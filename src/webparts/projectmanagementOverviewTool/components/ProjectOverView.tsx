@@ -108,7 +108,8 @@ export default function ProjectOverview() {
                 width: "180px",
                 Cell: ({ row }: any) => (
                     <span>
-                        <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers>
+                        <InlineEditingcolumns callBack={CallBack} columnName='Team' item={row?.original}  TaskUsers={AllTaskUser} />
+                        {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 )
             },

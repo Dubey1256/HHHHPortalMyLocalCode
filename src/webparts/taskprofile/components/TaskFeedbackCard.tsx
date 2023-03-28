@@ -414,7 +414,7 @@ private approvalcallback(){
               <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
             </div>
 
-            <div className="col-sm-1 pe-0 mt-2 text-end " style={{ display: this.state.showcomment }}>
+            <div className="col-sm-1 ps-1 mt-2 text-end " style={{ display: this.state.showcomment }}>
               <button type="button" className="post btn btn-primary " onClick={() => this.PostButtonClick()}>Post</button>
             </div>
           </div>
@@ -502,11 +502,11 @@ private approvalcallback(){
               </div>
             </div>
             {sunchildcomment == j ? <div className='d-flex ' >
-              <div className="col-sm-10 mt-2 p-0 " style={{ display: this.state.showcomment_subtext }}>
-                <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} style={{ width: '100%' }} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
+              <div className="col-sm-11  mt-2 p-0  " style={{ display: this.state.showcomment_subtext }}>
+                <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} style={{ width: '99%' }} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
               </div>
 
-              <div className="col-sm-2  mt-2 text-end " style={{ display: this.state.showcomment_subtext }}>
+              <div className="col-sm-1 mt-2 text-end  " style={{ display: this.state.showcomment_subtext }}>
                 <button type="button" className="post btn btn-primary" onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
               </div>
             </div> : null}

@@ -8,6 +8,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     const callBack = SubTextItemsArray.callBack
     const [Texts, setTexts] = useState(false);
     const [subCommentsData, setSubCommentsData] = useState([]);
+    const [UpdatedFeedBackChildArray, setUpdatedFeedBackChildArray] = useState([]);
     const [btnStatus, setBtnStatus] = useState(false);
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
@@ -17,26 +18,13 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     let SmartLightPercentStatus: any = SubTextItemsArray.SmartLightPercentStatus;
     let SmartLightStatus: any = SubTextItemsArray.SmartLightStatus;
     let ChildArray: any = [];
-    const addSubRow = () => {
-        const object = {
-            Completed: "",
-            Title: "",
-            text: "",
-            Phone: "",
-            LowImportance: "",
-            HighImportance: ""
-        };
-        subCommentsData.push(object);
-        setTexts(!Texts)
-        ChildArray.push(object)
-        setBtnStatus(true);
-    }
 
     useEffect(() => {
         if (SubTextItems != undefined && SubTextItems.length > 0) {
-            setSubCommentsData(SubTextItems);
             SubTextItems.map((subItem: any) => {
                 ChildArray.push(subItem);
+                UpdatedFeedBackChildArray.push(subItem);
+                subCommentsData.push(subItem);
             })
             setBtnStatus(true)
         } else {
@@ -49,22 +37,53 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             setIsDisabled(true);
         }
     }, [])
+    const addSubRow = () => {
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            Phone: "",
+            LowImportance: "",
+            HighImportance: "",
+            isShowLight: ""
+        };
+        subCommentsData.push(object);
+        setTexts(!Texts)
+        UpdatedFeedBackChildArray.push(object)
+        setBtnStatus(true);
+    }
+
+    const addSubRowInDiv = () => {
+        const object = {
+            Completed: "",
+            Title: "",
+            text: "",
+            Phone: "",
+            LowImportance: "",
+            HighImportance: "",
+            isShowLight: ""
+        };
+        subCommentsData.push(object);
+        setTexts(!Texts)
+        UpdatedFeedBackChildArray.push(object)
+        setBtnStatus(true);
+    }
     const RemoveSubtexTItem = (dltItem: any, Index: number) => {
         let tempArray: any = []
         subCommentsData.map((array: any, index: number) => {
             if (index != Index) {
                 tempArray.push(array);
-
             }
         });
-        tempArray?.map((tempData: any) => {
-            ChildArray.push(tempData);
-        })
-        callBack(tempArray, SubTextItemsArray.commentId);
+        // tempArray?.map((tempData: any) => {
+        //     ChildArray.push(tempData);
+        // })
+        callBack(tempArray, currentArrayIndex);
         setSubCommentsData(tempArray);
     }
 
     function handleChangeChild(e: any) {
+        // let tempArray: any = [];
         if (e.target.matches("textarea")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
@@ -72,18 +91,30 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const obj = { ...subCommentsData[id], [name]: value };
             copy[id] = obj;
             setSubCommentsData(copy);
-            ChildArray = copy;
+            UpdatedFeedBackChildArray[id].Title = value;
+
         }
         if (e.target.matches("input")) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
             const copy = [...subCommentsData];
-            const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
+            const obj = {...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
-            ChildArray = copy;
+            if (name == "Phone") {
+                UpdatedFeedBackChildArray[id].Phone = (value == "true" ? false : true)
+            }
+            if (name == "LowImportance") {
+                UpdatedFeedBackChildArray[id].LowImportance = (value == "true" ? false : true)
+            }
+            if (name == "HighImportance") {
+                UpdatedFeedBackChildArray[id].HighImportance = (value == "true" ? false : true)
+            }
+            if (name == "Completed") {
+                UpdatedFeedBackChildArray[id].Completed = (value == "true" ? false : true)
+            }
         }
-        callBack(ChildArray, currentArrayIndex);
+        callBack(UpdatedFeedBackChildArray, currentArrayIndex);
     }
 
     const postBtnHandle = (index: any) => {
@@ -100,24 +131,28 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         } else {
             setPostBtnStatus(true)
         }
-        ChildArray[Index].Comments = dataPost;
-        callBack(ChildArray, currentArrayIndex);
+        // const copy = [...subCommentsData];
+        // const obj = { ...subCommentsData[Index], Comments: dataPost };
+        // copy[Index] = obj;
+        // setSubCommentsData(copy);
+        UpdatedFeedBackChildArray[Index].Comments = dataPost;
+        callBack(UpdatedFeedBackChildArray, currentArrayIndex);
     }, [])
     const SmartLightUpdateSubChildComment = (index: any, value: any) => {
         const copy = [...subCommentsData];
         const obj = { ...subCommentsData[index], isShowLight: value };
         copy[index] = obj;
         setSubCommentsData(copy);
-        ChildArray = copy;
-        callBack(ChildArray);
+        UpdatedFeedBackChildArray[index].isShowLight = value;
+        callBack(UpdatedFeedBackChildArray, currentArrayIndex);
     }
-    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+    const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
             setPostBtnStatus(false)
         } else {
             setPostBtnStatus(true)
         }
-    },[])
+    }, [])
     function createSubRows(state: any[]) {
         return (
             <div className="add-text-box">
@@ -211,8 +246,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     <AddCommentComponent
                                         Data={obj.Comments != null ? obj.Comments : []}
                                         allFbData={SubTextItems}
-                                        index={currentIndex}
-                                        postStatus={postBtnStatus}
+                                        index={index}
+                                        postStatus={index == Number(currentIndex) && postBtnStatus ? true :false}
                                         allUsers={SubTextItemsArray.allUsers}
                                         callBack={postBtnHandleCallBack}
                                         CancelCallback={postBtnHandleCallBackCancel}
@@ -224,7 +259,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                 })}
                 {btnStatus ? <div className="float-end">
                     <button className="btn btn-primary my-1"
-                        onClick={addSubRow}>Add Sub-Text Box
+                        onClick={addSubRowInDiv}>Add Sub-Text Box
                     </button>
                 </div>
 
@@ -242,4 +277,4 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             {subCommentsData.length ? createSubRows(subCommentsData) : null}
         </div>
     );
-}
+}  

@@ -1,8 +1,11 @@
-import { Panel } from 'office-ui-fabric-react'
+import { Panel,PanelType } from 'office-ui-fabric-react'
 import { Web } from "sp-pnp-js";
 import React from 'react'
 import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
+import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
+import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
+
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -14,13 +17,15 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
+    const [TeamConfig, setTeamConfig] = React.useState();
+    const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TaskPriorityPopup, setTaskPriorityPopup] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+    const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([])
@@ -52,6 +57,7 @@ const inlineEditingcolumns = (props: any) => {
     ]
 
     React.useEffect(() => {
+        loadTaskUsers();
         if (props?.item?.Services?.length > 0) {
             setServicesTaskCheck(true)
         } else {
@@ -64,7 +70,6 @@ const inlineEditingcolumns = (props: any) => {
         })
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
-        loadTaskUsers();
         GetSmartMetadata();
     }, [])
     const getPercentCompleteTitle = (percent: any) => {
@@ -103,7 +108,7 @@ const inlineEditingcolumns = (props: any) => {
             if (metadata.Title == 'Immediate') {
                 impSharewebCategories.push(metadata);
             }
-            if (metadata.TaxType == 'Categories' ) {
+            if (metadata.TaxType == 'Categories') {
                 SharewebtaskCategories.push(metadata);
             }
 
@@ -129,6 +134,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     const loadTaskUsers = async () => {
         taskUsers = await globalCommon.loadTaskUsers()
+        setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {
 
@@ -140,7 +146,7 @@ const inlineEditingcolumns = (props: any) => {
         }
 
         if (props?.item?.Author != undefined && props?.item?.Author != null) {
-            taskUsers?.map((userData: any) => {
+            AllTaskUser?.map((userData: any) => {
                 if (props?.item?.Author.Id == userData?.AssingedToUserId) {
                     userData.Approver?.map((AData: any) => {
                         // ApproverDataTemp.push(AData);
@@ -150,7 +156,7 @@ const inlineEditingcolumns = (props: any) => {
             })
             if ((statusValue <= 2) && ApprovalStatusGlobal) {
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                    taskUsers?.map((userData1: any) => {
+                    AllTaskUser?.map((userData1: any) => {
                         TaskApproverBackupArray.map((itemData: any) => {
                             if (itemData.Id == userData1?.AssingedToUserId) {
                                 AssignedUsers.push(userData1);
@@ -160,7 +166,7 @@ const inlineEditingcolumns = (props: any) => {
                     })
                 } else {
                     if (TaskCreatorApproverBackupArray?.length > 0) {
-                        taskUsers?.map((userData1: any) => {
+                        AllTaskUser?.map((userData1: any) => {
                             TaskCreatorApproverBackupArray?.map((itemData: any) => {
                                 if (itemData.Id == userData1?.AssingedToUserId) {
                                     AssignedUsers.push(userData1);
@@ -171,7 +177,7 @@ const inlineEditingcolumns = (props: any) => {
                     }
                 }
             } else {
-                taskUsers?.map((userData: any) => {
+                AllTaskUser?.map((userData: any) => {
                     props?.item?.AssignedTo?.map((AssignedUser: any) => {
                         if (userData?.AssingedToUserId == AssignedUser.Id) {
                             AssignedUsers.push(userData);
@@ -289,11 +295,12 @@ const inlineEditingcolumns = (props: any) => {
                 props?.callBack();
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
+                setTeamMembersPopup(false);
             })
 
     }
     const setWorkingMember = (statusId: any) => {
-        taskUsers?.map((dataTask: any) => {
+        AllTaskUser?.map((dataTask: any) => {
             if (dataTask.AssingedToUserId == statusId) {
                 let tempArray: any = [];
                 tempArray.push(dataTask)
@@ -304,10 +311,50 @@ const inlineEditingcolumns = (props: any) => {
             }
         })
     }
+    const DDComponentCallBack = (dt: any) => {
+        setTeamConfig(dt);
+        console.log(TeamConfig);
+        if (dt?.AssignedTo?.length > 0) {
+          let tempArray: any = [];
+          dt.AssignedTo?.map((arrayData: any) => {
+            if (arrayData.AssingedToUser != null) {
+              tempArray.push(arrayData.AssingedToUser);
+            } else {
+              tempArray.push(arrayData);
+            }
+          });
+          setTaskAssignedTo(tempArray);
+          console.log("Team Config  assigadf=====", tempArray);
+        }
+        if (dt?.TeamMemberUsers?.length > 0) {
+          let tempArray: any = [];
+          dt.TeamMemberUsers?.map((arrayData: any) => {
+            if (arrayData.AssingedToUser != null) {
+              tempArray.push(arrayData.AssingedToUser);
+            } else {
+              tempArray.push(arrayData);
+            }
+          });
+          setTaskTeamMembers(tempArray);
+          console.log("Team Config member=====", tempArray);
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+          let tempArray: any = [];
+          dt.ResponsibleTeam?.map((arrayData: any) => {
+            if (arrayData.AssingedToUser != null) {
+              tempArray.push(arrayData.AssingedToUser);
+            } else {
+              tempArray.push(arrayData);
+            }
+          });
+          setTaskResponsibleTeam(tempArray);
+          console.log("Team Config reasponsible ===== ", tempArray);
+        }
+      };
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
         let tempArray: any = [];
         filterArray.map((TeamItems: any) => {
-            taskUsers?.map((TaskUserData: any) => {
+            AllTaskUser?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
                     if (TaskUserData.TimeCategory == filterType) {
                         tempArray.push(TaskUserData)
@@ -451,48 +498,54 @@ const inlineEditingcolumns = (props: any) => {
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
     }
-    const openPriotiyEdit = () => {
-        if (props?.type != undefined && props?.type == 'Task') {
-            setTaskPriorityPopup(true)
-        }
-    }
+ 
     const handleCategoryChange = (event: any, CategoryId: any) => {
         if (event.target.checked) {
             setSelectedCatId([...selectedCatId, CategoryId]);
-          } else {
-            setSelectedCatId(selectedCatId.filter((val:any) => val !== CategoryId));
-          }
-       
+        } else {
+            setSelectedCatId(selectedCatId.filter((val: any) => val !== CategoryId));
+        }
+
 
     }
     return (
         <>
             {
+                props?.columnName == 'Team' ?
+                    <>
+                        <span style={{ display: "block", width: "100%" }} onClick={() => setTeamMembersPopup(true)} >
+                            &nbsp;
+                            <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
+                        </span>
+                    </>
+                    : ''
+            }
+            {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span style={{ display: "block", width: "100%" }} onClick={() => openPriotiyEdit()} >
+                        <span style={{ display: "block", width: "100%" }} onClick={() =>  setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
                             <span className='ms-1'>
-                            {
-                                props?.item?.SharewebCategories?.map((category: any) => {
-                                    if (category?.Title == 'Immediate') {
-                                        return (
-                                            <a title="Immediate"><img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
-                                        )
-                                    }
-                                    if (category?.Title == 'Bottleneck') {
-                                        return (
-                                            <a title="Bottleneck"><img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
-                                        )
-                                    }
-                                    if (category?.Title == 'Favorite') {
-                                        return (
-                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} /> </a>
-                                        )
-                                    }
-                                })
-                            }
+                                {
+                                    props?.item?.SharewebCategories?.map((category: any) => {
+                                        if (category?.Title == 'Immediate') {
+                                            return (
+                                                <a title="Immediate"><img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
+                                            )
+                                        }
+                                        if (category?.Title == 'Bottleneck') {
+                                            return (
+                                                <a title="Bottleneck"><img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
+                                            )
+                                        }
+                                        if (category?.Title == 'Favorite') {
+                                            return (
+                                                <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favourite selected.svg")} /> </a>
+                                            )
+                                        }
+                                    })
+                                }
                             </span>
                         </span>
                     </>
@@ -524,7 +577,7 @@ const inlineEditingcolumns = (props: any) => {
                                     {
                                         props?.item?.AssignedTo?.map((AssignedUser: any) => {
                                             return (
-                                                taskUsers?.map((user: any) => {
+                                                AllTaskUser?.map((user: any) => {
                                                     if (AssignedUser.Id == user.AssingedToUserId) {
                                                         return (
                                                             <span className="user_Member_img">
@@ -624,10 +677,27 @@ const inlineEditingcolumns = (props: any) => {
                                 checked={selectedCatId?.includes(option.Id)}
                                 onChange={(event) => handleCategoryChange(event, option.Id)}
                             />
-                             <a title={option.Title}><img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} /> </a>
+                            <a title={option.Title}><img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} /> </a>
                             <label htmlFor={option.Id}>{option.Title}</label>
                         </div>
                     ))}
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+            <Panel
+                headerText={`Update Team Members`}
+                isOpen={teamMembersPopup}
+                onDismiss={() => setTeamMembersPopup(false)}
+                isBlocking={TaskStatusPopup}
+                type={PanelType.medium}
+            >
+                <div>
+                    <TeamConfigurationCard
+                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} ></TeamConfigurationCard>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
                             OK

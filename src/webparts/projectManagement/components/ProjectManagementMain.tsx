@@ -81,11 +81,12 @@ const ProjectManagementMain = (props: any) => {
     GetMasterData();
     GetMetaData();
    try{
-    var $myDiv = $("#spPageCanvasContent");
-    $myDiv.addClass('hundred');
-    var $myDiv = $("#workbenchPageContent");
-    $myDiv.addClass('hundred');
-    $('#Canvas div:first-child').addClass('max-w-Auto');
+    $('#spPageCanvasContent').removeClass();
+    $('#spPageCanvasContent').addClass('hundred')
+    $('#workbenchPageContent').removeClass();
+    $('#workbenchPageContent').addClass('hundred')
+   
+   
    }catch(e){
     console.log(e);
    }
@@ -675,10 +676,11 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <ShowTaskTeamMembers
+             <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Team' item={row?.original}  TaskUsers={AllUser} />
+            {/* <ShowTaskTeamMembers
               props={row?.original}
               TaskUsers={AllUser}
-            ></ShowTaskTeamMembers>
+            ></ShowTaskTeamMembers> */}
           </span>
         ),
       },
@@ -1029,7 +1031,7 @@ const ProjectManagementMain = (props: any) => {
                               callBack={tagAndCreateCallBack}
                             />
                           )}
-                          {projectId && (
+                          {/* {projectId && (
                             <TagTaskToProjectPopup
                               projectItem={Masterdata}
                               className="ms-2"
@@ -1037,7 +1039,7 @@ const ProjectManagementMain = (props: any) => {
                               callBack={tagAndCreateCallBack}
                               projectTitle={projectTitle}
                             />
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
