@@ -2882,6 +2882,7 @@ function EditInstitution(item: any) {
                       className="p-1"
                       href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                       target="_blank"
+                      data-interception="off"
                     >
                       Open out-of-the-box form
                     </a>

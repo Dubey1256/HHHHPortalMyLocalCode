@@ -11,6 +11,7 @@ const CommentBoxComponent = (commentData: any) => {
     const [postBtnStatus, setPostBtnStatus] = useState(false);
     const [currentIndex, setCurrentIndex] = useState('');
     const [isDisabled, setIsDisabled] = useState(false);
+    const [FirstFeedBackArray, setFirstFeedBackArray] = useState([]);
     var Array: any = [];
     let ApprovalStatus: any = commentData.ApprovalStatus;
     let SmartLightPercentStatus: any = commentData.SmartLightPercentStatus;
@@ -23,6 +24,7 @@ const CommentBoxComponent = (commentData: any) => {
                 if (index == 0) {
                     data.push(tempItem);
                     Array.push(tempItem);
+                    FirstFeedBackArray.push(tempItem);
                 }
             })
         } else {
@@ -37,9 +39,11 @@ const CommentBoxComponent = (commentData: any) => {
                 isShowLight: ''
             };
             data.push(object);
-            Array.push(object)
+            Array.push(object);
+            FirstFeedBackArray.push(object);
         }
         setCommentArray(data);
+        setFirstFeedBackArray(data);
         if (SmartLightStatus) {
             setIsDisabled(true);
         }
@@ -52,16 +56,26 @@ const CommentBoxComponent = (commentData: any) => {
             const copy = [...commentArray];
             const obj = { ...commentArray[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
+            if (name == "Phone") {
+                FirstFeedBackArray[id].Phone = (value == "true" ? false : true)
+            }
+            if (name == "LowImportance") {
+                FirstFeedBackArray[id].LowImportance = (value == "true" ? false : true)
+            }
+            if (name == "HighImportance") {
+                FirstFeedBackArray[id].HighImportance = (value == "true" ? false : true)
+            }
+            if (name == "Completed") {
+                FirstFeedBackArray[id].Completed = (value == "true" ? false : true)
+            }
             setCommentArray(copy);
             Array = copy;
         }
-        CallBack(Array);
+        CallBack(FirstFeedBackArray);
     }
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
-        if (Array.length > 0) {
-            Array[0].Title = EditorData;
-        }
-        CallBack(Array);
+        FirstFeedBackArray[0].Title = EditorData;
+        CallBack(FirstFeedBackArray);
     }, [])
 
     const SmartLightUpdate = (index: any, value: any) => {
@@ -69,8 +83,9 @@ const CommentBoxComponent = (commentData: any) => {
         const obj = { ...commentArray[index], isShowLight: value };
         copy[index] = obj;
         setCommentArray(copy);
+        FirstFeedBackArray[index].isShowLight = value;
         Array = copy;
-        CallBack(Array);
+        CallBack(FirstFeedBackArray);
     }
 
     const postBtnHandle = (index: any) => {
@@ -87,21 +102,23 @@ const CommentBoxComponent = (commentData: any) => {
         } else {
             setPostBtnStatus(true)
         }
+        FirstFeedBackArray[0].Comments = commentData;
         Array[0].Comments = commentData;
-        CallBack(Array);
+        CallBack(FirstFeedBackArray);
     }, [])
 
-    const postBtnHandleCallBackCancel =useCallback((status:any)=>{
+    const postBtnHandleCallBackCancel = useCallback((status: any) => {
         if (status) {
             setPostBtnStatus(false)
         } else {
             setPostBtnStatus(true)
         }
-    },[])
+    }, [])
 
     const subTextCallBack = useCallback((subTextData: any, commentId: any) => {
+        FirstFeedBackArray[0].Subtext = subTextData;
         Array[0].Subtext = subTextData;
-        CallBack(Array);
+        CallBack(FirstFeedBackArray);
     }, [])
     return (
         <div>
