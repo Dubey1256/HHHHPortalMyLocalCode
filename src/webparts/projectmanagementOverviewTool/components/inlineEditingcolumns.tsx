@@ -488,7 +488,7 @@ const inlineEditingcolumns = (props: any) => {
                                     }
                                     if (category?.Title == 'Favorite') {
                                         return (
-                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favourite selected.svg")} /> </a>
+                                            <a title="Favorite"><img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} /> </a>
                                         )
                                     }
                                 })
@@ -512,7 +512,7 @@ const inlineEditingcolumns = (props: any) => {
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
                                 parseInt(props?.item?.PercentComplete) <= 98 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipse-haf.svg")} />
+                                    <img src={require("../../../Assets/ICON/Ellipsehaf.svg")} />
                                 </a>
                             ) : (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
