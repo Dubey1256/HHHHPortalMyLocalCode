@@ -947,7 +947,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.allDataOfTask.forEach(function (value: any) {
       if (self.taskResult.SharewebTaskType = undefined) {
         if (self.taskResult.SharewebTaskType.Title == 'Activities' || self.taskResult.SharewebTaskType.Title == 'Project') {
-          
           if(self.taskResult.ParentTask==undefined){
             if (value.Id == self.taskResult.Id) {
               value.isLastNode = true;
