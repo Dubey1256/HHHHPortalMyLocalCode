@@ -675,6 +675,7 @@ const CreateActivity = (props: any) => {
                     }).then((res: any) => {
                         res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                         res.data['listId'] = value.listId
+                        res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value.SharewebID
                         res.data.ParentTaskId = AllItems.Id
 
@@ -781,6 +782,7 @@ const CreateActivity = (props: any) => {
                             res.data.ParentTaskId = AllItems.Id
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                             res.data['Shareweb_x0020_ID'] = SharewebID
+                            res.data['siteType'] = value.siteName
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
