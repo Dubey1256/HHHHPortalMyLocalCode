@@ -1307,7 +1307,8 @@ function TimeEntryPopup(item: any) {
 
         //-------------Post Method------------------------------------------------------------
 
-        let folderUri: string = '/Smalsus';
+        //let folderUri: string = '/Smalsus'
+        let folderUri:string = `/${UpdatedData.Company}`
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = '/sites/HHHH/SP/Lists/TasksTimesheet2';
             var listName = 'TasksTimesheet2'
@@ -1339,6 +1340,15 @@ function TimeEntryPopup(item: any) {
 
     }
     const createItemMainList = async () => {
+        var UpdatedData: any = {}
+        $.each(AllUsers, function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId == CurntUserId) {
+                UpdatedData['AuthorName'] = taskUser.Title;
+                UpdatedData['Company'] = taskUser.Company;
+                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+            }
+
+        });
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = '/sites/HHHH/SP/Lists/TasksTimesheet2';
@@ -1349,7 +1359,8 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
 
-        let folderUri: string = '/Smalsus/Santosh Kumar';
+       // let folderUri: string = '/Smalsus/Santosh Kumar';
+        let folderUri:string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
         // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
             'Title': checkCategories,
