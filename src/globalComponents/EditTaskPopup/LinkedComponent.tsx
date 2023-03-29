@@ -410,7 +410,7 @@ const LinkedServices = (item: any) => {
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData)} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
 
                                                                         </td>
 

@@ -77,6 +77,8 @@ function EditProjectPopup(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
+
+
   const [activePicker, setActivePicker] = React.useState(null);
 
   const [datepicker, setdatepicker] = React.useState(false);
@@ -89,10 +91,6 @@ function EditProjectPopup(item: any) {
   const handlePickerBlur = () => {
     setActivePicker(null);
   };
-  function datepickercl() {
-    setdatepicker(true);
-  }
- 
   // $('.ms-Dialog-main .main-153').hide();
   const setModalIsOpenToTrue = (e: any) => {
     // e.preventDefault()
@@ -112,19 +110,16 @@ function EditProjectPopup(item: any) {
     EditData.CompletedDate = date;
     setCompletiondate(date);
     setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
   };
   const handleDatestart = (date: any) => {
     EditData.StartDate = date;
     setStartdate(date);
     setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
   };
   const handleDatedue = (date: any) => {
     EditData.DueDate = date;
     setDate(date);
     setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
   };
   const Call = React.useCallback((item: any, type: any) => {
     setIsPortfolio(false);
@@ -1327,8 +1322,11 @@ function EditProjectPopup(item: any) {
     return (
       <>
         <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}
-        >
+          style={{     marginRight: "auto",
+          fontSize: "20px",
+          fontWeight: "600",
+          paddingLeft: "25px" }}
+      >
           {`Project > ${EditData.Title}`}
         </div>
         <Tooltip />
@@ -1590,12 +1588,12 @@ function EditProjectPopup(item: any) {
 
                                 <div className="inner-tabb full-width">
                                   {linkedComponentData?.length > 0 ? (
-                                    <div>
-                                      {linkedComponentData?.map(
-                                        (com: any, index: any) => {
-                                          return (
-                                            <>
-                                              <div className="d-flex Component-container-edit-task">
+                                    <div className="serviepannelgreena">
+                                    {linkedComponentData?.map(
+                                      (com: any, index: any) => {
+                                        return (
+                                          <>
+                                            <div className="d-flex Component-container-edit-task block">
                                                 <div>
                                                   <a
                                                     className="hreflink "
@@ -1644,14 +1642,14 @@ function EditProjectPopup(item: any) {
                               onBlur={handlePickerBlur}
                               open={activePicker === "startDate"}
                             />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-sm-4 ">
-                          <div className="input-group">
-                            <label className="form-label  full-width">
-                              Due Date
-                            </label>
-                            <DatePicker
+                          <div className="col-sm-4 ps-0">
+                            <div className="input-group">
+                              <label className="form-label  full-width">
+                                Due Date
+                              </label>
+                              <DatePicker
                               className="form-control"
                               selected={date}
                               value={EditData.DueDate}
@@ -1661,15 +1659,15 @@ function EditProjectPopup(item: any) {
                               onBlur={handlePickerBlur}
                               open={activePicker === "date"}
                             />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-sm-4 pe-0">
-                          <div className="input-group">
-                            <label className="form-label  full-width">
-                              {" "}
-                              Completion Date{" "}
-                            </label>
-                            <DatePicker
+                          <div className="col-sm-4 ps-0">
+                            <div className="input-group">
+                              <label className="form-label  full-width">
+                                {" "}
+                                Completion Date{" "}
+                              </label>
+                              <DatePicker
                               className="form-control"
                               name="CompletionDate"
                               selected={Completiondate}
@@ -2459,7 +2457,8 @@ function EditProjectPopup(item: any) {
                         src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png"
                       />
                       <a
-                        data-interception
+                      target="_blank"
+                      data-interception="off"
                         href={`mailto:?subject=${"Test"}&body=${
                           EditData.component_x0020_link
                         }`}
@@ -2470,7 +2469,8 @@ function EditProjectPopup(item: any) {
                     </span>
                     <span className="p-1">|</span>
                     <a
-                      data-interception
+                    
+                      data-interception="off"
                       className="p-1"
                       href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
                       target="_blank"

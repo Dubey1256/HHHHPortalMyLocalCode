@@ -97,7 +97,7 @@ function CreateTaskComponent(props: any) {
         setIsServices(false);
         if (type === "LinkedComponent") {
             if (propsItems?.linkedComponent?.length > 0) {
-                setSave({ ...save, linkedServices: propsItems.linkedComponent });
+                setSave({ ...save, linkedServices: propsItems.linkedComponent});
                 setLinkedComponentData(propsItems.linkedComponent);
             }
         }
@@ -107,7 +107,6 @@ function CreateTaskComponent(props: any) {
                 setSmartComponentData(propsItems.smartComponent);
             }
         }
-
     };
     const DueDate = (item: any) => {
         let date = new Date();
@@ -288,10 +287,25 @@ function CreateTaskComponent(props: any) {
             }
         } else if (props?.projectId != undefined && props?.projectItem != undefined) {
             AllComponents?.map((item: any) => {
-                if (item?.Id == props?.projectItem?.ComponentId[0]) {
-                    setComponent.push(item)
-                    setSave({ ...save, Component: setComponent });
-                    setSmartComponentData(setComponent);
+                // if (item?.Id == props?.projectItem?.ComponentId[0]) {
+                //     setComponent.push(item)
+                //     setSave({ ...save, Component: setComponent });
+                //     setSmartComponentData(setComponent);
+                // }
+                if(item?.Id == props?.createComponent?.portfolioData?.Id){
+                     if(props?.createComponent?.portfolioType==='Component'){
+                        selectPortfolioType('Component');
+                        setComponent.push(item)
+                        setSave({ ...save, portfolioType: 'Component' })
+                        setSmartComponentData(setComponent);
+                     }
+                    
+                     if(props?.createComponent?.portfolioType==='Service'){
+                        selectPortfolioType('Service');
+                        setComponent.push(item);
+                        setSave({ ...save, portfolioType: 'Service' })
+                        setLinkedComponentData(setComponent);
+                     }
                 }
             })
         }
@@ -1152,7 +1166,11 @@ function CreateTaskComponent(props: any) {
             <div className='Create-taskpage'>
                 <div className='row'>
                     {props?.projectId == undefined ? <div className='col-sm-12'>
-                        <dl className='d-grid text-right pull-right'><span className="pull-right"> <a data-interception="off" target='_blank' href={oldTaskIrl} style={{ cursor: "pointer" }}>Old Create Task</a></span></dl>
+                    <div className='header-section full-width justify-content-between'>
+                            <h2 style={{ color: "#000066", fontWeight: "600" }}>Create Task
+                            <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                            </h2>
+                        </div>
                     </div> : ''}
                     <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
@@ -1160,12 +1178,12 @@ function CreateTaskComponent(props: any) {
                     </div>
                     <div className='col-sm-2 p-0 mt-4'>
                         <input
-                            type="radio" className="form-check-input radio  me-1" defaultChecked={save.portfolioType === 'Component'}
+                            type="radio" className="form-check-input radio  me-1" checked={save.portfolioType === 'Component'}
                             name="taskcategory" onChange={() => selectPortfolioType('Component')} />
                         <label className='form-check-label me-2'>Component</label>
                         {
                             burgerMenuTaskDetails?.ComponentID == undefined ? <><input
-                                type="radio" className="form-check-input radio  me-1"
+                                type="radio" className="form-check-input radio  me-1" checked={save.portfolioType === 'Service'}
                                 name="taskcategory" onChange={() => selectPortfolioType('Service')} />
                                 <label className='form-check-label'>Service</label></> : ''
                         }
@@ -1469,8 +1487,8 @@ function CreateTaskComponent(props: any) {
                     }
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </div>
-                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}></ComponentPortPolioPopup>}
-                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
+                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
+                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>

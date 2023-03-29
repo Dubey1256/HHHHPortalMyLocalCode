@@ -1,4 +1,4 @@
-import  * as React from 'react';
+import * as React from 'react';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import DatePicker from "react-datepicker";
 import { Web } from "sp-pnp-js";
@@ -12,7 +12,7 @@ import * as Moment from 'moment';
 import * as moment from "moment-timezone";
 import Tooltip from '../../../globalComponents/Tooltip';
 
-const TaskItemRank: any = []; 
+const TaskItemRank: any = [];
 var TaskTypeItems: any = [];
 var SharewebTasknewTypeId: any = ''
 var SharewebTasknewType: any = ''
@@ -31,11 +31,12 @@ const CreateWS = (props: any) => {
         console.log(props)
     }
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
-   
+
     const [isDropItem, setisDropItem] = React.useState(false);
     const [isDropItemRes, setisDropItemRes] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [smartComponentData, setSmartComponentData] = React.useState([]);
+    const [inputFields, setInputFields] = React.useState([]);
     const [ParentArray, setParentArray] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
@@ -54,9 +55,9 @@ const CreateWS = (props: any) => {
     const [checkedWS, setcheckedWS] = React.useState(true);
     const [checkedTask, setcheckedTask] = React.useState(false);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
-    const [breadcrumb, setbreadcrumb] = React.useState([]);
+    const [showChildData, setShowChildData] = React.useState(false);
     const [childItem, setChildItem] = React.useState(false);
-    
+
 
 
     const closeTaskStatusUpdatePoup = (res: any) => {
@@ -82,7 +83,7 @@ const CreateWS = (props: any) => {
 
                     }
                 })
-               
+
             }
         })
         setParentArray(Parent)
@@ -234,7 +235,7 @@ const CreateWS = (props: any) => {
 
     }
     const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
-        var NewDate =''
+        var NewDate = ''
         WorstreamLatestId += index;
         var SharewebID = '';
         if (Task == undefined || Task == '')
@@ -260,14 +261,14 @@ const CreateWS = (props: any) => {
         //     }
 
         // })
-        if(myDate != undefined && myDate != null){
-           var dateValue = myDate.split("/");
-           var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-           var Dateet = new Date(dp)
-           NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+        if (myDate != undefined && myDate != null) {
+            var dateValue = myDate.split("/");
+            var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+            var Dateet = new Date(dp)
+            NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
         }
-        if(date != undefined){
-            NewDate = new Date(date).toDateString() ;
+        if (date != undefined) {
+            NewDate = new Date(date).toDateString();
         }
         if (AllItems.Portfolio_x0020_Type == 'Component') {
             Component.push(AllItems.Component[0].Id)
@@ -276,15 +277,15 @@ const CreateWS = (props: any) => {
             RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
         if (AllItems.Portfolio_x0020_Type == undefined) {
-            if(AllItems.Component != undefined && AllItems.Component.length>0){
-           smartComponentData.push(AllItems.Component);
+            if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+                smartComponentData.push(AllItems.Component);
             }
- 
-            if (AllItems.Services != undefined && AllItems.Services.length>0) {
+
+            if (AllItems.Services != undefined && AllItems.Services.length > 0) {
                 linkedComponentData.push(AllItems);
             }
-       
-       }
+
+        }
 
         var categoriesItem = '';
         CategoriesData.map((category) => {
@@ -346,7 +347,7 @@ const CreateWS = (props: any) => {
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
             Body: AllItems.Description,
-            DueDate: NewDate != '' &&   NewDate != undefined ? NewDate : undefined,
+            DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
@@ -414,7 +415,7 @@ const CreateWS = (props: any) => {
 
     }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
-        var NewDate =''
+        var NewDate = ''
         var RelevantPortfolioIds: any = []
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails: any = [];
@@ -446,24 +447,24 @@ const CreateWS = (props: any) => {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
             if (AllItems.Portfolio_x0020_Type == undefined) {
-                if(AllItems.Component != undefined && AllItems.Component.length>0){
-               smartComponentData.push(AllItems.Component);
+                if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+                    smartComponentData.push(AllItems.Component);
                 }
-     
-                if (AllItems.Services != undefined && AllItems.Services.length>0) {
+
+                if (AllItems.Services != undefined && AllItems.Services.length > 0) {
                     linkedComponentData.push(AllItems);
                 }
-           
-           }
-           if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-            linkedComponentData?.map((com: any) => {
-                if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
-                    $.each(linkedComponentData, function (index: any, smart: any) {
-                        RelevantPortfolioIds.push(smart.Id)
-                    })
-                }
-            })
-        }
+
+            }
+            if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+                linkedComponentData?.map((com: any) => {
+                    if (linkedComponentData != undefined && linkedComponentData?.length >= 0) {
+                        $.each(linkedComponentData, function (index: any, smart: any) {
+                            RelevantPortfolioIds.push(smart.Id)
+                        })
+                    }
+                })
+            }
             var Component: any = []
             smartComponentData.forEach((com: any) => {
                 if (com != undefined) {
@@ -486,13 +487,13 @@ const CreateWS = (props: any) => {
             //         }
             //     })
             // }
-           
-            if(myDate != undefined && myDate != null){
+
+            if (myDate != undefined && myDate != null) {
                 var dateValue = myDate.split("/");
                 var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
                 var Dateet = new Date(dp)
                 NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
-             }
+            }
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 Component.push(AllItems.Component[0].Id)
             }
@@ -543,10 +544,10 @@ const CreateWS = (props: any) => {
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body: AllItems.Description,
-                DueDate: NewDate != '' &&   NewDate != undefined ? NewDate : undefined,
+                DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
-                SharewebTaskLevel2No: WorstreamLatestId,
+                //SharewebTaskLevel2No: WorstreamLatestId,
                 SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
                 AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                 Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
@@ -614,21 +615,21 @@ const CreateWS = (props: any) => {
             </div>
         );
     };
-    const SelectDate=(Date:any)=>{
-        if(Date == 'Today'){
-           
-            var change =  moment().format('YYYY-MM-DD hh:mm:ss')
-            var NewDate  = new window.Date().toString()
+    const SelectDate = (Date: any) => {
+        if (Date == 'Today') {
+
+            var change = moment().format('YYYY-MM-DD hh:mm:ss')
+            var NewDate = new window.Date().toString()
             var FinalDate = moment(NewDate).format("DD/MM/YYYY")
-            
+
         }
-        if(Date == 'Tomorrow'){
+        if (Date == 'Tomorrow') {
             var Tommorrow = new window.Date();
-                Tommorrow.setDate(Tommorrow.getDate() + 1);
-                var FinalDate = moment(Tommorrow).format("DD/MM/YYYY")
-                console.log(FinalDate)
+            Tommorrow.setDate(Tommorrow.getDate() + 1);
+            var FinalDate = moment(Tommorrow).format("DD/MM/YYYY")
+            console.log(FinalDate)
         }
-        if(Date == 'This Week'){
+        if (Date == 'This Week') {
             var ThisWeek = new window.Date();
             ThisWeek.setDate(ThisWeek.getDate());
             var getdayitem = ThisWeek.getDay();
@@ -636,8 +637,8 @@ const CreateWS = (props: any) => {
             ThisWeek.setDate(ThisWeek.getDate() + dayscount);
             var FinalDate = moment(ThisWeek).format("DD/MM/YYYY")
         }
-        if(Date == 'This Month'){
-            var ThisMonth =new window.Date();
+        if (Date == 'This Month') {
+            var ThisMonth = new window.Date();
             var year = ThisMonth.getFullYear();
             var month = ThisMonth.getMonth();
             var lastday = new window.Date(year, month + 1, 0);
@@ -645,137 +646,148 @@ const CreateWS = (props: any) => {
         }
         setMyDate(FinalDate)
     }
-    const AddchildItem=()=>{
-        setChildItem(true)
+    const AddchildItem = () => {
+        setShowChildData(true)
+        setInputFields([...inputFields, {
+            ItemRank: '',
+            Priority: '',
+            DueDate: '',
+            Description: ''
+        }])
     }
-    
-    const Addchild =()=>{
-        return(
-            <>
-            <div className='row mt-4'>
-               <div className='col-sm-4'>
-                   <div className="input-group">
-                       <label className="full-width">Item Rank</label>
-                       <select
-                           className="full_width searchbox_height"
-                           defaultValue={AllItems?.ItemRankTitle}
-                           onChange={(e) =>
-                               (AllItems.ItemRankTitle = e.target.value)
-                           }
-                       >
-                           <option>
-                               {AllItems?.ItemRankTitle == undefined
-                                   ? "select Item Rank"
-                                   : AllItems.ItemRankTitle}
-                           </option>
-                           {TaskItemRank &&
-                               TaskItemRank[0].map(function (h: any, i: any) {
-                                   return (
-                                       <option
-                                           key={i}
-                                           defaultValue={AllItems?.ItemRankTitle}
-                                       >
-                                           {AllItems?.ItemRankTitle == h.rankTitle
-                                               ? AllItems.ItemRankTitle
-                                               : h.rankTitle}
-                                       </option>
-                                   );
-                               })}
-                       </select>
-                   </div>
-               </div>
-               <div className='col-sm-4'>
-                   <fieldset>
-                       <label className="full-width">Priority
-                       <span>
-                           <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                           <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
-                           <div className="popover__content">
-                               <span>
-                              
-                                       8-10 = High Priority,<br/>
-                                       4-7 = Normal Priority,<br/>
-                                           1-3 = Low Priority
-                                           </span>
-                                      
-                                   </div>
-                                  
-                           </div>
-                           </span></label>
-                      
-                       <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
-                           defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                       <div className="mt-2">
-                           <label>
-                               <input className="form-check-input  me-1" name="radioPriority"
-                                   type="radio" value="(1) High"
-                                   defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
-                           </label>
-                       </div>
-                       <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(2) Normal"
-                                   defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
-                           </label>
-                       </div>
-                       <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                           </label>
-                       </div>
-                   </fieldset>
-
-               </div>
-               <div className='col-sm-4'>
-                   <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                   <DatePicker className="form-control"
-                       selected={date}
-                       value={date}
-                       onChange={handleDatedue}
-                       dateFormat="dd/MM/yyyy"
-
-
-                   />
-                    <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
-                           </label>
-                       </div>
-                       <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
-                           </label>
-                       </div>
-                       <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
-                           </label>
-                       </div>
-                       <div className="">
-                           <label>
-                               <input className="form-check-input me-1" name="radioPriority"
-                                   type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
-                           </label>
-                       </div>
-               </div>
-
-           </div>
-           <div className='row'>
-               <div className='col-sm-12 mt-1'>
-                   <label className='full_width'>Description</label>
-                   <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
-               </div>
-           </div>
-          
-           </>
-        )
+    const removeInputFields = (index: any) => {
+        const rows = [...inputFields];
+        rows.splice(index, 1);
+        setInputFields(rows);
     }
+
+    // const Addchild =()=>{
+    //     return(
+    //         <>
+    //         <div className='row mt-4'>
+    //            <div className='col-sm-4'>
+    //                <div className="input-group">
+    //                    <label className="full-width">Item Rank</label>
+    //                    <select
+    //                        className="full_width searchbox_height"
+    //                        defaultValue={AllItems?.ItemRankTitle}
+    //                        onChange={(e) =>
+    //                            (AllItems.ItemRankTitle = e.target.value)
+    //                        }
+    //                    >
+    //                        <option>
+    //                            {AllItems?.ItemRankTitle == undefined
+    //                                ? "select Item Rank"
+    //                                : AllItems.ItemRankTitle}
+    //                        </option>
+    //                        {TaskItemRank &&
+    //                            TaskItemRank[0].map(function (h: any, i: any) {
+    //                                return (
+    //                                    <option
+    //                                        key={i}
+    //                                        defaultValue={AllItems?.ItemRankTitle}
+    //                                    >
+    //                                        {AllItems?.ItemRankTitle == h.rankTitle
+    //                                            ? AllItems.ItemRankTitle
+    //                                            : h.rankTitle}
+    //                                    </option>
+    //                                );
+    //                            })}
+    //                    </select>
+    //                </div>
+    //            </div>
+    //            <div className='col-sm-4'>
+    //                <fieldset>
+    //                    <label className="full-width">Priority
+    //                    <span>
+    //                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+    //                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+    //                        <div className="popover__content">
+    //                            <span>
+
+    //                                    8-10 = High Priority,<br/>
+    //                                    4-7 = Normal Priority,<br/>
+    //                                        1-3 = Low Priority
+    //                                        </span>
+
+    //                                </div>
+
+    //                        </div>
+    //                        </span></label>
+
+    //                    <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+    //                        defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
+    //                    <div className="mt-2">
+    //                        <label>
+    //                            <input className="form-check-input  me-1" name="radioPriority"
+    //                                type="radio" value="(1) High"
+    //                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(2) Normal"
+    //                                defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+    //                        </label>
+    //                    </div>
+    //                </fieldset>
+
+    //            </div>
+    //            <div className='col-sm-4'>
+    //                <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+    //                <DatePicker className="form-control"
+    //                    selected={date}
+    //                    value={date}
+    //                    onChange={handleDatedue}
+    //                    dateFormat="dd/MM/yyyy"
+
+
+    //                />
+    //                 <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+    //                        </label>
+    //                    </div>
+    //                    <div className="">
+    //                        <label>
+    //                            <input className="form-check-input me-1" name="radioPriority"
+    //                                type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+    //                        </label>
+    //                    </div>
+    //            </div>
+
+    //        </div>
+    //        <div className='row'>
+    //            <div className='col-sm-12 mt-1'>
+    //                <label className='full_width'>Description</label>
+    //                <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+    //            </div>
+    //        </div>
+
+    //        </>
+    //     )
+    // }
     return (
         <>
             <Panel
@@ -793,7 +805,7 @@ const CreateWS = (props: any) => {
                                 return (
                                     <>
                                         <tr className='d-flex'>
-                                        <td className='list-none mx-2'><b>Parent</b></td>
+                                            <td className='list-none mx-2'><b>Parent</b></td>
                                             <td className='list-none mx-2'>{`${pare.Title} >`}</td>
                                             {
                                                 pare.child?.map((childsitem: any) => {
@@ -910,23 +922,23 @@ const CreateWS = (props: any) => {
                         <div className='col-sm-4'>
                             <fieldset>
                                 <label className="full-width">Priority
-                                <span>
-                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                    <span>
+                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
-                                    <div className="popover__content">
-                                        <span>
-                                       
-                                                8-10 = High Priority,<br/>
-                                                4-7 = Normal Priority,<br/>
+                                            <div className="popover__content">
+                                                <span>
+
+                                                    8-10 = High Priority,<br />
+                                                    4-7 = Normal Priority,<br />
                                                     1-3 = Low Priority
-                                                    </span>
-                                               
+                                                </span>
+
                                             </div>
-                                           
-                                    </div>
+
+                                        </div>
                                     </span></label>
-                               
+
                                 <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
                                     defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
                                 <div className="mt-2">
@@ -959,36 +971,36 @@ const CreateWS = (props: any) => {
                                 value={myDate}
                                 onChange={handleDatedue}
                                 dateFormat="dd/MM/yyyy"
- 
+
 
                             />
-                             <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
-                                    </label>
-                                </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
+                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                </label>
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
+                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                </label>
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
+                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                </label>
+                            </div>
+                            <div className="">
+                                <label>
+                                    <input className="form-check-input me-1" name="radioPriority"
+                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                </label>
+                            </div>
                         </div>
-                        
-                       
+
+
 
                     </div>
                     <div className='row mt-2'>
@@ -1002,146 +1014,157 @@ const CreateWS = (props: any) => {
                     </div>
 
 
-    {/* _________________Add More Item____________________________________________________________________________________________________________ */}
-                      {childItem?<Addchild/>:''}
-                     
-                     
+                    {/* _________________Add More Item____________________________________________________________________________________________________________ */}
 
-                   {/* {
-                    childItem &&
-                    <>
-                     <div className='row mt-4'>
-                        <div className='col-sm-4'>
-                            <div className="input-group">
-                                <label className="full-width">Item Rank</label>
-                                <select
-                                    className="full_width searchbox_height"
-                                    defaultValue={AllItems?.ItemRankTitle}
-                                    onChange={(e) =>
-                                        (AllItems.ItemRankTitle = e.target.value)
-                                    }
-                                >
-                                    <option>
-                                        {AllItems?.ItemRankTitle == undefined
-                                            ? "select Item Rank"
-                                            : AllItems.ItemRankTitle}
-                                    </option>
-                                    {TaskItemRank &&
-                                        TaskItemRank[0].map(function (h: any, i: any) {
-                                            return (
-                                                <option
-                                                    key={i}
-                                                    defaultValue={AllItems?.ItemRankTitle}
-                                                >
-                                                    {AllItems?.ItemRankTitle == h.rankTitle
-                                                        ? AllItems.ItemRankTitle
-                                                        : h.rankTitle}
-                                                </option>
-                                            );
-                                        })}
-                                </select>
-                            </div>
-                        </div>
-                        <div className='col-sm-4'>
-                            <fieldset>
-                                <label className="full-width">Priority
-                                <span>
-                                    <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                    {
+                        showChildData==true && inputFields?.map((data, index) => {
+                            const { Priority, DueDate, ItemRank, Description } = data;
+                            return (
+                                <div>
+                                    <div className="row my-3" key={index}>
+                                        <div className="col-sm-4">
+                                            <fieldset>
+                                                <label className="full-width">Priority
+                                                    <span>
+                                                        <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
-                                    <div className="popover__content">
-                                        <span>
-                                       
-                                                8-10 = High Priority,<br/>
-                                                4-7 = Normal Priority,<br/>
-                                                    1-3 = Low Priority
-                                                    </span>
-                                               
+                                                            <div className="popover__content">
+                                                                <span>
+
+                                                                    8-10 = High Priority,<br />
+                                                                    4-7 = Normal Priority,<br />
+                                                                    1-3 = Low Priority
+                                                                </span>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </span></label>
+
+                                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
+                                                    defaultValue={selectPriority} />
+                                                <div className="mt-2">
+                                                    <label>
+                                                        <input className="form-check-input  me-1" name="radioPriority"
+                                                            type="radio" value="(1) High"
+                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
+                                                    </label>
+                                                </div>
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name="radioPriority"
+                                                            type="radio" value="(2) Normal"
+                                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
+                                                    </label>
+                                                </div>
+                                                <div className="">
+                                                    <label>
+                                                        <input className="form-check-input me-1" name="radioPriority"
+                                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+                                                    </label>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div className='col-sm-4'>
+                                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
+                                            <DatePicker className="form-control"
+                                                selected={date}
+                                                value={myDate}
+                                                onChange={handleDatedue}
+                                                dateFormat="dd/MM/yyyy"
+
+
+                                            />
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name="radioPriority"
+                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                                </label>
                                             </div>
-                                           
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name="radioPriority"
+                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                                </label>
+                                            </div>
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name="radioPriority"
+                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                                </label>
+                                            </div>
+                                            <div className="">
+                                                <label>
+                                                    <input className="form-check-input me-1" name="radioPriority"
+                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div className='col-sm-4'>
+                                            <div className="input-group">
+                                                <label className="full-width">Item Rank</label>
+                                                <select
+                                                    className="full_width searchbox_height"
+                                                    defaultValue={AllItems?.ItemRankTitle}
+                                                    onChange={(e) =>
+                                                        (AllItems.ItemRankTitle = e.target.value)
+                                                    }
+                                                >
+                                                    <option>
+                                                        {AllItems?.ItemRankTitle == undefined
+                                                            ? "select Item Rank"
+                                                            : AllItems.ItemRankTitle}
+                                                    </option>
+                                                    {TaskItemRank &&
+                                                        TaskItemRank[0].map(function (h: any, i: any) {
+                                                            return (
+                                                                <option
+                                                                    key={i}
+                                                                    defaultValue={AllItems?.ItemRankTitle}
+                                                                >
+                                                                    {AllItems?.ItemRankTitle == h.rankTitle
+                                                                        ? AllItems.ItemRankTitle
+                                                                        : h.rankTitle}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                       
                                     </div>
-                                    </span></label>
-                               
-                                <input type="text" className="full-width" placeholder="Priority" ng-model="PriorityRank"
-                                    defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                <div className="mt-2">
-                                    <label>
-                                        <input className="form-check-input  me-1" name="radioPriority"
-                                            type="radio" value="(1) High"
-                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)} />High
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(2) Normal"
-                                            defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)} />Normal
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                    </label>
-                                </div>
-                            </fieldset>
-
-                        </div>
-                        <div className='col-sm-4'>
-                            <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                            <DatePicker className="form-control"
-                                selected={date}
-                                value={AllItems?.DueDate}
-                                onChange={handleDatedue}
-                                dateFormat="dd/MM/yyyy"
+                                    <div className='row'>
+                                        <div className='col-sm-12 mt-1'>
+                                            <label className='full_width'>Description</label>
+                                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                                        </div>
+                                    </div>
+                                  
 
 
-                            />
-                             <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
-                                    </label>
-                                </div>
-                                <div className="">
-                                    <label>
-                                        <input className="form-check-input me-1" name="radioPriority"
-                                            type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
-                                    </label>
-                                </div>
-                        </div>
+                      {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"></img></a> : ''}
 
-                    </div>
-                    <div className='row'>
-                        <div className='col-sm-12 mt-1'>
-                            <label className='full_width'>Description</label>
-                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
-                        </div>
-                    </div>
-                    <button type="button" onClick={() => AddchildItem()}>Add More Child Items</button>
-                    </>
-                   } */}
+
+                       
+                                </div>
+                            )
+                        })
+                    }
+
+
 
                 </div>
 
-                {childItem?'': <a type="button" onClick={() => AddchildItem()}>
-                        Add More Child Items
-                    </a>}
+                <a type="button" onClick={() => AddchildItem()}>
+                    Add More Child Items
+                </a>
                 <div className="modal-footer pt-1">
-                   
-                   
+                    {/* {(inputFields.length!==1)? <button className="btn btn-outline-danger" onClick={removeInputFields}>x</button>:''} */}
+
                     <button type="button" className="btn btn-primary me-1" onClick={() => createWorkStream('CreatePopup')}>
                         Create & OpenPopup
                     </button>

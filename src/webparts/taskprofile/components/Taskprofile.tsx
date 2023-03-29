@@ -20,12 +20,14 @@ import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/Versio
 import { Sync } from '@material-ui/icons';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 // import { forEach } from 'lodash';
 // import { Item } from '@pnp/sp/items';
 // var smartTime: Number = 0                                   ;
 var ClientTimeArray: any = [];
 //  var countemailbutton=0;
-var TaskIdHover:any="";
+var TaskIdCSF:any="";
+var TaskIdAW="";
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -171,8 +173,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       // console.log(AllDataMatches);
       this.gAllDataMatches = AllDataMatches;
      
-      TaskIdHover=AllDataMatches[0].PortfolioStructureID;
-      console.log(TaskIdHover);
+      TaskIdCSF=AllDataMatches[0].PortfolioStructureID;
+      console.log(TaskIdCSF);
        
       // console.log('All Component : ');
       // console.log(this.gAllDataMatches)
@@ -833,7 +835,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   }
                 }
               })
-            } else if (value.Parent == undefined || value.Parent.Id == undefined) {
+            } else if (value.Parent == undefined) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
@@ -879,7 +881,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   }
                 }
               })
-            } else if (value.Parent !=undefined && value.Parent.Id == undefined) {
+            } else if (value.Parent ==undefined ) {
+            } else if (value.Parent ==undefined ) {
               if (value.Item_x0020_Type == 'Component') {
                 flag = true;
                 breadcrumbitem.Parentitem = value;
@@ -942,12 +945,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
    private breadcrumbOtherHierarchy(breadcrumbitem: any) {
     let self = this;
     this.allDataOfTask.forEach(function (value: any) {
-      if (self.taskResult.SharewebTaskType != undefined) {
+      if (self.taskResult.SharewebTaskType = undefined) {
         if (self.taskResult.SharewebTaskType.Title == 'Activities' || self.taskResult.SharewebTaskType.Title == 'Project') {
-          if (value.Id == self.taskResult.Id) {
-            value.isLastNode = true;
-            breadcrumbitem.ParentTask = value;
+          if(self.taskResult.ParentTask==undefined){
+            if (value.Id == self.taskResult.Id) {
+              value.isLastNode = true;
+              breadcrumbitem.ParentTask = value;
+            }
           }
+           
         } else if (self.taskResult.SharewebTaskType.Title == 'Workstream' || self.taskResult.SharewebTaskType.Title == 'Step') {
           if (self.taskResult.ParentTask.Id != undefined) {
             if (self.taskResult.ParentTask.Id == value.Id) {
@@ -987,6 +993,26 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       this.taskResult.isLastNode = true;
       breadcrumbitem.ParentTask = this.taskResult;
     }
+    if(breadcrumbitem!=undefined){
+      if(breadcrumbitem.ParentTask!=undefined&&breadcrumbitem.ParentTask.Shareweb_x0020_ID!=undefined){
+
+        TaskIdAW=breadcrumbitem.ParentTask.Shareweb_x0020_ID
+      }
+      if(breadcrumbitem.ChildTask!=undefined){
+        if(breadcrumbitem.ChildTask.Shareweb_x0020_ID!=undefined){
+          if(TaskIdAW!=""){
+            TaskIdAW=TaskIdAW+">"+breadcrumbitem.ChildTask.Shareweb_x0020_ID;
+          }else{
+            TaskIdAW=breadcrumbitem.ChildTask.Shareweb_x0020_ID;
+          }
+        }
+
+       
+     
+      }
+    }
+    
+   
     this.maincollection.push(breadcrumbitem);
     breadcrumbitem = {};
 
@@ -1079,13 +1105,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${breadcrumbitem.Subchild.Id}`}>{breadcrumbitem.Subchild.Title}</a>
                       </li>
                     }
-                     {breadcrumbitem.ParentTask != undefined && (this.state.Result["Component"] != null && this.state.Result["Component"].length > 0)||(this.state.Result["Services"] != null && this.state.Result["Services"].length > 0)&&
+                     {breadcrumbitem.ParentTask != undefined&& breadcrumbitem.ParentTask.Shareweb_x0020_ID!=undefined&&
                       <li className="ng-scope" >
 
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem.ParentTask.siteType}`}>{breadcrumbitem.ParentTask.Title}</a>
                       </li>
                     }
-                      {breadcrumbitem.ChildTask != undefined &&
+                      {breadcrumbitem.ChildTask != undefined && breadcrumbitem.ChildTask.Shareweb_x0020_ID!=undefined&&
                       <li className="ng-scope" >
 
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem.ChildTask.siteType}`}>{breadcrumbitem.ChildTask.Title}</a>
@@ -1143,7 +1169,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <div className='col-md-4 p-0'>
                   <dl>
                     <dt className='bg-fxdark'>Task Id</dt>
-                    <dd className='bg-light'  title={TaskIdHover}ng-show="Task.Shareweb_x0020_ID!=undefined" ng-repeat="taskId in maincollection">{this.state.Result["TaskId"]}</dd>
+                    <dd className='bg-light' ><span className='tooltipbox'>{this.state.Result["TaskId"]} 
+                    {TaskIdCSF!=""&&<span className="tooltiptext  bg-fxdark siteColor">{TaskIdCSF} {TaskIdAW!=""&&<span className='text-body'>{">" +  TaskIdAW}</span>}</span>}
+                    </span> 
+                    </dd>
+                    
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Due Date</dt>
@@ -1550,7 +1580,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           </div>
         </div>
 
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
 
       </div>
