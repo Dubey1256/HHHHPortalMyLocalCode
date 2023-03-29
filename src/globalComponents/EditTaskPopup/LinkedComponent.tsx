@@ -153,6 +153,7 @@ const LinkedServices = (item: any) => {
         })
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
+        setCheckBoxData(item.linkedComponentData);
         setData(ComponentsData);
         setModalIsOpen(true);
         LinkedServicesBackupArray = ComponentsData;
