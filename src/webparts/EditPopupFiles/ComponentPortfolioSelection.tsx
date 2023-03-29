@@ -186,6 +186,7 @@ const ComponentPortPolioPopup = (item: any) => {
             }
         })
         //MainDataBackup.push(ComponentsData)
+        setcheckbox(item.smartComponentData);
         setMainDataBackup(ComponentsData);
         setComponentsData(ComponentsData);
         const tempData: any = ComponentsData;
