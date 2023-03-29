@@ -1487,8 +1487,8 @@ function CreateTaskComponent(props: any) {
                     }
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </div>
-                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}></ComponentPortPolioPopup>}
-                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call}></LinkedComponent>}
+                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
+                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>

@@ -2218,7 +2218,8 @@ const EditTaskPopup = (Items: any) => {
         if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
             ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
             const copy = [...TaskImages];
-            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url };
+            const ImageUrl = TaskImages[ReplaceImageIndex].ImageUrl;
+            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url, imageDataUrl: ImageUrl};
             copy[ReplaceImageIndex] = obj;
             setTaskImages(copy);
             setReplaceImagePopup(false);

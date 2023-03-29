@@ -4,4 +4,7 @@ export interface IComponentPortfolioProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  siteUrl:string
+  Context: any;
+  dropdownvalue:any;
 }

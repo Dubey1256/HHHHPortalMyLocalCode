@@ -1,8 +1,11 @@
-import { Panel } from 'office-ui-fabric-react'
+import { Panel, PanelType } from 'office-ui-fabric-react'
 import { Web } from "sp-pnp-js";
 import React from 'react'
 import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
+import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
+import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
+
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
 let taskUsers: any = [];
@@ -14,13 +17,15 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
+    const [TeamConfig, setTeamConfig] = React.useState();
+    const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TaskPriorityPopup, setTaskPriorityPopup] = React.useState(false);
     const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
     const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
+    const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([])
@@ -29,10 +34,13 @@ const inlineEditingcolumns = (props: any) => {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
+    const [impTaskCategoryType, setImpTaskCategoryType] = React.useState([]);
+    const [taskCategoryType, setTaskCategoryType] = React.useState([])
     const [taskStatus, setTaskStatus] = React.useState('');
-    // const [taskPriority, setTaskPriority] = React.useState('');
+    const [taskPriority, setTaskPriority] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
+    const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -48,13 +56,19 @@ const inlineEditingcolumns = (props: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
     React.useEffect(() => {
+        loadTaskUsers();
         if (props?.item?.Services?.length > 0) {
             setServicesTaskCheck(true)
         } else {
             setServicesTaskCheck(false)
         }
 
-        loadTaskUsers();
+        let selectedCategoryId: any = [];
+        props?.item?.SharewebCategories?.map((category: any) => {
+            selectedCategoryId.push(category.Id);
+        })
+        setSelectedCatId(selectedCategoryId);
+        setTaskPriority(props?.item?.Priority_x0020_Rank);
         GetSmartMetadata();
     }, [])
     const getPercentCompleteTitle = (percent: any) => {
@@ -79,11 +93,27 @@ const inlineEditingcolumns = (props: any) => {
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,spfxIconName,Item_x005F_x0020_Cover,ProfileType,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
             .expand('Author,Editor')
             .get();
         AllMetadata = MetaData;
+        let impSharewebCategories: any = [];
+        let SharewebtaskCategories: any = []
+        AllMetadata?.map((metadata: any) => {
+            if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
+                impSharewebCategories.push(metadata);
+            }
+            if (metadata.Title == 'Immediate') {
+                impSharewebCategories.push(metadata);
+            }
+            if (metadata.TaxType == 'Categories') {
+                SharewebtaskCategories.push(metadata);
+            }
+
+        })
+        setTaskCategoryType(SharewebtaskCategories);
+        setImpTaskCategoryType(impSharewebCategories);
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
         setpriorityRank(Priority)
 
@@ -103,6 +133,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     const loadTaskUsers = async () => {
         taskUsers = await globalCommon.loadTaskUsers()
+        setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {
 
@@ -114,7 +145,7 @@ const inlineEditingcolumns = (props: any) => {
         }
 
         if (props?.item?.Author != undefined && props?.item?.Author != null) {
-            taskUsers?.map((userData: any) => {
+            AllTaskUser?.map((userData: any) => {
                 if (props?.item?.Author.Id == userData?.AssingedToUserId) {
                     userData.Approver?.map((AData: any) => {
                         // ApproverDataTemp.push(AData);
@@ -124,7 +155,7 @@ const inlineEditingcolumns = (props: any) => {
             })
             if ((statusValue <= 2) && ApprovalStatusGlobal) {
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                    taskUsers?.map((userData1: any) => {
+                    AllTaskUser?.map((userData1: any) => {
                         TaskApproverBackupArray.map((itemData: any) => {
                             if (itemData.Id == userData1?.AssingedToUserId) {
                                 AssignedUsers.push(userData1);
@@ -134,7 +165,7 @@ const inlineEditingcolumns = (props: any) => {
                     })
                 } else {
                     if (TaskCreatorApproverBackupArray?.length > 0) {
-                        taskUsers?.map((userData1: any) => {
+                        AllTaskUser?.map((userData1: any) => {
                             TaskCreatorApproverBackupArray?.map((itemData: any) => {
                                 if (itemData.Id == userData1?.AssingedToUserId) {
                                     AssignedUsers.push(userData1);
@@ -145,7 +176,7 @@ const inlineEditingcolumns = (props: any) => {
                     }
                 }
             } else {
-                taskUsers?.map((userData: any) => {
+                AllTaskUser?.map((userData: any) => {
                     props?.item?.AssignedTo?.map((AssignedUser: any) => {
                         if (userData?.AssingedToUserId == AssignedUser.Id) {
                             AssignedUsers.push(userData);
@@ -215,12 +246,12 @@ const inlineEditingcolumns = (props: any) => {
         })
         let priority: any;
         let priorityRank = 4;
-        if (props?.item?.Priority_x0020_Rank === undefined || parseInt(props?.item?.Priority_x0020_Rank) <= 0) {
+        if (taskPriority === undefined || parseInt(taskPriority) <= 0) {
             priorityRank = 4;
             priority = '(2) Normal';
         }
         else {
-            priorityRank = parseInt(props?.item?.Priority_x0020_Rank);
+            priorityRank = parseInt(taskPriority);
             if (priorityRank >= 8 && priorityRank <= 10) {
                 priority = '(1) High';
             }
@@ -231,6 +262,19 @@ const inlineEditingcolumns = (props: any) => {
                 priority = '(3) Low';
             }
         }
+        let CategoryTitle: any;
+        selectedCatId?.map((category: any) => {
+            taskCategoryType?.map((item: any) => {
+                if (category === item.Id) {
+                    if (CategoryTitle === undefined) {
+                        CategoryTitle = item.Title + ';';
+                    } else {
+                        CategoryTitle += item.Title + ';';
+                    }
+                }
+            })
+
+        })
 
         setPercentCompleteCheck(false);
         let web = new Web(props?.item?.siteUrl);
@@ -241,18 +285,21 @@ const inlineEditingcolumns = (props: any) => {
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             "Priority": priority,
-            "Priority_x0020_Rank": priorityRank
+            "Categories": CategoryTitle,
+            "Priority_x0020_Rank": priorityRank,
+            SharewebCategoriesId: { "results": selectedCatId },
         })
             .then((res: any) => {
                 console.log(res);
                 props?.callBack();
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
+                setTeamMembersPopup(false);
             })
 
     }
     const setWorkingMember = (statusId: any) => {
-        taskUsers?.map((dataTask: any) => {
+        AllTaskUser?.map((dataTask: any) => {
             if (dataTask.AssingedToUserId == statusId) {
                 let tempArray: any = [];
                 tempArray.push(dataTask)
@@ -263,10 +310,50 @@ const inlineEditingcolumns = (props: any) => {
             }
         })
     }
+    const DDComponentCallBack = (dt: any) => {
+        setTeamConfig(dt);
+        console.log(TeamConfig);
+        if (dt?.AssignedTo?.length > 0) {
+            let tempArray: any = [];
+            dt.AssignedTo?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser);
+                } else {
+                    tempArray.push(arrayData);
+                }
+            });
+            setTaskAssignedTo(tempArray);
+            console.log("Team Config  assigadf=====", tempArray);
+        }
+        if (dt?.TeamMemberUsers?.length > 0) {
+            let tempArray: any = [];
+            dt.TeamMemberUsers?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser);
+                } else {
+                    tempArray.push(arrayData);
+                }
+            });
+            setTaskTeamMembers(tempArray);
+            console.log("Team Config member=====", tempArray);
+        }
+        if (dt?.ResponsibleTeam?.length > 0) {
+            let tempArray: any = [];
+            dt.ResponsibleTeam?.map((arrayData: any) => {
+                if (arrayData.AssingedToUser != null) {
+                    tempArray.push(arrayData.AssingedToUser);
+                } else {
+                    tempArray.push(arrayData);
+                }
+            });
+            setTaskResponsibleTeam(tempArray);
+            console.log("Team Config reasponsible ===== ", tempArray);
+        }
+    };
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
         let tempArray: any = [];
         filterArray.map((TeamItems: any) => {
-            taskUsers?.map((TaskUserData: any) => {
+            AllTaskUser?.map((TaskUserData: any) => {
                 if (TeamItems.Id == TaskUserData.AssingedToUserId) {
                     if (TaskUserData.TimeCategory == filterType) {
                         tempArray.push(TaskUserData)
@@ -410,33 +497,63 @@ const inlineEditingcolumns = (props: any) => {
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
     }
-    const openPriotiyEdit = () => {
-        if (props?.type != undefined && props?.type == 'Task') {
-            setTaskPriorityPopup(true)
+    const handleCategoryChange = (event: any, CategoryId: any) => {
+        if (event.target.checked) {
+            setSelectedCatId([...selectedCatId, CategoryId]);
+        } else {
+            setSelectedCatId(selectedCatId.filter((val: any) => val !== CategoryId));
         }
+
+
     }
     return (
         <>
             {
+                props?.columnName == 'Team' ?
+                    <>
+                        <span style={{ display: "block", width: "100%" }} onClick={() => setTeamMembersPopup(true)} >
+                            &nbsp;
+                            <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
+                        </span>
+                    </>
+                    : ''
+            }
+            {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span style={{ display: "block", width: "100%" }} onClick={() => openPriotiyEdit()} >
+                        <span style={{ display: "block", width: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
-                            {
-                                props?.item?.SharewebCategories?.map((category: any) => {
-                                    if (category?.Title == 'Immediate') {
-                                        return (
-                                            <a title="Immediate"><img className='ms-1 w-25' src={require("../../../Assets/ICON/urgent.svg")} /> </a>
-                                        )
-                                    }
-                                    if (category?.Title == 'Bottleneck') {
-                                        return (
-                                            <a title="Bottleneck"><img className='ms-1 w-25' src={require("../../../Assets/ICON/bottleneck.svg")} /> </a>
-                                        )
-                                    }
-                                })
-                            }
+                            <span className='ms-1'>
+                                {
+                                    props?.item?.SharewebCategories?.map((category: any) => {
+                                        if (category?.Title == 'Immediate') {
+                                            return (
+                                                <a title="Immediate">
+                                                    <span className="svg__iconbox svg__icon--alert" ></span>
+                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
+                                                </a>
+                                            )
+                                        }
+                                        if (category?.Title == 'Bottleneck') {
+                                            return (
+                                                <a title="Bottleneck">
+                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
+                                                    <span className="svg__iconbox svg__icon--bottleneck" ></span>
+                                                </a>
+                                            )
+                                        }
+                                        if (category?.Title == 'Favorite') {
+                                            return (
+                                                <a title="Favorite">
+                                                    <span className="svg__iconbox svg__icon--Star" ></span>
+                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
+                                                </a>
+                                            )
+                                        }
+                                    })
+                                }
+                            </span>
                         </span>
                     </>
                     : ''
@@ -450,16 +567,22 @@ const inlineEditingcolumns = (props: any) => {
                             {parseInt(props?.item?.PercentComplete) <= 5 &&
                                 parseInt(props?.item?.PercentComplete) >= 0 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipse.svg")} />
+                                    <span className="svg__iconbox svg__icon--Ellipse" ></span>
+                                    {/* <img src={require("../../../Assets/ICON/Ellipse.svg")} /> */}
                                 </a>
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
                                 parseInt(props?.item?.PercentComplete) <= 98 ? (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/Ellipsehaf.svg")} />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="none">
+                                        <circle cx="15" cy="15" r="14" fill="white" stroke="#414141" stroke-width="2" />
+                                        <path d="M30 15C30 16.9698 29.612 18.9204 28.8582 20.7403C28.1044 22.5601 26.9995 24.2137 25.6066 25.6066C24.2137 26.9995 22.5601 28.1044 20.7403 28.8582C18.9204 29.612 16.9698 30 15 30C13.0302 30 11.0796 29.612 9.25975 28.8582C7.43986 28.1044 5.78628 26.9995 4.3934 25.6066C3.00052 24.2137 1.89563 22.5601 1.14181 20.7403C0.387986 18.9204 -1.72208e-07 16.9698 0 15L15 15L30 15Z" fill="#414141" />
+                                    </svg>
+                                    {/* <img src={require("../../../Assets/ICON/Ellipse-haf.svg")} /> */}
                                 </a>
                             ) : (
                                 <a title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <img src={require("../../../Assets/ICON/completed.svg")} />
+                                    <span className="svg__iconbox svg__icon--completed" ></span>
+                                    {/* <img src={require("../../../Assets/ICON/completed.svg")} /> */}
                                 </a>
                             )}
                             {
@@ -467,7 +590,7 @@ const inlineEditingcolumns = (props: any) => {
                                     {
                                         props?.item?.AssignedTo?.map((AssignedUser: any) => {
                                             return (
-                                                taskUsers?.map((user: any) => {
+                                                AllTaskUser?.map((user: any) => {
                                                     if (AssignedUser.Id == user.AssingedToUserId) {
                                                         return (
                                                             <span className="user_Member_img">
@@ -547,8 +670,8 @@ const inlineEditingcolumns = (props: any) => {
                                             <td>
                                                 <div className="form-check l-radio">
                                                     <input className="form-check-input"
-                                                        type="radio" checked={props?.item?.Priority_x0020_Rank == item.Title}
-                                                        onClick={() => props.item.Priority_x0020_Rank = item.Title} />
+                                                        type="radio" checked={taskPriority == item.Title}
+                                                        onClick={() => setTaskPriority(item.Title)} />
                                                     <label className="form-check-label mx-2">{item.Title}</label>
                                                 </div>
                                             </td>
@@ -558,6 +681,39 @@ const inlineEditingcolumns = (props: any) => {
                             </tbody>
                         </table>
                     </div>
+                    {impTaskCategoryType?.map((option) => (
+                        <div className='d-flex' key={option.Id}>
+                            <input
+                                type="checkbox"
+                                id={option.Id}
+                                value={option.Id}
+                                checked={selectedCatId?.includes(option.Id)}
+                                onChange={(event) => handleCategoryChange(event, option.Id)}
+                            />
+                            <a title={option.Title}>
+                                <span className={option.spfxIconName} ></span>
+                                {/* <img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} />  */}
+                            </a>
+                            <label htmlFor={option.Id}>{option.Title}</label>
+                        </div>
+                    ))}
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+            <Panel
+                headerText={`Update Team Members`}
+                isOpen={teamMembersPopup}
+                onDismiss={() => setTeamMembersPopup(false)}
+                isBlocking={TaskStatusPopup}
+                type={PanelType.medium}
+            >
+                <div>
+                    <TeamConfigurationCard
+                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} ></TeamConfigurationCard>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
                             OK

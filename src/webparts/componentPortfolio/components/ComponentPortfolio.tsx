@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from './ComponentPortfolio.module.scss';
+// import styles from './ComponentPortfolio.module.scss';
 import { IComponentPortfolioProps } from './IComponentPortfolioProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import Groupby from './GroupBy';
@@ -11,14 +11,14 @@ export default class ComponentPortfolio extends React.Component<IComponentPortfo
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      Context,
+      dropdownvalue,
     } = this.props;
 
     return (
       <div className="container" >
-       
-      < Groupby />
-    
+      < Groupby SelectedProp={this.props.dropdownvalue}/>
     </div>
     );
   }
