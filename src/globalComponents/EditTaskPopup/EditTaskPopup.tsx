@@ -40,6 +40,7 @@ import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
+// import SiteCompositionComponent from "./SiteCompositionComponent";
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -455,7 +456,7 @@ const EditTaskPopup = (Items: any) => {
 
         siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
         siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
                 tempArray.push(site);
             }
@@ -630,12 +631,13 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver')
                     .get();
                 if (extraLookupColumnData.length > 0) {
+                    console.log("Extra Lookup Data =======", extraLookupColumnData);
                     let Data: any;
                     let ApproverData: any
                     Data = extraLookupColumnData[0]?.Project;
@@ -664,7 +666,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver')
@@ -708,7 +710,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -718,7 +720,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -1403,7 +1405,7 @@ const EditTaskPopup = (Items: any) => {
     var ApproverIds: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
-        if (TaskImages != undefined && TaskImages?.length > 0) {
+        if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
                     let tempObject: any = {
@@ -1588,14 +1590,14 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-        if(sendEmailGlobalCount > 0){
+        if (sendEmailGlobalCount > 0) {
             if (sendEmailStatus) {
                 setSendEmailComponentStatus(false)
             } else {
                 setSendEmailComponentStatus(true)
             }
         }
-        
+
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
         //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
@@ -1608,6 +1610,7 @@ const EditTaskPopup = (Items: any) => {
             let web = new Web(siteUrls);
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
+                workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
                 ItemRank: EditData.ItemRank,
                 Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
@@ -1660,11 +1663,20 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }
-    const changeStatus = (e: any) => {
-        if (e.target.value === 'true') {
-            setEditData({ ...EditData, IsTodaysTask: false })
-        } else {
-            setEditData({ ...EditData, IsTodaysTask: true })
+    const changeStatus = (e: any, type: any) => {
+        if (type == "workingThisWeek") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, workingThisWeek: false })
+            } else {
+                setEditData({ ...EditData, workingThisWeek: true })
+            }
+        }
+        if (type == "IsTodaysTask") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, IsTodaysTask: false })
+            } else {
+                setEditData({ ...EditData, IsTodaysTask: true })
+            }
         }
     }
     //    ************* this is team configuration call Back function **************
@@ -1821,7 +1833,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
                     ApprovedGlobalCount++;
-                    setSendEmailGlobalCount( sendEmailGlobalCount+1 )
+                    setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
@@ -1840,7 +1852,7 @@ const EditTaskPopup = (Items: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
                             ApprovedGlobalCount++;
-                            setSendEmailGlobalCount( sendEmailGlobalCount+1)
+                            setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
@@ -1859,7 +1871,7 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
                     ApprovedGlobalCount++;
-                    setSendEmailGlobalCount(sendEmailGlobalCount+1)
+                    setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (ApprovedStatusCount == 0) {
                         if (Status >= 2) {
                             setInputFieldDisable(true)
@@ -1871,7 +1883,7 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
                             ApprovedGlobalCount++;
-                            setSendEmailGlobalCount( sendEmailGlobalCount+1)
+                            setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (ApprovedStatusCount == 0) {
                                 if (Status <= 2) {
                                     setInputFieldDisable(true)
@@ -2219,7 +2231,7 @@ const EditTaskPopup = (Items: any) => {
             ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
             const copy = [...TaskImages];
             const ImageUrl = TaskImages[ReplaceImageIndex].ImageUrl;
-            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url, imageDataUrl: ImageUrl};
+            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url, imageDataUrl: ImageUrl };
             copy[ReplaceImageIndex] = obj;
             setTaskImages(copy);
             setReplaceImagePopup(false);
@@ -2526,7 +2538,7 @@ const EditTaskPopup = (Items: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId} ${EditData.Title}`}
                     </span>
@@ -2540,7 +2552,7 @@ const EditTaskPopup = (Items: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         Select Site
                     </span>
@@ -2806,7 +2818,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-                   
+
                     <div className="modal-body mb-5">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
@@ -2821,12 +2833,22 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col-12 ">
                                             <div className="input-group">
                                                 <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
-                                                    <span className="form-check">
-                                                        <input className="form-check-input rounded-0" type="checkbox"
-                                                            checked={EditData.IsTodaysTask}
-                                                            value={EditData.IsTodaysTask}
-                                                            onChange={(e) => changeStatus(e)} />
-                                                        <label className="form-check-label">Working Today?</label>
+                                                    <span className="d-flex">
+                                                        <span className="form-check mx-2">
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.workingThisWeek}
+                                                                value={EditData.workingThisWeek}
+                                                                onChange={(e) => changeStatus(e, "workingThisWeek")} />
+                                                            <label className="form-check-label">Working This Week?</label>
+                                                        </span>
+
+                                                        <span className="form-check">
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.IsTodaysTask}
+                                                                value={EditData.IsTodaysTask}
+                                                                onChange={(e) => changeStatus(e, "IsTodaysTask")} />
+                                                            <label className="form-check-label">Working Today?</label>
+                                                        </span>
                                                     </span>
                                                 </label>
                                                 <input type="text" className="form-control" placeholder="Task Name"
@@ -3052,7 +3074,7 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                     <div className="col ps-4">
-                                                        <ul className="">
+                                                        <ul className="p-0 mt-1">
                                                             <li className="form-check l-radio">
                                                                 <input className="form-check-input"
                                                                     name="radioPriority"
@@ -3657,10 +3679,19 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             </div> */}
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
-                                <div>
-                                    <NewTameSheetComponent props={Items}
-                                        TeamConfigDataCallBack={getTeamConfigData}
-                                    />
+                                <div className="d-flex justify-content-between">
+                                    <div className="col-sm-7">
+                                        <NewTameSheetComponent props={Items}
+                                            TeamConfigDataCallBack={getTeamConfigData}
+                                        />
+                                    </div>
+                                    <div className="col-sm-5">
+                                        {/* <SiteCompositionComponent
+                                            siteUrls={siteUrls}
+                                            SiteTypes={SiteTypes}
+                                            ClientTime={EditData.siteCompositionData}
+                                        /> */}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3798,12 +3829,21 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-12 ">
                                                         <div className="input-group">
                                                             <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
-                                                                <span className="form-check">
-                                                                    <input className="form-check-input rounded-0" type="checkbox"
-                                                                        checked={EditData.IsTodaysTask}
-                                                                        value={EditData.IsTodaysTask}
-                                                                        onChange={(e) => changeStatus(e)} />
-                                                                    <label className="form-check-label">Working Today?</label>
+                                                                <span className="d-flex">
+                                                                    <span className="form-check mx-2">
+                                                                        <input className="form-check-input rounded-0" type="checkbox"
+                                                                            checked={EditData.workingThisWeek}
+                                                                            value={EditData.workingThisWeek}
+                                                                            onChange={(e) => changeStatus(e, "workingThisWeek")} />
+                                                                        <label className="form-check-label">Working This Week?</label>
+                                                                    </span>
+                                                                    <span className="form-check">
+                                                                        <input className="form-check-input rounded-0" type="checkbox"
+                                                                            checked={EditData.IsTodaysTask}
+                                                                            value={EditData.IsTodaysTask}
+                                                                            onChange={(e) => changeStatus(e, "IsTodaysTask")} />
+                                                                        <label className="form-check-label">Working Today?</label>
+                                                                    </span>
                                                                 </span>
                                                             </label>
                                                             <input type="text" className="form-control" placeholder="Task Name"
@@ -4034,7 +4074,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                 </div>
                                                                 <div className="col ps-4">
-                                                                    <ul>
+                                                                    <ul className="p-0 mt-1">
                                                                         <li
                                                                             className="form-check l-radio">
                                                                             <label>Normal Approval</label>
@@ -4604,15 +4644,17 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="card-body">
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
-                                            return (
-                                                <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
-                                                    <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
-                                                        <span className="icon-sites">
-                                                            <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
-                                                        </span> {siteData.Title}
-                                                    </a>
-                                                </li>
-                                            )
+                                            if (siteData.Title !== "QA") {
+                                                return (
+                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                        <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
+                                                            <span className="icon-sites">
+                                                                <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
+                                                            </span> {siteData.Title}
+                                                        </a>
+                                                    </li>
+                                                )
+                                            }
                                         })}
                                     </ul>
                                 </div>
