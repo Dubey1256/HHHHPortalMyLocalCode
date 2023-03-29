@@ -69,6 +69,7 @@ const ProjectManagementMain = (props: any) => {
   const [projectTitle, setProjectTitle] = React.useState("");
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
+  const [createTaskId, setCreateTaskId]=React.useState({});
   const [sidebarStatus, setSidebarStatus] = React.useState({
     sideBarFilter: false,
     dashboard: true,
@@ -81,8 +82,10 @@ const ProjectManagementMain = (props: any) => {
     GetMasterData();
     GetMetaData();
    try{
-    var $myDiv = $("#spPageCanvasContent");
-    $myDiv.css("max-width", "2400px");
+     $('#spPageCanvasContent').removeClass();
+    $('#spPageCanvasContent').addClass('hundred')
+    $('#workbenchPageContent').removeClass();
+    $('#workbenchPageContent').addClass('hundred')
    }catch(e){
     console.log(e);
    }
@@ -521,6 +524,13 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Shareweb_x0020_ID",
         width: "75px",
         showSortIcon: false,
+        Cell: ({ row }: any) => (
+          <span style={{color: `${row.original.Component.length > 0 ? "#000066" : "green"}` }}>
+            
+              {row?.original?.Shareweb_x0020_ID}
+           
+          </span>
+        ),
       },
       {
         internalHeader: "Title",
@@ -529,7 +539,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <a
-              style={{ textDecoration: "none", color: "#000066" }}
+             style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
@@ -560,7 +570,7 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <a
+            <a  style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}
               data-interception="off"
               target="blank"
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -597,7 +607,7 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Due Date",
         showSortIcon: true,
         accessor: "DueDate",
-        Cell: ({ row }: any) => <span>{row?.original?.DisplayDueDate}</span>,
+        Cell: ({ row }: any) => <span  style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}>{row?.original?.DisplayDueDate}</span>,
       },
 
       {
@@ -672,10 +682,12 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <ShowTaskTeamMembers
+             <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Team' item={row?.original}  TaskUsers={AllUser} />
+
+            {/* <ShowTaskTeamMembers
               props={row?.original}
               TaskUsers={AllUser}
-            ></ShowTaskTeamMembers>
+            ></ShowTaskTeamMembers> */}
           </span>
         ),
       },
@@ -734,6 +746,7 @@ const ProjectManagementMain = (props: any) => {
     clickedIndex: any,
     type: any
   ) => {
+    setCreateTaskId({portfolioData: portfolio , portfolioType : type})
     let projectData = Masterdata;
     let displayTasks = AllTasks;
     projectData?.smartComponent?.map((item: any, index: any) => {
@@ -796,7 +809,9 @@ const ProjectManagementMain = (props: any) => {
     gotoPage(page);
   };
   return (
-    <>
+    <div>
+    {
+      QueryId != "" ?   <>
       <div className="row">
         <div
           className="d-flex justify-content-between p-0"
@@ -1024,9 +1039,10 @@ const ProjectManagementMain = (props: any) => {
                               pageContext={props.pageContext}
                               projectId={projectId}
                               callBack={tagAndCreateCallBack}
+                              createComponent= {createTaskId}
                             />
                           )}
-                          {projectId && (
+                          {/* {projectId && (
                             <TagTaskToProjectPopup
                               projectItem={Masterdata}
                               className="ms-2"
@@ -1034,7 +1050,7 @@ const ProjectManagementMain = (props: any) => {
                               callBack={tagAndCreateCallBack}
                               projectTitle={projectTitle}
                             />
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -1408,7 +1424,9 @@ const ProjectManagementMain = (props: any) => {
           Call={Call}
         ></PortfolioTagging>
       )}
-    </>
+ </>    :   <div>Project not found</div>
+    }
+   </div>
   );
 };
 export default ProjectManagementMain;
