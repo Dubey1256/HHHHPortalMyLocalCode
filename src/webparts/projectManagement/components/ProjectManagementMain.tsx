@@ -1,39 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
-import {
-  Button,
-  Table,
-  Row,
-  Col,
-  Pagination,
-  PaginationLink,
-  PaginationItem,
-  Input,
-} from "reactstrap";
-import {
-  FaAngleDoubleLeft,
-  FaAngleDoubleRight,
-  FaAngleLeft,
-  FaAngleRight,
-  FaCaretDown,
-  FaCaretRight,
-  FaSort,
-  FaSortDown,
-  FaSortUp,
-} from "react-icons/fa";
-import {
-  useTable,
-  useSortBy,
-  useFilters,
-  useExpanded,
-  usePagination,
-  HeaderGroup,
-} from "react-table";
-import {
-  Filter,
-  DefaultColumnFilter,
-} from "../../projectmanagementOverviewTool/components/filters";
+import {Button,Table,Row,Col,Pagination,PaginationLink,PaginationItem,Input,} from "reactstrap";
+import {FaAngleDoubleLeft,FaAngleDoubleRight,FaAngleLeft,FaAngleRight,FaCaretDown,FaCaretRight,FaSort,FaSortDown,FaSortUp,} from "react-icons/fa";
+import {useTable,useSortBy,useFilters,useExpanded,usePagination,HeaderGroup,} from "react-table";
+import {  Filter,DefaultColumnFilter,} from "../../projectmanagementOverviewTool/components/filters";
 import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
@@ -114,102 +85,10 @@ const ProjectManagementMain = (props: any) => {
     taskUsers = await web.lists
       .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
       .items.select(
-        "ComponentCategory/Id",
-        "ComponentCategory/Title",
-        "SiteCompositionSettings",
-        "PortfolioStructureID",
-        "ItemRank",
-        "ShortDescriptionVerified",
-        "Portfolio_x0020_Type",
-        "BackgroundVerified",
-        "descriptionVerified",
-        "Synonyms",
-        "BasicImageInfo",
-        "Deliverable_x002d_Synonyms",
-        "OffshoreComments",
-        "OffshoreImageUrl",
-        "HelpInformationVerified",
-        "IdeaVerified",
-        "TechnicalExplanationsVerified",
-        "Deliverables",
-        "DeliverablesVerified",
-        "ValueAddedVerified",
-        "CompletedDate",
-        "Idea",
-        "ValueAdded",
-        "TechnicalExplanations",
-        "Item_x0020_Type",
-        "Sitestagging",
-        "Package",
-        "Parent/Id",
-        "Parent/Title",
-        "Short_x0020_Description_x0020_On",
-        "Short_x0020_Description_x0020__x",
-        "Short_x0020_description_x0020__x0",
-        "Admin_x0020_Notes",
-        "AdminStatus",
-        "Background",
-        "Help_x0020_Information",
-        "SharewebComponent/Id",
-        "SharewebCategories/Id",
-        "SharewebCategories/Title",
-        "Priority_x0020_Rank",
-        "Reference_x0020_Item_x0020_Json",
-        "Team_x0020_Members/Title",
-        "Team_x0020_Members/Name",
-        "Component/Id",
-        "Services/Id",
-        "Services/Title",
-        "Services/ItemType",
-        "Component/Title",
-        "Component/ItemType",
-        "Team_x0020_Members/Id",
-        "Item_x002d_Image",
-        "component_x0020_link",
-        "IsTodaysTask",
-        "AssignedTo/Title",
-        "AssignedTo/Name",
-        "AssignedTo/Id",
-        "AttachmentFiles/FileName",
-        "FileLeafRef",
-        "FeedBack",
-        "Title",
-        "Id",
-        "PercentComplete",
-        "Company",
-        "StartDate",
-        "DueDate",
-        "Comments",
-        "Categories",
-        "Status",
-        "WebpartId",
-        "Body",
-        "Mileage",
-        "PercentComplete",
-        "Attachments",
-        "Priority",
-        "Created",
-        "Modified",
-        "Author/Id",
-        "Author/Title",
-        "Editor/Id",
-        "Editor/Title",
-        "ClientCategory/Id",
-        "ClientCategory/Title"
+        "ComponentCategory/Id","ComponentCategory/Title","SiteCompositionSettings","PortfolioStructureID","ItemRank","ShortDescriptionVerified","Portfolio_x0020_Type","BackgroundVerified","descriptionVerified","Synonyms","BasicImageInfo","Deliverable_x002d_Synonyms","OffshoreComments","OffshoreImageUrl","HelpInformationVerified","IdeaVerified","TechnicalExplanationsVerified","Deliverables","DeliverablesVerified","ValueAddedVerified","CompletedDate","Idea","ValueAdded","TechnicalExplanations","Item_x0020_Type","Sitestagging","Package","Parent/Id","Parent/Title","Short_x0020_Description_x0020_On","Short_x0020_Description_x0020__x","Short_x0020_description_x0020__x0","Admin_x0020_Notes","AdminStatus","Background","Help_x0020_Information","SharewebComponent/Id","SharewebCategories/Id","SharewebCategories/Title","Priority_x0020_Rank","Reference_x0020_Item_x0020_Json","Team_x0020_Members/Title","Team_x0020_Members/Name","Component/Id","Services/Id","Services/Title","Services/ItemType","Component/Title","Component/ItemType","Team_x0020_Members/Id","Item_x002d_Image","component_x0020_link","IsTodaysTask","AssignedTo/Title","AssignedTo/Name","AssignedTo/Id","AttachmentFiles/FileName","FileLeafRef","FeedBack","Title","Id","PercentComplete","Company","StartDate","DueDate","Comments","Categories","Status","WebpartId","Body","Mileage","PercentComplete","Attachments","Priority","Created","Modified","Author/Id","Author/Title","Editor/Id","Editor/Title","ClientCategory/Id","ClientCategory/Title"
       )
       .expand(
-        "ClientCategory",
-        "ComponentCategory",
-        "AssignedTo",
-        "Component",
-        "Services",
-        "AttachmentFiles",
-        "Author",
-        "Editor",
-        "Team_x0020_Members",
-        "SharewebComponent",
-        "SharewebCategories",
-        "Parent"
+        "ClientCategory","ComponentCategory","AssignedTo","Component","Services","AttachmentFiles","Author","Editor","Team_x0020_Members","SharewebComponent","SharewebCategories","Parent"
       )
       .getById(QueryId)
       .get();
@@ -315,17 +194,16 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  const loadAdminConfigurations = function () {
+  const loadAdminConfigurations = async  ()=> {
     var CurrentSiteType = "";
-
-    axios
-      .get(
-        "https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('e968902a-3021-4af2-a30a-174ea95cf8fa')/items?$select=Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-      )
-      .then(
-        (response: AxiosResponse) => {
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+    await web.lists
+    .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
+    .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
+    .top(4999)
+    .get().then((response) => {
           var SmartFavoritesConfig = [];
-          $.each(response.data.value, function (index: any, smart: any) {
+          $.each(response, function (index: any, smart: any) {
             if (smart.Configurations != undefined) {
               DataSiteIcon = JSON.parse(smart.Configurations);
             }
@@ -413,6 +291,10 @@ const ProjectManagementMain = (props: any) => {
             items.Team_x0020_Members.map((taskUser: any) => {
               var newuserdata: any = {};
               AllUser?.map((user: any) => {
+                if (user?.Title != undefined) {
+                  items.TeamMembersSearch =
+                    items.TeamMembersSearch + " " + user?.Title;
+                }
                 if (user.AssingedToUserId == taskUser.Id) {
                   newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
                   newuserdata["Suffix"] = user.Suffix;
@@ -587,16 +469,6 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Priority_x0020_Rank",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          // <span>
-          //   {row?.original?.Priority_x0020_Rank}
-          //   {
-          //     row?.original?.Categories?.includes('Immediate') ?
-          //       <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a>
-          //       :
-          //       " "
-          //   }
-
-          // </span>
           <span>
             <InlineEditingcolumns type='Task' callBack={tagAndCreateCallBack} columnName='Priority' item={row?.original} />
           </span>
@@ -615,62 +487,7 @@ const ProjectManagementMain = (props: any) => {
         accessor: "PercentComplete",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          // <span>
-          //   {parseInt(row?.original?.PercentComplete) <= 5 &&
-          //     parseInt(row?.original?.PercentComplete) >= 0 ? (
-          //     <a title={row?.original?.PercentComplete}>
-          //       <img
-
-          //         onMouseEnter={row?.original?.PercentComplete}
-          //         src={require("../../../Assets/ICON/Ellipse.svg")}
-          //       />
-          //     </a>
-          //   ) : parseInt(row?.original?.PercentComplete) >= 6 &&
-          //     parseInt(row?.original?.PercentComplete) <= 98 ? (
-          //     <a title={row?.original?.PercentComplete}>
-          //       <img
-
-          //         onMouseEnter={row?.original?.PercentComplete}
-          //         src={require("../../../Assets/ICON/Ellipse-haf.svg")}
-          //       />
-          //     </a>
-          //   ) : (
-          //     <a title={row?.original?.PercentComplete}>
-          //       <img
-
-          //         onMouseEnter={row?.original?.PercentComplete}
-          //         src={require("../../../Assets/ICON/completed.svg")}
-          //       />
-          //     </a>
-          //   )}
-          //   {
-          //     row?.original?.IsTodaysTask?<>
-          //     {
-          //       row?.original?.AssignedTo?.map((AssignedUser:any)=>{
-          //         return(
-          //           AllUser?.map((user:any)=>{
-          //             if(AssignedUser.Id==user.AssingedToUserId){
-          //               return(
-          //                 <span className="user_Member_img">
-          //               <a
-          //                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
-          //                 target="_blank"
-          //                 data-interception="off"
-          //                 title={user.Title}
-          //               >
-          //                 <img className="imgAuthor" src={user?.Item_x0020_Cover?.Url}></img>
-          //               </a>
-          //             </span>
-          //               )
-          //             }
-
-          //           })
-          //         )
-          //       })
-          //     }
-          //     </>:''
-          //   }
-          // </span>
+          
           <span>
             <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='PercentComplete' item={row?.original} />
           </span>
@@ -683,11 +500,6 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
              <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Team' item={row?.original}  TaskUsers={AllUser} />
-
-            {/* <ShowTaskTeamMembers
-              props={row?.original}
-              TaskUsers={AllUser}
-            ></ShowTaskTeamMembers> */}
           </span>
         ),
       },
