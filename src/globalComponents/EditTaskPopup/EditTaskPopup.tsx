@@ -40,7 +40,7 @@ import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
-// import SiteCompositionComponent from "./SiteCompositionComponent";
+import SiteCompositionComponent from "./SiteCompositionComponent";
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -383,7 +383,8 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(false)
                 }
                 if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true)
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
                 } else {
                     setApprovalStatus(false)
                 }
@@ -710,7 +711,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -720,7 +721,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -1611,6 +1612,7 @@ const EditTaskPopup = (Items: any) => {
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
                 workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
+                waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
                 ItemRank: EditData.ItemRank,
                 Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
@@ -1676,6 +1678,13 @@ const EditTaskPopup = (Items: any) => {
                 setEditData({ ...EditData, IsTodaysTask: false })
             } else {
                 setEditData({ ...EditData, IsTodaysTask: true })
+            }
+        }
+        if (type == "waitForResponse") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, waitForResponse: false })
+            } else {
+                setEditData({ ...EditData, waitForResponse: true })
             }
         }
     }
@@ -1980,7 +1989,8 @@ const EditTaskPopup = (Items: any) => {
                 setImmediateStatus(true)
             }
             if (type == "Approval") {
-                setApprovalStatus(true)
+                setApprovalStatus(true);
+                setApproverData(TaskApproverBackupArray);
             }
             if (type == "Only Completed") {
                 setOnlyCompletedStatus(true)
@@ -3077,7 +3087,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <ul className="p-0 mt-1">
                                                             <li className="form-check l-radio">
                                                                 <input className="form-check-input"
-                                                                    name="radioPriority"
+                                                                    name="ApprovalLevel"
                                                                     type="radio"
                                                                 />
                                                                 <label className="form-check-label">Normal Approval</label>
@@ -3088,7 +3098,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input
                                                                     type="radio"
                                                                     className="form-check-input"
-                                                                    name="radioPriority" />
+                                                                    name="ApprovalLevel" />
                                                             </li>
                                                             <li
                                                                 className="form-check l-radio">
@@ -3096,7 +3106,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input
                                                                     type="radio"
                                                                     className="form-check-input"
-                                                                    name="radioPriority" />
+                                                                    name="ApprovalLevel" />
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -3491,6 +3501,14 @@ const EditTaskPopup = (Items: any) => {
                                             <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
+                                            <span className="">
+                                                <label className="form-check-label mx-2">Waiting for HHHH response</label>
+                                                <input className="form-check-input rounded-0" type="checkbox"
+                                                    checked={EditData.waitForResponse}
+                                                    value={EditData.waitForResponse}
+                                                    onChange={(e) => changeStatus(e, "waitForResponse")}
+                                                />
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -3686,11 +3704,13 @@ const EditTaskPopup = (Items: any) => {
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {/* <SiteCompositionComponent
+                                        {EditData.Id != null ? <SiteCompositionComponent
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
                                             ClientTime={EditData.siteCompositionData}
-                                        /> */}
+                                            SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                        /> : null}
+
                                     </div>
                                 </div>
                             </div>
@@ -4080,6 +4100,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <label>Normal Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input" />
                                                                         </li>
                                                                         <li
@@ -4087,6 +4108,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <label> Complex Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input" />
                                                                         </li>
                                                                         <li
@@ -4094,6 +4116,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <label> Quick Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input " />
                                                                         </li>
                                                                     </ul>
@@ -4509,6 +4532,15 @@ const EditTaskPopup = (Items: any) => {
                                                         <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
+                                                        <span className="">
+                                                            <label className="form-check-label mx-2">Waiting for HHHH response</label>
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.waitForResponse}
+                                                                value={EditData.waitForResponse}
+                                                                onChange={(e) => changeStatus(e, "waitForResponse")}
+                                                            />
+                                                        </span>
+
                                                     </div>
                                                 </div>
                                             </div>
