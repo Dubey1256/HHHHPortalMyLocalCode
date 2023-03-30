@@ -691,7 +691,7 @@ const inlineEditingcolumns = (props: any) => {
                                 onChange={(event) => handleCategoryChange(event, option.Id)}
                             />
                             <a title={option.Title}>
-                                <span className={`${option.spfxIconName}`} ></span>
+                                <span className={option.spfxIconName} ></span>
                                 {/* <img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} />  */}
                             </a>
                             <label htmlFor={option.Id}>{option.Title}</label>

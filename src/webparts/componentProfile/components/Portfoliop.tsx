@@ -47,6 +47,7 @@ function Portfolio({ ID }: any) {
   const [dataQues, setdataQues] = React.useState([]);
   const [dataHelp, setdataHelp] = React.useState([]);
   const [FolderData, SetFolderData] = React.useState([]);
+  const [ParentData, SetParentData] = React.useState([]);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [showBlock, setShowBlock] = React.useState(false);
@@ -112,9 +113,13 @@ function Portfolio({ ID }: any) {
   };
   React.useEffect(() => {
     var folderId: any = "";
+    let ParentId:any = "";
     var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
     var response: any = [];
-    var responsen: any = []; // this variable is used for storing list items
+    var responsen: any = [];
+    
+    var ParentData: any = [];
+    // this variable is used for storing list items
     function GetListItems() {
       $.ajax({
         url: url,
@@ -147,6 +152,29 @@ function Portfolio({ ID }: any) {
                 },
               });
             }
+            if (item?.Parent!=undefined && item.Parent.Id != undefined&&item.Item_x0020_Type=="Feature")  {
+              ParentId = item.Parent.Id;
+              var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              $.ajax({
+                url: urln,
+                method: "GET",
+                headers: {
+                  Accept: "application/json; odata=verbose",
+                },
+                success: function (data) {
+                  ParentData = ParentData.concat(data.d.results);
+                  if (data.d.__next) {
+                    urln = data.d.__next;
+                  } else SetParentData(ParentData);
+                  // console.log(responsen);
+                },
+                error: function (error) {
+                  console.log(error);
+                  // error handler code goes here
+                },
+              });
+            }
+            
             if (item.Portfolio_x0020_Type != undefined) {
               var filter = "";
               if (item.Portfolio_x0020_Type == "Component") {
@@ -368,7 +396,28 @@ function Portfolio({ ID }: any) {
                       </li>
                       {(item.Item_x0020_Type == "SubComponent" ||
                         item.Item_x0020_Type == "Feature") && (
-                        <li>
+                          <>
+                          <li>
+                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                          {ParentData!=undefined&&
+                          ParentData.map((ParentD:any)=>{
+
+                          return(
+                            <>
+                          {ParentD.Parent != undefined && (
+                            <a
+                              target="_blank"
+                              data-interception="off"
+                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD.Parent.Id}`}
+                            >
+                              {ParentD.Parent.Title}
+                            </a>
+                          )}
+                          </>
+                          )
+                        })}
+                        </li>
+                       <li>
                           {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
                           {item.Parent != undefined && (
                             <a
@@ -380,6 +429,7 @@ function Portfolio({ ID }: any) {
                             </a>
                           )}
                         </li>
+                        </>
                       )}
 
                       <li>

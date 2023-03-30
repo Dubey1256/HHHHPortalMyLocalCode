@@ -362,6 +362,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data['siteType'] = AllItems.siteType
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -370,6 +371,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data['siteType'] = AllItems.siteType
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -557,6 +559,7 @@ const CreateWS = (props: any) => {
                 console.log(res);
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
+                res.data['siteType'] = AllItems.siteType
                 closeTaskStatusUpdatePoup(res);
             })
         }
