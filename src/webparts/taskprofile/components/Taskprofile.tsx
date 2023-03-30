@@ -187,16 +187,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         // }
         return AllDataMatches;
       }
+      
       else {
         let query = 'filter=';
         AllDataMatches.forEach(function (item: any) {
-          query += "(Id eq '" + item.Parent.Id + "')or";
+         query += "(Id eq '" + item.Parent.Id + "')or";
         });
         query = query.slice(0, query.length - 2);
-
         await this.loadOtherComponentsData(query, AllDataMatches);
-
-      }
+       }
     }
   }
 
@@ -1116,13 +1115,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     {breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined && this.state.Result["ParentTask"] != undefined &&
                       <li className="ng-scope" >
 
-                        <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem.ParentTask.siteType}`}>{breadcrumbitem.ParentTask.Title}</a>
+                        <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem.ParentTask.siteType}`}>{breadcrumbitem.ParentTask.Title}</a>
                       </li>
                     }
                     {breadcrumbitem.ChildTask != undefined && breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined &&
                       <li className="ng-scope" >
 
-                        <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem.ChildTask.siteType}`}>{breadcrumbitem.ChildTask.Title}</a>
+                        <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem.ChildTask.siteType}`}>{breadcrumbitem.ChildTask.Title}</a>
                       </li>
                     }
 

@@ -443,10 +443,10 @@ const CreateWS = (props: any) => {
             if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
                 SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Services != undefined && Task.Services.length > 0) {
+            if (Task.Services != undefined && Task.Services.length > 0 || Task.Portfolio_x0020_Type == 'Service') {
                 SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Events != undefined || Task.Portfolio_x0020_Type == 'Events') {
+            if (Task.Events != undefined && Task.Events.length >0 || Task.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
             if (Task.Component != undefined && Task.Component.length > 0) {
