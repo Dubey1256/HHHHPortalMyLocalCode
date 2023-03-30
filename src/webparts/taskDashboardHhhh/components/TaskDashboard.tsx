@@ -105,7 +105,7 @@ const TaskDashboard = () => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items.select(
-                            "Id,StartDate,DueDate,Title,workingThisWeek,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+                            "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
                         )
                         .top(4999)
                         .expand(
