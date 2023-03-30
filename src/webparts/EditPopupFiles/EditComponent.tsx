@@ -8,6 +8,7 @@ import {
   TextField,
 } from "office-ui-fabric-react";
 
+// import * as Moment from 'moment';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
@@ -67,7 +68,6 @@ function EditInstitution(item: any) {
   const [siteDetails, setsiteDetails] = React.useState([]);
   const [checkedCat, setcheckedCat] = React.useState(false);
   const [linkedComponentData, setLinkedComponentData] = React.useState([]);
-  const [Startdate, setStartdate] = React.useState(undefined);
   const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
   const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
   const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
@@ -77,19 +77,7 @@ function EditInstitution(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
-  const [datepicker, setdatepicker] = React.useState(false);
-  const [activePicker, setActivePicker] = React.useState(null);
-  // Date picker closer
-  const handlePickerFocus = (pickerName: any) => {
-    setActivePicker(pickerName);
-  };
-
-  const handlePickerBlur = () => {
-    setActivePicker(null);
-  };
-  function datepickercl() {
-    setdatepicker(true);
-  }
+ 
   // $('.ms-Dialog-main .main-153').hide();
   const setModalIsOpenToTrue = (e: any) => {
     // e.preventDefault()
@@ -105,24 +93,7 @@ function EditInstitution(item: any) {
     EditComponentCallback();
     setModalIsOpen(false);
   };
-  const handleDate = (date: any) => {
-    EditData.CompletedDate = date;
-    setCompletiondate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
-  const handleDatestart = (date: any) => {
-    EditData.StartDate = date;
-    setStartdate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
-  const handleDatedue = (date: any) => {
-    EditData.DueDate = date;
-    setDate(date);
-    setComponent((EditData) => [...EditData]);
-    setActivePicker(null);
-  };
+  
   const Call = React.useCallback((item1: any, type: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
@@ -524,10 +495,10 @@ function EditInstitution(item: any) {
         Rr.push(item.ServicePortfolio);
         setLinkedComponentData(Rr);
       }
-      if (item.StartDate != undefined) {
-        item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
-        //setStartdate(item.StartDate);
-      }
+      // if (item.StartDate != undefined) {
+      //   item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
+      //   //setStartdate(item.StartDate);
+      // }
       if (item.component_x0020_link != null) {
         item.component_x0020_link = item.component_x0020_link.Url;
         //setStartdate(item.StartDate);
@@ -1080,15 +1051,10 @@ function EditInstitution(item: any) {
         Priority_x0020_Rank: Items.Priority_x0020_Rank,
         ComponentId: { results: smartComponentsIds },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate:
-          Startdate != undefined
-            ? new Date(Startdate).toDateString()
-            : Startdate,
-        DueDate: date != undefined ? new Date(date).toDateString() : date,
-        CompletedDate:
-          Completiondate != undefined
-            ? new Date(Completiondate).toDateString()
-            : Completiondate,
+        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+        DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+        CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+        
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
         Categories: categoriesItem ? categoriesItem : null,
         SharewebCategoriesId: { results: CategoryID },
@@ -1703,17 +1669,13 @@ function EditInstitution(item: any) {
                             <label className="form-label  full-width">
                               Start Date
                             </label>
-
-                            <DatePicker
-                              className="form-control"
-                              selected={Startdate}
-                              value={EditData.StartDate}
-                              onChange={handleDatestart}
-                              dateFormat="dd/MM/yyyy"
-                              onFocus={() => handlePickerFocus("startDate")}
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "startDate"}
-                            />
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={moment(EditData.StartDate).format("YYYY-MM-DD")}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, StartDate: e.target.value
+                                                        })}
+                                                    />
+                          
                           </div>
                         </div>
                         <div className="col-sm-4 ">
@@ -1721,16 +1683,12 @@ function EditInstitution(item: any) {
                             <label className="form-label  full-width">
                               Due Date
                             </label>
-                            <DatePicker
-                              className="form-control"
-                              selected={date}
-                              value={EditData.DueDate}
-                              onChange={handleDatedue}
-                              dateFormat="dd/MM/yyyy"
-                              onFocus={() => handlePickerFocus("date")}
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "date"}
-                            />
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, DueDate: e.target.value
+                                                        })}
+                                                    />
                           </div>
                         </div>
                         <div className="col-sm-4 pe-0">
@@ -1739,19 +1697,12 @@ function EditInstitution(item: any) {
                               {" "}
                               Completion Date{" "}
                             </label>
-                            <DatePicker
-                              className="form-control"
-                              name="CompletionDate"
-                              selected={Completiondate}
-                              dateFormat="dd/MM/yyyy"
-                              value={EditData.CompletedDate}
-                              onChange={handleDate}
-                              onFocus={() =>
-                                handlePickerFocus("Completiondate")
-                              }
-                              onBlur={handlePickerBlur}
-                              open={activePicker === "Completiondate"}
-                            />
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, CompletedDate: e.target.value
+                                                        })}
+                                                    />
                           </div>
                         </div>
                       </div>
