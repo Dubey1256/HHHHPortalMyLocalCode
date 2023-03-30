@@ -428,13 +428,13 @@ private approvalcallback(){
                     <div className="col-11 pe-0" >
                       <div className='d-flex justify-content-between align-items-center'>
                         {fbComment.AuthorName} - {fbComment.Created}
-                        <span>
-                          <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, 0, false)}>
+                        <span className='d-flex'>
+                          <a  title='Edit' onClick={() => this.openEditModal(fbComment.Title, k, 0, false)}>
                             {/* <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img> */}
-                            <img src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img>
-                            
+                            {/* <img src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img> */}
+                            <span className='svg__iconbox svg__icon--edit'></span>
                             </a>
-                          <a className="ps-1" onClick={() => this.clearComment(false, k, 0)}><img src='/_layouts/images/delete.gif'></img></a>
+                          <a  title='Delete' onClick={() => this.clearComment(false, k, 0)}><span className='svg__iconbox svg__icon--trash'></span></a>
                         </span>
                       </div>
                       <div><span dangerouslySetInnerHTML={{ __html: fbComment.Title }}></span></div>
@@ -521,12 +521,13 @@ private approvalcallback(){
                       <div className="col-sm-11 pad0" key={k}>
                         <div className="d-flex justify-content-between align-items-center">
                           {fbComment.AuthorName} - {fbComment.Created}
-                          <span>
-                            <a className="ps-1" onClick={() => this.openEditModal(fbComment.Title, k, j, true)}>
+                          <span className='d-flex'>
+                            <a  title="Edit" onClick={() => this.openEditModal(fbComment.Title, k, j, true)}>
                               {/* <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif'></img> */}
-                             <img  src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img>
+                             {/* <img  src={require('../../../Assets/ICON/edit_page.svg')} width="25"></img> */}
+                             <span className='svg__iconbox svg__icon--edit'></span>
                               </a>
-                            <a className="ps-1" onClick={() => this.clearComment(true, k, j)}><img src='/_layouts/images/delete.gif'></img></a>
+                            <a title='Delete' onClick={() => this.clearComment(true, k, j)}><span className='svg__iconbox svg__icon--trash'></span></a>
                           </span>
                         </div>
                         <div className="ng-binding"><span dangerouslySetInnerHTML={{ __html: fbComment.Title }}></span></div>
@@ -538,10 +539,10 @@ private approvalcallback(){
             </div>
             {sunchildcomment == j ? <div className='d-flex ' >
               <div className="col-sm-11  mt-2 p-0  " style={{ display: this.state.showcomment_subtext }}>
-                <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)} style={{ width: '99%' }} className="form-control ng-pristine ng-empty ng-invalid ng-invalid-required ng-touched" ></textarea>
+                <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)}  className="form-control full-width" ></textarea>
               </div>
 
-              <div className="col-sm-1 mt-2 text-end  " style={{ display: this.state.showcomment_subtext }}>
+              <div className="col-sm-1 mt-2 ps-1 text-end  " style={{ display: this.state.showcomment_subtext }}>
                 <button type="button" className="post btn btn-primary" onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
               </div>
             </div> : null}
