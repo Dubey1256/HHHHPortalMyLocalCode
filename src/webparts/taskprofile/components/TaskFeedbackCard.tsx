@@ -9,7 +9,8 @@ import EmailComponenet from './emailComponent';
 var sunchildcomment: any;
 var countemailbutton=0;
  var changespercentage=false;
- 
+var countApprove=0;
+ var countreject=0;
 export interface ITaskFeedbackProps {
   fullfeedback: any;
   feedback: any;
@@ -221,52 +222,71 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   private checkforMail(allfeedback:any){
     console.log(allfeedback);
     if( allfeedback!=null&& allfeedback!=undefined){
-      let isShowLight=0;
-      let NotisShowLight=0
-  
-        if(allfeedback.Subtext!=undefined&&allfeedback.Subtext.length>0){
-          allfeedback?.Subtext.map((subtextitem:any)=>{
-                  if(subtextitem.isShowLight!=""&&subtextitem.isShowLight!=undefined ){
-                    // count=1
-                    isShowLight=isShowLight+1;
+    var  isShowLight=0;
+      var NotisShowLight=0
+      if(allfeedback!=undefined){
+        allfeedback.map((items:any)=>{
+
+          if(items.isShowLight!=undefined&&items.isShowLight!=""){
+            isShowLight=isShowLight+1;
+            if(items.isShowLight=="Approve"){
+              changespercentage=true;
+              countApprove=countApprove+1;
+            }else{
+              countreject=countreject+1;
+            }
+           
+            
+          }
+          if(items.Subtext!=undefined&&items.Subtext.length>0){
+            items.Subtext.map((subtextItems:any)=>{
+              if(subtextItems.isShowLight!=undefined&&subtextItems.isShowLight!=""){
+                isShowLight=isShowLight+1;
+                if(subtextItems.isShowLight=="Approve"){
+                  changespercentage=true;
+                  countApprove=countApprove+1;
+                }else{
+                  countreject=countreject+1;
                 }
-                 })
                 
               }
-  
-              if(isShowLight==0){
-                if(allfeedback.isShowLight!=""&&allfeedback.isShowLight!=undefined){
-                  if(allfeedback.isShowLight=="Approve"){
-                    changespercentage=true;
-                  }
-                  // count=1
-                  isShowLight=isShowLight+1;
-              
-                }
-                 }
-            if(isShowLight>NotisShowLight){
+            })
+          }
+        })
+      }
+      
+      if(isShowLight>NotisShowLight){
          countemailbutton=1;
       }
     }
   }
-  private async changepercentageStatus(percentageStatus:any){
+  private async changepercentageStatus(percentageStatus:any,pervious:any){
+    console.log(percentageStatus)
+    console.log(pervious)
+    console.log(countApprove)
+    console.log(countreject)
+    if((countApprove==0&&percentageStatus=="Approve"&&(pervious.isShowLight==""||pervious.isShowLight==undefined))){
+      changespercentage=true;
+    }
+    if((countApprove==1&&(percentageStatus=="Reject"||percentageStatus=="Maybe")&&(pervious.isShowLight=="Approve"&&pervious.isShowLight!=undefined))){
+      changespercentage=false;
+    }
     let percentageComplete;
-    if((changespercentage==false||percentageStatus=="Approve")||(changespercentage==true||percentageStatus=="Approve")){
+    if(changespercentage==true){
     percentageComplete=0.03;
     }
-    if(changespercentage==false&&(percentageStatus=="Reject"|| percentageStatus=="Maybe")){
-      percentageComplete=0.02;
-    }
+   if(changespercentage==false){
+     percentageComplete=0.02;
+      }
+   
       const web = new Web( this.props.Result?.siteUrl );
       await web.lists.getByTitle(this.props.Result.listName).items.getById(this.props.Result.Id).update({
         PercentComplete: percentageComplete,
         
       }).then((res:any)=>{
        console.log(res);
-       this.props.approvalcallbacktask();
-       
-       
-     })
+      //  this.props.approvalcallbacktask();
+       })
      .catch((err) => {
        console.log(err.message);
     });
@@ -279,7 +299,13 @@ private changeTrafficLigth(index:any,item:any){
   if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
    
     let tempData:any=this.state.fbData;
-    this.checkforMail(this.state.fbData);
+    if(this.props.fullfeedback!=undefined){
+      this.checkforMail(this.props.fullfeedback[0]?.FeedBackDescriptions);
+    }
+    if(countemailbutton>0){
+      this.changepercentageStatus(item,tempData);
+    }
+   
     tempData.isShowLight = item;
     console.log(tempData);
     this.setState({
@@ -288,9 +314,9 @@ private changeTrafficLigth(index:any,item:any){
         emailcomponentopen:true,
         emailComponentstatus:item
     });
-    console.log(this.state.emailcomponentopen);
+    console.log(this.state.fbData);
     this.props.onPost();
-    this.changepercentageStatus(item);
+    
    
   }
 }
@@ -302,7 +328,13 @@ console.log(status);
 if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
  
 let tempData:any=this.state.fbData;
- this.checkforMail(this.state.fbData);
+if(this.props.fullfeedback!=undefined){
+  this.checkforMail(this.props.fullfeedback[0]?.FeedBackDescriptions);
+}
+if(countemailbutton>0){
+  this.changepercentageStatus(status,tempData.Subtext[subchileindex]);
+}
+
 tempData.Subtext[subchileindex].isShowLight = status;
 console.log(tempData);
 this.setState({
@@ -313,7 +345,7 @@ this.setState({
 });
 console.log(this.state.emailcomponentopen)
 this.props.onPost();
-this.changepercentageStatus(status);
+
 
 }
 }
