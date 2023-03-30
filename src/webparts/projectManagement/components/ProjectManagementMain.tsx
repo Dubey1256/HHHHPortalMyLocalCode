@@ -407,7 +407,7 @@ const ProjectManagementMain = (props: any) => {
         width: "75px",
         showSortIcon: false,
         Cell: ({ row }: any) => (
-          <span style={{color: `${row.original.Component.length > 0 ? "#000066" : "green"}` }}>
+          <span style={{color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>
             
               {row?.original?.Shareweb_x0020_ID}
            
@@ -419,9 +419,9 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Title",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
+          <span >
             <a
-             style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}
+             style={{ textDecoration: "none", color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
@@ -451,8 +451,8 @@ const ProjectManagementMain = (props: any) => {
         accessor: "PortfolioTitle",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
-            <a  style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}
+          <span >
+            <a  style={{ textDecoration: "none", color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}
               data-interception="off"
               target="blank"
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -479,7 +479,7 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Due Date",
         showSortIcon: true,
         accessor: "DueDate",
-        Cell: ({ row }: any) => <span  style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ?  "green" : "#000066"}` }}>{row?.original?.DisplayDueDate}</span>,
+        Cell: ({ row }: any) => <span  style={{color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>{row?.original?.DisplayDueDate}</span>,
       },
 
       {
@@ -498,7 +498,7 @@ const ProjectManagementMain = (props: any) => {
         accessor: "TeamMembersSearch",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
+          <span style={{color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>
              <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Team' item={row?.original}  TaskUsers={AllUser} />
           </span>
         ),

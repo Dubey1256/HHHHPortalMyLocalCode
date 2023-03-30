@@ -65,59 +65,62 @@ const CreateActivity = (props: any) => {
     const [site, setSite] = React.useState('');
     var [isActive, setIsActive] = React.useState({ siteType: false, });
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
+    const [post, setPost] = React.useState({ Title: ''})
+   
 
     var CheckCategory: any = []
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
         { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
 
 
-    if (AllItems.Portfolio_x0020_Type != undefined) {
-        if (AllItems.Portfolio_x0020_Type == 'Component') {
-            smartComponentData.push(AllItems);
-        }
-        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-
-        if (AllItems.Portfolio_x0020_Type == 'Service') {
-            linkedComponentData.push(AllItems);
-        }
-        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-
-        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-    }
-    if (AllItems.Portfolio_x0020_Type == undefined) {
-        if (AllItems.Component != undefined && AllItems.Component.length > 0) {
-            smartComponentData.push(AllItems);
-        }
-
-        if (AllItems.Services != undefined && AllItems.Services.length > 0) {
-            linkedComponentData.push(AllItems);
-        }
-        linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-        smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-
-    }
+  
     React.useEffect(() => {
         if (AllItems.Clientcategories != undefined && AllItems.Clientcategories.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
+        if (AllItems.Portfolio_x0020_Type != undefined) {
+            if (AllItems.Portfolio_x0020_Type == 'Component') {
+                smartComponentData.push(AllItems);
+            }
+            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+    
+            if (AllItems.Portfolio_x0020_Type == 'Service') {
+                linkedComponentData.push(AllItems);
+            }
+            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+    
+            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+        }
+        if (AllItems.Portfolio_x0020_Type == undefined) {
+            if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+                smartComponentData.push(AllItems);
+            }
+    
+            if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+                linkedComponentData.push(AllItems);
+            }
+            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+    
+        }
         GetSmartMetadata();
-    }, [])
-
+    }, [linkedComponentData])
+ 
 
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
@@ -439,7 +442,8 @@ const CreateActivity = (props: any) => {
     }
     var LatestTaskNumber: any = ''
     var SharewebID: any = ''
-    const getActivitiesDetails = async (item: any) => {
+   
+    const getActivitiesDetails =  async(item: any) => {
         console.log(item)
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let componentDetails = [];
@@ -648,18 +652,19 @@ const CreateActivity = (props: any) => {
                         alert("Select Task List.");
                     }
                     if (value.selectSiteName == true) {
-                        var Title = save.Title != undefined && save.Title != '' ? save.Title + value.Title : AllItems.Title + value.Title
+                        var Title = save.Title != undefined && save.Title != '' ? save.Title + value.Title : post.Title + value.Title
                         save.Title = ''
                     }
                     else {
-                        var Title = save.Title != undefined && save.Title != '' ? save.Title : AllItems.Title
+                        var Title = save.Title != undefined && save.Title != '' ? save.Title : post.Title
                     }
                     let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
                     await web.lists.getById(value.listId).items.add({
-                        Title: Title != undefined && Title != '' ? Title : AllItems.Title,
+                        Title: Title != undefined && Title != '' ? Title : post.Title,
                         ComponentId: { "results": Component },
                         Categories: categoriesItem ? categoriesItem : null,
-                        DueDate: date != undefined ? new Date(date).toDateString() : date,
+                        //DueDate: date != undefined ? new Date(date).toDateString() : date,
+                        DueDate: date != undefined ?Moment(date).format("MM-DD-YYYY") : null,
                         SharewebCategoriesId: { "results": CategoryID },
                         ClientCategoryId: { "results": ClientCategory },
                         ServicesId: { "results": RelevantPortfolioIds },
@@ -675,6 +680,7 @@ const CreateActivity = (props: any) => {
                     }).then((res: any) => {
                         res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                         res.data['listId'] = value.listId
+                        res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value.SharewebID
                         res.data.ParentTaskId = AllItems.Id
 
@@ -758,11 +764,12 @@ const CreateActivity = (props: any) => {
                         // }
                         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
                         await web.lists.getById(value.listId).items.add({
-                            Title: save.Title != undefined && save.Title != '' ? save.Title : AllItems.Title,
+                            Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
                             ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
                             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                            DueDate: date != undefined ? new Date(date).toDateString() : date,
+                           // DueDate: date != undefined ? new Date(date).toDateString() : date,
+                            DueDate: date != undefined ?Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
@@ -781,6 +788,7 @@ const CreateActivity = (props: any) => {
                             res.data.ParentTaskId = AllItems.Id
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                             res.data['Shareweb_x0020_ID'] = SharewebID
+                            res.data['siteType'] = value.siteName
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
@@ -854,7 +862,8 @@ const CreateActivity = (props: any) => {
     }
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
-        setDate(date);
+        var finalDate = Moment(date).format("YYYY-MM-DD")
+        setDate(finalDate);
 
     };
     const Priority = (e: any) => {
@@ -942,15 +951,15 @@ const CreateActivity = (props: any) => {
                                                 onClick={SelectSiteType}>Site Name</a>
                                         </label>
                                         <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
-                                            defaultValue={`${AllItems.Title}${site}`} onChange={(e: any) => AllItems.Title = e.target.value} />
+                                            defaultValue={`${AllItems.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                     </div>
                                     <div className="col-sm-2 mb-10 padL-0 mt-2">
                                         <label>Due Date</label>
-                                        <DatePicker className="form-control"
-                                            selected={date}
+                                        <input type="date" className="form-control"
+                                            defaultValue={Moment(date).format("DD/MM/YYYY")}
                                             onChange={handleDatedue}
-                                            dateFormat="dd/MM/yyyy"
+                                            
 
 
                                         />

@@ -2510,6 +2510,21 @@ function ComponentTable(SelectedProp: any) {
                     if (val.Id == MainId) {
                         val.childs.push(childItem.data)
                     }
+                    if(val.childs != undefined){
+                        val.childs.forEach((va:any)=>{
+                            if(va.Id == MainId){
+                                va.childs.push(childItem.data)
+                            }
+                            if(va.childs != undefined){
+                                va.childs.forEach((vall:any)=>{
+                                    if(vall.Id == MainId){
+                                        vall.childs.push(childItem.data)
+                                    }
+                                })
+                            }
+        
+                        })
+                    }
 
                 })
                 setData(array => ([...array]))
@@ -4090,7 +4105,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                 <tr className="tdrow">
                                                                                                                                     
                                                                                                                                         <td style={{ width: "2%" }}>
-                                                                                                                                            {childinew.childs.length > 0 &&
+                                                                                                                                            {(childinew.childs != undefined && childinew.childs.length > 0)&&
                                                                                                                                                 <div className="accordian-header" onClick={() => handleOpen(childinew)}>
                                                                                                                                                     <a className='hreflink'
                                                                                                                                                         title="Tap to expand the childs">
@@ -4160,10 +4175,10 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                         {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         } */}
-                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type == 'Feature' &&
+                                                                                                                                        {(childinew.childs != undefined && childinew.childs.length > 0) && childinew.Item_x0020_Type == 'Feature' &&
                                                                                                                                             <span className='ms-1'>  ({childinew.childs.length})</span>
                                                                                                                                         }
-                                                                                                                                        {childinew.childs.length > 0 && childinew.Item_x0020_Type != 'Feature' &&
+                                                                                                                                        {(childinew.childs != undefined && childinew.childs.length > 0) && childinew.Item_x0020_Type != 'Feature' &&
                                                                                                                                             <span className='ms-1'>  ({childinew.childsLength})</span>
                                                                                                                                         }
 
@@ -4211,7 +4226,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                             </table>
                                                                                                                         </td>
                                                                                                                     </tr>
-                                                                                                                    {childinew.show && childinew.childs.length > 0 && (
+                                                                                                                    {childinew.show &&(childinew.childs != undefined && childinew.childs.length > 0) && (
                                                                                                                         <>
                                                                                                                             {childinew.childs.map(function (subchilditem: any) {
                                                                                                                                 if (subchilditem.flag == true) {

@@ -394,7 +394,7 @@ const SmartInformation = (props: any) => {
         </div>
         <div className='mt-3'> <HtmlEditorCard editorValue={allValue.Description != "" ? allValue.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
-          <div className='col-sm-12 row'>
+          <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">
               {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
@@ -402,10 +402,10 @@ const SmartInformation = (props: any) => {
               </div>}
             </div>
 
-            <div className='col-sm-6'>
+            <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
               <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument")}>Add Link/ Document</a></span>
-              <Button className='btn btn-primary ms-1 mx-2' onClick={saveSharewebItem}>
+              <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
                 Save
               </Button>
               <Button className='btn btn-default' onClick={() => handleClose()}>
