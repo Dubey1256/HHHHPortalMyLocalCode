@@ -1571,7 +1571,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
           </div>
-        </section>
+        </section> 
 
         <div className='imghover' style={{ display: this.state.showPopup }}>
           <div className="popup">

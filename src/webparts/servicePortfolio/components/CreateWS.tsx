@@ -11,6 +11,7 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from 'moment';
 import * as moment from "moment-timezone";
 import Tooltip from '../../../globalComponents/Tooltip';
+import { data } from 'jquery';
 
 const TaskItemRank: any = [];
 var TaskTypeItems: any = [];
@@ -361,8 +362,8 @@ const CreateWS = (props: any) => {
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['Shareweb_x0020_ID'] = SharewebID
                 res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -370,8 +371,8 @@ const CreateWS = (props: any) => {
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['Shareweb_x0020_ID'] = SharewebID
                 res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -442,11 +443,17 @@ const CreateWS = (props: any) => {
             if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
                 SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service') {
+            if (Task.Services != undefined && Task.Services.length > 0 || Task.Portfolio_x0020_Type == 'Service') {
                 SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
+            if (Task.Events != undefined && Task.Events.length >0 || Task.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+            }
+            if (Task.Component != undefined && Task.Component.length > 0) {
+                SharewebID = 'CA' + Task.SharewebTaskLevel1No + 'T' + LatestId;
+            }
+            if (Task.Component == undefined && Task.Services == undefined) {
+                SharewebID = 'T' + LatestId;
             }
             if (AllItems.Portfolio_x0020_Type == undefined) {
                 if (AllItems.Component != undefined && AllItems.Component.length > 0) {
@@ -496,10 +503,10 @@ const CreateWS = (props: any) => {
                 var Dateet = new Date(dp)
                 NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
             }
-            if (AllItems.Portfolio_x0020_Type == 'Component') {
+            if (AllItems.Portfolio_x0020_Type == 'Component' ||  AllItems.Component != undefined && AllItems.Component.length > 0) {
                 Component.push(AllItems.Component[0].Id)
             }
-            if (AllItems.Portfolio_x0020_Type == 'Service') {
+            if (AllItems.Portfolio_x0020_Type == 'Service' ||  AllItems.Services != undefined && AllItems.Services.length > 0) {
                 RelevantPortfolioIds.push(AllItems.Services[0].Id)
             }
             var categoriesItem = '';
@@ -560,6 +567,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -602,8 +610,20 @@ const CreateWS = (props: any) => {
         })
     }
     const handleDatedue = (date: any) => {
-        AllItems.DueDate = date;
-        setDate(date);
+        let selectedDate =   new window.Date(date)
+        let formatDate = moment(selectedDate).format('DDMMYYYY')
+        let datee = formatDate.length < 9
+        if(datee){
+            var final = moment(selectedDate).format("DD/MM/YYYY")
+            AllItems.DueDate = date;
+            setDate(date);  
+        }
+        else{
+            setDate(undefined)
+        }
+        
+        
+        
 
     };
     const onRenderCustomHeaderMain = () => {
