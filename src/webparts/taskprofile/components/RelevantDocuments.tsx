@@ -13,6 +13,9 @@ const RelevantDocuments = (props: any) => {
         loadAllSitesDocuments();
     }, [])
     const loadAllSitesDocuments = async () => {
+        if(props.siteName=="Offshore Tasks"){
+            props.siteName="OffShoreTask"  
+        }
         const web = new Web(props.siteUrl);
         var filter = (`${props.siteName}/Id eq ${props.ID}`);
         console.log(filter);
@@ -48,22 +51,21 @@ const RelevantDocuments = (props: any) => {
                         <div className='card-body p-1'>
                             <ul  className='d-flex list-none'>
                                 <li>
-                                   <a className='px-2' href={item.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
+                                   <a  href={item.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
                                 </li>
                                 <li>
-                                  <a className='px-2' href={item.EncodedAbsUrl}>
+                                  <a  href={item.EncodedAbsUrl}>
                                     {item.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf'></span>}
                                     {item.File_x0020_Type=="docx"&&<span className='svg__iconbox svg__icon--docx'></span>} 
-                                    {item.File_x0020_Type=="csv"&&<span className='svg__iconbox svg__icon--csv'></span>}
+                                    {item.File_x0020_Type=="csv"||item.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--csv'></span>}
                                     {item.File_x0020_Type=="jpeg"&&<span className='svg__iconbox svg__icon--jpeg'></span>}
                                     {item.File_x0020_Type=="ppt"&&<span className='svg__iconbox svg__icon--ppt'></span>}
                                     {item.File_x0020_Type=="svg"&&<span className='svg__iconbox svg__icon--svg'></span>}
                                     {item.File_x0020_Type=="zip"&&<span className='svg__iconbox svg__icon--zip'></span>}
                                     {item.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'></span>}
-                                    {item.File_x0020_Type=="pptx"&&<span className='svg__iconbox svg__icon--pptx'></span>}
                                     {item.File_x0020_Type=="txt"&&<span className='svg__iconbox svg__icon--txt'></span>}
                                     {item.File_x0020_Type=="smg"&&<span className='svg__iconbox svg__icon--smg'></span>}
-                                    {item.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--xlsx'></span>}
+                                    
                                     </a>
                                 
                                 </li>
