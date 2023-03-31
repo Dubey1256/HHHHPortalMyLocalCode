@@ -5,83 +5,40 @@ const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     const ClientTime = Props.ClientTime;
     const siteUrls = Props.siteUrls;
+    const TotalTime = Props.SmartTotalTimeData;
+    const callBack = Props.callBack;
     const [SiteTypes, setSiteTypes] = useState([]);
-    const [selectedSiteCount, setSelectedSiteCount] = useState(0);
+    const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
+    const [ClientTimeData, setClientTimeData] = useState([]);
     const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
+
     useEffect(() => {
         setSiteTypes(SiteData);
+        let tempData: any = [];
+        let tempData2: any = [];
+        setClientTimeData(ClientTime);
         // GetAllSitesData();
-        // if (ClientTime != undefined && ClientTime.length > 0) {
-        //     ClientTime?.map((ClientItem: any) => {
-        //         if (SiteData != undefined && SiteData.length > 0) {
-        //             SiteData.map((SiteItem: any) => {
-        //                 if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
-        //                     if (ClientItem.SiteName == SiteItem.Title) {
-        //                         SiteItem.Checked = true
-        //                         selectedSiteCount + 1;
-        //                         SiteTypes.push(SiteItem);
-        //                     } else {
-        //                         SiteItem.Checked = false;
-        //                         SiteTypes.push(SiteItem);
-        //                     }
-        //                 }
-        //             })
-        //         }
-        //     })
-        // }
-        // if (SiteData != undefined && SiteData.length > 0) {
-        //     SiteData.map((SiteItem: any) => {
-        //         if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
-        //             // if (ClientTime != undefined && ClientTime.length > 0) {
-        //             //     ClientTime?.map((ClientItem: any) => {
-        //             //         if (ClientItem.SiteName == SiteItem.Title) {
-        //             //             SiteItem.Checked = true
-        //             //             selectedSiteCount + 1;
-        //             //         } else {
-        //             //             SiteItem.Checked = false;
-        //             //         }
-        //             //     })
-        //             // }
-        //             tempData.push(SiteItem);
-        //         }
-        //     })
-
-        //     if (tempData != undefined && tempData.length > 0) {
-        //         tempData?.map((data: any) => {
-        //             ClientTime?.map((ClientItem: any) => {
-        //                 if (ClientItem.SiteName == data.Title) {
-        //                     data.BtnStatus = true
-        //                     selectedSiteCount + 1;
-        //                 } else {
-        //                     data.BtnStatus = false;
-        //                 }
-
-        //             })
-        //             tempData2.push(data);
-        //         })
-        //     }
-        //     setSiteTypes(tempData2);
-        // }
-        // if(tempData != undefined && tempData.length > 0){
-        //     tempData?.map((data:any)=>{
-        //         SiteTypes.push(data)
-        //     })
-        // }
-    })
-
-    // const GetAllSitesData = () => {
-    //     let siteIndex: any = [];
-    //     SiteData?.map((data: any, index: any) => {
-    //         ClientTime?.map((ClientItem: any) => {
-    //             if (ClientItem.SiteName == data.Title) {
-    //                 siteIndex.push(index);
-    //             }
-    //         })
-
-    //     })
-
-    // }
+        if (SiteData != undefined && SiteData.length > 0) {
+            SiteData.map((SiteItem: any) => {
+                if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
+                    tempData.push(SiteItem);
+                }
+            })
+            if (tempData != undefined && tempData.length > 0) {
+                tempData?.map((data: any) => {
+                    ClientTime?.map((ClientItem: any) => {
+                        if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
+                            "DA E+E" && data.Title == "ALAKDigital")) {
+                            data.BtnStatus = true
+                        }
+                    })
+                    tempData2.push(data);
+                })
+            }
+            setSiteTypes(tempData2);
+        }
+    }, [])
     const selectSiteCompositionFunction = (e: any, Index: any) => {
         let TempArray: any = [];
         if (SiteTypes != undefined && SiteTypes.length > 0) {
@@ -90,9 +47,26 @@ const SiteCompositionComponent = (Props: any) => {
                     if (DataItem.BtnStatus) {
                         DataItem.BtnStatus = false
                         setSelectedSiteCount(selectedSiteCount - 1);
+                        let TempArray: any = [];
+                        ClientTime.map((Data: any) => {
+                            if (Data.Title != DataItem) {
+                                TempArray.push(Data)
+                            }
+                        })
+                        setClientTimeData(TempArray);
+                        callBack(TempArray);
                     } else {
                         DataItem.BtnStatus = true
-                        setSelectedSiteCount(selectedSiteCount + 1)
+                        setSelectedSiteCount(selectedSiteCount + 1);
+                        const object = {
+                            SiteName: DataItem.Title,
+                            ClienTimeDescription: (100 / selectedSiteCount+1).toFixed(1),
+                            localSiteComposition: true,
+                            siteIcons: DataItem.Item_x005F_x0020_Cover
+                        }
+                        ClientTime.push(object);
+                        setClientTimeData(ClientTime);
+                        callBack(ClientTime);
                     }
                 }
                 TempArray.push(DataItem)
@@ -101,43 +75,6 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
     }
 
-    // const getSmartMetaData = async () => {
-    //     let web = new Web(Props.siteUrls);
-    //     let MetaData: any = [];
-    //     let siteConfig: any = [];
-    //     let tempArray: any = [];
-    //     MetaData = await web.lists
-    //         .getByTitle('SmartMetadata')
-    //         .items
-    //         .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-    //         .top(4999)
-    //         .expand('Author,Editor')
-    //         .get()
-
-    //     siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
-    //     siteConfig?.map((site: any) => {
-    //         if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "Small Projects" && site.Title !== "SDC Sites" && site.Title !== "Gender" && site.Title !== "Health" && site.Title !== "Offshore Tasks") {
-    //             site.BtnStatus = false;
-    //             tempArray.push(site);
-    //         }
-    //     })
-    //     setSiteTypes(tempArray);
-    //     tempArray?.map((tempData: any) => {
-    //         SiteTypeBackupArray.push(tempData);
-    //     })
-
-    // }
-    // var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
-    //     var Items: any = [];
-    //     metadataItems.map((taxItem: any) => {
-    //         if (taxItem.TaxType === taxType)
-    //             Items.push(taxItem);
-    //     });
-    //     Items.sort((a: any, b: any) => {
-    //         return a.SortOrder - b.SortOrder;
-    //     });
-    //     return Items;
-    // }
     const ChangeSiteCompositionSettings = (Type: any) => {
         if (Type == "Proportional") {
             const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
@@ -250,32 +187,31 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {siteData.Title}
                                             </td>
                                             <td className="m-0 p-1" style={{ width: "12%" }}>
-                                                <input type="number"  min="1" style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}} defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} className="form-control p-1" ng-change="TimeChange(site)" ng-disabled="site.flag ==false || EqualType=='Portfolio' || EqualType=='Proportional'" readOnly={ProportionalStatus && siteData.BtnStatus} />
+                                                <input type="number" min="1" style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}} defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} className="form-control p-1" ng-change="TimeChange(site)" ng-disabled="site.flag ==false || EqualType=='Portfolio' || EqualType=='Proportional'" readOnly={ProportionalStatus}
+                                                />
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "12%" }}>
-                                                <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) + "h" : ''}</span>
+                                                <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : ''}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 <span ng-show="site.flag ==true" className="ng-binding ng-hide"></span>
                                             </td>
                                         </tr>
-
                                     )
                                 }
                             })}
                         </tbody>
                         : null}
                 </table>
-
                 <div className="bg-secondary d-flex justify-content-end p-1 shadow-lg">
                     <div className="bg-body col-sm-2 p-1">
                         <div className="">100%</div>
                     </div>
                     <div className="bg-body col-sm-2 p-1 mx-2">
-                        <div className="">1.1h</div>
+                        <div className="">{TotalTime}</div>
                     </div>
                 </div>
             </div>
