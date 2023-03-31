@@ -298,7 +298,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
 
     }
 
-    private onDropTeam(e: any, array: any, Team: any, AllUser: any) {
+    private onDropTeam(e: any, array: any, Team: any, AllUser: any,userType:any) {
+        if(dragItem.userType != userType){
+
+        
         let $data = dragItem.user;
         let self = this;
         array.forEach(function (user: any, indexParent: any) {
@@ -320,11 +323,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
             })
         }
-
         this.dropSuccessHandler(true);
     }
+    }
 
-    private onDropTeam1(e: any, array: any, Team: any, AllUser: any) {
+    private onDropTeam1(e: any, array: any, Team: any, AllUser: any,userType:any) {
+        if(dragItem.userType != userType){
         let $data = dragItem.user;
         let self = this;
         array.forEach(function (user: any, indexParent: any) {
@@ -347,10 +351,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (!self.isItemExists(array, $data.Id)) {
             array.push($data);
         }
-
         this.dropSuccessHandler(false);
-
     }
+}
 
     private dropSuccessHandler(isRemove: any) {
         if (isRemove) {
@@ -437,7 +440,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div className="row  UserTimeTabGray">
                                         <div className='col-sm-5 ps-1 border-end'>
                                             <div className="col"
-                                                onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
+                                                onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers,'Assigned User')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className=" p-1" >
                                                     <div className='d-flex flex-wrap' style={{minHeight:"30px", height:"auto"}} >
@@ -459,7 +462,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
                                         
                                         <div className="col-sm-7"
-                                            onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
+                                            onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers,'TeamMemberUsers')}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <div className="p-1">
                                                 <div className='d-flex flex-wrap'>
