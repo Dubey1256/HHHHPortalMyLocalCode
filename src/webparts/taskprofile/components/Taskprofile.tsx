@@ -1076,10 +1076,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) &&
                       <li>
                         {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                          <a target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
                         }
                         {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                          <a target="_blank" data-interception="off" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx"}>Service Portfolio</a>
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
                         }
                       </li>
                     }
