@@ -174,24 +174,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       // console.log(AllDataMatches);
       this.gAllDataMatches = AllDataMatches;
 
-      TaskIdCSF = AllDataMatches[0].PortfolioStructureID;
+      TaskIdCSF = (AllDataMatches[0].PortfolioStructureID).replace("-",">");
       console.log(TaskIdCSF);
 
-      // console.log('All Component : ');
-      // console.log(this.gAllDataMatches)
+     
       if (AllDataMatches[0] != undefined && AllDataMatches[0].Item_x0020_Type != undefined && AllDataMatches[0].Item_x0020_Type == 'Component') {
-        // if(AllDataMatches[0].parent==undefined&&AllDataMatches[0].parent==null){
-        //   var alldata=AllDataMatches;
-        //   alldata[0].Parent=""
-        //   return alldata;
-        // }
+        
         return AllDataMatches;
       }
       
       else {
         let query = 'filter=';
         AllDataMatches.forEach(function (item: any) {
-         query += "(Id eq '" + item.Parent.Id + "')or";
+         query += "(Id eq '" + item?.Parent?.Id + "')or";
         });
         query = query.slice(0, query.length - 2);
         await this.loadOtherComponentsData(query, AllDataMatches);
@@ -244,7 +239,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     taskDetails["listName"] = this.state.listName;
     taskDetails["siteType"] = this.state.listName;
     taskDetails["siteUrl"] = this.props.siteUrl;
-    // console.log(taskDetails);
+    
     taskDetails.TaskId = globalCommon.getTaskId(taskDetails);
     var category = ""
 
@@ -282,14 +277,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
     if (taskDetails["Team_x0020_Members"] != undefined) {
       taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"].filter((item: any) => array2.Id != item.Id))
-      // console.log(taskDetails.array);
+    
     }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       OffshoreComments = JSON.parse(taskDetails["OffshoreComments"])
     }
-    // console.log(taskDetails)
-    // console.log(category);
+   
     taskDetails["Categories"] = category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
@@ -331,7 +325,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Created: taskDetails["Created"],
       Author: this.GetUserObject(taskDetails["Author"].Title),
       component_url: taskDetails["component_x0020_link"],
-      //BasicImageInfo: JSON.parse(taskDetails["BasicImageInfo"]),
       BasicImageInfo: this.GetAllImages(JSON.parse(taskDetails["BasicImageInfo"]), taskDetails["AttachmentFiles"], taskDetails["Attachments"]),
       FeedBack: JSON.parse(taskDetails["FeedBack"]),
       SharewebTaskType: taskDetails["SharewebTaskType"] != null ? taskDetails["SharewebTaskType"].Title : '',
@@ -350,7 +343,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ParentTask: taskDetails?.ParentTask,
     };
 
-    // console.log(tempTask);
+    console.log(tempTask);
 
     this.setState({
       Result: tempTask,
@@ -363,7 +356,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
     });
   }
-  //  private shortBackgroundComment=(a:any,b:any)=>a.Created-b.Created;
+
   private sortAlphaNumericAscending = (a: any, b: any) => a.FileName.localeCompare(b.FileName, 'en', { numeric: true });
 
   private GetAllImages(BasicImageInfo: any, AttachmentFiles: any, Attachments: any) {
@@ -412,7 +405,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
       });
-      // ImagesInfo = ImagesInfo.concat(BasicImageInfo);
+     
       ImagesInfo = ImagesInfo;
 
     }
@@ -996,22 +989,25 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       breadcrumbitem.ParentTask = this.taskResult;
     }
     if (breadcrumbitem != undefined) {
-      if (breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined) {
+      if (breadcrumbitem.ParentTask != undefined && breadcrumbitem.ParentTask.Shareweb_x0020_ID != undefined&&breadcrumbitem.ChildTask==undefined&&breadcrumbitem.SubChildTask==undefined) {
 
-        TaskIdAW = breadcrumbitem.ParentTask.Shareweb_x0020_ID
+        TaskIdAW = (breadcrumbitem.ParentTask.Shareweb_x0020_ID).replace("-",">")
       }
-      if (breadcrumbitem.ChildTask != undefined) {
+      if (breadcrumbitem.ChildTask != undefined&&breadcrumbitem.SubChildTask==undefined) {
         if (breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined) {
-          if (TaskIdAW != "") {
+          if (TaskIdAW != ""||TaskIdAW=="") {
             TaskIdAW = TaskIdAW + ">" + breadcrumbitem.ChildTask.Shareweb_x0020_ID;
-          } else {
-            TaskIdAW = breadcrumbitem.ChildTask.Shareweb_x0020_ID;
-          }
+          } 
         }
-
-
-
+         else if (breadcrumbitem.ChildTask!=undefined&&breadcrumbitem.ChildTask.TaskId!=undefined&&breadcrumbitem.SubChildTask==undefined){
+          TaskIdAW = (breadcrumbitem.ChildTask.TaskId).replace("-",">")
+        }}
+      else if(breadcrumbitem.SubChildTask!=undefined&&breadcrumbitem.SubChildTask.TaskId!=undefined){
+        TaskIdAW = (breadcrumbitem.SubChildTask.TaskId).replace("-",">")
       }
+
+
+      
     }
 
 
@@ -1080,10 +1076,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) &&
                       <li>
                         {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
-                          <a target="_blank" data-interception="off" href="https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Component-Portfolio.aspx">Component Portfolio</a>
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
                         }
                         {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
-                          <a target="_blank" data-interception="off" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SitePages/Service-Portfolio.aspx"}>Service Portfolio</a>
+                          <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
                         }
                       </li>
                     }
@@ -1172,7 +1168,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>Task Id</dt>
                     <dd className='bg-light' ><span className='tooltipbox'>{this.state.Result["TaskId"]}
-                      {TaskIdCSF != "" && <span className="tooltiptext  bg-fxdark siteColor">{TaskIdCSF} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW}</span>}</span>}
+                      {TaskIdCSF != "" && <span className="tooltiptext  bg-fxdark siteColor">{TaskIdCSF.replace("-",">")}{TaskIdAW==""&&this.state.Result["TaskId"]!=undefined&&<span className='text-body'>{">"+this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
                     </span>
                     </dd>
 
@@ -1543,7 +1539,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
-              <div>  <RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments></div>
+              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
@@ -1553,8 +1549,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           <div className="row">
             {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
           </div>
-
-          <div className='row'>
+           <div className='row'>
             {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
@@ -1563,14 +1558,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
                   <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                 </div>
-
               </div>
-
-
-            }
-
-
-          </div>
+             }
+           </div>
         </section>
 
         <div className='imghover' style={{ display: this.state.showPopup }}>

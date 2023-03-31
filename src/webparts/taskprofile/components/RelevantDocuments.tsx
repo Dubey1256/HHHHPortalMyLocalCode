@@ -58,8 +58,8 @@ const RelevantDocuments = (props: any) => {
                                     {item.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf'></span>}
                                     {item.File_x0020_Type=="docx"&&<span className='svg__iconbox svg__icon--docx'></span>} 
                                     {item.File_x0020_Type=="csv"||item.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--csv'></span>}
-                                    {item.File_x0020_Type=="jpeg"&&<span className='svg__iconbox svg__icon--jpeg'></span>}
-                                    {item.File_x0020_Type=="ppt"&&<span className='svg__iconbox svg__icon--ppt'></span>}
+                                    {item.File_x0020_Type=="jpeg"||item.File_x0020_Type=="jpg "&&<span className='svg__iconbox svg__icon--jpeg'></span>}
+                                    {item.File_x0020_Type=="ppt"||item.File_x0020_Type=="pptx"&&<span className='svg__iconbox svg__icon--ppt'></span>}
                                     {item.File_x0020_Type=="svg"&&<span className='svg__iconbox svg__icon--svg'></span>}
                                     {item.File_x0020_Type=="zip"&&<span className='svg__iconbox svg__icon--zip'></span>}
                                     {item.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'></span>}
