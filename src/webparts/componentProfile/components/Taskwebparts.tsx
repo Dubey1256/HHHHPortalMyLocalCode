@@ -3861,7 +3861,7 @@ export default function ComponentTable({ props }: any) {
         </div>
         <div className="col-sm-12 pad0 smart">
           <div className="section-event">
-            <div className="wrapper">
+            <div className={`${data.length>10?"wrapper":"MinHeight"}`}>
               <table
                 className="table table-hover"
                 id="EmpTable"
