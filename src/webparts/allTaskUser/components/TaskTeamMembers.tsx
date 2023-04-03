@@ -390,6 +390,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }
         else {
             this.createTask();
+            showCreatePanel: false
         }
     }
 
