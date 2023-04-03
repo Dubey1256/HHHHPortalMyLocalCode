@@ -19,10 +19,11 @@ var Categoryy = '';
 var CategoryyID: any = ''
 var TaskCate: any = []
 var AllUsers: any = [];
+var isShowCate:any=''
 var change = Moment().format()
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
-    const [changeTimeEdit, setchangeTimeEdit] = React.useState(0)
+    const [showCat, setshowCat] = React.useState('')
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
@@ -60,6 +61,7 @@ function TimeEntryPopup(item: any) {
     const [years, setYears] = React.useState(1)
     const [TimeInHours, setTimeInHours] = React.useState(0)
     const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
+    const [categoryData, setCategoryData] = React.useState([])
     var smartTermName = "Task" + item.props.siteType;
 
     const GetTaskUsers = async () => {
@@ -352,15 +354,31 @@ function TimeEntryPopup(item: any) {
 
     }
     const openTaskStatusUpdatePoup = () => {
+        AllUsers.forEach((val:any)=>{
+            TimeSheet.forEach((time:any)=>{
+              if(val.AssingedToUserId == CurntUserId){
+                isShowCate = val.TimeCategory;
+                if(val.TimeCategory == time.Title){
+                    setshowCat(time.Title)
+                    setcheckCategories(time.Title)
+                }
+                
+              }
+            })
+        })
         setTaskStatuspopup(true)
     }
     const Editcategorypopup = (child: any) => {
-        Categoryy = child.Title
+        var array:any=[]
+        Categoryy = child.Category.Title
         CategoryyID = child.ID
+        array.push(child)
+        setCategoryData(array)
         setEditcategory(true)
     }
 
     const closeEditcategorypopup = (child: any) => {
+        setNewData(undefined)
         setEditcategory(false)
     }
 
@@ -404,6 +422,7 @@ function TimeEntryPopup(item: any) {
         var Childitem: any = []
         setTaskStatuspopup2(true)
         Array.push(childitem)
+        setNewData(undefined)
         Childitem.push(childinew)
         setsaveEditTaskTime(Array)
         setsaveEditTaskTimeChild(Childitem)
@@ -414,6 +433,7 @@ function TimeEntryPopup(item: any) {
         setcheckCategories(undefined)
         setTaskStatuspopup(false)
         setTimeInHours(0)
+        setNewData(undefined)
         setTimeInMinutes(0)
         setchangeDates(undefined)
         setediteddata(undefined)
@@ -429,6 +449,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(0)
         setTimeInHours(0)
         setediteddata(undefined)
+        setNewData(undefined)
         setCount(1)
         change = Moment().format()
         setMonth(1)
@@ -442,6 +463,7 @@ function TimeEntryPopup(item: any) {
         setTimeInMinutes(0)
         setAddTaskTimepopup(false)
         setTimeInHours(0)
+        setNewData(undefined)
         setediteddata(undefined)
         setCount(1)
         change = Moment().format()
@@ -456,6 +478,7 @@ function TimeEntryPopup(item: any) {
         setTaskStatuspopup2(false)
         setTaskStatuspopup(false)
         setediteddata(undefined)
+        setNewData(undefined)
         setTimeInHours(0)
         setchangeDates(undefined)
         change = Moment().format()
@@ -525,17 +548,19 @@ function TimeEntryPopup(item: any) {
 
         //     })
         //     })
-        TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300 }, { "TaxType": "TimesheetCategories", "Title": "Development", "Id": 299 }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298 },
-            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301 }, { "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310 }, { "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297 }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298 },
-            { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302 }, { "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335 }, { "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315 });
+        TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Development", "Id": 299,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Investigation", "Id": 296,"isShow":false  },
+            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298 ,"isShow":false },
+            { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315 ,"isShow":false });
         setTimeSheets(TimeSheets)
 
     }
-    const selectCategories = (e: any) => {
+    const selectCategories = (e:any,Title: any) => {
         const target = e.target;
         if (target.checked) {
-            setcheckCategories(target.value);
+            setcheckCategories(Title);
+            setshowCat(Title)
         }
+       
     }
     React.useEffect(() => {
         GetTimeSheet();
@@ -1318,7 +1343,7 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
         let itemMetadataAdded = {
-            'Title': checkCategories,
+            'Title': newData != undefined && newData.Title != undefined?newData.Title:checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1363,7 +1388,7 @@ function TimeEntryPopup(item: any) {
         let folderUri:string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
         // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
-            'Title': checkCategories,
+            'Title': newData != undefined && newData.Title != undefined?newData.Title:checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1497,9 +1522,10 @@ function TimeEntryPopup(item: any) {
                 console.log(i);
             });
         setupdateData(updateData + 5)
+       // setTimeSheet((AllTimeSheetDataNew) => [...AllTimeSheetDataNew])
     }
 
-
+ 
 
 
 
@@ -1612,7 +1638,7 @@ function TimeEntryPopup(item: any) {
         await web.lists.getById(ListId).items.getById(CategoryyID).update({
 
 
-            Title: checkCategories,
+            Title: newData != undefined ?newData.Title:checkCategories,
             CategoryId: Category
 
         }).then((res: any) => {
@@ -1833,6 +1859,9 @@ function TimeEntryPopup(item: any) {
                                         </thead>
                                         <tbody>
                                             {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
+                                                 <div id="SpfxProgressbar" style={{ display: "none" }}>
+                                                 <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                             </div>
                                                 if (item.Childs != undefined && item.Childs.length > 0) {
 
                                                     return (
@@ -1840,9 +1869,7 @@ function TimeEntryPopup(item: any) {
 
                                                             {item.Childs != undefined && item.Childs.length > 0 && (
                                                                 <>
-                                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
-                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                        </div>
+                                                               
                                                                     {item.Childs.map(function (childitem: any) {
 
                                                                         return (
@@ -2048,14 +2075,15 @@ function TimeEntryPopup(item: any) {
                                     <input type="text" autoComplete="off"
                                         className="form-control"
                                         name="CategoriesTitle"
+                                        disabled={true}
                                         value={checkCategories}
                                     />
                                 </div>
                             </div>
                             <div className='mb-3'>
-                                <div className=" form-group">
+                                <div className=" form-group" key={checkCategories}>
                                     <label>Title</label>
-                                    <input type="text" autoComplete="off"
+                                    <input type="text" 
                                         className="form-control" name="TimeTitle"
                                         defaultValue={checkCategories}
                                         onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
@@ -2252,9 +2280,9 @@ function TimeEntryPopup(item: any) {
                                                 id="subcategorytasksPriority{{item.Id}}">
                                                 <input
                                                     type="radio" className="form-check-input"
-                                                    value={Items.Title}
+                                                    checked={showCat==Items.Title?true:false}
                                                     // checked={selectCategories === Items.Title ? true : false}
-                                                    onChange={selectCategories}
+                                                    onChange={(e)=>selectCategories(e,Items.Title)}
 
                                                     name="taskcategory" />
                                                 <label className='form-check-label'>{Items.Title}</label>
@@ -3019,28 +3047,33 @@ function TimeEntryPopup(item: any) {
                 <div className="modal-body border  p-3  ">
 
                     <div className='row'>
-                        <div className="col-sm-9 border-end" >
-                            <div className='mb-3'>
-                                <div className=" form-group">
-                                    <label>Selected Category</label>
-                                    <input type="text" autoComplete="off"
-                                        className="form-control"
-                                        name="CategoriesTitle"
-                                        value={checkCategories != undefined ? checkCategories : Categoryy}
-                                    />
+                        {categoryData?.map((item)=>{
+                            return(
+                                <div className="col-sm-9 border-end" >
+                                <div className='mb-3'>
+                                    <div className=" form-group">
+                                        <label>Selected Category</label>
+                                        <input type="text" autoComplete="off"
+                                            className="form-control"
+                                            name="CategoriesTitle"
+                                            value={checkCategories != undefined ? checkCategories : item.Category.Title}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='mb-3'>
-                                <div className=" form-group">
-                                    <label>Title</label>
-                                    <input type="text" autoComplete="off"
-                                        className="form-control" name="TimeTitle"
-                                        value={checkCategories != undefined ? checkCategories : Categoryy}
-                                        onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
+                                <div className='mb-3'>
+                                    <div className=" form-group" key={checkCategories}>
+                                        <label>Title</label>
+                                        <input type="text" autoComplete="off"
+                                            className="form-control" name="TimeTitle"
+                                            defaultValue={checkCategories != undefined ? checkCategories : item.Title}
+                                            onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
+                                    </div>
                                 </div>
+    
                             </div>
-
-                        </div>
+                            )
+                        })}
+                       
                         <div className="col-sm-3">
 
                             <div className="col mb-2">
