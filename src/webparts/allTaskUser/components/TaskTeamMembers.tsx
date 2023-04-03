@@ -1,5 +1,5 @@
 import { Checkbox, ChoiceGroup, CommandBar, DefaultButton, Dialog, DialogFooter, DialogType, DocumentCard, FontIcon, FontSizes, IChoiceGroupOption, ICommandBarItemProps, Icon, IContextualMenuItem, IContextualMenuProps, IDropdownOption, Image, ImageFit, Label, Link, mergeStyles, Panel, PrimaryButton, SearchBox, Text, TextField } from "office-ui-fabric-react";
-import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode } from "@fluentui/react";
+import { buildColumns, DetailsList, DetailsListLayoutMode, Dropdown, IColumn, PanelType, Pivot, PivotItem, PivotLinkFormat, PivotLinkSize, Selection, SelectionMode, ConstrainMode, Stack, IPersonaProps, PersonaSize, Persona, TooltipHost, IStackTokens } from "@fluentui/react";
 import * as React from "react";
 import { Component } from "react";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
@@ -8,13 +8,17 @@ import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/File
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
 
+import { SPHttpClient } from '@microsoft/sp-http';
+
 const controlStyles = {
     root: {
         margin: '10px 5px 20px 0',
         maxWidth: '300px'
     }
 };
-
+const stackTokens: IStackTokens = {
+    childrenGap: 5
+};
 const iconClass = mergeStyles({
     fontSize: 25,
     height: 25,
@@ -149,7 +153,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.getSubMenuItems = this.getSubMenuItems.bind(this);
         this.menuProps = this.menuProps.bind(this);
         
-        
+        this.getUserPersona = this.getUserPersona.bind(this);
+        this.getImageUrl = this.getImageUrl.bind(this);    
         this.commandBarItems = [
             {
                 key: "editTask",
@@ -335,7 +340,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         if(users.length>0) {
             let userMail = users[0].id.split("|")[2];
-            let userInfo = await this.props.spService.getUserInfo(userMail);
+            let userInfo = await this.getUserInfo(userMail);
             userId = userInfo.Id;
             userTitle = userInfo.Title;
             userSuffix = userTitle.split(" ").map(i=>i.charAt(0)).join("");
@@ -348,7 +353,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         taskItem.userSuffix = userSuffix;
         this.setState({
             taskItem: taskItem,
-            enableSave: enableSave
+            enableSave: true
         })
     }
 
@@ -358,8 +363,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         if(approvers.length>0) {
             let approverMail = approvers[0].id.split("|")[2];
-            let userInfo = await this.props.spService.getUserInfo(approverMail);
-            approverId = userInfo.Id;
+            let userInfo = await this.getUserInfo(approverMail);
+              approverId = userInfo.Id;
         }        
         
         let taskItem = { ...this.state.taskItem };
@@ -1086,6 +1091,14 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             if(column.name=="Title") {
                 column.isSorted = true;
                 column.isSortedDescending = false;
+                column.onRender = (item) => (
+                    <Stack horizontal tokens={stackTokens}>
+                        <Stack.Item>
+                            {this.getUserPersona({UserName:item.Title,ImageUrl:this.getImageUrl(item.TaskId)})}
+                        </Stack.Item>
+                        <Stack.Item><div style={{fontSize: "12px", fontWeight: 400}}>{item.Title}</div></Stack.Item>
+                    </Stack>
+                )
             }
             else if(column.name=="TaskId") {
                 column.name = "";
@@ -1127,6 +1140,52 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
           }),
         });
     };
+    
+    private getUserPersona(userInfo: any) {
+        const personaProps: IPersonaProps = {
+            size: PersonaSize.size24,
+        }
+        const userImage = userInfo.ImageUrl;
+        const userName = userInfo.UserName;
+        if(userImage) {
+            personaProps.imageUrl = userImage;
+        }
+        else {
+            personaProps.imageInitials = (userName!=undefined&&userName!=null)&&userName?.split(" ").map((i: string)=>i.indexOf("+")>-1?i:i.charAt(0)).join("");
+        }
+        const elemPersona = <Persona {...personaProps} styles={{details:{padding:"0px"}}} />
+        return (            
+            <TooltipHost content={userName}>
+                <Link href="#" target="_blank">
+                    { elemPersona }
+                </Link>
+            </TooltipHost>            
+        );
+    }
+
+    private getImageUrl(userId: number) {
+        const allTasks = [...this.props.tasks];
+        const userTaskItem = allTasks?.filter(taskItem=>taskItem.TaskId==userId)[0];
+        return userTaskItem?.ItemCover ? userTaskItem?.ItemCover.Url : "";
+    }
+
+    private async getUserInfo(userMail: string) {
+
+        const userEndPoint:string = `${this.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
+
+        const userData: string = JSON.stringify({
+            "logonName": userMail
+        });
+
+        const userReqData = {
+            body: userData
+        };
+
+        const resUserInfo = await this.props.context.spHttpClient.post(userEndPoint, SPHttpClient.configurations.v1, userReqData);
+        const userInfo = await resUserInfo.json()
+
+        return userInfo;
+    }
 }
 
 function _copyAndSort<T>(items: T[], columnKey: string, isSortedDescending?: boolean): T[] {
