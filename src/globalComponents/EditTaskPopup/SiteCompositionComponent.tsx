@@ -49,7 +49,7 @@ const SiteCompositionComponent = (Props: any) => {
                         setSelectedSiteCount(selectedSiteCount - 1);
                         let TempArray: any = [];
                         ClientTime.map((Data: any) => {
-                            if (Data.Title != DataItem) {
+                            if (Data.SiteName != DataItem.Title) {
                                 TempArray.push(Data)
                             }
                         })
