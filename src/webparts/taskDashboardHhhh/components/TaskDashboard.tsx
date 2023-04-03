@@ -13,6 +13,7 @@ import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewToo
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var currentUserId: '';
 var DataSiteIcon: any = [];
 var currentUser: any = [];
 var today: any = [];
@@ -571,7 +572,7 @@ const TaskDashboard = () => {
             userGroups.push(item);
         })
         setGroupedUsers(userGroups);
-        let currentUserId: number;
+        // let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         if (currentUserId != undefined) {
             if (taskUsers != null && taskUsers?.length > 0) {

@@ -48,25 +48,37 @@ const SiteCompositionComponent = (Props: any) => {
                         DataItem.BtnStatus = false
                         setSelectedSiteCount(selectedSiteCount - 1);
                         let TempArray: any = [];
-                        ClientTime.map((Data: any) => {
-                            if (Data.SiteName != DataItem.Title) {
-                                TempArray.push(Data)
-                            }
+                        if (ClientTimeData != undefined && ClientTimeData.length > 0) {
+                            ClientTimeData.map((Data: any) => {
+                                if (Data.SiteName != DataItem.Title) {
+                                    TempArray.push(Data)
+                                }
+                            })
+                        }
+                        let tempDataForRemove: any = [];
+                        TempArray?.map((dataItem: any) => {
+                            dataItem.ClienTimeDescription = (100 / (selectedSiteCount - 1)).toFixed(1);
+                            tempDataForRemove.push(dataItem);
                         })
-                        setClientTimeData(TempArray);
-                        callBack(TempArray);
+                        setClientTimeData(tempDataForRemove);
+                        callBack(tempDataForRemove);
                     } else {
                         DataItem.BtnStatus = true
                         setSelectedSiteCount(selectedSiteCount + 1);
                         const object = {
                             SiteName: DataItem.Title,
-                            ClienTimeDescription: (100 / selectedSiteCount+1).toFixed(1),
+                            ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
                             localSiteComposition: true,
                             siteIcons: DataItem.Item_x005F_x0020_Cover
                         }
                         ClientTime.push(object);
-                        setClientTimeData(ClientTime);
-                        callBack(ClientTime);
+                        let tempData: any = [];
+                        ClientTime?.map((TimeData: any) => {
+                            TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
+                            tempData.push(TimeData);
+                        })
+                        setClientTimeData(tempData);
+                        callBack(tempData);
                     }
                 }
                 TempArray.push(DataItem)
@@ -194,7 +206,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "12%" }}>
-                                                <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : ''}</span>
+                                                <span ng-show="site.flag ==true" className="ng-binding ng-hide">{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 <span ng-show="site.flag ==true" className="ng-binding ng-hide"></span>
@@ -211,7 +223,7 @@ const SiteCompositionComponent = (Props: any) => {
                         <div className="">100%</div>
                     </div>
                     <div className="bg-body col-sm-2 p-1 mx-2">
-                        <div className="">{TotalTime}</div>
+                        <div className="">{TotalTime ? TotalTime : 0}</div>
                     </div>
                 </div>
             </div>
