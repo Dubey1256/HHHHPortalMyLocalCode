@@ -77,7 +77,7 @@ function EditInstitution(item: any) {
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
- 
+  const [ParentData, SetParentData] = React.useState([]);
   // $('.ms-Dialog-main .main-153').hide();
   const setModalIsOpenToTrue = (e: any) => {
     // e.preventDefault()
@@ -347,7 +347,8 @@ function EditInstitution(item: any) {
         "ClientCategory/Id",
         "ClientCategory/Title",
         "Responsible_x0020_Team/Id",
-        "Responsible_x0020_Team/Title"
+        "Responsible_x0020_Team/Title",
+        "Parent/Id","Parent/Title","Parent/ItemType"
       )
 
       .expand(
@@ -362,7 +363,7 @@ function EditInstitution(item: any) {
         "Team_x0020_Members",
         "SharewebComponent",
         "SharewebCategories",
-        "Responsible_x0020_Team"
+        "Responsible_x0020_Team", "Parent"
       )
       .filter("Id eq " + item.props.Id + "")
       .get();
@@ -377,6 +378,7 @@ function EditInstitution(item: any) {
     //     },
     //     success: function (data) {
     var Tasks = componentDetails;
+    let ParentData: any = [];
     $.each(Tasks, function (index: any, item: any) {
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
@@ -524,6 +526,33 @@ function EditInstitution(item: any) {
             );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
+      }
+      let ParentId: any = "";
+      if (
+        item?.Parent != undefined &&
+        item.Parent.Id != undefined &&
+        item.Item_x0020_Type == "Feature"
+      ) {
+        ParentId = item.Parent.Id;
+        let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+        $.ajax({
+          url: urln,
+          method: "GET",
+          headers: {
+            Accept: "application/json; odata=verbose",
+          },
+          success: function (data) {
+            ParentData = ParentData.concat(data.d.results);
+            if (data.d.__next) {
+              urln = data.d.__next;
+            } else SetParentData(ParentData);
+            // console.log(responsen);
+          },
+          error: function (error) {
+            console.log(error);
+            // error handler code goes here
+          },
+        });
       }
     });
     //  deferred.resolve(Tasks);
@@ -1274,12 +1303,67 @@ function EditInstitution(item: any) {
   const onRenderCustomHeader = () => {
     return (
       <>
-        <div
-          style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", paddingLeft: "24px" }}
+      <div className="align-items-center d-flex full-width justify-content-between">
+        <div className="ps-4">  <ul className=" m-0 p-0 spfxbreadcrumb"
         >
-          {`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
-        </div>
-        <Tooltip />
+           <li>
+                        {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                        {EditData.Portfolio_x0020_Type != undefined && (
+                          <a
+                            target="_blank"
+                            data-interception="off"
+                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${EditData.Portfolio_x0020_Type}-Portfolio.aspx`}
+                          >
+                            {EditData.Portfolio_x0020_Type}-Portfolio
+                          </a>
+                        )}
+                      </li>
+                      {(EditData.Item_x0020_Type == "SubComponent" ||
+                        EditData.Item_x0020_Type == "Feature") && (
+                         <> <li>
+                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                          {(EditData.Parent != undefined && ParentData != undefined && ParentData.length != 0 )&& (
+                           
+                            <a
+                              target="_blank"
+                              data-interception="off"
+                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                            >
+                              {ParentData[0].Parent.Title}
+                            </a>
+                           
+                          )}
+                        </li>
+                        <li>
+                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                          {EditData.Parent != undefined && (
+                            <a
+                              target="_blank"
+                              data-interception="off"
+                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${EditData.Parent.Id}`}
+                            >
+                              {EditData.Parent.Title}
+                            </a>
+                          )}
+                        </li>
+                        </>
+                      )}
+
+                      <li>
+                      {EditData.Item_x0020_Type == "Feature"&&<a>
+                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData.Title}</>
+                        </a>}
+                        {EditData.Item_x0020_Type == "SubComponent"&&<a>
+                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"}/>{EditData.Title}</>
+                        </a>}
+                         {EditData.Item_x0020_Type == "Component"&&<a>
+                        <><img style={{    width: "20px", marginRight: "2px"}}src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData.Title}</>
+                        </a>}
+                      </li>
+        </ul></div>
+      
+       <div className="feedbkicon"> <Tooltip /> </div>
+       </div>
       </>
     );
   };
@@ -1311,7 +1395,7 @@ function EditInstitution(item: any) {
   return (
     <>
       {console.log("Done")}
-      <Panel
+      <Panel className={`${EditData.Portfolio_x0020_Type == "Service" ? " serviepannelgreena":""}`}
         headerText={`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -1321,7 +1405,7 @@ function EditInstitution(item: any) {
       >
         {EditData != undefined && EditData.Title != undefined && (
           <div id="EditGrueneContactSearch">
-            <div className={`${EditData.Portfolio_x0020_Type == "Service" ? "modal-body serviepannelgreena":"modal-body"}`}>
+            <div className="modal-body">
               <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                   <button
