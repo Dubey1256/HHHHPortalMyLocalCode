@@ -167,7 +167,9 @@
         {
           "entrypoint": "./lib/webparts/permissionManagement/PermissionManagementWebPart.js",
           "manifest": "./src/webparts/permissionManagement/PermissionManagementWebPart.manifest.json"
-        }]},
+        }
+      ]
+    },
     "all-task-user-web-part": {
       "components": [
         {
@@ -205,6 +207,14 @@
         {
           "entrypoint": "./lib/webparts/tasksView/TasksViewWebPart.js",
           "manifest": "./src/webparts/tasksView/TasksViewWebPart.manifest.json"
+        }
+      ]
+    },
+    "task-dashboard-hhhh-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.js",
+          "manifest": "./src/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.manifest.json"
         }
       ]
     }
@@ -254,6 +264,7 @@
     "LastModifiedItemsWebPartStrings": "lib/webparts/lastModifiedItems/loc/{locale}.js",
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
-    "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js"
+    "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
+    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
   }
 }
