@@ -566,7 +566,7 @@ const TaskDashboard = () => {
     const getCurrentUserDetails = async () => {
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
-            item.expanded = true;
+            item.expanded = false;
             getChilds1(item, taskUsers);
             userGroups.push(item);
         })
@@ -714,7 +714,7 @@ const TaskDashboard = () => {
                                                             {filterItem?.childs?.map((childUsers: any) => {
                                                                 return (
                                                                     <li id="DefaultViewSelectId" className="nav__text  ms-3  ">
-                                                                        <a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${childUsers.Id}&Name=${childUsers.Title}`}
+                                                                        <a className='text-white' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${childUsers.Id}&Name=${childUsers.Title}`}
                                                                             target="_blank" data-interception="off" title={childUsers.Title} >
                                                                             {childUsers.Title}
                                                                         </a>
