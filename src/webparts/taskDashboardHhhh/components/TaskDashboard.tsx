@@ -86,6 +86,19 @@ const TaskDashboard = () => {
                 function (error) { }
             );
     };
+
+    //Item Exist 
+    const checkUserExistence = (item: any, Array: any) => {
+        let result = false;
+        Array?.map((checkItem: any) => {
+            if (checkItem?.Title == item) {
+                result = true;
+            }
+        })
+        return result;
+    }
+    //End 
+    // All Sites Task
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         let AllAssignedTask: any = [];
@@ -105,7 +118,7 @@ const TaskDashboard = () => {
                     smartmeta = await web.lists
                         .getById(config.listId)
                         .items.select(
-                            "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+                            "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
                         )
                         .top(4999)
                         .expand(
@@ -114,6 +127,7 @@ const TaskDashboard = () => {
                         .get();
                     arraycount++;
                     smartmeta.map((task: any) => {
+                        let alreadyPushed=false;
                         task.AllTeamMember = [];
                         task.siteType = config.Title;
                         task.listId = config.listId;
@@ -149,22 +163,30 @@ const TaskDashboard = () => {
                                 ? getComponentasString(task.Component)
                                 : "";
                         task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
-                        if (task?.Approver?.filter((approverUser: any) => approverUser?.Id == currentUser?.AssingedToUserId) && task?.PercentComplete == '1') {
-                            approverTask.push(task)
-                        }
-                        taskUsers?.map((user: any) => {
-                            task?.AssignedTo?.map((assignedUser: any) => {
-                                if (currentUser?.AssingedToUserId == assignedUser.Id) {
-                                    if (task?.IsTodaysTask) {
-                                        workingTodayTask.push(task)
-                                    } else if (task?.workingThisWeek) {
-                                        workingThisWeekTask.push(task)
-                                    } else if (task?.SharewebCategories?.filter((cat: any) => cat?.Title == 'Bottleneck')) {
-                                        bottleneckTask.push(task)
-                                    } else {
-                                        AllAssignedTask.push(task)
-                                    }
+                        task?.Approver?.map((approverUser: any) => {
+                            if (approverUser?.Id == currentUser?.AssingedToUserId && task?.PercentComplete == '1'&&!alreadyPushed) {
+                                approverTask.push(task)
+                                alreadyPushed=true;
+                            }
+                        })
+
+                        task?.AssignedTo?.map((assignedUser: any) => {
+                            if (currentUser?.AssingedToUserId == assignedUser.Id) {
+                                if (task?.IsTodaysTask&&!alreadyPushed) {
+                                    workingTodayTask.push(task)
+                                    alreadyPushed=true;
+                                } else if (task?.workingThisWeek&&!alreadyPushed) {
+                                    workingThisWeekTask.push(task)
+                                    alreadyPushed=true;
+                                } else if (checkUserExistence('Bottleneck', task?.SharewebCategories)&&!alreadyPushed) {
+                                    bottleneckTask.push(task)
+                                    alreadyPushed=true;
+                                } else if(!alreadyPushed) {
+                                    AllAssignedTask.push(task)
+                                    alreadyPushed=true;
                                 }
+                            }
+                            taskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == assignedUser.Id) {
                                     if (user?.Title != undefined) {
                                         task.TeamMembersSearch =
@@ -172,8 +194,10 @@ const TaskDashboard = () => {
                                     }
                                 }
                             });
-                            task?.Team_x0020_Members?.map((taskUser: any) => {
-                                var newuserdata: any = {};
+                        });
+                        task?.Team_x0020_Members?.map((taskUser: any) => {
+                            var newuserdata: any = {};
+                            taskUsers?.map((user: any) => {
                                 if (user.AssingedToUserId == taskUser.Id) {
                                     if (user?.Title != undefined) {
                                         task.TeamMembersSearch =
@@ -189,7 +213,7 @@ const TaskDashboard = () => {
                             });
                         });
                     });
-                    if (arraycount === siteConfig?.length - 1) {
+                    if (arraycount === 17) {
                         setAllAssignedTasks(AllAssignedTask);
                         setWorkingTodayTasks(workingTodayTask)
                         setThisWeekTasks(workingThisWeekTask)
@@ -209,7 +233,6 @@ const TaskDashboard = () => {
         array?.map((childItem: any) => {
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                getChilds1(childItem, array);
             }
         })
     }
@@ -543,7 +566,7 @@ const TaskDashboard = () => {
     const getCurrentUserDetails = async () => {
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
-            item.expanded = false;
+            item.expanded = true;
             getChilds1(item, taskUsers);
             userGroups.push(item);
         })
@@ -610,12 +633,16 @@ const TaskDashboard = () => {
     //Toggle Team 
     const toggleTeamUsers = (index: any) => {
         let userGroups = groupedUsers;
+        let count = updateContent;
+        count++;
+        
         try {
             userGroups[index].expanded = !userGroups[index].expanded
         } catch (error) {
             console.log(error, 'Toogle Team Error')
         }
         setGroupedUsers(userGroups);
+        setUpdateContent(count);
     }
     //End
     return (
