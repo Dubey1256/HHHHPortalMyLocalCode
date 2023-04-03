@@ -40,8 +40,8 @@ import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
-import SiteCompositionComponent from "./SiteCompositionComponent";
-import SmartTotalTime from './SmartTimeTotal';
+// import SiteCompositionComponent from "./SiteCompositionComponent";
+// import SmartTotalTime from './SmartTimeTotal';
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -136,8 +136,8 @@ const EditTaskPopup = (Items: any) => {
     const [sendEmailGlobalCount, setSendEmailGlobalCount] = React.useState(0);
     const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
     const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
-    const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
-    const [ClientTimeData, setClientTimeData] = React.useState([]);
+    // const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
+    // const [ClientTimeData, setClientTimeData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -803,7 +803,7 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                     item.siteCompositionData = tempData2;
-                    setClientTimeData(tempData2)
+                    // setClientTimeData(tempData2)
                 } else {
                     const object: any = {
                         SiteName: Items.Items.siteType,
@@ -812,7 +812,7 @@ const EditTaskPopup = (Items: any) => {
                         siteIcons: Items.Items.SiteIcon
                     }
                     item.siteCompositionData = [object];
-                    setClientTimeData([object]);
+                    // setClientTimeData([object]);
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -1645,7 +1645,7 @@ const EditTaskPopup = (Items: any) => {
                 BasicImageInfo: JSON.stringify(UploadImageArray),
                 ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-                ClientTime:JSON.stringify(ClientTimeData)
+                // ClientTime:JSON.stringify(ClientTimeData)
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -2550,14 +2550,14 @@ const EditTaskPopup = (Items: any) => {
 
     // ************************ this is for Site Composition Component Section Functions ***************************
 
-    const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
-        let Time: any = TotalTime;
-        setSmartTotalTimeData(Time)
-    }, [])
+    // const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
+    //     let Time: any = TotalTime;
+    //     setSmartTotalTimeData(Time)
+    // }, [])
 
-    const SiteCompositionCallBack = React.useCallback((Data: any) => {
-        setClientTimeData(Data);
-    }, [])
+    // const SiteCompositionCallBack = React.useCallback((Data: any) => {
+    //     setClientTimeData(Data);
+    // }, [])
 
 
 
@@ -3427,10 +3427,10 @@ const EditTaskPopup = (Items: any) => {
                                                         </ul>
                                                     </div> : null
                                                 }
-                                                <div className="bg-e9 border-1 p-2">
+                                                {/* <div className="bg-e9 border-1 p-2">
                                                     <label className="siteColor">Total Time</label>
                                                     {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                </div>
+                                                </div> */}
 
                                             </div>
                                         </div>
@@ -3727,7 +3727,7 @@ const EditTaskPopup = (Items: any) => {
                                             TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
-                                    <div className="col-sm-5">
+                                    {/* <div className="col-sm-5">
                                         {EditData.Id != null ? <SiteCompositionComponent
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
@@ -3737,7 +3737,7 @@ const EditTaskPopup = (Items: any) => {
                                             callBack={SiteCompositionCallBack}
                                         /> : null}
 
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -4462,10 +4462,10 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div> : null
                                                             }
                                                         </div>
-                                                        <div className="bg-e9 border-1 p-2">
+                                                        {/* <div className="bg-e9 border-1 p-2">
                                                             <label className="siteColor">Total Time</label>
                                                             {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                        </div>
+                                                        </div> */}
 
                                                     </div>
 
