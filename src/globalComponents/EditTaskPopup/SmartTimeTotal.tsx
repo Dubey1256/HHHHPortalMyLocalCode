@@ -70,7 +70,7 @@ const SmartTimeTotalFunctionOnTaskPopup = (item: any) => {
 
     return (
         <>
-            {(smartTimeTotal!=undefined)&&smartTimeTotal.toFixed(1)}
+            {smartTimeTotal != undefined ? smartTimeTotal.toFixed(1) : null}
         </>
     )
 }
