@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as Moment from "moment";
-import pnp, { Web } from "sp-pnp-js";
+import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
@@ -13,6 +13,7 @@ import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewToo
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var currentUserId: '';
 var DataSiteIcon: any = [];
 var currentUser: any = [];
 var today: any = [];
@@ -37,6 +38,7 @@ const TaskDashboard = () => {
         origin: ''
     });
     React.useEffect(() => {
+        sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -571,8 +573,7 @@ const TaskDashboard = () => {
             userGroups.push(item);
         })
         setGroupedUsers(userGroups);
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        // let currentUserId: number;
         if (currentUserId != undefined) {
             if (taskUsers != null && taskUsers?.length > 0) {
                 taskUsers?.map((userData: any) => {
