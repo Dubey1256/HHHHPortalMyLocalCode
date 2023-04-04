@@ -1168,7 +1168,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-fxdark'>Task Id</dt>
                     <dd className='bg-light position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide    bg-fxdark siteColor">{TaskIdCSF.replace("-",">")}{TaskIdAW==""&&this.state.Result["TaskId"]!=undefined&&<span className='text-body'>{">"+this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
+                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF.replace("-",">")}{TaskIdAW==""&&this.state.Result["TaskId"]!=undefined&&<span className='text-body'>{">"+this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
                    
                     </dd>
 

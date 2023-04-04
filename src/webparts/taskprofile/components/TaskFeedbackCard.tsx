@@ -282,7 +282,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
      percentageComplete=0.02;
       }
    
-      const web = new Web( this.props.Result?.siteUrl );
+      const web = new Web( this.props.Result.siteUrl);
       await web.lists.getByTitle(this.props.Result.listName).items.getById(this.props.Result.Id).update({
         PercentComplete: percentageComplete,
         
@@ -296,7 +296,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
    
  
   }
-private changeTrafficLigth(index:any,item:any){
+private async changeTrafficLigth  (index:any,item:any){
   console.log(index);
   console.log(item);
   if(  this.props.Approver.Id==this.props.CurrentUser[0].Id){
@@ -306,10 +306,9 @@ private changeTrafficLigth(index:any,item:any){
       this.checkforMail(this.props.fullfeedback[0]?.FeedBackDescriptions);
     }
     if(countemailbutton>0){
-      this.changepercentageStatus(item,tempData);
+       await this.changepercentageStatus(item,tempData);
     }
-   
-    tempData.isShowLight = item;
+   tempData.isShowLight = item;
     console.log(tempData);
     this.setState({
       fbData: tempData,
@@ -319,12 +318,10 @@ private changeTrafficLigth(index:any,item:any){
     });
     console.log(this.state.fbData);
     this.props.onPost();
-    
-   
-  }
+    }
 }
 
-private changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
+private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
 console.log(parentindex);
 console.log(subchileindex);
 console.log(status);
@@ -335,7 +332,7 @@ if(this.props.fullfeedback!=undefined){
   this.checkforMail(this.props.fullfeedback[0]?.FeedBackDescriptions);
 }
 if(countemailbutton>0){
-  this.changepercentageStatus(status,tempData.Subtext[subchileindex]);
+  await this.changepercentageStatus(status,tempData.Subtext[subchileindex]);
 }
 
 tempData.Subtext[subchileindex].isShowLight = status;
