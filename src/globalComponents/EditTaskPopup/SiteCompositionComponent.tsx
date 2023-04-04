@@ -4,7 +4,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
 import Tooltip from "../Tooltip";
 
-let AutoCompleteItemsArray: any = [];
+var AutoCompleteItemsArray: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     const ClientTime = Props.ClientTime;
@@ -21,12 +21,18 @@ const SiteCompositionComponent = (Props: any) => {
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
     const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
+    const [searchedKey, setSearchedKey] = useState('');
+    const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(false);
+    const [SearchedClientCategoryData, setSearchedClientCategoryData] = useState([]);
+    const [selectedClientCategory, setSelectedClientCategory] = useState([]);
+
     useEffect(() => {
         setSiteTypes(SiteData);
         let tempData: any = [];
         let tempData2: any = [];
         setClientTimeData(ClientTime);
         loadAllCategoryData();
+
         if (SiteData != undefined && SiteData.length > 0) {
             SiteData.map((SiteItem: any) => {
                 if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
@@ -121,11 +127,9 @@ const SiteCompositionComponent = (Props: any) => {
 
     // ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
     var SmartTaxonomyName = "Client Category";
-    var AutoCompleteItems: any = [];
     const loadAllCategoryData = function () {
         var AllTaskUsers = []
         var AllMetaData: any = []
-        var TaxonomyItems: any = []
         var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomyName + "'")
         $.ajax({
             url: url,
@@ -149,10 +153,7 @@ const SiteCompositionComponent = (Props: any) => {
                         item.newTitle = item.Title;
                     }
                     AllMetaData.push(item);
-
                 })
-                // TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
-                // console.log("All meta data in Function ============================ ", AllMetaData)
                 setAllClientCategoryData(AllMetaData)
             },
             error: function (error: any) {
@@ -160,77 +161,19 @@ const SiteCompositionComponent = (Props: any) => {
             }
         })
     };
-    // var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any) => {
-    //     var TaxonomyItems: any = [];
-    //     var uniqueNames: any = [];
-    //     $.each(AllTaxonomyItems, function (index: any, item: any) {
-    //         if (item.ParentID == 0 && SmartTaxonomyName == item.TaxType) {
-    //             TaxonomyItems.push(item);
-    //             getChilds(item, AllTaxonomyItems);
-    //             if (item.childs != undefined && item.childs.length > 0) {
-    //                 TaxonomyItems.push(item)
-    //             }
-    //             uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-    //                 return array.indexOf(val) == id;
-    //             });
-
-    //         }
-    //     });
-    //     return uniqueNames;
-    // }
-    // const getChilds = (item: any, items: any) => {
-    //     item.childs = [];
-    //     $.each(items, function (index: any, childItem: any) {
-    //         if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
-    //             childItem.isChild = true;
-    //             item.childs.push(childItem);
-    //             getChilds(childItem, items);
-    //         }
-    //     });
-    // }
-
-    // if (AllClientCategoryData?.length > 0) {
-    //     AllClientCategoryData?.map((item: any) => {
-    //         if (item.newTitle != undefined) {
-    //             item['Newlabel'] = item.newTitle;
-    //             AutoCompleteItems.push(item)
-    //             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-    //                 item.childs.map((childitem: any) => {
-    //                     if (childitem.newTitle != undefined) {
-    //                         childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-    //                         AutoCompleteItems.push(childitem)
-    //                     }
-    //                     if (childitem.childs.length > 0) {
-    //                         childitem.childs.map((subchilditem: any) => {
-    //                             if (subchilditem.newTitle != undefined) {
-    //                                 subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-    //                                 AutoCompleteItems.push(subchilditem)
-    //                             }
-    //                         })
-    //                     }
-    //                 })
-    //             }
-    //         }
-    //     })
-    // }
-
-    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        var alredyExists = previous.filter(function (item: any) {
-            return item.Title === current.Title
-        }).length > 0
-        if (!alredyExists) {
-            previous.push(current)
-        }
-        return previous
-    }, [])
 
     const openClientCategoryModel = (SiteParentId: any) => {
         let ParentArray: any = [];
+        setSelectedClientCategory([]);
+        setSearchedKey('');
+        AutoCompleteItemsArray = [];
         if (AllClientCategoryData != undefined && AllClientCategoryData.length > 0) {
             AllClientCategoryData?.map((ArrayData: any) => {
                 if (ArrayData.ParentId == SiteParentId) {
                     ArrayData.Child = [];
+                    ArrayData.newLabel = ArrayData.siteName + " > " + ArrayData.Title;
                     ParentArray.push(ArrayData)
+                    AutoCompleteItemsArray.push(ArrayData);
                 }
             })
         }
@@ -238,7 +181,9 @@ const SiteCompositionComponent = (Props: any) => {
             ParentArray.map((parentArray: any) => {
                 AllClientCategoryData.map((AllData: any) => {
                     if (parentArray.Id == AllData.ParentId) {
+                        AllData.newLabel = parentArray.Title + " > " + AllData.Title
                         parentArray.Child.push(AllData);
+                        AutoCompleteItemsArray.push(AllData);
                     }
                 })
             })
@@ -246,9 +191,65 @@ const SiteCompositionComponent = (Props: any) => {
         setSelectedSiteClientCategoryData(ParentArray);
         setClientCategoryPopupStatus(true);
     }
+
     const closeClientCategoryPopup = () => {
         setClientCategoryPopupStatus(false)
     }
+
+    const AutoSuggestionForClientCategory = (e: any) => {
+        let SearchedKey: any = e.target.value;
+        setSearchedKey(SearchedKey);
+        let TempArray: any = [];
+        if (SearchedKey.length > 0) {
+            if (SearchWithDescriptionStatus) {
+                if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                    AutoCompleteItemsArray?.map((AllData: any) => {
+                        if (AllData.newLabel?.toLowerCase().includes(SearchedKey.toLowerCase()) || AllData.Description1?.toLowerCase().includes(SearchedKey.toLowerCase())) {
+                            TempArray.push(AllData);
+                        }
+                        if (AllData.Child != undefined && AllData.Child.length > 0) {
+                            AllData.Child?.map((ChildData: any) => {
+                                if (ChildData.newLabel?.toLowerCase().includes(SearchedKey.toLowerCase()) || AllData.Description1?.toLowerCase().includes(SearchedKey.toLowerCase())) {
+                                    TempArray.push(ChildData)
+                                }
+                            })
+                        }
+                    })
+                    setSearchedClientCategoryData(TempArray)
+                    console.log("Searched Data with descriptions ========================", TempArray)
+                }
+            } else {
+                if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                    AutoCompleteItemsArray?.map((AllData: any) => {
+                        if (AllData.newLabel.toLowerCase().includes(SearchedKey.toLowerCase())) {
+                            TempArray.push(AllData);
+                        }
+                        if (AllData.Child != undefined && AllData.Child.length > 0) {
+                            AllData.Child?.map((ChildData: any) => {
+                                if (ChildData.newLabel.toLowerCase().includes(SearchedKey.toLowerCase())) {
+                                    TempArray.push(ChildData)
+                                }
+                            })
+                        }
+                    })
+                    setSearchedClientCategoryData(TempArray)
+                    console.log("Searched Data without descriptions ========================", TempArray)
+                }
+            }
+        } else {
+            setSearchedClientCategoryData([]);
+        }
+    }
+
+    const SelectClientCategoryFromAutoSuggestion = (selectedCategory: any) => {
+        setSelectedClientCategory([selectedCategory]);
+        setSearchedKey('');
+        setSearchedClientCategoryData([]);
+        console.log("Selected Category from auto suggestion ==============", selectedCategory);
+    }
+
+    //    ************* this is Custom Header For Client Category Popup *****************
+
     const onRenderCustomClientCategoryHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
@@ -262,8 +263,6 @@ const SiteCompositionComponent = (Props: any) => {
         )
     }
 
-
-
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {console.log("All Category Data in Div ======", AllClientCategoryData)}
@@ -272,7 +271,6 @@ const SiteCompositionComponent = (Props: any) => {
                     Task User Management
                 </a>
             </div>
-
             <div className="col-sm-12 ps-3">
                 <input
                     type="radio"
@@ -317,7 +315,6 @@ const SiteCompositionComponent = (Props: any) => {
                     </label>
                 </span>
             </div>
-
             <div className="my-2 ps-3">
                 <table className="table table-bordered mb-1">
                     {SiteTypes != undefined && SiteTypes.length > 0 ?
@@ -453,34 +450,34 @@ const SiteCompositionComponent = (Props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
-                            {/* <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={ApproverSearchKey} onChange={(e) => autoSuggestionsForApprover(e, "OnPanel")} />
-                            {ApproverSearchedDataForPopup?.length > 0 ? (
+                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label> Search With Description (Info Icons)</label>
+                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e)} />
+                            {SearchedClientCategoryData?.length > 0 ? (
                                 <div className="SearchTableCategoryComponent">
                                     <ul className="list-group">
-                                        {ApproverSearchedDataForPopup.map((item: any) => {
+                                        {SearchedClientCategoryData.map((item: any) => {
                                             return (
-                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
-                                                    <a>{item.NewLabel}</a>
+                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                    <a>{item.newLabel}</a>
                                                 </li>
                                             )
                                         }
                                         )}
                                     </ul>
-                                </div>) : null} */}
+                                </div>) : null}
 
-                            {/* <div className="border full-width my-2 p-2">
-                                {ApproverData?.map((val: any) => {
-                                    return (
-                                        <>
-                                            <span>
-                                                <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
-                                                    <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
-                                                </a>
-                                            </span>
-                                        </>
-                                    )
-                                })}
-                            </div> */}
+                            <div className="border full-width my-2 p-2 pb-1">
+                                {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
+                                    <span className="bg-69 p-1 ps-2"> {selectedClientCategory[0].Title}
+                                        <a className=""
+                                            onClick={() => setSelectedClientCategory([])}
+                                        >
+                                            <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                        </a>
+                                    </span> : null}
+
+
+                            </div>
                             {console.log("Selected Site All data ================", SelectedSiteClientCategoryData)}
                             {SelectedSiteClientCategoryData != undefined && SelectedSiteClientCategoryData.length > 0 ?
                                 <ul className="categories-menu p-0">
@@ -488,7 +485,7 @@ const SiteCompositionComponent = (Props: any) => {
                                         return (
                                             <>
                                                 <li>
-                                                    <p className='mb-0 hreflink' onClick={() => alert("We are working on It. This feature will be live soon ...")} >
+                                                    <p className='mb-0 hreflink' onClick={() => setSelectedClientCategory([item])} >
                                                         <a>
                                                             {item.Title}
                                                             {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -505,7 +502,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <>
                                                                     {child1.Title != null ?
                                                                         <li>
-                                                                            <p className='mb-0 hreflink' onClick={() => alert("We are working on It. This feature will be live soon ...")}>
+                                                                            <p className='mb-0 hreflink' onClick={() => setSelectedClientCategory([child1])}>
                                                                                 <a>
                                                                                     {child1.Item_x0020_Cover ? <img className="flag_icon"
                                                                                         style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
@@ -536,11 +533,11 @@ const SiteCompositionComponent = (Props: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
+                        <span>
+                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                        </span>
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={() => alert("We are working on It. This feature will be live soon ...")} >
                             Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeClientCategoryPopup} >
-                            Cancel
                         </button>
                     </footer>
                 </div>
