@@ -17,7 +17,7 @@ var currentUserId: '';
 var DataSiteIcon: any = [];
 var currentUser: any = [];
 var today: any = [];
-const TaskDashboard = () => {
+const TaskDashboard = (props:any) => {
     const [updateContent, setUpdateContent] = React.useState(0);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
@@ -38,7 +38,7 @@ const TaskDashboard = () => {
         origin: ''
     });
     React.useEffect(() => {
-        sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -566,24 +566,19 @@ const TaskDashboard = () => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
+        let currentUserId: number;
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
+            if(item?.AssingedToUser?.EMail==props?.pageContext?.user?.loginName||item?.Email==props?.pageContext?.user?.loginName){
+                currentUserId=item?.AssingedToUser?.Id
+                currentUser = item;
+                setCurrentUserData(item);
+            }
             item.expanded = false;
             getChilds1(item, taskUsers);
             userGroups.push(item);
         })
         setGroupedUsers(userGroups);
-        // let currentUserId: number;
-        if (currentUserId != undefined) {
-            if (taskUsers != null && taskUsers?.length > 0) {
-                taskUsers?.map((userData: any) => {
-                    if (userData.AssingedToUserId == currentUserId) {
-                        setCurrentUserData(userData);
-                        currentUser = userData
-                    }
-                })
-            }
-        }
         GetMetaData();
     }
     // End
