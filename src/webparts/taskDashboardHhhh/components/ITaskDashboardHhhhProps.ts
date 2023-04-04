@@ -4,4 +4,5 @@ export interface ITaskDashboardHhhhProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  pageContext:any;
 }
