@@ -512,7 +512,6 @@ const inlineEditingcolumns = (props: any) => {
                 props?.columnName == 'Team' ?
                     <>
                         <span style={{ display: "block", width: "100%" }} onClick={() => setTeamMembersPopup(true)} >
-                            &nbsp;
                             <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
                         </span>
                     </>
