@@ -446,7 +446,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     {/* <div className="block col p-1"> {select}</div> */}
                                 </div>
                                 <div className="d-end">
-                                    <button type="button" className="btn btn-primary">
+                                    <button type="button" className="btn btn-primary" onClick={() => alert("We are working on It. This feature will be live soon ...")}>
                                         OK
                                     </button>
                                 </div>
@@ -488,7 +488,7 @@ const SiteCompositionComponent = (Props: any) => {
                                         return (
                                             <>
                                                 <li>
-                                                    <p className='mb-0 hreflink' >
+                                                    <p className='mb-0 hreflink' onClick={() => alert("We are working on It. This feature will be live soon ...")} >
                                                         <a>
                                                             {item.Title}
                                                             {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -505,7 +505,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <>
                                                                     {child1.Title != null ?
                                                                         <li>
-                                                                            <p className='mb-0 hreflink'>
+                                                                            <p className='mb-0 hreflink' onClick={() => alert("We are working on It. This feature will be live soon ...")}>
                                                                                 <a>
                                                                                     {child1.Item_x0020_Cover ? <img className="flag_icon"
                                                                                         style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
@@ -536,10 +536,10 @@ const SiteCompositionComponent = (Props: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" >
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={() => alert("We are working on It. This feature will be live soon ...")} >
                             Save
                         </button>
-                        <button type="button" className="btn btn-default px-3" >
+                        <button type="button" className="btn btn-default px-3" onClick={closeClientCategoryPopup} >
                             Cancel
                         </button>
                     </footer>
