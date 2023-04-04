@@ -29,7 +29,8 @@ export default class TaskDashboardHhhhWebPart extends BaseClientSideWebPart<ITas
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        pageContext: this.context.pageContext
       }
     );
 

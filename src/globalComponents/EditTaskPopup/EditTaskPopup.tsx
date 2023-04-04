@@ -40,8 +40,8 @@ import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
-// import SiteCompositionComponent from "./SiteCompositionComponent";
-// import SmartTotalTime from './SmartTimeTotal';
+import SiteCompositionComponent from "./SiteCompositionComponent";
+import SmartTotalTime from './SmartTimeTotal';
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -136,8 +136,8 @@ const EditTaskPopup = (Items: any) => {
     const [sendEmailGlobalCount, setSendEmailGlobalCount] = React.useState(0);
     const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
     const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
-    // const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
-    // const [ClientTimeData, setClientTimeData] = React.useState([]);
+    const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
+    const [ClientTimeData, setClientTimeData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -803,7 +803,7 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                     item.siteCompositionData = tempData2;
-                    // setClientTimeData(tempData2)
+                    setClientTimeData(tempData2)
                 } else {
                     const object: any = {
                         SiteName: Items.Items.siteType,
@@ -812,7 +812,7 @@ const EditTaskPopup = (Items: any) => {
                         siteIcons: Items.Items.SiteIcon
                     }
                     item.siteCompositionData = [object];
-                    // setClientTimeData([object]);
+                    setClientTimeData([object]);
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -1645,7 +1645,7 @@ const EditTaskPopup = (Items: any) => {
                 BasicImageInfo: JSON.stringify(UploadImageArray),
                 ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-                // ClientTime:JSON.stringify(ClientTimeData)
+                ClientTime: JSON.stringify(ClientTimeData)
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -1671,6 +1671,20 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }
+
+    // this is for change priority status function 
+
+    const ChangePriorityStatusFunction=(e:any)=>{
+        let value = e.target.value;
+        if(Number(value) <= 10){
+            setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })
+        }else{
+            alert("Please Enter priority between 0 to 10");
+            setEditData({ ...EditData, Priority_x0020_Rank: 0})
+        }
+        
+    }
+
     const changeStatus = (e: any, type: any) => {
         if (type == "workingThisWeek") {
             if (e.target.value === 'true') {
@@ -2550,14 +2564,14 @@ const EditTaskPopup = (Items: any) => {
 
     // ************************ this is for Site Composition Component Section Functions ***************************
 
-    // const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
-    //     let Time: any = TotalTime;
-    //     setSmartTotalTimeData(Time)
-    // }, [])
+    const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
+        let Time: any = TotalTime;
+        setSmartTotalTimeData(Time)
+    }, [])
 
-    // const SiteCompositionCallBack = React.useCallback((Data: any) => {
-    //     setClientTimeData(Data);
-    // }, [])
+    const SiteCompositionCallBack = React.useCallback((Data: any) => {
+        setClientTimeData(Data);
+    }, [])
 
 
 
@@ -2632,7 +2646,7 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomFooterMain = () => {
         return (
             <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
-                <div className="d-flex justify-content-between px-4 py-2 me-3">
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -2706,7 +2720,7 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomFooterOther = () => {
         return (
             <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
-                <div className="me-3 d-flex justify-content-between px-4 py-2">
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -2888,7 +2902,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width" >Start Date</label>
-                                                    <input type="date" className="form-control"
+                                                    <input type="date" className="form-control" max="9999-12-31"
                                                         defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
@@ -2904,7 +2918,7 @@ const EditTaskPopup = (Items: any) => {
                                                             ng-click="OpenDueDatePopup()" />
                                                     </span></label>
 
-                                                    <input type="date" className="form-control" placeholder="Enter Due Date"
+                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
@@ -2916,7 +2930,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="input-group ">
                                                     <label className="form-label full-width"
                                                     >Completed Date</label>
-                                                    <input type="date" className="form-control"
+                                                    <input type="date" className="form-control" max="9999-12-31"
                                                         defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
@@ -3205,8 +3219,8 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
-                                                            defaultValue={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
-                                                            onChange={(e) => setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })}
+                                                            value={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
+                                                            onChange={(e)=> ChangePriorityStatusFunction(e)}
                                                         />
                                                     </div>
                                                     <ul className="p-0 mt-1">
@@ -3398,42 +3412,45 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className="col-md-3">
-                                        <div className="Sitecomposition">
-                                            <div className='dropdown'>
-                                                <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
-                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                                                </a>
-                                                {composition ?
-                                                    <div className="mt-1 spxdropdown-menu">
-                                                        <ul>
-                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
-                                                                <>
-                                                                    {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                        return <li className="Sitelist">
-                                                                            <span className="ms-2">
-                                                                                <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
-                                                                            </span>
-
-                                                                            {SiteDtls.ClienTimeDescription != undefined &&
-                                                                                <span className="mx-2">
-                                                                                    {SiteDtls.ClienTimeDescription}%
+                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                            <div className="Sitecomposition">
+                                                <div className='dropdown'>
+                                                    <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
+                                                        <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                    </a>
+                                                    {composition ?
+                                                        <div className="mt-1 spxdropdown-menu">
+                                                            <ul>
+                                                                {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                    <>
+                                                                        {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                            return <li className="Sitelist">
+                                                                                <span className="ms-2">
+                                                                                    <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                 </span>
-                                                                            }
-                                                                        </li>
-                                                                    })}
-                                                                </> : null
-                                                            }
 
-                                                        </ul>
-                                                    </div> : null
-                                                }
-                                                {/* <div className="bg-e9 border-1 p-2">
-                                                    <label className="siteColor">Total Time</label>
-                                                    {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                </div> */}
+                                                                                {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                    <span className="mx-2">
+                                                                                        {SiteDtls.ClienTimeDescription}%
+                                                                                    </span>
+                                                                                }
+                                                                            </li>
+                                                                        })}
+                                                                    </> : null
+                                                                }
 
+                                                            </ul>
+                                                        </div> : null
+                                                    }
+                                                    <div className="bg-e9 border-1 p-2">
+                                                        <label className="siteColor">Total Time</label>
+                                                        {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                        </div>
+                                            : null}
+
                                         <div className="col mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
@@ -3727,17 +3744,19 @@ const EditTaskPopup = (Items: any) => {
                                             TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
-                                    {/* <div className="col-sm-5">
+                                    <div className="col-sm-5">
                                         {EditData.Id != null ? <SiteCompositionComponent
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
                                             ClientTime={EditData.siteCompositionData}
                                             SiteCompositionSettings={EditData.SiteCompositionSettings}
                                             SmartTotalTimeData={SmartTotalTimeData}
+                                            currentListName={EditData.siteType}
                                             callBack={SiteCompositionCallBack}
+                                            isServiceTask={ServicesTaskCheck}
                                         /> : null}
 
-                                    </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3900,7 +3919,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -3916,7 +3935,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         ng-click="OpenDueDatePopup()" />
                                                                 </span></label>
 
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -3928,7 +3947,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
                                                                 >Completed Date</label>
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -4462,10 +4481,10 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div> : null
                                                             }
                                                         </div>
-                                                        {/* <div className="bg-e9 border-1 p-2">
+                                                        <div className="bg-e9 border-1 p-2">
                                                             <label className="siteColor">Total Time</label>
                                                             {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                        </div> */}
+                                                        </div>
 
                                                     </div>
 

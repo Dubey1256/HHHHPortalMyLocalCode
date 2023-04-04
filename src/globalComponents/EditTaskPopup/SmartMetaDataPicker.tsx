@@ -11,7 +11,7 @@ var AutoCompleteItems: any = [];
 var AutoCompleteItemsArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-    const isServiceTask:any = item.isServiceTask;
+    const isServiceTask: any = item.isServiceTask;
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
@@ -229,17 +229,21 @@ const Picker = (item: any) => {
 
     const customFooter = () => {
         return (
-            <footer  className={isServiceTask?"serviepannelgreena":""}>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={saveCategories}>
-                    OK
+            <footer className={isServiceTask ? "serviepannelgreena" : ""}>
+                <span>
+                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                </span>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
+                    Save
                 </button>
             </footer>
+
         )
     }
 
     const customHeader = () => {
         return (
-            <div className={isServiceTask? "d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+            <div className={isServiceTask ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
                         Select Category
@@ -260,10 +264,10 @@ const Picker = (item: any) => {
                 customWidth="850px"
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={PopupSmartTaxanomy}
-                onRenderFooter={customFooter}
+            // onRenderFooter={customFooter}
             >
-                <div id="SmartTaxonomyPopup" className={(item.props.Portfolio_x0020_Type!=undefined&&item.props.Portfolio_x0020_Type == "Service" )? "serviepannelgreena" : ""}>
-                    <div className={isServiceTask? "modal-body serviepannelgreena":"modal-body"}>
+                <div id="SmartTaxonomyPopup" className={(item.props.Portfolio_x0020_Type != undefined && item.props.Portfolio_x0020_Type == "Service") ? "serviepannelgreena" : ""}>
+                    <div className={isServiceTask ? "modal-body serviepannelgreena" : "modal-body"}>
                         {/* <table className="ms-dialogHeaderDescription">
                             <tbody>
                                 <tr id="addNewTermDescription" className="">
@@ -315,6 +319,7 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
+                                    <input type="checkbox" className="form-check-input me-1 rounded-0"/> <label> Search With Description (Info Icons)</label>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
@@ -464,6 +469,14 @@ const Picker = (item: any) => {
                             </ul>
                         </div>
                     </div>
+                    <footer className={isServiceTask ? "serviepannelgreena float-end" : "float-end"}>
+                        <span>
+                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                        </span>
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
+                            Save
+                        </button>
+                    </footer>
                 </div>
             </Panel>
         </>
