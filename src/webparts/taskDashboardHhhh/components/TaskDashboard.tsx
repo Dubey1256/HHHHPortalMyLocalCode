@@ -1,5 +1,6 @@
 import * as React from 'react'
 import $ from 'jquery';
+import axios from 'axios';
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as Moment from "moment";
@@ -17,7 +18,7 @@ var currentUserId: '';
 var DataSiteIcon: any = [];
 var currentUser: any = [];
 var today: any = [];
-const TaskDashboard = (props:any) => {
+const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(0);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
@@ -129,7 +130,7 @@ const TaskDashboard = (props:any) => {
                         .get();
                     arraycount++;
                     smartmeta.map((task: any) => {
-                        let alreadyPushed=false;
+                        let alreadyPushed = false;
                         task.AllTeamMember = [];
                         task.siteType = config.Title;
                         task.listId = config.listId;
@@ -166,26 +167,26 @@ const TaskDashboard = (props:any) => {
                                 : "";
                         task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
                         task?.Approver?.map((approverUser: any) => {
-                            if (approverUser?.Id == currentUser?.AssingedToUserId && task?.PercentComplete == '1'&&!alreadyPushed) {
+                            if (approverUser?.Id == currentUser?.AssingedToUserId && task?.PercentComplete == '1' && !alreadyPushed) {
                                 approverTask.push(task)
-                                alreadyPushed=true;
+                                alreadyPushed = true;
                             }
                         })
 
                         task?.AssignedTo?.map((assignedUser: any) => {
                             if (currentUser?.AssingedToUserId == assignedUser.Id) {
-                                if (task?.IsTodaysTask&&!alreadyPushed) {
+                                if (task?.IsTodaysTask && !alreadyPushed) {
                                     workingTodayTask.push(task)
-                                    alreadyPushed=true;
-                                } else if (task?.workingThisWeek&&!alreadyPushed) {
+                                    alreadyPushed = true;
+                                } else if (task?.workingThisWeek && !alreadyPushed) {
                                     workingThisWeekTask.push(task)
-                                    alreadyPushed=true;
-                                } else if (checkUserExistence('Bottleneck', task?.SharewebCategories)&&!alreadyPushed) {
+                                    alreadyPushed = true;
+                                } else if (checkUserExistence('Bottleneck', task?.SharewebCategories) && !alreadyPushed) {
                                     bottleneckTask.push(task)
-                                    alreadyPushed=true;
-                                } else if(!alreadyPushed) {
+                                    alreadyPushed = true;
+                                } else if (!alreadyPushed) {
                                     AllAssignedTask.push(task)
-                                    alreadyPushed=true;
+                                    alreadyPushed = true;
                                 }
                             }
                             taskUsers?.map((user: any) => {
@@ -567,10 +568,22 @@ const TaskDashboard = (props:any) => {
     // Current User deatils
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
+        await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
+            headers: {
+                "Accept": "application/json;odata=verbose"
+            }
+        })
+            .then(response => {
+                currentUserId = response?.data?.d?.Id;
+                console.log(`Current user ID: ${currentUserId}`);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
-            if(item?.AssingedToUser?.EMail==props?.pageContext?.user?.loginName||item?.Email==props?.pageContext?.user?.loginName){
-                currentUserId=item?.AssingedToUser?.Id
+            if (currentUserId == item?.AssingedToUser?.Id ) {
                 currentUser = item;
                 setCurrentUserData(item);
             }
@@ -631,7 +644,7 @@ const TaskDashboard = (props:any) => {
         let userGroups = groupedUsers;
         let count = updateContent;
         count++;
-        
+
         try {
             userGroups[index].expanded = !userGroups[index].expanded
         } catch (error) {
@@ -728,7 +741,7 @@ const TaskDashboard = (props:any) => {
                         </nav>
                     </section>
                 </aside>
-                <div className="dashboard-content ps-2 full-width">
+                <div className={updateContent > 0 ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
                     <article className="row">
                         <div className="col-md-12">
 
