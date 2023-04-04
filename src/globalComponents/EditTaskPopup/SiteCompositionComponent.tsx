@@ -367,7 +367,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                         <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
                                                         {siteData.BtnStatus ?
                                                             <a className="border border-secondary"
-                                                            onClick={() => openClientCategoryModel(341)}
+                                                                onClick={() => openClientCategoryModel(341)}
                                                             >
                                                                 <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                             </a>
@@ -380,7 +380,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                         <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
                                                         {siteData.BtnStatus ?
                                                             <a className="border border-secondary"
-                                                            onClick={() => openClientCategoryModel(344)}
+                                                                onClick={() => openClientCategoryModel(344)}
                                                             >
                                                                 <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                             </a>
@@ -393,7 +393,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                         <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
                                                         {siteData.BtnStatus ?
                                                             <a className="border border-secondary"
-                                                            onClick={() => openClientCategoryModel(569)}
+                                                                onClick={() => openClientCategoryModel(569)}
                                                             >
                                                                 <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                             </a>
@@ -491,6 +491,12 @@ const SiteCompositionComponent = (Props: any) => {
                                                     <p className='mb-0 hreflink' >
                                                         <a>
                                                             {item.Title}
+                                                            {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                <div className="popover__content">
+                                                                    <span>{item.Description1}</span>
+                                                                </div>
+                                                            </div> : null}
                                                         </a>
                                                     </p>
                                                     <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
@@ -506,6 +512,12 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                         src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''} /> :
                                                                                         null}
                                                                                     {child1.Title}
+                                                                                    {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                        <div className="popover__content">
+                                                                                            <span>{child1.Description1}</span>
+                                                                                        </div>
+                                                                                    </div> : null}
                                                                                 </a>
                                                                             </p>
                                                                         </li> : null
