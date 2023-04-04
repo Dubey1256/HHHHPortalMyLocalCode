@@ -1671,6 +1671,20 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }
+
+    // this is for change priority status function 
+
+    const ChangePriorityStatusFunction=(e:any)=>{
+        let value = e.target.value;
+        if(Number(value) <= 10){
+            setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })
+        }else{
+            alert("Priority Status not should be greater than 10");
+            setEditData({ ...EditData, Priority_x0020_Rank: 0})
+        }
+        
+    }
+
     const changeStatus = (e: any, type: any) => {
         if (type == "workingThisWeek") {
             if (e.target.value === 'true') {
@@ -3205,8 +3219,8 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
-                                                            defaultValue={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
-                                                            onChange={(e) => setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })}
+                                                            value={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
+                                                            onChange={(e)=> ChangePriorityStatusFunction(e)}
                                                         />
                                                     </div>
                                                     <ul className="p-0 mt-1">
