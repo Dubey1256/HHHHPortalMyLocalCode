@@ -319,7 +319,7 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="checkbox" className="form-check-input me-1 rounded-0" /> <label> Search With Description (Info Icons)</label>
+                                    <input type="checkbox" className="form-check-input me-1 rounded-0"/> <label> Search With Description (Info Icons)</label>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
