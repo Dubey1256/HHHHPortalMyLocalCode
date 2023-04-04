@@ -13,6 +13,9 @@ const RelevantDocuments = (props: any) => {
         loadAllSitesDocuments();
     }, [])
     const loadAllSitesDocuments = async () => {
+        if(props.siteName=="Offshore Tasks"){
+            props.siteName="OffShoreTask"  
+        }
         const web = new Web(props.siteUrl);
         var filter = (`${props.siteName}/Id eq ${props.ID}`);
         console.log(filter);
@@ -48,10 +51,23 @@ const RelevantDocuments = (props: any) => {
                         <div className='card-body p-1'>
                             <ul  className='d-flex list-none'>
                                 <li>
-                                   <a className='px-2' href={item.FileDirRef} target="_blank" data-interception="off" > <img src="/_layouts/15/images/folder.gif" /></a>
+                                   <a  href={item.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
                                 </li>
                                 <li>
-                                  <a className='px-2' href={item.EncodedAbsUrl}>  <img src="/_layouts/15/images/icdocx.png" /></a>
+                                  <a  href={item.EncodedAbsUrl}>
+                                    {item.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf'></span>}
+                                    {item.File_x0020_Type=="docx"&&<span className='svg__iconbox svg__icon--docx'></span>} 
+                                    {item.File_x0020_Type=="csv"||item.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--csv'></span>}
+                                    {item.File_x0020_Type=="jpeg"||item.File_x0020_Type=="jpg "&&<span className='svg__iconbox svg__icon--jpeg'></span>}
+                                    {item.File_x0020_Type=="ppt"||item.File_x0020_Type=="pptx"&&<span className='svg__iconbox svg__icon--ppt'></span>}
+                                    {item.File_x0020_Type=="svg"&&<span className='svg__iconbox svg__icon--svg'></span>}
+                                    {item.File_x0020_Type=="zip"&&<span className='svg__iconbox svg__icon--zip'></span>}
+                                    {item.File_x0020_Type=="png"&&<span className='svg__iconbox svg__icon--png'></span>}
+                                    {item.File_x0020_Type=="txt"&&<span className='svg__iconbox svg__icon--txt'></span>}
+                                    {item.File_x0020_Type=="smg"&&<span className='svg__iconbox svg__icon--smg'></span>}
+                                    
+                                    </a>
+                                
                                 </li>
                                 <li>
                                    <a className='px-2' href={`${item.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item.Title}</span></a>
@@ -71,7 +87,7 @@ const RelevantDocuments = (props: any) => {
                 <div className='card-body p-1'>
                 <ul className='list-none'>
                                 <li>
-                                   <a  href={Fileurl} target="_blank" data-interception="off" > <img src="/_layouts/15/images/folder.gif" /> <span className='ms-1'>{props.folderName}</span></a>
+                                   <a  href={Fileurl} target="_blank" data-interception="off"  className='d-flex'> <span className='svg__iconbox svg__icon--folder '></span> <span className='ms-3'>{props.folderName}</span></a>
                                 </li>
                                 </ul>
                     </div>

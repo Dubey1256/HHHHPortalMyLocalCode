@@ -905,7 +905,8 @@ function TasksTable(props: any) {
         }
         else {
             if (props.props.SharewebTaskType == 'Workstream') {
-                MeetingItems[0].props['NoteCall'] = 'Task'
+                props.props['NoteCall']='Task'
+                MeetingItems.push(props.props)
                 setMeetingPopup(true)
             }
             if (props.props.SharewebTaskType == 'Activities') {

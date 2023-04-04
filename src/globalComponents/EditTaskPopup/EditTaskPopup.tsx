@@ -39,6 +39,9 @@ import {
 import { Filter, DefaultColumnFilter } from '../ReactTableComponents/filters';
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import EmailComponent from "../EmailComponents";
+import SiteCompositionComponent from "./SiteCompositionComponent";
+import SmartTotalTime from './SmartTimeTotal';
 // import SiteComposition from "../SiteComposition";
 
 var AllMetaData: any = []
@@ -55,7 +58,6 @@ let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
-var sendEmailStatusCount:any = false;
 var TaskApproverBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -63,6 +65,7 @@ var ReplaceImageData: any;
 var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
 const EditTaskPopup = (Items: any) => {
+    const Context = Items.context;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -128,8 +131,13 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverSearchKey, setApproverSearchKey] = React.useState('');
     const [ApproverSearchedData, setApproverSearchedData] = React.useState([]);
     const [ApproverSearchedDataForPopup, setApproverSearchedDataForPopup] = React.useState([]);
-
+    const [sendEmailStatus, setSendEmailStatus] = React.useState(false);
+    const [sendEmailComponentStatus, setSendEmailComponentStatus] = React.useState(false);
+    const [sendEmailGlobalCount, setSendEmailGlobalCount] = React.useState(0);
     const [AllEmployeeData, setAllEmployeeData] = React.useState([]);
+    const [ApprovalTaskStatus, setApprovalTaskStatus] = React.useState(false);
+    const [SmartTotalTimeData, setSmartTotalTimeData] = React.useState(0);
+    const [ClientTimeData, setClientTimeData] = React.useState([]);
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -378,7 +386,8 @@ const EditTaskPopup = (Items: any) => {
                     setImmediateStatus(false)
                 }
                 if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true)
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
                 } else {
                     setApprovalStatus(false)
                 }
@@ -451,7 +460,7 @@ const EditTaskPopup = (Items: any) => {
 
         siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
         siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "QA" && site.Title !== "SDC Sites") {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
                 tempArray.push(site);
             }
@@ -626,12 +635,13 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver')
                     .get();
                 if (extraLookupColumnData.length > 0) {
+                    console.log("Extra Lookup Data =======", extraLookupColumnData);
                     let Data: any;
                     let ApproverData: any
                     Data = extraLookupColumnData[0]?.Project;
@@ -660,7 +670,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title, Approver/Id, Approver/Title")
+                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver')
@@ -704,7 +714,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -714,7 +724,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -764,7 +774,6 @@ const EditTaskPopup = (Items: any) => {
                     } else {
                         setDesignStatus(false);
                     }
-
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
                     let tempData: any = JSON.parse(item.ClientTime);
@@ -776,7 +785,7 @@ const EditTaskPopup = (Items: any) => {
                                 siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
                             }
                             if (siteName == 'alakdigital' || siteName == 'da e+e') {
-                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
+                                siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png`
                             }
                             if (siteName == 'development-effectiveness' || siteName == 'de') {
                                 siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png`
@@ -794,6 +803,7 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                     item.siteCompositionData = tempData2;
+                    setClientTimeData(tempData2)
                 } else {
                     const object: any = {
                         SiteName: Items.Items.siteType,
@@ -802,6 +812,7 @@ const EditTaskPopup = (Items: any) => {
                         siteIcons: Items.Items.SiteIcon
                     }
                     item.siteCompositionData = [object];
+                    setClientTimeData([object]);
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -848,12 +859,16 @@ const EditTaskPopup = (Items: any) => {
                 //     }
                 // }
                 item.TaskId = globalCommon.getTaskId(item);
+                item.siteUrl = siteUrls;
+                item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
+                let TaskCreatorData: any = [];
                 if (item.Author != undefined && item.Author != null) {
                     taskUsers.map((userData: any) => {
                         if (item.Author.Id == userData?.AssingedToUserId) {
+                            TaskCreatorData.push(userData);
                             userData.Approver?.map((AData: any) => {
                                 // ApproverDataTemp.push(AData);
                                 TaskCreatorApproverBackupArray.push(AData);
@@ -892,6 +907,7 @@ const EditTaskPopup = (Items: any) => {
                         })
                     }
                 }
+                item.TaskCreatorData = TaskCreatorData;
                 if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                     TaskApproverBackupArray.map((itemData: any) => {
                         currentUserBackupArray?.map((currentUser: any) => {
@@ -947,31 +963,31 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (item.FeedBack != null) {
                     let message = JSON.parse(item.FeedBack);
+                    item.FeedBackBackup = message;
                     updateFeedbackArray = message;
-                    let Count:any = 0;
+                    let Count: any = 0;
                     let feedbackArray = message[0]?.FeedBackDescriptions
                     if (feedbackArray != undefined && feedbackArray.length > 0) {
                         let CommentBoxText = feedbackArray[0].Title?.replace(/(<([^>]+)>)/ig, '');
                         item.CommentBoxText = CommentBoxText;
-                        feedbackArray.map((FeedBackData:any)=>{
-                            if(FeedBackData.isShowLight == "Approved" || FeedBackData.isShowLight == "Maybe" || FeedBackData.isShowLight == "Reject"){
+                        feedbackArray.map((FeedBackData: any) => {
+                            if (FeedBackData.isShowLight == "Approve" || FeedBackData.isShowLight == "Maybe" || FeedBackData.isShowLight == "Reject") {
                                 Count++;
-                            }if(feedbackArray.Subtext != undefined && feedbackArray.Subtext.length > 0){
-                                feedbackArray.Subtext.map((ChildItem:any)=>{
-                                    if(ChildItem.isShowLight == "Approved" || ChildItem.isShowLight == "Maybe" || ChildItem.isShowLight == "Reject"){
-                                        Count++;     
+                            } if (FeedBackData.Subtext != undefined && FeedBackData.Subtext.length > 0) {
+                                FeedBackData.Subtext.map((ChildItem: any) => {
+                                    if (ChildItem.isShowLight == "Approve" || ChildItem.isShowLight == "Maybe" || ChildItem.isShowLight == "Reject") {
+                                        Count++;
                                     }
                                 })
                             }
-
                         })
                     } else {
                         item.CommentBoxText = "<p></p>"
                     }
-                    if(Count >= 1){
-                        sendEmailStatusCount = true
-                    }else{
-                        sendEmailStatusCount = false
+                    if (Count >= 1) {
+                        setSendEmailStatus(true)
+                    } else {
+                        setSendEmailStatus(false)
                     }
                     item.FeedBackArray = feedbackArray;
                     FeedBackBackupArray = JSON.stringify(feedbackArray);
@@ -1395,7 +1411,7 @@ const EditTaskPopup = (Items: any) => {
     var ApproverIds: any = [];
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
-        if (TaskImages != undefined && TaskImages?.length > 0) {
+        if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
                 if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
                     let tempObject: any = {
@@ -1580,6 +1596,13 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
+        if (sendEmailGlobalCount > 0) {
+            if (sendEmailStatus) {
+                setSendEmailComponentStatus(false)
+            } else {
+                setSendEmailComponentStatus(true)
+            }
+        }
 
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
@@ -1588,10 +1611,13 @@ const EditTaskPopup = (Items: any) => {
         //         })
         //     }
         // }
+
         try {
             let web = new Web(siteUrls);
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
                 IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
+                workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
+                waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
                 Priority_x0020_Rank: EditData.Priority_x0020_Rank,
                 ItemRank: EditData.ItemRank,
                 Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
@@ -1618,7 +1644,8 @@ const EditTaskPopup = (Items: any) => {
                 },
                 BasicImageInfo: JSON.stringify(UploadImageArray),
                 ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
-                ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] }
+                ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
+                ClientTime: JSON.stringify(ClientTimeData)
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -1644,11 +1671,27 @@ const EditTaskPopup = (Items: any) => {
         }
 
     }
-    const changeStatus = (e: any) => {
-        if (e.target.value === 'true') {
-            setEditData({ ...EditData, IsTodaysTask: false })
-        } else {
-            setEditData({ ...EditData, IsTodaysTask: true })
+    const changeStatus = (e: any, type: any) => {
+        if (type == "workingThisWeek") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, workingThisWeek: false })
+            } else {
+                setEditData({ ...EditData, workingThisWeek: true })
+            }
+        }
+        if (type == "IsTodaysTask") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, IsTodaysTask: false })
+            } else {
+                setEditData({ ...EditData, IsTodaysTask: true })
+            }
+        }
+        if (type == "waitForResponse") {
+            if (e.target.value === 'true') {
+                setEditData({ ...EditData, waitForResponse: false })
+            } else {
+                setEditData({ ...EditData, waitForResponse: true })
+            }
         }
     }
     //    ************* this is team configuration call Back function **************
@@ -1724,10 +1767,10 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (Items.Items.listId != undefined) {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listId).items.getById(itemId).delete();
+                await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
             } else {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listName).items.getById(itemId).delete();
+                await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
             Items.Call();
             console.log("Your post has been deleted successfully");
@@ -1793,6 +1836,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
         let ApprovedStatusCount: any = 0;
+        let ApprovedGlobalCount: any = 0;
         let Status: any;
         if (EditDataBackup.PercentComplete != undefined) {
             Status = EditDataBackup.PercentComplete;
@@ -1803,6 +1847,8 @@ const EditTaskPopup = (Items: any) => {
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Approve") {
                     ApprovedStatusCount++;
+                    ApprovedGlobalCount++;
+                    setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
@@ -1820,6 +1866,8 @@ const EditTaskPopup = (Items: any) => {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Approve") {
                             ApprovedStatusCount++;
+                            ApprovedGlobalCount++;
+                            setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
@@ -1837,6 +1885,8 @@ const EditTaskPopup = (Items: any) => {
             })
             TempFeedBackArray?.map((item: any) => {
                 if (item.isShowLight == "Reject" || item.isShowLight == "Maybe") {
+                    ApprovedGlobalCount++;
+                    setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                     if (ApprovedStatusCount == 0) {
                         if (Status >= 2) {
                             setInputFieldDisable(true)
@@ -1847,6 +1897,8 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
                         if (subItem.isShowLight == "Reject" || subItem.isShowLight == "Maybe") {
+                            ApprovedGlobalCount++;
+                            setSendEmailGlobalCount(sendEmailGlobalCount + 1)
                             if (ApprovedStatusCount == 0) {
                                 if (Status <= 2) {
                                     setInputFieldDisable(true)
@@ -1857,6 +1909,11 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             })
+            if (ApprovedStatusCount == 0) {
+                setApprovalTaskStatus(false)
+            } else {
+                setApprovalTaskStatus(true)
+            }
         }
     }
 
@@ -1938,7 +1995,8 @@ const EditTaskPopup = (Items: any) => {
                 setImmediateStatus(true)
             }
             if (type == "Approval") {
-                setApprovalStatus(true)
+                setApprovalStatus(true);
+                setApproverData(TaskApproverBackupArray);
             }
             if (type == "Only Completed") {
                 setOnlyCompletedStatus(true)
@@ -2188,7 +2246,8 @@ const EditTaskPopup = (Items: any) => {
         if (ReplaceImageData != undefined && ReplaceImageIndex != undefined) {
             ReplaceImageFunction(ReplaceImageData, ReplaceImageIndex);
             const copy = [...TaskImages];
-            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url };
+            const ImageUrl = TaskImages[ReplaceImageIndex].ImageUrl;
+            const obj = { ...TaskImages[ReplaceImageIndex], ImageUrl: ReplaceImageData.data_url, imageDataUrl: ImageUrl };
             copy[ReplaceImageIndex] = obj;
             setTaskImages(copy);
             setReplaceImagePopup(false);
@@ -2382,7 +2441,7 @@ const EditTaskPopup = (Items: any) => {
             columns,
             data,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 10 }
+            initialState: { pageIndex: 0, pageSize: 10000 }
         },
         useFilters,
         useSortBy,
@@ -2483,13 +2542,32 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
+    // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
+
+    const SendEmailNotificationCallBack = () => {
+
+    }
+
+    // ************************ this is for Site Composition Component Section Functions ***************************
+
+    const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
+        let Time: any = TotalTime;
+        setSmartTotalTimeData(Time)
+    }, [])
+
+    const SiteCompositionCallBack = React.useCallback((Data: any) => {
+        setClientTimeData(Data);
+    }, [])
+
+
+
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId} ${EditData.Title}`}
                     </span>
@@ -2503,7 +2581,7 @@ const EditTaskPopup = (Items: any) => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <img className="imgWid29 pe-1 " src={Items.Items.SiteIcon} />
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         Select Site
                     </span>
@@ -2553,8 +2631,8 @@ const EditTaskPopup = (Items: any) => {
 
     const onRenderCustomFooterMain = () => {
         return (
-            <footer className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-                <div className="d-flex justify-content-between px-4 py-2 me-3">
+            <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -2627,8 +2705,8 @@ const EditTaskPopup = (Items: any) => {
     }
     const onRenderCustomFooterOther = () => {
         return (
-            <footer className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-                <div className="me-3 d-flex justify-content-between px-4 py-2">
+            <footer className={ServicesTaskCheck ? "serviepannelgreena bg-f4 fixed-bottom" : "bg-f4 fixed-bottom"}>
+                <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
                     <div>
                         <div className="">
                             Created <span className="font-weight-normal siteColor">  {EditData.Created ? Moment(EditData.Created).format("DD/MM/YYYY") : ""}  </span> By <span className="font-weight-normal siteColor">
@@ -2695,6 +2773,20 @@ const EditTaskPopup = (Items: any) => {
             </footer>
         )
     }
+
+    const customFooterForProjectManagement = () => {
+        return (
+            <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
+                    Save
+                </button>
+                <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
+                    Cancel
+                </button>
+            </footer>
+        )
+    }
+
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {/* ***************** this is status panel *********** */}
@@ -2755,8 +2847,8 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-                    {console.log("Email Send Staus Data ===============================================", sendEmailStatusCount)}
-                    <div className="modal-body">
+
+                    <div className="modal-body mb-5">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
                             <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
                                 BASIC INFORMATION
@@ -2770,12 +2862,22 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col-12 ">
                                             <div className="input-group">
                                                 <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
-                                                    <span className="form-check">
-                                                        <input className="form-check-input rounded-0" type="checkbox"
-                                                            checked={EditData.IsTodaysTask}
-                                                            value={EditData.IsTodaysTask}
-                                                            onChange={(e) => changeStatus(e)} />
-                                                        <label className="form-check-label">Working Today?</label>
+                                                    <span className="d-flex">
+                                                        <span className="form-check mx-2">
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.workingThisWeek}
+                                                                value={EditData.workingThisWeek}
+                                                                onChange={(e) => changeStatus(e, "workingThisWeek")} />
+                                                            <label className="form-check-label">Working This Week?</label>
+                                                        </span>
+
+                                                        <span className="form-check">
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.IsTodaysTask}
+                                                                value={EditData.IsTodaysTask}
+                                                                onChange={(e) => changeStatus(e, "IsTodaysTask")} />
+                                                            <label className="form-check-label">Working Today?</label>
+                                                        </span>
                                                     </span>
                                                 </label>
                                                 <input type="text" className="form-control" placeholder="Task Name"
@@ -2786,7 +2888,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width" >Start Date</label>
-                                                    <input type="date" className="form-control"
+                                                    <input type="date" className="form-control" max="9999-12-31"
                                                         defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
@@ -2802,7 +2904,7 @@ const EditTaskPopup = (Items: any) => {
                                                             ng-click="OpenDueDatePopup()" />
                                                     </span></label>
 
-                                                    <input type="date" className="form-control" placeholder="Enter Due Date"
+                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
@@ -2814,7 +2916,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="input-group ">
                                                     <label className="form-label full-width"
                                                     >Completed Date</label>
-                                                    <input type="date" className="form-control"
+                                                    <input type="date" className="form-control" max="9999-12-31"
                                                         defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
@@ -2888,7 +2990,6 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
-
                                                                             <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                         </a>
                                                                     </div>
@@ -3002,10 +3103,10 @@ const EditTaskPopup = (Items: any) => {
                                                         />
                                                     </div>
                                                     <div className="col ps-4">
-                                                        <ul className="">
+                                                        <ul className="p-0 mt-1">
                                                             <li className="form-check l-radio">
                                                                 <input className="form-check-input"
-                                                                    name="radioPriority"
+                                                                    name="ApprovalLevel"
                                                                     type="radio"
                                                                 />
                                                                 <label className="form-check-label">Normal Approval</label>
@@ -3016,7 +3117,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input
                                                                     type="radio"
                                                                     className="form-check-input"
-                                                                    name="radioPriority" />
+                                                                    name="ApprovalLevel" />
                                                             </li>
                                                             <li
                                                                 className="form-check l-radio">
@@ -3024,7 +3125,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input
                                                                     type="radio"
                                                                     className="form-check-input"
-                                                                    name="radioPriority" />
+                                                                    name="ApprovalLevel" />
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -3037,7 +3138,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     value={ApproverSearchKey}
                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                 />
-                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Project Items Popup">
+                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
 
                                                                 </span>
@@ -3238,9 +3339,12 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
-                                                        <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> </span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                        </span>
+                                                        </span>}
+
+
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -3294,37 +3398,45 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                     </div>
                                     <div className="col-md-3">
-                                        <div className="Sitecomposition">
-                                            <div className='dropdown'>
-                                                <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
-                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                                                </a>
-                                                {composition ?
-                                                    <div className="mt-1 spxdropdown-menu">
-                                                        <ul>
-                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
-                                                                <>
-                                                                    {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                        return <li className="Sitelist">
-                                                                            <span>
-                                                                                <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
-                                                                            </span>
-
-                                                                            {SiteDtls.ClienTimeDescription != undefined &&
-                                                                                <span className="mx-2">
-                                                                                    {SiteDtls.ClienTimeDescription}%
+                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                            <div className="Sitecomposition">
+                                                <div className='dropdown'>
+                                                    <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
+                                                        <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                    </a>
+                                                    {composition ?
+                                                        <div className="mt-1 spxdropdown-menu">
+                                                            <ul>
+                                                                {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                    <>
+                                                                        {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                            return <li className="Sitelist">
+                                                                                <span className="ms-2">
+                                                                                    <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                 </span>
-                                                                            }
-                                                                        </li>
-                                                                    })}
-                                                                </> : null
-                                                            }
 
-                                                        </ul>
-                                                    </div> : null
-                                                }
+                                                                                {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                    <span className="mx-2">
+                                                                                        {SiteDtls.ClienTimeDescription}%
+                                                                                    </span>
+                                                                                }
+                                                                            </li>
+                                                                        })}
+                                                                    </> : null
+                                                                }
+
+                                                            </ul>
+                                                        </div> : null
+                                                    }
+                                                    <div className="bg-e9 border-1 p-2">
+                                                        <label className="siteColor">Total Time</label>
+                                                        {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                        </div>
+                                            : null}
+
                                         <div className="col mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
@@ -3416,6 +3528,14 @@ const EditTaskPopup = (Items: any) => {
                                             <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                         </div>
                                         <div className="pull-right">
+                                            <span className="">
+                                                <label className="form-check-label mx-2">Waiting for HHHH response</label>
+                                                <input className="form-check-input rounded-0" type="checkbox"
+                                                    checked={EditData.waitForResponse}
+                                                    value={EditData.waitForResponse}
+                                                    onChange={(e) => changeStatus(e, "waitForResponse")}
+                                                />
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -3604,10 +3724,25 @@ const EditTaskPopup = (Items: any) => {
                                 </div>
                             </div> */}
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
-                                <div>
-                                    <NewTameSheetComponent props={Items}
-                                        TeamConfigDataCallBack={getTeamConfigData}
-                                    />
+                                <div className="d-flex justify-content-between">
+                                    <div className="col-sm-7">
+                                        <NewTameSheetComponent props={Items}
+                                            TeamConfigDataCallBack={getTeamConfigData}
+                                        />
+                                    </div>
+                                    <div className="col-sm-5">
+                                        {EditData.Id != null ? <SiteCompositionComponent
+                                            siteUrls={siteUrls}
+                                            SiteTypes={SiteTypes}
+                                            ClientTime={EditData.siteCompositionData}
+                                            SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                            SmartTotalTimeData={SmartTotalTimeData}
+                                            currentListName={EditData.siteType}
+                                            callBack={SiteCompositionCallBack}
+                                            isServiceTask={ServicesTaskCheck}
+                                        /> : null}
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3620,6 +3755,7 @@ const EditTaskPopup = (Items: any) => {
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -3632,7 +3768,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className="modal-body">
+                <div className="modal-body mb-5">
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -3723,7 +3859,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={ImageCustomizePopup}
                 onRenderFooter={onRenderCustomFooterOther}
             >
-                <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
+                <div className={ServicesTaskCheck ? "modal-body mb-5 serviepannelgreena" : "modal-body mb-5"}>
                     <ul className="nav nav-tabs" id="myTab" role="tablist">
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
@@ -3744,12 +3880,21 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="col-12 ">
                                                         <div className="input-group">
                                                             <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
-                                                                <span className="form-check">
-                                                                    <input className="form-check-input rounded-0" type="checkbox"
-                                                                        checked={EditData.IsTodaysTask}
-                                                                        value={EditData.IsTodaysTask}
-                                                                        onChange={(e) => changeStatus(e)} />
-                                                                    <label className="form-check-label">Working Today?</label>
+                                                                <span className="d-flex">
+                                                                    <span className="form-check mx-2">
+                                                                        <input className="form-check-input rounded-0" type="checkbox"
+                                                                            checked={EditData.workingThisWeek}
+                                                                            value={EditData.workingThisWeek}
+                                                                            onChange={(e) => changeStatus(e, "workingThisWeek")} />
+                                                                        <label className="form-check-label">Working This Week?</label>
+                                                                    </span>
+                                                                    <span className="form-check">
+                                                                        <input className="form-check-input rounded-0" type="checkbox"
+                                                                            checked={EditData.IsTodaysTask}
+                                                                            value={EditData.IsTodaysTask}
+                                                                            onChange={(e) => changeStatus(e, "IsTodaysTask")} />
+                                                                        <label className="form-check-label">Working Today?</label>
+                                                                    </span>
                                                                 </span>
                                                             </label>
                                                             <input type="text" className="form-control" placeholder="Task Name"
@@ -3760,7 +3905,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -3776,7 +3921,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         ng-click="OpenDueDatePopup()" />
                                                                 </span></label>
 
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -3788,7 +3933,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
                                                                 >Completed Date</label>
-                                                                <input type="date" className="form-control"
+                                                                <input type="date" className="form-control" max="9999-12-31"
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -3980,12 +4125,13 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                 </div>
                                                                 <div className="col ps-4">
-                                                                    <ul>
+                                                                    <ul className="p-0 mt-1">
                                                                         <li
                                                                             className="form-check l-radio">
                                                                             <label>Normal Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input" />
                                                                         </li>
                                                                         <li
@@ -3993,6 +4139,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <label> Complex Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input" />
                                                                         </li>
                                                                         <li
@@ -4000,6 +4147,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <label> Quick Approval</label>
                                                                             <input
                                                                                 type="radio"
+                                                                                name="ApprovalLevel"
                                                                                 className="form-check-input " />
                                                                         </li>
                                                                     </ul>
@@ -4234,10 +4382,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup">
+                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg></span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-
-                                                                    </span>
+                                                                    </span>}
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
@@ -4302,7 +4449,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <>
                                                                                 {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
                                                                                     return (<li className="Sitelist">
-                                                                                        <span>
+                                                                                        <span className="ms-2">
                                                                                             <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                         </span>
 
@@ -4320,6 +4467,11 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div> : null
                                                             }
                                                         </div>
+                                                        <div className="bg-e9 border-1 p-2">
+                                                            <label className="siteColor">Total Time</label>
+                                                            {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                        </div>
+
                                                     </div>
 
                                                     <div className="col mt-2">
@@ -4416,6 +4568,15 @@ const EditTaskPopup = (Items: any) => {
                                                         <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
+                                                        <span className="">
+                                                            <label className="form-check-label mx-2">Waiting for HHHH response</label>
+                                                            <input className="form-check-input rounded-0" type="checkbox"
+                                                                checked={EditData.waitForResponse}
+                                                                value={EditData.waitForResponse}
+                                                                onChange={(e) => changeStatus(e, "waitForResponse")}
+                                                            />
+                                                        </span>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -4551,15 +4712,17 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="card-body">
                                     <ul className="quick-actions">
                                         {SiteTypes?.map((siteData: any, index: number) => {
-                                            return (
-                                                <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
-                                                    <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
-                                                        <span className="icon-sites">
-                                                            <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
-                                                        </span> {siteData.Title}
-                                                    </a>
-                                                </li>
-                                            )
+                                            if (siteData.Title !== "QA") {
+                                                return (
+                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                        <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
+                                                            <span className="icon-sites">
+                                                                <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
+                                                            </span> {siteData.Title}
+                                                        </a>
+                                                    </li>
+                                                )
+                                            }
                                         })}
                                     </ul>
                                 </div>
@@ -4615,10 +4778,11 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={ProjectManagementPopup}
                 type={PanelType.custom}
                 customWidth="1100px"
+                onRenderFooter={customFooterForProjectManagement}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                    <div className="modal-body p-0 mt-2">
-                        <Table className="SortingTable" bordered hover {...getTableProps()}>
+                    <div className="modal-body wrapper p-0 mt-2">
+                        <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
                             <thead>
                                 {headerGroups.map((headerGroup: any) => (
                                     <tr  {...headerGroup.getHeaderGroupProps()}>
@@ -4650,14 +4814,7 @@ const EditTaskPopup = (Items: any) => {
                             </tbody>
                         </Table>
                     </div>
-                    <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
-                            Save
-                        </button>
-                        <button type="button" className="btn btn-default px-3" onClick={closeProjectManagementPopup}>
-                            Cancel
-                        </button>
-                    </footer>
+
                 </div>
             </Panel>
 

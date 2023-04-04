@@ -1,22 +1,15 @@
 import * as React from "react";
 import * as $ from "jquery";
 import Modal from "react-bootstrap/Modal";
-var TypeSite: string;
-// if(TypeSite=="Service"){
-//     require('../../cssFolder/sitecolorservice.scss');
-// }
-// if(TypeSite=="Component"){
-//     require('../../cssFolder/site_color.scss');
-// }
+let TypeSite: string;
+
 import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
-// import Groupby from './TaskWebpart';
 import Tooltip from "../../../globalComponents/Tooltip";
 
 import { FaHome } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import { SPComponentLoader } from "@microsoft/sp-loader";
-// import { NavItem } from 'react-bootstrap';
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import Smartinfo from "./NextSmart";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -25,13 +18,13 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
 
-var TeamMembers: any = [];
-var AssigntoMembers: any = [];
-var AllQuestion: any[] = [];
-var AllHelp: any[] = [];
-var AllTeamMember: any = [];
-var Folderdatas: any = [];
-var AssignTeamMember: any = [];
+let TeamMembers: any = [];
+let AssigntoMembers: any = [];
+let AllQuestion: any[] = [];
+let AllHelp: any[] = [];
+let AllTeamMember: any = [];
+let Folderdatas: any = [];
+let AssignTeamMember: any = [];
 function Portfolio({ ID }: any) {
   const [data, setTaskData] = React.useState([]);
   const [isActive, setIsActive] = React.useState(false);
@@ -47,6 +40,7 @@ function Portfolio({ ID }: any) {
   const [dataQues, setdataQues] = React.useState([]);
   const [dataHelp, setdataHelp] = React.useState([]);
   const [FolderData, SetFolderData] = React.useState([]);
+  const [ParentData, SetParentData] = React.useState([]);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [showBlock, setShowBlock] = React.useState(false);
@@ -111,10 +105,14 @@ function Portfolio({ ID }: any) {
     setdataHelp((dataHelp) => [...dataHelp]);
   };
   React.useEffect(() => {
-    var folderId: any = "";
-    var url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
-    var response: any = [];
-    var responsen: any = []; // this variable is used for storing list items
+    let folderId: any = "";
+    let ParentId: any = "";
+    let url = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
+    let response: any = [];
+    var responsen: any = [];
+
+    let ParentData: any = [];
+    // this letiable is used for storing list items
     function GetListItems() {
       $.ajax({
         url: url,
@@ -127,7 +125,7 @@ function Portfolio({ ID }: any) {
           response.map((item: any) => {
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
-              var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -147,15 +145,42 @@ function Portfolio({ ID }: any) {
                 },
               });
             }
+            if (
+              item?.Parent != undefined &&
+              item.Parent.Id != undefined &&
+              item.Item_x0020_Type == "Feature"
+            ) {
+              ParentId = item.Parent.Id;
+              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              $.ajax({
+                url: urln,
+                method: "GET",
+                headers: {
+                  Accept: "application/json; odata=verbose",
+                },
+                success: function (data) {
+                  ParentData = ParentData.concat(data.d.results);
+                  if (data.d.__next) {
+                    urln = data.d.__next;
+                  } else SetParentData(ParentData);
+                  // console.log(responsen);
+                },
+                error: function (error) {
+                  console.log(error);
+                  // error handler code goes here
+                },
+              });
+            }
+
             if (item.Portfolio_x0020_Type != undefined) {
-              var filter = "";
+              let filter = "";
               if (item.Portfolio_x0020_Type == "Component") {
                 filter += "(Components / Id eq " + ID + ")";
               } else if (item.Portfolio_x0020_Type == "Service") {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
-              var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('9cf872fc-afcd-42a5-87c0-aab0c80c5457')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
+              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('9cf872fc-afcd-42a5-87c0-aab0c80c5457')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -189,14 +214,18 @@ function Portfolio({ ID }: any) {
             url = data.d.__next;
             GetListItems();
           } else
-          response?.forEach((itrm:any)=>{
-            if(itrm.Item_x0020_Type == 'Component' || itrm.Item_x0020_Type == "SubComponent" || itrm.Item_x0020_Type == "Feature"){
-            itrm.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
-            itrm.listId = "EC34B38F-0669-480A-910C-F84E92E58ADF"
-            }
-          })
-           setTaskData(response);
-        
+            response?.forEach((itrm: any) => {
+              if (
+                itrm.Item_x0020_Type == "Component" ||
+                itrm.Item_x0020_Type == "SubComponent" ||
+                itrm.Item_x0020_Type == "Feature"
+              ) {
+                itrm.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+                itrm.listId = "EC34B38F-0669-480A-910C-F84E92E58ADF";
+              }
+            });
+          setTaskData(response);
+
           console.log(response);
         },
         error: function (error) {
@@ -205,8 +234,8 @@ function Portfolio({ ID }: any) {
         },
       });
     }
-    var urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
-    var responsen: any = []; // this variable is used for storing list items
+    let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('d0f88b8f-d96d-4e12-b612-2706ba40fb08')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+    var responsen: any = []; // this letiable is used for storing list items
     GetListItems();
     getTaskUser();
     open();
@@ -215,7 +244,7 @@ function Portfolio({ ID }: any) {
   // Make Folder data unique
 
   Folderdatas = FolderData.reduce(function (previous: any, current: any) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -224,6 +253,7 @@ function Portfolio({ ID }: any) {
     }
     return previous;
   }, []);
+  
   // Get All User
 
   const getTaskUser = async () => {
@@ -251,9 +281,9 @@ function Portfolio({ ID }: any) {
     });
   }
 
-  var myarray2: any = [];
+  let myarray2: any = [];
 
-  var FolderID: any = "";
+  let FolderID: any = "";
   data.map((item) => {
     if (item.Portfolio_x0020_Type != undefined) {
       TypeSite = item.Portfolio_x0020_Type;
@@ -303,7 +333,7 @@ function Portfolio({ ID }: any) {
   // const UniqueArray = [...TeamMembers, ...AssigntoMembers];
 
   AllTeamMember = TeamMembers.reduce(function (previous: any, current: any) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -317,7 +347,7 @@ function Portfolio({ ID }: any) {
     previous: any,
     current: any
   ) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -368,18 +398,39 @@ function Portfolio({ ID }: any) {
                       </li>
                       {(item.Item_x0020_Type == "SubComponent" ||
                         item.Item_x0020_Type == "Feature") && (
-                        <li>
-                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {item.Parent != undefined && (
-                            <a
-                              target="_blank"
-                              data-interception="off"
-                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
-                            >
-                              {item.Parent.Title}
-                            </a>
-                          )}
-                        </li>
+                        <>
+                          <li>
+                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {ParentData != undefined &&
+                              ParentData.map((ParentD: any) => {
+                                return (
+                                  <>
+                                    {ParentD.Parent != undefined && (
+                                      <a
+                                        target="_blank"
+                                        data-interception="off"
+                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD.Parent.Id}`}
+                                      >
+                                        {ParentD.Parent.Title}
+                                      </a>
+                                    )}
+                                  </>
+                                );
+                              })}
+                          </li>
+                          <li>
+                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {item.Parent != undefined && (
+                              <a
+                                target="_blank"
+                                data-interception="off"
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
+                              >
+                                {item.Parent.Title}
+                              </a>
+                            )}
+                          </li>
+                        </>
                       )}
 
                       <li>
@@ -408,8 +459,9 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -426,8 +478,9 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -442,11 +495,12 @@ function Portfolio({ ID }: any) {
                               src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
                             />{" "}
                             <a>{item.Title}</a>{" "}
-                            <span >
+                            <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -463,8 +517,9 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -482,8 +537,9 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -501,8 +557,9 @@ function Portfolio({ ID }: any) {
                             <span>
                               {" "}
                               <img
-                                src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25"
+                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                width="30"
+                                height="25"
                                 onClick={(e) => EditComponentPopup(item)}
                               />
                             </span>
@@ -570,49 +627,92 @@ function Portfolio({ ID }: any) {
                       </dl>
                       <dl>
                         <dt className="bg-fxdark">Team Members</dt>
-                        <dd className='bg-light d-flex'>
-                                            {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
-                                        <>
-                                                <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                        <dd className="bg-light d-flex">
+                          {AssignTeamMember.length != 0
+                            ? AssignTeamMember.map((item: any) => (
+                                <>
+                                  <a
+                                    target="_blank"
+                                    data-interception="off"
+                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}
+                                  >
+                                    <img
+                                      className="AssignUserPhoto"
+                                      src={item.Item_x0020_Cover.Url}
+                                      title={item.Title}
+                                    />
+                                  </a>
+                                </>
+                              ))
+                            : ""}
+                          <div className="px-1">|</div>
+                          {AllTeamMember != null &&
+                            AllTeamMember.length > 0 && (
+                              <div className="user_Member_img">
+                                <a
+                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`}
+                                  target="_blank"
+                                  data-interception="off"
+                                >
+                                  <img
+                                    className="imgAuthor"
+                                    src={AllTeamMember[0].Item_x0020_Cover.Url}
+                                    title={AllTeamMember[0].Title}
+                                  ></img>
+                                </a>
+                              </div>
+                            )}
+                          {AllTeamMember != null &&
+                            AllTeamMember.length > 1 && (
+                              <div
+                                className="position-relative user_Member_img_suffix2 multimember fs13"
+                                style={{ paddingTop: "2px" }}
+                                onMouseOver={(e) => handleSuffixHover()}
+                                onMouseLeave={(e) => handleuffixLeave()}
+                              >
+                                +{AllTeamMember.length - 1}
+                                {showBlock && (
+                                  <span className="tooltiptext">
+                                    <div className="bg-white border p-2">
+                                      {AllTeamMember.slice(1).map(
+                                        (rcData: any, i: any) => {
+                                          return (
+                                            <div className="team_Members_Item p-1">
+                                              <div>
+                                                <a
+                                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                                                  target="_blank"
+                                                  data-interception="off"
+                                                >
+                                                  <img
+                                                    className="imgAuthor"
+                                                    src={
+                                                      rcData.Item_x0020_Cover
+                                                        .Url
+                                                    }
+                                                  ></img>
                                                 </a>
-                                            
-                                                </>
-                                        ):""}
-                                        <div className='px-1'>|</div>
-                                                {AllTeamMember != null && AllTeamMember.length > 0 &&
-                    <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
-                    }
-                    {AllTeamMember != null && AllTeamMember.length > 1 &&
-                    <div className="position-relative user_Member_img_suffix2 multimember fs13" style={{paddingTop: '2px'}} onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
-                    {showBlock &&
-                        <span className="tooltiptext">
-                        <div className='bg-white border p-2'>                        
-                            { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
-                                
-                                return  <div className="team_Members_Item p-1">
-                                <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
-                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
-                                <div className='m-1'>{rcData.Title}</div>
-                                </div>
-                                                        
-                            })
-                            }
-                        
-                        </div>
-                        </span>
-                        }
-                    </div>                        
-                    }   
-                                                {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
+                                              </div>
+                                              <div className="m-1">
+                                                {rcData.Title}
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
                                                 <>
                                                         <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
                                                         <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
                                                     </a>
                                                 </>
                                                 ):""} */}
-
-                                    </dd>
+                        </dd>
                       </dl>
                       <dl>
                         <dt className="bg-fxdark">Item Rank</dt>
@@ -687,8 +787,11 @@ function Portfolio({ ID }: any) {
                                               data-interception="off"
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
                                             >
-                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "}
+                                              <img
+                                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                                width="30"
+                                                height="25"
+                                              />{" "}
                                             </a>
                                           </>
                                         )}
@@ -701,8 +804,11 @@ function Portfolio({ ID }: any) {
                                               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
                                             >
                                               {" "}
-                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "}
+                                              <img
+                                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                                width="30"
+                                                height="25"
+                                              />{" "}
                                             </a>
                                           </>
                                         )}

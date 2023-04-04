@@ -1695,12 +1695,32 @@ export default function ComponentTable({ props }: any) {
         AllItems.forEach((val: any) => {
           val.flag = true;
           val.show = false;
-          if (val.Id == MainId) {
-            val.childs.push(childItem.data);
+          if (
+            val.Id == MainId ||
+            (val.childs != undefined && val.childs.length > 0)
+          ) {
+            if (val.Id == MainId) {
+              val.childs.push(childItem.data);
+            }
+            if (val.childs != undefined && val.childs.length > 0) {
+              val.childs.forEach((type: any) => {
+                if (type.Id == MainId) {
+                  val.flag = true;
+                  type.childs.push(childItem.data);
+                } else {
+                  AllItems.push(childItem.data);
+                }
+              });
+            }
+          } else {
+            AllItems.push(childItem.data);
           }
         });
-        setData((AllItems) => [...AllItems]);
-        setCount(count+1)
+        const finalData = AllItems.filter((val: any, id: any, array: any) => {
+          return array.indexOf(val) == id;
+        });
+        setData(finalData);
+        setCount(count + 1);
       }
     }
   }, []);
@@ -3841,7 +3861,7 @@ export default function ComponentTable({ props }: any) {
         </div>
         <div className="col-sm-12 pad0 smart">
           <div className="section-event">
-            <div className="wrapper">
+            <div className={`${data.length>10?"wrapper":"MinHeight"}`}>
               <table
                 className="table table-hover"
                 id="EmpTable"
@@ -4178,904 +4198,958 @@ export default function ComponentTable({ props }: any) {
                       alt="Loading..."
                     />
                   </div>
-                  {data?.length == 0?    
-                  
-                  <div className="border m-2 p-5 text-center noitems">
-<h5 className="opacity-50">No items available</h5>
-</div>:
-               <>   {data?.length > 0 &&
-                    data &&
-                    data.map(function (item, index) {
-                      if (item.flag == true) {
-                        return (
-                          <>
-                            <tr>
-                              <td className="p-0" colSpan={13}>
-                                <table
-                                  className="table m-0"
-                                  style={{ width: "100%" }}
-                                >
-                                  <tr className="bold for-c0l">
-                                    <td style={{ width: "2%" }}>
-                                      <div className="accordian-header">
-                                        {item.childs != undefined &&
-                                          item.childs.length > 0 && (
-                                            <a
-                                              className="hreflink"
-                                              title="Tap to expand the childs"
-                                            >
-                                              <div
-                                                onClick={() => handleOpen(item)}
-                                                className="sign"
-                                              >
-                                                {item.childs.length > 0 &&
-                                                item.show ? (
-                                                  <img
-                                                    src={item.downArrowIcon}
-                                                  />
-                                                ) : (
-                                                  <img
-                                                    src={item.RightArrowIcon}
-                                                  />
-                                                )}
-                                              </div>
-                                            </a>
-                                          )}
-                                      </div>
-                                    </td>
-                                    <td style={{ width: "6%" }}>
-                                      <div className="d-flex">
-                                        <span className="pe-2">
-                                          <input
-                                            type="checkbox"
-                                            checked={item.chekBox}
-                                            onChange={(e) =>
-                                              onChangeHandler(item, "Parent", e)
-                                            }
-                                          />
-                                          <a
-                                            className="hreflink"
-                                            data-toggle="modal"
-                                          >
-                                            <img
-                                              className="icon-sites-img ml20"
-                                              src={item.SiteIcon}
-                                            ></img>
-                                          </a>
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td style={{ width: "7%" }}>
-                                      <span className="ml-2">
-                                        {item.Shareweb_x0020_ID}
-                                      </span>
-                                    </td>
-                                    <td style={{ width: "23%" }}>
-                                      {/* {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" onClick={() => window.open(GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId= + ${item.Id}`, '_blank')} */}
-                                      {item.siteType === "Master Tasks" && (
-                                        <a
-                                          className="hreflink serviceColor_Active"
-                                          target="_blank"
-                                          data-interception="off"
-                                          href={
-                                            GlobalConstants.MAIN_SITE_URL +
-                                            "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                            item.Id
-                                          }
-                                        >
-                                          <span
-                                            dangerouslySetInnerHTML={{
-                                              __html: item.TitleNew,
-                                            }}
-                                          ></span>
-                                          {/* {item.TitleNew} */}
-                                        </a>
-                                      )}
-                                      {item.siteType != "Master Tasks" && (
-                                        <a
-                                          className="hreflink serviceColor_Active"
-                                          target="_blank"
-                                          data-interception="off"
-                                          href={
-                                            GlobalConstants.MAIN_SITE_URL +
-                                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
-                                            item.Id +
-                                            "&Site=" +
-                                            item.siteType
-                                          }
-                                        >
-                                          <span
-                                            dangerouslySetInnerHTML={{
-                                              __html: item?.TitleNew,
-                                            }}
-                                          ></span>
-                                        </a>
-                                      )}
-                                      {item.childs != undefined &&
-                                        item.childs.length > 0 && (
-                                          <span>
-                                            {item.childs.length == 0 ? (
-                                              ""
-                                            ) : (
-                                              <span className="ms-1">
-                                                ({item.childsLength})
-                                              </span>
-                                            )}
-                                          </span>
-                                        )}
-                                      {item.Short_x0020_Description_x0020_On !=
-                                        null && (
-                                        // <span className="project-tool"><img
-                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                        //         <span className="tooltiptext">
-                                        //             <div className="tooltip_Desc">
-                                        //                 <span>{item.Short_x0020_Description_x0020_On}</span>
-                                        //             </div>
-                                        //         </span>
-                                        //     </span>
-                                        // </span>
-                                        <div
-                                          className="popover__wrapper ms-1"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-placement="auto"
-                                        >
-                                          <img
-                                            src={
-                                              GlobalConstants.MAIN_SITE_URL +
-                                              "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
-                                            }
-                                          />
-                                          <div className="popover__content">
-                                            {
-                                              item.Short_x0020_Description_x0020_On
-                                            }
-                                          </div>
-                                        </div>
-                                      )}
-                                    </td>
-                                    <td style={{ width: "7%" }}>
-                                      <div>
-                                        {item.ClientCategory != undefined &&
-                                          item.ClientCategory.length > 0 &&
-                                          item.ClientCategory.map(
-                                            function (client: {
-                                              Title: string;
-                                            }) {
-                                              return (
-                                                <span
-                                                  className="ClientCategory-Usericon"
-                                                  title={client.Title}
-                                                >
-                                                  <a>
-                                                    {client.Title.slice(
-                                                      0,
-                                                      2
-                                                    ).toUpperCase()}
-                                                  </a>
-                                                </span>
-                                              );
-                                            }
-                                          )}
-                                      </div>
-                                    </td>
-                                    <td style={{ width: "4%" }}>
-                                      {item.PercentComplete}
-                                    </td>
-                                    <td style={{ width: "7%" }}>
-                                      {item.ItemRank}
-                                    </td>
-                                    <td style={{ width: "10%" }}>
-                                      <div>
-                                        <ShowTaskTeamMembers
-                                          props={item}
-                                          TaskUsers={AllUsers}
-                                        ></ShowTaskTeamMembers>
-                                      </div>
-                                    </td>
-
-                                    <td style={{ width: "9%" }}>
-                                      {item.DueDate}
-                                    </td>
-                                    <td style={{ width: "11%" }}>
-                                      {item.Created != null
-                                        ? Moment(item.Created).format(
-                                            "DD/MM/YYYY"
-                                          )
-                                        : ""}
-                                      {item.Created == null ? (
-                                        ""
-                                      ) : (
-                                        <>
-                                          {item.Author != undefined ? (
-                                            <img
-                                              className="AssignUserPhoto"
-                                              title={item.Author.Title}
-                                              src={findUserByName(
-                                                item.Author.Title
-                                              )}
-                                            />
-                                          ) : (
-                                            <img
-                                              className="AssignUserPhoto"
-                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                                            />
-                                          )}{" "}
-                                        </>
-                                      )}
-                                    </td>
-
-                                    <td style={{ width: "7%" }}>
-                                      {/* {item.Item_x0020_Type == 'Task' && item.TimeSpent != null &&
-                                                                        <>
-                                                                        {item.TimeSpent.toFixed(1)}
-                                                                      </>
-                                                                      } */}
-                                    </td>
-
-                                    <td style={{ width: "2%" }}>
-                                      {item.Item_x0020_Type == "Task" &&
-                                        item.siteType != "Master Tasks" && (
-                                          <a onClick={(e) => EditData(e, item)}>
-                                            <span className="svg__iconbox svg__icon--clock"></span>
-                                          </a>
-                                        )}
-                                    </td>
-                                    <td style={{ width: "2%" }}>
-                                      {item.siteType === "Master Tasks" &&
-                                        item.isRestructureActive && (
-                                          <a
-                                            href="#"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="auto"
-                                            title="Edit"
-                                          >
-                                            <img
-                                              className="icon-sites-img"
-                                              src={item.Restructuring}
-                                              onClick={(e) => OpenModal(item)}
-                                            />
-                                          </a>
-                                        )}
-                                      <span>
-                                        {IsShowRestru ? (
-                                          <img
-                                            className="icon-sites-img ml20"
-                                            onClick={(e) => OpenModal(props)}
-                                            src={
-                                              IsShowRestru &&
-                                              IsUpdated == "Service"
-                                                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                            }
-                                          ></img>
-                                        ) : (
-                                          ""
-                                        )}
-                                      </span>
-                                    </td>
-                                    <td style={{ width: "2%" }}>
-                                      <a>
-                                        {item.siteType == "Master Tasks" && (
-                                          <img
-                                            src={require("../../../Assets/ICON/edit_page.svg")}
-                                            width="25"
-                                            onClick={(e) =>
-                                              EditComponentPopup(item)
-                                            }
-                                          />
-                                        )}
-                                        {item.Item_x0020_Type == "Task" &&
-                                          item.siteType != "Master Tasks" && (
-                                            <img
-                                              src={require("../../../Assets/ICON/edit_page.svg")}
-                                              width="25"
-                                              onClick={(e) =>
-                                                EditItemTaskPopup(item)
-                                              }
-                                            />
-                                          )}
-                                      </a>
-                                    </td>
-                                    {/* <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
-                                                                    {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td> */}
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                            {item.show && item.childs.length > 0 && (
+                  {data?.length == 0 ? (
+                    <div className="border m-2 p-5 text-center noitems">
+                      <h5 className="opacity-50">No items available</h5>
+                    </div>
+                  ) : (
+                    <>
+                      {" "}
+                      {data?.length > 0 &&
+                        data &&
+                        data.map(function (item, index) {
+                          if (item.flag == true) {
+                            return (
                               <>
-                                {item.childs.map(function (childitem: any) {
-                                  if (childitem.flag == true) {
-                                    return (
-                                      <>
-                                        <tr>
-                                          <td className="p-0" colSpan={13}>
-                                            <table
-                                              className="table m-0"
-                                              style={{ width: "100%" }}
-                                            >
-                                              <tr className="for-c02">
-                                                <td style={{ width: "2%" }}>
+                                <tr>
+                                  <td className="p-0" colSpan={13}>
+                                    <table
+                                      className="table m-0"
+                                      style={{ width: "100%" }}
+                                    >
+                                      <tr className="bold for-c0l">
+                                        <td style={{ width: "2%" }}>
+                                          <div className="accordian-header">
+                                            {item.childs != undefined &&
+                                              item.childs.length > 0 && (
+                                                <a
+                                                  className="hreflink"
+                                                  title="Tap to expand the childs"
+                                                >
                                                   <div
                                                     onClick={() =>
-                                                      handleOpen(childitem)
+                                                      handleOpen(item)
                                                     }
                                                     className="sign"
                                                   >
-                                                    {childitem.childs?.length >
-                                                      0 && childitem.show ? (
+                                                    {item.childs.length > 0 &&
+                                                    item.show ? (
                                                       <img
-                                                        src={
-                                                          childitem.downArrowIcon
-                                                        }
+                                                        src={item.downArrowIcon}
                                                       />
                                                     ) : (
                                                       <img
                                                         src={
-                                                          childitem.RightArrowIcon
+                                                          item.RightArrowIcon
                                                         }
                                                       />
                                                     )}
                                                   </div>
-                                                </td>
-                                                <td style={{ width: "6%" }}>
-                                                  <span className="pe-2">
-                                                    <input
-                                                      type="checkbox"
-                                                      onChange={(e) =>
-                                                        onChangeHandler(
-                                                          childitem,
-                                                          "Parent",
-                                                          e
-                                                        )
-                                                      }
-                                                    />
-                                                    <a
-                                                      className="hreflink"
-                                                      data-toggle="modal"
-                                                    >
-                                                      <img
-                                                        className="icon-sites-img ml20"
-                                                        src={childitem.SiteIcon}
-                                                      ></img>
-                                                    </a>
+                                                </a>
+                                              )}
+                                          </div>
+                                        </td>
+                                        <td style={{ width: "6%" }}>
+                                          <div className="d-flex">
+                                            <span className="pe-2">
+                                              <input
+                                                type="checkbox"
+                                                checked={item.chekBox}
+                                                onChange={(e) =>
+                                                  onChangeHandler(
+                                                    item,
+                                                    "Parent",
+                                                    e
+                                                  )
+                                                }
+                                              />
+                                              <a
+                                                className="hreflink"
+                                                data-toggle="modal"
+                                              >
+                                                <img
+                                                  className="icon-sites-img ml20"
+                                                  src={item.SiteIcon}
+                                                ></img>
+                                              </a>
+                                            </span>
+                                          </div>
+                                        </td>
+                                        <td style={{ width: "7%" }}>
+                                          <span className="ml-2">
+                                            {item.Shareweb_x0020_ID}
+                                          </span>
+                                        </td>
+                                        <td style={{ width: "23%" }}>
+                                          {/* {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" onClick={() => window.open(GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId= + ${item.Id}`, '_blank')} */}
+                                          {item.siteType === "Master Tasks" && (
+                                            <a
+                                              className="hreflink serviceColor_Active"
+                                              target="_blank"
+                                              data-interception="off"
+                                              href={
+                                                GlobalConstants.MAIN_SITE_URL +
+                                                "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                item.Id
+                                              }
+                                            >
+                                              <span
+                                                dangerouslySetInnerHTML={{
+                                                  __html: item.TitleNew,
+                                                }}
+                                              ></span>
+                                              {/* {item.TitleNew} */}
+                                            </a>
+                                          )}
+                                          {item.siteType != "Master Tasks" && (
+                                            <a
+                                              className="hreflink serviceColor_Active"
+                                              target="_blank"
+                                              data-interception="off"
+                                              href={
+                                                GlobalConstants.MAIN_SITE_URL +
+                                                "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                item.Id +
+                                                "&Site=" +
+                                                item.siteType
+                                              }
+                                            >
+                                              <span
+                                                dangerouslySetInnerHTML={{
+                                                  __html: item?.TitleNew,
+                                                }}
+                                              ></span>
+                                            </a>
+                                          )}
+                                          {item.childs != undefined &&
+                                            item.childs.length > 0 && (
+                                              <span>
+                                                {item.childs.length == 0 ? (
+                                                  ""
+                                                ) : (
+                                                  <span className="ms-1">
+                                                    ({item.childsLength})
                                                   </span>
-                                                </td>
-                                                <td style={{ width: "7%" }}>
-                                                  {" "}
-                                                  <span className="ml-2">
-                                                    {
-                                                      childitem.Shareweb_x0020_ID
-                                                    }
-                                                  </span>
-                                                </td>
-                                                <td style={{ width: "23%" }}>
-                                                  {childitem.siteType ==
-                                                    "Master Tasks" && (
-                                                    <a
-                                                      className="hreflink serviceColor_Active"
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                      href={
-                                                        GlobalConstants.MAIN_SITE_URL +
-                                                        "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                        childitem.Id
-                                                      }
+                                                )}
+                                              </span>
+                                            )}
+                                          {item.Short_x0020_Description_x0020_On !=
+                                            null && (
+                                            // <span className="project-tool"><img
+                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                            //         <span className="tooltiptext">
+                                            //             <div className="tooltip_Desc">
+                                            //                 <span>{item.Short_x0020_Description_x0020_On}</span>
+                                            //             </div>
+                                            //         </span>
+                                            //     </span>
+                                            // </span>
+                                            <div
+                                              className="popover__wrapper ms-1"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="auto"
+                                            >
+                                              <img
+                                                src={
+                                                  GlobalConstants.MAIN_SITE_URL +
+                                                  "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
+                                                }
+                                              />
+                                              <div className="popover__content">
+                                                {
+                                                  item.Short_x0020_Description_x0020_On
+                                                }
+                                              </div>
+                                            </div>
+                                          )}
+                                        </td>
+                                        <td style={{ width: "7%" }}>
+                                          <div>
+                                            {item.ClientCategory != undefined &&
+                                              item.ClientCategory.length > 0 &&
+                                              item.ClientCategory.map(
+                                                function (client: {
+                                                  Title: string;
+                                                }) {
+                                                  return (
+                                                    <span
+                                                      className="ClientCategory-Usericon"
+                                                      title={client.Title}
                                                     >
-                                                      <span
-                                                        dangerouslySetInnerHTML={{
-                                                          __html:
-                                                            childitem?.TitleNew,
-                                                        }}
-                                                      ></span>
-                                                    </a>
+                                                      <a>
+                                                        {client.Title.slice(
+                                                          0,
+                                                          2
+                                                        ).toUpperCase()}
+                                                      </a>
+                                                    </span>
+                                                  );
+                                                }
+                                              )}
+                                          </div>
+                                        </td>
+                                        <td style={{ width: "4%" }}>
+                                          {item.PercentComplete}
+                                        </td>
+                                        <td style={{ width: "7%" }}>
+                                          {item.ItemRank}
+                                        </td>
+                                        <td style={{ width: "10%" }}>
+                                          <div>
+                                            <ShowTaskTeamMembers
+                                              props={item}
+                                              TaskUsers={AllUsers}
+                                            ></ShowTaskTeamMembers>
+                                          </div>
+                                        </td>
+
+                                        <td style={{ width: "9%" }}>
+                                          {item.DueDate}
+                                        </td>
+                                        <td style={{ width: "11%" }}>
+                                          {item.Created != null
+                                            ? Moment(item.Created).format(
+                                                "DD/MM/YYYY"
+                                              )
+                                            : ""}
+                                          {item.Created == null ? (
+                                            ""
+                                          ) : (
+                                            <>
+                                              {item.Author != undefined ? (
+                                                <img
+                                                  className="AssignUserPhoto"
+                                                  title={item.Author.Title}
+                                                  src={findUserByName(
+                                                    item.Author.Title
                                                   )}
-                                                  {childitem.siteType !=
-                                                    "Master Tasks" && (
-                                                    <a
-                                                      className="hreflink serviceColor_Active"
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                      href={
-                                                        GlobalConstants.MAIN_SITE_URL +
-                                                        "/SP/SitePages/Task-Profile.aspx?taskId=" +
-                                                        childitem.Id +
-                                                        "&Site=" +
-                                                        childitem.siteType
-                                                      }
-                                                    >
-                                                      <span
-                                                        dangerouslySetInnerHTML={{
-                                                          __html:
-                                                            childitem?.TitleNew,
-                                                        }}
-                                                      ></span>
-                                                    </a>
-                                                  )}
-                                                  {childitem.childs !=
-                                                    undefined &&
-                                                    childitem.childs.length >
-                                                      0 && (
-                                                      <span className="ms-1">
-                                                        (
-                                                        {childitem.childsLength}
-                                                        )
-                                                      </span>
-                                                    )}
-                                                  {childitem.Short_x0020_Description_x0020_On !=
-                                                    null && (
-                                                    // <span className="project-tool"><img
-                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                    //         <span className="tooltiptext">
-                                                    //             <div className="tooltip_Desc">
-                                                    //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                    //             </div>
-                                                    //         </span>
-                                                    //     </span>
-                                                    // </span>
-                                                    <div
-                                                      className="popover__wrapper ms-1"
-                                                      data-bs-toggle="tooltip"
-                                                      data-bs-placement="auto"
-                                                    >
-                                                      <img
-                                                        src={
-                                                          GlobalConstants.MAIN_SITE_URL +
-                                                          "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
+                                                />
+                                              ) : (
+                                                <img
+                                                  className="AssignUserPhoto"
+                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                                                />
+                                              )}{" "}
+                                            </>
+                                          )}
+                                        </td>
+
+                                        <td style={{ width: "7%" }}>
+                                          {/* {item.Item_x0020_Type == 'Task' && item.TimeSpent != null &&
+                                                                        <>
+                                                                        {item.TimeSpent.toFixed(1)}
+                                                                      </>
+                                                                      } */}
+                                        </td>
+
+                                        <td style={{ width: "2%" }}>
+                                          {item.Item_x0020_Type == "Task" &&
+                                            item.siteType != "Master Tasks" && (
+                                              <a
+                                                onClick={(e) =>
+                                                  EditData(e, item)
+                                                }
+                                              >
+                                                <span className="svg__iconbox svg__icon--clock"></span>
+                                              </a>
+                                            )}
+                                        </td>
+                                        <td style={{ width: "2%" }}>
+                                          {item.siteType === "Master Tasks" &&
+                                            item.isRestructureActive && (
+                                              <a
+                                                href="#"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="auto"
+                                                title="Edit"
+                                              >
+                                                <img
+                                                  className="icon-sites-img"
+                                                  src={item.Restructuring}
+                                                  onClick={(e) =>
+                                                    OpenModal(item)
+                                                  }
+                                                />
+                                              </a>
+                                            )}
+                                          <span>
+                                            {IsShowRestru ? (
+                                              <img
+                                                className="icon-sites-img ml20"
+                                                onClick={(e) =>
+                                                  OpenModal(props)
+                                                }
+                                                src={
+                                                  IsShowRestru &&
+                                                  IsUpdated == "Service"
+                                                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+                                                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                                                }
+                                              ></img>
+                                            ) : (
+                                              ""
+                                            )}
+                                          </span>
+                                        </td>
+                                        <td style={{ width: "2%" }}>
+                                          <a>
+                                            {item.siteType ==
+                                              "Master Tasks" && (
+                                              <img
+                                                src={require("../../../Assets/ICON/edit_page.svg")}
+                                                width="25"
+                                                onClick={(e) =>
+                                                  EditComponentPopup(item)
+                                                }
+                                              />
+                                            )}
+                                            {item.Item_x0020_Type == "Task" &&
+                                              item.siteType !=
+                                                "Master Tasks" && (
+                                                <img
+                                                  src={require("../../../Assets/ICON/edit_page.svg")}
+                                                  width="25"
+                                                  onClick={(e) =>
+                                                    EditItemTaskPopup(item)
+                                                  }
+                                                />
+                                              )}
+                                          </a>
+                                        </td>
+                                        {/* <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
+                                                                    {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td> */}
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                                {item.show && item.childs.length > 0 && (
+                                  <>
+                                    {item.childs.map(function (childitem: any) {
+                                      if (childitem.flag == true) {
+                                        return (
+                                          <>
+                                            <tr>
+                                              <td className="p-0" colSpan={13}>
+                                                <table
+                                                  className="table m-0"
+                                                  style={{ width: "100%" }}
+                                                >
+                                                  <tr className="for-c02">
+                                                    <td style={{ width: "2%" }}>
+                                                      <div
+                                                        onClick={() =>
+                                                          handleOpen(childitem)
                                                         }
-                                                      />
-                                                      <div className="popover__content">
-                                                        {
-                                                          childitem.Short_x0020_Description_x0020_On
-                                                        }
+                                                        className="sign"
+                                                      >
+                                                        {childitem.childs
+                                                          ?.length > 0 &&
+                                                        childitem.show ? (
+                                                          <img
+                                                            src={
+                                                              childitem.downArrowIcon
+                                                            }
+                                                          />
+                                                        ) : (
+                                                          <img
+                                                            src={
+                                                              childitem.RightArrowIcon
+                                                            }
+                                                          />
+                                                        )}
                                                       </div>
-                                                    </div>
-                                                  )}
-                                                </td>
-                                                <td style={{ width: "7%" }}>
-                                                  <div>
-                                                    {childitem.ClientCategory !=
-                                                      undefined &&
-                                                      childitem.ClientCategory
-                                                        .length > 0 &&
-                                                      childitem.ClientCategory.map(
-                                                        function (client: {
-                                                          Title: string;
-                                                        }) {
-                                                          return (
-                                                            <span
-                                                              className="ClientCategory-Usericon"
-                                                              title={
-                                                                client.Title
-                                                              }
-                                                            >
-                                                              <a>
-                                                                {client.Title.slice(
-                                                                  0,
-                                                                  2
-                                                                ).toUpperCase()}
-                                                              </a>
-                                                            </span>
-                                                          );
+                                                    </td>
+                                                    <td style={{ width: "6%" }}>
+                                                      <span className="pe-2">
+                                                        <input
+                                                          type="checkbox"
+                                                          onChange={(e) =>
+                                                            onChangeHandler(
+                                                              childitem,
+                                                              "Parent",
+                                                              e
+                                                            )
+                                                          }
+                                                        />
+                                                        <a
+                                                          className="hreflink"
+                                                          data-toggle="modal"
+                                                        >
+                                                          <img
+                                                            className="icon-sites-img ml20"
+                                                            src={
+                                                              childitem.SiteIcon
+                                                            }
+                                                          ></img>
+                                                        </a>
+                                                      </span>
+                                                    </td>
+                                                    <td style={{ width: "7%" }}>
+                                                      {" "}
+                                                      <span className="ml-2">
+                                                        {
+                                                          childitem.Shareweb_x0020_ID
                                                         }
+                                                      </span>
+                                                    </td>
+                                                    <td
+                                                      style={{ width: "23%" }}
+                                                    >
+                                                      {childitem.siteType ==
+                                                        "Master Tasks" && (
+                                                        <a
+                                                          className="hreflink serviceColor_Active"
+                                                          target="_blank"
+                                                          data-interception="off"
+                                                          href={
+                                                            GlobalConstants.MAIN_SITE_URL +
+                                                            "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                            childitem.Id
+                                                          }
+                                                        >
+                                                          <span
+                                                            dangerouslySetInnerHTML={{
+                                                              __html:
+                                                                childitem?.TitleNew,
+                                                            }}
+                                                          ></span>
+                                                        </a>
                                                       )}
-                                                  </div>
-                                                </td>
-                                                <td style={{ width: "4%" }}>
-                                                  {childitem.PercentComplete}
-                                                </td>
-                                                <td style={{ width: "7%" }}>
-                                                  {childitem.ItemRank}
-                                                </td>
-                                                <td style={{ width: "10%" }}>
-                                                  <div>
-                                                    <ShowTaskTeamMembers
-                                                      props={childitem}
-                                                      TaskUsers={AllUsers}
-                                                    ></ShowTaskTeamMembers>
-                                                  </div>
-                                                </td>
-                                                <td style={{ width: "9%" }}>
-                                                  {childitem.DueDate}
-                                                </td>
-                                                <td style={{ width: "11%" }}>
-                                                  {childitem.Created != null
-                                                    ? Moment(
-                                                        childitem.Created
-                                                      ).format("DD/MM/YYYY")
-                                                    : ""}
-                                                  {childitem.Author !=
-                                                  undefined ? (
-                                                    <img
-                                                      className="AssignUserPhoto"
-                                                      title={
-                                                        childitem.Author.Title
+                                                      {childitem.siteType !=
+                                                        "Master Tasks" && (
+                                                        <a
+                                                          className="hreflink serviceColor_Active"
+                                                          target="_blank"
+                                                          data-interception="off"
+                                                          href={
+                                                            GlobalConstants.MAIN_SITE_URL +
+                                                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                            childitem.Id +
+                                                            "&Site=" +
+                                                            childitem.siteType
+                                                          }
+                                                        >
+                                                          <span
+                                                            dangerouslySetInnerHTML={{
+                                                              __html:
+                                                                childitem?.TitleNew,
+                                                            }}
+                                                          ></span>
+                                                        </a>
+                                                      )}
+                                                      {childitem.childs !=
+                                                        undefined &&
+                                                        childitem.childs
+                                                          .length > 0 && (
+                                                          <span className="ms-1">
+                                                            (
+                                                            {
+                                                              childitem.childsLength
+                                                            }
+                                                            )
+                                                          </span>
+                                                        )}
+                                                      {childitem.Short_x0020_Description_x0020_On !=
+                                                        null && (
+                                                        // <span className="project-tool"><img
+                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                        //         <span className="tooltiptext">
+                                                        //             <div className="tooltip_Desc">
+                                                        //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
+                                                        //             </div>
+                                                        //         </span>
+                                                        //     </span>
+                                                        // </span>
+                                                        <div
+                                                          className="popover__wrapper ms-1"
+                                                          data-bs-toggle="tooltip"
+                                                          data-bs-placement="auto"
+                                                        >
+                                                          <img
+                                                            src={
+                                                              GlobalConstants.MAIN_SITE_URL +
+                                                              "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
+                                                            }
+                                                          />
+                                                          <div className="popover__content">
+                                                            {
+                                                              childitem.Short_x0020_Description_x0020_On
+                                                            }
+                                                          </div>
+                                                        </div>
+                                                      )}
+                                                    </td>
+                                                    <td style={{ width: "7%" }}>
+                                                      <div>
+                                                        {childitem.ClientCategory !=
+                                                          undefined &&
+                                                          childitem
+                                                            .ClientCategory
+                                                            .length > 0 &&
+                                                          childitem.ClientCategory.map(
+                                                            function (client: {
+                                                              Title: string;
+                                                            }) {
+                                                              return (
+                                                                <span
+                                                                  className="ClientCategory-Usericon"
+                                                                  title={
+                                                                    client.Title
+                                                                  }
+                                                                >
+                                                                  <a>
+                                                                    {client.Title.slice(
+                                                                      0,
+                                                                      2
+                                                                    ).toUpperCase()}
+                                                                  </a>
+                                                                </span>
+                                                              );
+                                                            }
+                                                          )}
+                                                      </div>
+                                                    </td>
+                                                    <td style={{ width: "4%" }}>
+                                                      {
+                                                        childitem.PercentComplete
                                                       }
-                                                      src={findUserByName(
-                                                        childitem.Author.Title
+                                                    </td>
+                                                    <td style={{ width: "7%" }}>
+                                                      {childitem.ItemRank}
+                                                    </td>
+                                                    <td
+                                                      style={{ width: "10%" }}
+                                                    >
+                                                      <div>
+                                                        <ShowTaskTeamMembers
+                                                          props={childitem}
+                                                          TaskUsers={AllUsers}
+                                                        ></ShowTaskTeamMembers>
+                                                      </div>
+                                                    </td>
+                                                    <td style={{ width: "9%" }}>
+                                                      {childitem.DueDate}
+                                                    </td>
+                                                    <td
+                                                      style={{ width: "11%" }}
+                                                    >
+                                                      {childitem.Created != null
+                                                        ? Moment(
+                                                            childitem.Created
+                                                          ).format("DD/MM/YYYY")
+                                                        : ""}
+                                                      {childitem.Author !=
+                                                      undefined ? (
+                                                        <img
+                                                          className="AssignUserPhoto"
+                                                          title={
+                                                            childitem.Author
+                                                              .Title
+                                                          }
+                                                          src={findUserByName(
+                                                            childitem.Author
+                                                              .Title
+                                                          )}
+                                                        />
+                                                      ) : (
+                                                        <img
+                                                          className="AssignUserPhoto"
+                                                          src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                                                        />
                                                       )}
-                                                    />
-                                                  ) : (
-                                                    <img
-                                                      className="AssignUserPhoto"
-                                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                                                    />
-                                                  )}
-                                                </td>
-                                                <td style={{ width: "7%" }}>
-                                                  {/* {childitem.Item_x0020_Type == 'Task' &&
+                                                    </td>
+                                                    <td style={{ width: "7%" }}>
+                                                      {/* {childitem.Item_x0020_Type == 'Task' &&
                                                                                             <>
                                                                                               {smartTime.toFixed(1)}
                                                                                             </>
                                                                                             }
                                                                                              {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                </td>
+                                                    </td>
 
-                                                <td style={{ width: "2%" }}>
-                                                  {childitem.Item_x0020_Type ==
-                                                    "Task" &&
-                                                    childitem.siteType !=
-                                                      "Master Tasks" && (
-                                                      <a
-                                                        onClick={(e) =>
-                                                          EditData(e, childitem)
-                                                        }
-                                                      >
-                                                        <span className="svg__iconbox svg__icon--clock"></span>
+                                                    <td style={{ width: "2%" }}>
+                                                      {childitem.Item_x0020_Type ==
+                                                        "Task" &&
+                                                        childitem.siteType !=
+                                                          "Master Tasks" && (
+                                                          <a
+                                                            onClick={(e) =>
+                                                              EditData(
+                                                                e,
+                                                                childitem
+                                                              )
+                                                            }
+                                                          >
+                                                            <span className="svg__iconbox svg__icon--clock"></span>
+                                                          </a>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ width: "2%" }}>
+                                                      {childitem.siteType ===
+                                                        "Master Tasks" &&
+                                                        childitem.isRestructureActive && (
+                                                          <a
+                                                            href="#"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="auto"
+                                                            title="Edit"
+                                                          >
+                                                            <img
+                                                              className="icon-sites-img"
+                                                              src={
+                                                                childitem.Restructuring
+                                                              }
+                                                              onClick={(e) =>
+                                                                OpenModal(
+                                                                  childitem
+                                                                )
+                                                              }
+                                                            />
+                                                          </a>
+                                                        )}
+                                                      <span>
+                                                        {IsShowRestru ? (
+                                                          <img
+                                                            className="icon-sites-img ml20"
+                                                            onClick={(e) =>
+                                                              OpenModal(props)
+                                                            }
+                                                            src={
+                                                              IsShowRestru &&
+                                                              IsUpdated ==
+                                                                "Service"
+                                                                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+                                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                                                            }
+                                                          ></img>
+                                                        ) : (
+                                                          ""
+                                                        )}
+                                                      </span>
+                                                    </td>
+                                                    <td style={{ width: "2%" }}>
+                                                      <a>
+                                                        {childitem.siteType ==
+                                                          "Master Tasks" && (
+                                                          <img
+                                                            src={require("../../../Assets/ICON/edit_page.svg")}
+                                                            width="25"
+                                                            onClick={(e) =>
+                                                              EditComponentPopup(
+                                                                childitem
+                                                              )
+                                                            }
+                                                          />
+                                                        )}
+                                                        {childitem.Item_x0020_Type ==
+                                                          "Task" &&
+                                                          childitem.siteType !=
+                                                            "Master Tasks" && (
+                                                            <img
+                                                              src={require("../../../Assets/ICON/edit_page.svg")}
+                                                              width="25"
+                                                              onClick={(e) =>
+                                                                EditItemTaskPopup(
+                                                                  childitem
+                                                                )
+                                                              }
+                                                            />
+                                                          )}
                                                       </a>
-                                                    )}
-                                                </td>
-                                                <td style={{ width: "2%" }}>
-                                                  {childitem.siteType ===
-                                                    "Master Tasks" &&
-                                                    childitem.isRestructureActive && (
-                                                      <a
-                                                        href="#"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="auto"
-                                                        title="Edit"
-                                                      >
-                                                        <img
-                                                          className="icon-sites-img"
-                                                          src={
-                                                            childitem.Restructuring
-                                                          }
-                                                          onClick={(e) =>
-                                                            OpenModal(childitem)
-                                                          }
-                                                        />
-                                                      </a>
-                                                    )}
-                                                  <span>
-                                                    {IsShowRestru ? (
-                                                      <img
-                                                        className="icon-sites-img ml20"
-                                                        onClick={(e) =>
-                                                          OpenModal(props)
-                                                        }
-                                                        src={
-                                                          IsShowRestru &&
-                                                          IsUpdated == "Service"
-                                                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-                                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                                        }
-                                                      ></img>
-                                                    ) : (
-                                                      ""
-                                                    )}
-                                                  </span>
-                                                </td>
-                                                <td style={{ width: "2%" }}>
-                                                  <a>
-                                                    {childitem.siteType ==
-                                                      "Master Tasks" && (
-                                                      <img
-                                                        src={require("../../../Assets/ICON/edit_page.svg")}
-                                                        width="25"
-                                                        onClick={(e) =>
-                                                          EditComponentPopup(
-                                                            childitem
-                                                          )
-                                                        }
-                                                      />
-                                                    )}
-                                                    {childitem.Item_x0020_Type ==
-                                                      "Task" &&
-                                                      childitem.siteType !=
-                                                        "Master Tasks" && (
-                                                        <img
-                                                          src={require("../../../Assets/ICON/edit_page.svg")}
-                                                          width="25"
-                                                          onClick={(e) =>
-                                                            EditItemTaskPopup(
-                                                              childitem
-                                                            )
-                                                          }
-                                                        />
-                                                      )}
-                                                  </a>
-                                                </td>
-                                                {/* <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                    </td>
+                                                    {/* <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                         <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childitem)} />}
                                                                                             {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td> */}
-                                              </tr>
-                                            </table>
-                                          </td>
-                                        </tr>
-                                        {childitem.show &&
-                                          childitem.childs.length > 0 && (
-                                            <>
-                                              {childitem.childs.map(function (
-                                                childinew: any
-                                              ) {
-                                                if (childinew.flag == true) {
-                                                  return (
-                                                    <>
-                                                      <tr>
-                                                        <td
-                                                          className="p-0"
-                                                          colSpan={13}
-                                                        >
-                                                          <table
-                                                            className="table m-0"
-                                                            style={{
-                                                              width: "100%",
-                                                            }}
-                                                          >
-                                                            <tr className="tdrow">
+                                                  </tr>
+                                                </table>
+                                              </td>
+                                            </tr>
+                                            {childitem.show &&
+                                              childitem.childs.length > 0 && (
+                                                <>
+                                                  {childitem.childs.map(
+                                                    function (childinew: any) {
+                                                      if (
+                                                        childinew.flag == true
+                                                      ) {
+                                                        return (
+                                                          <>
+                                                            <tr>
                                                               <td
-                                                                style={{
-                                                                  width: "2%",
-                                                                }}
+                                                                className="p-0"
+                                                                colSpan={13}
                                                               >
-                                                                <div
-                                                                  className="accordian-header"
-                                                                  onClick={() =>
-                                                                    handleOpen(
-                                                                      childinew
-                                                                    )
-                                                                  }
+                                                                <table
+                                                                  className="table m-0"
+                                                                  style={{
+                                                                    width:
+                                                                      "100%",
+                                                                  }}
                                                                 >
-                                                                  {childinew
-                                                                    .childs
-                                                                    .length >
-                                                                    0 && (
-                                                                    <a
-                                                                      className="hreflink"
-                                                                      title="Tap to expand the childs"
+                                                                  <tr className="tdrow">
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "2%",
+                                                                      }}
                                                                     >
-                                                                      <div className="sign">
-                                                                        {childinew
-                                                                          .childs
-                                                                          .length >
-                                                                          0 &&
-                                                                        childinew.show ? (
-                                                                          <img
-                                                                            src={
-                                                                              childinew.downArrowIcon
-                                                                            }
-                                                                          />
-                                                                        ) : (
-                                                                          <img
-                                                                            src={
-                                                                              childinew.RightArrowIcon
-                                                                            }
-                                                                          />
-                                                                        )}
+                                                                      <div
+                                                                        className="accordian-header"
+                                                                        onClick={() =>
+                                                                          handleOpen(
+                                                                            childinew
+                                                                          )
+                                                                        }
+                                                                      >
+                                                                        {childinew.childs &&
+                                                                          childinew
+                                                                            .childs
+                                                                            .length >
+                                                                            0 && (
+                                                                            <a
+                                                                              className="hreflink"
+                                                                              title="Tap to expand the childs"
+                                                                            >
+                                                                              <div className="sign">
+                                                                                {childinew.childs &&
+                                                                                childinew
+                                                                                  .childs
+                                                                                  .length >
+                                                                                  0 &&
+                                                                                childinew.show ? (
+                                                                                  <img
+                                                                                    src={
+                                                                                      childinew.downArrowIcon
+                                                                                    }
+                                                                                  />
+                                                                                ) : (
+                                                                                  <img
+                                                                                    src={
+                                                                                      childinew.RightArrowIcon
+                                                                                    }
+                                                                                  />
+                                                                                )}
+                                                                              </div>
+                                                                            </a>
+                                                                          )}
                                                                       </div>
-                                                                    </a>
-                                                                  )}
-                                                                </div>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "6%",
-                                                                }}
-                                                              >
-                                                                <span className="pe-2">
-                                                                  <input
-                                                                    type="checkbox"
-                                                                    onChange={(
-                                                                      e
-                                                                    ) =>
-                                                                      onChangeHandler(
-                                                                        childinew,
-                                                                        item,
-                                                                        e
-                                                                      )
-                                                                    }
-                                                                  />
-                                                                  <a
-                                                                    className="hreflink"
-                                                                    title="Show All Child"
-                                                                    data-toggle="modal"
-                                                                  >
-                                                                    <img
-                                                                      className="icon-sites-img ml20"
-                                                                      src={
-                                                                        childinew.SiteIcon
-                                                                      }
-                                                                    ></img>
-                                                                  </a>
-                                                                </span>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "7%",
-                                                                }}
-                                                              >
-                                                                {" "}
-                                                                <div className="d-flex">
-                                                                  <span className="ml-2">
-                                                                    {
-                                                                      childinew.Shareweb_x0020_ID
-                                                                    }
-                                                                  </span>
-                                                                </div>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "23%",
-                                                                }}
-                                                              >
-                                                                {childinew.siteType ==
-                                                                  "Master Tasks" && (
-                                                                  <a
-                                                                    className="hreflink serviceColor_Active"
-                                                                    target="_blank"
-                                                                    data-interception="off"
-                                                                    href={
-                                                                      GlobalConstants.MAIN_SITE_URL +
-                                                                      "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                      childinew.Id
-                                                                    }
-                                                                  >
-                                                                    <span
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          childinew?.TitleNew,
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "6%",
                                                                       }}
-                                                                    ></span>
-                                                                  </a>
-                                                                )}
-                                                                {childinew.siteType !=
-                                                                  "Master Tasks" && (
-                                                                  <a
-                                                                    className="hreflink serviceColor_Active"
-                                                                    target="_blank"
-                                                                    data-interception="off"
-                                                                    href={
-                                                                      GlobalConstants.MAIN_SITE_URL +
-                                                                      "/SP/SitePages/Task-Profile.aspx?taskId=" +
-                                                                      childinew.Id +
-                                                                      "&Site=" +
-                                                                      childinew.siteType
-                                                                    }
-                                                                  >
-                                                                    {" "}
-                                                                    <span
-                                                                      dangerouslySetInnerHTML={{
-                                                                        __html:
-                                                                          childinew?.TitleNew,
+                                                                    >
+                                                                      <span className="pe-2">
+                                                                        <input
+                                                                          type="checkbox"
+                                                                          onChange={(
+                                                                            e
+                                                                          ) =>
+                                                                            onChangeHandler(
+                                                                              childinew,
+                                                                              item,
+                                                                              e
+                                                                            )
+                                                                          }
+                                                                        />
+                                                                        <a
+                                                                          className="hreflink"
+                                                                          title="Show All Child"
+                                                                          data-toggle="modal"
+                                                                        >
+                                                                          <img
+                                                                            className="icon-sites-img ml20"
+                                                                            src={
+                                                                              childinew.SiteIcon
+                                                                            }
+                                                                          ></img>
+                                                                        </a>
+                                                                      </span>
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "7%",
                                                                       }}
-                                                                    ></span>
-                                                                  </a>
-                                                                )}
-                                                                {childinew.childs !=
-                                                                  undefined &&
-                                                                  childinew
-                                                                    .childs
-                                                                    .length >
-                                                                    0 && (
-                                                                    <span className="ms-1">
-                                                                      (
-                                                                      {
+                                                                    >
+                                                                      {" "}
+                                                                      <div className="d-flex">
+                                                                        <span className="ml-2">
+                                                                          {
+                                                                            childinew.Shareweb_x0020_ID
+                                                                          }
+                                                                        </span>
+                                                                      </div>
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "23%",
+                                                                      }}
+                                                                    >
+                                                                      {childinew.siteType ==
+                                                                        "Master Tasks" && (
+                                                                        <a
+                                                                          className="hreflink serviceColor_Active"
+                                                                          target="_blank"
+                                                                          data-interception="off"
+                                                                          href={
+                                                                            GlobalConstants.MAIN_SITE_URL +
+                                                                            "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                            childinew.Id
+                                                                          }
+                                                                        >
+                                                                          <span
+                                                                            dangerouslySetInnerHTML={{
+                                                                              __html:
+                                                                                childinew?.TitleNew,
+                                                                            }}
+                                                                          ></span>
+                                                                        </a>
+                                                                      )}
+                                                                      {childinew.siteType !=
+                                                                        "Master Tasks" && (
+                                                                        <a
+                                                                          className="hreflink serviceColor_Active"
+                                                                          target="_blank"
+                                                                          data-interception="off"
+                                                                          href={
+                                                                            GlobalConstants.MAIN_SITE_URL +
+                                                                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                            childinew.Id +
+                                                                            "&Site=" +
+                                                                            childinew.siteType
+                                                                          }
+                                                                        >
+                                                                          {" "}
+                                                                          <span
+                                                                            dangerouslySetInnerHTML={{
+                                                                              __html:
+                                                                                childinew?.TitleNew,
+                                                                            }}
+                                                                          ></span>
+                                                                        </a>
+                                                                      )}
+                                                                      {childinew.childs !=
+                                                                        undefined &&
                                                                         childinew
                                                                           .childs
-                                                                          .length
-                                                                      }
-                                                                      )
-                                                                    </span>
-                                                                  )}
-                                                                {childinew.Short_x0020_Description_x0020_On !=
-                                                                  null && (
-                                                                  // <span className="project-tool"><img
-                                                                  //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                  //         <span className="tooltiptext">
-                                                                  //             <div className="tooltip_Desc">
-                                                                  //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                  //             </div>
-                                                                  //         </span>
-                                                                  //     </span>
-                                                                  // </span>
-                                                                  <div
-                                                                    className="popover__wrapper ms-1"
-                                                                    data-bs-toggle="tooltip"
-                                                                    data-bs-placement="auto"
-                                                                  >
-                                                                    <img
-                                                                      src={
-                                                                        GlobalConstants.MAIN_SITE_URL +
-                                                                        "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
-                                                                      }
-                                                                    />
-                                                                    <div className="popover__content">
-                                                                      {
-                                                                        childinew.Short_x0020_Description_x0020_On
-                                                                      }
-                                                                    </div>
-                                                                  </div>
-                                                                )}
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "7%",
-                                                                }}
-                                                              >
-                                                                <div>
-                                                                  {childinew.ClientCategory !=
-                                                                    undefined &&
-                                                                    childinew
-                                                                      .ClientCategory
-                                                                      .length >
-                                                                      0 &&
-                                                                    childinew.ClientCategory.map(
-                                                                      function (client: {
-                                                                        Title: string;
-                                                                      }) {
-                                                                        return (
-                                                                          <span
-                                                                            className="ClientCategory-Usericon"
-                                                                            title={
-                                                                              client.Title
+                                                                          .length >
+                                                                          0 && (
+                                                                          <span className="ms-1">
+                                                                            (
+                                                                            {
+                                                                              childinew
+                                                                                .childs
+                                                                                .length
                                                                             }
-                                                                          >
-                                                                            <a>
-                                                                              {client.Title.slice(
-                                                                                0,
-                                                                                2
-                                                                              ).toUpperCase()}
-                                                                            </a>
+                                                                            )
                                                                           </span>
-                                                                        );
+                                                                        )}
+                                                                      {childinew.Short_x0020_Description_x0020_On !=
+                                                                        null && (
+                                                                        // <span className="project-tool"><img
+                                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                        //         <span className="tooltiptext">
+                                                                        //             <div className="tooltip_Desc">
+                                                                        //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
+                                                                        //             </div>
+                                                                        //         </span>
+                                                                        //     </span>
+                                                                        // </span>
+                                                                        <div
+                                                                          className="popover__wrapper ms-1"
+                                                                          data-bs-toggle="tooltip"
+                                                                          data-bs-placement="auto"
+                                                                        >
+                                                                          <img
+                                                                            src={
+                                                                              GlobalConstants.MAIN_SITE_URL +
+                                                                              "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
+                                                                            }
+                                                                          />
+                                                                          <div className="popover__content">
+                                                                            {
+                                                                              childinew.Short_x0020_Description_x0020_On
+                                                                            }
+                                                                          </div>
+                                                                        </div>
+                                                                      )}
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "7%",
+                                                                      }}
+                                                                    >
+                                                                      <div>
+                                                                        {childinew.ClientCategory !=
+                                                                          undefined &&
+                                                                          childinew
+                                                                            .ClientCategory
+                                                                            .length >
+                                                                            0 &&
+                                                                          childinew.ClientCategory.map(
+                                                                            function (client: {
+                                                                              Title: string;
+                                                                            }) {
+                                                                              return (
+                                                                                <span
+                                                                                  className="ClientCategory-Usericon"
+                                                                                  title={
+                                                                                    client.Title
+                                                                                  }
+                                                                                >
+                                                                                  <a>
+                                                                                    {client.Title.slice(
+                                                                                      0,
+                                                                                      2
+                                                                                    ).toUpperCase()}
+                                                                                  </a>
+                                                                                </span>
+                                                                              );
+                                                                            }
+                                                                          )}
+                                                                      </div>
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "4%",
+                                                                      }}
+                                                                    >
+                                                                      {
+                                                                        childinew.PercentComplete
                                                                       }
-                                                                    )}
-                                                                </div>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "4%",
-                                                                }}
-                                                              >
-                                                                {
-                                                                  childinew.PercentComplete
-                                                                }
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "7%",
-                                                                }}
-                                                              >
-                                                                {
-                                                                  childinew.ItemRank
-                                                                }
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "10%",
-                                                                }}
-                                                              >
-                                                                <div>
-                                                                  <ShowTaskTeamMembers
-                                                                    props={
-                                                                      childinew
-                                                                    }
-                                                                    TaskUsers={
-                                                                      AllUsers
-                                                                    }
-                                                                  ></ShowTaskTeamMembers>
-                                                                  {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "7%",
+                                                                      }}
+                                                                    >
+                                                                      {
+                                                                        childinew.ItemRank
+                                                                      }
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "10%",
+                                                                      }}
+                                                                    >
+                                                                      <div>
+                                                                        <ShowTaskTeamMembers
+                                                                          props={
+                                                                            childinew
+                                                                          }
+                                                                          TaskUsers={
+                                                                            AllUsers
+                                                                          }
+                                                                        ></ShowTaskTeamMembers>
+                                                                        {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                                                     return (
                                                                                                                         <span className="AssignUserPhoto"
                                                                                                                             title={client1.Title}>
@@ -5083,1167 +5157,1176 @@ export default function ComponentTable({ props }: any) {
                                                                                                                         </span>
                                                                                                                     )
                                                                                                                 })} */}
-                                                                </div>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "9%",
-                                                                }}
-                                                              >
-                                                                {
-                                                                  childinew.DueDate
-                                                                }
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "11%",
-                                                                }}
-                                                              >
-                                                                {childinew.Created !=
-                                                                null
-                                                                  ? Moment(
-                                                                      childinew.Created
-                                                                    ).format(
-                                                                      "DD/MM/YYYY"
-                                                                    )
-                                                                  : ""}
+                                                                      </div>
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "9%",
+                                                                      }}
+                                                                    >
+                                                                      {
+                                                                        childinew.DueDate
+                                                                      }
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "11%",
+                                                                      }}
+                                                                    >
+                                                                      {childinew.Created !=
+                                                                      null
+                                                                        ? Moment(
+                                                                            childinew.Created
+                                                                          ).format(
+                                                                            "DD/MM/YYYY"
+                                                                          )
+                                                                        : ""}
 
-                                                                {childinew.Author !=
-                                                                undefined ? (
-                                                                  <img
-                                                                    className="AssignUserPhoto"
-                                                                    title={
-                                                                      childinew
-                                                                        .Author
-                                                                        .Title
-                                                                    }
-                                                                    src={findUserByName(
-                                                                      childinew
-                                                                        .Author
-                                                                        .Title
-                                                                    )}
-                                                                  />
-                                                                ) : (
-                                                                  <img
-                                                                    className="AssignUserPhoto"
-                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                                                                  />
-                                                                )}
-                                                              </td>
+                                                                      {childinew.Author !=
+                                                                      undefined ? (
+                                                                        <img
+                                                                          className="AssignUserPhoto"
+                                                                          title={
+                                                                            childinew
+                                                                              .Author
+                                                                              .Title
+                                                                          }
+                                                                          src={findUserByName(
+                                                                            childinew
+                                                                              .Author
+                                                                              .Title
+                                                                          )}
+                                                                        />
+                                                                      ) : (
+                                                                        <img
+                                                                          className="AssignUserPhoto"
+                                                                          src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                                                                        />
+                                                                      )}
+                                                                    </td>
 
-                                                              <td
-                                                                style={{
-                                                                  width: "7%",
-                                                                }}
-                                                              >
-                                                                {/* {childinew.Item_x0020_Type == 'Task' &&
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "7%",
+                                                                      }}
+                                                                    >
+                                                                      {/* {childinew.Item_x0020_Type == 'Task' &&
                                                                                                                         <>
                                                                                                                         {smartTime.toFixed(1)}
                                                                                                                       </>
                                                                                                                       }
                                                                                                                        {SmartTimes? <SmartTimeTotal props={childinew} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                              </td>
+                                                                    </td>
 
-                                                              <td
-                                                                style={{
-                                                                  width: "2%",
-                                                                }}
-                                                              >
-                                                                {childinew.Item_x0020_Type ==
-                                                                  "Task" &&
-                                                                  childinew.siteType !=
-                                                                    "Master Tasks" && (
-                                                                    <a
-                                                                      onClick={(
-                                                                        e
-                                                                      ) =>
-                                                                        EditData(
-                                                                          e,
-                                                                          childinew
-                                                                        )
-                                                                      }
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "2%",
+                                                                      }}
                                                                     >
-                                                                      <span className="svg__iconbox svg__icon--clock"></span>
-                                                                    </a>
-                                                                  )}
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "2%",
-                                                                }}
-                                                              >
-                                                                {childinew.siteType ===
-                                                                  "Master Tasks" &&
-                                                                  childinew.isRestructureActive && (
-                                                                    <a
-                                                                      href="#"
-                                                                      data-bs-toggle="tooltip"
-                                                                      data-bs-placement="auto"
-                                                                      title="Edit"
+                                                                      {childinew.Item_x0020_Type ==
+                                                                        "Task" &&
+                                                                        childinew.siteType !=
+                                                                          "Master Tasks" && (
+                                                                          <a
+                                                                            onClick={(
+                                                                              e
+                                                                            ) =>
+                                                                              EditData(
+                                                                                e,
+                                                                                childinew
+                                                                              )
+                                                                            }
+                                                                          >
+                                                                            <span className="svg__iconbox svg__icon--clock"></span>
+                                                                          </a>
+                                                                        )}
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "2%",
+                                                                      }}
                                                                     >
-                                                                      <img
-                                                                        className="icon-sites-img"
-                                                                        src={
-                                                                          childinew.Restructuring
-                                                                        }
-                                                                        onClick={(
-                                                                          e
-                                                                        ) =>
-                                                                          OpenModal(
-                                                                            childinew
-                                                                          )
-                                                                        }
-                                                                      />
-                                                                    </a>
-                                                                  )}
-                                                                <span>
-                                                                  {IsShowRestru ? (
-                                                                    <img
-                                                                      className="icon-sites-img ml20"
-                                                                      onClick={(
-                                                                        e
-                                                                      ) =>
-                                                                        OpenModal(
-                                                                          props
-                                                                        )
-                                                                      }
-                                                                      src={
-                                                                        IsShowRestru &&
-                                                                        IsUpdated ==
-                                                                          "Service"
-                                                                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-                                                                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                                                      }
-                                                                    ></img>
-                                                                  ) : (
-                                                                    ""
-                                                                  )}
-                                                                </span>
-                                                              </td>
-                                                              <td
-                                                                style={{
-                                                                  width: "2%",
-                                                                }}
-                                                              >
-                                                                <a>
-                                                                  {childinew.siteType ==
-                                                                    "Master Tasks" && (
-                                                                    <img
-                                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                      width="25"
-                                                                      onClick={(
-                                                                        e
-                                                                      ) =>
-                                                                        EditComponentPopup(
-                                                                          childinew
-                                                                        )
-                                                                      }
-                                                                    />
-                                                                  )}
-                                                                  {childinew.Item_x0020_Type ==
-                                                                    "Task" &&
-                                                                    childinew.siteType !=
-                                                                      "Master Tasks" && (
-                                                                      <img
-                                                                        src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                        width="25"
-                                                                        onClick={(
-                                                                          e
-                                                                        ) =>
-                                                                          EditItemTaskPopup(
-                                                                            childinew
-                                                                          )
-                                                                        }
-                                                                      />
-                                                                    )}
-                                                                </a>
-                                                              </td>
-                                                              {/* <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                      {childinew.siteType ===
+                                                                        "Master Tasks" &&
+                                                                        childinew.isRestructureActive && (
+                                                                          <a
+                                                                            href="#"
+                                                                            data-bs-toggle="tooltip"
+                                                                            data-bs-placement="auto"
+                                                                            title="Edit"
+                                                                          >
+                                                                            <img
+                                                                              className="icon-sites-img"
+                                                                              src={
+                                                                                childinew.Restructuring
+                                                                              }
+                                                                              onClick={(
+                                                                                e
+                                                                              ) =>
+                                                                                OpenModal(
+                                                                                  childinew
+                                                                                )
+                                                                              }
+                                                                            />
+                                                                          </a>
+                                                                        )}
+                                                                      <span>
+                                                                        {IsShowRestru ? (
+                                                                          <img
+                                                                            className="icon-sites-img ml20"
+                                                                            onClick={(
+                                                                              e
+                                                                            ) =>
+                                                                              OpenModal(
+                                                                                props
+                                                                              )
+                                                                            }
+                                                                            src={
+                                                                              IsShowRestru &&
+                                                                              IsUpdated ==
+                                                                                "Service"
+                                                                                ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+                                                                                : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                                                                            }
+                                                                          ></img>
+                                                                        ) : (
+                                                                          ""
+                                                                        )}
+                                                                      </span>
+                                                                    </td>
+                                                                    <td
+                                                                      style={{
+                                                                        width:
+                                                                          "2%",
+                                                                      }}
+                                                                    >
+                                                                      <a>
+                                                                        {childinew.siteType ==
+                                                                          "Master Tasks" && (
+                                                                          <img
+                                                                            src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                            width="25"
+                                                                            onClick={(
+                                                                              e
+                                                                            ) =>
+                                                                              EditComponentPopup(
+                                                                                childinew
+                                                                              )
+                                                                            }
+                                                                          />
+                                                                        )}
+                                                                        {childinew.Item_x0020_Type ==
+                                                                          "Task" &&
+                                                                          childinew.siteType !=
+                                                                            "Master Tasks" && (
+                                                                            <img
+                                                                              src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                              width="25"
+                                                                              onClick={(
+                                                                                e
+                                                                              ) =>
+                                                                                EditItemTaskPopup(
+                                                                                  childinew
+                                                                                )
+                                                                              }
+                                                                            />
+                                                                          )}
+                                                                      </a>
+                                                                    </td>
+                                                                    {/* <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
                                                                                                                 <td style={{ width: "3%" }}><a>{childinew.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childinew)} />}
                                                                                                                     {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td> */}
+                                                                  </tr>
+                                                                </table>
+                                                              </td>
                                                             </tr>
-                                                          </table>
-                                                        </td>
-                                                      </tr>
-                                                      {childinew.show &&
-                                                        childinew.childs
-                                                          .length > 0 && (
-                                                          <>
-                                                            {childinew.childs.map(
-                                                              function (
-                                                                subchilditem: any
-                                                              ) {
-                                                                return (
-                                                                  <>
-                                                                    <tr>
-                                                                      <td
-                                                                        className="p-0"
-                                                                        colSpan={
-                                                                          13
-                                                                        }
-                                                                      >
-                                                                        <table
-                                                                          className="table m-0"
-                                                                          style={{
-                                                                            width:
-                                                                              "100%",
-                                                                          }}
-                                                                        >
-                                                                          <tr className="for-c02">
+                                                            {childinew.show &&
+                                                              childinew.childs
+                                                                .length > 0 && (
+                                                                <>
+                                                                  {childinew.childs.map(
+                                                                    function (
+                                                                      subchilditem: any
+                                                                    ) {
+                                                                      return (
+                                                                        <>
+                                                                          <tr>
                                                                             <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "2%",
-                                                                              }}
+                                                                              className="p-0"
+                                                                              colSpan={
+                                                                                13
+                                                                              }
                                                                             >
-                                                                              <div
-                                                                                className="accordian-header"
-                                                                                onClick={() =>
-                                                                                  handleOpen(
-                                                                                    subchilditem
-                                                                                  )
-                                                                                }
+                                                                              <table
+                                                                                className="table m-0"
+                                                                                style={{
+                                                                                  width:
+                                                                                    "100%",
+                                                                                }}
                                                                               >
-                                                                                {subchilditem
-                                                                                  .childs
-                                                                                  .length >
-                                                                                  0 && (
-                                                                                  <a
-                                                                                    className="hreflink"
-                                                                                    title="Tap to expand the childs"
+                                                                                <tr className="for-c02">
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "2%",
+                                                                                    }}
                                                                                   >
-                                                                                    <div className="sign">
+                                                                                    <div
+                                                                                      className="accordian-header"
+                                                                                      onClick={() =>
+                                                                                        handleOpen(
+                                                                                          subchilditem
+                                                                                        )
+                                                                                      }
+                                                                                    >
                                                                                       {subchilditem
                                                                                         .childs
                                                                                         .length >
-                                                                                        0 &&
-                                                                                      subchilditem.show ? (
-                                                                                        <img
-                                                                                          src={
-                                                                                            subchilditem.downArrowIcon
-                                                                                          }
-                                                                                        />
-                                                                                      ) : (
-                                                                                        <img
-                                                                                          src={
-                                                                                            subchilditem.RightArrowIcon
-                                                                                          }
-                                                                                        />
+                                                                                        0 && (
+                                                                                        <a
+                                                                                          className="hreflink"
+                                                                                          title="Tap to expand the childs"
+                                                                                        >
+                                                                                          <div className="sign">
+                                                                                            {subchilditem
+                                                                                              .childs
+                                                                                              .length >
+                                                                                              0 &&
+                                                                                            subchilditem.show ? (
+                                                                                              <img
+                                                                                                src={
+                                                                                                  subchilditem.downArrowIcon
+                                                                                                }
+                                                                                              />
+                                                                                            ) : (
+                                                                                              <img
+                                                                                                src={
+                                                                                                  subchilditem.RightArrowIcon
+                                                                                                }
+                                                                                              />
+                                                                                            )}
+                                                                                          </div>
+                                                                                        </a>
                                                                                       )}
                                                                                     </div>
-                                                                                  </a>
-                                                                                )}
-                                                                              </div>
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "6%",
-                                                                              }}
-                                                                            >
-                                                                              <span className="pe-2">
-                                                                                <input
-                                                                                  type="checkbox"
-                                                                                  onChange={(
-                                                                                    e
-                                                                                  ) =>
-                                                                                    onChangeHandler(
-                                                                                      subchilditem,
-                                                                                      item,
-                                                                                      e
-                                                                                    )
-                                                                                  }
-                                                                                />
-                                                                              </span>
-                                                                              <span>
-                                                                                <a
-                                                                                  className="hreflink"
-                                                                                  title="Show All Child"
-                                                                                  data-toggle="modal"
-                                                                                >
-                                                                                  <img
-                                                                                    className="icon-sites-img ml20"
-                                                                                    src={
-                                                                                      subchilditem.SiteIcon
-                                                                                    }
-                                                                                  ></img>
-                                                                                </a>
-                                                                              </span>
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "7%",
-                                                                              }}
-                                                                            >
-                                                                              {" "}
-                                                                              <div className="d-flex">
-                                                                                <span className="ml-2">
-                                                                                  {
-                                                                                    subchilditem.Shareweb_x0020_ID
-                                                                                  }
-                                                                                </span>
-                                                                              </div>
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "23%",
-                                                                              }}
-                                                                            >
-                                                                              {subchilditem.siteType ==
-                                                                                "Master Tasks" && (
-                                                                                <a
-                                                                                  className="hreflink serviceColor_Active"
-                                                                                  target="_blank"
-                                                                                  data-interception="off"
-                                                                                  href={
-                                                                                    GlobalConstants.MAIN_SITE_URL +
-                                                                                    "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                                    childitem.Id
-                                                                                  }
-                                                                                >
-                                                                                  <span
-                                                                                    dangerouslySetInnerHTML={{
-                                                                                      __html:
-                                                                                        subchilditem?.TitleNew,
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "6%",
                                                                                     }}
-                                                                                  ></span>
-                                                                                </a>
-                                                                              )}
-                                                                              {subchilditem.siteType !=
-                                                                                "Master Tasks" && (
-                                                                                <a
-                                                                                  className="hreflink serviceColor_Active"
-                                                                                  target="_blank"
-                                                                                  data-interception="off"
-                                                                                  href={
-                                                                                    GlobalConstants.MAIN_SITE_URL +
-                                                                                    "/SP/SitePages/Task-Profile.aspx?taskId=" +
-                                                                                    subchilditem.Id +
-                                                                                    "&Site=" +
-                                                                                    subchilditem.siteType
-                                                                                  }
-                                                                                >
-                                                                                  {" "}
-                                                                                  <span
-                                                                                    dangerouslySetInnerHTML={{
-                                                                                      __html:
-                                                                                        subchilditem?.TitleNew,
+                                                                                  >
+                                                                                    <span className="pe-2">
+                                                                                      <input
+                                                                                        type="checkbox"
+                                                                                        onChange={(
+                                                                                          e
+                                                                                        ) =>
+                                                                                          onChangeHandler(
+                                                                                            subchilditem,
+                                                                                            item,
+                                                                                            e
+                                                                                          )
+                                                                                        }
+                                                                                      />
+                                                                                    </span>
+                                                                                    <span>
+                                                                                      <a
+                                                                                        className="hreflink"
+                                                                                        title="Show All Child"
+                                                                                        data-toggle="modal"
+                                                                                      >
+                                                                                        <img
+                                                                                          className="icon-sites-img ml20"
+                                                                                          src={
+                                                                                            subchilditem.SiteIcon
+                                                                                          }
+                                                                                        ></img>
+                                                                                      </a>
+                                                                                    </span>
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "7%",
                                                                                     }}
-                                                                                  ></span>
-                                                                                </a>
-                                                                              )}
-                                                                              {subchilditem.childs !=
-                                                                                undefined &&
-                                                                                subchilditem
-                                                                                  .childs
-                                                                                  .length >
-                                                                                  0 && (
-                                                                                  <span className="ms-1">
-                                                                                    (
-                                                                                    {
+                                                                                  >
+                                                                                    {" "}
+                                                                                    <div className="d-flex">
+                                                                                      <span className="ml-2">
+                                                                                        {
+                                                                                          subchilditem.Shareweb_x0020_ID
+                                                                                        }
+                                                                                      </span>
+                                                                                    </div>
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "23%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {subchilditem.siteType ==
+                                                                                      "Master Tasks" && (
+                                                                                      <a
+                                                                                        className="hreflink serviceColor_Active"
+                                                                                        target="_blank"
+                                                                                        data-interception="off"
+                                                                                        href={
+                                                                                          GlobalConstants.MAIN_SITE_URL +
+                                                                                          "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                                          childitem.Id
+                                                                                        }
+                                                                                      >
+                                                                                        <span
+                                                                                          dangerouslySetInnerHTML={{
+                                                                                            __html:
+                                                                                              subchilditem?.TitleNew,
+                                                                                          }}
+                                                                                        ></span>
+                                                                                      </a>
+                                                                                    )}
+                                                                                    {subchilditem.siteType !=
+                                                                                      "Master Tasks" && (
+                                                                                      <a
+                                                                                        className="hreflink serviceColor_Active"
+                                                                                        target="_blank"
+                                                                                        data-interception="off"
+                                                                                        href={
+                                                                                          GlobalConstants.MAIN_SITE_URL +
+                                                                                          "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                                          subchilditem.Id +
+                                                                                          "&Site=" +
+                                                                                          subchilditem.siteType
+                                                                                        }
+                                                                                      >
+                                                                                        {" "}
+                                                                                        <span
+                                                                                          dangerouslySetInnerHTML={{
+                                                                                            __html:
+                                                                                              subchilditem?.TitleNew,
+                                                                                          }}
+                                                                                        ></span>
+                                                                                      </a>
+                                                                                    )}
+                                                                                    {subchilditem.childs !=
+                                                                                      undefined &&
                                                                                       subchilditem
                                                                                         .childs
-                                                                                        .length
-                                                                                    }
-                                                                                    )
-                                                                                  </span>
-                                                                                )}
-                                                                              {subchilditem.Short_x0020_Description_x0020_On !=
-                                                                                null && (
-                                                                                // <span className="project-tool"><img
-                                                                                //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                //         <span className="tooltiptext">
-                                                                                //             <div className="tooltip_Desc">
-                                                                                //                 <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
-                                                                                //             </div>
-                                                                                //         </span>
-                                                                                //     </span>
-                                                                                // </span>
-                                                                                <div
-                                                                                  className="popover__wrapper ms-1"
-                                                                                  data-bs-toggle="tooltip"
-                                                                                  data-bs-placement="auto"
-                                                                                >
-                                                                                  <img
-                                                                                    src={
-                                                                                      GlobalConstants.MAIN_SITE_URL +
-                                                                                      "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
-                                                                                    }
-                                                                                  />
-                                                                                  <div className="popover__content">
-                                                                                    {
-                                                                                      subchilditem.Short_x0020_Description_x0020_On
-                                                                                    }
-                                                                                  </div>
-                                                                                </div>
-                                                                              )}
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "7%",
-                                                                              }}
-                                                                            >
-                                                                              <div>
-                                                                                {subchilditem.ClientCategory !=
-                                                                                  undefined &&
-                                                                                  subchilditem
-                                                                                    .ClientCategory
-                                                                                    .length >
-                                                                                    0 &&
-                                                                                  subchilditem.ClientCategory.map(
-                                                                                    function (client: {
-                                                                                      Title: string;
-                                                                                    }) {
-                                                                                      return (
-                                                                                        <span
-                                                                                          className="ClientCategory-Usericon"
-                                                                                          title={
-                                                                                            client.Title
+                                                                                        .length >
+                                                                                        0 && (
+                                                                                        <span className="ms-1">
+                                                                                          (
+                                                                                          {
+                                                                                            subchilditem
+                                                                                              .childs
+                                                                                              .length
                                                                                           }
-                                                                                        >
-                                                                                          <a>
-                                                                                            {client.Title.slice(
-                                                                                              0,
-                                                                                              2
-                                                                                            ).toUpperCase()}
-                                                                                          </a>
+
+                                                                                          )
                                                                                         </span>
-                                                                                      );
+                                                                                      )}
+                                                                                    {subchilditem.Short_x0020_Description_x0020_On !=
+                                                                                      null && (
+                                                                                      // <span className="project-tool"><img
+                                                                                      //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                      //         <span className="tooltiptext">
+                                                                                      //             <div className="tooltip_Desc">
+                                                                                      //                 <span>{subchilditem.Short_x0020_Description_x0020_On}</span>
+                                                                                      //             </div>
+                                                                                      //         </span>
+                                                                                      //     </span>
+                                                                                      // </span>
+                                                                                      <div
+                                                                                        className="popover__wrapper ms-1"
+                                                                                        data-bs-toggle="tooltip"
+                                                                                        data-bs-placement="auto"
+                                                                                      >
+                                                                                        <img
+                                                                                          src={
+                                                                                            GlobalConstants.MAIN_SITE_URL +
+                                                                                            "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
+                                                                                          }
+                                                                                        />
+                                                                                        <div className="popover__content">
+                                                                                          {
+                                                                                            subchilditem.Short_x0020_Description_x0020_On
+                                                                                          }
+                                                                                        </div>
+                                                                                      </div>
+                                                                                    )}
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "7%",
+                                                                                    }}
+                                                                                  >
+                                                                                    <div>
+                                                                                      {subchilditem.ClientCategory !=
+                                                                                        undefined &&
+                                                                                        subchilditem
+                                                                                          .ClientCategory
+                                                                                          .length >
+                                                                                          0 &&
+                                                                                        subchilditem.ClientCategory.map(
+                                                                                          function (client: {
+                                                                                            Title: string;
+                                                                                          }) {
+                                                                                            return (
+                                                                                              <span
+                                                                                                className="ClientCategory-Usericon"
+                                                                                                title={
+                                                                                                  client.Title
+                                                                                                }
+                                                                                              >
+                                                                                                <a>
+                                                                                                  {client.Title.slice(
+                                                                                                    0,
+                                                                                                    2
+                                                                                                  ).toUpperCase()}
+                                                                                                </a>
+                                                                                              </span>
+                                                                                            );
+                                                                                          }
+                                                                                        )}
+                                                                                    </div>
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "4%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {
+                                                                                      subchilditem.PercentComplete
                                                                                     }
-                                                                                  )}
-                                                                              </div>
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "4%",
-                                                                              }}
-                                                                            >
-                                                                              {
-                                                                                subchilditem.PercentComplete
-                                                                              }
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "7%",
-                                                                              }}
-                                                                            >
-                                                                              {
-                                                                                subchilditem.ItemRank
-                                                                              }
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "10%",
-                                                                              }}
-                                                                            >
-                                                                              <div>
-                                                                                <ShowTaskTeamMembers
-                                                                                  props={
-                                                                                    subchilditem
-                                                                                  }
-                                                                                  TaskUsers={
-                                                                                    AllUsers
-                                                                                  }
-                                                                                ></ShowTaskTeamMembers>
-                                                                              </div>
-                                                                            </td>
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "7%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {
+                                                                                      subchilditem.ItemRank
+                                                                                    }
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "10%",
+                                                                                    }}
+                                                                                  >
+                                                                                    <div>
+                                                                                      <ShowTaskTeamMembers
+                                                                                        props={
+                                                                                          subchilditem
+                                                                                        }
+                                                                                        TaskUsers={
+                                                                                          AllUsers
+                                                                                        }
+                                                                                      ></ShowTaskTeamMembers>
+                                                                                    </div>
+                                                                                  </td>
 
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "9%",
-                                                                              }}
-                                                                            >
-                                                                              {
-                                                                                subchilditem.DueDate
-                                                                              }
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "11%",
-                                                                              }}
-                                                                            >
-                                                                              {subchilditem.Created !=
-                                                                              null
-                                                                                ? Moment(
-                                                                                    subchilditem.Created
-                                                                                  ).format(
-                                                                                    "DD/MM/YYYY"
-                                                                                  )
-                                                                                : ""}
-                                                                              {subchilditem.Author !=
-                                                                              undefined ? (
-                                                                                <img
-                                                                                  className="AssignUserPhoto"
-                                                                                  title={
-                                                                                    subchilditem
-                                                                                      .Author
-                                                                                      .Title
-                                                                                  }
-                                                                                  src={findUserByName(
-                                                                                    subchilditem
-                                                                                      .Author
-                                                                                      .Title
-                                                                                  )}
-                                                                                />
-                                                                              ) : (
-                                                                                <img
-                                                                                  className="AssignUserPhoto"
-                                                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                                                                                />
-                                                                              )}
-                                                                            </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "9%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {
+                                                                                      subchilditem.DueDate
+                                                                                    }
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "11%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {subchilditem.Created !=
+                                                                                    null
+                                                                                      ? Moment(
+                                                                                          subchilditem.Created
+                                                                                        ).format(
+                                                                                          "DD/MM/YYYY"
+                                                                                        )
+                                                                                      : ""}
+                                                                                    {subchilditem.Author !=
+                                                                                    undefined ? (
+                                                                                      <img
+                                                                                        className="AssignUserPhoto"
+                                                                                        title={
+                                                                                          subchilditem
+                                                                                            .Author
+                                                                                            .Title
+                                                                                        }
+                                                                                        src={findUserByName(
+                                                                                          subchilditem
+                                                                                            .Author
+                                                                                            .Title
+                                                                                        )}
+                                                                                      />
+                                                                                    ) : (
+                                                                                      <img
+                                                                                        className="AssignUserPhoto"
+                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                                                                                      />
+                                                                                    )}
+                                                                                  </td>
 
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "7%",
-                                                                              }}
-                                                                            >
-                                                                              {/* {subchilditem.Item_x0020_Type == 'Task' &&
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "7%",
+                                                                                    }}
+                                                                                  >
+                                                                                    {/* {subchilditem.Item_x0020_Type == 'Task' &&
                                                                                                                                         <>
                                                                                                                                              {smartTime.toFixed(1)}
                                                                                                                                              </>
                                                                                                                                              }
                                                                                                                                               {SmartTimes? <SmartTimeTotal props={subchilditem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                                            </td>
+                                                                                  </td>
 
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "2%",
-                                                                              }}
-                                                                            >
-                                                                              {subchilditem.Item_x0020_Type ==
-                                                                                "Task" &&
-                                                                                subchilditem.siteType !=
-                                                                                  "Master Tasks" && (
-                                                                                  <a
-                                                                                    onClick={(
-                                                                                      e
-                                                                                    ) =>
-                                                                                      EditData(
-                                                                                        e,
-                                                                                        subchilditem
-                                                                                      )
-                                                                                    }
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "2%",
+                                                                                    }}
                                                                                   >
-                                                                                    <span className="svg__iconbox svg__icon--clock"></span>
-                                                                                  </a>
-                                                                                )}
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "2%",
-                                                                              }}
-                                                                            >
-                                                                              {childitem.siteType ===
-                                                                                "Master Tasks" &&
-                                                                                subchilditem.isRestructureActive && (
-                                                                                  <a
-                                                                                    href="#"
-                                                                                    data-bs-toggle="tooltip"
-                                                                                    data-bs-placement="auto"
-                                                                                    title="Edit"
+                                                                                    {subchilditem.Item_x0020_Type ==
+                                                                                      "Task" &&
+                                                                                      subchilditem.siteType !=
+                                                                                        "Master Tasks" && (
+                                                                                        <a
+                                                                                          onClick={(
+                                                                                            e
+                                                                                          ) =>
+                                                                                            EditData(
+                                                                                              e,
+                                                                                              subchilditem
+                                                                                            )
+                                                                                          }
+                                                                                        >
+                                                                                          <span className="svg__iconbox svg__icon--clock"></span>
+                                                                                        </a>
+                                                                                      )}
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "2%",
+                                                                                    }}
                                                                                   >
-                                                                                    <img
-                                                                                      className="icon-sites-img"
-                                                                                      src={
-                                                                                        childitem.Restructuring
-                                                                                      }
-                                                                                      onClick={(
-                                                                                        e
-                                                                                      ) =>
-                                                                                        OpenModal(
-                                                                                          childitem
-                                                                                        )
-                                                                                      }
-                                                                                    />
-                                                                                  </a>
-                                                                                )}
-                                                                              <span>
-                                                                                {IsShowRestru ? (
-                                                                                  <img
-                                                                                    className="icon-sites-img ml20"
-                                                                                    onClick={(
-                                                                                      e
-                                                                                    ) =>
-                                                                                      OpenModal(
-                                                                                        props
-                                                                                      )
-                                                                                    }
-                                                                                    src={
-                                                                                      IsShowRestru &&
-                                                                                      IsUpdated ==
-                                                                                        "Service"
-                                                                                        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-                                                                                        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                                                                    }
-                                                                                  ></img>
-                                                                                ) : (
-                                                                                  ""
-                                                                                )}
-                                                                              </span>
-                                                                            </td>
-                                                                            <td
-                                                                              style={{
-                                                                                width:
-                                                                                  "2%",
-                                                                              }}
-                                                                            >
-                                                                              <a>
-                                                                                {subchilditem.siteType ==
-                                                                                  "Master Tasks" && (
-                                                                                  <img
-                                                                                    src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                    width="25"
-                                                                                    onClick={(
-                                                                                      e
-                                                                                    ) =>
-                                                                                      EditComponentPopup(
-                                                                                        subchilditem
-                                                                                      )
-                                                                                    }
-                                                                                  />
-                                                                                )}
-                                                                                {subchilditem.Item_x0020_Type ==
-                                                                                  "Task" &&
-                                                                                  subchilditem.siteType !=
-                                                                                    "Master Tasks" && (
-                                                                                    <img
-                                                                                      src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                      width="25"
-                                                                                      onClick={(
-                                                                                        e
-                                                                                      ) =>
-                                                                                        EditItemTaskPopup(
-                                                                                          subchilditem
-                                                                                        )
-                                                                                      }
-                                                                                    />
-                                                                                  )}
-                                                                              </a>
-                                                                            </td>
-                                                                            {/* <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                    {childitem.siteType ===
+                                                                                      "Master Tasks" &&
+                                                                                      subchilditem.isRestructureActive && (
+                                                                                        <a
+                                                                                          href="#"
+                                                                                          data-bs-toggle="tooltip"
+                                                                                          data-bs-placement="auto"
+                                                                                          title="Edit"
+                                                                                        >
+                                                                                          <img
+                                                                                            className="icon-sites-img"
+                                                                                            src={
+                                                                                              childitem.Restructuring
+                                                                                            }
+                                                                                            onClick={(
+                                                                                              e
+                                                                                            ) =>
+                                                                                              OpenModal(
+                                                                                                childitem
+                                                                                              )
+                                                                                            }
+                                                                                          />
+                                                                                        </a>
+                                                                                      )}
+                                                                                    <span>
+                                                                                      {IsShowRestru ? (
+                                                                                        <img
+                                                                                          className="icon-sites-img ml20"
+                                                                                          onClick={(
+                                                                                            e
+                                                                                          ) =>
+                                                                                            OpenModal(
+                                                                                              props
+                                                                                            )
+                                                                                          }
+                                                                                          src={
+                                                                                            IsShowRestru &&
+                                                                                            IsUpdated ==
+                                                                                              "Service"
+                                                                                              ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+                                                                                              : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                                                                                          }
+                                                                                        ></img>
+                                                                                      ) : (
+                                                                                        ""
+                                                                                      )}
+                                                                                    </span>
+                                                                                  </td>
+                                                                                  <td
+                                                                                    style={{
+                                                                                      width:
+                                                                                        "2%",
+                                                                                    }}
+                                                                                  >
+                                                                                    <a>
+                                                                                      {subchilditem.siteType ==
+                                                                                        "Master Tasks" && (
+                                                                                        <img
+                                                                                          src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                                          width="25"
+                                                                                          onClick={(
+                                                                                            e
+                                                                                          ) =>
+                                                                                            EditComponentPopup(
+                                                                                              subchilditem
+                                                                                            )
+                                                                                          }
+                                                                                        />
+                                                                                      )}
+                                                                                      {subchilditem.Item_x0020_Type ==
+                                                                                        "Task" &&
+                                                                                        subchilditem.siteType !=
+                                                                                          "Master Tasks" && (
+                                                                                          <img
+                                                                                            src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                                            width="25"
+                                                                                            onClick={(
+                                                                                              e
+                                                                                            ) =>
+                                                                                              EditItemTaskPopup(
+                                                                                                subchilditem
+                                                                                              )
+                                                                                            }
+                                                                                          />
+                                                                                        )}
+                                                                                    </a>
+                                                                                  </td>
+                                                                                  {/* <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                     <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(subchilditem)} />}
                                                                                                                                         {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td> */}
+                                                                                </tr>
+                                                                              </table>
+                                                                            </td>
                                                                           </tr>
-                                                                        </table>
-                                                                      </td>
-                                                                    </tr>
-                                                                    {subchilditem.show &&
-                                                                      subchilditem
-                                                                        .childs
-                                                                        .length >
-                                                                        0 && (
-                                                                        <>
-                                                                          {subchilditem.childs.map(
-                                                                            function (
-                                                                              nextsubchilditem: any
-                                                                            ) {
-                                                                              return (
-                                                                                <>
-                                                                                  <tr>
-                                                                                    <td
-                                                                                      className="p-0"
-                                                                                      colSpan={
-                                                                                        13
-                                                                                      }
-                                                                                    >
-                                                                                      <table
-                                                                                        className="table m-0"
-                                                                                        style={{
-                                                                                          width:
-                                                                                            "100%",
-                                                                                        }}
-                                                                                      >
-                                                                                        <tr className="for-c02">
+                                                                          {subchilditem.show &&
+                                                                            subchilditem
+                                                                              .childs
+                                                                              .length >
+                                                                              0 && (
+                                                                              <>
+                                                                                {subchilditem.childs.map(
+                                                                                  function (
+                                                                                    nextsubchilditem: any
+                                                                                  ) {
+                                                                                    return (
+                                                                                      <>
+                                                                                        <tr>
                                                                                           <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "2%",
-                                                                                            }}
+                                                                                            className="p-0"
+                                                                                            colSpan={
+                                                                                              13
+                                                                                            }
                                                                                           >
-                                                                                            <div
-                                                                                              className="accordian-header"
-                                                                                              onClick={() =>
-                                                                                                handleOpen(
-                                                                                                  nextsubchilditem
-                                                                                                )
-                                                                                              }
+                                                                                            <table
+                                                                                              className="table m-0"
+                                                                                              style={{
+                                                                                                width:
+                                                                                                  "100%",
+                                                                                              }}
                                                                                             >
-                                                                                              {nextsubchilditem
-                                                                                                .childs
-                                                                                                .length >
-                                                                                                0 && (
-                                                                                                <a
-                                                                                                  className="hreflink"
-                                                                                                  title="Tap to expand the childs"
+                                                                                              <tr className="for-c02">
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "2%",
+                                                                                                  }}
                                                                                                 >
-                                                                                                  <div className="sign">
+                                                                                                  <div
+                                                                                                    className="accordian-header"
+                                                                                                    onClick={() =>
+                                                                                                      handleOpen(
+                                                                                                        nextsubchilditem
+                                                                                                      )
+                                                                                                    }
+                                                                                                  >
                                                                                                     {nextsubchilditem
                                                                                                       .childs
                                                                                                       .length >
-                                                                                                      0 &&
-                                                                                                    nextsubchilditem.show ? (
+                                                                                                      0 && (
+                                                                                                      <a
+                                                                                                        className="hreflink"
+                                                                                                        title="Tap to expand the childs"
+                                                                                                      >
+                                                                                                        <div className="sign">
+                                                                                                          {nextsubchilditem
+                                                                                                            .childs
+                                                                                                            .length >
+                                                                                                            0 &&
+                                                                                                          nextsubchilditem.show ? (
+                                                                                                            <img
+                                                                                                              src={
+                                                                                                                nextsubchilditem.downArrowIcon
+                                                                                                              }
+                                                                                                            />
+                                                                                                          ) : (
+                                                                                                            <img
+                                                                                                              src={
+                                                                                                                nextsubchilditem.RightArrowIcon
+                                                                                                              }
+                                                                                                            />
+                                                                                                          )}
+                                                                                                        </div>
+                                                                                                      </a>
+                                                                                                    )}
+                                                                                                  </div>
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "6%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <span className="pe-2">
+                                                                                                    <input
+                                                                                                      type="checkbox"
+                                                                                                      onChange={(
+                                                                                                        e
+                                                                                                      ) =>
+                                                                                                        onChangeHandler(
+                                                                                                          nextsubchilditem,
+                                                                                                          item,
+                                                                                                          e
+                                                                                                        )
+                                                                                                      }
+                                                                                                    />
+                                                                                                  </span>
+                                                                                                  <span>
+                                                                                                    <a
+                                                                                                      className="hreflink"
+                                                                                                      title="Show All Child"
+                                                                                                      data-toggle="modal"
+                                                                                                    >
+                                                                                                      <img
+                                                                                                        className="icon-sites-img ml20"
+                                                                                                        src={
+                                                                                                          nextsubchilditem.SiteIcon
+                                                                                                        }
+                                                                                                      ></img>
+                                                                                                    </a>
+                                                                                                  </span>
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "7%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {" "}
+                                                                                                  <div className="d-flex">
+                                                                                                    <span className="ml-2">
+                                                                                                      {
+                                                                                                        nextsubchilditem.Shareweb_x0020_ID
+                                                                                                      }
+                                                                                                    </span>
+                                                                                                  </div>
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "23%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {nextsubchilditem.siteType ==
+                                                                                                    "Master Tasks" && (
+                                                                                                    <a
+                                                                                                      className="hreflink serviceColor_Active"
+                                                                                                      target="_blank"
+                                                                                                      data-interception="off"
+                                                                                                      href={
+                                                                                                        GlobalConstants.MAIN_SITE_URL +
+                                                                                                        "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                                                        childitem.Id
+                                                                                                      }
+                                                                                                    >
+                                                                                                      {" "}
+                                                                                                      <span
+                                                                                                        dangerouslySetInnerHTML={{
+                                                                                                          __html:
+                                                                                                            nextsubchilditem?.TitleNew,
+                                                                                                        }}
+                                                                                                      ></span>
+                                                                                                    </a>
+                                                                                                  )}
+                                                                                                  {nextsubchilditem.siteType !=
+                                                                                                    "Master Tasks" && (
+                                                                                                    <a
+                                                                                                      className="hreflink serviceColor_Active"
+                                                                                                      target="_blank"
+                                                                                                      data-interception="off"
+                                                                                                      href={
+                                                                                                        GlobalConstants.MAIN_SITE_URL +
+                                                                                                        "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                                                        nextsubchilditem.Id +
+                                                                                                        "&Site=" +
+                                                                                                        nextsubchilditem.siteType
+                                                                                                      }
+                                                                                                    >
+                                                                                                      {" "}
+                                                                                                      <span
+                                                                                                        dangerouslySetInnerHTML={{
+                                                                                                          __html:
+                                                                                                            nextsubchilditem?.TitleNew,
+                                                                                                        }}
+                                                                                                      ></span>
+                                                                                                    </a>
+                                                                                                  )}
+                                                                                                  {nextsubchilditem.childs !=
+                                                                                                    undefined &&
+                                                                                                    nextsubchilditem
+                                                                                                      .childs
+                                                                                                      .length >
+                                                                                                      0 && (
+                                                                                                      <span className="ms-1">
+                                                                                                        (
+                                                                                                        {
+                                                                                                          nextsubchilditem
+                                                                                                            .childs
+                                                                                                            .length
+                                                                                                        }
+
+                                                                                                        )
+                                                                                                      </span>
+                                                                                                    )}
+                                                                                                  {nextsubchilditem.Short_x0020_Description_x0020_On !=
+                                                                                                    null && (
+                                                                                                    // <span className="project-tool"><img
+                                                                                                    //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
+                                                                                                    //         <span className="tooltiptext">
+                                                                                                    //             <div className="tooltip_Desc">
+                                                                                                    //                 <span>{nextsubchilditem.Short_x0020_Description_x0020_On}</span>
+                                                                                                    //             </div>
+                                                                                                    //         </span>
+                                                                                                    //     </span>
+                                                                                                    // </span>
+                                                                                                    <div
+                                                                                                      className="popover__wrapper ms-1"
+                                                                                                      data-bs-toggle="tooltip"
+                                                                                                      data-bs-placement="auto"
+                                                                                                    >
                                                                                                       <img
                                                                                                         src={
-                                                                                                          nextsubchilditem.downArrowIcon
+                                                                                                          GlobalConstants.MAIN_SITE_URL +
+                                                                                                          "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
                                                                                                         }
                                                                                                       />
-                                                                                                    ) : (
+                                                                                                      <div className="popover__content">
+                                                                                                        {
+                                                                                                          nextsubchilditem.Short_x0020_Description_x0020_On
+                                                                                                        }
+                                                                                                      </div>
+                                                                                                    </div>
+                                                                                                  )}
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "7%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <div>
+                                                                                                    {nextsubchilditem.ClientCategory !=
+                                                                                                      undefined &&
+                                                                                                      nextsubchilditem
+                                                                                                        .ClientCategory
+                                                                                                        .length >
+                                                                                                        0 &&
+                                                                                                      nextsubchilditem.ClientCategory.map(
+                                                                                                        function (client: {
+                                                                                                          Title: string;
+                                                                                                        }) {
+                                                                                                          return (
+                                                                                                            <span
+                                                                                                              className="ClientCategory-Usericon"
+                                                                                                              title={
+                                                                                                                client.Title
+                                                                                                              }
+                                                                                                            >
+                                                                                                              <a>
+                                                                                                                {client.Title.slice(
+                                                                                                                  0,
+                                                                                                                  2
+                                                                                                                ).toUpperCase()}
+                                                                                                              </a>
+                                                                                                            </span>
+                                                                                                          );
+                                                                                                        }
+                                                                                                      )}
+                                                                                                  </div>
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "4%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {
+                                                                                                    nextsubchilditem.PercentComplete
+                                                                                                  }
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "7%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {
+                                                                                                    nextsubchilditem.ItemRank
+                                                                                                  }
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "10%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <div>
+                                                                                                    <ShowTaskTeamMembers
+                                                                                                      props={
+                                                                                                        nextsubchilditem
+                                                                                                      }
+                                                                                                      TaskUsers={
+                                                                                                        AllUsers
+                                                                                                      }
+                                                                                                    ></ShowTaskTeamMembers>
+                                                                                                  </div>
+                                                                                                </td>
+
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "9%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {
+                                                                                                    nextsubchilditem.DueDate
+                                                                                                  }
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "11%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {nextsubchilditem.Created !=
+                                                                                                  null
+                                                                                                    ? Moment(
+                                                                                                        nextsubchilditem.Created
+                                                                                                      ).format(
+                                                                                                        "DD/MM/YYYY"
+                                                                                                      )
+                                                                                                    : ""}
+                                                                                                  {nextsubchilditem.Author !=
+                                                                                                  undefined ? (
+                                                                                                    <img
+                                                                                                      className="AssignUserPhoto"
+                                                                                                      title={
+                                                                                                        nextsubchilditem
+                                                                                                          .Author
+                                                                                                          .Title
+                                                                                                      }
+                                                                                                      src={findUserByName(
+                                                                                                        nextsubchilditem
+                                                                                                          .Author
+                                                                                                          .Title
+                                                                                                      )}
+                                                                                                    />
+                                                                                                  ) : (
+                                                                                                    <img
+                                                                                                      className="AssignUserPhoto"
+                                                                                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
+                                                                                                    />
+                                                                                                  )}
+                                                                                                </td>
+
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "7%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {/* {nextsubchilditem.Item_x0020_Type == 'Task' &&
+                                                                                                                                                                <div>{nextsubchilditem.Mileage}</div>
+                                                                                                                                                            } */}
+                                                                                                </td>
+
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "2%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {nextsubchilditem.Item_x0020_Type ==
+                                                                                                    "Task" &&
+                                                                                                    nextsubchilditem.siteType !=
+                                                                                                      "Master Tasks" && (
+                                                                                                      <a
+                                                                                                        onClick={(
+                                                                                                          e
+                                                                                                        ) =>
+                                                                                                          EditData(
+                                                                                                            e,
+                                                                                                            nextsubchilditem
+                                                                                                          )
+                                                                                                        }
+                                                                                                      >
+                                                                                                        <span className="svg__iconbox svg__icon--clock"></span>
+                                                                                                      </a>
+                                                                                                    )}
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "2%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  {nextsubchilditem.siteType ===
+                                                                                                    "Master Tasks" &&
+                                                                                                    nextsubchilditem.isRestructureActive && (
+                                                                                                      <a
+                                                                                                        href="#"
+                                                                                                        data-bs-toggle="tooltip"
+                                                                                                        data-bs-placement="auto"
+                                                                                                        title="Edit"
+                                                                                                      >
+                                                                                                        <img
+                                                                                                          className="icon-sites-img"
+                                                                                                          src={
+                                                                                                            nextsubchilditem.Restructuring
+                                                                                                          }
+                                                                                                          onClick={(
+                                                                                                            e
+                                                                                                          ) =>
+                                                                                                            OpenModal(
+                                                                                                              nextsubchilditem
+                                                                                                            )
+                                                                                                          }
+                                                                                                        />
+                                                                                                      </a>
+                                                                                                    )}
+
+                                                                                                  <span>
+                                                                                                    {IsShowRestru ? (
                                                                                                       <img
+                                                                                                        className="icon-sites-img ml20"
+                                                                                                        onClick={(
+                                                                                                          e
+                                                                                                        ) =>
+                                                                                                          OpenModal(
+                                                                                                            props
+                                                                                                          )
+                                                                                                        }
                                                                                                         src={
-                                                                                                          nextsubchilditem.RightArrowIcon
+                                                                                                          IsShowRestru &&
+                                                                                                          IsUpdated ==
+                                                                                                            "Service"
+                                                                                                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+                                                                                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
+                                                                                                        }
+                                                                                                      ></img>
+                                                                                                    ) : (
+                                                                                                      ""
+                                                                                                    )}
+                                                                                                  </span>
+                                                                                                </td>
+                                                                                                <td
+                                                                                                  style={{
+                                                                                                    width:
+                                                                                                      "2%",
+                                                                                                  }}
+                                                                                                >
+                                                                                                  <a>
+                                                                                                    {nextsubchilditem.siteType ==
+                                                                                                      "Master Tasks" && (
+                                                                                                      <img
+                                                                                                        src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                                                        width="25"
+                                                                                                        onClick={(
+                                                                                                          e
+                                                                                                        ) =>
+                                                                                                          EditComponentPopup(
+                                                                                                            nextsubchilditem
+                                                                                                          )
                                                                                                         }
                                                                                                       />
                                                                                                     )}
-                                                                                                  </div>
-                                                                                                </a>
-                                                                                              )}
-                                                                                            </div>
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "6%",
-                                                                                            }}
-                                                                                          >
-                                                                                            <span className="pe-2">
-                                                                                              <input
-                                                                                                type="checkbox"
-                                                                                                onChange={(
-                                                                                                  e
-                                                                                                ) =>
-                                                                                                  onChangeHandler(
-                                                                                                    nextsubchilditem,
-                                                                                                    item,
-                                                                                                    e
-                                                                                                  )
-                                                                                                }
-                                                                                              />
-                                                                                            </span>
-                                                                                            <span>
-                                                                                              <a
-                                                                                                className="hreflink"
-                                                                                                title="Show All Child"
-                                                                                                data-toggle="modal"
-                                                                                              >
-                                                                                                <img
-                                                                                                  className="icon-sites-img ml20"
-                                                                                                  src={
-                                                                                                    nextsubchilditem.SiteIcon
-                                                                                                  }
-                                                                                                ></img>
-                                                                                              </a>
-                                                                                            </span>
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "7%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {" "}
-                                                                                            <div className="d-flex">
-                                                                                              <span className="ml-2">
-                                                                                                {
-                                                                                                  nextsubchilditem.Shareweb_x0020_ID
-                                                                                                }
-                                                                                              </span>
-                                                                                            </div>
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "23%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {nextsubchilditem.siteType ==
-                                                                                              "Master Tasks" && (
-                                                                                              <a
-                                                                                                className="hreflink serviceColor_Active"
-                                                                                                target="_blank"
-                                                                                                data-interception="off"
-                                                                                                href={
-                                                                                                  GlobalConstants.MAIN_SITE_URL +
-                                                                                                  "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                                                  childitem.Id
-                                                                                                }
-                                                                                              >
-                                                                                                {" "}
-                                                                                                <span
-                                                                                                  dangerouslySetInnerHTML={{
-                                                                                                    __html:
-                                                                                                      nextsubchilditem?.TitleNew,
-                                                                                                  }}
-                                                                                                ></span>
-                                                                                              </a>
-                                                                                            )}
-                                                                                            {nextsubchilditem.siteType !=
-                                                                                              "Master Tasks" && (
-                                                                                              <a
-                                                                                                className="hreflink serviceColor_Active"
-                                                                                                target="_blank"
-                                                                                                data-interception="off"
-                                                                                                href={
-                                                                                                  GlobalConstants.MAIN_SITE_URL +
-                                                                                                  "/SP/SitePages/Task-Profile.aspx?taskId=" +
-                                                                                                  nextsubchilditem.Id +
-                                                                                                  "&Site=" +
-                                                                                                  nextsubchilditem.siteType
-                                                                                                }
-                                                                                              >
-                                                                                                {" "}
-                                                                                                <span
-                                                                                                  dangerouslySetInnerHTML={{
-                                                                                                    __html:
-                                                                                                      nextsubchilditem?.TitleNew,
-                                                                                                  }}
-                                                                                                ></span>
-                                                                                              </a>
-                                                                                            )}
-                                                                                            {nextsubchilditem.childs !=
-                                                                                              undefined &&
-                                                                                              nextsubchilditem
-                                                                                                .childs
-                                                                                                .length >
-                                                                                                0 && (
-                                                                                                <span className="ms-1">
-                                                                                                  (
-                                                                                                  {
-                                                                                                    nextsubchilditem
-                                                                                                      .childs
-                                                                                                      .length
-                                                                                                  }
-                                                                                                  )
-                                                                                                </span>
-                                                                                              )}
-                                                                                            {nextsubchilditem.Short_x0020_Description_x0020_On !=
-                                                                                              null && (
-                                                                                              // <span className="project-tool"><img
-                                                                                              //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                                              //         <span className="tooltiptext">
-                                                                                              //             <div className="tooltip_Desc">
-                                                                                              //                 <span>{nextsubchilditem.Short_x0020_Description_x0020_On}</span>
-                                                                                              //             </div>
-                                                                                              //         </span>
-                                                                                              //     </span>
-                                                                                              // </span>
-                                                                                              <div
-                                                                                                className="popover__wrapper ms-1"
-                                                                                                data-bs-toggle="tooltip"
-                                                                                                data-bs-placement="auto"
-                                                                                              >
-                                                                                                <img
-                                                                                                  src={
-                                                                                                    GlobalConstants.MAIN_SITE_URL +
-                                                                                                    "/SP/SiteCollectionImages/ICONS/24/infoIcon.png"
-                                                                                                  }
-                                                                                                />
-                                                                                                <div className="popover__content">
-                                                                                                  {
-                                                                                                    nextsubchilditem.Short_x0020_Description_x0020_On
-                                                                                                  }
-                                                                                                </div>
-                                                                                              </div>
-                                                                                            )}
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "7%",
-                                                                                            }}
-                                                                                          >
-                                                                                            <div>
-                                                                                              {nextsubchilditem.ClientCategory !=
-                                                                                                undefined &&
-                                                                                                nextsubchilditem
-                                                                                                  .ClientCategory
-                                                                                                  .length >
-                                                                                                  0 &&
-                                                                                                nextsubchilditem.ClientCategory.map(
-                                                                                                  function (client: {
-                                                                                                    Title: string;
-                                                                                                  }) {
-                                                                                                    return (
-                                                                                                      <span
-                                                                                                        className="ClientCategory-Usericon"
-                                                                                                        title={
-                                                                                                          client.Title
-                                                                                                        }
-                                                                                                      >
-                                                                                                        <a>
-                                                                                                          {client.Title.slice(
-                                                                                                            0,
-                                                                                                            2
-                                                                                                          ).toUpperCase()}
-                                                                                                        </a>
-                                                                                                      </span>
-                                                                                                    );
-                                                                                                  }
-                                                                                                )}
-                                                                                            </div>
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "4%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {
-                                                                                              nextsubchilditem.PercentComplete
-                                                                                            }
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "7%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {
-                                                                                              nextsubchilditem.ItemRank
-                                                                                            }
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "10%",
-                                                                                            }}
-                                                                                          >
-                                                                                            <div>
-                                                                                              <ShowTaskTeamMembers
-                                                                                                props={
-                                                                                                  nextsubchilditem
-                                                                                                }
-                                                                                                TaskUsers={
-                                                                                                  AllUsers
-                                                                                                }
-                                                                                              ></ShowTaskTeamMembers>
-                                                                                            </div>
-                                                                                          </td>
-
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "9%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {
-                                                                                              nextsubchilditem.DueDate
-                                                                                            }
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "11%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {nextsubchilditem.Created !=
-                                                                                            null
-                                                                                              ? Moment(
-                                                                                                  nextsubchilditem.Created
-                                                                                                ).format(
-                                                                                                  "DD/MM/YYYY"
-                                                                                                )
-                                                                                              : ""}
-                                                                                            {nextsubchilditem.Author !=
-                                                                                            undefined ? (
-                                                                                              <img
-                                                                                                className="AssignUserPhoto"
-                                                                                                title={
-                                                                                                  nextsubchilditem
-                                                                                                    .Author
-                                                                                                    .Title
-                                                                                                }
-                                                                                                src={findUserByName(
-                                                                                                  nextsubchilditem
-                                                                                                    .Author
-                                                                                                    .Title
-                                                                                                )}
-                                                                                              />
-                                                                                            ) : (
-                                                                                              <img
-                                                                                                className="AssignUserPhoto"
-                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
-                                                                                              />
-                                                                                            )}
-                                                                                          </td>
-
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "7%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {/* {nextsubchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                                                <div>{nextsubchilditem.Mileage}</div>
-                                                                                                                                                            } */}
-                                                                                          </td>
-
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "2%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {nextsubchilditem.Item_x0020_Type ==
-                                                                                              "Task" &&
-                                                                                              nextsubchilditem.siteType !=
-                                                                                                "Master Tasks" && (
-                                                                                                <a
-                                                                                                  onClick={(
-                                                                                                    e
-                                                                                                  ) =>
-                                                                                                    EditData(
-                                                                                                      e,
-                                                                                                      nextsubchilditem
-                                                                                                    )
-                                                                                                  }
-                                                                                                >
-                                                                                                  <span className="svg__iconbox svg__icon--clock"></span>
-                                                                                                </a>
-                                                                                              )}
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "2%",
-                                                                                            }}
-                                                                                          >
-                                                                                            {nextsubchilditem.siteType ===
-                                                                                              "Master Tasks" &&
-                                                                                              nextsubchilditem.isRestructureActive && (
-                                                                                                <a
-                                                                                                  href="#"
-                                                                                                  data-bs-toggle="tooltip"
-                                                                                                  data-bs-placement="auto"
-                                                                                                  title="Edit"
-                                                                                                >
-                                                                                                  <img
-                                                                                                    className="icon-sites-img"
-                                                                                                    src={
-                                                                                                      nextsubchilditem.Restructuring
-                                                                                                    }
-                                                                                                    onClick={(
-                                                                                                      e
-                                                                                                    ) =>
-                                                                                                      OpenModal(
-                                                                                                        nextsubchilditem
-                                                                                                      )
-                                                                                                    }
-                                                                                                  />
-                                                                                                </a>
-                                                                                              )}
-
-                                                                                            <span>
-                                                                                              {IsShowRestru ? (
-                                                                                                <img
-                                                                                                  className="icon-sites-img ml20"
-                                                                                                  onClick={(
-                                                                                                    e
-                                                                                                  ) =>
-                                                                                                    OpenModal(
-                                                                                                      props
-                                                                                                    )
-                                                                                                  }
-                                                                                                  src={
-                                                                                                    IsShowRestru &&
-                                                                                                    IsUpdated ==
-                                                                                                      "Service"
-                                                                                                      ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-                                                                                                      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png"
-                                                                                                  }
-                                                                                                ></img>
-                                                                                              ) : (
-                                                                                                ""
-                                                                                              )}
-                                                                                            </span>
-                                                                                          </td>
-                                                                                          <td
-                                                                                            style={{
-                                                                                              width:
-                                                                                                "2%",
-                                                                                            }}
-                                                                                          >
-                                                                                            <a>
-                                                                                              {nextsubchilditem.siteType ==
-                                                                                                "Master Tasks" && (
-                                                                                                <img
-                                                                                                  src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                                  width="25"
-                                                                                                  onClick={(
-                                                                                                    e
-                                                                                                  ) =>
-                                                                                                    EditComponentPopup(
-                                                                                                      nextsubchilditem
-                                                                                                    )
-                                                                                                  }
-                                                                                                />
-                                                                                              )}
-                                                                                              {nextsubchilditem.Item_x0020_Type ==
-                                                                                                "Task" &&
-                                                                                                nextsubchilditem.siteType !=
-                                                                                                  "Master Tasks" && (
-                                                                                                  <img
-                                                                                                    src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                                    width="25"
-                                                                                                    onClick={(
-                                                                                                      e
-                                                                                                    ) =>
-                                                                                                      EditItemTaskPopup(
-                                                                                                        nextsubchilditem
-                                                                                                      )
-                                                                                                    }
-                                                                                                  />
-                                                                                                )}
-                                                                                            </a>
-                                                                                          </td>
-                                                                                          {/* <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                    {nextsubchilditem.Item_x0020_Type ==
+                                                                                                      "Task" &&
+                                                                                                      nextsubchilditem.siteType !=
+                                                                                                        "Master Tasks" && (
+                                                                                                        <img
+                                                                                                          src={require("../../../Assets/ICON/edit_page.svg")}
+                                                                                                          width="25"
+                                                                                                          onClick={(
+                                                                                                            e
+                                                                                                          ) =>
+                                                                                                            EditItemTaskPopup(
+                                                                                                              nextsubchilditem
+                                                                                                            )
+                                                                                                          }
+                                                                                                        />
+                                                                                                      )}
+                                                                                                  </a>
+                                                                                                </td>
+                                                                                                {/* <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
                                                                                                                                                         <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
                                                                                                                                                             {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td> */}
+                                                                                              </tr>
+                                                                                            </table>
+                                                                                          </td>
                                                                                         </tr>
-                                                                                      </table>
-                                                                                    </td>
-                                                                                  </tr>
-                                                                                </>
-                                                                              );
-                                                                            }
-                                                                          )}
+                                                                                      </>
+                                                                                    );
+                                                                                  }
+                                                                                )}
+                                                                              </>
+                                                                            )}
                                                                         </>
-                                                                      )}
-                                                                  </>
-                                                                );
-                                                              }
-                                                            )}
+                                                                      );
+                                                                    }
+                                                                  )}
+                                                                </>
+                                                              )}
                                                           </>
-                                                        )}
-                                                    </>
-                                                  );
-                                                }
-                                              })}
-                                            </>
-                                          )}
-                                      </>
-                                    );
-                                  }
-                                })}
+                                                        );
+                                                      }
+                                                    }
+                                                  )}
+                                                </>
+                                              )}
+                                          </>
+                                        );
+                                      }
+                                    })}
+                                  </>
+                                )}
                               </>
-                            )}
-                          </>
-                        );
-                      }
-                    })}
-                </>}
-
+                            );
+                          }
+                        })}
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>

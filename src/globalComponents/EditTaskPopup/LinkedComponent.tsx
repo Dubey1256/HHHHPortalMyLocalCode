@@ -153,6 +153,7 @@ const LinkedServices = (item: any) => {
         })
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
+        setCheckBoxData(item.linkedComponentData);
         setData(ComponentsData);
         setModalIsOpen(true);
         LinkedServicesBackupArray = ComponentsData;
@@ -410,7 +411,7 @@ const LinkedServices = (item: any) => {
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData)} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
 
                                                                         </td>
 
@@ -518,7 +519,7 @@ const LinkedServices = (item: any) => {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
+                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -611,7 +612,7 @@ const LinkedServices = (item: any) => {
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
