@@ -11,11 +11,12 @@ export default class TaskDashboardHhhh extends React.Component<ITaskDashboardHhh
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      pageContext
     } = this.props;
 
     return (
-     <TaskDashboard/>
+     <TaskDashboard pageContext={this.props.pageContext}/>
     );
   }
 }
