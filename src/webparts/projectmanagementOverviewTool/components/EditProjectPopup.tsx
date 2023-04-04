@@ -902,19 +902,22 @@ function EditProjectPopup(item: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    switch (item.Priority_x0020_Rank) {
-      case "8":
+    if (item.Priority_x0020_Rank<=10) {
+      
+      if(item.Priority_x0020_Rank == 8||item.Priority_x0020_Rank == 9||item.Priority_x0020_Rank == 10) {
         item.Priority = "(1) High";
-        break;
-      case "4":
+      }
+      if(item.Priority_x0020_Rank == 4||item.Priority_x0020_Rank == 5||item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
         item.Priority = "(2) Normal";
-        break;
-      case "1":
+      }
+      if(item.Priority_x0020_Rank == 1||item.Priority_x0020_Rank == 2||item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
         item.Priority = "(3) Low";
-        break;
-      case "":
-        item.Priority = "";
-        break;
+      }
+  
+    }else{
+      item.Priority_x0020_Rank = ""
+      alert("Please Enter priority between 0 to 10");
+      
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1964,6 +1967,7 @@ function EditProjectPopup(item: any) {
                               className="form-control"
                               value={EditData.Priority_x0020_Rank}
                               onChange={(e) => setPriorityNew(e, EditData)}
+                              maxLength={2}
                             />
                           </div>
 
