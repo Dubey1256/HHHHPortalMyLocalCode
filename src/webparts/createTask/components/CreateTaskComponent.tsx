@@ -430,7 +430,7 @@ function CreateTaskComponent(props: any) {
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
             .expand('Author,Editor')
             .get();
@@ -856,6 +856,38 @@ function CreateTaskComponent(props: any) {
         // TestUrl = $scope.component_x0020_link;
         var item = '';
         if (TestUrl !== undefined) {
+            for (let index = 0; index < SitesTypes.length; index++) {
+                let site = SitesTypes[index];
+                if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                    TestUrl = TestUrl.split('.com')[1];
+                else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                    TestUrl = TestUrl.split('.ch')[1];
+                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                    TestUrl = TestUrl.split('.de')[1];
+                
+                let Isfound = false;
+                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/'+ site.Title.toLowerCase() +'/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))){
+                    item = site.Title;
+                    selectedSiteTitle = site.Title;
+                    Isfound = true;
+                }
+
+                if(!Isfound){
+                    if (TestUrl !== undefined && site.AlternativeTitle != null){
+                        let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
+                        for (let j = 0; j < sitesAlterNatives.length; j++) {
+                            let element = sitesAlterNatives[j];
+                            if (TestUrl.toLowerCase().indexOf(element) > -1 ){
+                                item = site.Title;
+                                selectedSiteTitle = site.Title;
+                                Isfound = true;
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            /*
             SitesTypes?.map((site: any) => {
                 if (TestUrl.toLowerCase().indexOf('.com') > -1)
                     TestUrl = TestUrl.split('.com')[1];
@@ -967,7 +999,9 @@ function CreateTaskComponent(props: any) {
                     }
                 }
             })
+            */
         }
+        
         saveValue.siteType = selectedSiteTitle;
         setSave(saveValue)
         if (selectedSiteTitle !== undefined) {
@@ -1333,8 +1367,10 @@ function CreateTaskComponent(props: any) {
                                                     {/*  */}
                                                     <a className='text-white text-decoration-none' >
                                                         <span className="icon-sites">
+                                                            {item.Item_x005F_x0020_Cover != undefined &&
                                                             <img className="icon-sites"
                                                                 src={item.Item_x005F_x0020_Cover.Url} />
+                                                            }
                                                         </span>{item.Title}
                                                     </a>
                                                 </li>
