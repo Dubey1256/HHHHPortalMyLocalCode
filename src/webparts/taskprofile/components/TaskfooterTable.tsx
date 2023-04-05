@@ -260,9 +260,9 @@ function TasksTable(props: any) {
         componentDetails = compo[0]
         IsUpdated = componentDetails.Portfolio_x0020_Type;
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
-            props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+            props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
         else if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities')
-            props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+            props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
         if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Workstream')
             props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
         if (componentDetails.ItemType === 'Component')
@@ -282,9 +282,9 @@ function TasksTable(props: any) {
         if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services[0].Id))
             GetComponents(props.props)
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
-            props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+            props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
         else if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities')
-            props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
+            props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
         if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Workstream')
             props.props.CurrentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Workstream.png';
 
@@ -791,11 +791,13 @@ function TasksTable(props: any) {
             SharewebTaskTypeId: ChengedTitle === 'Workstream' ? 3 : 2,
             SharewebTaskLevel2No: (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? null : SharewebTaskLevel2No) : (Numbers + 1)),
         }).then((res: any) => {
-            if(checkedList[0].SharewebTaskType !=undefined){
-                checkedList[0].SharewebTaskType.Title = ChengedTitle === 'Workstream' ?ChengedTitle :'Task';
-                checkedList[0].SharewebTaskType.Id =ChengedTitle === 'Workstream' ? 3 : 2;
+            if (checkedList[0].SharewebTaskType != undefined) {
+                checkedList[0].SharewebTaskType.Title = ChengedTitle === 'Workstream' ? ChengedTitle : 'Task';
+                checkedList[0].SharewebTaskType.Id = ChengedTitle === 'Workstream' ? 3 : 2;
             }
-            checkedList[0].SharewebTaskLevel2No = (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? '' : SharewebTaskLevel2No) : (Numbers + 1));
+            if (SharewebTaskLevel2No !== undefined)
+                checkedList[0].SharewebTaskLevel2No = (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? '' : SharewebTaskLevel2No) : (Numbers + 1));
+            else delete checkedList[0].SharewebTaskLevel2No;
             checkedList[0]['Shareweb_x0020_ID'] = globalCommon.getTaskId(checkedList[0]);
             maidataBackup.forEach((obj, index) => {
                 obj.isRestructureActive = false;
