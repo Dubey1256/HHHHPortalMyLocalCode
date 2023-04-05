@@ -1478,7 +1478,7 @@ function EditInstitution(item: any) {
                   aria-labelledby="home-tab"
                 >
                   <div className="row  px-3 py-2">
-                    <div className="col-sm-5 ">
+                    <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
                           <label className="form-label  full-width">
@@ -1674,7 +1674,7 @@ function EditInstitution(item: any) {
                             </div>
                           )}
 
-                          <div className="col-sm-11  inner-tabb">
+                          <div className="col-sm-12  inner-tabb">
                             <div>
                               {/* {(EditData != undefined && EditData.smartComponent != undefined)?
                                                                 <>
@@ -2038,7 +2038,7 @@ function EditInstitution(item: any) {
                         </div>
                       </div>
                     </div>
-                    <div className="col-sm-3 ">
+                    <div className="col-sm-2 ">
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
@@ -2745,7 +2745,6 @@ function EditInstitution(item: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5"></div>
                   </div>
                 </div>
                 <div

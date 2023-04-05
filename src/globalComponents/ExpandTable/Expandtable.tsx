@@ -66,8 +66,8 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("fifty")}
                   // props.prop("fifty")}
-                  className="card p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "fifty" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "fifty"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "fifty" ? "boxtrue " : "boxfalse"}
                 >
                   50%
                 </div>
@@ -75,8 +75,8 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => showExpended("sixty")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0  m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "sixty" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "sixty"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                   id={props.prop1 == "sixty" ? "boxtrue " : "boxfalse"}
                 >
                   60%
                 </div>
@@ -85,8 +85,8 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("seventyfive")}
                   // props.prop("seventyfive")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "seventyfive" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "seventyfive"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "seventyfive" ? "boxtrue " : "boxfalse"}
                 >
                   75%
                 </div>
@@ -95,8 +95,8 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("hundred")}
                   // props.prop("hundred")}
-                  className="card p-5 text-light fw-bold expandtiles  rounded-0 m-2 d-flex align-items-center justify-content-center"
-                  id={props.prop1 == "hundred" ? "boxtrue" : "boxfalse"}
+                  className={props.prop1 == "hundred"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  id={props.prop1 == "hundred" ? "boxtrue " : "boxfalse"}
                 >
                   100%
                 </div>
@@ -105,7 +105,7 @@ const ExpndTable = (props: any) => {
             <div className="modal-footer">
               <button
                 type="button"
-                className="btn btn-light px-3 border"
+                className="btn btn-light px-3 border" 
                 data-bs-dismiss="modal"
               >
                 Cancel
