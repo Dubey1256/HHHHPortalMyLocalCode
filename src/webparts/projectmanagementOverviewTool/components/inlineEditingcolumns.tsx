@@ -528,7 +528,7 @@ const inlineEditingcolumns = (props: any) => {
                                     props?.item?.SharewebCategories?.map((category: any) => {
                                         if (category?.Title == 'Immediate') {
                                             return (
-                                                <a title="Immediate">
+                                                <a className='d-inline-block' title="Immediate">
                                                     <span className="svg__iconbox svg__icon--alert" ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                                                 </a>
@@ -536,7 +536,7 @@ const inlineEditingcolumns = (props: any) => {
                                         }
                                         if (category?.Title == 'Bottleneck') {
                                             return (
-                                                <a title="Bottleneck">
+                                                <a className='d-inline-block' title="Bottleneck">
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
                                                     <span className="svg__iconbox svg__icon--bottleneck" ></span>
                                                 </a>
@@ -544,7 +544,7 @@ const inlineEditingcolumns = (props: any) => {
                                         }
                                         if (category?.Title == 'Favorite') {
                                             return (
-                                                <a title="Favorite">
+                                                <a className='d-inline-block' title="Favorite">
                                                     <span className="svg__iconbox svg__icon--Star" ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                                                 </a>
