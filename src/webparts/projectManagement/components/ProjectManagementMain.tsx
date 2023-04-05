@@ -1,10 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
-import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
-import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import {Button,Table,Row,Col,Pagination,PaginationLink,PaginationItem,Input} from "reactstrap";
+import {FaAngleDoubleLeft,FaAngleDoubleRight,FaAngleLeft,FaAngleRight,FaCaretDown,FaCaretRight,FaSort,FaSortDown,FaSortUp,} from "react-icons/fa";
+import {useTable,useSortBy,useFilters,useExpanded,usePagination,HeaderGroup,} from "react-table";
+import {Filter,DefaultColumnFilter,} from "../../projectmanagementOverviewTool/components/filters";
 import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
@@ -41,6 +41,13 @@ const ProjectManagementMain = (props: any) => {
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
+  const [expendcollapsAccordion, setExpendcollapsAccordion]: any =
+    React.useState({
+      description: false,
+      background: false,
+      deliverables: false,
+      idea: false,
+    });
   const [sidebarStatus, setSidebarStatus] = React.useState({
     sideBarFilter: false,
     dashboard: true,
@@ -53,10 +60,10 @@ const ProjectManagementMain = (props: any) => {
     GetMasterData();
     GetMetaData();
     try {
-      $('#spPageCanvasContent').removeClass();
-      $('#spPageCanvasContent').addClass('hundred')
-      $('#workbenchPageContent').removeClass();
-      $('#workbenchPageContent').addClass('hundred')
+      $("#spPageCanvasContent").removeClass();
+      $("#spPageCanvasContent").addClass("hundred");
+      $("#workbenchPageContent").removeClass();
+      $("#workbenchPageContent").addClass("hundred");
     } catch (e) {
       console.log(e);
     }
@@ -70,7 +77,7 @@ const ProjectManagementMain = (props: any) => {
 
   const getQueryVariable = async (variable: any) => {
     const params = new URLSearchParams(window.location.search);
-    let query = params.get('ProjectId')
+    let query = params.get("ProjectId");
     QueryId = query;
     setProjectId(QueryId);
     console.log(query); //"app=article&act=news_content&aid=160990"
@@ -84,12 +91,8 @@ const ProjectManagementMain = (props: any) => {
     var AllUsers: any = [];
     taskUsers = await web.lists
       .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
-      .items.select(
-        "ComponentCategory/Id", "ComponentCategory/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title"
-      )
-      .expand(
-        "ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent"
-      )
+      .items.select("ComponentCategory/Id","ComponentCategory/Title","SiteCompositionSettings","PortfolioStructureID","ItemRank","ShortDescriptionVerified","Portfolio_x0020_Type","BackgroundVerified","descriptionVerified","Synonyms","BasicImageInfo","Deliverable_x002d_Synonyms","OffshoreComments","OffshoreImageUrl","HelpInformationVerified","IdeaVerified","TechnicalExplanationsVerified","Deliverables","DeliverablesVerified","ValueAddedVerified","CompletedDate","Idea","ValueAdded","TechnicalExplanations","Item_x0020_Type","Sitestagging","Package","Parent/Id","Parent/Title","Short_x0020_Description_x0020_On","Short_x0020_Description_x0020__x","Short_x0020_description_x0020__x0","Admin_x0020_Notes","AdminStatus","Background","Help_x0020_Information","SharewebComponent/Id","SharewebCategories/Id","SharewebCategories/Title","Priority_x0020_Rank","Reference_x0020_Item_x0020_Json","Team_x0020_Members/Title","Team_x0020_Members/Name","Component/Id","Services/Id","Services/Title","Services/ItemType","Component/Title","Component/ItemType","Team_x0020_Members/Id","Item_x002d_Image","component_x0020_link","IsTodaysTask","AssignedTo/Title","AssignedTo/Name","AssignedTo/Id","AttachmentFiles/FileName","FileLeafRef","FeedBack","Title","Id","PercentComplete","Company","StartDate","DueDate","Comments","Categories","Status","WebpartId","Body","Mileage","PercentComplete","Attachments","Priority","Created","Modified","Author/Id","Author/Title","Editor/Id","Editor/Title","ClientCategory/Id","ClientCategory/Title")
+      .expand("ClientCategory","ComponentCategory","AssignedTo","Component","Services","AttachmentFiles","Author","Editor","Team_x0020_Members","SharewebComponent","SharewebCategories","Parent")
       .getById(QueryId)
       .get();
     if ((taskUsers.PercentComplete = undefined))
@@ -156,24 +159,7 @@ const ProjectManagementMain = (props: any) => {
     let TaxonomyItems = [];
     smartmeta = await web.lists
       .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-      .items.select(
-        "Id",
-        "IsVisible",
-        "ParentID",
-        "Title",
-        "SmartSuggestions",
-        "TaxType",
-        "Description1",
-        "Item_x005F_x0020_Cover",
-        "listId",
-        "siteName",
-        "siteUrl",
-        "SortOrder",
-        "SmartFilters",
-        "Selectable",
-        "Parent/Id",
-        "Parent/Title"
-      )
+      .items.select("Id","IsVisible","ParentID","Title","SmartSuggestions","TaxType","Description1","Item_x005F_x0020_Cover","listId","siteName","siteUrl","SortOrder","SmartFilters","Selectable","Parent/Id","Parent/Title")
       .top(5000)
       .filter("TaxType eq 'Sites'")
       .expand("Parent")
@@ -186,6 +172,28 @@ const ProjectManagementMain = (props: any) => {
     setisOpenEditPopup(true);
     setpassdata(item);
   }, []);
+
+  const untagTask = async (item: any) => {
+    let confirmation = confirm(
+      "Are you sure you want to untag " + item.Project.Id + " to this project ?"
+    );
+    if (confirmation == true) {
+      const web = new Web(item?.siteUrl);
+      await web.lists
+        .getById(item?.listId)
+        .items.getById(item?.Id)
+        .update({
+          ProjectId: null,
+        })
+        .then((e: any) => {
+          LoadAllSiteTasks();
+        })
+        .catch((err: { message: any }) => {
+          console.log(err.message);
+        });
+    }
+  };
+
   const EditComponentPopup = (item: any) => {
     item["siteUrl"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
     item["listName"] = "Master Tasks";
@@ -196,20 +204,24 @@ const ProjectManagementMain = (props: any) => {
   };
   const loadAdminConfigurations = async () => {
     var CurrentSiteType = "";
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
     await web.lists
-      .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
-      .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
+      .getById("e968902a-3021-4af2-a30a-174ea95cf8fa")
+      .items.select(
+        "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
+      )
       .top(4999)
-      .get().then((response) => {
-        var SmartFavoritesConfig = [];
-        $.each(response, function (index: any, smart: any) {
-          if (smart.Configurations != undefined) {
-            DataSiteIcon = JSON.parse(smart.Configurations);
-          }
-        });
-      },
-        function (error) { }
+      .get()
+      .then(
+        (response) => {
+          var SmartFavoritesConfig = [];
+          $.each(response, function (index: any, smart: any) {
+            if (smart.Configurations != undefined) {
+              DataSiteIcon = JSON.parse(smart.Configurations);
+            }
+          });
+        },
+        function (error) {}
       );
   };
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -229,7 +241,7 @@ const ProjectManagementMain = (props: any) => {
         smartmeta = await web.lists
           .getById(config.listId)
           .items.select(
-            "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+            "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
           )
           .top(4999)
           .filter("ProjectId eq " + QueryId)
@@ -249,6 +261,10 @@ const ProjectManagementMain = (props: any) => {
             items.DueDate != null
               ? Moment(items.DueDate).format("DD/MM/YYYY")
               : "";
+          items.DisplayCreateDate =
+            items.Created != null
+              ? Moment(items.Created).format("DD/MM/YYYY")
+              : "";
           items.portfolio = {};
           if (items?.Component?.length > 0) {
             items.portfolio = items?.Component[0];
@@ -267,6 +283,7 @@ const ProjectManagementMain = (props: any) => {
               }
             });
           }
+
           items.TeamMembersSearch = "";
           if (items.AssignedTo != undefined) {
             items?.AssignedTo?.map((taskUser: any) => {
@@ -282,18 +299,17 @@ const ProjectManagementMain = (props: any) => {
           }
           items.componentString =
             items.Component != undefined &&
-              items.Component != undefined &&
-              items.Component.length > 0
+            items.Component != undefined &&
+            items.Component.length > 0
               ? getComponentasString(items.Component)
               : "";
           items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
-          if (items.Team_x0020_Members != undefined) {
-            items.Team_x0020_Members.map((taskUser: any) => {
-              var newuserdata: any = {};
-              AllUser?.map((user: any) => {
-                if (user?.Title != undefined) {
-                  items.TeamMembersSearch =
-                    items.TeamMembersSearch + " " + user?.Title;
+          AllUser?.map((user: any) => {
+            if (items.Team_x0020_Members != undefined) {
+              items.Team_x0020_Members.map((taskUser: any) => {
+                var newuserdata: any = {};
+                if (user.AssingedToUserId == items.Author.Id) {
+                  items.createdImg = user.Item_x0020_Cover.Url;
                 }
                 if (user.AssingedToUserId == taskUser.Id) {
                   newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
@@ -302,15 +318,16 @@ const ProjectManagementMain = (props: any) => {
                   newuserdata["UserId"] = user.AssingedToUserId;
                   items["Usertitlename"] = user.Title;
                 }
+                items.AllTeamMember.push(newuserdata);
               });
-              items.AllTeamMember.push(newuserdata);
-            });
-          }
+            }
+          });
           AllTask.push(items);
         });
         if (arraycount === 17) {
           setAllTasks(AllTask);
           setData(AllTask);
+          console.log("this is main tabke data ", AllTask);
         }
       } else {
         arraycount++;
@@ -339,6 +356,7 @@ const ProjectManagementMain = (props: any) => {
     setShareWebComponent(item);
   };
   const Call = (propsItems: any, type: any) => {
+    setIsComponent(false);
     setIsPortfolio(false);
     if (type === "Service") {
       if (propsItems?.smartService?.length > 0) {
@@ -391,26 +409,32 @@ const ProjectManagementMain = (props: any) => {
         });
     }
   };
-  const toggleSideBar = () => {
-    setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
-    if (sidebarStatus.dashboard == false) {
-      $(".sidebar").attr("collapsed", "");
-    } else {
-      $(".sidebar").removeAttr("collapsed");
-    }
-  };
+  // const toggleSideBar = () => {
+  //   setSidebarStatus({ ...sidebarStatus, dashboard: !sidebarStatus.dashboard });
+  //   if (sidebarStatus.dashboard == false) {
+  //     $(".sidebar").attr("collapsed", "");
+  //   } else {
+  //     $(".sidebar").removeAttr("collapsed");
+  //   }
+  // };
   const columns = React.useMemo(
     () => [
       {
         internalHeader: "Task Id",
         accessor: "Shareweb_x0020_ID",
-        width: "75px",
+        style: { width: "70px" },
         showSortIcon: false,
         Cell: ({ row }: any) => (
-          <span style={{ color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>
-
+          <span
+            style={{
+              color: `${
+                row?.original?.Component?.length > 0
+                  ? "#000066"
+                  : "serviepannelgreena"
+              }`,
+            }}
+          >
             {row?.original?.Shareweb_x0020_ID}
-
           </span>
         ),
       },
@@ -419,15 +443,39 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Title",
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span >
+          <span>
             <a
-              style={{ textDecoration: "none", color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}
+              style={{
+                textDecoration: "none",
+                color: `${
+                  row?.original?.Component?.length > 0
+                    ? "#000066"
+                    : "serviepannelgreena"
+                }`,
+              }}
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
             >
               {row?.values?.Title}
             </a>
+            <span className="me-1">
+              <div
+                className="popover__wrapper ms-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="auto"
+              >
+                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                <div className="popover__content">
+                  <span>
+                    <p
+                      dangerouslySetInnerHTML={{ __html: row?.original?.Body }}
+                    ></p>
+                  </span>
+                </div>
+              </div>
+            </span>
           </span>
         ),
       },
@@ -436,7 +484,7 @@ const ProjectManagementMain = (props: any) => {
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
-        width: "45px",
+        style: { width: "40px" },
         Cell: ({ row }: any) => (
           <span>
             <img
@@ -450,9 +498,18 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Portfolio",
         accessor: "PortfolioTitle",
         showSortIcon: true,
+        style: { width: "100px" },
         Cell: ({ row }: any) => (
-          <span >
-            <a style={{ textDecoration: "none", color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}
+          <span>
+            <a
+              style={{
+                textDecoration: "none",
+                color: `${
+                  row?.original?.Component?.length > 0
+                    ? "#000066"
+                    : "serviepannelgreena"
+                }`,
+              }}
               data-interception="off"
               target="blank"
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -467,10 +524,16 @@ const ProjectManagementMain = (props: any) => {
         isSorted: true,
         isSortedDesc: true,
         accessor: "Priority_x0020_Rank",
+        style: { width: "100px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <InlineEditingcolumns type='Task' callBack={tagAndCreateCallBack} columnName='Priority' item={row?.original} />
+            <InlineEditingcolumns
+              type="Task"
+              callBack={tagAndCreateCallBack}
+              columnName="Priority"
+              item={row?.original}
+            />
           </span>
         ),
       },
@@ -478,18 +541,35 @@ const ProjectManagementMain = (props: any) => {
       {
         internalHeader: "Due Date",
         showSortIcon: true,
+        style: { width: "80px" },
         accessor: "DueDate",
-        Cell: ({ row }: any) => <span style={{ color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>{row?.original?.DisplayDueDate}</span>,
+        Cell: ({ row }: any) => (
+          <span
+            style={{
+              color: `${
+                row?.original?.Component?.length > 0
+                  ? "#000066"
+                  : "serviepannelgreena"
+              }`,
+            }}
+          >
+            {row?.original?.DisplayDueDate}
+          </span>
+        ),
       },
 
       {
-        internalHeader: "Percent Complete",
+        internalHeader: "% Complete",
         accessor: "PercentComplete",
+        style: { width: "100px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
-
           <span>
-            <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='PercentComplete' item={row?.original} />
+            <InlineEditingcolumns
+              callBack={tagAndCreateCallBack}
+              columnName="PercentComplete"
+              item={row?.original}
+            />
           </span>
         ),
       },
@@ -497,9 +577,48 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Team Members",
         accessor: "TeamMembersSearch",
         showSortIcon: true,
+        style: { width: "150px" },
         Cell: ({ row }: any) => (
-          <span style={{ color: `${row?.original?.Component?.length > 0 ? "#000066" : "serviepannelgreena"}` }}>
-            <InlineEditingcolumns callBack={tagAndCreateCallBack} columnName='Team' item={row?.original} TaskUsers={AllUser} />
+          <span
+            style={{
+              color: `${
+                row?.original?.Component?.length > 0
+                  ? "#000066"
+                  : "serviepannelgreena"
+              }`,
+            }}
+          >
+            <InlineEditingcolumns
+              callBack={tagAndCreateCallBack}
+              columnName="Team"
+              item={row?.original}
+              TaskUsers={AllUser}
+            />
+          </span>
+        ),
+      },
+
+      {
+        internalHeader: "Created",
+        accessor: "DisplayCreateDate",
+        showSortIcon: true,
+        style: { width: "110px" },
+        Cell: ({ row }: any) => (
+          <span
+            className="d-flex"
+            style={{
+              color: `${
+                row?.original?.Component?.length > 0
+                  ? "#000066"
+                  : "serviepannelgreena"
+              }`,
+            }}
+          >
+            <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+            <img
+              style={{ height: "25px", width: "25px", borderRadius: "20px" }}
+              src={row?.original?.createdImg}
+            />
           </span>
         ),
       },
@@ -508,18 +627,28 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "",
         id: "Id", // 'id' is required
         isSorted: false,
+        style: { width: "60px" },
         showSortIcon: false,
         Cell: ({ row }: any) => (
-          <span
-            title="Edit Task"
-            onClick={() => EditPopup(row?.original)}
-            className="svg__iconbox svg__icon--edit"
-          ></span>
+          <span className="d-flex">
+            <span
+              title="Edit Task"
+              onClick={() => EditPopup(row?.original)}
+              className="svg__iconbox svg__icon--edit"
+            ></span>
+            <span
+              style={{ marginLeft: "6px" }}
+              title="Remove Task"
+              onClick={() => untagTask(row?.original)}
+              className="svg__iconbox svg__icon--cross"
+            ></span>
+          </span>
         ),
       },
     ],
     [AllTasks]
   );
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -558,7 +687,7 @@ const ProjectManagementMain = (props: any) => {
     clickedIndex: any,
     type: any
   ) => {
-    setCreateTaskId({ portfolioData: portfolio, portfolioType: type })
+    setCreateTaskId({ portfolioData: portfolio, portfolioType: type });
     let projectData = Masterdata;
     let displayTasks = AllTasks;
     projectData?.smartComponent?.map((item: any, index: any) => {
@@ -598,6 +727,7 @@ const ProjectManagementMain = (props: any) => {
     setMasterdata(projectData);
     setData(displayTasks);
   };
+
   const generateSortingIndicator = (column: any) => {
     return column.isSorted ? (
       column.isSortedDesc ? (
@@ -622,8 +752,8 @@ const ProjectManagementMain = (props: any) => {
   };
   return (
     <div>
-      {
-        QueryId != "" ? <>
+      {QueryId != "" ? (
+        <>
           <div className="row">
             <div
               className="d-flex justify-content-between p-0"
@@ -645,13 +775,13 @@ const ProjectManagementMain = (props: any) => {
           <div className="Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
-                <button
-                  type="button"
-                  onClick={() => {
-                    toggleSideBar();
-                  }}
-                  className="collapse-toggle"
-                ></button>
+                {/* <button
+              type="button"
+              onClick={() => {
+                toggleSideBar();
+              }}
+              className="collapse-toggle"
+            ></button> */}
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">
@@ -740,7 +870,10 @@ const ProjectManagementMain = (props: any) => {
                 <section className="sidebar__section sidebar__section--menu">
                   <nav className="nav__item">
                     <ul className="nav__list">
-                      <li id="DefaultViewSelectId" className="nav__item  pt-0  ">
+                      <li
+                        id="DefaultViewSelectId"
+                        className="nav__item  pt-0  "
+                      >
                         <a
                           ng-click="ChangeView('DefaultView','DefaultViewSelectId')"
                           className="nav__link border-bottom pb-1"
@@ -751,7 +884,9 @@ const ProjectManagementMain = (props: any) => {
                             <span
                               className="float-end "
                               style={{ cursor: "pointer" }}
-                              onClick={(e) => EditPortfolio(Masterdata, "Service")}
+                              onClick={(e) =>
+                                EditPortfolio(Masterdata, "Service")
+                              }
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -771,7 +906,10 @@ const ProjectManagementMain = (props: any) => {
                           </span>
                         </a>
                       </li>
-                      <li id="DefaultViewSelectId" className="nav__item  pb-1 pt-0">
+                      <li
+                        id="DefaultViewSelectId"
+                        className="nav__item  pb-1 pt-0"
+                      >
                         <div className="nav__text">
                           {Masterdata?.smartService?.length > 0 ? (
                             <ul className="nav__subList scrollbarCustom pt-1 ps-0">
@@ -779,7 +917,12 @@ const ProjectManagementMain = (props: any) => {
                                 (service: any, index: any) => {
                                   return (
                                     <li
-                                      className={service?.filterActive ? "nav__item bg-ee" : "nav__item"} >
+                                      className={
+                                        service?.filterActive
+                                          ? "nav__item bg-ee"
+                                          : "nav__item"
+                                      }
+                                    >
                                       <span>
                                         <a
                                           className={
@@ -829,11 +972,11 @@ const ProjectManagementMain = (props: any) => {
                                 src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Icon_Project.png"
                               />
                               <>
-
                                 <a>{Masterdata?.Title} </a>
                               </>
                             </h2>
-                            <span onClick={() => EditComponentPopup(Masterdata)}
+                            <span
+                              onClick={() => EditComponentPopup(Masterdata)}
                               className="mx-2 svg__iconbox svg__icon--edit"
                               title="Edit Project"
                             ></span>
@@ -876,8 +1019,8 @@ const ProjectManagementMain = (props: any) => {
                                       <a>
                                         {Masterdata.DueDate != null
                                           ? Moment(Masterdata.Created).format(
-                                            "DD/MM/YYYY"
-                                          )
+                                              "DD/MM/YYYY"
+                                            )
                                           : ""}
                                       </a>
                                     </span>
@@ -917,14 +1060,19 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                    {Masterdata?.AssignedUser?.map((image: any) => (
-                                      <span className="headign" title={image.Title}>
-                                        <img
-                                          className="circularImage rounded-circle"
-                                          src={image.useimageurl}
-                                        />
-                                      </span>
-                                    ))}
+                                    {Masterdata?.AssignedUser?.map(
+                                      (image: any) => (
+                                        <span
+                                          className="headign"
+                                          title={image.Title}
+                                        >
+                                          <img
+                                            className="circularImage rounded-circle"
+                                            src={image.useimageurl}
+                                          />
+                                        </span>
+                                      )
+                                    )}
                                   </dd>
                                 </dl>
                                 <dl>
@@ -952,24 +1100,209 @@ const ProjectManagementMain = (props: any) => {
                                   </dd>
                                 </dl>
                               </div>
-                              <div className="team_member row  py-2">
-                                <div className="col-md-12 p-0">
-                                  <dl className="bg-light p-2">
-                                    <a>
-                                      {Masterdata.Body != null
-                                        ? Masterdata.Body
-                                        : ""}
-                                    </a>
-                                    <span
-                                      className="hreflink pull-right"
-                                      title="Edit Inline"
+
+                              <div className="accordionbox mt-1 p-0">
+                                <div
+                                  className="accordion accordion-flush mb-1 me-2 "
+                                  id="accordionFlushExample"
+                                >
+                                  <div className="accordion-item border">
+                                    <h2
+                                      className="accordion-header"
+                                      id="flush-headingOne"
+                                      onClick={() =>
+                                        setExpendcollapsAccordion({
+                                          ...expendcollapsAccordion,
+                                          Description:
+                                            !expendcollapsAccordion.Description,
+                                        })
+                                      }
                                     >
-                                      <i
-                                        className="fa fa-pencil siteColor"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </span>
-                                  </dl>
+                                      <button
+                                        className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-collapseOne"
+                                        aria-expanded="false"
+                                        aria-controls="flush-collapseOne"
+                                      >
+                                        <span className="fw-medium font-sans-serif text-900">
+                                          <span className="sign">
+                                            {expendcollapsAccordion.Description ? (
+                                              <IoMdArrowDropdown />
+                                            ) : (
+                                              <IoMdArrowDropright />
+                                            )}
+                                          </span>
+                                          Description
+                                        </span>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-collapseOne"
+                                      className="accordion-collapse collapse p-2"
+                                      aria-labelledby="flush-headingOne"
+                                      data-bs-parent="#accordionFlushExample"
+                                    >
+                                      <div>
+                                        {Masterdata.Body != null
+                                          ? Masterdata.Body
+                                          : "No Description Available "}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div
+                                  className="accordion accordion-flush mb-1 me-2"
+                                  id="accordionFlushExample1"
+                                >
+                                  <div className="accordion-item border">
+                                    <h2
+                                      className="card-header p-0 border-bottom-0 "
+                                      id="flush-headingOne"
+                                      onClick={() =>
+                                        setExpendcollapsAccordion({
+                                          ...expendcollapsAccordion,
+                                          Background:
+                                            !expendcollapsAccordion.Background,
+                                        })
+                                      }
+                                    >
+                                      <button
+                                        className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-collapseOneee"
+                                        aria-expanded="false"
+                                        aria-controls="flush-collapseOne"
+                                      >
+                                        <span className="fw-medium font-sans-serif text-900">
+                                          <span className="sign">
+                                            {expendcollapsAccordion.Background ? (
+                                              <IoMdArrowDropdown />
+                                            ) : (
+                                              <IoMdArrowDropright />
+                                            )}
+                                          </span>
+                                          Background
+                                        </span>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-collapseOneee"
+                                      className="accordion-collapse collapse p-2"
+                                      aria-labelledby="flush-headingOne"
+                                      data-bs-parent="#accordionFlushExample1"
+                                    >
+                                      <div>
+                                        {Masterdata.Background != null
+                                          ? Masterdata.Background
+                                          : "No Background Available"}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div
+                                  className="accordion accordion-flush mb-1 me-2"
+                                  id="accordionFlushExample2"
+                                >
+                                  <div className="accordion-item border">
+                                    <h2
+                                      className="accordion-header"
+                                      id="flush-headingOne"
+                                      onClick={() =>
+                                        setExpendcollapsAccordion({
+                                          ...expendcollapsAccordion,
+                                          Idea: !expendcollapsAccordion.Idea,
+                                        })
+                                      }
+                                    >
+                                      <button
+                                        className="accordion-button collapsed btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-collapsethree"
+                                        aria-expanded="false"
+                                        aria-controls="flush-collapseOne"
+                                      >
+                                        <span className="fw-medium font-sans-serif text-900">
+                                          <span className="sign">
+                                            {expendcollapsAccordion.Idea ? (
+                                              <IoMdArrowDropdown />
+                                            ) : (
+                                              <IoMdArrowDropright />
+                                            )}
+                                          </span>
+                                          Idea
+                                        </span>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-collapsethree"
+                                      className="accordion-collapse collapse p-2"
+                                      aria-labelledby="flush-headingOne"
+                                      data-bs-parent="#accordionFlushExample2"
+                                    >
+                                      <div>
+                                        {Masterdata.Idea != null
+                                          ? Masterdata.Idea
+                                          : "No Idea Available"}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div
+                                  className="accordion accordion-flush mb-1 me-2"
+                                  id="accordionFlushExample3"
+                                >
+                                  <div className="accordion-item border">
+                                    <h2
+                                      className="accordion-header"
+                                      id="flush-headingOne"
+                                      onClick={() =>
+                                        setExpendcollapsAccordion({
+                                          ...expendcollapsAccordion,
+                                          Deliverables:
+                                            !expendcollapsAccordion.Deliverables,
+                                        })
+                                      }
+                                    >
+                                      <button
+                                        className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#flush-collapsefour"
+                                        aria-expanded="false"
+                                        aria-controls="flush-collapseOne"
+                                      >
+                                        <span className="fw-medium font-sans-serif text-900">
+                                          <span className="sign">
+                                            {expendcollapsAccordion.Deliverables ? (
+                                              <IoMdArrowDropdown />
+                                            ) : (
+                                              <IoMdArrowDropright />
+                                            )}
+                                          </span>
+                                          Deliverables
+                                        </span>
+                                      </button>
+                                    </h2>
+                                    <div
+                                      id="flush-collapsefour"
+                                      className="accordion-collapse collapse p-2"
+                                      aria-labelledby="flush-headingOne"
+                                      data-bs-parent="#accordionFlushExample3"
+                                    >
+                                      <div>
+                                        {Masterdata.Deliverables != null
+                                          ? Masterdata.Deliverables
+                                          : "No Deliverables Available"}
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -991,98 +1324,7 @@ const ProjectManagementMain = (props: any) => {
                               ""
                             )}
 
-                            {/* <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                                    <thead>
-                                                        <tr>
-                                                            <th></th>
 
-                                                            <th style={{ width: "10%" }}>
-                                                                <div> Portfolio</div>
-                                                            </th>
-
-                                                            <th style={{ width: "10%" }}>
-                                                                <div> Task Id </div></th>
-
-                                                            <th style={{ width: "25%" }}>
-                                                                <div> Title </div></th>
-
-                                                            <th style={{ width: "10%" }}>
-                                                                <div> % Complete </div>
-                                                            </th>
-
-                                                            <th style={{ width: "13%" }}>
-                                                                <div> Priority </div>
-                                                            </th>
-
-                                                            <th style={{ width: "15%" }}>
-                                                                <div> Team </div>
-                                                            </th>
-
-                                                            <th style={{ width: "13%" }}>
-                                                                <div> Due Date </div>
-                                                            </th>
-
-                                                            <th style={{ width: "2%" }}>
-                                                            </th>
-
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                        <div id="SpfxProgressbar" style={{ display: "none" }}>
-
-                                                            <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-
-                                                        </div>
-                                                        {AllTasks.length > 0 && AllTasks && AllTasks.map(function (item, index) {
-
-
-                                                            return (
-                                                                <>
-                                                                    <tr >
-                                                                        <td>
-                                                                            <img className="circularImage rounded-circle"
-                                                                                src={item.siteIcon} />
-                                                                        </td>
-                                                                        <td>
-                                                                            {item.Component != undefined &&
-                                                                                <>
-                                                                                    {item.Component.map((types: any) => {
-                                                                                        return (
-                                                                                            <>
-                                                                                                <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                            </>
-                                                                                        )
-                                                                                    })}
-                                                                                </>
-                                                                            }
-                                                                            {item.Component == undefined &&
-                                                                                <>
-                                                                                    {item.Services.map((types: any) => {
-                                                                                        return (
-                                                                                            <>
-                                                                                                <span><a data-interception="off" target='blank' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${types.Id}`}>{types.Title}</a></span>
-                                                                                            </>
-                                                                                        )
-                                                                                    })}
-                                                                                </>
-                                                                            }
-                                                                        </td>
-                                                                        <td>{item.Shareweb_x0020_ID}</td>
-                                                                        <td>
-                                                                            <span><a data-interception="off" target="blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}>{item.Title}</a></span>
-                                                                        </td>
-                                                                        <td><span className="ml-2">{item.PercentComplete}</span></td>
-                                                                        <td>{item.Priority_x0020_Rank}</td>
-                                                                        <td><ShowTaskTeamMembers props={item} TaskUsers={AllUser}></ShowTaskTeamMembers></td>
-                                                                        <td><span className="ml-2">{item?.DueDate != undefined ? Moment(item.DueDate).format('DD/MM/YYYY') : ''}</span></td>
-                                                                        <td onClick={() => EditPopup(item)}><span className="svg__iconbox svg__icon--edit"></span></td>
-                                                                    </tr>
-                                                                </>
-                                                            )
-                                                        })}
-                                                    </tbody>
-                                                </table> */}
                             <Table
                               className="SortingTable"
                               bordered
@@ -1093,7 +1335,10 @@ const ProjectManagementMain = (props: any) => {
                                 {headerGroups.map((headerGroup: any) => (
                                   <tr {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column: any) => (
-                                      <th {...column.getHeaderProps()}>
+                                      <th
+                                        {...column.getHeaderProps()}
+                                        style={column?.style}
+                                      >
                                         <span
                                           class="Table-SortingIcon"
                                           style={{ marginTop: "-6px" }}
@@ -1140,47 +1385,7 @@ const ProjectManagementMain = (props: any) => {
                               </tbody>
                             </Table>
                           </div>
-                          {/* <nav>
-                                                <Pagination>
-                                                    <PaginationItem>
-                                                        <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
-                                                            <span aria-hidden={true}>
-                                                                <FaAngleLeft aria-hidden={true} />
-                                                            </span>
-                                                        </PaginationLink>
-                                                    </PaginationItem>
-                                                    <PaginationItem>
-                                                        <PaginationLink>
-                                                            {pageIndex + 1}
-
-                                                        </PaginationLink>
-                                                    </PaginationItem>
-                                                    <PaginationItem>
-                                                        <PaginationLink onClick={() => nextPage()} disabled={!canNextPage}>
-                                                            <span aria-hidden={true}>
-                                                                <FaAngleRight
-                                                                    aria-hidden={true}
-
-                                                                />
-                                                            </span>
-                                                        </PaginationLink>
-                                                    </PaginationItem>
-                                                    <Col md={2}>
-                                                        <Input
-                                                            type='select'
-                                                            value={pageSize}
-                                                            onChange={onChangeInSelect}
-                                                        >
-
-                                                            {[10, 20, 30, 40, 50].map((pageSize) => (
-                                                                <option key={pageSize} value={pageSize}>
-                                                                    Show {pageSize}
-                                                                </option>
-                                                            ))}
-                                                        </Input>
-                                                    </Col>
-                                                </Pagination>
-                                            </nav> */}
+                        
                         </div>
                       </div>
                     </div>
@@ -1212,13 +1417,24 @@ const ProjectManagementMain = (props: any) => {
               </div>
               <div>
                 <span>
-                  {QueryId && <CommentCard Context={props.Context} siteUrl={props.siteUrl} listName={"Master Tasks"} itemID={QueryId} />}
+                  {QueryId && (
+                    <CommentCard
+                      Context={props.Context}
+                      siteUrl={props.siteUrl}
+                      listName={"Master Tasks"}
+                      itemID={QueryId}
+                    />
+                  )}
                 </span>
                 <span>
-                  {
-                    QueryId && <SmartInformation listName={"Master Tasks"} Context={props.Context.pageContext.web} siteurl={props.siteUrl} Id={QueryId} />
-                  }
-
+                  {QueryId && (
+                    <SmartInformation
+                      listName={"Master Tasks"}
+                      Context={props.Context.pageContext.web}
+                      siteurl={props.siteUrl}
+                      Id={QueryId}
+                    />
+                  )}
                 </span>
               </div>
             </div>
@@ -1231,8 +1447,10 @@ const ProjectManagementMain = (props: any) => {
               Call={Call}
             ></PortfolioTagging>
           )}
-        </> : <div>Project not found</div>
-      }
+        </>
+      ) : (
+        <div>Project not found</div>
+      )}
     </div>
   );
 };
