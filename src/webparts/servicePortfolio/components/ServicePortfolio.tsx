@@ -17,11 +17,14 @@ export default class ServicePortfolio extends React.Component<IServicePortfolioP
         userDisplayName,
         Context,
         dropdownvalue,
+        MasterTaskListID,
+        TaskUsertListID,
+        SmartMetadataListID,
       } = this.props;
     return (
     <div>
       {/* {escape(this.props.dropdownvalue)} */}
-      <ComponentTable SelectedProp={this.props.dropdownvalue}></ComponentTable></div> 
+      <ComponentTable SelectedProp={this.props}></ComponentTable></div> 
     );
   }
 }

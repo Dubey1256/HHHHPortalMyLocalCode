@@ -45,16 +45,28 @@ const SmartTimeTotalFunctionOnTaskPopup = (item: any) => {
                         AllTimeSpentDetails.map((items: any) => {
                             if (items.AdditionalTimeEntry != null) {
                                 let data = JSON.parse(items.AdditionalTimeEntry)
-                                tempArray.push(data[0]);
+                                if (data != undefined && data.length > 0) {
+                                    data.map((timeData: any) => {
+                                        tempArray.push(timeData);
+                                    })
+                                }
+
                             }
                         })
                     }
                     let TotalTimeData: any = 0;
-                    let FinalTotalTime: any
+                    let FinalTotalTime: any = 0;
                     if (tempArray.length > 0) {
                         tempArray.map((tempItem: any) => {
-                            if (tempItem.TaskTimeInMin > 0) {
-                                TotalTimeData = TotalTimeData + tempItem.TaskTimeInMin;
+                            if (typeof (tempItem.TaskTimeInMin) == 'string') {
+                                let timeValue = Number(tempItem.TaskTimeInMin);
+                                if (timeValue > 0) {
+                                    TotalTimeData = TotalTimeData + timeValue;
+                                }
+                            } else {
+                                if (tempItem.TaskTimeInMin > 0) {
+                                    TotalTimeData = TotalTimeData + tempItem.TaskTimeInMin;
+                                }
                             }
                         })
                     }

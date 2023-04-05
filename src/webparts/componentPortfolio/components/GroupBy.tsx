@@ -43,8 +43,9 @@ import {
 } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import { BsFillCaretRightFill, BsFillCaretDownFill } from "react-icons/bs";
 import { HTMLProps } from 'react';
-import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/Bs';
+import HighlightableCell from './highlight';
 
 
 
@@ -91,22 +92,31 @@ function Filter({
     );
 }
 
-function IndeterminateCheckbox({
-    indeterminate,
-    className = "",
-    ...rest
-}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+function IndeterminateCheckbox(
+    {
+        indeterminate,
+        className = "",
+        ...rest
+    }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
     const ref = React.useRef<HTMLInputElement>(null!);
-
     React.useEffect(() => {
         if (typeof indeterminate === "boolean") {
             ref.current.indeterminate = !rest.checked && indeterminate;
         }
     }, [ref, indeterminate]);
-
+    // const [valueData, setData] = React.useState({});
+    // const handleChange = (event: any, RowSelectValue: any) => {
+    //     let { checked } = event.target;
+    //     if (checked) {
+    //         setData(RowSelectValue);
+    //     } else {
+    //         setData({});
+    //     }
+    // };
     return (
         <input
             type="checkbox"
+            // onChange={(event) => handleChange(event, RowSelectValue)}
             ref={ref}
             className={className + " cursor-pointer"}
             {...rest}
@@ -121,6 +131,7 @@ function IndeterminateCheckbox({
 function ComponentTable(SelectedProp: any) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
+    const [rowSelection, setRowSelection] = React.useState({});
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -1152,6 +1163,9 @@ function ComponentTable(SelectedProp: any) {
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                     if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
+
+                            result.ID = result.ID !=undefined ? result.ID : result.Id;
+
                             result.TeamLeaderUser = []
                             result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
                             result.chekbox = false;
@@ -1815,6 +1829,9 @@ function ComponentTable(SelectedProp: any) {
 
         console.log(componentDetails);
         componentDetails.forEach((result: any) => {
+            
+            result.ID = result.Id !=undefined ? result.Id :result.ID
+
             result.AllTeamName = '';
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
@@ -3573,37 +3590,11 @@ function ComponentTable(SelectedProp: any) {
 
     ///new react table part recharch and devlopment///
 
+
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
                 accessorKey: "Shareweb_x0020_ID",
-                // Cell: ({ row, getValue }: any) => {
-                //     console.log(row.original);
-                //     return (
-                //         <div style={{ display: "flex" }}>
-                //             <a
-                //                 className="hreflink"
-                //                 title="Show All Child"
-                //                 data-toggle="modal"
-                //             >
-                //                 <img
-                //                     className="icon-sites-img ml20 me-1"
-                //                     src={row?.original?.SiteIcon}
-                //                 ></img>
-                //             </a>
-                //             {getValue()}
-                //         </div>
-                //     );
-                // },
-                // Cell: ({ row }: any) => {
-                //     return (
-                //         <span>
-                //             <a className="hreflink" title="Show All Child" data-toggle="modal">
-                //                 <img className="icon-sites-img ml20 me-1" src={row?.SiteIcon}></img>
-                //             </a>
-                //         </span>
-                //     );
-                // },
                 placeholder: "ID",
                 header: ({ table }: any) => (
                     <>
@@ -3614,23 +3605,17 @@ function ComponentTable(SelectedProp: any) {
                         >
                             {table.getIsAllRowsExpanded() ? <BsFillCaretDownFill /> : <BsFillCaretRightFill />}
                         </button>{" "}
-                        <IndeterminateCheckbox
-                            {...{
-                                checked: table.getIsAllRowsSelected(),
-                                indeterminate: table.getIsSomeRowsSelected(),
-                                onChange: table.getToggleAllRowsSelectedHandler(),
-                            }}
-                        />{" "}
+                        <IndeterminateCheckbox {...{
+                            checked: table.getIsAllRowsSelected(),
+                            indeterminate: table.getIsSomeRowsSelected(),
+                            onChange: table.getToggleAllRowsSelectedHandler(),
+                        }} />{" "}
                     </>
                 ),
                 cell: ({ row, getValue }) => (
                     <div
                         style={{
-                            // Since rows are flattened by default,
-                            // we can use the row.depth property
-                            // and paddingLeft to visually indicate the depth
-                            // of the row
-                            paddingLeft: `${row.depth * 2}rem`,
+                            paddingLeft: `${row.depth * 5}px`,
                         }}
                     >
                         <>
@@ -3651,6 +3636,7 @@ function ComponentTable(SelectedProp: any) {
                                     checked: row.getIsSelected(),
                                     indeterminate: row.getIsSomeSelected(),
                                     onChange: row.getToggleSelectedHandler(),
+
                                 }}
                             />{" "}
                             <a
@@ -3668,18 +3654,80 @@ function ComponentTable(SelectedProp: any) {
                     </div>
                 ),
             },
+            // {
+            //     accessorKey: "Title",
+            //     cell: ({ column, getValue }) => (
+            //         <HighlightableCell
+            //             value={getValue()}
+            //             searchTerm={column.getFilterValue()}
+            //         />
+            //     ),
+            //     placeholder: "Title",
+            //     header: ""
+            // },
             {
-                accessorKey: "Title",
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, column, getValue }) => (
+                    <>
+                        {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+                        >
+                            <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                        </a>}
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
+                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
+                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+                            >
+                                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                            </a>}
+                        {/* {row?.original?.childs != undefined &&
+                                <span className='ms-1'>({row?.original?.childsLength})</span>} */}
+
+                        {row?.original?.Short_x0020_Description_x0020_On != null &&
+                            <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+
+                                <span className="popover__content">
+                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                </span>
+                            </span>}
+                    </>
+
+                    // <>
+
+                    //     {/* <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} /> */}
+                    // </>
+                ),
+                id: "Title",
                 placeholder: "Title",
-                header: ""
+                header: "",
             },
             {
-                accessorKey: "ClientCategory.Title",
+                // accessorKey: "ClientCategory.Title",
+                accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
+                // accessorFn: row => row?.ClientCategory?.Title,
+                // accessorKey: 
+                cell: ({ row }) => (
+                    <>
+                        {row?.original?.ClientCategory?.map((elem: any) => {
+                            return (
+                                <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
+                            )
+                        })}
+                    </>
+                ),
+                id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: ""
             },
             {
-                accessorKey: "AllTeamMembers.ItemCover",
+                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
+                cell: ({ row }) => (
+                    <div>
+                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
+                    </div>
+                ),
+                id: 'TeamLeaderUser',
                 placeholder: "Team",
                 header: ""
             },
@@ -3702,155 +3750,72 @@ function ComponentTable(SelectedProp: any) {
         state: {
             expanded,
             sorting,
+            rowSelection,
         },
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         getSubRows: (row) => row.subRows,
+        onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
         debugTable: true,
         filterFromLeafRows: true,
+        enableSubRowSelection: false,
     });
+
+
+    console.log(".........", table.getSelectedRowModel().flatRows);
+
+    let AfterSearch = table?.getRowModel()?.rows;
+    let ComponentCopy = 0;
+    let SubComponentCopy = 0;
+    let FeatureCopy = 0;
+    // let activityCopy = 0;
+    // let workstrimCopy = 0;
+    // let task = 0;
+
+    if (AfterSearch != undefined && AfterSearch.length > 0) {
+        AfterSearch?.map((Comp) => {
+            if (Comp.original != undefined) {
+                if (Comp?.original?.Item_x0020_Type == "Component") {
+                    ComponentCopy = ComponentCopy + 1
+                }
+                if (Comp?.original?.Item_x0020_Type == "SubComponent") {
+                    SubComponentCopy = SubComponentCopy + 1;
+                }
+                if (Comp?.original?.Item_x0020_Type == "Feature") {
+                    FeatureCopy = FeatureCopy + 1;
+                }
+                // if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
+                //     activityCopy = activityCopy + 1;
+                // }
+                // if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
+                //     workstrimCopy = workstrimCopy + 1;
+                // }
+                // if (Comp?.original?.SharewebTaskType?.Title == "Task") {
+                //     task = task + 1;
+                // }
+            }
+        })
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
-
-            {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
-            {/* <Modal
-                isOpen={modalIsOpen}
-                onDismiss={setModalIsOpenToFalse}
-                isBlocking={false} >
-                <div className='modal-dialog modal-lg'>
-                    <form>
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h5 className='modal-title'><span>Add Item</span></h5>
-                                <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
-                            </div>
-                            <div className='modal-body clearfix bg-f5f5'>
-                                <div className="col-sm-12 tab-content">
-                                    <div className="col-md-5">
-                                        <div className="row">
-                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
-                                                <label>Title</label>
-                                                <input type="text" className="form-control" placeholder="Task Name"
-                                                    value={Title} onChange={handleTitle} />
-                                            </div>
-                                            <div className="col-sm-4 mb-10 Doc-align padR0">
-                                                <label className="full_width">ItemRank
-                                                </label>
-                                                <select className="form-control" value="2">
-                                                    <option value="">Select Item Rank</option>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                </select>
-                                            </div>
-                                            <div className="col-4 mb-10">
-                                                <label>Item Type</label>
-                                                <select value={itemType} onChange={(e: any) => setitemType(e.target.value)}>
-                                                    <option>Component</option>
-                                                    <option>Feature</option>
-                                                    <option>SubComponent</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-sm-6 p-0">
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Service'"
-                                                    className="col-sm-12 mb-10 Doc-align padL-0">
-                                                    <div className="col-sm-11 PadR0 Doc-align">
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-                                                            </span>
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtSharewebComponent" ng-model="SearchComponent"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-                                                        <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
-                                                            ng-click="EditComponent('Components',item)" />
-                                                    </div>
-                                                </div>
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Component'"
-                                                    className="col-sm-12 padL-0">
-                                                    <div className="col-sm-11 p-0 Doc-align">
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-                                                            </span>
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtServiceSharewebComponent" ng-model="SearchService"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 padR0">
-                                                <label>Deliverable-Synonyms </label>
-                                                <input type="text" className="form-control ui-autocomplete-input"
-                                                    id="txtDeliverable_x002d_Synonyms"
-                                                    ng-model="Item.Deliverable_x002d_Synonyms" /><span
-                                                        role="status" aria-live="polite"
-                                                        className="ui-helper-hidden-accessible"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
-                    <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </div>
-            </Modal> */}
-            {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
-
-            {/* <Modal
-                isOpen={addModalOpen}
-                onDismiss={closeModal}
-                isBlocking={false}>
-                <div className='modal-dialog modal-lg'>
-                    <div className='modal-header'>
-                        <h5 className='modal-title'><span>Add Component</span></h5>
-                        <button type="button" className='btn btn-danger pull-right' onClick={closeModal}>Cancel</button>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6 mb-10" title="Task Name">
-                            <label>Title</label>
-                            <input type="text" className="form-control" placeholder="Task Name"
-                                ng-required="true" />
-                        </div>
-                    </div>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
-                    <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
-                </div>
-            </Modal> */}
-            {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
 
             <section className="ContentSection">
@@ -3868,11 +3833,6 @@ function ComponentTable(SelectedProp: any) {
                     <div className="togglebox">
                         <label className="toggler full_width mb-10">
                             <span className=" siteColor" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}>
-                                {/* <img className="hreflink wid22"
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
-                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
-                                    <path d="M36 11H11V15.0625L20.6774 23.1875V32.9375L27.129 37V23.1875L36 15.0625V11Z" stroke="#333333" stroke-width="0" />
-                                </svg> */}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="hreflink wid22"
@@ -4070,6 +4030,32 @@ function ComponentTable(SelectedProp: any) {
                                 <div className="tbl-headings">
                                     <span className="leftsec">
                                         <label>
+                                            Showing {ComponentCopy}  of {AllCountItems.AllComponentItems.length} Components
+                                        </label>
+                                        <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {SubComponentCopy} of {AllCountItems.AllSubComponentItems.length} SubComponents
+                                        </label>
+                                        <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {FeatureCopy}  of {AllCountItems.AllFeaturesItems.length} Features
+                                        </label>
+                                        {/* <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {activityCopy}  of {AllCountItems.AllFeaturesItems.length} Activities
+                                        </label>
+                                        <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {workstrimCopy}  of {AllCountItems.AllFeaturesItems.length} Workstream
+                                        </label>
+                                        <label className="ms-1 me-1"> | </label>
+                                        <label>
+                                            {task}  of {AllCountItems.AllFeaturesItems.length} Task
+                                        </label> */}
+
+                                    </span>
+                                    {/* <span className="leftsec">
+                                        <label>
                                             Showing {AllCountItems.AfterSearchComponentItems.length} of {AllCountItems.AllComponentItems.length} Components
                                         </label>
                                         <label className="ms-1 me-1"> | </label>
@@ -4080,18 +4066,7 @@ function ComponentTable(SelectedProp: any) {
                                         <label>
                                             {AllCountItems.AfterSearchFeaturesItems.length} of {AllCountItems.AllFeaturesItems.length} Features
                                         </label>
-                                        {/* <span className="g-search">
-                                            <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
-                                            <span className="gsearch-btn" ><i><FaSearch /></i></span>
-                                        </span> */}
-                                        {/* <span>
-                                            <select className="ml2 searchbox_height">
-                                                <option value="All Words">All Words</option>
-                                                <option value="Any Words">Any Words</option>
-                                                <option value="Exact Phrase">Exact Phrase</option>
-                                            </select>
-                                        </span> */}
-                                    </span>
+                                    </span> */}
                                     <span className="toolbox mx-auto">
                                         {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Feature' ?
                                             <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
