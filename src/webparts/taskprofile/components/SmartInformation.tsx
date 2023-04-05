@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { Button } from 'react-bootstrap';
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
-import { Web } from "sp-pnp-js";
+import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 // import {IFolders, Folders } from "@pnp/sp/presets/all";
@@ -19,6 +19,7 @@ const SmartInformation = (props: any) => {
   const [allValue, setallSetValue] = useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public",fileupload:""
   })
+  const [uplodDoc,setUploaddoc]=useState(null);
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
   const [taskInfo, settaskinfo] = useState(null);
   const [SmartMetaData, setLoadSmartMetaData] = useState([]);
@@ -163,8 +164,10 @@ const SmartInformation = (props: any) => {
       setallSetValue({ ...allValue, Acronym: value })
     }
     if(item=="fileupload"){
-      let fileName=value.split('\\')
-      setallSetValue ({...allValue,fileupload:fileName[fileName.length-1]}); 
+      console.log(value.target.files[0])
+      setUploaddoc(value.target.files[0])
+      let fileName=value.target.files[0].name
+      setallSetValue ({...allValue,fileupload:fileName}); 
     }
   }
   // save function to save the data .
@@ -239,9 +242,7 @@ const SmartInformation = (props: any) => {
             console.log(err.message);
           });
       }
-
-
-    }
+      }
     else {
       alert("plese fill the Title")
     }
@@ -325,21 +326,30 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
 });
 }
  const uploadDocumentFinal=async()=>{
-  var ListIId="Documents"
-  const web = new Web( props.siteurl);
-  await web.lists.getByTitle(ListIId).items.add(
-{
-  Title: allValue.fileupload!=""?allValue.fileupload:"",
-  SmartInformationId: [smartDocumentpostData.Id]
-}    
-
-  )
-  .then(async (res: any) => {
-    console.log(res);
-
-  }).catch((err:any)=>{
-     console.log(err)
+ 
+  
+  sp.web.getFolderByServerRelativeUrl(props.spPageContext.serverRelativeUrl + "/Documents")
+  .files.add(allValue.fileupload, uplodDoc, true)
+  .then((data) =>{
+    alert("File uploaded sucessfully");
+    setallSetValue ({...allValue,fileupload:""}); 
   })
+  .catch((error) =>{
+    alert("Error is uploading");
+  })
+//   await web.lists.getByTitle(ListIId).items.add(
+// {
+//   Title: allValue.fileupload!=""?allValue.fileupload:"",
+//   // SmartInformationId: [smartDocumentpostData.Id]
+// }    
+
+//   )
+//   .then(async (res: any) => {
+//     console.log(res);
+
+//   }).catch((err:any)=>{
+//      console.log(err)
+//   })
  }
 
 
@@ -515,7 +525,7 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
             <div>{SelectedTilesTitle}</div>
             <div className=''>Drag your files here (max. 5 items)</div>
             <div>
-             <input type='file' onChange={(e)=>changeInputField(e.target.value,"fileupload")} className="full-width mt-3"></input>
+             <input type='file' onChange={(e)=>changeInputField(e,"fileupload")} className="full-width mt-3"></input>
             </div>
             <div><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue.fileupload!=""?allValue.fileupload:""}></input></div>
             <div className='mt-4 text-end' onClick={(e)=>onUploadDocumentFunction("uploadFile","UploadDocument")}> <button>upload</button></div>

@@ -1679,7 +1679,7 @@ const EditTaskPopup = (Items: any) => {
         if(Number(value) <= 10){
             setEditData({ ...EditData, Priority_x0020_Rank: e.target.value })
         }else{
-            alert("Priority Status not should be greater than 10");
+            alert("Please Enter priority between 0 to 10");
             setEditData({ ...EditData, Priority_x0020_Rank: 0})
         }
         
