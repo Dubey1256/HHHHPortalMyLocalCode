@@ -791,11 +791,13 @@ function TasksTable(props: any) {
             SharewebTaskTypeId: ChengedTitle === 'Workstream' ? 3 : 2,
             SharewebTaskLevel2No: (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? null : SharewebTaskLevel2No) : (Numbers + 1)),
         }).then((res: any) => {
-            if(checkedList[0].SharewebTaskType !=undefined){
-                checkedList[0].SharewebTaskType.Title = ChengedTitle === 'Workstream' ?ChengedTitle :'Task';
-                checkedList[0].SharewebTaskType.Id =ChengedTitle === 'Workstream' ? 3 : 2;
+            if (checkedList[0].SharewebTaskType != undefined) {
+                checkedList[0].SharewebTaskType.Title = ChengedTitle === 'Workstream' ? ChengedTitle : 'Task';
+                checkedList[0].SharewebTaskType.Id = ChengedTitle === 'Workstream' ? 3 : 2;
             }
-            checkedList[0].SharewebTaskLevel2No = (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? '' : SharewebTaskLevel2No) : (Numbers + 1));
+            if (SharewebTaskLevel2No !== undefined)
+                checkedList[0].SharewebTaskLevel2No = (ChengedTitle === 'Task' ? (SharewebTaskLevel2No === undefined ? '' : SharewebTaskLevel2No) : (Numbers + 1));
+            else delete checkedList[0].SharewebTaskLevel2No;
             checkedList[0]['Shareweb_x0020_ID'] = globalCommon.getTaskId(checkedList[0]);
             maidataBackup.forEach((obj, index) => {
                 obj.isRestructureActive = false;
