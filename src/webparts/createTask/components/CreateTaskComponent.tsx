@@ -1446,7 +1446,8 @@ function CreateTaskComponent(props: any) {
 
                                                     <a className='text-white'>
                                                         <span>
-                                                            <img src={item.Item_x005F_x0020_Cover.Url} />
+                                                        {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                                            <img src={item.Item_x005F_x0020_Cover.Url} />}
                                                         </span>
                                                     </a>
 
@@ -1475,8 +1476,10 @@ function CreateTaskComponent(props: any) {
 
                                                     <a className='text-decoration-none text-white'>
                                                         <span className="icon-sites">
+                                                        {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
                                                             <img className="icon-sites"
-                                                                src={item.Item_x005F_x0020_Cover.Url} />
+                                                                                    src={item.Item_x005F_x0020_Cover.Url} />
+                                                        }                                                           
                                                         </span>{item.Title}
                                                     </a>
                                                 </div>
@@ -1514,8 +1517,9 @@ function CreateTaskComponent(props: any) {
                             if (site.Title === save.siteType) {
                                 return (
                                     <span className='ms-2'>
-                                        <img className="client-icons"
-                                            src={site?.Item_x005F_x0020_Cover?.Url} />
+                                        {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                            <img className="client-icons" src={site.Item_x005F_x0020_Cover.Url} />
+                                        }                            
                                     </span>
                                 )
                             }
