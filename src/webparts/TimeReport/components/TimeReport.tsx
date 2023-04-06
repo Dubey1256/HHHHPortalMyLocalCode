@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 import { RankingInfo, rankItem, compareItems } from '@tanstack/match-sorter-utils'
 import Tooltip from '../../../globalComponents/Tooltip';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import {
@@ -292,8 +293,8 @@ const TimeReport = () => {
             FinalSelectDate.forEach((val: any) => {
                 AllTasks?.forEach((task: any) => {
 
-                    if (val.TaskQA != undefined || val.TaskHHHH != undefined || val.TaskEPS != undefined || val.TaskEI != undefined || val.TaskShareweb != undefined || val.TaskMigration != undefined || val.TaskALAKDigital != undefined) {
-                        if (val.TaskQA != undefined && val.TaskQA.Id == task.Id || val.TaskHHHH != undefined && val.TaskHHHH.Id == task.Id || val.TaskEPS != undefined && val.TaskEPS.Id == task.Id || val.TaskMigration != undefined && val.TaskMigration.Id == task.Id || val.TaskALAKDigital != undefined && val.TaskALAKDigital.Id == task.Id) {
+                    if (val.TaskQA != undefined || val.TaskHHHH != undefined || val.TaskEPS != undefined || val.TaskEI != undefined || val.TaskShareweb != undefined || val.TaskMigration != undefined || val.TaskALAKDigital != undefined || val.TaskOffshoreTasks != undefined) {
+                        if (val.TaskQA != undefined && val.TaskQA.Id == task.Id || val.TaskHHHH != undefined && val.TaskHHHH.Id == task.Id || val.TaskEPS != undefined && val.TaskEPS.Id == task.Id || val.TaskMigration != undefined && val.TaskMigration.Id == task.Id || val.TaskALAKDigital != undefined && val.TaskALAKDigital.Id == task.Id || val.TaskOffshoreTasks != undefined && val.TaskOffshoreTasks.Id == task.Id) {
                             if (val.AdditionalTime != undefined) {
                                 const RemoveDuplicateTime = val.AdditionalTime.filter((val: any, id: any, array: any) => {
                                     return array.indexOf(val) == id;
@@ -381,70 +382,101 @@ const TimeReport = () => {
 
     }
 
-    const columns: any = React.useMemo(
+    const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                header: 'Title',
-                accessorKey: 'Title',
-                placeholder: "",
+               
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.Id + '&Site=' +  row?.original?.siteType}
+                        >
+                             {getValue()}
+                        </a>
+                       
+                    </>
+                ),
+                id:'Title',
+                header: '',
+                placeholder: "Title",
+                
 
 
             },
             {
-                header: 'Components',
+                header: '',
                 accessorKey: 'Components',
-                placeholder: "",
+                placeholder: "Components",
+                
 
             },
             {
-                header: 'SubComponents',
+                header: '',
                 accessorKey: 'SubComponents',
-                placeholder: "",
-
+                placeholder: "SubComponents",
+                Cell: ({ row }: any) => (
+                    <span>
+                      <a
+                        style={{
+                          textDecoration: "none",
+                          color: `${
+                            row?.original?.Component?.length > 0
+                              ? "#000066"
+                              : "serviepannelgreena"
+                          }`,
+                        }}
+                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                        data-interception="off"
+                        target="_blank"
+                      >
+                        </a>
+                        </span>
+                ),
 
             },
             {
-                header: 'Features',
+                header: '',
                 accessorKey: 'Features',
-                placeholder: "",
+                placeholder: "Features",
 
             },
             {
-                header: 'Effort',
+                header: '',
                 accessorKey: 'TimeSpent',
-                placeholder: "",
+                placeholder: "Effort",
                 size: 50
 
             },
             {
-                header: 'Sites',
+                header: '',
                 accessorKey: 'siteType',
-                placeholder: "",
+                placeholder: "Sites",
 
 
             },
             {
-                header: 'PercentComplete',
+                header: '',
                 accessorKey: 'PercentComplete',
-                placeholder: "",
+                placeholder: "PercentComplete",
 
             },
             {
-                header: 'Status',
+                header: '',
                 accessorKey: 'Status',
-                placeholder: "",
+                placeholder: "Status",
 
             },
             {
-                header: 'TimeEntryUser',
+                header: '',
                 accessorKey: 'userName',
-                placeholder: "",
+                placeholder: "TimeEntryUser",
 
             },
             {
-                header: 'Designation',
+                header: '',
                 accessorKey: 'AllTeamName',
-                placeholder: "",
+                placeholder: "Designation",
 
             },
 
@@ -637,38 +669,38 @@ const TimeReport = () => {
             />
             <div className="h-2" />
             <table className='table table-striped table-hover'>
-                <thead>
+            <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map(header => {
                                 return (
-                                    <th key={header.id} colSpan={header.colSpan}
-                                        style={{ width: header.getSize() }}>
+                                    <th key={header.id} colSpan={header.colSpan}>
                                         {header.isPlaceholder ? null : (
-                                            <>
-                                                <div
-                                                    {...{
-                                                        className: header.column.getCanSort()
-                                                            ? 'cursor-pointer select-none'
-                                                            : '',
-                                                        onClick: header.column.getToggleSortingHandler(),
-                                                    }}
-                                                >
-                                                    {flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                                    {{
-                                                        asc: ' 🔼',
-                                                        desc: ' 🔽',
-                                                    }[header.column.getIsSorted() as string] ?? null}
-                                                </div>
+                                            <div style={{ display: "flex" }}>
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
                                                 {header.column.getCanFilter() ? (
                                                     <div>
                                                         <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
                                                     </div>
                                                 ) : null}
-                                            </>
+                                                <div
+                                                    {...{
+                                                        className: header.column.getCanSort()
+                                                            ? "cursor-pointer select-none"
+                                                            : "",
+                                                        onClick: header.column.getToggleSortingHandler(),
+                                                    }}
+                                                >
+                                                    {header.column.getIsSorted()
+                                                        ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                                        header.column.getIsSorted() as string
+                                                        ] ?? null
+                                                        : <FaSort />}
+                                                </div>
+                                            </div>
                                         )}
                                     </th>
                                 )
