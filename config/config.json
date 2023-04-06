@@ -10,6 +10,14 @@
         }
       ]
     },
+    "data-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/dataTool/DataToolWebPart.js",
+          "manifest": "./src/webparts/dataTool/DataToolWebPart.manifest.json"
+        }
+      ]
+    },
     "component-portfolio-web-part": {
       "components": [
         {
@@ -274,6 +282,7 @@
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
+    "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
   }
 }

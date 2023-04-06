@@ -8,29 +8,28 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskDashboardHhhhWebPartStrings';
-import TaskDashboardHhhh from './components/TaskDashboardHhhh';
-import { ITaskDashboardHhhhProps } from './components/ITaskDashboardHhhhProps';
-
-export interface ITaskDashboardHhhhWebPartProps {
+import * as strings from 'DataToolWebPartStrings';
+import DataTool from './components/DataTool';
+import { IDataToolProps } from './components/IDataToolProps';
+import * as pnp from 'sp-pnp-js';
+export interface IDataToolWebPartProps {
   description: string;
 }
 
-export default class TaskDashboardHhhhWebPart extends BaseClientSideWebPart<ITaskDashboardHhhhWebPartProps> {
+export default class DataToolWebPart extends BaseClientSideWebPart<IDataToolWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ITaskDashboardHhhhProps> = React.createElement(
-      TaskDashboardHhhh,
+    const element: React.ReactElement<IDataToolProps> = React.createElement(
+      DataTool,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -39,10 +38,15 @@ export default class TaskDashboardHhhhWebPart extends BaseClientSideWebPart<ITas
 
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
+      
       this._environmentMessage = message;
+      pnp.setup({
+        spfxContext: this.context
+       });
     });
-  }
+    
 
+  }
 
 
   private _getEnvironmentMessage(): Promise<string> {

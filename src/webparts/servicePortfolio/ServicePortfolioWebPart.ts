@@ -17,10 +17,9 @@ import { text } from '@fortawesome/fontawesome-svg-core';
 
 export interface IServicePortfolioWebPartProps {
   description: string;
-  ComponentlistId: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  TasklistId: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  SmartMetaDataId: '01a34938-8c7e-4ea6-a003-cee649e8c67a'
-  TaskUserlistId: 'b318ba84-e21d-4876-8851-88b94b9dc300'
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a'
   dropdownvalue:string,
 }
 
@@ -47,10 +46,9 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        ComponentlistId: this.properties.ComponentlistId,
-        TasklistId: this.properties.TasklistId,
-        SmartMetaDataId: this.properties.SmartMetaDataId,
-        TaskUserlistId: this.properties.TaskUserlistId,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
         Context: this.context,
         dropdownvalue:this.properties.dropdownvalue,
       }
@@ -117,7 +115,16 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
                     { key: 'Events Portfolio', text: 'Events Portfolio' },
                     { key: 'Component Portfolio', text: 'Component Portfolio' },
                   ]
-                })
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'Task User List'
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: 'Smart Metadata List'
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: 'Master Task List',
+                }),
               ]
             }
           ]

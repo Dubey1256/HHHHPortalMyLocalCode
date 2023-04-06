@@ -882,19 +882,22 @@ function EditInstitution(item: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    switch (item.Priority_x0020_Rank) {
-      case "8":
+    if (item.Priority_x0020_Rank<=10) {
+      
+      if(item.Priority_x0020_Rank == 8||item.Priority_x0020_Rank == 9||item.Priority_x0020_Rank == 10) {
         item.Priority = "(1) High";
-        break;
-      case "4":
+      }
+      if(item.Priority_x0020_Rank == 4||item.Priority_x0020_Rank == 5||item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
         item.Priority = "(2) Normal";
-        break;
-      case "1":
+      }
+      if(item.Priority_x0020_Rank == 1||item.Priority_x0020_Rank == 2||item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
         item.Priority = "(3) Low";
-        break;
-      case "":
-        item.Priority = "";
-        break;
+      }
+  
+    }else{
+      item.Priority_x0020_Rank = ""
+      alert("Please Enter priority between 0 to 10");
+      
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1475,7 +1478,7 @@ function EditInstitution(item: any) {
                   aria-labelledby="home-tab"
                 >
                   <div className="row  px-3 py-2">
-                    <div className="col-sm-5 ">
+                    <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
                           <label className="form-label  full-width">
@@ -1671,7 +1674,7 @@ function EditInstitution(item: any) {
                             </div>
                           )}
 
-                          <div className="col-sm-11  inner-tabb">
+                          <div className="col-sm-12  inner-tabb">
                             <div>
                               {/* {(EditData != undefined && EditData.smartComponent != undefined)?
                                                                 <>
@@ -2035,7 +2038,7 @@ function EditInstitution(item: any) {
                         </div>
                       </div>
                     </div>
-                    <div className="col-sm-3 ">
+                    <div className="col-sm-2 ">
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
@@ -2046,6 +2049,7 @@ function EditInstitution(item: any) {
                             className="form-control"
                             value={EditData.Priority_x0020_Rank}
                             onChange={(e) => setPriorityNew(e, EditData)}
+                            maxLength={2}
                           />
                         </div>
 
@@ -2741,7 +2745,6 @@ function EditInstitution(item: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5"></div>
                   </div>
                 </div>
                 <div

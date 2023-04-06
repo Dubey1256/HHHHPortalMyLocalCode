@@ -94,7 +94,7 @@ function ShowTaskTeamMembers(item: any) {
         }
       });
     }
-    Item.allMembersEmail=emailarray.join();
+    Item.allMembersEmail = emailarray.join();
     setItemMember(Item);
   };
   React.useEffect(() => {
@@ -102,34 +102,36 @@ function ShowTaskTeamMembers(item: any) {
   }, []);
 
   return (
-    <div>
+    <div className='full-width'>
+
       {ItemNew?.TeamLeader?.length > 0 ||
-      ItemNew?.AllTeamMembers?.length > 0 ? (
+        ItemNew?.AllTeamMembers?.length > 0 ? (
         <div className="d-flex align-items-center">
+          &nbsp;
           {ItemNew["TeamLeader"] != null && ItemNew["TeamLeader"].length > 0
             ? ItemNew["TeamLeader"].map((rcData: any, i: any) => {
-                return (
-                  <>
-                    <span className="user_Member_img">
-                      <a
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
-                        target="_blank"
-                        data-interception="off"
-                        title={rcData.Title}
-                      >
-                        <img className="imgAuthor" src={rcData.ItemCover}></img>
-                      </a>
-                    </span>
-                  </>
-                );
-              })
+              return (
+                <>
+                  <span className="user_Member_img">
+                    <a
+                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                      target="_blank"
+                      data-interception="off"
+                      title={rcData.Title}
+                    >
+                      <img className="imgAuthor" src={rcData.ItemCover}></img>
+                    </a>
+                  </span>
+                </>
+              );
+            })
             : ""}
           {/* {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 &&
                                                                                                                            <div></div>
                                                                                                                        } */}
 
           {ItemNew["AllTeamMembers"] != null &&
-          ItemNew["AllTeamMembers"].length > 0 ? (
+            ItemNew["AllTeamMembers"].length > 0 ? (
             <div className="  ">
               <a
                 href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
@@ -147,7 +149,7 @@ function ShowTaskTeamMembers(item: any) {
             ""
           )}
           {ItemNew["AllTeamMembers"] != null &&
-          ItemNew["AllTeamMembers"].length > 1 ? (
+            ItemNew["AllTeamMembers"].length > 1 ? (
             <div
               className="position-relative user_Member_img_suffix2 ms-1"
               onMouseOver={(e) => handleSuffixHover(ItemNew)}
@@ -192,22 +194,22 @@ function ShowTaskTeamMembers(item: any) {
             ""
           )}
           {ItemNew.allMembersEmail != null
-          ? (
-            <span style={{marginLeft:'5px'}} >
-              <a
-                href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
-                target="_blank"
-              >
-                <img alt="m-teams"
-                width="25px"
-                height="25px"
-                  src={require('../Assets/ICON/Teams-Logo.png')}
-                />
-              </a>
-            </span>
-          ) : (
-            ""
-          )}
+            ? (
+              <span style={{ marginLeft: '5px' }} >
+                <a
+                  href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
+                  target="_blank"
+                >
+                  <img alt="m-teams"
+                    width="25px"
+                    height="25px"
+                    src={require('../Assets/ICON/Teams-Logo.png')}
+                  />
+                </a>
+              </span>
+            ) : (
+              ""
+            )}
         </div>
       ) : (
         ""

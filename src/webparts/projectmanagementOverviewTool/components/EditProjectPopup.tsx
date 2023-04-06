@@ -132,12 +132,12 @@ function EditProjectPopup(item: any) {
     // }
 
     if (type === "Service") {
-      if (item?.smartService?.length > 0) {
+      if (item?.smartService?.length >= 0) {
         setLinkedComponentData(item.smartService);
       }
     }
     if (type === "Component") {
-      if (item?.smartComponent?.length > 0) {
+      if (item?.smartComponent?.length >= 0) {
         setSmartComponentData(item.smartComponent);
       }
     }
@@ -881,7 +881,7 @@ function EditProjectPopup(item: any) {
       if (item.Component != undefined) {
         item.smartComponent = [];
         if (item.smartComponent != undefined) {
-          item?.Component?.map((com: any) => {
+          smartComponentData?.map((com: any) => {
             item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
           });
         }
@@ -890,7 +890,7 @@ function EditProjectPopup(item: any) {
       if (item.Services != undefined) {
         item.smartService = [];
         if (item.smartService != undefined) {
-          item?.Services?.map((com: any) => {
+          linkedComponentData?.map((com: any) => {
             item.smartService.push({ Title: com?.Title, Id: com?.Id });
           });
         }
@@ -902,19 +902,22 @@ function EditProjectPopup(item: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    switch (item.Priority_x0020_Rank) {
-      case "8":
+    if (item.Priority_x0020_Rank<=10) {
+      
+      if(item.Priority_x0020_Rank == 8||item.Priority_x0020_Rank == 9||item.Priority_x0020_Rank == 10) {
         item.Priority = "(1) High";
-        break;
-      case "4":
+      }
+      if(item.Priority_x0020_Rank == 4||item.Priority_x0020_Rank == 5||item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
         item.Priority = "(2) Normal";
-        break;
-      case "1":
+      }
+      if(item.Priority_x0020_Rank == 1||item.Priority_x0020_Rank == 2||item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
         item.Priority = "(3) Low";
-        break;
-      case "":
-        item.Priority = "";
-        break;
+      }
+  
+    }else{
+      item.Priority_x0020_Rank = ""
+      alert("Please Enter priority between 0 to 10");
+      
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1446,7 +1449,7 @@ function EditProjectPopup(item: any) {
                         </div>
 
                         <div className="mx-0 row ">
-                          <div className="col-sm-12 mt-2">
+                          <div className="col-sm-12 mt-2 p-0">
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Item Rank
@@ -1491,129 +1494,131 @@ function EditProjectPopup(item: any) {
                 </div>
             </div> */}
                           {EditData?.Item_x0020_Type == "Project" && (
-                            <div className="row ps-0 pe-0 mt-2 ">
-                              <div className="col-sm-6">
-                                <div className="input-group full-width">
-                                  <label className="form-label full-width">
-                                    Component Portfolio
-                                  </label>
-                                  <input type="text" className="form-control" />
-                                  <span className="input-group-text">
-                                    <svg
-                                      onClick={(e) =>
-                                        EditPortfolio(EditData, "Component")
-                                      }
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 48 48"
-                                      fill="none"
-                                    >
-                                      <path
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                        fill="#333333"
-                                      />
-                                    </svg>
-                                  </span>
-                                </div>
+                            <div className="col-sm-12 mt-2 p-0">
+                              <div className="row">
+                                <div className="col-sm-6">
+                                  <div className="input-group full-width">
+                                    <label className="form-label full-width">
+                                      Component Portfolio
+                                    </label>
+                                    <input type="text" className="form-control" />
+                                    <span className="input-group-text">
+                                      <svg
+                                        onClick={(e) =>
+                                          EditPortfolio(EditData, "Component")
+                                        }
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 48 48"
+                                        fill="none"
+                                      >
+                                        <path
+                                          fill-rule="evenodd"
+                                          clip-rule="evenodd"
+                                          d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
+                                          fill="#333333"
+                                        />
+                                      </svg>
+                                    </span>
+                                  </div>
 
-                                <div className="  inner-tabb">
-                                  <div>
-                                    {smartComponentData
-                                      ? smartComponentData?.map(
-                                          (com: any, index: any) => {
-                                            return (
-                                              <>
-                                                <div className="d-flex Component-container-edit-task">
-                                                  <a
-                                                    style={{
-                                                      color: "#fff !important",
-                                                    }}
-                                                    target="_blank"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                                  >
-                                                    {com.Title}
-                                                  </a>
-                                                  <a>
+                                  <div className="  inner-tabb">
+                                    <div>
+                                      {smartComponentData
+                                        ? smartComponentData?.map(
+                                            (com: any, index: any) => {
+                                              return (
+                                                <>
+                                                  <div className="d-flex Component-container-edit-task">
+                                                    <a
+                                                      style={{
+                                                        color: "#fff !important",
+                                                      }}
+                                                      target="_blank"
+                                                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                                    >
+                                                      {com.Title}
+                                                    </a>
+                                                    <a>
+                                                      <img
+                                                        className="mx-2"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                        onClick={() =>
+                                                          unTagComponent(
+                                                            smartComponentData,
+                                                            index
+                                                          )
+                                                        }
+                                                      />
+                                                    </a>
+                                                  </div>
+                                                </>
+                                              );
+                                            }
+                                          )
+                                        : null}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-sm-6">
+                                  <div className="input-group full-width">
+                                    <label className="form-label full-width">
+                                      Service Portfolio
+                                    </label>
+                                    <input type="text" className="form-control" />
+                                    <span className="input-group-text">
+                                      <svg
+                                        onClick={(e) =>
+                                          EditPortfolio(EditData, "Service")
+                                        }
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 48 48"
+                                        fill="none"
+                                      >
+                                        <path
+                                          fill-rule="evenodd"
+                                          clip-rule="evenodd"
+                                          d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
+                                          fill="#333333"
+                                        />
+                                      </svg>
+                                    </span>
+                                  </div>
+
+                                  <div className="inner-tabb full-width">
+                                    {linkedComponentData?.length > 0 ? (
+                                      <div className="serviepannelgreena">
+                                      {linkedComponentData?.map(
+                                        (com: any, index: any) => {
+                                          return (
+                                            <>
+                                              <div className="d-flex Component-container-edit-task block">
+                                                  <div>
+                                                    <a
+                                                      className="hreflink "
+                                                      target="_blank"
+                                                      data-interception="off"
+                                                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                                    >
+                                                      {com.Title}
+                                                    </a>
                                                     <img
-                                                      className="mx-2"
                                                       src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
                                                       onClick={() =>
-                                                        unTagComponent(
-                                                          smartComponentData,
+                                                        unTagService(
+                                                          linkedComponentData,
                                                           index
                                                         )
                                                       }
                                                     />
-                                                  </a>
+                                                  </div>
                                                 </div>
                                               </>
                                             );
                                           }
-                                        )
-                                      : null}
+                                        )}
+                                      </div>
+                                    ) : null}
                                   </div>
-                                </div>
-                              </div>
-                              <div className="col-sm-6">
-                                <div className="input-group full-width">
-                                  <label className="form-label full-width">
-                                    Service Portfolio
-                                  </label>
-                                  <input type="text" className="form-control" />
-                                  <span className="input-group-text">
-                                    <svg
-                                      onClick={(e) =>
-                                        EditPortfolio(EditData, "Service")
-                                      }
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 48 48"
-                                      fill="none"
-                                    >
-                                      <path
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                        fill="#333333"
-                                      />
-                                    </svg>
-                                  </span>
-                                </div>
-
-                                <div className="inner-tabb full-width">
-                                  {linkedComponentData?.length > 0 ? (
-                                    <div className="serviepannelgreena">
-                                    {linkedComponentData?.map(
-                                      (com: any, index: any) => {
-                                        return (
-                                          <>
-                                            <div className="d-flex Component-container-edit-task block">
-                                                <div>
-                                                  <a
-                                                    className="hreflink "
-                                                    target="_blank"
-                                                    data-interception="off"
-                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                                  >
-                                                    {com.Title}
-                                                  </a>
-                                                  <img
-                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                                    onClick={() =>
-                                                      unTagService(
-                                                        linkedComponentData,
-                                                        index
-                                                      )
-                                                    }
-                                                  />
-                                                </div>
-                                              </div>
-                                            </>
-                                          );
-                                        }
-                                      )}
-                                    </div>
-                                  ) : null}
                                 </div>
                               </div>
                             </div>
@@ -1634,7 +1639,7 @@ function EditProjectPopup(item: any) {
                           
                           </div>
                         </div>
-                        <div className="col-sm-4 ">
+                        <div className="col-sm-4 ps-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               Due Date
@@ -1647,7 +1652,7 @@ function EditProjectPopup(item: any) {
                                                     />
                           </div>
                         </div>
-                        <div className="col-sm-4 pe-0">
+                        <div className="col-sm-4 p-0">
                           <div className="input-group">
                             <label className="form-label  full-width">
                               {" "}
@@ -1663,7 +1668,7 @@ function EditProjectPopup(item: any) {
                         </div>
                         </div>
                         <div className="mx-0 row mt-2 ">
-                          <div className="col-sm-6 p-0">
+                          <div className="col-sm-6 ps-0">
                             <div className="input-group mb-2">
                               <label className="form-label  full-width">
                                 Status
@@ -1770,7 +1775,7 @@ function EditProjectPopup(item: any) {
                               </label>
                             </div>
                           </div>
-                          <div className="col">
+                          <div className="col-sm-6 pe-0">
                             <div className="input-group position-relative">
                               <label className="form-label  full-width">
                                 Categories{" "}
@@ -1962,6 +1967,7 @@ function EditProjectPopup(item: any) {
                               className="form-control"
                               value={EditData.Priority_x0020_Rank}
                               onChange={(e) => setPriorityNew(e, EditData)}
+                              maxLength={2}
                             />
                           </div>
 
