@@ -249,8 +249,8 @@ const TaskDashboard = (props: any) => {
                                 });
                                 arraycount++;
                             });
-                        
-                        if (arraycount === 17) {
+                        let currentCount =siteConfig?.length;
+                        if (arraycount ===currentCount ) {
                             setAllAssignedTasks(AllAssignedTask);
                             setWorkingTodayTasks(workingTodayTask)
                             setThisWeekTasks(workingThisWeekTask)
@@ -561,29 +561,12 @@ const TaskDashboard = (props: any) => {
         let TaxonomyItems = [];
         smartmeta = await web.lists
             .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-            .items.select(
-                "Id",
-                "IsVisible",
-                "ParentID",
-                "Title",
-                "SmartSuggestions",
-                "TaxType",
-                "Description1",
-                "Item_x005F_x0020_Cover",
-                "listId",
-                "siteName",
-                "siteUrl",
-                "SortOrder",
-                "SmartFilters",
-                "Selectable",
-                "Parent/Id",
-                "Parent/Title"
-            )
+            .items.select("Id","IsVisible","ParentID","Title","SmartSuggestions","TaxType","Description1","Item_x005F_x0020_Cover","listId","siteName","siteUrl","SortOrder","SmartFilters","Selectable","Parent/Id","Parent/Title")
             .top(5000)
-            .filter("TaxType eq 'Sites'")
+            .filter("TaxType eq 'Sites'" )
             .expand("Parent")
             .get();
-        siteConfig = smartmeta;
+        siteConfig = smartmeta.filter((data:any)=>data.IsVisible);
         LoadAllSiteTasks();
     };
 
