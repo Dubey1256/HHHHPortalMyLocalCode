@@ -74,7 +74,7 @@ export default function ProjectOverview() {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a className='hreflink' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -85,7 +85,7 @@ export default function ProjectOverview() {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' item={row.original} />
+                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
@@ -96,7 +96,7 @@ export default function ProjectOverview() {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' item={row.original} />
+                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
