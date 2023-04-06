@@ -483,7 +483,6 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Portfolio",
         accessor: "PortfolioTitle",
         showSortIcon: true,
-        style: { width: "100px" },
         Cell: ({ row }: any) => (
           <span>
             <a className='hreflink'
