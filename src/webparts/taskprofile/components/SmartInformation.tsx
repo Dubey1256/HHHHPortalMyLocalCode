@@ -7,10 +7,9 @@ import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
-// import {IFolders, Folders } from "@pnp/sp/presets/all";
-// import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
-// import ImageUploading, { ImageListType } from "react-images-uploading";
+
 import { SPHttpClient } from "@microsoft/sp-http";
+import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 let hhhsmartinfoId: any = [];
 const SmartInformation = (props: any) => {
   const [show, setShow] = useState(false);
@@ -169,6 +168,7 @@ const SmartInformation = (props: any) => {
       let fileName=value.target.files[0].name
       setallSetValue ({...allValue,fileupload:fileName}); 
     }
+    
   }
   // save function to save the data .
   const saveSharewebItem = async () => {
@@ -308,11 +308,13 @@ const SmartInformation = (props: any) => {
    console.log(folderUrl);
   console.log(SiteUrl);
    console.log(ListIId);
-  await GetOrCreateFolder(folderName,folderUrl,SiteUrl,ListIId).then((folder: { UniqueId: any; }) => {
+  await GetOrCreateFolder(folderName,folderUrl,SiteUrl,ListIId)
+  .then((folder: { UniqueId: any; }) => {
     console.log(`Folder created with ID: ${folder.UniqueId}`);
+    uploadDocumentFinal(folderName);
 }).catch((err: string) => {
     console.log("Error creating folder: " + err);});
-    uploadDocumentFinal();
+ 
   }
 
 }
@@ -325,32 +327,44 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
     return response.json();
 });
 }
- const uploadDocumentFinal=async()=>{
- 
-  
+// final document upload and move into a folder
+ const uploadDocumentFinal=async(folderName:any)=>{
+  const web = new Web(props.siteurl);
   sp.web.getFolderByServerRelativeUrl(props.spPageContext.serverRelativeUrl + "/Documents")
-  .files.add(allValue.fileupload, uplodDoc, true)
-  .then((data) =>{
+  .files.add(allValue.fileupload, uplodDoc, true,)
+  .then(async(data:any) =>{
+    console.log(data)
     alert("File uploaded sucessfully");
+
+    //get the file in document list ..
+    sp.web.getFolderByServerRelativeUrl("/Documents").files.get()
+    //  await sp.web.getFileByServerRelativeUrl('Documents/leave WFH.xlsx').get()
+     await sp.web.getFileByServerRelativeUrl('Documents/leave WFH.xlsx').moveTo('/Documents/t task/leave WFH.xlsx')
+     .then((file: any) => {
+        console.log(file)
+       
+      }).catch((err:any) => {
+        console.log(err.message);
+      });
+    //moe file into the folder ...
+    var movefolderurl = `${props.spPageContext.serverRelativeUrl}/Documents`
+
+    let movedata = await web.getFileByServerRelativeUrl(`${movefolderurl}/${data.data.ID}_.000`).moveTo(`/${folderName}${MovefolderItemUrl}/${data.data.ID}_.000`);
+      console.log(movedata);
     setallSetValue ({...allValue,fileupload:""}); 
   })
   .catch((error) =>{
     alert("Error is uploading");
   })
-//   await web.lists.getByTitle(ListIId).items.add(
-// {
-//   Title: allValue.fileupload!=""?allValue.fileupload:"",
-//   // SmartInformationId: [smartDocumentpostData.Id]
-// }    
-
-//   )
-//   .then(async (res: any) => {
-//     console.log(res);
-
-//   }).catch((err:any)=>{
-//      console.log(err)
-//   })
  }
+ const  _getDropFiles = (files:any) => {
+  for (var i = 0; i < files.length; i++) {
+    console.log("Filename: " + files[i].name);
+    console.log("Path: " + files[i].fullPath);
+    setallSetValue ({...allValue,fileupload: files[i].name}); 
+   
+  }
+}
 
 
 
@@ -479,8 +493,8 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
         onDismiss={handleClose}>
         <div>
           
-            <div className='d-flex justify-content-center text-center'>
-            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('UploadDocument')}>
+            <div className='bg-ee d-flex justify-content-center py-4 text-center'>
+            <a className={SelectedTilesTitle=="UploadDocument"?"bg-69 me-2 pe-5 px-4 py-2 BoxShadow":"bg-69 me-2 pe-5 px-4 py-2"}onClick={() => SelectedTiles('UploadDocument')}>
               <p className='full-width floar-end'>
                 Document
                 </p>
@@ -489,7 +503,7 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
                 
          
             </a>
-            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('UploadEmail')}>
+            <a className={SelectedTilesTitle=="UploadEmail"?"bg-69 me-2 pe-5 px-4 py-2 BoxShadow":"bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('UploadEmail')}>
               <p className='full-width floar-end'>
                 Email
                 </p>
@@ -497,7 +511,7 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
               
             
             </a>
-            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('CreateLink')}>
+            <a className={SelectedTilesTitle=="CreateLink"?"bg-69 me-2 pe-5 px-4 py-2 BoxShadow":"bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('CreateLink')}>
               <p className='full-width floar-end'>
                 Link
                 </p>
@@ -505,7 +519,7 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
                
             
             </a>
-            <a className="bg-69 me-2 pe-5 px-4 py-2" onClick={() => SelectedTiles('Task')}>
+            <a className={SelectedTilesTitle=="Task"?"bg-69 me-2 pe-5 px-4 py-2 BoxShadow":"bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('Task')}>
               <p className='full-width floar-end'>
                 Task
                 </p>
@@ -521,24 +535,52 @@ return props.Context.spHttpClient.post(endpointUrl, SPHttpClient.configurations.
                         </a> */}
             </div>
           
-          {SelectedTilesTitle === "UploadDocument" && <div>
-            <div>{SelectedTilesTitle}</div>
-            <div className=''>Drag your files here (max. 5 items)</div>
-            <div>
+          {SelectedTilesTitle === "UploadDocument" && <div className='mt-2'>
+            <div className=''>{SelectedTilesTitle}</div>
+            <DragDropFiles 
+          dropEffect="copy" 
+          // enable={true}  
+          onDrop={_getDropFiles}
+          iconName="Upload"
+          //labelMessage= "My custom upload File"
+          >
+            <div className='BorderDas py-5 px-2 text-center'> {allValue.fileupload==""&&<span>Drag and drop here...</span>}
+            <span>{allValue.fileupload!=""?allValue.fileupload:""}</span>
+            </div>
+         
+          </DragDropFiles>
+          <div className='row'>
+            <div className='col-md-6'>
              <input type='file' onChange={(e)=>changeInputField(e,"fileupload")} className="full-width mt-3"></input>
             </div>
-            <div><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue.fileupload!=""?allValue.fileupload:""}></input></div>
-            <div className='mt-4 text-end' onClick={(e)=>onUploadDocumentFunction("uploadFile","UploadDocument")}> <button>upload</button></div>
-          </div>}
-          {SelectedTilesTitle === "UploadEmail" && <div>kumar</div>}
-          {SelectedTilesTitle === "CreateLink" && <div>manas</div>}
-          {SelectedTilesTitle === "Task" && <div>pallav</div>}
-        </div>
-        <footer className='text-end'>
-          <Button className='btn btn-default text-end mt-5' onClick={() => handleClose()}>
+            <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue.fileupload!=""?allValue.fileupload:""}></input></div>
+            </div>
+            <div className='mt-2 text-end' onClick={(e)=>onUploadDocumentFunction("uploadFile","UploadDocument")}><button className='btn  text-end btn btn-primary '>upload</button>  <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>
             Cancel
-          </Button>
-        </footer>
+          </Button> </div>
+          </div>}
+          {SelectedTilesTitle === "UploadEmail" && <div>  <DragDropFiles 
+          dropEffect="copy" 
+          // enable={true}  
+          onDrop={_getDropFiles}
+          iconName="Upload"
+          labelMessage= "My custom upload File"
+          >
+            <div className='border py-5 px-2'> {allValue.fileupload==""&&<span>Drag and drop here...</span>}
+            <span>{allValue.fileupload!=""?allValue.fileupload:""}</span>
+            </div>
+         
+          </DragDropFiles></div>}
+          {SelectedTilesTitle === "CreateLink" && <div><div className="panel-heading">
+                                    <h3 className="panel-title">
+                                        Link
+                                    </h3>
+                                </div>
+                                
+                                </div>}
+          {SelectedTilesTitle === "Task" && <div>Task</div>}
+        </div>
+     
       </Panel>
     </div>
   )
