@@ -21,6 +21,7 @@ var today: any = [];
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
+    const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
@@ -54,7 +55,7 @@ const TaskDashboard = (props: any) => {
     }, []);
     React.useEffect(() => {
         let CONTENT = !updateContent;
-    
+
         setUpdateContent(CONTENT);
 
     }, [AllAssignedTasks, thisWeekTasks, workingTodayTasks]);
@@ -72,22 +73,26 @@ const TaskDashboard = (props: any) => {
         today = displayDate;
     }
     const loadAdminConfigurations = async () => {
-        var CurrentSiteType = "";
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
-        await web.lists
-            .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
-            .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
-            .top(4999)
-            .get().then((response) => {
-                var SmartFavoritesConfig = [];
-                $.each(response, function (index: any, smart: any) {
-                    if (smart.Configurations != undefined) {
-                        DataSiteIcon = JSON.parse(smart.Configurations);
-                    }
-                });
-            },
-                function (error) { }
-            );
+        try {
+            var CurrentSiteType = "";
+            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
+            await web.lists
+                .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
+                .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
+                .top(4999)
+                .get().then((response) => {
+                    var SmartFavoritesConfig = [];
+                    $.each(response, function (index: any, smart: any) {
+                        if (smart.Configurations != undefined) {
+                            DataSiteIcon = JSON.parse(smart.Configurations);
+                        }
+                    });
+                },
+                    function (error) { }
+                );
+        } catch (e) {
+            console.log(e)
+        }
     };
 
     //Item Exist 
@@ -130,8 +135,8 @@ const TaskDashboard = (props: any) => {
                             .expand(
                                 "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
                             )
-                            .get().then((data:any)=>{
-                                smartmeta=data;
+                            .get().then((data: any) => {
+                                smartmeta = data;
                                 smartmeta.map((task: any) => {
                                     let alreadyPushed = false;
                                     task.AllTeamMember = [];
@@ -223,34 +228,34 @@ const TaskDashboard = (props: any) => {
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
-        
+
                                     const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUser?.AssingedToUserId);
                                     const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUser?.AssingedToUserId);
                                     const isCurrentUserApprover = task?.TeamMembersId?.includes(currentUser?.AssingedToUserId);
                                     const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
-                                    if(isCurrentUserApprover&&task?.PercentComplete == '1'){
+                                    if (isCurrentUserApprover && task?.PercentComplete == '1') {
                                         approverTask.push(task)
                                         alreadyPushed = true;
-                                    }else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                                    } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
                                         workingTodayTask.push(task)
                                         alreadyPushed = true;
-                                    } else if (task?.workingThisWeek && (isCurrentUserAssigned||isCurrentUserTeamMember)) {
+                                    } else if (task?.workingThisWeek && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
                                         workingThisWeekTask.push(task)
                                         alreadyPushed = true;
-                                    } else if (checkUserExistence('Bottleneck', task?.SharewebCategories) &&(isCurrentUserAssigned||isCurrentUserTeamMember)) {
+                                    } else if (checkUserExistence('Bottleneck', task?.SharewebCategories) && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
                                         bottleneckTask.push(task)
                                         alreadyPushed = true;
-                                    } else if (!alreadyPushed &&(isCurrentUserAssigned||isCurrentUserTeamMember)) {
+                                    } else if (!alreadyPushed && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
                                         AllAssignedTask.push(task)
                                         alreadyPushed = true;
                                     }
-        
-        
+
+
                                 });
                                 arraycount++;
                             });
-                        
-                        if (arraycount === 17) {
+                        let currentCount = siteConfig?.length;
+                        if (arraycount === currentCount) {
                             setAllAssignedTasks(AllAssignedTask);
                             setWorkingTodayTasks(workingTodayTask)
                             setThisWeekTasks(workingThisWeekTask)
@@ -269,6 +274,7 @@ const TaskDashboard = (props: any) => {
     const getChilds1 = function (item: any, array: any) {
         item.childs = [];
         array?.map((childItem: any) => {
+            childItem.selected = false;
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
             }
@@ -295,7 +301,7 @@ const TaskDashboard = (props: any) => {
                 style: { width: '70px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
-                    <span style={{ color: `${row.original.Component.length > 0 ? "#000066" : "green"}` }}>
+                    <span>
 
                         {row?.original?.Shareweb_x0020_ID}
 
@@ -308,8 +314,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a
-                            style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ? "green" : "#000066"}` }}
+                        <a className='hreflink'
                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
@@ -320,9 +325,9 @@ const TaskDashboard = (props: any) => {
                 ),
             },
             {
-                internalHeader: "",
+                internalHeader: "Site",
+                accessor:'siteType',
                 id: "siteIcon", // 'id' is required
-                isSorted: false,
                 showSortIcon: false,
                 style: { width: '40px' },
                 Cell: ({ row }: any) => (
@@ -338,11 +343,9 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Portfolio",
                 accessor: "PortfolioTitle",
                 showSortIcon: true,
-                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ? "green" : "#000066"}` }}
-                            data-interception="off"
+                        <a className='hreflink' data-interception="off"
                             target="blank"
                             href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                         >
@@ -360,7 +363,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns type='Task' callBack={inlineCallBack} columnName='Priority' item={row?.original} />
+                        <InlineEditingcolumns type='Task' callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                     </span>
                 ),
             },
@@ -370,7 +373,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "DueDate",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => <span style={{ textDecoration: "none", color: `${row?.original?.Service?.length > 0 ? "green" : "#000066"}` }}>{row?.original?.DisplayDueDate}</span>,
+                Cell: ({ row }: any) => <span >{row?.original?.DisplayDueDate}</span>,
             },
 
             {
@@ -381,7 +384,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
 
                     <span>
-                        <InlineEditingcolumns callBack={inlineCallBack} columnName='PercentComplete' item={row?.original} />
+                        <InlineEditingcolumns callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                     </span>
                 ),
             },
@@ -559,32 +562,21 @@ const TaskDashboard = (props: any) => {
         let smartmeta = [];
 
         let TaxonomyItems = [];
-        smartmeta = await web.lists
-            .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-            .items.select(
-                "Id",
-                "IsVisible",
-                "ParentID",
-                "Title",
-                "SmartSuggestions",
-                "TaxType",
-                "Description1",
-                "Item_x005F_x0020_Cover",
-                "listId",
-                "siteName",
-                "siteUrl",
-                "SortOrder",
-                "SmartFilters",
-                "Selectable",
-                "Parent/Id",
-                "Parent/Title"
-            )
-            .top(5000)
-            .filter("TaxType eq 'Sites'")
-            .expand("Parent")
-            .get();
-        siteConfig = smartmeta;
-        LoadAllSiteTasks();
+        try {
+            smartmeta = await web.lists
+                .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
+                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                .top(5000)
+                .filter("TaxType eq 'Sites'")
+                .expand("Parent")
+                .get();
+            siteConfig = smartmeta.filter((data: any) => data.IsVisible);
+            LoadAllSiteTasks();
+
+        } catch (error) {
+
+        }
+
     };
 
 
@@ -634,39 +626,78 @@ const TaskDashboard = (props: any) => {
         setGroupedUsers(userGroups);
         GetMetaData();
     }
+    const createGroupUsers = () => {
+        let Groups:any=[];
+        taskUsers?.map((item: any) => {
+            item.expanded = false;
+            getChilds1(item, taskUsers);
+            Groups.push(item);
+        })
+        setGroupedUsers(Groups);
+    }
     // End
+
+    //Change User details 
+    const changeSelectedUser = (user: any) => {
+        if (!user.selected) {
+            createGroupUsers();
+            user.selected = !user.selected;
+            if (user?.AssingedToUserId!=currentUserData?.AssingedToUserId) {
+                currentUserId = user?.AssingedToUserId;
+                setSelectedUser(user)
+                LoadAllSiteTasks()
+            }else{
+                unSelectUser();
+            }
+        } else {
+            user.selected = !user.selected;
+            unSelectUser();
+        }
+    }
+    const unSelectUser = () => {
+        currentUserId = currentUserData?.AssingedToUserId;
+        LoadAllSiteTasks()
+        setSelectedUser({})
+        createGroupUsers();
+    }
+    // End
+
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        let todayTasks = workingTodayTasks;
-        let thisWeekTask = thisWeekTasks;
-        let allTasks = AllAssignedTasks;
-        let task: any = dragedTask.task;
-        if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined)) {
-            task.IsTodaysTask = false;
-            task.workingThisWeek = true;
-            UpdateTaskStatus(task);
-            thisWeekTask.push(task)
-            todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-            allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+        if (currentUserId == currentUserData?.AssingedToUserId) {
+            let todayTasks = workingTodayTasks;
+            let thisWeekTask = thisWeekTasks;
+            let allTasks = AllAssignedTasks;
+            let task: any = dragedTask.task;
+            if (destination == 'thisWeek' && (task?.workingThisWeek == false || task?.workingThisWeek == undefined)) {
+                task.IsTodaysTask = false;
+                task.workingThisWeek = true;
+                UpdateTaskStatus(task);
+                thisWeekTask.push(task)
+                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+            }
+            if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined)) {
+                task.IsTodaysTask = true;
+                task.workingThisWeek = false;
+                UpdateTaskStatus(task);
+                todayTasks.push(task)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+            }
+            if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true)) {
+                task.IsTodaysTask = false;
+                task.workingThisWeek = false;
+                UpdateTaskStatus(task);
+                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+            }
+            setAllAssignedTasks(allTasks);
+            setThisWeekTasks(thisWeekTask);
+            setWorkingTodayTasks(todayTasks);
+        } else {
+            alert('This Drop Is Not Allowed')
         }
-        if (destination == 'workingToday' && (task?.IsTodaysTask == false || task?.IsTodaysTask == undefined)) {
-            task.IsTodaysTask = true;
-            task.workingThisWeek = false;
-            UpdateTaskStatus(task);
-            todayTasks.push(task)
-            thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-            allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-        }
-        if (destination == 'AllTasks' && (task?.IsTodaysTask == true || task?.workingThisWeek == true)) {
-            task.IsTodaysTask = false;
-            task.workingThisWeek = false;
-            UpdateTaskStatus(task);
-            todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-            thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
-        }
-        setAllAssignedTasks(allTasks);
-        setThisWeekTasks(thisWeekTask);
-        setWorkingTodayTasks(todayTasks);
 
     }
     const startDrag = (task: any, taskId: any, origin: any) => {
@@ -683,7 +714,7 @@ const TaskDashboard = (props: any) => {
     const toggleTeamUsers = (index: any) => {
         let userGroups = groupedUsers;
         let CONTENT = !updateContent;
-      
+
 
         try {
             userGroups[index].expanded = !userGroups[index].expanded
@@ -696,7 +727,7 @@ const TaskDashboard = (props: any) => {
     //End
     return (
         <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
-            <div className={updateContent? "dashboard-colm" : "dashboard-colm"}>
+            <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
                 <aside className="sidebar">
                     <button
                         type="button"
@@ -754,7 +785,7 @@ const TaskDashboard = (props: any) => {
                                 {groupedUsers?.map((filterItem: any, index: any) => {
                                     if (filterItem?.childs?.length > 0) {
                                         return (
-                                            <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent? "nav__text hreflink  pt-0 " : "nav__text hreflink  pt-0 "}>
+                                            <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink  pt-0 " : "nav__text hreflink  pt-0 "}>
                                                 {filterItem?.Title}
                                                 {filterItem?.expanded ? <FaSortUp className='text-white' /> : <FaSortDown className='text-white' />}
                                                 {
@@ -763,8 +794,8 @@ const TaskDashboard = (props: any) => {
                                                             {filterItem?.childs?.map((childUsers: any) => {
                                                                 return (
                                                                     <li id="DefaultViewSelectId" className="nav__text  ms-3  ">
-                                                                        <a className='text-white' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${childUsers.Id}&Name=${childUsers.Title}`}
-                                                                            target="_blank" data-interception="off" title={childUsers.Title} >
+                                                                        <a className={childUsers?.selected ? 'bg-ee hreflink ' : 'text-white hreflink'}
+                                                                            target="_blank" data-interception="off" title={childUsers.Title} onClick={() => changeSelectedUser(childUsers)}>
                                                                             {childUsers.Title}
                                                                         </a>
                                                                     </li>
@@ -783,6 +814,14 @@ const TaskDashboard = (props: any) => {
                 </aside>
                 <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
                     <article className="row">
+                        {selectedUser?.Title != undefined ?
+                            <div className="col-md-12 clearfix">
+                                <h5 className="d-inline-block">
+                                    {`${selectedUser?.Title}'s Dashboard`}
+                                </h5>
+                                <span className='pull-right hreflink' onClick={() => unSelectUser()}>Go Back To Your Dashboard</span>
+                            </div>
+                            : ''}
                         <div className="col-md-12">
 
                             <Accordion defaultActiveKey="0" className="mt-2 ">
@@ -793,10 +832,10 @@ const TaskDashboard = (props: any) => {
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="0">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
+                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
                                             onDragOver={(e: any) => e.preventDefault()}>
                                             {pageToday?.length > 0 ?
-                                                <Table  className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsToday()}>
+                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
                                                     <thead>
                                                         {headerGroupsToday?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -821,7 +860,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageToday?.map((row: any) => {
                                                             prepareRowToday(row);
                                                             return (
-                                                                <tr draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -849,7 +888,9 @@ const TaskDashboard = (props: any) => {
                                                         })}
                                                     </tbody>
                                                 </Table>
-                                                : <span>No Working Today Tasks Available</span>}
+                                                : <div  className='text-center full-width'>
+                                                    <span>No Working Today Tasks Available</span>
+                                                </div>}
 
 
                                         </Card.Body>
@@ -864,10 +905,10 @@ const TaskDashboard = (props: any) => {
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="1">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
+                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
                                             onDragOver={(e: any) => e.preventDefault()}>
                                             {pageWeek?.length > 0 ?
-                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover {...getTablePropsWeek()} >
+                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
                                                     <thead>
                                                         {headerGroupsWeek?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -892,7 +933,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageWeek?.map((row: any) => {
                                                             prepareRowWeek(row);
                                                             return (
-                                                                <tr draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -919,7 +960,9 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> : <span>No Working This Week Tasks Available</span>}
+                                                </Table> :<div  className='text-center full-width'>
+                                                <span>No Working This Week Tasks Available</span>
+                                                </div>}
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
@@ -932,9 +975,9 @@ const TaskDashboard = (props: any) => {
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="3">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} >
+                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} >
                                             {pageBottleneck?.lenght > 0 ?
-                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
+                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
                                                     <thead>
                                                         {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -959,7 +1002,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageBottleneck?.map((row: any) => {
                                                             prepareRowBottleneck(row);
                                                             return (
-                                                                <tr {...row.getRowProps()}>
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0?'serviepannelgreena':''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -985,7 +1028,9 @@ const TaskDashboard = (props: any) => {
                                                         })}
                                                     </tbody>
                                                 </Table>
-                                                : <span>No Bottleneck Tasks Available</span>}
+                                                : <div  className='text-center full-width'>
+                                                <span>No Bottleneck Tasks Available</span>
+                                                </div>}
 
                                         </Card.Body>
                                     </Accordion.Collapse>
@@ -999,9 +1044,9 @@ const TaskDashboard = (props: any) => {
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="4">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} >
+                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} >
                                             {pageApprover?.length > 0 ?
-                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
                                                     <thead>
                                                         {headerGroupsApprover?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1026,7 +1071,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageApprover?.map((row: any) => {
                                                             prepareRowApprover(row);
                                                             return (
-                                                                <tr {...row.getRowProps()}>
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0?'serviepannelgreena':''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1051,7 +1096,10 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> : <span>No Approver Tasks Available</span>}
+                                                </Table> : <div  className='text-center full-width'>
+                                                <span>No Approver Tasks Available</span>
+                                                </div>}
+
 
                                         </Card.Body>
                                     </Accordion.Collapse>
@@ -1065,10 +1113,10 @@ const TaskDashboard = (props: any) => {
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="2">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
+                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
                                             onDragOver={(e: any) => e.preventDefault()}>
                                             {pageAll?.length > 0 ?
-                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover {...getTablePropsAll()} >
+                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
                                                     <thead>
                                                         {headerGroupsAll?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1093,7 +1141,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageAll?.map((row: any) => {
                                                             prepareRowAll(row);
                                                             return (
-                                                                <tr draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -1120,7 +1168,9 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> : <span>No Assigned Tasks Available</span>}
+                                                </Table> :  <div  className='text-center full-width'>
+                                                <span>No Assigned Tasks Available</span>
+                                                </div>}
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
