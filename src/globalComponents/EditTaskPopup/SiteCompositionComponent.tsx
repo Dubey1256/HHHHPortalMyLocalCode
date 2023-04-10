@@ -7,12 +7,14 @@ import Tooltip from "../Tooltip";
 var AutoCompleteItemsArray: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
-    const ClientTime = Props.ClientTime;
+    var ClientTime = Props.ClientTime;
     const siteUrls = Props.siteUrls;
     const TotalTime = Props.SmartTotalTimeData;
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
-    const ServicesTaskCheck = Props.isServiceTask
+    const ServicesTaskCheck = Props.isServiceTask;
+    const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
+    const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
@@ -20,11 +22,16 @@ const SiteCompositionComponent = (Props: any) => {
     const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
-    const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
     const [searchedKey, setSearchedKey] = useState('');
     const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(false);
     const [SearchedClientCategoryData, setSearchedClientCategoryData] = useState([]);
     const [selectedClientCategory, setSelectedClientCategory] = useState([]);
+
+    const SiteCompositionObject: any = {
+        ClientTime: [],
+        selectedClientCategory: [],
+        SiteCompositionSettings: []
+    }
 
     useEffect(() => {
         setSiteTypes(SiteData);
@@ -32,7 +39,9 @@ const SiteCompositionComponent = (Props: any) => {
         let tempData2: any = [];
         setClientTimeData(ClientTime);
         loadAllCategoryData();
-
+        if (SelectedClientCategoryFromProps != undefined && SelectedClientCategoryFromProps.length > 0) {
+            setSelectedClientCategory(SelectedClientCategoryFromProps);
+        }
         if (SiteData != undefined && SiteData.length > 0) {
             SiteData.map((SiteItem: any) => {
                 if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
@@ -78,7 +87,9 @@ const SiteCompositionComponent = (Props: any) => {
                             tempDataForRemove.push(dataItem);
                         })
                         setClientTimeData(tempDataForRemove);
-                        callBack(tempDataForRemove);
+                        SiteCompositionObject.ClientTime = tempDataForRemove;
+                        ClientTime = tempDataForRemove;
+                        callBack(SiteCompositionObject);
                     } else {
                         DataItem.BtnStatus = true
                         setSelectedSiteCount(selectedSiteCount + 1);
@@ -95,7 +106,8 @@ const SiteCompositionComponent = (Props: any) => {
                             tempData.push(TimeData);
                         })
                         setClientTimeData(tempData);
-                        callBack(tempData);
+                        SiteCompositionObject.ClientTime = tempData;
+                        callBack(SiteCompositionObject);
                     }
                 }
                 TempArray.push(DataItem)
@@ -164,7 +176,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     const openClientCategoryModel = (SiteParentId: any) => {
         let ParentArray: any = [];
-        setSelectedClientCategory([]);
+        // setSelectedClientCategory([]);
         setSearchedKey('');
         AutoCompleteItemsArray = [];
         if (AllClientCategoryData != undefined && AllClientCategoryData.length > 0) {
@@ -181,7 +193,7 @@ const SiteCompositionComponent = (Props: any) => {
             ParentArray.map((parentArray: any) => {
                 AllClientCategoryData.map((AllData: any) => {
                     if (parentArray.Id == AllData.ParentId) {
-                        AllData.newLabel = parentArray.Title + " > " + AllData.Title
+                        AllData.newLabel = parentArray.newLabel + " > " + AllData.Title
                         parentArray.Child.push(AllData);
                         AutoCompleteItemsArray.push(AllData);
                     }
@@ -192,9 +204,7 @@ const SiteCompositionComponent = (Props: any) => {
         setClientCategoryPopupStatus(true);
     }
 
-    const closeClientCategoryPopup = () => {
-        setClientCategoryPopupStatus(false)
-    }
+
 
     const AutoSuggestionForClientCategory = (e: any) => {
         let SearchedKey: any = e.target.value;
@@ -248,6 +258,17 @@ const SiteCompositionComponent = (Props: any) => {
         console.log("Selected Category from auto suggestion ==============", selectedCategory);
     }
 
+    const saveSelectedClientCategoryData = () => {
+        SiteCompositionObject.selectedClientCategory = selectedClientCategory;
+        callBack(SiteCompositionObject);
+        AutoCompleteItemsArray = [];
+        setClientCategoryPopupStatus(false);
+    }
+
+    const closeClientCategoryPopup = () => {
+        setClientCategoryPopupStatus(false)
+    }
+
     //    ************* this is Custom Header For Client Category Popup *****************
 
     const onRenderCustomClientCategoryHeader = () => {
@@ -267,7 +288,7 @@ const SiteCompositionComponent = (Props: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {console.log("All Category Data in Div ======", AllClientCategoryData)}
             <div className="row">
-                <a target="_blank " className="text-end siteColor" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx">
+                <a target="_blank " className="text-end siteColor" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx" data-interception="off">
                     Task User Management
                 </a>
             </div>
@@ -348,54 +369,135 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
 
                                                 {siteData.Title == "EI" && (currentListName.toLowerCase() == "ei" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group">
-                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                        {siteData.BtnStatus ?
-                                                            <a className="border border-secondary"
-                                                                onClick={() => openClientCategoryModel(340)}
-                                                            >
-                                                                <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                            </a>
-                                                            : null}
+                                                    <div className="input-group block justify-content-between">
+                                                        {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
+                                                            <> {selectedClientCategory?.map((dataItem: any) => {
+                                                                if (dataItem.siteName == siteData.Title) {
+                                                                    return (
+                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <a className=""
+                                                                                onClick={() => setSelectedClientCategory([])}
+                                                                            >
+                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                            </a>
+                                                                        </div>
+                                                                    )
+                                                                } else {
+                                                                    return (
+                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    )
+                                                                }
+                                                            })}
+                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+
+                                                        {
+                                                            siteData.BtnStatus ?
+                                                                <a className="bg-white border border-secondary"
+                                                                    onClick={() => openClientCategoryModel(340)}
+                                                                >
+                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                </a>
+                                                                : null
+                                                        }
                                                     </div>
                                                     : null}
                                                 {siteData.Title == "EPS" && (currentListName.toLowerCase() == "eps" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group">
-                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                        {siteData.BtnStatus ?
-                                                            <a className="border border-secondary"
-                                                                onClick={() => openClientCategoryModel(341)}
-                                                            >
-                                                                <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                            </a>
+                                                    <div className="input-group block justify-content-between">
+                                                        {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
+                                                            <> {selectedClientCategory?.map((dataItem: any) => {
+                                                                if (dataItem.siteName == siteData.Title) {
+                                                                    return (
+                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <a className=""
+                                                                                onClick={() => setSelectedClientCategory([])}
+                                                                            >
+                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                            </a>
+                                                                        </div>
+                                                                    )
+                                                                } else {
+                                                                    return (
+                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    )
+                                                                }
+                                                            })}
+                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                            : null}
+                                                        {
+                                                            siteData.BtnStatus ?
+                                                                <a className="bg-white border border-secondary"
+                                                                    onClick={() => openClientCategoryModel(341)}
+                                                                >
+                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                </a>
+                                                                : null
+                                                        }
                                                     </div>
                                                     : null}
                                                 {siteData.Title == "Education" && (currentListName.toLowerCase() == "education" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group">
-                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                        {siteData.BtnStatus ?
-                                                            <a className="border border-secondary"
-                                                                onClick={() => openClientCategoryModel(344)}
-                                                            >
-                                                                <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                            </a>
+                                                    <div className="input-group block justify-content-between">
+                                                        {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
+                                                            <> {selectedClientCategory?.map((dataItem: any) => {
+                                                                if (dataItem.siteName == siteData.Title) {
+                                                                    return (
+                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <a className=""
+                                                                                onClick={() => setSelectedClientCategory([])}
+                                                                            >
+                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                            </a>
+                                                                        </div>
+                                                                    )
+                                                                } else {
+                                                                    return (
+                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    )
+                                                                }
+                                                            })}
+                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                            : null}
+                                                        {
+                                                            siteData.BtnStatus ?
+                                                                <a className="bg-white border border-secondary"
+                                                                    onClick={() => openClientCategoryModel(344)}
+                                                                >
+                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                </a>
+                                                                : null
+                                                        }
                                                     </div>
                                                     : null}
                                                 {siteData.Title == "Migration" && (currentListName.toLowerCase() == "migration" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group">
-                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                        {siteData.BtnStatus ?
-                                                            <a className="border border-secondary"
-                                                                onClick={() => openClientCategoryModel(569)}
-                                                            >
-                                                                <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                            </a>
+                                                    <div className="input-group block justify-content-between">
+                                                        {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
+                                                            <> {selectedClientCategory?.map((dataItem: any) => {
+                                                                if (dataItem.siteName == siteData.Title) {
+                                                                    return (
+                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                            <a className=""
+                                                                                onClick={() => setSelectedClientCategory([])}
+                                                                            >
+                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                            </a>
+                                                                        </div>
+                                                                    )
+                                                                } else {
+                                                                    return (
+                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                    )
+                                                                }
+                                                            })}
+                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                            : null}
+                                                        {
+                                                            siteData.BtnStatus ?
+                                                                <a className="bg-white border border-secondary"
+                                                                    onClick={() => openClientCategoryModel(569)}
+                                                                >
+                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                </a>
+                                                                : null
+                                                        }
                                                     </div>
                                                     : null}
 
@@ -443,7 +545,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     {/* <div className="block col p-1"> {select}</div> */}
                                 </div>
                                 <div className="d-end">
-                                    <button type="button" className="btn btn-primary" onClick={() => alert("We are working on It. This feature will be live soon ...")}>
+                                    <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
                                         OK
                                     </button>
                                 </div>
@@ -466,7 +568,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     </ul>
                                 </div>) : null}
 
-                            <div className="border full-width my-2 p-2 pb-1">
+                            <div className="border full-width my-2 p-2 pb-1 ActivityBox">
                                 {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
                                     <span className="bg-69 p-1 ps-2"> {selectedClientCategory[0].Title}
                                         <a className=""
@@ -475,8 +577,6 @@ const SiteCompositionComponent = (Props: any) => {
                                             <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
                                         </a>
                                     </span> : null}
-
-
                             </div>
                             {console.log("Selected Site All data ================", SelectedSiteClientCategoryData)}
                             {SelectedSiteClientCategoryData != undefined && SelectedSiteClientCategoryData.length > 0 ?
@@ -536,7 +636,7 @@ const SiteCompositionComponent = (Props: any) => {
                         <span>
                             <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                         </span>
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={() => alert("We are working on It. This feature will be live soon ...")} >
+                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedClientCategoryData} >
                             Save
                         </button>
                     </footer>

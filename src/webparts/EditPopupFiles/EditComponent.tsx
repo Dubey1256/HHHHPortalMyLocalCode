@@ -1478,7 +1478,7 @@ function EditInstitution(item: any) {
                   aria-labelledby="home-tab"
                 >
                   <div className="row  px-3 py-2">
-                    <div className="col-sm-5 ">
+                    <div className="col-sm-6 ">
                       <div className="col-12">
                         <div className="input-group">
                           <label className="form-label  full-width">
@@ -1555,6 +1555,18 @@ function EditInstitution(item: any) {
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Component Portfolio
+                              
+                              <span>
+                              <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                              <div className="popover__content">
+                                                <span>
+                                                Click to activate auto suggest for components/services
+                                                </span>
+
+                                            </div>
+                                            </div>
+                              </span>
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
@@ -1580,7 +1592,19 @@ function EditInstitution(item: any) {
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Service Portfolio
+                                <span>
+                              <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                              <div className="popover__content">
+                                                <span>
+                                                Click to activate auto suggest for components/services
+                                                </span>
+
+                                            </div>
+                                            </div>
+                              </span>
                               </label>
+                              
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
                                 <svg
@@ -1674,7 +1698,7 @@ function EditInstitution(item: any) {
                             </div>
                           )}
 
-                          <div className="col-sm-11  inner-tabb">
+                          <div className="col-sm-12  inner-tabb">
                             <div>
                               {/* {(EditData != undefined && EditData.smartComponent != undefined)?
                                                                 <>
@@ -2038,7 +2062,7 @@ function EditInstitution(item: any) {
                         </div>
                       </div>
                     </div>
-                    <div className="col-sm-3 ">
+                    <div className="col-sm-2 ">
                       <div className="col" title="Priority">
                         <div className="input-group mb-2">
                           <label className="form-label  full-width">
@@ -2294,7 +2318,7 @@ function EditInstitution(item: any) {
                     </div>
                     <div className="col-sm-8">
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width">Url</label>
+                        <label className="form-label  full-width"></label>
                         <input
                           type="text"
                           className="form-control"
@@ -2308,6 +2332,7 @@ function EditInstitution(item: any) {
                           }
                           placeholder="Url"
                         ></input>
+                        <span><a target="_blank" href={EditData.component_x0020_link}>Open</a></span>
                       </div>
                     </div>
                   </div>
@@ -2745,7 +2770,6 @@ function EditInstitution(item: any) {
                         </section>
                       </div>
                     </div>
-                    <div className="col-sm-5"></div>
                   </div>
                 </div>
                 <div
@@ -2897,7 +2921,7 @@ function EditInstitution(item: any) {
                     <span>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData.Id}&name=${EditData.Title}`}
+                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${EditData.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page

@@ -10,6 +10,14 @@
         }
       ]
     },
+    "data-tool-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/dataTool/DataToolWebPart.js",
+          "manifest": "./src/webparts/dataTool/DataToolWebPart.manifest.json"
+        }
+      ]
+    },
     "component-portfolio-web-part": {
       "components": [
         {
@@ -210,6 +218,14 @@
         }
       ]
     },
+    "feedback-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/TimeReport/FeedbackWebPart.js",
+          "manifest": "./src/webparts/TimeReport/FeedbackWebPart.manifest.json"
+        }
+      ]
+    },
     "task-dashboard-hhhh-web-part": {
       "components": [
         {
@@ -246,6 +262,7 @@
     "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
+    "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
     "TaskStepsWebPartStrings": "lib/webparts/taskSteps/loc/{locale}.js",
     "HrToolWebPartStrings": "lib/webparts/hrTool/loc/{locale}.js",
     "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js",
@@ -265,6 +282,7 @@
     "MyPendingTasksWebPartStrings": "lib/webparts/myPendingTasks/loc/{locale}.js",
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
+    "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
   }
 }

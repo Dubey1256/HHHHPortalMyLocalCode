@@ -72,21 +72,20 @@ export default function ProjectOverview() {
                 internalHeader: 'Title',
                 accessor: 'Title',
                 showSortIcon: true,
-                size: 200,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a className='hreflink' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
             {
-                internalHeader: 'Percent Complete',
+                internalHeader: '% Complete',
                 accessor: 'PercentComplete',
                 showSortIcon: true,
-                width: "75px",
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' item={row.original} />
+                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
@@ -94,18 +93,18 @@ export default function ProjectOverview() {
                 internalHeader: 'Priority',
                 accessor: 'Priority_x0020_Rank',
                 showSortIcon: true,
-                width: "75px",
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' item={row.original} />
+                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
             {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
-                showSortIcon: true,
-                width: "180px",
+                showSortIcon: true,    
+                style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <InlineEditingcolumns callBack={CallBack} columnName='Team' item={row?.original}  TaskUsers={AllTaskUser} />
@@ -117,14 +116,14 @@ export default function ProjectOverview() {
                 internalHeader: 'Due Date',
                 showSortIcon: true,
                 accessor: 'DisplayDueDate',
-                width: "150px",
+                style: { width: '100px' },
             },
             {
                 internalHeader: '',
                 id: 'Id', // 'id' is required
                 isSorted: false,
                 showSortIcon: false,
-
+                style: { width: '30px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)}></img>
@@ -247,8 +246,7 @@ export default function ProjectOverview() {
                                     {headerGroups.map((headerGroup: any) => (
                                         <tr  {...headerGroup.getHeaderGroupProps()}>
                                             {headerGroup.headers.map((column: any) => (
-                                                <th  {...column.getHeaderProps()}
-                                                >
+                                                <th  {...column.getHeaderProps()} style={column?.style}>
                                                     <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
                                                         {column.render('Header')}
                                                         {generateSortingIndicator(column)}
