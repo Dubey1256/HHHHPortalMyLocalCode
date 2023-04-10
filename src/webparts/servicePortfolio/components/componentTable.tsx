@@ -1522,7 +1522,7 @@ function ComponentTable(SelectedProp: any) {
         })
         if (siteConfig.length > 0)
             LoadAllSiteTasks();
-        else filterDataBasedOnList()
+        //  else filterDataBasedOnList()
 
         map(Response, (user: any) => {
             user.TaxType = 'Team Members';
@@ -1698,8 +1698,11 @@ function ComponentTable(SelectedProp: any) {
         })
         AllComponetsData = componentDetails;
         ComponetsData['allComponets'] = componentDetails;
+        if (siteConfig.length === 0)
+            filterDataBasedOnList()
+
         setAllMasterTasks(AllComponetsData);
-        
+
     }
 
     if (IsUpdated == '') {
@@ -1715,6 +1718,7 @@ function ComponentTable(SelectedProp: any) {
         ContextValue = SelectedProp.SelectedProp;
         setmaidataBackup(maidataBackup => ([...[]]))
         setmaidataBackup(maidataBackup => ([...[]]))
+        GetComponents();
         setData(data => ([...[]]));
         if (filterGroups != undefined && filterGroups.indexOf('Sites') === -1) {
             filterGroups.push("Portfolio");
@@ -1734,7 +1738,7 @@ function ComponentTable(SelectedProp: any) {
 
         }
 
-        GetComponents();
+
     }, [IsUpdated])
     // common services
     const countOfWord = function (text: any) {
