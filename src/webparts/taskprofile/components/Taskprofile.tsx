@@ -885,7 +885,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
         breadcrumbitem = {};
       })
     }
-    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events == undefined) {
+    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult?.Events == undefined) {
       self.breadcrumbOtherHierarchy(breadcrumbitem);
       breadcrumbitem = {};
     }
@@ -1124,7 +1124,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Due Date</dt>
-                    <dd className='bg-light'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                    <dd className='bg-light'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"])?.format("DD/MM/YYYY") : ''}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Start Date</dt>
@@ -1142,7 +1142,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      {/* <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal props={this.state.Result} /> : null}</span> */}
+                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal props={this.state.Result} /> : null}</span>
                     </dd>
 
                   </dl>
@@ -1227,11 +1227,11 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <dl>
                     <dt className='bg-fxdark'>Created</dt>
                     <dd className='bg-light'>
-                      {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
+                      {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"])?.format("DD/MM/YYYY") : ""}  <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                           <a title={this.state.Result["Author"][0].Title} >
-                            {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img>}
-                            {this.state.Result["Author"][0].userImage === "" && <span className="imgAuthor">{this.state.Result["Author"][0].Suffix}</span>}
+                            {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0]?.userImage} ></img>}
+                            {this.state.Result["Author"][0].userImage === "" && <span className="imgAuthor">{this.state.Result["Author"][0]?.Suffix}</span>}
                           </a>
 
                         }
@@ -1489,7 +1489,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
               {this.state.Result!=undefined&&<CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} Context={this.props.Context} taskTitle={this.state.Result.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
-              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div> {this.state.Result!=undefined &&this.state.listName!=undefined&&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
