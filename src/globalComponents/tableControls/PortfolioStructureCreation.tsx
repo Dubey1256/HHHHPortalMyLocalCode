@@ -11,6 +11,7 @@ export interface IStructureCreationProps {
     Close: (item: any) => void;
     SelectedItem: any;
     PortfolioType: any;
+    PropsValue: any;
 }
 
 export interface IStructureCreationState {
@@ -31,6 +32,10 @@ export interface IStructureCreationState {
     filterArray: any;
     search: false;
     Isflag: any;
+    PropValue :any,
+    webServerRelativeUrl:any,
+
+
 
 }
 
@@ -56,6 +61,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             filterArray: [],
             search: false,
             Isflag: false,
+            PropValue: this.props.PropsValue,
+            webServerRelativeUrl:this.props.PropsValue.siteUrl.toLowerCase().split('.com')[1],
         }
         this.LoadSPComponents();
         this.Load();
@@ -66,7 +73,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
         var select: any = "Title,Id,PortfolioType&$filter=Portfolio_x0020_Type eq '" + filtertitle + "'"
-        SPDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.MASTER_TASKS_LISTID, select);
+        SPDetails = await globalCommon.getData(this.state.PropValue.siteUrl, this.state.PropValue.MasterTaskListID, select);
         console.log(SPDetails);
         var tets: any = [];
         SPDetails.forEach((obj: any) => {
@@ -81,7 +88,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private setItemType() {
         let item = this.props.SelectedItem;
         if (item != undefined) {
-            item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+            item.siteUrl = this.state.PropValue.siteUrl;
             item.listName = 'Master Tasks';
         }
 
@@ -141,17 +148,17 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     }
 
     private async GetOrCreateFolder(foldername: any) {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(this.state.PropValue.siteUrl);
         let isFolderExists = false;
         try {
-            let folder = await web.getFolderByServerRelativeUrl("/sites/hhhh/sp/documents/COMPONENT-PORTFOLIO/" + foldername).get();
+            let folder = await web.getFolderByServerRelativeUrl(this.state.webServerRelativeUrl+"/documents/COMPONENT-PORTFOLIO/" + foldername).get();
             console.log(folder);
             isFolderExists = folder.Exists;
 
         } catch (error) {
             isFolderExists = false;
             // creates a new folder for web with specified url
-            let folderAddResult = await web.folders.add("/sites/hhhh/sp/documents/COMPONENT-PORTFOLIO/" + foldername);
+            let folderAddResult = await web.folders.add(this.state.webServerRelativeUrl+"/documents/COMPONENT-PORTFOLIO/" + foldername);
             console.log(folderAddResult);
             isFolderExists = folderAddResult.data.Exists;
         }
@@ -161,7 +168,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     }
 
     private async GetFolderID(folderName: any) {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(this.state.PropValue.siteUrl);
         let folderDeatils = [];
         folderDeatils = await web.lists
             .getByTitle("Documents")
@@ -195,11 +202,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     CreateFolder = async (Type: any) => {
         let folderURL = '';
         if (this.Portfolio_x0020_Type == 'Component') {
-            folderURL = ('/sites/hhhh/sp/Documents/COMPONENT-PORTFOLIO').toLowerCase();
+            folderURL = (this.state.webServerRelativeUrl+'/Documents/COMPONENT-PORTFOLIO').toLowerCase();
         } else if (this.Portfolio_x0020_Type == 'Service') {
-            folderURL = ('/sites/hhhh/sp/Documents/SERVICE-PORTFOLIO').toLowerCase();
+            folderURL = (this.state.webServerRelativeUrl+'/Documents/SERVICE-PORTFOLIO').toLowerCase();
         } else if (this.Portfolio_x0020_Type == 'Events') {
-            folderURL = ('/sites/hhhh/sp/Documents/EVENT-PORTFOLIO').toLowerCase();
+            folderURL = (this.state.webServerRelativeUrl+'/Documents/EVENT-PORTFOLIO').toLowerCase();
         }
         let DOcListID = "d0f88b8f-d96d-4e12-b612-2706ba40fb08"
         if (this.state.textTitle == '') {
@@ -226,9 +233,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             "PortfolioLevel": this.NextLevel,
             "PortfolioStructureID": this.PortfolioStructureIDs
         }
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(this.state.PropValue.siteUrl);
         const i = await web.lists
-            .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+            .getById(this.state.PropValue.MasterTaskListID)
             .items
             .add(postdata);
 
@@ -275,9 +282,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
         }
 
 
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(this.state.PropValue.siteUrl);
         let results = await web.lists
-            .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+            .getById(this.state.PropValue.MasterTaskListID)
             .items
             .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id")
             .expand("Parent")
@@ -495,9 +502,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         }
                     })*/
 
-                    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                    let web = new Web(self.state.PropValue.siteUrl);
                     const i = await web.lists
-                        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+                        .getById(self.state.PropValue.MasterTaskListID)
                         .items
                         .add(postdata);
                     console.log(i);
@@ -545,7 +552,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             Isflag: true,
         })
         this.createChildItems('CreatePopup');
-    }
+    } 
     DDComponentCallBack = (dt: any) => {
         this.setState({
             TeamConfig: dt
