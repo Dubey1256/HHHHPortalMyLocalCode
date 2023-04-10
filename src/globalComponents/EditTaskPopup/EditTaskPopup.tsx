@@ -1670,6 +1670,23 @@ const EditTaskPopup = (Items: any) => {
             })
         }
 
+        let ClientCategoryData: any = [];
+
+        if(ClientTimeData != undefined && ClientTimeData.length > 0){
+            ClientTimeData?.map((ClientTimeItems:any)=>{
+                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons.Url.length > 0) {
+                    let newObject: any = {
+                        SiteName: ClientTimeItems.SiteName,
+                        ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+                        localSiteComposition: true
+                    }
+                    ClientCategoryData.push(newObject);
+                } else {
+                    ClientCategoryData.push(ClientTimeItems);
+                }
+            })
+        }
+
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
         //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
@@ -1711,7 +1728,7 @@ const EditTaskPopup = (Items: any) => {
                 BasicImageInfo: JSON.stringify(UploadImageArray),
                 ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-                ClientTime: JSON.stringify(ClientTimeData),
+                ClientTime: JSON.stringify(ClientCategoryData),
                 ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] }
             }).then((res: any) => {
                 tempShareWebTypeData = [];
@@ -2662,9 +2679,13 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
             setSelectedClientCategory(Data.selectedClientCategory);
+        }else{
+            setSelectedClientCategory([]);
         }
         if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
             setSiteCompositionSetting(Data.SiteCompositionSettings);
+        }else{
+            setSiteCompositionSetting([])
         }
         console.log("Site Composition final Call back Data =========", Data);
     }, [])
