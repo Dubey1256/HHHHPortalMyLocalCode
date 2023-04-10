@@ -13,7 +13,7 @@ export default class ServicePortfolio extends React.Component<IServicePortfolioP
         description,
         isDarkTheme,
         environmentMessage,
-        hasTeamsContext,
+        hasTeamsContext, 
         userDisplayName,
         Context,
         dropdownvalue,
