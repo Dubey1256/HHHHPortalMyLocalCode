@@ -93,7 +93,7 @@ const inlineEditingcolumns = (props: any) => {
         let MetaData = [];
         MetaData = await web.lists
         .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-        .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+        .items.select("Id", "IsVisible","ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
         .top(5000)
         .expand("Parent")
         .get();
