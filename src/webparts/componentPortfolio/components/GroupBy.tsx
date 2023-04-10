@@ -66,7 +66,7 @@ let Activities: any = [];
 let AllActivitysData: any = [];
 let AllActivitysDatacopy: any = [];
 let AllWorkStreamData: any = [];
-
+var ContextValue: any = {};
 
 // ReactTable Part/////
 function Filter({
@@ -1889,6 +1889,7 @@ function ComponentTable(SelectedProp: any) {
     //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
     React.useEffect(() => {
         showProgressBar();
+        ContextValue = SelectedProp.SelectedProp;
         setmaidataBackup(maidataBackup => ([...[]]))
         setmaidataBackup(maidataBackup => ([...[]]))
         setData(data => ([...[]]));
@@ -4188,7 +4189,7 @@ function ComponentTable(SelectedProp: any) {
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
             <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={ContextValue}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
             <Panel
