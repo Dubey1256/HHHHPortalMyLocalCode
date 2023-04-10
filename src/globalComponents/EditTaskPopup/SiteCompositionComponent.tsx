@@ -651,7 +651,7 @@ const SiteCompositionComponent = (Props: any) => {
                             <div className="border full-width my-2 p-2 pb-1 ActivityBox">
                                 {ClientCategoryPopupSiteName == "EPS" ?
                                     <>
-                                        {EIClientCategory != undefined && EIClientCategory.length > 0 ?
+                                        {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                             <span className="bg-69 p-1 ps-2">
                                                 {EPSClientCategory != undefined && EPSClientCategory.length > 0 ? EPSClientCategory[0].Title : null}
                                                 <a className=""
