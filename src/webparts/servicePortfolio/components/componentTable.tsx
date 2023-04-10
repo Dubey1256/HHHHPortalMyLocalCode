@@ -1079,6 +1079,7 @@ function ComponentTable(SelectedProp: any) {
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                     if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
+                            result.ID =result.Id !=undefined ? result.Id :result.ID;
                             result.TeamLeaderUser = []
                             result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
                             result.chekbox = false;
@@ -1162,12 +1163,12 @@ function ComponentTable(SelectedProp: any) {
                         setAllTasks(CopyTaskData);
                         filterDataBasedOnList();
                     }
-                }else showProgressHide();
+                }else {  filterDataBasedOnList();showProgressHide();}
 
             } else Counter++;
 
         })
-    }else showProgressHide();
+    }else {  filterDataBasedOnList();showProgressHide();}
 
     }
     const handleOpen2 = (item: any) => {
@@ -1668,6 +1669,7 @@ function ComponentTable(SelectedProp: any) {
         console.log(componentDetails);
         componentDetails.forEach((result: any) => {
             result.AllTeamName = '';
+            result.Id =result.Id !=undefined ? result.Id :result.ID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
@@ -2573,7 +2575,7 @@ function ComponentTable(SelectedProp: any) {
                 obj.data.childs = [];
                 obj.data.flag = true;
                 obj.data.TitleNew = obj.data.Title;
-                // obj.data.Team_x0020_Members=item.TeamMembersIds;
+                // obj.data.Team_x0020_Members=item.TeamMembersIds; 
                 // obj.AssignedTo =item.AssignedIds;
                 obj.data.siteType = "Master Tasks"
                 if (obj.data.Item_x0020_Type != undefined && obj.data.Item_x0020_Type === 'Component')
@@ -3198,7 +3200,7 @@ function ComponentTable(SelectedProp: any) {
     //         .get()
     //     if (results.length > 0) {
     //         PortfolioLevelNum = results[0].PortfolioLevel + 1;
-    //     } else {
+    //     } else { 
     //         PortfolioLevelNum = 1;
     //     }
     // }
@@ -3207,7 +3209,7 @@ function ComponentTable(SelectedProp: any) {
             <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
-                        {`Create Activity ${MeetingItems[0]?.Title}`}
+                        {`Create Activity ${MeetingItems[0]?.Title}`}  ``
                     </span>
                 </div>
                 <Tooltip ComponentId={MeetingItems[0]?.Id} />
@@ -3487,12 +3489,12 @@ function ComponentTable(SelectedProp: any) {
                                                                                                             <div className="align-items-center d-flex">
                                                                                                                 {child1.childs.length > 0 && !child1.expanded &&
                                                                                                                     <span className="hreflink me-1 GByicon"  >
-                                                                                                                       <span className="svg__iconbox svg__icon--arrowDown"></span> 
+                                                                                                                       <span className="svg__iconbox svg__icon--GroupDown"></span> 
                                                                                                                     </span>
                                                                                                                 }
                                                                                                                 {child1.childs.length > 0 && child1.expanded &&
                                                                                                                     <span className="hreflink me-1 GByicon"  >
-                                                                                                                       <span className="svg__iconbox svg__icon--arrowRight "></span>
+                                                                                                                       <span className="svg__iconbox svg__icon--GroupRight "></span>
                                                                                                                     </span>
                                                                                                                 }
                                                                                                                 <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" onChange={(e) => SingleLookDatatest(e, child1, index)} />
@@ -3645,8 +3647,8 @@ function ComponentTable(SelectedProp: any) {
                                                                 : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
                                                             </div>  */}
                                                               <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >
-                                                                {Isshow ? <span className="svg__iconbox svg__icon--arrowDown"></span> 
-                                                                : <span className="svg__iconbox svg__icon--arrowRight "></span>}
+                                                                {Isshow ? <span className="svg__iconbox svg__icon--GroupDown"></span> 
+                                                                : <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "2%" }}>
@@ -3764,8 +3766,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                                     {/* <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
                                                                                                         : <img src={item.RightArrowIcon} />}
                                                                                                     </div> */}
-                                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <span className="svg__iconbox svg__icon--arrowDown"></span>
-                                                                                                        : <span className="svg__iconbox svg__icon--arrowRight "></span> }
+                                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <span className="svg__iconbox svg__icon--GroupDown"></span>
+                                                                                                        : <span className="svg__iconbox svg__icon--GroupRight "></span> }
                                                                                                     </div>
                                                                                                 </a>
                                                                                             }
@@ -3893,8 +3895,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                             {/* <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <img src={childitem.downArrowIcon} />
                                                                                                                                 : <img src={childitem.RightArrowIcon} />}
                                                                                                                             </div>   */}
-                                                                                                                            <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <span className="svg__iconbox svg__icon--arrowRight "></span>
-                                                                                                                                :  <span className="svg__iconbox svg__icon--arrowRight "></span>}
+                                                                                                                            <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <span className="svg__iconbox svg__icon--GroupDown "></span>
+                                                                                                                                :  <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                                                                                             </div>
                                                                                                                         </a>
                                                                                                                     }
@@ -3985,7 +3987,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                             </span>
                                                                                                                         )
                                                                                                                     })}</div>
-                                                                                                            </td>
+                                                                                                            </td>     
                                                                                                             <td style={{ width: "17%" }}>
                                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
@@ -4022,8 +4024,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                     {/* <div className="sign">{childinew.childs.length > 0 && childinew.show ? <img src={childinew.downArrowIcon} />
                                                                                                                                                         : <img src={childinew.RightArrowIcon} />}
                                                                                                                                                     </div>   */}
-                                                                                                                                                    <div className="sign">{childinew.childs.length > 0 && childinew.show ? <span className="svg__iconbox svg__icon--arrowRight "></span>
-                                                                                                                                                        : <span className="svg__iconbox svg__icon--arrowDown"></span>}
+                                                                                                                                                    <div className="sign">{childinew.childs.length > 0 && childinew.show ? <span className="svg__iconbox svg__icon--GroupRight "></span>
+                                                                                                                                                        : <span className="svg__iconbox svg__icon--GroupDown"></span>}
                                                                                                                                                     </div>
                                                                                                                                                 </a>
 
@@ -4101,7 +4103,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                                     <span className="tooltiptext">
                                                                                                                                                         <div className="tooltip_Desc">
                                                                                                                                                             <span> {childinew.Short_x0020_Description_x0020_On}</span>
-                                                                                                                                                        </div>
+                                                                                                                                                        </div> 
                                                                                                                                                     </span>
                                                                                                                                                 </span> */}
                                                                                                                                                 <div className="popover__content">
@@ -4303,7 +4305,7 @@ function ComponentTable(SelectedProp: any) {
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
             <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={ContextValue} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
             <Panel
@@ -4458,7 +4460,7 @@ function ComponentTable(SelectedProp: any) {
                     {ResturuningOpen ?
                         <div className='bg-ee p-2 restructurebox'>
                             <div>
-                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
@@ -4467,7 +4469,10 @@ function ComponentTable(SelectedProp: any) {
                                 <span>  Old: </span>
                                 {OldArrayBackup.map(function (obj: any, index) {
                                     return (
-                                        <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                        <span> 
+                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
+                                            {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
+                                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                             href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
                                         ><span>{obj.Title}  </span>
                                         </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
@@ -4479,13 +4484,19 @@ function ComponentTable(SelectedProp: any) {
                                 <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
                                     return (
                                         <>
-                                            <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                            <span> 
+                                            <div className='Dyicons '>{newobj.SiteIconTitle}</div>
+                                                {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
+                                                <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
                                             ><span>{newobj.Title}  </span>
                                             </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
                                 })}
-                                <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                <span> 
+                                <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
+                                    {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
+                                <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
                                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
                                 ><span>{RestructureChecked[0].Title}  </span>
                                 </a></span>
