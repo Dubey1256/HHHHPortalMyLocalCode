@@ -84,6 +84,7 @@ const inlineEditingcolumns = (props: any) => {
         return result
     }
     const GetSmartMetadata = async () => {
+    try{
         var TaskTypes: any = []
         var Priority: any = []
         var Timing: any = []
@@ -91,12 +92,11 @@ const inlineEditingcolumns = (props: any) => {
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
         let MetaData = [];
         MetaData = await web.lists
-            .getByTitle('SmartMetadata')
-            .items
-            .select("Id,Title,listId,siteUrl,siteName,spfxIconName,Item_x005F_x0020_Cover,ProfileType,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-            .top(4999)
-            .expand('Author,Editor')
-            .get();
+        .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
+        .items.select("Id", "IsVisible","ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+        .top(5000)
+        .expand("Parent")
+        .get();
         AllMetadata = MetaData;
         let impSharewebCategories: any = [];
         let SharewebtaskCategories: any = []
@@ -116,6 +116,10 @@ const inlineEditingcolumns = (props: any) => {
         setImpTaskCategoryType(impSharewebCategories);
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
         setpriorityRank(Priority)
+    }
+    catch(e){
+        console.log(e)
+    }
 
 
     }
@@ -132,7 +136,7 @@ const inlineEditingcolumns = (props: any) => {
         return Items;
     }
     const loadTaskUsers = async () => {
-        taskUsers = await globalCommon.loadTaskUsers()
+        taskUsers = props?.TaskUsers;
         setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {

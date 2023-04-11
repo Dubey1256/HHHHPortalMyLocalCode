@@ -98,6 +98,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .get()
 
     await this.GetTaskUsers();
+    console.log("this is result function")
 
     //this.currentUser = this.GetUserObject(this.props.Context.pageContext.user.displayName);
     Title=taskDetails["Title"];
@@ -124,18 +125,18 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Component: taskDetails["Component"],
       Services: taskDetails["Services"],
       Portfolio_x0020_Type:taskDetails["Portfolio_x0020_Type"],
-      TaskUrl: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + this.state.itemID + "&Site=" + this.state.listName
+      TaskUrl: `${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${this.state.itemID }&Site=${this.state.listName}`
     };
     if(tempTask["Portfolio_x0020_Type"]!=undefined&&tempTask["Portfolio_x0020_Type"]=="Service"){
       color=true;
     }
     if(tempTask["Comments"]!=undefined&&tempTask["Comments"].length>0){
-      commentlength=tempTask.Comments.length;
+      commentlength=tempTask?.Comments?.length;
     }
     
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
       tempTask["Comments"].map((item: any) => {
-        if (item.AuthorImage != undefined && item.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
+        if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
           var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
           item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
         }
@@ -165,30 +166,35 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private GetUserObjectFromCollection(UsersValues: any) {
+    console.log("this is GetUserObjectFromCollection function")
     let userDeatails = [];
-    for (let index = 0; index < UsersValues.length; index++) {
-      let senderObject = this.taskUsers.filter(function (user: any, i: any) {
-        if (user.AssingedToUser != undefined) {
-          return user.AssingedToUser['Title'] == UsersValues[index].Title
+    if(UsersValues!=undefined&&UsersValues.length>0&&this.taskUsers!=undefined&&this.taskUsers.length>0){
+      for (let index = 0; index < UsersValues.length; index++) {
+        let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
+          if (user.AssingedToUser != undefined) {
+            return user?.AssingedToUser['Title'] == UsersValues[index]?.Title
+          }
+        });
+        if (senderObject.length > 0) {
+          userDeatails.push({
+            'Id': senderObject[0]?.Id,
+            'Name': senderObject[0]?.Email,
+            'Suffix': senderObject[0]?.Suffix,
+            'Title': senderObject[0]?.Title,
+            'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+          })
         }
-      });
-      if (senderObject.length > 0) {
-        userDeatails.push({
-          'Id': senderObject[0].Id,
-          'Name': senderObject[0].Email,
-          'Suffix': senderObject[0].Suffix,
-          'Title': senderObject[0].Title,
-          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
-        })
       }
+      return userDeatails;
     }
-    return userDeatails;
+    
   }
 
 
   private async GetTaskUsers() {
+    console.log("this is GetTaskUsers function")
     let web = new Web(this.props.siteUrl);
-    let currentUser = await web.currentUser.get();
+    let currentUser = await web.currentUser?.get();
     //.then((r: any) => {  
     // console.log("Cuurent User Name - " + r['Title']);  
     //}); 
@@ -200,6 +206,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .filter("ItemType eq 'User'")
       .expand('AssingedToUser')
       .get();
+
     this.taskUsers = taskUsers;
 
     for (let index = 0; index < this.taskUsers.length; index++) {
@@ -231,12 +238,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    console.log("this is post comment function")
     commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
       let temp = {
-        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
-        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
+        AuthorImage: this.currentUser?.Item_x0020_Cover!= null ? this.currentUser?.Item_x0020_Cover?.Url: '',
+        AuthorName: this.currentUser?.Title != null ? this.currentUser['Title'] : this.props.Context.pageContext._user.displayName,
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Description: txtComment,
         Header: this.GetMentionValues(),
@@ -290,8 +298,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     if (txtComment != '') {
       let temp = {
-        AuthorImage: this.currentUser['Item_x0020_Cover'] != null ? this.currentUser['Item_x0020_Cover']['Url'] : '',
-        AuthorName: this.currentUser['Title'] != null ? this.currentUser['Title'] : '',
+        AuthorImage: this.currentUser?.Item_x0020_Cover!= null ? this.currentUser?.Item_x0020_Cover?.Url : '',
+        AuthorName: this.currentUser?.Title != null ? this.currentUser?.Title : this.props.Context.pageContext._user.displayName,
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         Description: txtComment,
         Header: updateCommentPost.Header,
@@ -365,28 +373,32 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private GetUserObjectArr(username: any) {
     let userDeatails = [];
-    let senderObject = this.taskUsers.filter(function (user: any, i: any) {
-      if (user.AssingedToUser != undefined) {
-        return user.AssingedToUser['Title'] == username.Title //|| user.AssingedToUser['Title'] == "SPFx Developer1"
+    if(username!=undefined&&this.taskUsers!=undefined&&this.taskUsers.length>0){
+      let senderObject = this.taskUsers?.filter(function (user: any, i: any) {
+        if (user.AssingedToUser != undefined) {
+          return user.AssingedToUser['Title'] == username.Title //|| user.AssingedToUser['Title'] == "SPFx Developer1"
+        }
+        else {
+          return user.Title == username.Title
+        }
+      });
+      if (senderObject.length > 0) {
+        userDeatails.push({
+          'Id': senderObject[0].Id,
+          'Name': senderObject[0].Email,
+          'Suffix': senderObject[0].Suffix,
+          'Title': senderObject[0].Title,
+          'userImage': senderObject[0]?.Item_x0020_Cover?.Url
+        })
       }
-      else {
-        return user.Title == username.Title
-      }
-    });
-    if (senderObject.length > 0) {
-      userDeatails.push({
-        'Id': senderObject[0].Id,
-        'Name': senderObject[0].Email,
-        'Suffix': senderObject[0].Suffix,
-        'Title': senderObject[0].Title,
-        'userImage': senderObject[0]?.Item_x0020_Cover?.Url
-      })
+      return userDeatails;
     }
-    return userDeatails;
+    
   }
 
   private GetUserObject(username: any) {
     let userDeatails = {};
+    if(username!=undefined&&this.taskUsers!=undefined&&this.taskUsers.length>0){
     let senderObject = this.taskUsers.filter(function (user: any, i: any) {
       if (user.AssingedToUser != undefined) {
         return user.AssingedToUser['Title'] == username
@@ -403,6 +415,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       }
     }
     return userDeatails;
+  }
   }
 
   private async clearComment(indexOfDeleteElement: any) {
@@ -462,10 +475,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private topCommentersClick(e: any) {
     console.log(e.currentTarget.className);
-    if (e.currentTarget.className.indexOf('active') < 0) {
-      e.currentTarget.classList.add('active');
+    if (e.currentTarget?.className?.indexOf('active') < 0) {
+      e.currentTarget?.classList?.add('active');
       this.setState({
-        mentionValue: this.state.mentionValue + '@[' + e.currentTarget.title + '](' + e.currentTarget.id + ') '
+        mentionValue: this.state.mentionValue + '@[' + e.currentTarget?.title + '](' + e.currentTarget?.id + ') '
       }, () => { console.log(this.state.mentionValue) })
     }
 
@@ -502,7 +515,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
         if (mention_To.length > 0) {
           let emailprops = {
             To: mention_To,
-            Subject: "[" + this.params1.get('Site') + " - Comment by " + this.props.Context.pageContext.user.displayName + "] " + this.state.Result["Title"],
+            Subject: "[" + this.params1.get('Site') + " - Comment by " + this.props.Context.pageContext?.user?.displayName + "] " + this.state.Result["Title"],
             Body: this.state.Result["Title"]
           }
           console.log(emailprops);
@@ -516,8 +529,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private BindHtmlBody() {
     let body = document.getElementById('htmlMailBody')
-    console.log(body.innerHTML);
-    return "<style>p>br {display: none;}</style>" + body.innerHTML;
+    console.log(body?.innerHTML);
+    return "<style>p>br {display: none;}</style>" + body?.innerHTML;
   }
 
   private SendEmail(emailprops: any) {
@@ -546,15 +559,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private customHeaderforEditCommentpopup() {
     return (
-      // <div className={(this.state?.Result?.Portfolio_x0020_Type!=undefined&&this.state?.Result?.Portfolio_x0020_Type=="Service")?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
-      //   <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-          
-      //     <span className="siteColor">
-      //       Update Comment
-      //     </span>
-      //   </div>
-      //   <Tooltip ComponentId="588" />
-      // </div>
+     
       <>
    <div className={color?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"}>
         <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
@@ -591,19 +596,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private joinObjectValues(arr: any) {
     let val = '';
-    arr.forEach((element: any) => {
-      val += element.Title + ';'
-    });
-    return val;
+    if(arr!=undefined&&arr.length>0){
+      arr?.forEach((element: any) => {
+        val += element?.Title + ';'
+      });
+      return val;
+    }
+    
   }
 
   public render(): React.ReactElement<ICommentCardProps> {
-    //const { editorState } = this.state;
+ 
     return (
       <div >
         <div className='mb-3 card commentsection'>
           <div className='card-header'>
-            {/* <div className='card-actions float-end'>  <Tooltip /></div> */}
+       
             <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">Comments<span><Tooltip ComponentId='586' /></span></div>
 
           </div>
@@ -611,18 +619,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div className="comment-box  mb-2">
               <div className='mb-1'>
                 <span> <strong>To:</strong>  </span>
-                {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters.map((topCmnt: any, i: any) => {
+                {this.topCommenters != null && this.topCommenters.length > 0 && this.topCommenters?.map((topCmnt: any, i: any) => {
                   return <span>
                     <a target="_blank">
-                      <img onClick={(e) => this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt.Title}
-                        id={topCmnt.id} src={topCmnt.ItemCoverURL} />
+                      <img onClick={(e) => this.topCommentersClick(e)} className="circularImage rounded-circle " title={topCmnt?.Title}
+                        id={topCmnt?.id} src={topCmnt?.ItemCoverURL} />
                     </a>
                   </span>
                 })}
               </div>
-
               <span className='clintlist'>
-                <MentionsInput placeholder='Recipients Name' value={this.state.mentionValue ? this.state.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
+                <MentionsInput placeholder='Recipients Name' value={this.state?.mentionValue ? this.state?.mentionValue : ""} onChange={(e) => this.setMentionValue(e)}
                   className="form-control"
                   classNames={mentionClass}>
                   <Mention trigger="@" data={this.mentionUsers} appendSpaceOnAdd={true} />
@@ -632,10 +639,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             </div>
             <div>
               <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
-              {/* <p className="ng-hide">
-                                            <i className="fa fa-exclamation-circle" aria-hidden="true"></i>
-                                            Comment shouldn't be empty
-                                        </p> */}
+           
               <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
                 Post
               </button>
@@ -644,19 +648,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div className="clearfix"></div>
 
             <div className="commentMedia">
-              {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
+              {this.state.Result["Comments"] != null&&this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
                 <div>
                   <ul className="list-unstyled">
-                    {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"].slice(0, 3).map((cmtData: any, i: any) => {
+                    {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 && this.state.Result["Comments"]?.slice(0, 3)?.map((cmtData: any, i: any) => {
                       return <li className="media border p-1 my-1">
 
                         <div className="media-bodyy">
                           <div className="d-flex justify-content-between align-items-center">
                             <span className="comment-date ng-binding">
                               <span className="round  pe-1">
-                                <img className="align-self-start " title={cmtData.AuthorName}
-                                  src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
-                                    cmtData.AuthorImage :
+                                <img className="align-self-start " title={cmtData?.AuthorName}
+                                  src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
+                                    cmtData?.AuthorImage :
                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                 />
                               </span>
@@ -675,8 +679,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                           <div className="media-text">
-                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{cmtData.Header}</a></h6>}
-                            <p className='m-0'><span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
+                            {cmtData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{cmtData?.Header}</a></h6>}
+                            <p className='m-0'><span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
                           </div>
 
                         </div>
@@ -686,7 +690,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                   {this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 3 &&
                     <div className="MoreComments ng-hide">
                       <a className="MoreComments ng-binding ng-hide" title="Click to Reply" onClick={() => this.openAllCommentModal()}>
-                        All Comments({this.state.Result["Comments"].length})
+                        All Comments({this.state.Result["Comments"]?.length})
                       </a>
                     </div>
                   }
@@ -702,19 +706,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           type={PanelType.custom}
           customWidth="500px"
-          // headerText='Update Comment'
+          
           onRenderHeader={this.customHeaderforEditCommentpopup }
           onDismiss={(e) => this.CloseModal(e)}
-        >
-
-
-          {/* <div> */}
-            {/* <div className='modal-header mb-2'>
-              <h3 className='modal-title'>Update Comment</h3>
-
-              <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
-            </div> */}
-            <div className={color?"serviepannelgreena":""}>
+        > <div className={color?"serviepannelgreena":""}>
             <div className='modal-body'>
               <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard>
             </div>
@@ -723,14 +718,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
               <button type="button" className="btn btn-default ms-2 mt-2 " onClick={(e) => this.CloseModal(e)}>Cancel</button>
             </footer>
             </div>
-          {/* </div> */}
+       
 
         </Panel>
 
 
 
         <Panel
-          // headerText={`Comment:${this.state.Result["Title"]}(${this.state.Result["Comments"]?.length})`}
+       
           onRenderHeader={this.customHeaderforALLcomments}
           type={PanelType.custom}
           customWidth="500px"
@@ -740,13 +735,6 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
           <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 
-            {/* <div className='modal-header mb-2'>
-              {this.state.Result["Comments"] != undefined && this.state.Result["Comments"].length > 0 &&
-                <h3 className='modal-title'></h3>
-              }
-             <span><Tooltip /> </span> <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.closeAllCommentModal(e)}></button>
-
-            </div> */}
             <div className='modal-body mt-2'>
               <div className="col-sm-12 " id="ShowAllComments">
                 <div className="col-sm-12">
@@ -758,17 +746,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                     <div className='text-end mt-1'> <a className=' btn btn-primary ' onClick={() => this.PostComment('txtCommentModal')} >Post</a></div>
 
                   </div>
-                  {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"].map((cmtData: any, i: any) => {
+                  {this.state.Result["Comments"] != null && this.state.Result["Comments"]?.length > 0 && this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
                     return <div className="border p-1 mb-2">
                       <div>
                         <div className='d-flex justify-content-between align-items-center'>
                           <span className='comment-date'>
-                            <span className='round  pe-1'> <img className='align-self-start me-1' style={{ height: '35px', width: '35px' }} title={cmtData.AuthorName}
-                              src={cmtData.AuthorImage != undefined && cmtData.AuthorImage != '' ?
+                            <span className='round  pe-1'> <img className='align-self-start me-1' style={{ height: '35px', width: '35px' }} title={cmtData?.AuthorName}
+                              src={cmtData?.AuthorImage != undefined && cmtData?.AuthorImage != '' ?
                                 cmtData.AuthorImage :
                                 "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                             />
-                              {cmtData.Created}
+                              {cmtData?.Created}
 
                             </span>
                           </span>
@@ -777,7 +765,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <span className='svg__iconbox svg__icon--edit'></span>
                             </a>
                             <a className="hreflink" title="Delete" onClick={() => this.clearComment(i)}>
-                              {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/delete.gif" /> */}
+                         
                              <span className='svg__iconbox svg__icon--trash'></span>
                             </a>
 
@@ -787,8 +775,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </div>
 
                         <div className="media-text">
-                          <h6 className='userid m-0 fs-6'>   {cmtData.Header != '' && <b>{cmtData.Header}</b>}</h6>
-                          <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: cmtData.Description }}></span></p>
+                          <h6 className='userid m-0 fs-6'>   {cmtData?.Header != '' && <b>{cmtData?.Header}</b>}</h6>
+                          <p className='m-0' id="pageContent">  <span dangerouslySetInnerHTML={{ __html: cmtData?.Description }}></span></p>
                         </div>
                       </div>
                     </div>
@@ -807,11 +795,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
         </Panel>
 
-        {this.state.Result != null && this.state.Result["Comments"] != null && this.state.Result["Comments"].length > 0 &&
+        {this.state.Result != null && this.state.Result?.Comments != null && this.state.Result?.Comments.length > 0 &&
           <div id='htmlMailBody' style={{ display: 'none' }}>
 
             <div style={{ marginTop: "11.25pt" }}>
-              <a href={this.state.Result["TaskUrl"]} target="_blank">{this.state.Result["Title"]}</a><u></u><u></u></div>
+              <a href={this.state.Result?.TaskUrl} target="_blank">{this.state.Result?.Title}</a><u></u><u></u></div>
             <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
               <tbody>
                 <tr>
@@ -844,7 +832,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.Priority}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                           </td>
                         </tr>
                         <tr>
@@ -852,19 +840,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["StartDate"]}</span><u></u><u></u></p>
+                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.StartDate}</span><u></u><u></u></p>
                           </td>
                           <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                             <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["CompletedDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.CompletedDate}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                           </td>
                           <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                             <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
                           </td>
                           <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["DueDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.DueDate}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                           </td>
                         </tr>
                         <tr>
@@ -875,7 +863,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                             <p>{this.state.Result["TeamMembers"] != null &&
                               this.state.Result["TeamMembers"].length > 0 &&
                               <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                                {this.joinObjectValues(this.state.Result["TeamMembers"])}
+                                {this.joinObjectValues(this.state.Result?.TeamMembers)}
                               </span>
                             }
                               <span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -957,19 +945,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
 
                         {this.state.Result["FeedBack"] != null &&
-                          this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                          this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
-                          this.state.Result["FeedBack"][0].FeedBackDescriptions.map((fbData: any, i: any) => {
+                          this.state.Result["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
+                          this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
+                          this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
                               <tr>
                                 <td>
                                   <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                                 </td>
                                 <td><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
-                                  {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                  {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
                                     return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                       <div style={{ marginBottom: '3.75pt' }}>
-                                        <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                        <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment?.AuthorName} - {fbComment?.Created}<u></u><u></u></span></p>
                                       </div>
                                       <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                     </div>
@@ -977,17 +965,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                   })}
                                 </td>
                               </tr>
-                              {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                              {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
                                   <tr>
                                     <td>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                     </td>
                                     <td><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
-                                      {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments'].map((fbSubComment: any) => {
+                                      {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                         return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                           <div style={{ marginBottom: '3.75pt' }}>
-                                            <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                            <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}<u></u><u></u></span></p>
                                           </div>
                                           <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
                                         </div>
@@ -1016,14 +1004,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </tr>
                         <tr>
                           <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                            {this.state.Result["Comments"].map((cmtData: any, i: any) => {
+                            {this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
                               return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                 <div style={{ marginBottom: "3.75pt" }}>
                                   <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                    <span style={{ color: 'black' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                    <span style={{ color: 'black' }}>{cmtData?.AuthorName} - {cmtData?.Created}</span></p>
                                 </div>
                                 <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                  <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                  <span style={{ color: 'black' }}>{cmtData?.Description}</span></p>
                               </div>
                             })}
                           </td>
