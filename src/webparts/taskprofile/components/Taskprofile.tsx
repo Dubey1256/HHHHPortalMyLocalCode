@@ -158,6 +158,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       let AllDataMatches = [];
       AllDataMatches = await web.lists
         .getByTitle("Master Tasks")
+        // .getById(this.props.MasterTaskListID)
         .items
         .select('ComponentCategory/Id', 'PortfolioStructureID', 'SharewebTaskType/Id', "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
         .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
@@ -190,6 +191,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     let web = new Web(this.props?.siteUrl);
     let Data = await web.lists
       .getByTitle("Master Tasks")
+      // .getById(this.props.MasterTaskListID)
       .items
       .select('ComponentCategory/Id', 'PortfolioStructureID', "SharewebTaskType/Id", "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
       .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
@@ -218,10 +220,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails: any = [];
-    let listInfo = await web.lists.getByTitle(this.state?.listName).get();
+    // let listInfo = await web.lists.getById(this.props.SiteTaskListID).get();
+      let listInfo = await web.lists.getByTitle(this.state?.listName).get();
     // console.log(listInfo);
+ 
     taskDetails = await web.lists
-      .getByTitle(this.state?.listName)
+    .getByTitle(this.state?.listName)
+      // .getById(this.props.SiteTaskListID)
       .items
       .getById(this.state?.itemID)
       .select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
@@ -415,6 +420,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     let taskUsers = [];
     taskUsers = await web.lists
       .getByTitle("Task Users")
+      // .getById(this.props.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -453,6 +459,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     let web = new Web(this.props?.siteUrl);
     var smartMetaData = await web.lists
       .getByTitle('SmartMetadata')
+      // .getById(this.props.SmartMetadataListID)
       .items
       .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters",)
 
@@ -482,54 +489,54 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     if (listName != undefined) {
       let siteicon = '';
       if (listName?.toLowerCase() == 'migration') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png';
+        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
       }
       if (listName?.toLowerCase() == 'health') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_health.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
       }
       if (listName?.toLowerCase() == 'eps') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_eps.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
       }
       if (listName?.toLowerCase() == 'ei') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_ei.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
       }
       if (listName?.toLowerCase() == 'qa') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_qa.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
       }
       if (listName?.toLowerCase() == 'gender') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_gender.png';
+        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
       }
       if (listName?.toLowerCase() == 'education') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_education.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
       }
       if (listName?.toLowerCase() == 'development-effectiveness' || listName?.toLowerCase() == 'de') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_de.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
       }
       if (listName?.toLowerCase() == 'cep') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/icon_cep.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
       }
       if (listName?.toLowerCase() == 'alakdigital' || listName?.toLowerCase() == 'da e+e') {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_da.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
       }
       if (listName?.toLowerCase() == 'hhhh')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png';
+        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
 
       if (listName?.toLowerCase() == 'gruene')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/logo-gruene.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
 
       if (listName?.toLowerCase() == 'shareweb')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png';
+        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
 
       if (listName?.toLowerCase() == 'small projects')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/small_project.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
 
       if (listName?.toLowerCase() == 'offshore tasks')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
 
       if (listName?.toLowerCase() == 'kathabeck')
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
       if (listName?.toLowerCase() == 'tasks' && this.props.Context._pageContext._web.title == "SH") {
-        siteicon = 'https://hhhhteams.sharepoint.com/sites/HHHH/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png';
+        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
       }
       return siteicon;
     }
@@ -637,9 +644,12 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
 
     let web = new Web(this.props.siteUrl);
-    const i = await web.lists.getByTitle(this.state?.listName)
+    const i = await web.lists
+    .getByTitle(this.state?.listName)
+    // .getById(this.props.SiteTaskListID)
       .items
-      .getById(this.state?.itemID).update({
+      .getById(this.state?.itemID)
+      .update({
         FeedBack: JSON.stringify(this.state?.Result?.FeedBack)
       });
 
@@ -733,6 +743,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     let results = [];
     results = await web.lists
       .getByTitle(this.site)
+      // .getById(this.props.SiteTaskListID)
       .items
       .select('Shareweb_x0020_ID', 'SharewebTaskType/Id', "AssignedTo/Id", "AssignedTo/Title", 'SharewebTaskType/Title', 'Team_x0020_Members/Id', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id', 'AttachmentFiles/FileName', 'Component/Id', 'Component/Title', 'Component/ItemType', 'Services/Id', 'Services/Title', 'Services/ItemType', 'OffshoreComments', 'Portfolio_x0020_Type', 'Categories', 'FeedBack', 'component_x0020_link', 'FileLeafRef', 'Title', 'Id', 'Comments', 'CompletedDate', 'StartDate', 'DueDate', 'Status', 'Body', 'Company', 'Mileage', 'PercentComplete', 'FeedBack', 'Attachments', 'Priority', 'Created', 'Modified', 'BasicImageInfo', 'SharewebCategories/Id', 'SharewebCategories/Title', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title', 'Events/Id', 'Events/Title', 'Events/ItemType', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'ParentTask/Id', 'ParentTask/Title', 'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'Responsible_x0020_Team/Name')
       .filter("(SharewebTaskType/Title eq 'Activities') or (SharewebTaskType/Title eq 'Workstream') or (SharewebTaskType/Title eq 'Task') or (SharewebTaskType/Title eq 'Project') or (SharewebTaskType/Title eq 'Step') or (SharewebTaskType/Title eq 'MileStone')")
@@ -885,7 +896,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
         breadcrumbitem = {};
       })
     }
-    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult?.Events == undefined) {
+    if (this.taskResult.Component.length == 0 && this.taskResult.Services.length == 0 && this.taskResult != undefined && this.taskResult.Events == undefined) {
       self.breadcrumbOtherHierarchy(breadcrumbitem);
       breadcrumbitem = {};
     }
@@ -1124,7 +1135,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Due Date</dt>
-                    <dd className='bg-light'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"])?.format("DD/MM/YYYY") : ''}</dd>
+                    <dd className='bg-light'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-fxdark'>Start Date</dt>
@@ -1227,11 +1238,11 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <dl>
                     <dt className='bg-fxdark'>Created</dt>
                     <dd className='bg-light'>
-                      {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"])?.format("DD/MM/YYYY") : ""}  <span className='ms-1'>
+                      {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                           <a title={this.state.Result["Author"][0].Title} >
-                            {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0]?.userImage} ></img>}
-                            {this.state.Result["Author"][0].userImage === "" && <span className="imgAuthor">{this.state.Result["Author"][0]?.Suffix}</span>}
+                            {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img>}
+                            {this.state.Result["Author"][0].userImage === "" && <span className="imgAuthor">{this.state.Result["Author"][0].Suffix}</span>}
                           </a>
 
                         }
@@ -1489,7 +1500,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
               {this.state.Result!=undefined&&<CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} Context={this.props.Context} taskTitle={this.state.Result.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
-              <div> {this.state.Result!=undefined &&this.state.listName!=undefined&&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
