@@ -1672,9 +1672,15 @@ const EditTaskPopup = (Items: any) => {
 
         let ClientCategoryData: any = [];
 
-        if(ClientTimeData != undefined && ClientTimeData.length > 0){
-            ClientTimeData?.map((ClientTimeItems:any)=>{
-                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons.Url.length > 0) {
+        if (ClientTimeData != undefined && ClientTimeData.length > 0) {
+            let SiteIconStatus: any = false
+            ClientTimeData?.map((ClientTimeItems: any) => {
+                if (ClientTimeItems.siteIcons != undefined) {
+                    if (ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url?.length > 0) {
+                        SiteIconStatus = true;
+                    }
+                }
+                if (ClientTimeItems.ClientCategory != undefined || SiteIconStatus) {
                     let newObject: any = {
                         SiteName: ClientTimeItems.SiteName,
                         ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
@@ -2679,12 +2685,12 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
             setSelectedClientCategory(Data.selectedClientCategory);
-        }else{
+        } else {
             setSelectedClientCategory([]);
         }
         if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
             setSiteCompositionSetting(Data.SiteCompositionSettings);
-        }else{
+        } else {
             setSiteCompositionSetting([])
         }
         console.log("Site Composition final Call back Data =========", Data);
