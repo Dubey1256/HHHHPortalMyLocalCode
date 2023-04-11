@@ -298,25 +298,27 @@ const SiteCompositionComponent = (Props: any) => {
         setSearchedClientCategoryData([]);
         setSearchedClientCategoryDataForInput([]);
         SelectedClientCategoryFromDataList(selectedCategory);
+
     }
 
     const SelectedClientCategoryFromDataList = (selectedCategory: any) => {
         if (ClientCategoryPopupSiteName == "EPS") {
-            setEPSClientCategory([selectedCategory])
+            EPSClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "EI") {
-            setEIClientCategory([selectedCategory])
+            EIClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "Education") {
-            setEducationClientCategory([selectedCategory])
+            EducationClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "Migration") {
-            setMigrationClientCategory([selectedCategory])
+            MigrationClientCategory[0] = selectedCategory;
         }
 
         // SelectedClientCategoryBackupArray
         setSearchedKey('');
         setSearchedClientCategoryData([]);
+        saveSelectedClientCategoryData();
         // setSelectedClientCategory(selectedClientCategory);
     }
 
@@ -402,6 +404,8 @@ const SiteCompositionComponent = (Props: any) => {
             AutoSuggestionForClientCategory(e, "For-Input");
             setSearchedKeyForMigration(SearchedKey);
         }
+
+
     }
 
     //    ************* this is Custom Header For Client Category Popup *****************
