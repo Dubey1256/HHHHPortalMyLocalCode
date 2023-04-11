@@ -21,6 +21,15 @@ var DataSiteIcon: any = [];
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
+var backupTaskArray: any = {
+    AllAssignedTasks: [],
+    workingTodayTasks: [],
+    thisWeekTasks: [],
+    bottleneckTasks: [],
+    assignedApproverTasks: [],
+    allTasks: []
+};
+var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [currentUserData, setCurrentUserData]: any = React.useState({});
@@ -260,6 +269,7 @@ const TaskDashboard = (props: any) => {
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
                             filterCurrentUserTask();
+                            backupTaskArray.allTasks = AllSiteTasks;
                         }
                     } else {
                         arraycount++;
@@ -272,13 +282,13 @@ const TaskDashboard = (props: any) => {
     };
     const getChilds1 = function (item: any, array: any) {
         item.childs = [];
-        
+
         array?.map((childItem: any) => {
             childItem.selected = false;
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if((item?.Title=='HHHH Team'||item?.Title=='Smalsus Lead Team')&&currentUser?.AssingedToUserId==childItem?.AssingedToUserId){
-                    currentUser.isAdmin=true;
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                    currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }
             }
@@ -286,9 +296,46 @@ const TaskDashboard = (props: any) => {
     }
 
     //Edit CallBack
-    const inlineCallBack = React.useCallback(() => {
+    const editTaskCallBack = React.useCallback(() => {
         setisOpenEditPopup(false);
-        LoadAllSiteTasks();
+      }, []);
+    const inlineCallBack = React.useCallback((item: any, index: any) => {
+        // let CONTENT = !updateContent;
+        // if (selectedInlineTask.table == 'workingToday') {
+        //     let todayTasks = backupTaskArray.workingTodayTasks
+        //     todayTasks[index] = item;
+        //     backupTaskArray.workingTodayTasks = todayTasks;
+        //     setWorkingTodayTasks(todayTasks)
+        // } else if (selectedInlineTask.table == 'workingThisWeek') {
+        //     let thisWeeks = backupTaskArray.thisWeekTasks
+        //     thisWeeks[index] = item;
+        //     backupTaskArray.thisWeekTasks = thisWeeks;
+        //     setThisWeekTasks(thisWeeks)
+        // } else if (selectedInlineTask.table == 'bottleneck') {
+        //     let bottleNeck = backupTaskArray.bottleneckTasks
+        //     bottleNeck[index] = item;
+        //     backupTaskArray.bottleneckTasks = bottleNeck;
+        //     setBottleneckTasks(bottleNeck)
+        // } else if (selectedInlineTask.table == 'approverTask') {
+        //     let Approver = backupTaskArray.assignedApproverTasks
+        //     Approver[index] = item;
+        //     backupTaskArray.assignedApproverTasks = Approver;
+        //     setAssignedApproverTasks(Approver)
+        // } else if (selectedInlineTask.table == 'allAssignedTask') {
+        //     let AllAssigned = backupTaskArray.AllAssignedTasks
+        //     AllAssigned[index] = item;
+        //     backupTaskArray.AllAssignedTasks = AllAssigned;
+        //     setAllAssignedTasks(AllAssigned)
+        // }
+        backupTaskArray?.allTasks?.map((task: any) => {
+            if (task.Id == item.Id) {
+                task = item;
+            }
+        })
+        AllTasks = backupTaskArray?.allTasks;
+        // setUpdateContent(CONTENT);
+        filterCurrentUserTask();
+        setisOpenEditPopup(false);
     }, []);
     //end
     const EditPopup = React.useCallback((item: any) => {
@@ -304,7 +351,7 @@ const TaskDashboard = (props: any) => {
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
         let approverTask: any = [];
-        
+
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
@@ -330,6 +377,11 @@ const TaskDashboard = (props: any) => {
                 }
             })
         }
+        backupTaskArray.AllAssignedTasks = AllAssignedTask;
+        backupTaskArray.workingTodayTasks = workingTodayTask;
+        backupTaskArray.thisWeekTasks = workingThisWeekTask;
+        backupTaskArray.bottleneckTasks = bottleneckTask;
+        backupTaskArray.assignedApproverTasks = approverTask;
         setAllAssignedTasks(AllAssignedTask);
         setWorkingTodayTasks(workingTodayTask)
         setThisWeekTasks(workingThisWeekTask)
@@ -407,7 +459,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns type='Task' callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+                        <InlineEditingcolumns type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                     </span>
                 ),
             },
@@ -428,7 +480,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
 
                     <span>
-                        <InlineEditingcolumns callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                     </span>
                 ),
             },
@@ -439,7 +491,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
                     </span>
                 ),
             },
@@ -557,13 +609,19 @@ const TaskDashboard = (props: any) => {
         prepareRow: prepareRowAll,
         gotoPage: gotoPageAll,
         setPageSize: setPageSizeAll,
+        canPreviousPage:canPreviousPageAll,
+        canNextPage:canNextPageAll,
+        pageOptions:pageOptionsAll,
+        pageCount:pageCountAll,
+        nextPage:nextPageAll,
+        previousPage:previousPageAll,
         state: { pageIndex: pageIndexAll, pageSize: pageSizeAll },
     }: any = useTable(
         {
             columns: columns,
             data: AllAssignedTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 100000 },
+            initialState: { pageIndex: 0, pageSize: 10 },
         },
         useFilters,
         useSortBy,
@@ -668,7 +726,7 @@ const TaskDashboard = (props: any) => {
 
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
-            item.isAdmin=false;
+            item.isAdmin = false;
             if (currentUserId == item?.AssingedToUser?.Id) {
                 currentUser = item;
                 setCurrentUserData(item);
@@ -684,7 +742,7 @@ const TaskDashboard = (props: any) => {
         let Groups: any = [];
         taskUsers?.map((item: any) => {
             item.expanded = false;
-            item.isAdmin=false;
+            item.isAdmin = false;
             getChilds1(item, taskUsers);
             Groups.push(item);
         })
@@ -719,7 +777,7 @@ const TaskDashboard = (props: any) => {
 
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        if (currentUserId == currentUserData?.AssingedToUserId||currentUserData?.isAdmin==true) {
+        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) {
             let todayTasks = workingTodayTasks;
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
@@ -779,6 +837,9 @@ const TaskDashboard = (props: any) => {
         setGroupedUsers(userGroups);
         setUpdateContent(CONTENT);
     }
+    const onChangeInSelectAll = (event: any) => {
+        setPageSizeAll(Number(event.target.value));
+    };
     //End
     return (
         <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
@@ -911,11 +972,11 @@ const TaskDashboard = (props: any) => {
                                                         ))}
                                                     </thead>
 
-                                                    <tbody {...getTableBodyPropsToday}>
+                                                    <tbody className={updateContent ? 'p-0' : ''} {...getTableBodyPropsToday}>
                                                         {pageToday?.map((row: any) => {
                                                             prepareRowToday(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                <tr onClick={() => { selectedInlineTask = { table: "workingToday", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -988,7 +1049,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageWeek?.map((row: any) => {
                                                             prepareRowWeek(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                <tr onClick={() => { selectedInlineTask = { table: "workingThisWeek", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -1057,7 +1118,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageBottleneck?.map((row: any) => {
                                                             prepareRowBottleneck(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                <tr onClick={() => { selectedInlineTask = { table: "bottleneck", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1126,7 +1187,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageApprover?.map((row: any) => {
                                                             prepareRowApprover(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1164,66 +1225,110 @@ const TaskDashboard = (props: any) => {
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="2">
-                                            Assigned Tasks {'(' + pageAll?.length + ')'}
+                                            Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                         </Accordion.Toggle>
                                     </Card.Header>
                                     <Accordion.Collapse eventKey="2">
                                         <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
                                             onDragOver={(e: any) => e.preventDefault()}>
                                             {pageAll?.length > 0 ?
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
-                                                    <thead>
-                                                        {headerGroupsAll?.map((headerGroup: any) => (
-                                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                {headerGroup.headers.map((column: any) => (
-                                                                    <th {...column.getHeaderProps()} style={column?.style}>
-                                                                        <span
-                                                                            class="Table-SortingIcon"
-                                                                            style={{ marginTop: "-6px" }}
-                                                                            {...column.getSortByToggleProps()}
-                                                                        >
-                                                                            {column.render("Header")}
-                                                                            {generateSortingIndicator(column)}
-                                                                        </span>
-                                                                        <Filter column={column} />
-                                                                    </th>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </thead>
-
-                                                    <tbody {...getTableBodyPropsAll()}>
-                                                        {pageAll?.map((row: any) => {
-                                                            prepareRowAll(row);
-                                                            return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
-                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
-                                                                    onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
-                                                                    {row.cells.map(
-                                                                        (cell: {
-                                                                            getCellProps: () => JSX.IntrinsicAttributes &
-                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
-                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                                            render: (
-                                                                                arg0: string
-                                                                            ) =>
-                                                                                | boolean
-                                                                                | React.ReactChild
-                                                                                | React.ReactFragment
-                                                                                | React.ReactPortal;
-                                                                        }) => {
-                                                                            return (
-                                                                                <td {...cell.getCellProps()}>
-                                                                                    {cell.render("Cell")}
-                                                                                </td>
-                                                                            );
-                                                                        }
-                                                                    )}
+                                                <>
+                                                    <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
+                                                        <thead>
+                                                            {headerGroupsAll?.map((headerGroup: any) => (
+                                                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                    {headerGroup.headers.map((column: any) => (
+                                                                        <th {...column.getHeaderProps()} style={column?.style}>
+                                                                            <span
+                                                                                class="Table-SortingIcon"
+                                                                                style={{ marginTop: "-6px" }}
+                                                                                {...column.getSortByToggleProps()}
+                                                                            >
+                                                                                {column.render("Header")}
+                                                                                {generateSortingIndicator(column)}
+                                                                            </span>
+                                                                            <Filter column={column} />
+                                                                        </th>
+                                                                    ))}
                                                                 </tr>
-                                                            );
-                                                        })}
-                                                    </tbody>
-                                                </Table> : <div className='text-center full-width'>
+                                                            ))}
+                                                        </thead>
+
+                                                        <tbody {...getTableBodyPropsAll()}>
+                                                            {pageAll?.map((row: any) => {
+                                                                prepareRowAll(row);
+                                                                return (
+                                                                    <tr onClick={() => { selectedInlineTask = { table: "allAssignedTask", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                        onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
+                                                                        onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
+                                                                        {row.cells.map(
+                                                                            (cell: {
+                                                                                getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                    React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                    React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                                render: (
+                                                                                    arg0: string
+                                                                                ) =>
+                                                                                    | boolean
+                                                                                    | React.ReactChild
+                                                                                    | React.ReactFragment
+                                                                                    | React.ReactPortal;
+                                                                            }) => {
+                                                                                return (
+                                                                                    <td {...cell.getCellProps()}>
+                                                                                        {cell.render("Cell")}
+                                                                                    </td>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </Table>
+                                                    <nav>
+                                                        <Pagination>
+                                                            <PaginationItem>
+                                                                <PaginationLink onClick={() => previousPageAll()} disabled={!canPreviousPageAll}>
+                                                                    <span aria-hidden={true}>
+                                                                        <FaAngleLeft aria-hidden={true} />
+                                                                    </span>
+                                                                </PaginationLink>
+                                                            </PaginationItem>
+                                                            <PaginationItem>
+                                                                <PaginationLink>
+                                                                    {pageIndexAll + 1}
+
+                                                                </PaginationLink>
+                                                            </PaginationItem>
+                                                            <PaginationItem>
+                                                                <PaginationLink onClick={() => nextPageAll()} disabled={!canNextPageAll}>
+                                                                    <span aria-hidden={true}>
+                                                                        <FaAngleRight
+                                                                            aria-hidden={true}
+
+                                                                        />
+                                                                    </span>
+                                                                </PaginationLink>
+                                                            </PaginationItem>
+                                                            <Col md={2}>
+                                                                <Input
+                                                                    type='select'
+                                                                    value={pageSizeAll}
+                                                                    onChange={onChangeInSelectAll}
+                                                                >
+
+                                                                    {[10, 20, 30, 40, 50].map((pageSizeAll) => (
+                                                                        <option key={pageSizeAll} value={pageSizeAll}>
+                                                                            Show {pageSizeAll}
+                                                                        </option>
+                                                                    ))}
+                                                                </Input>
+                                                            </Col>
+                                                        </Pagination>
+                                                    </nav>
+                                                </>
+                                                : <div className='text-center full-width'>
                                                     <span>No Assigned Tasks Available</span>
                                                 </div>}
                                         </Card.Body>
@@ -1237,7 +1342,7 @@ const TaskDashboard = (props: any) => {
                 </div>
                 <div>
                     {isOpenEditPopup ? (
-                        <EditTaskPopup Items={passdata} Call={inlineCallBack} />
+                        <EditTaskPopup Items={passdata} Call={editTaskCallBack} />
                     ) : (
                         ""
                     )}

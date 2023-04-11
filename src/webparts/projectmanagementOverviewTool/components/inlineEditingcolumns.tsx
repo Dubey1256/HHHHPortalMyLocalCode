@@ -67,6 +67,9 @@ const inlineEditingcolumns = (props: any) => {
         props?.item?.SharewebCategories?.map((category: any) => {
             selectedCategoryId.push(category.Id);
         })
+        setTaskAssignedTo(props?.item?.AssignedTo)
+        setTaskTeamMembers(props?.item?.Team_x0020_Members)
+        setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
         GetSmartMetadata();
@@ -84,42 +87,59 @@ const inlineEditingcolumns = (props: any) => {
         return result
     }
     const GetSmartMetadata = async () => {
-    try{
-        var TaskTypes: any = []
-        var Priority: any = []
-        var Timing: any = []
-        var Task: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let MetaData = [];
-        MetaData = await web.lists
-        .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-        .items.select("Id", "IsVisible","ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
-        .top(5000)
-        .expand("Parent")
-        .get();
-        AllMetadata = MetaData;
         let impSharewebCategories: any = [];
-        let SharewebtaskCategories: any = []
-        AllMetadata?.map((metadata: any) => {
-            if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
-                impSharewebCategories.push(metadata);
-            }
-            if (metadata.Title == 'Immediate') {
-                impSharewebCategories.push(metadata);
-            }
-            if (metadata.TaxType == 'Categories') {
-                SharewebtaskCategories.push(metadata);
-            }
+        let SharewebtaskCategories: any = [];
+        var Priority: any = []
 
-        })
-        setTaskCategoryType(SharewebtaskCategories);
-        setImpTaskCategoryType(impSharewebCategories);
-        Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
-        setpriorityRank(Priority)
-    }
-    catch(e){
-        console.log(e)
-    }
+        try {
+            impSharewebCategories = JSON.parse(localStorage.getItem("impTaskCategoryType"));
+            SharewebtaskCategories = JSON.parse(localStorage.getItem("taskCategoryType"));
+            Priority = JSON.parse(localStorage.getItem("Priority"));
+            let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
+            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null) && !DataLoaded) {
+                impSharewebCategories = [];
+                SharewebtaskCategories = [];
+                Priority = [];
+                var TaskTypes: any = []
+                var Timing: any = []
+                var Task: any = []
+                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                let MetaData = [];
+                localStorage.setItem("inlineMetaDataLoaded", JSON.stringify(true));
+                MetaData = await web.lists
+                    .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
+                    .items.select("Id", "IsVisible", "ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .top(5000)
+                    .expand("Parent")
+                    .get();
+                AllMetadata = MetaData;
+                AllMetadata?.map((metadata: any) => {
+                    if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
+                        impSharewebCategories.push(metadata);
+                    }
+                    if (metadata.Title == 'Immediate') {
+                        impSharewebCategories.push(metadata);
+                    }
+                    if (metadata.TaxType == 'Categories') {
+                        SharewebtaskCategories.push(metadata);
+                    }
+
+                })
+                localStorage.setItem("taskCategoryType", JSON.stringify(SharewebtaskCategories));
+                localStorage.setItem("Priority", JSON.stringify(getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank')));
+                localStorage.setItem("impTaskCategoryType", JSON.stringify(impSharewebCategories));
+                Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
+                setTaskCategoryType(SharewebtaskCategories);
+                setImpTaskCategoryType(impSharewebCategories);
+                setpriorityRank(Priority)
+            }
+            setTaskCategoryType(SharewebtaskCategories);
+            setImpTaskCategoryType(impSharewebCategories);
+            setpriorityRank(Priority)
+        }
+        catch (e) {
+            console.log(e)
+        }
 
 
     }
@@ -294,8 +314,67 @@ const inlineEditingcolumns = (props: any) => {
             SharewebCategoriesId: { "results": selectedCatId },
         })
             .then((res: any) => {
-                console.log(res);
-                props?.callBack();
+                web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).get().then((task) => {
+                    task.AllTeamMember = [];
+                    task.siteType = props?.item?.siteType;
+                    task.listId =props?.item?.listId;
+                    task.siteUrl =props?.item?.siteUrl;
+                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                    task.DisplayDueDate =
+                        task.DueDate != null
+                            ? Moment(task.DueDate).format("DD/MM/YYYY")
+                            : "";
+                    task.portfolio = {};
+                    if (task?.Component?.length > 0) {
+                        task.portfolio = task?.Component[0];
+                        task.PortfolioTitle = task?.Component[0]?.Title;
+                        task["Portfoliotype"] = "Component";
+                    }
+                    if (task?.Services?.length > 0) {
+                        task.portfolio = task?.Services[0];
+                        task.PortfolioTitle = task?.Services[0]?.Title;
+                        task["Portfoliotype"] = "Service";
+                    }
+
+                    task.TeamMembersSearch = "";
+                    task.ApproverIds = [];
+                    task?.Approver?.map((approverUser: any) => {
+                        task.ApproverIds.push(approverUser?.Id);
+                    })
+                    task.AssignedToIds = [];
+                    task?.AssignedTo?.map((assignedUser: any) => {
+                        task.AssignedToIds.push(assignedUser.Id)
+                        taskUsers?.map((user: any) => {
+                            if (user.AssingedToUserId == assignedUser.Id) {
+                                if (user?.Title != undefined) {
+                                    task.TeamMembersSearch =
+                                        task.TeamMembersSearch + " " + user?.Title;
+                                }
+                            }
+                        });
+                    });
+                    task.TeamMembersId = [];
+                    task?.Team_x0020_Members?.map((taskUser: any) => {
+                        task.TeamMembersId.push(taskUser.Id);
+                        var newuserdata: any = {};
+                        taskUsers?.map((user: any) => {
+                            if (user.AssingedToUserId == taskUser.Id) {
+                                if (user?.Title != undefined) {
+                                    task.TeamMembersSearch =
+                                        task.TeamMembersSearch + " " + user?.Title;
+                                }
+                                newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
+                                newuserdata["Suffix"] = user.Suffix;
+                                newuserdata["Title"] = user.Title;
+                                newuserdata["UserId"] = user.AssingedToUserId;
+                                task["Usertitlename"] = user.Title;
+                            }
+                            task.AllTeamMember.push(newuserdata);
+                        });
+                    });
+                    props.item=task;
+                    props?.callBack(task, props?.rowIndex);
+                });
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
