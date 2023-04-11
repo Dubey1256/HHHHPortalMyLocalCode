@@ -1032,9 +1032,8 @@ function ComponentTable(SelectedProp: any) {
 
         var Response: any = []
         var Counter = 0;
-        if(siteConfig !=undefined && siteConfig.length >0){
-        map(siteConfig, async (config: any) => {
-            if (config.DataLoadNew) {
+        if (siteConfig != undefined && siteConfig.length > 0) {
+            map(siteConfig, async (config: any) => {
                 let web = new Web(ContextValue.siteUrl);
                 let AllTasksMatches = [];
                 AllTasksMatches = await web.lists
@@ -1079,7 +1078,7 @@ function ComponentTable(SelectedProp: any) {
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                     if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
-                            result.ID =result.Id !=undefined ? result.Id :result.ID;
+                            result.ID = result.Id != undefined ? result.Id : result.ID;
                             result.TeamLeaderUser = []
                             result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
                             result.chekbox = false;
@@ -1163,12 +1162,12 @@ function ComponentTable(SelectedProp: any) {
                         setAllTasks(CopyTaskData);
                         filterDataBasedOnList();
                     }
-                }else {  filterDataBasedOnList();showProgressHide();}
+                } else { if (Counter == siteConfig.length) { filterDataBasedOnList(); showProgressHide(); } }
 
-            } else Counter++;
 
-        })
-    }else {  filterDataBasedOnList();showProgressHide();}
+
+            })
+        } else showProgressHide();
 
     }
     const handleOpen2 = (item: any) => {
@@ -1496,28 +1495,11 @@ function ComponentTable(SelectedProp: any) {
         // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
         map(smartmetaDetails, (newtest) => {
             newtest.Id = newtest.ID;
-            // if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
-            //     TaxonomyItems.push(newtest);
-            // }
-            if (newtest.TaxType == 'Sites') {
+            if (newtest.Title == "SDC Sites" || newtest.Title == "Tasks" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Offshore Tasks" || newtest.Title == "Health" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
+                newtest.DataLoadNew = false;
+            else if (newtest.TaxType == 'Sites')
                 siteConfig.push(newtest)
-            }
         });
-        map(siteConfig, (newsite) => {
-            if (newsite.Title == "SDC Sites" || newsite.Title == "DRR" || newsite.Title == "Small Projects" || newsite.Title == "Offshore Tasks" || newsite.Title == "Health" || newsite.Title == "Shareweb Old" || newsite.Title == "Master Tasks")
-                newsite.DataLoadNew = false;
-            else
-                newsite.DataLoadNew = true;
-            /*-- Code for default Load Task Data---*/
-            if (newsite.Title == "DRR" || newsite.Title == "Small Projects" || newsite.Title == "Gruene" || newsite.Title == "Offshore Tasks" || newsite.Title == "Health" || newsite.Title == "Shareweb Old") {
-
-                newsite.Selected = false;
-            }
-            else {
-                newsite.Selected = true;
-            }
-
-        })
         map(smartmetaDetails, (item) => {
             if (item.TaxType != 'Status' && item.TaxType != 'Admin Status' && item.TaxType != 'Task Type' && item.TaxType != 'Time' && item.Id != 300 && item.TaxType != 'Portfolio Type' && item.TaxType != 'Task Types') {
                 if (item.TaxType == 'Sites') {
@@ -1538,7 +1520,9 @@ function ComponentTable(SelectedProp: any) {
                 //setFilterGroups(metadatItem)
             }
         })
-        LoadAllSiteTasks();
+        if (siteConfig.length > 0)
+            LoadAllSiteTasks();
+        //  else filterDataBasedOnList()
 
         map(Response, (user: any) => {
             user.TaxType = 'Team Members';
@@ -1669,7 +1653,7 @@ function ComponentTable(SelectedProp: any) {
         console.log(componentDetails);
         componentDetails.forEach((result: any) => {
             result.AllTeamName = '';
-            result.Id =result.Id !=undefined ? result.Id :result.ID;
+            result.Id = result.Id != undefined ? result.Id : result.ID;
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
@@ -1713,8 +1697,12 @@ function ComponentTable(SelectedProp: any) {
             }
         })
         AllComponetsData = componentDetails;
-        setAllMasterTasks(AllComponetsData);
         ComponetsData['allComponets'] = componentDetails;
+        if (siteConfig.length === 0)
+            filterDataBasedOnList()
+
+        setAllMasterTasks(AllComponetsData);
+
     }
 
     if (IsUpdated == '') {
@@ -1730,6 +1718,7 @@ function ComponentTable(SelectedProp: any) {
         ContextValue = SelectedProp.SelectedProp;
         setmaidataBackup(maidataBackup => ([...[]]))
         setmaidataBackup(maidataBackup => ([...[]]))
+        GetComponents();
         setData(data => ([...[]]));
         if (filterGroups != undefined && filterGroups.indexOf('Sites') === -1) {
             filterGroups.push("Portfolio");
@@ -1749,7 +1738,7 @@ function ComponentTable(SelectedProp: any) {
 
         }
 
-        GetComponents();
+
     }, [IsUpdated])
     // common services
     const countOfWord = function (text: any) {
@@ -1958,7 +1947,7 @@ function ComponentTable(SelectedProp: any) {
             result.Restructuring = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
             result.AllTeamName = '';
             result.TitleNew = result.Title;
-          //  getWebpartId(result);
+            //  getWebpartId(result);
             result.childsLength = 0;
             result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
             result.flag = true;
@@ -1971,7 +1960,7 @@ function ComponentTable(SelectedProp: any) {
                 result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
             }
             result['siteType'] = 'Master Tasks';
-           // result['SiteIcon'] = GetIconImageUrl(result.siteType, ContextValue.siteUrl, undefined);
+            // result['SiteIcon'] = GetIconImageUrl(result.siteType, ContextValue.siteUrl, undefined);
             if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
                 $.each(result.AssignedTo, function (index: any, Assig: any) {
                     if (Assig.Id != undefined) {
@@ -3355,7 +3344,7 @@ function ComponentTable(SelectedProp: any) {
 
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
-                    <h2  className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
@@ -3485,16 +3474,16 @@ function ComponentTable(SelectedProp: any) {
                                                                                                 {ItemType.childs.map(function (child1: any, index: any) {
                                                                                                     return (
                                                                                                         <>
- 
+
                                                                                                             <div className="align-items-center d-flex">
                                                                                                                 {child1.childs.length > 0 && !child1.expanded &&
                                                                                                                     <span className="hreflink me-1 GByicon"  >
-                                                                                                                       <span className="svg__iconbox svg__icon--GroupDown"></span> 
+                                                                                                                        <span className="svg__iconbox svg__icon--GroupDown"></span>
                                                                                                                     </span>
                                                                                                                 }
                                                                                                                 {child1.childs.length > 0 && child1.expanded &&
                                                                                                                     <span className="hreflink me-1 GByicon"  >
-                                                                                                                       <span className="svg__iconbox svg__icon--GroupRight "></span>
+                                                                                                                        <span className="svg__iconbox svg__icon--GroupRight "></span>
                                                                                                                     </span>
                                                                                                                 }
                                                                                                                 <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" onChange={(e) => SingleLookDatatest(e, child1, index)} />
@@ -3646,9 +3635,9 @@ function ComponentTable(SelectedProp: any) {
                                                             {/* <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >{Isshow ? <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png'} />
                                                                 : <img src={(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png"} />}
                                                             </div>  */}
-                                                              <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >
-                                                                {Isshow ? <span className="svg__iconbox svg__icon--GroupDown"></span> 
-                                                                : <span className="svg__iconbox svg__icon--GroupRight "></span>}
+                                                            <div className="smart-relative sign hreflink" onClick={() => handleOpenAll()} >
+                                                                {Isshow ? <span className="svg__iconbox svg__icon--GroupDown"></span>
+                                                                    : <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                             </div>
                                                         </th>
                                                         <th style={{ width: "2%" }}>
@@ -3767,7 +3756,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                         : <img src={item.RightArrowIcon} />}
                                                                                                     </div> */}
                                                                                                     <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <span className="svg__iconbox svg__icon--GroupDown"></span>
-                                                                                                        : <span className="svg__iconbox svg__icon--GroupRight "></span> }
+                                                                                                        : <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                                                                     </div>
                                                                                                 </a>
                                                                                             }
@@ -3896,7 +3885,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                                 : <img src={childitem.RightArrowIcon} />}
                                                                                                                             </div>   */}
                                                                                                                             <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <span className="svg__iconbox svg__icon--GroupDown "></span>
-                                                                                                                                :  <span className="svg__iconbox svg__icon--GroupRight "></span>}
+                                                                                                                                : <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                                                                                             </div>
                                                                                                                         </a>
                                                                                                                     }
@@ -3987,7 +3976,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                             </span>
                                                                                                                         )
                                                                                                                     })}</div>
-                                                                                                            </td>     
+                                                                                                            </td>
                                                                                                             <td style={{ width: "17%" }}>
                                                                                                                 <ShowTaskTeamMembers props={childitem} TaskUsers={AllUsers}></ShowTaskTeamMembers></td>
                                                                                                             <td style={{ width: "6%" }}>{childitem.PercentComplete}</td>
@@ -4469,13 +4458,13 @@ function ComponentTable(SelectedProp: any) {
                                 <span>  Old: </span>
                                 {OldArrayBackup.map(function (obj: any, index) {
                                     return (
-                                        <span> 
-                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
+                                        <span>
+                                            <span className='Dyicons '>{obj.SiteIconTitle}</span>
                                             {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
                                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
-                                        ><span>{obj.Title}  </span>
-                                        </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
+                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                            ><span>{obj.Title}  </span>
+                                            </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                     )
                                 })}
 
@@ -4484,22 +4473,22 @@ function ComponentTable(SelectedProp: any) {
                                 <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
                                     return (
                                         <>
-                                            <span> 
-                                            <div className='Dyicons '>{newobj.SiteIconTitle}</div>
+                                            <span>
+                                                <div className='Dyicons '>{newobj.SiteIconTitle}</div>
                                                 {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
                                                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
-                                            ><span>{newobj.Title}  </span>
-                                            </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
+                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                ><span>{newobj.Title}  </span>
+                                                </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
                                 })}
-                                <span> 
-                                <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
+                                <span>
+                                    <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
                                     {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
-                                <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
-                                ><span>{RestructureChecked[0].Title}  </span>
-                                </a></span>
+                                    <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                    ><span>{RestructureChecked[0].Title}  </span>
+                                    </a></span>
                             </div>
                             {console.log("restructure functio test in div===================================")}
                             {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Task' ?
