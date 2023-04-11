@@ -314,7 +314,12 @@ const inlineEditingcolumns = (props: any) => {
             SharewebCategoriesId: { "results": selectedCatId },
         })
             .then((res: any) => {
-                web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).get().then((task) => {
+                web.lists.getById(props?.item?.listId).items.select(
+                    "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+                )
+                .expand(
+                    "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
+                ).getById(props?.item?.Id).get().then((task) => {
                     task.AllTeamMember = [];
                     task.siteType = props?.item?.siteType;
                     task.listId =props?.item?.listId;
@@ -342,9 +347,9 @@ const inlineEditingcolumns = (props: any) => {
                         task.ApproverIds.push(approverUser?.Id);
                     })
                     task.AssignedToIds = [];
-                    task?.AssignedTo?.map((assignedUser: any) => {
-                        task.AssignedToIds.push(assignedUser.Id)
-                        taskUsers?.map((user: any) => {
+                    task?.AssignedToId?.map((assignedUser: any) => {
+                        task.AssignedToIds.push(assignedUser)
+                        AllTaskUser?.map((user: any) => {
                             if (user.AssingedToUserId == assignedUser.Id) {
                                 if (user?.Title != undefined) {
                                     task.TeamMembersSearch =
@@ -354,20 +359,21 @@ const inlineEditingcolumns = (props: any) => {
                         });
                     });
                     task.TeamMembersId = [];
-                    task?.Team_x0020_Members?.map((taskUser: any) => {
-                        task.TeamMembersId.push(taskUser.Id);
+                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                    task?.Team_x0020_MembersId?.map((taskUser: any) => {
+                        task.TeamMembersId.push(taskUser);
                         var newuserdata: any = {};
-                        taskUsers?.map((user: any) => {
-                            if (user.AssingedToUserId == taskUser.Id) {
+                        AllTaskUser?.map((user: any) => {
+                            if (user?.AssingedToUserId == taskUser?.Id) {
                                 if (user?.Title != undefined) {
                                     task.TeamMembersSearch =
                                         task.TeamMembersSearch + " " + user?.Title;
                                 }
-                                newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
-                                newuserdata["Suffix"] = user.Suffix;
-                                newuserdata["Title"] = user.Title;
-                                newuserdata["UserId"] = user.AssingedToUserId;
-                                task["Usertitlename"] = user.Title;
+                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                newuserdata["Suffix"] = user?.Suffix;
+                                newuserdata["Title"] = user?.Title;
+                                newuserdata["UserId"] = user?.AssingedToUserId;
+                                task["Usertitlename"] = user?.Title;
                             }
                             task.AllTeamMember.push(newuserdata);
                         });

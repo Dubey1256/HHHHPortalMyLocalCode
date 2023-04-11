@@ -300,39 +300,12 @@ const TaskDashboard = (props: any) => {
         setisOpenEditPopup(false);
       }, []);
     const inlineCallBack = React.useCallback((item: any, index: any) => {
-        // let CONTENT = !updateContent;
-        // if (selectedInlineTask.table == 'workingToday') {
-        //     let todayTasks = backupTaskArray.workingTodayTasks
-        //     todayTasks[index] = item;
-        //     backupTaskArray.workingTodayTasks = todayTasks;
-        //     setWorkingTodayTasks(todayTasks)
-        // } else if (selectedInlineTask.table == 'workingThisWeek') {
-        //     let thisWeeks = backupTaskArray.thisWeekTasks
-        //     thisWeeks[index] = item;
-        //     backupTaskArray.thisWeekTasks = thisWeeks;
-        //     setThisWeekTasks(thisWeeks)
-        // } else if (selectedInlineTask.table == 'bottleneck') {
-        //     let bottleNeck = backupTaskArray.bottleneckTasks
-        //     bottleNeck[index] = item;
-        //     backupTaskArray.bottleneckTasks = bottleNeck;
-        //     setBottleneckTasks(bottleNeck)
-        // } else if (selectedInlineTask.table == 'approverTask') {
-        //     let Approver = backupTaskArray.assignedApproverTasks
-        //     Approver[index] = item;
-        //     backupTaskArray.assignedApproverTasks = Approver;
-        //     setAssignedApproverTasks(Approver)
-        // } else if (selectedInlineTask.table == 'allAssignedTask') {
-        //     let AllAssigned = backupTaskArray.AllAssignedTasks
-        //     AllAssigned[index] = item;
-        //     backupTaskArray.AllAssignedTasks = AllAssigned;
-        //     setAllAssignedTasks(AllAssigned)
-        // }
-        backupTaskArray?.allTasks?.map((task: any) => {
+        AllTasks?.map((task: any,index:any) => {
             if (task.Id == item.Id) {
-                task = item;
+                AllTasks[index] = {...task,...item};
             }
         })
-        AllTasks = backupTaskArray?.allTasks;
+        backupTaskArray.allTasks=AllTasks;
         // setUpdateContent(CONTENT);
         filterCurrentUserTask();
         setisOpenEditPopup(false);
@@ -356,7 +329,7 @@ const TaskDashboard = (props: any) => {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
                 const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUserId);
-                const isCurrentUserApprover = task?.TeamMembersId?.includes(currentUserId);
+                const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
                 const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                 let alreadyPushed = false;
                 if (isCurrentUserApprover && task?.PercentComplete == '1') {
