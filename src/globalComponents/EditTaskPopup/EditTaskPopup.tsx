@@ -1144,7 +1144,7 @@ const EditTaskPopup = (Items: any) => {
                 setPercentCompleteStatus('Not Started');
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
             }
-            if (StatusInput < 70 && StatusInput > 20) {
+            if (StatusInput < 70 && StatusInput > 20 || StatusInput < 80 && StatusInput > 70) {
                 setTaskStatus("In Progress");
                 setPercentCompleteStatus(`${StatusInput}% In Progress`);
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
