@@ -103,11 +103,7 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
                 // PropertyPaneTextField('description', {
                 //   label: strings.DescriptionFieldLabel
                 // }),
-                PropertyPaneDropdown('dropdownvalue', {
-                  label: 'Portfolio type',
-                  // selectedKey:'Service Portfolio',
-                 
-                }),
+            
                 PropertyPaneTextField('TaskUsertListID', {
                   label: 'Task User List'
                 }),

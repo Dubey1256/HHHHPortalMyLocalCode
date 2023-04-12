@@ -378,7 +378,7 @@ function Portfolio({SelectedProp}:any) {
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${item.Portfolio_x0020_Type}-Portfolio.aspx`}
+                            href={SelectedProp.siteUrl+"/SitePages/"+item.Portfolio_x0020_Type+"-Portfolio.aspx"}
                           >
                             {item.Portfolio_x0020_Type}-Portfolio
                           </a>
@@ -392,7 +392,7 @@ function Portfolio({SelectedProp}:any) {
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
+                              href={SelectedProp.siteUrl+"SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
                             >
                               {item.Parent.Title}
                             </a>
@@ -531,7 +531,7 @@ function Portfolio({SelectedProp}:any) {
                       <a
                         target="_blank"
                         data-interception="off"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-Old.aspx?taskId=${ID}`}
+                        href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile-Old.aspx?taskId="+ID}
                       >
                         Old Portfolio profile page
                       </a>
@@ -591,7 +591,7 @@ function Portfolio({SelectedProp}:any) {
                         <dd className='bg-light d-flex'>
                                             {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
                                         <>
-                                                <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
+                                                <a  target='_blank' data-interception="off" href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
                                                 <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
                                                 </a>
                                             
@@ -599,7 +599,7 @@ function Portfolio({SelectedProp}:any) {
                                         ):""}
                                         <div className='px-1'>|</div>
                                                 {AllTeamMember != null && AllTeamMember.length > 0 &&
-                    <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                     }
                     {AllTeamMember != null && AllTeamMember.length > 1 &&
                     <div className="position-relative user_Member_img_suffix2 multimember fs13" style={{paddingTop: '2px'}} onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
@@ -609,7 +609,7 @@ function Portfolio({SelectedProp}:any) {
                             { AllTeamMember.slice(1).map( (rcData:any,i:any)=> {
                                 
                                 return  <div className="team_Members_Item p-1">
-                                <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                <div><a href={SelectedProp.siteUrl+"/SitePages/TeamLeader-Dashboard.aspx?UserId="+rcData.Id+"&Name="+rcData.Title} target="_blank" data-interception="off">
                                     <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
                                 <div className='m-1'>{rcData.Title}</div>
                                 </div>
@@ -624,7 +624,7 @@ function Portfolio({SelectedProp}:any) {
                     }   
                                                 {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
                                                 <>
-                                                        <a  target='_blank' data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
+                                                        <a  target='_blank' data-interception="off" href={web+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
                                                         <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
                                                     </a>
                                                 </>
@@ -690,7 +690,7 @@ function Portfolio({SelectedProp}:any) {
                                   <a
                                     target="_blank"
                                     data-interception="off"
-                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
+                                    href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
                                   >
                                     {item.Parent.Title}
                                   </a>
@@ -703,7 +703,7 @@ function Portfolio({SelectedProp}:any) {
                                             <a
                                               target="_blank"
                                               data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
+                                              href={SelectedProp.siteUrl+"/SitePages/Component-Portfolio.aspx?ComponentID="+item.Parent.Id}
                                             >
                                               <img src={require('../../../Assets/ICON/edit_page.svg')}
                                 width="30" height="25" />{" "}
@@ -716,7 +716,7 @@ function Portfolio({SelectedProp}:any) {
                                             <a
                                               target="_blank"
                                               data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio.aspx?ComponentID=${item.Parent.Id}`}
+                                              href={SelectedProp.siteUrl+"/SitePages/Service-Portfolio.aspx?ComponentID="+item.Parent.Id}
                                             >
                                               {" "}
                                               <img src={require('../../../Assets/ICON/edit_page.svg')}
@@ -1323,7 +1323,7 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ServicePortfolio.Id}`}
+                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.ServicePortfolio.Id}
                                 >
                                   {item.ServicePortfolio.Title}
                                 </a>
@@ -1341,7 +1341,7 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}
                                 >
                                   {item.ComponentPortfolio.Title}
                                 </a>
@@ -1381,7 +1381,7 @@ function Portfolio({SelectedProp}:any) {
                       // <SmartInformation
                       //   Id={item.Id}
                       //   siteurl={
-                      //     "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+                      //     "${web}"
                       //   }
                       //   listName={"HHHH"}
                       //   spPageContext={"/sites/HHHH/SP"}
@@ -1495,7 +1495,7 @@ function Portfolio({SelectedProp}:any) {
         })}
       </div>
       {IsComponent && (
-        <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>
+        <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call}></EditInstituton>
       )}
     </div>
   );

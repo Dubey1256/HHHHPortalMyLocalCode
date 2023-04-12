@@ -49,7 +49,7 @@ var selectedCategory: any = [];
 var AllItems: any = [];
 let IsShowRestru: any = false;
 let ChengedTitle: any = "";
-export default function ComponentTable({ props }: any) {
+export default function ComponentTable({ props,NextProp }: any) {
   const [maidataBackup, setmaidataBackup] = React.useState([]);
   const [search, setSearch]: [string, (search: string) => void] =
     React.useState("");
@@ -248,7 +248,7 @@ export default function ComponentTable({ props }: any) {
               filter +
               "";
             AllTasksMatches = await globalCommon.getData(
-              GlobalConstants.SP_SITE_URL,
+              NextProp.siteUrl,
               config.listId,
               select
             );
@@ -648,8 +648,8 @@ export default function ComponentTable({ props }: any) {
     var select: any =
       "Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent";
     smartmetaDetails = await globalCommon.getData(
-      GlobalConstants.SP_SITE_URL,
-      GlobalConstants.SMARTMETADATA_LIST_ID,
+      NextProp.siteUrl,
+      NextProp.SmartMetadataListID,
       select
     );
     console.log(smartmetaDetails);
@@ -723,8 +723,8 @@ export default function ComponentTable({ props }: any) {
       "";
 
     componentDetails = await globalCommon.getData(
-      GlobalConstants.SP_SITE_URL,
-      GlobalConstants.MASTER_TASKS_LISTID,
+      NextProp.siteUrl,
+      NextProp.MasterTaskListID,
       select
     );
     console.log(componentDetails);
@@ -3183,7 +3183,7 @@ export default function ComponentTable({ props }: any) {
                 {siteConfig.map((site: any) => {
                   return (
                     <span>
-                      {site.Title != undefined &&
+                      {site?.Title != undefined &&
                         site.Title != "Foundation" &&
                         site.Title != "Master Tasks" &&
                         site.Title != "Gender" &&
@@ -3191,8 +3191,8 @@ export default function ComponentTable({ props }: any) {
                         site.Title != "SDC Sites" &&
                         site.Title != "Offshore Tasks" && (
                           <>
-                            <img src={site.Item_x005F_x0020_Cover.Url} />
-                            <p>{site.Title}</p>
+                            <img src={site?.Item_x005F_x0020_Cover?.Url} />
+                            <p>{site?.Title}</p>
                           </>
                         )}
                     </span>
@@ -3618,8 +3618,8 @@ export default function ComponentTable({ props }: any) {
                         target="_blank"
                         data-interception="off"
                         href={
-                          GlobalConstants.MAIN_SITE_URL +
-                          `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          NextProp.siteUrl +
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
                         }
                       >
                         <img
@@ -3650,8 +3650,8 @@ export default function ComponentTable({ props }: any) {
                         target="_blank"
                         data-interception="off"
                         href={
-                          GlobalConstants.MAIN_SITE_URL +
-                          `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          NextProp.siteUrl +
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
                         }
                       >
                         <img
@@ -3683,8 +3683,8 @@ export default function ComponentTable({ props }: any) {
                         target="_blank"
                         data-interception="off"
                         href={
-                          GlobalConstants.MAIN_SITE_URL +
-                          `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          NextProp.siteUrl +
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
                         }
                       >
                         <img
@@ -3703,8 +3703,8 @@ export default function ComponentTable({ props }: any) {
                           target="_blank"
                           data-interception="off"
                           href={
-                            GlobalConstants.MAIN_SITE_URL +
-                            `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                            NextProp.siteUrl +
+                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
                           }
                         >
                           <img
@@ -3755,8 +3755,8 @@ export default function ComponentTable({ props }: any) {
                           target="_blank"
                           data-interception="off"
                           href={
-                            GlobalConstants.MAIN_SITE_URL +
-                            `/SP/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                            NextProp.siteUrl +
+                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
                           }
                         >
                           <img
@@ -4288,8 +4288,8 @@ export default function ComponentTable({ props }: any) {
                                               target="_blank"
                                               data-interception="off"
                                               href={
-                                                GlobalConstants.MAIN_SITE_URL +
-                                                "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                NextProp.siteUrl +
+                                                "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                 item.Id
                                               }
                                             >
@@ -4307,8 +4307,8 @@ export default function ComponentTable({ props }: any) {
                                               target="_blank"
                                               data-interception="off"
                                               href={
-                                                GlobalConstants.MAIN_SITE_URL +
-                                                "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                NextProp.siteUrl +
+                                                "/SitePages/Task-Profile.aspx?taskId=" +
                                                 item.Id +
                                                 "&Site=" +
                                                 item.siteType
@@ -4603,8 +4603,8 @@ export default function ComponentTable({ props }: any) {
                                                           target="_blank"
                                                           data-interception="off"
                                                           href={
-                                                            GlobalConstants.MAIN_SITE_URL +
-                                                            "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                            NextProp.siteUrl +
+                                                            "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                             childitem.Id
                                                           }
                                                         >
@@ -4623,8 +4623,8 @@ export default function ComponentTable({ props }: any) {
                                                           target="_blank"
                                                           data-interception="off"
                                                           href={
-                                                            GlobalConstants.MAIN_SITE_URL +
-                                                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                            NextProp.siteUrl +
+                                                            "/SitePages/Task-Profile.aspx?taskId=" +
                                                             childitem.Id +
                                                             "&Site=" +
                                                             childitem.siteType
@@ -4996,8 +4996,8 @@ export default function ComponentTable({ props }: any) {
                                                                           target="_blank"
                                                                           data-interception="off"
                                                                           href={
-                                                                            GlobalConstants.MAIN_SITE_URL +
-                                                                            "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                            NextProp.siteUrl +
+                                                                            "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                                             childinew.Id
                                                                           }
                                                                         >
@@ -5016,8 +5016,8 @@ export default function ComponentTable({ props }: any) {
                                                                           target="_blank"
                                                                           data-interception="off"
                                                                           href={
-                                                                            GlobalConstants.MAIN_SITE_URL +
-                                                                            "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                            NextProp.siteUrl +
+                                                                            "/SitePages/Task-Profile.aspx?taskId=" +
                                                                             childinew.Id +
                                                                             "&Site=" +
                                                                             childinew.siteType
@@ -5478,8 +5478,8 @@ export default function ComponentTable({ props }: any) {
                                                                                         target="_blank"
                                                                                         data-interception="off"
                                                                                         href={
-                                                                                          GlobalConstants.MAIN_SITE_URL +
-                                                                                          "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                                          NextProp.siteUrl +
+                                                                                          "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                                                           childitem.Id
                                                                                         }
                                                                                       >
@@ -5498,8 +5498,8 @@ export default function ComponentTable({ props }: any) {
                                                                                         target="_blank"
                                                                                         data-interception="off"
                                                                                         href={
-                                                                                          GlobalConstants.MAIN_SITE_URL +
-                                                                                          "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                                          NextProp.siteUrl +
+                                                                                          "/SitePages/Task-Profile.aspx?taskId=" +
                                                                                           subchilditem.Id +
                                                                                           "&Site=" +
                                                                                           subchilditem.siteType
@@ -5955,8 +5955,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                       target="_blank"
                                                                                                       data-interception="off"
                                                                                                       href={
-                                                                                                        GlobalConstants.MAIN_SITE_URL +
-                                                                                                        "/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                                                                        NextProp.siteUrl +
+                                                                                                        "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                                                                         childitem.Id
                                                                                                       }
                                                                                                     >
@@ -5976,8 +5976,8 @@ export default function ComponentTable({ props }: any) {
                                                                                                       target="_blank"
                                                                                                       data-interception="off"
                                                                                                       href={
-                                                                                                        GlobalConstants.MAIN_SITE_URL +
-                                                                                                        "/SP/SitePages/Task-Profile.aspx?taskId=" +
+                                                                                                        NextProp.siteUrl +
+                                                                                                        "/SitePages/Task-Profile.aspx?taskId=" +
                                                                                                         nextsubchilditem.Id +
                                                                                                         "&Site=" +
                                                                                                         nextsubchilditem.siteType
@@ -6334,10 +6334,10 @@ export default function ComponentTable({ props }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} Siteu={NextProp.siteUrl} Call={Call}></EditTaskPopup>
       )}
       {IsComponent && (
-        <EditInstituton props={SharewebComponent} Call={Call}></EditInstituton>
+        <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
       )}
       {IsTimeEntry && (
         <TimeEntryPopup
@@ -6554,7 +6554,7 @@ export default function ComponentTable({ props }: any) {
                       target="_blank"
                       className="hreflink serviceColor_Active"
                       href={
-                        "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                        NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspxHH?taskId=" +
                         NewArrayBackup[0].Id
                       }
                     >
@@ -6581,7 +6581,7 @@ export default function ComponentTable({ props }: any) {
                         target="_blank"
                         className="hreflink serviceColor_Active"
                         href={
-                          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                          NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
                           obj.Id
                         }
                       >
@@ -6608,7 +6608,7 @@ export default function ComponentTable({ props }: any) {
                           target="_blank"
                           className="hreflink serviceColor_Active"
                           href={
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                            NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
                             newobj.Id
                           }
                         >
@@ -6630,7 +6630,7 @@ export default function ComponentTable({ props }: any) {
                     target="_blank"
                     className="hreflink serviceColor_Active"
                     href={
-                      "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
+                      NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
                       RestructureChecked[0].Id
                     }
                   >
