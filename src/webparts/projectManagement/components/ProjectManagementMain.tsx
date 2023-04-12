@@ -19,6 +19,9 @@ import PortfolioTagging from "../../projectmanagementOverviewTool/components/Por
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
+import Accordion from 'react-bootstrap/Accordion';
+//import { useAccordionButton } from 'react-bootstrap/AccordionButton';
+import Card from 'react-bootstrap/Card';
 var QueryId: any = "";
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
@@ -28,7 +31,8 @@ var siteConfig: any = [];
 var DataSiteIcon: any = [];
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
-  const [ShareWebComponent, setShareWebComponent] = React.useState("");
+  const [icon, seticon] = React.useState(false);
+  const [ShareWebCoseticonmponent, setShareWebComponent] = React.useState("");
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
@@ -371,6 +375,9 @@ const ProjectManagementMain = (props: any) => {
       }
     }
   };
+  const ChangeIcon=()=>{
+   seticon(!icon)
+  } 
   const TagPotfolioToProject = async () => {
     if (Masterdata?.Id != undefined) {
       let selectedComponent: any[] = [];
@@ -1102,6 +1109,29 @@ const ProjectManagementMain = (props: any) => {
                               </div>
 
                               <div className="accordionbox mt-1 p-0">
+                                
+
+                              <Accordion defaultActiveKey="0" className="mt-2 ">
+                                <Card>
+                                    <Card.Header className="p-0">
+                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="0" onClick={ChangeIcon}>
+                                           <span className={icon?"svg__icon--arrowUp":"svg__icon--arrowDown"}>Working Today Tasks</span>  
+                                        </Accordion.Toggle>
+                                    </Card.Header>
+                                    <Accordion.Collapse eventKey="0">
+                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} 
+                                           >
+                                           <span>No Working Today Tasks Available</span>
+
+
+                                        </Card.Body>
+                                    </Accordion.Collapse>
+                                </Card>
+                            </Accordion>
+
+
+
+                                
                                 <div
                                   className="accordion accordion-flush mb-1 me-2 "
                                   id="accordionFlushExample"
@@ -1442,7 +1472,7 @@ const ProjectManagementMain = (props: any) => {
 
           {IsPortfolio && (
             <PortfolioTagging
-              props={ShareWebComponent}
+              props={SharewebComponent}
               type={portfolioType}
               Call={Call}
             ></PortfolioTagging>

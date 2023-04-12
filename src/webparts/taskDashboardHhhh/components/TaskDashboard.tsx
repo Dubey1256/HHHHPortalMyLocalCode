@@ -754,9 +754,9 @@ const TaskDashboard = (props: any) => {
                                 {groupedUsers?.map((filterItem: any, index: any) => {
                                     if (filterItem?.childs?.length > 0) {
                                         return (
-                                            <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent? "nav__text hreflink  pt-0 " : "nav__text hreflink  pt-0 "}>
+                                            <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent? "nav__text hreflink d-flex justify-content-between align-items-center  pt-0  " : "nav__text hreflink d-flex justify-content-between align-items-center  pt-0 "}>
                                                 {filterItem?.Title}
-                                                {filterItem?.expanded ? <FaSortUp className='text-white' /> : <FaSortDown className='text-white' />}
+                                                {filterItem?.expanded ? <span className='svg__iconbox svg__icon--arrowUp'></span> :<span className=' svg__iconbox svg__icon--arrowDown'></span> }
                                                 {
                                                     filterItem?.expanded == true ?
                                                         <ul className="nav__list">
@@ -784,8 +784,67 @@ const TaskDashboard = (props: any) => {
                 <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
                     <article className="row">
                         <div className="col-md-12">
+                            <details>
+                                <summary> Working Today Tasks {'(' + pageToday?.length + ')'}</summary>
+                                <div className='AccordionContent'  style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
+                                            onDragOver={(e: any) => e.preventDefault()}>
+                                {pageToday?.length > 0 ?
+                                                <Table  className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsToday()}>
+                                                    <thead>
+                                                        {headerGroupsToday?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >{column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
 
-                            <Accordion defaultActiveKey="0" className="mt-2 ">
+                                                    <tbody {...getTableBodyPropsToday}>
+                                                        {pageToday?.map((row: any) => {
+                                                            prepareRowToday(row);
+                                                            return (
+                                                                <tr draggable data-value={row?.original}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
+                                                                    onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </Table>
+                                                : <span>No Working Today Tasks Available</span>}
+                                </div>
+                            </details>
+
+                            {/* <Accordion defaultActiveKey="0" className="mt-2 ">
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="0">
@@ -855,8 +914,68 @@ const TaskDashboard = (props: any) => {
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="1" className="mt-2 ">
+                            </Accordion> */}
+                            <details>
+                                <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
+                                <div className='AccordionContent' onDrop={(e: any) => handleDrop('thisWeek')}
+                                            onDragOver={(e: any) => e.preventDefault()}>
+                                {pageWeek?.length > 0 ?
+                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover {...getTablePropsWeek()} >
+                                                    <thead>
+                                                        {headerGroupsWeek?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            style={{ marginTop: "-6px" }}
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >
+                                                                            {column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
+
+                                                    <tbody {...getTableBodyPropsWeek()}>
+                                                        {pageWeek?.map((row: any) => {
+                                                            prepareRowWeek(row);
+                                                            return (
+                                                                <tr draggable data-value={row?.original}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
+                                                                    onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </Table> : <span>No Working This Week Tasks Available</span>}
+                                </div>
+                            </details>
+                            {/* <Accordion defaultActiveKey="1" className="mt-2 ">
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="1">
@@ -923,8 +1042,66 @@ const TaskDashboard = (props: any) => {
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="3" className="mt-2 ">
+                            </Accordion> */}
+                            <details>
+                                <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
+                                <div className='AccordionContent'>
+                                {pageBottleneck?.lenght > 0 ?
+                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
+                                                    <thead>
+                                                        {headerGroupsBottleneck?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            style={{ marginTop: "-6px" }}
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >
+                                                                            {column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
+
+                                                    <tbody {...getTableBodyPropsBottleneck}>
+                                                        {pageBottleneck?.map((row: any) => {
+                                                            prepareRowBottleneck(row);
+                                                            return (
+                                                                <tr {...row.getRowProps()}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </Table>
+                                                : <span>No Bottleneck Tasks Available</span>}
+                                </div>
+                            </details>
+                            {/* <Accordion defaultActiveKey="3" className="mt-2 ">
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="3">
@@ -990,8 +1167,65 @@ const TaskDashboard = (props: any) => {
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="4" className="mt-2 ">
+                            </Accordion> */}
+                            <details>
+                                <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
+                                <div className='AccordionContent'>
+                                {pageApprover?.length > 0 ?
+                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                                    <thead>
+                                                        {headerGroupsApprover?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            style={{ marginTop: "-6px" }}
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >
+                                                                            {column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
+
+                                                    <tbody {...getTableBodyPropsApprover}>
+                                                        {pageApprover?.map((row: any) => {
+                                                            prepareRowApprover(row);
+                                                            return (
+                                                                <tr {...row.getRowProps()}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </Table> : <span>No Approver Tasks Available</span>}
+                                </div>
+                            </details>
+                            {/* <Accordion defaultActiveKey="4" className="mt-2 ">
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="4">
@@ -1056,8 +1290,69 @@ const TaskDashboard = (props: any) => {
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="2" className="mt-2 ">
+                            </Accordion> */}
+                            <details>
+                                <summary> Assigned Tasks {'(' + pageAll?.length + ')'}</summary>
+                                <div className='AccordionContent' onDrop={(e: any) => handleDrop('AllTasks')}
+                                            onDragOver={(e: any) => e.preventDefault()}>
+                                {pageAll?.length > 0 ?
+                                                <Table className={updateContent?"SortingTable":"SortingTable"} bordered hover {...getTablePropsAll()} >
+                                                    <thead>
+                                                        {headerGroupsAll?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            style={{ marginTop: "-6px" }}
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >
+                                                                            {column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
+
+                                                    <tbody {...getTableBodyPropsAll()}>
+                                                        {pageAll?.map((row: any) => {
+                                                            prepareRowAll(row);
+                                                            return (
+                                                                <tr draggable data-value={row?.original}
+                                                                    onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
+                                                                    onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </Table> : <span>No Assigned Tasks Available</span>}
+                                </div>
+                            </details>
+
+                            {/* <Accordion defaultActiveKey="2" className="mt-2 ">
                                 <Card>
                                     <Card.Header className="p-0">
                                         <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="2">
@@ -1124,7 +1419,7 @@ const TaskDashboard = (props: any) => {
                                         </Card.Body>
                                     </Accordion.Collapse>
                                 </Card>
-                            </Accordion>
+                            </Accordion> */}
 
 
                         </div>
