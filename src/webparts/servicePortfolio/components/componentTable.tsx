@@ -3748,8 +3748,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                 <tr className="bold for-c0l">
 
                                                                                     <td style={{ width: "2%" }}>
+                                                                                    {item.childs != undefined && item.childs.length > 0 &&
                                                                                         <div className="accordian-header" >
-                                                                                            {item.childs != undefined &&
+                                                                                            
                                                                                                 <a className='hreflink'
                                                                                                     title="Tap to expand the childs">
                                                                                                     {/* <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
@@ -3759,9 +3760,9 @@ function ComponentTable(SelectedProp: any) {
                                                                                                         : <span className="svg__iconbox svg__icon--GroupRight "></span>}
                                                                                                     </div>
                                                                                                 </a>
-                                                                                            }
+                                                                                          
                                                                                         </div>
-
+  }
                                                                                     </td>
                                                                                     <td style={{ width: "2%" }}>
                                                                                         <div className="accordian-header" >
