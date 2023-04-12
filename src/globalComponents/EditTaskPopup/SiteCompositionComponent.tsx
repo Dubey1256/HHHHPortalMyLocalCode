@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
 import Tooltip from "../Tooltip";
+import { Suggest } from "@pnp/sp/search";
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
@@ -24,8 +25,13 @@ const SiteCompositionComponent = (Props: any) => {
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
     const [searchedKey, setSearchedKey] = useState('');
+    const [SearchedKeyForEPS, setSearchedKeyForEPS] = useState('');
+    const [SearchedKeyForEI, setSearchedKeyForEI] = useState('');
+    const [SearchedKeyForEducation, setSearchedKeyForEducation] = useState('');
+    const [SearchedKeyForMigration, setSearchedKeyForMigration] = useState('');
     const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(false);
     const [SearchedClientCategoryData, setSearchedClientCategoryData] = useState([]);
+    const [SearchedClientCategoryDataForInput, setSearchedClientCategoryDataForInput] = useState([]);
     const [selectedClientCategory, setSelectedClientCategory] = useState([]);
     const [ClientCategoryPopupSiteName, setClientCategoryPopupSiteName] = useState('');
     const [EPSClientCategory, setEPSClientCategory] = useState([]);
@@ -193,9 +199,15 @@ const SiteCompositionComponent = (Props: any) => {
 
     const openClientCategoryModel = (SiteParentId: any, SiteName: any) => {
         setClientCategoryPopupSiteName(SiteName);
-        let ParentArray: any = [];
         // setSelectedClientCategory([]);
         setSearchedKey('');
+        setClientCategoryPopupStatus(true);
+        BuildIndividualAllDataArray(SiteParentId);
+
+    }
+
+    const BuildIndividualAllDataArray = (SiteParentId: any) => {
+        let ParentArray: any = [];
         AutoCompleteItemsArray = [];
         if (AllClientCategoryData != undefined && AllClientCategoryData.length > 0) {
             AllClientCategoryData?.map((ArrayData: any) => {
@@ -219,15 +231,15 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         setSelectedSiteClientCategoryData(ParentArray);
-        setClientCategoryPopupStatus(true);
-
     }
 
 
 
-    const AutoSuggestionForClientCategory = (e: any) => {
+    const AutoSuggestionForClientCategory = (e: any, usedFor: any) => {
         let SearchedKey: any = e.target.value;
-        setSearchedKey(SearchedKey);
+        if (usedFor == "Popup") {
+            setSearchedKey(SearchedKey);
+        }
         let TempArray: any = [];
         if (SearchedKey.length > 0) {
             if (SearchWithDescriptionStatus) {
@@ -244,7 +256,11 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                     })
-                    setSearchedClientCategoryData(TempArray)
+                    if (usedFor == "Popup") {
+                        setSearchedClientCategoryData(TempArray)
+                    } else {
+                        setSearchedClientCategoryDataForInput(TempArray)
+                    }
                 }
             } else {
                 if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
@@ -260,37 +276,49 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                     })
-                    setSearchedClientCategoryData(TempArray)
+                    if (usedFor == "Popup") {
+                        setSearchedClientCategoryData(TempArray)
+                    } else {
+                        setSearchedClientCategoryDataForInput(TempArray)
+                    }
                 }
             }
         } else {
             setSearchedClientCategoryData([]);
+            setSearchedClientCategoryDataForInput([]);
         }
     }
 
     const SelectClientCategoryFromAutoSuggestion = (selectedCategory: any) => {
         setSearchedKey('');
+        setSearchedKeyForEPS("")
+        setSearchedKeyForEI("")
+        setSearchedKeyForEducation("")
+        setSearchedKeyForMigration("")
         setSearchedClientCategoryData([]);
-        setSelectedClientCategory([selectedCategory]);
+        setSearchedClientCategoryDataForInput([]);
+        SelectedClientCategoryFromDataList(selectedCategory);
+
     }
 
     const SelectedClientCategoryFromDataList = (selectedCategory: any) => {
         if (ClientCategoryPopupSiteName == "EPS") {
-            setEPSClientCategory([selectedCategory])
+            EPSClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "EI") {
-            setEIClientCategory([selectedCategory])
+            EIClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "Education") {
-            setEducationClientCategory([selectedCategory])
+            EducationClientCategory[0] = selectedCategory;
         }
         if (ClientCategoryPopupSiteName == "Migration") {
-            setMigrationClientCategory([selectedCategory])
+            MigrationClientCategory[0] = selectedCategory;
         }
 
         // SelectedClientCategoryBackupArray
         setSearchedKey('');
         setSearchedClientCategoryData([]);
+        saveSelectedClientCategoryData();
         // setSelectedClientCategory(selectedClientCategory);
     }
 
@@ -348,6 +376,36 @@ const SiteCompositionComponent = (Props: any) => {
     const closeClientCategoryPopup = () => {
         setClientCategoryPopupStatus(false)
         setSelectedClientCategory(SelectedClientCategoryBackupArray);
+    }
+
+
+    // ************************ this is for the auto Suggestion fuction for all Client Category ******************
+
+    const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
+        let SearchedKey: any = e.target.value;
+        setClientCategoryPopupSiteName(siteType);
+        if (siteType == "EPS") {
+            BuildIndividualAllDataArray(SiteId);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEPS(SearchedKey);
+        }
+        if (siteType == "EI") {
+            BuildIndividualAllDataArray(SiteId);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEI(SearchedKey);
+        }
+        if (siteType == "Education") {
+            BuildIndividualAllDataArray(SiteId);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForEducation(SearchedKey);
+        }
+        if (siteType == "Migration") {
+            BuildIndividualAllDataArray(SiteId);
+            AutoSuggestionForClientCategory(e, "For-Input");
+            setSearchedKeyForMigration(SearchedKey);
+        }
+
+
     }
 
     //    ************* this is Custom Header For Client Category Popup *****************
@@ -449,136 +507,198 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
 
                                                 {siteData.Title == "EI" && (currentListName.toLowerCase() == "ei" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group block justify-content-between">
-                                                        {EIClientCategory != undefined && EIClientCategory.length > 0 ?
-                                                            <> {EIClientCategory?.map((dataItem: any) => {
-                                                                if (dataItem.siteName == siteData.Title) {
-                                                                    return (
-                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
-                                                                            <a className=""
-                                                                                onClick={() => removeSelectedClientCategory("EI")}
-                                                                            >
-                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                                            </a>
-                                                                        </div>
-                                                                    )
-                                                                } else {
-                                                                    return (
-                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                                    )
-                                                                }
-                                                            })}
-                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                    <>
+                                                        <div className="input-group block justify-content-between">
+                                                            {EIClientCategory != undefined && EIClientCategory.length > 0 ?
+                                                                <> {EIClientCategory?.map((dataItem: any) => {
+                                                                    if (dataItem.siteName == siteData.Title) {
+                                                                        return (
+                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                                <a className=""
+                                                                                    onClick={() => removeSelectedClientCategory("EI")}
+                                                                                >
+                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                </a>
+                                                                            </div>
+                                                                        )
+                                                                    } else {
+                                                                        return (
+                                                                            <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                        )
+                                                                    }
+                                                                })}
+                                                                </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                        {
-                                                            siteData.BtnStatus ?
-                                                                <a className="bg-white border border-secondary"
-                                                                    onClick={() => openClientCategoryModel(340, 'EI')}
-                                                                >
-                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                </a>
-                                                                : null
-                                                        }
-                                                    </div>
+                                                            {
+                                                                siteData.BtnStatus ?
+                                                                    <a className="bg-white border border-secondary"
+                                                                        onClick={() => openClientCategoryModel(340, 'EI')}
+                                                                    >
+                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                    </a>
+                                                                    : null
+                                                            }
+
+                                                        </div>
+                                                        {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
+                                                            <div className="SearchTableClientCategoryComponent">
+                                                                <ul className="list-group">
+                                                                    {SearchedClientCategoryDataForInput.map((item: any) => {
+                                                                        return (
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                                <a>{item.newLabel}</a>
+                                                                            </li>
+                                                                        )
+                                                                    }
+                                                                    )}
+                                                                </ul>
+                                                            </div>) : null}
+                                                    </>
                                                     : null}
                                                 {siteData.Title == "EPS" && (currentListName.toLowerCase() == "eps" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group block justify-content-between">
-                                                        {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
-                                                            <> {EPSClientCategory?.map((dataItem: any) => {
-                                                                if (dataItem.siteName == siteData.Title) {
-                                                                    return (
-                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
-                                                                            <a className=""
-                                                                                onClick={() => removeSelectedClientCategory("EPS")}
-                                                                            >
-                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                                            </a>
-                                                                        </div>
-                                                                    )
-                                                                } else {
-                                                                    return (
-                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                                    )
-                                                                }
-                                                            })}
-                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                    <>
+                                                        <div className="input-group block justify-content-between">
+                                                            {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
+                                                                <> {EPSClientCategory?.map((dataItem: any) => {
+                                                                    if (dataItem.siteName == siteData.Title) {
+                                                                        return (
+                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                                <a className=""
+                                                                                    onClick={() => removeSelectedClientCategory("EPS")}
+                                                                                >
+                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                </a>
+                                                                            </div>
+                                                                        )
+                                                                    } else {
+                                                                        return (
+                                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                        )
+                                                                    }
+                                                                })}
+                                                                </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                        {
-                                                            siteData.BtnStatus ?
-                                                                <a className="bg-white border border-secondary"
-                                                                    onClick={() => openClientCategoryModel(341, "EPS")}
-                                                                >
-                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                </a>
-                                                                : null
-                                                        }
-                                                    </div>
+                                                            {
+                                                                siteData.BtnStatus ?
+                                                                    <a className="bg-white border border-secondary"
+                                                                        onClick={() => openClientCategoryModel(341, "EPS")}
+                                                                    >
+                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                    </a>
+                                                                    : null
+                                                            }
+
+                                                        </div>
+                                                        {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EPS" ? (
+                                                            <div className="SearchTableClientCategoryComponent">
+                                                                <ul className="list-group">
+                                                                    {SearchedClientCategoryDataForInput.map((item: any) => {
+                                                                        return (
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                                <a>{item.newLabel}</a>
+                                                                            </li>
+                                                                        )
+                                                                    }
+                                                                    )}
+                                                                </ul>
+                                                            </div>) : null}
+                                                    </>
                                                     : null}
                                                 {siteData.Title == "Education" && (currentListName.toLowerCase() == "education" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group block justify-content-between">
-                                                        {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
-                                                            <> {EducationClientCategory?.map((dataItem: any) => {
-                                                                if (dataItem.siteName == siteData.Title) {
-                                                                    return (
-                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
-                                                                            <a className=""
-                                                                                onClick={() => removeSelectedClientCategory("Education")}
-                                                                            >
-                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                                            </a>
-                                                                        </div>
-                                                                    )
-                                                                } else {
-                                                                    return (
-                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                                    )
-                                                                }
-                                                            })}
-                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                    <>
+                                                        <div className="input-group block justify-content-between">
+                                                            {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
+                                                                <> {EducationClientCategory?.map((dataItem: any) => {
+                                                                    if (dataItem.siteName == siteData.Title) {
+                                                                        return (
+                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                                <a className=""
+                                                                                    onClick={() => removeSelectedClientCategory("Education")}
+                                                                                >
+                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                </a>
+                                                                            </div>
+                                                                        )
+                                                                    } else {
+                                                                        return (
+                                                                            <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                        )
+                                                                    }
+                                                                })}
+                                                                </> : <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                        {
-                                                            siteData.BtnStatus ?
-                                                                <a className="bg-white border border-secondary"
-                                                                    onClick={() => openClientCategoryModel(344, "Education")}
-                                                                >
-                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                </a>
-                                                                : null
-                                                        }
-                                                    </div>
+                                                            {
+                                                                siteData.BtnStatus ?
+                                                                    <a className="bg-white border border-secondary"
+                                                                        onClick={() => openClientCategoryModel(344, "Education")}
+                                                                    >
+                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                    </a>
+                                                                    : null
+                                                            }
+                                                        </div>
+                                                        {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Education" ? (
+                                                            <div className="SearchTableClientCategoryComponent">
+                                                                <ul className="list-group">
+                                                                    {SearchedClientCategoryDataForInput.map((item: any) => {
+                                                                        return (
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                                <a>{item.newLabel}</a>
+                                                                            </li>
+                                                                        )
+                                                                    }
+                                                                    )}
+                                                                </ul>
+                                                            </div>) : null}
+                                                    </>
                                                     : null}
                                                 {siteData.Title == "Migration" && (currentListName.toLowerCase() == "migration" || currentListName.toLowerCase() == "shareweb") ?
-                                                    <div className="input-group block justify-content-between">
-                                                        {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
-                                                            <> {MigrationClientCategory?.map((dataItem: any) => {
-                                                                if (dataItem.siteName == siteData.Title) {
-                                                                    return (
-                                                                        <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
-                                                                            <a className=""
-                                                                                onClick={() => removeSelectedClientCategory("Migration")}
-                                                                            >
-                                                                                <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                                            </a>
-                                                                        </div>
-                                                                    )
-                                                                } else {
-                                                                    return (
-                                                                        <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
-                                                                    )
-                                                                }
-                                                            })}
-                                                            </> : <input type="text" style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                    <>
+                                                        <div className="input-group block justify-content-between">
+                                                            {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
+                                                                <> {MigrationClientCategory?.map((dataItem: any) => {
+                                                                    if (dataItem.siteName == siteData.Title) {
+                                                                        return (
+                                                                            <div className="bg-69 p-1 ps-2"> {dataItem.Title ? dataItem.Title : null}
+                                                                                <a className=""
+                                                                                    onClick={() => removeSelectedClientCategory("Migration")}
+                                                                                >
+                                                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
+                                                                                </a>
+                                                                            </div>
+                                                                        )
+                                                                    } else {
+                                                                        return (
+                                                                            <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                        )
+                                                                    }
+                                                                })}
+                                                                </> : <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
 
-                                                        {
-                                                            siteData.BtnStatus ?
-                                                                <a className="bg-white border border-secondary"
-                                                                    onClick={() => openClientCategoryModel(569, 'Migration')}
-                                                                >
-                                                                    <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
-                                                                </a>
-                                                                : null
-                                                        }
-                                                    </div>
+                                                            {
+                                                                siteData.BtnStatus ?
+                                                                    <a className="bg-white border border-secondary"
+                                                                        onClick={() => openClientCategoryModel(569, 'Migration')}
+                                                                    >
+                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                    </a>
+                                                                    : null
+                                                            }
+                                                        </div>
+                                                        {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "Migration" ? (
+                                                            <div className="SearchTableClientCategoryComponent">
+                                                                <ul className="list-group">
+                                                                    {SearchedClientCategoryDataForInput.map((item: any) => {
+                                                                        return (
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                                <a>{item.newLabel}</a>
+                                                                            </li>
+                                                                        )
+                                                                    }
+                                                                    )}
+                                                                </ul>
+                                                            </div>) : null}
+                                                    </>
                                                     : null}
 
                                             </td>
@@ -622,7 +742,7 @@ const SiteCompositionComponent = (Props: any) => {
                                             <span><a className="hreflink"> Send Feedback </a></span>
                                         </p>
                                     </div>
-                                    {/* <div className="block col p-1"> {select}</div> */}
+
                                 </div>
                                 <div className="d-end">
                                     <button type="button" className="btn btn-primary" onClick={saveSelectedClientCategoryData}>
@@ -633,7 +753,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </div>
                         <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
                             <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label> Search With Description (Info Icons)</label>
-                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e)} />
+                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
                             {SearchedClientCategoryData?.length > 0 ? (
                                 <div className="SearchTableCategoryComponent">
                                     <ul className="list-group">
@@ -706,23 +826,7 @@ const SiteCompositionComponent = (Props: any) => {
                                             </span> : null}
                                     </>
                                     : null}
-                                {/* {selectedClientCategory != undefined && selectedClientCategory.length > 0 ?
-                                    <>
-                                        {selectedClientCategory?.map((selectedData: any) => {
-                                            if (ClientCategoryPopupSiteName == selectedData.siteName) {
-                                                return (
-                                                    <span className="bg-69 p-1 ps-2"> {selectedData.Title}
-                                                        <a className=""
-                                                            onClick={() => setSelectedClientCategory([])}
-                                                        >
-                                                            <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" />
-                                                        </a>
-                                                    </span>
-                                                )
-                                            }
-                                        })}
-                                    </>
-                                    : null} */}
+
                             </div>
                             {SelectedSiteClientCategoryData != undefined && SelectedSiteClientCategoryData.length > 0 ?
                                 <ul className="categories-menu p-0">
