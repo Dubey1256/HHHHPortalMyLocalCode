@@ -91,7 +91,7 @@ const ProjectManagementMain = (props: any) => {
     var AllUsers: any = [];
     taskUsers = await web.lists
       .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title","DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
       .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
       .getById(QueryId)
       .get();
@@ -100,6 +100,7 @@ const ProjectManagementMain = (props: any) => {
     if (taskUsers.Body != undefined) {
       taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
     }
+   
     let allPortfolios: any[] = [];
     allPortfolios = await globalCommon.getPortfolio("All");
 
@@ -521,9 +522,12 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "80px" },
         accessor: "DueDate",
         Cell: ({ row }: any) => (
-          <span>
-            {row?.original?.DisplayDueDate}
-          </span>
+           <InlineEditingcolumns
+              callBack={tagAndCreateCallBack}
+              columnName="DisplayDueDate"
+              item={row?.original}
+              TaskUsers={AllUser}
+            />
         ),
       },
 
@@ -1054,201 +1058,46 @@ const ProjectManagementMain = (props: any) => {
                                 </dl>
                               </div>
 
-                              <div className="accordionbox mt-1 p-0">
-                              {Masterdata?.Body != undefined ? 
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2 "
-                                  id="accordionFlushExample"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="accordion-header"
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Description:
-                                            !expendcollapsAccordion.Description,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapseOne"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Description ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Description
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapseOne"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample"
-                                    >
-                                      <div>
-                                        {Masterdata?.Body}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>:''}
-                                {Masterdata?.Background != undefined?
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2"
-                                  id="accordionFlushExample1"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="card-header p-0 border-bottom-0 "
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Background:
-                                            !expendcollapsAccordion.Background,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapseOneee"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Background ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Background
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapseOneee"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample1"
-                                    >
-                                      <div>
-                                       {Masterdata?.Background }
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>:''}
-                                {Masterdata?.Idea != undefined ?
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2"
-                                  id="accordionFlushExample2"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="accordion-header"
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Idea: !expendcollapsAccordion.Idea,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button collapsed btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapsethree"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Idea ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Idea
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapsethree"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample2"
-                                    >
-                                      <div>
-                                       {Masterdata?.Idea}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>:''}
-                                {Masterdata?.Deliverables != undefined   ?
-                                  <div className="accordion accordion-flush mb-1 me-2" id="accordionFlushExample3"  >
-                                    <div className="accordion-item border">
-                                      <h2
-                                        className="accordion-header"
-                                        id="flush-headingOne"
-                                        onClick={() =>
-                                          setExpendcollapsAccordion({
-                                            ...expendcollapsAccordion,
-                                            Deliverables:
-                                              !expendcollapsAccordion.Deliverables,
-                                          })
-                                        }
-                                      >
-                                        <button
-                                          className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                          type="button"
-                                          data-bs-toggle="collapse"
-                                          data-bs-target="#flush-collapsefour"
-                                          aria-expanded="false"
-                                          aria-controls="flush-collapseOne"
-                                        >
-                                          <span className="fw-medium font-sans-serif text-900">
-                                            <span className="sign">
-                                              {expendcollapsAccordion.Deliverables ? (
-                                                <IoMdArrowDropdown />
-                                              ) : (
-                                                <IoMdArrowDropright />
-                                              )}
-                                            </span>
-                                            Deliverables
-                                          </span>
-                                        </button>
-                                      </h2>
-                                      <div
-                                        id="flush-collapsefour"
-                                        className="accordion-collapse collapse p-2"
-                                        aria-labelledby="flush-headingOne"
-                                        data-bs-parent="#accordionFlushExample3"
-                                      >
-                                        <div>
-                                        {Masterdata?.Deliverables}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div> : ''}
+
+
+                              {
+                                Masterdata?.Body != undefined ?<div className="mt-2 p-0 row">
+                                  <details className="pe-0">
+                                <summary>Description</summary>
+                           <div  className="AccordionContent">{Masterdata?.Body}</div>
+                           </details>
+                                </div>
+                                   : ''
+                              }
+
+{
+                                Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
+                                       <details className="pe-0">
+                                <summary>Background</summary>
+                           <div className="AccordionContent">{Masterdata?.Background}</div>
+                           </details> 
+                                </div>  : ''
+                              }
+
+{
+                                Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
+                                  <details className="pe-0">
+                                <summary>Idea</summary>
+                           <div className="AccordionContent">{Masterdata?.Idea}</div>
+                           </details>
+                                </div>   : ''
+                              }
+
+{
+                                Masterdata?.Deliverables != undefined ? <div className="mt-2 p-0 row">
+                                       <details className="pe-0">
+                                <summary>Deliverables</summary>
+                           <div className="AccordionContent">{Masterdata?.Deliverables}</div>
+                           </details>
+                                </div>   : ''
+                              }
+
                               </div>
-                            </div>
                           </div>
                         </div>
                       </div>

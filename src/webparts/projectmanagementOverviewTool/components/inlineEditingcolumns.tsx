@@ -1,6 +1,6 @@
 import { Panel, PanelType } from 'office-ui-fabric-react'
 import { Web } from "sp-pnp-js";
-import React from 'react'
+import React, { useState } from 'react'
 import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
@@ -17,6 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
+    console.log(props);
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -28,7 +29,8 @@ const inlineEditingcolumns = (props: any) => {
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
-    const [priorityRank, setpriorityRank] = React.useState([])
+    const [priorityRank, setpriorityRank] = React.useState([]);
+    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false})
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
@@ -93,7 +95,7 @@ const inlineEditingcolumns = (props: any) => {
         let MetaData = [];
         MetaData = await web.lists
         .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-        .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+        .items.select("Id", "IsVisible","ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
         .top(5000)
         .expand("Parent")
         .get();
@@ -510,6 +512,31 @@ const inlineEditingcolumns = (props: any) => {
 
 
     }
+    const closeTaskDueDate=()=> {
+        setDueDate({...dueDate, editPopup:false})
+    }
+
+    const updateTaskDueDate=async ()=> {
+        console.log("hjbdhjcbhjdbhjcbjhbdj" ,dueDate,   props);
+
+        let web = new Web(props?.item?.siteUrl);
+        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+           DueDate : dueDate.editDate
+        })
+            .then((res: any) => {
+                console.log(res);
+                props?.callBack();
+                setTaskStatusPopup(false);
+                setTaskPriorityPopup(false);
+                setTeamMembersPopup(false);
+                setDueDate({...dueDate, editPopup:false})
+            }).catch((err:any)=>{
+console.log(err)
+            })
+    }
+
+    
+
     return (
         <>
             {
@@ -621,6 +648,38 @@ const inlineEditingcolumns = (props: any) => {
                     </>
                     : ''
             }
+
+
+{/* Panel to edit due-date */}
+
+             {props.item.DisplayDueDate!=undefined&& <Panel
+                headerText={`Update Due Date`}
+                isOpen={dueDate.editPopup}
+                onDismiss={closeTaskDueDate}
+              
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                
+                    <div className="modal-body mt-3 mb-3 d-flex flex-column">
+                    <label className="form-check-label mt-5 mb-2">Edit Due Date</label>
+                    <input className="form-check-input p-3 w-100"
+                       type='date' 
+                      value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : Moment(new Date(props.item.DueDate)).format('YYYY-MM-DD') }
+                          onChange={(e:any) => setDueDate({...dueDate, editDate:e.target.value})} />
+                              
+
+                    </div>
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={updateTaskDueDate}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>}
+
+            {props?.columnName == 'DisplayDueDate' ?  <span onClick={() => setDueDate({...dueDate, editPopup:true}) }>{props?.item?.DisplayDueDate}</span>    : " "
+            }
+
             {/* Pannel To select Status */}
             <Panel
                 headerText={`Update Status`}
