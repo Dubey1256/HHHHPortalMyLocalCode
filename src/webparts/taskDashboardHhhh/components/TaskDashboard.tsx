@@ -14,9 +14,12 @@ import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewToo
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var AllTasks: any = [];
+var timesheetListConfig: any = [];
 var currentUserId: '';
 var DataSiteIcon: any = [];
 var currentUser: any = [];
+var weekTimeEntry: any = [];
 var today: any = [];
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
@@ -54,8 +57,10 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
+        currentUserTimeEntry()
+    }, [currentUserId, timesheetListConfig]);
+    React.useEffect(() => {
         let CONTENT = !updateContent;
-
         setUpdateContent(CONTENT);
 
     }, [AllAssignedTasks, thisWeekTasks, workingTodayTasks]);
@@ -106,14 +111,55 @@ const TaskDashboard = (props: any) => {
         return result;
     }
     //End 
+    // Get Week Start Date 
+    function getThisWeekStartingDate() {
+        const startingDate = new Date();
+        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+        const formattedDate = Moment(startingDate).format('YYYY-MM-DDTHH:mm:ssZ');
+        return formattedDate;
+    }
+    //End
+
+    //Load This Week Time Entry 
+    const currentUserTimeEntry = async () => {
+        let WeekStartDate = getThisWeekStartingDate();
+        let count = 0;
+        let AllTimeEntries: any = [];
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            if (timesheetLists?.length > 0) {
+                timesheetLists?.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    await web.lists
+                        .getById(list?.listId)
+                        .items.select(
+                            "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle"
+                        )
+                        .top(200).orderBy('Created')
+                        .filter(`Author/Id eq '${currentUserId}'`)
+                        .get().then((data: any) => {
+                            data?.map((item: any) => {
+                                if (item?.TaskDate >= WeekStartDate)
+                                    AllTimeEntries.push(item)
+                            })
+                            count++;
+                        });
+                    if (count == timesheetLists?.lenght) {
+                        weekTimeEntry = AllTimeEntries
+                        console.log(weekTimeEntry)
+                    }
+                })
+            }
+        }
+    }
+    //End 
+
+
     // All Sites Task
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
-        let AllAssignedTask: any = [];
-        let workingTodayTask: any = [];
-        let workingThisWeekTask: any = [];
-        let bottleneckTask: any = [];
-        let approverTask: any = [];
+        let AllSiteTasks: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
@@ -130,15 +176,12 @@ const TaskDashboard = (props: any) => {
                             .items.select(
                                 "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
                             )
-                            .top(4999)
-                            .filter(`(AssignedTo/Id eq '${currentUserId}' or Team_x0020_Members/Id eq '${currentUserId}')`)
                             .expand(
                                 "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
                             )
-                            .get().then((data: any) => {
+                            .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
-                                    let alreadyPushed = false;
                                     task.AllTeamMember = [];
                                     task.siteType = config.Title;
                                     task.listId = config.listId;
@@ -176,29 +219,10 @@ const TaskDashboard = (props: any) => {
                                     task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
                                     task.ApproverIds = [];
                                     task?.Approver?.map((approverUser: any) => {
-                                        // if (approverUser?.Id == currentUser?.AssingedToUserId && task?.PercentComplete == '1' && !alreadyPushed) {
-                                        //     approverTask.push(task)
-                                        //     alreadyPushed = true;
-                                        // }
                                         task.ApproverIds.push(approverUser?.Id);
                                     })
                                     task.AssignedToIds = [];
                                     task?.AssignedTo?.map((assignedUser: any) => {
-                                        // if (currentUser?.AssingedToUserId == assignedUser.Id) {
-                                        //     if (task?.IsTodaysTask && !alreadyPushed) {
-                                        //         workingTodayTask.push(task)
-                                        //         alreadyPushed = true;
-                                        //     } else if (task?.workingThisWeek && !alreadyPushed) {
-                                        //         workingThisWeekTask.push(task)
-                                        //         alreadyPushed = true;
-                                        //     } else if (checkUserExistence('Bottleneck', task?.SharewebCategories) && !alreadyPushed) {
-                                        //         bottleneckTask.push(task)
-                                        //         alreadyPushed = true;
-                                        //     } else if (!alreadyPushed) {
-                                        //         AllAssignedTask.push(task)
-                                        //         alreadyPushed = true;
-                                        //     }
-                                        // }
                                         task.AssignedToIds.push(assignedUser.Id)
                                         taskUsers?.map((user: any) => {
                                             if (user.AssingedToUserId == assignedUser.Id) {
@@ -228,39 +252,14 @@ const TaskDashboard = (props: any) => {
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
-
-                                    const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUser?.AssingedToUserId);
-                                    const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUser?.AssingedToUserId);
-                                    const isCurrentUserApprover = task?.TeamMembersId?.includes(currentUser?.AssingedToUserId);
-                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
-                                    if (isCurrentUserApprover && task?.PercentComplete == '1') {
-                                        approverTask.push(task)
-                                        alreadyPushed = true;
-                                    } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
-                                        workingTodayTask.push(task)
-                                        alreadyPushed = true;
-                                    } else if (task?.workingThisWeek && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
-                                        workingThisWeekTask.push(task)
-                                        alreadyPushed = true;
-                                    } else if (checkUserExistence('Bottleneck', task?.SharewebCategories) && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
-                                        bottleneckTask.push(task)
-                                        alreadyPushed = true;
-                                    } else if (!alreadyPushed && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
-                                        AllAssignedTask.push(task)
-                                        alreadyPushed = true;
-                                    }
-
-
+                                    AllSiteTasks.push(task)
                                 });
                                 arraycount++;
                             });
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
-                            setAllAssignedTasks(AllAssignedTask);
-                            setWorkingTodayTasks(workingTodayTask)
-                            setThisWeekTasks(workingThisWeekTask)
-                            setBottleneckTasks(bottleneckTask)
-                            setAssignedApproverTasks(approverTask)
+                            AllTasks = AllSiteTasks;
+                            filterCurrentUserTask();
                         }
                     } else {
                         arraycount++;
@@ -273,10 +272,15 @@ const TaskDashboard = (props: any) => {
     };
     const getChilds1 = function (item: any, array: any) {
         item.childs = [];
+        
         array?.map((childItem: any) => {
             childItem.selected = false;
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
+                if((item?.Title=='HHHH Team'||item?.Title=='Smalsus Lead Team')&&currentUser?.AssingedToUserId==childItem?.AssingedToUserId){
+                    currentUser.isAdmin=true;
+                    setCurrentUserData(currentUser);
+                }
             }
         })
     }
@@ -293,6 +297,46 @@ const TaskDashboard = (props: any) => {
     }, []);
 
     // Create React Tables For the Tasks
+    // Filter User Task From All Task 
+    const filterCurrentUserTask = () => {
+        let AllAssignedTask: any = [];
+        let workingTodayTask: any = [];
+        let workingThisWeekTask: any = [];
+        let bottleneckTask: any = [];
+        let approverTask: any = [];
+        
+        if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
+            AllTasks?.map((task: any) => {
+                const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
+                const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUserId);
+                const isCurrentUserApprover = task?.TeamMembersId?.includes(currentUserId);
+                const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+                let alreadyPushed = false;
+                if (isCurrentUserApprover && task?.PercentComplete == '1') {
+                    approverTask.push(task)
+                    alreadyPushed = true;
+                } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                    workingTodayTask.push(task)
+                    alreadyPushed = true;
+                } else if (task?.workingThisWeek && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                    workingThisWeekTask.push(task)
+                    alreadyPushed = true;
+                } else if (isBottleneckTask && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                    bottleneckTask.push(task)
+                    alreadyPushed = true;
+                } else if (!alreadyPushed && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                    AllAssignedTask.push(task)
+                    alreadyPushed = true;
+                }
+            })
+        }
+        setAllAssignedTasks(AllAssignedTask);
+        setWorkingTodayTasks(workingTodayTask)
+        setThisWeekTasks(workingThisWeekTask)
+        setBottleneckTasks(bottleneckTask)
+        setAssignedApproverTasks(approverTask)
+    }
+    //End
     const columns = React.useMemo(
         () => [
             {
@@ -326,7 +370,7 @@ const TaskDashboard = (props: any) => {
             },
             {
                 internalHeader: "Site",
-                accessor:'siteType',
+                accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
                 style: { width: '40px' },
@@ -565,12 +609,21 @@ const TaskDashboard = (props: any) => {
         try {
             smartmeta = await web.lists
                 .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                 .top(5000)
-                .filter("TaxType eq 'Sites'")
+                .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
                 .expand("Parent")
                 .get();
-            siteConfig = smartmeta.filter((data: any) => data.IsVisible);
+            siteConfig = smartmeta.filter((data: any) => {
+                if (data?.IsVisible && data?.TaxType == 'Sites') {
+                    return data;
+                }
+            });
+            timesheetListConfig = smartmeta.filter((data: any) => {
+                if (data?.TaxType == 'timesheetListConfigrations') {
+                    return data;
+                }
+            });
             LoadAllSiteTasks();
 
         } catch (error) {
@@ -615,6 +668,7 @@ const TaskDashboard = (props: any) => {
 
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
+            item.isAdmin=false;
             if (currentUserId == item?.AssingedToUser?.Id) {
                 currentUser = item;
                 setCurrentUserData(item);
@@ -627,9 +681,10 @@ const TaskDashboard = (props: any) => {
         GetMetaData();
     }
     const createGroupUsers = () => {
-        let Groups:any=[];
+        let Groups: any = [];
         taskUsers?.map((item: any) => {
             item.expanded = false;
+            item.isAdmin=false;
             getChilds1(item, taskUsers);
             Groups.push(item);
         })
@@ -642,11 +697,11 @@ const TaskDashboard = (props: any) => {
         if (!user.selected) {
             createGroupUsers();
             user.selected = !user.selected;
-            if (user?.AssingedToUserId!=currentUserData?.AssingedToUserId) {
+            if (user?.AssingedToUserId != currentUserData?.AssingedToUserId) {
                 currentUserId = user?.AssingedToUserId;
                 setSelectedUser(user)
-                LoadAllSiteTasks()
-            }else{
+                filterCurrentUserTask()
+            } else {
                 unSelectUser();
             }
         } else {
@@ -656,7 +711,7 @@ const TaskDashboard = (props: any) => {
     }
     const unSelectUser = () => {
         currentUserId = currentUserData?.AssingedToUserId;
-        LoadAllSiteTasks()
+        filterCurrentUserTask()
         setSelectedUser({})
         createGroupUsers();
     }
@@ -664,7 +719,7 @@ const TaskDashboard = (props: any) => {
 
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        if (currentUserId == currentUserData?.AssingedToUserId) {
+        if (currentUserId == currentUserData?.AssingedToUserId||currentUserData?.isAdmin==true) {
             let todayTasks = workingTodayTasks;
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
@@ -860,7 +915,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageToday?.map((row: any) => {
                                                             prepareRowToday(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -888,7 +943,7 @@ const TaskDashboard = (props: any) => {
                                                         })}
                                                     </tbody>
                                                 </Table>
-                                                : <div  className='text-center full-width'>
+                                                : <div className='text-center full-width'>
                                                     <span>No Working Today Tasks Available</span>
                                                 </div>}
 
@@ -933,7 +988,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageWeek?.map((row: any) => {
                                                             prepareRowWeek(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -960,8 +1015,8 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> :<div  className='text-center full-width'>
-                                                <span>No Working This Week Tasks Available</span>
+                                                </Table> : <div className='text-center full-width'>
+                                                    <span>No Working This Week Tasks Available</span>
                                                 </div>}
                                         </Card.Body>
                                     </Accordion.Collapse>
@@ -1002,7 +1057,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageBottleneck?.map((row: any) => {
                                                             prepareRowBottleneck(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0?'serviepannelgreena':''}>
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1028,8 +1083,8 @@ const TaskDashboard = (props: any) => {
                                                         })}
                                                     </tbody>
                                                 </Table>
-                                                : <div  className='text-center full-width'>
-                                                <span>No Bottleneck Tasks Available</span>
+                                                : <div className='text-center full-width'>
+                                                    <span>No Bottleneck Tasks Available</span>
                                                 </div>}
 
                                         </Card.Body>
@@ -1071,7 +1126,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageApprover?.map((row: any) => {
                                                             prepareRowApprover(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0?'serviepannelgreena':''}>
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1096,8 +1151,8 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> : <div  className='text-center full-width'>
-                                                <span>No Approver Tasks Available</span>
+                                                </Table> : <div className='text-center full-width'>
+                                                    <span>No Approver Tasks Available</span>
                                                 </div>}
 
 
@@ -1141,7 +1196,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageAll?.map((row: any) => {
                                                             prepareRowAll(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''} draggable data-value={row?.original}
+                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -1168,8 +1223,8 @@ const TaskDashboard = (props: any) => {
                                                             );
                                                         })}
                                                     </tbody>
-                                                </Table> :  <div  className='text-center full-width'>
-                                                <span>No Assigned Tasks Available</span>
+                                                </Table> : <div className='text-center full-width'>
+                                                    <span>No Assigned Tasks Available</span>
                                                 </div>}
                                         </Card.Body>
                                     </Accordion.Collapse>

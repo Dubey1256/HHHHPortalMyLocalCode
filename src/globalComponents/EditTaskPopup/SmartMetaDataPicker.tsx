@@ -15,7 +15,7 @@ const Picker = (item: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
-    const [update, set] = React.useState([]);
+    const [check, setCheck] = React.useState(false);
     const [value, setValue] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [searchedData, setSearchedData] = React.useState([])
@@ -180,18 +180,37 @@ const Picker = (item: any) => {
         setValue(event.target.value);
         let searchedKey: any = event.target.value;
         let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray.map((itemData: any) => {
-                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                    tempArray.push(itemData);
-                }
-            })
-            setSearchedData(tempArray)
-        } else {
-            setSearchedData([]);
+        if(check == false){
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                        tempArray.push(itemData);
+                    }
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
         }
+        else{
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if(itemData.Description1 != null){
+                        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.Description1.toLowerCase().includes(searchedKey.toLowerCase())) {
+                            tempArray.push(itemData);
+                        }
+                    }
+                    
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
+        }
+       
 
     };
+
     if (AllCategories.length > 0) {
         AllCategories.map((item: any) => {
             if (item.newTitle != undefined) {
@@ -253,7 +272,10 @@ const Picker = (item: any) => {
             </div>
         )
     }
-
+const selectwithDescription=()=>{
+  
+    setCheck(!check) 
+}
 
     return (
         <>
@@ -301,11 +323,11 @@ const Picker = (item: any) => {
                                                 <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                             </p>
                                         </div>
-                                        <div id="SendFeedbackTr">
+                                        {/* <div id="SendFeedbackTr">
                                             <p className="mb-1">Make a request or send feedback to the Term Set manager.
                                                 <span><a className="hreflink" ng-click="sendFeedback();"> Send Feedback </a></span>
                                             </p>
-                                        </div>
+                                        </div> */}
                                         {/* <div className="block col p-1"> {select}</div> */}
                                     </div>
                                     <div className="d-end">
@@ -319,7 +341,7 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="checkbox" className="form-check-input me-1 rounded-0"/> <label> Search With Description (Info Icons)</label>
+                                    <input type="checkbox" checked={check} onClick={()=>selectwithDescription()} className="form-check-input me-1 rounded-0"/> <label> Search With Description (Info Icons)</label>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
