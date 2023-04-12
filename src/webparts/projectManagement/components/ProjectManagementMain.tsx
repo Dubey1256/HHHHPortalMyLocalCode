@@ -530,7 +530,7 @@ const ProjectManagementMain = (props: any) => {
       {
         internalHeader: "% Complete",
         accessor: "PercentComplete",
-        style: { width: "100px" },
+        style: { width: "70px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
@@ -564,14 +564,11 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Created",
         accessor: "DisplayCreateDate",
         showSortIcon: true,
-        style: { width: "110px" },
+        style: { width: "125px" },
         Cell: ({ row }: any) => (
           <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            <img
-              style={{ height: "25px", width: "25px", borderRadius: "20px" }}
-              src={row?.original?.createdImg}
-            />
+            <img className="imgAuthor" src={row?.original?.createdImg}/>
           </span>
         ),
       },

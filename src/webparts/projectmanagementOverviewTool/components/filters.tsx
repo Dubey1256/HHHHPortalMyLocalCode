@@ -22,7 +22,7 @@ export const DefaultColumnFilter :any =  ({
       value={filterValue || ''}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
-      }}
+      }} title={`${internalHeader}`}
       placeholder={`${internalHeader}`}
     />
   );
