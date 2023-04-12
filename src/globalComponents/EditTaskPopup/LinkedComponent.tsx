@@ -214,35 +214,35 @@ const LinkedServices = (item: any) => {
         let searchKey = e.target.value.toLowerCase();
         let tempArray: any = [];
         let childs: any = [];
-        if(searchKey == ''){
-            tempArray?.forEach((item:any)=>{
-              item.show=false;
+        if (searchKey == '') {
+            tempArray?.forEach((item: any) => {
+                item.show = false;
             })
             setData(ComponentsData)
         }
         if (columnName == "Title") {
             data?.forEach((dataItem: any) => {
-                let IsAvailable= dataItem.Title.toLowerCase().includes(searchKey.toLowerCase())
+                let IsAvailable = dataItem.Title.toLowerCase().includes(searchKey.toLowerCase())
                 if (IsAvailable) {
                     tempArray.push(dataItem)
-                } 
-                if(dataItem.Child != undefined && dataItem.Child.length>0){
-                    dataItem.Child.forEach((childData:any)=>{
-                        let IsAvailable = childData.Title.toLowerCase(). includes(searchKey.toLowerCase())
-                        if(IsAvailable){
-                           dataItem.show=true;
-                           childs.push(childData)
-                           tempArray.push(dataItem)
+                }
+                if (dataItem.Child != undefined && dataItem.Child.length > 0) {
+                    dataItem.Child.forEach((childData: any) => {
+                        let IsAvailable = childData.Title.toLowerCase().includes(searchKey.toLowerCase())
+                        if (IsAvailable) {
+                            dataItem.show = true;
+                            childs.push(childData)
+                            tempArray.push(dataItem)
                         }
                     })
                 }
             })
-           
-            tempArray?.forEach((item:any)=>{
-                item.Child=[]
-                childs?.forEach((childData:any)=>{
-                    if(childData.Parent.Id == item.Id)
-                    item.Child.push(childData)
+
+            tempArray?.forEach((item: any) => {
+                item.Child = []
+                childs?.forEach((childData: any) => {
+                    if (childData.Parent.Id == item.Id)
+                        item.Child.push(childData)
                 })
             })
             const finalData = tempArray.filter((val: any, id: any, array: any) => {
@@ -412,7 +412,6 @@ const LinkedServices = (item: any) => {
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
                                                                             <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData)} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
-
                                                                         </td>
 
                                                                         <td style={{ width: "4%" }}>

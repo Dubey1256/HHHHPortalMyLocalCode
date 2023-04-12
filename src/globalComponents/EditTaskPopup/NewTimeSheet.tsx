@@ -5,6 +5,7 @@ import TimeEntryPopup from './TimeEntryComponent';
 
 const NewTameSheetComponent = (props: any) => {
     const TeamConfigInfo = props?.props?.Items;
+    const AllListIdData = props?.AllListId
     const [TeamConfig, setTeamConfig] = useState()
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
@@ -19,11 +20,11 @@ const NewTameSheetComponent = (props: any) => {
     return (
         <div>
             <div>
-                <TeamConfigurationCard ItemInfo={TeamConfigInfo} parentCallback={DDComponentCallBack}>
+                <TeamConfigurationCard ItemInfo={TeamConfigInfo} parentCallback={DDComponentCallBack} AllListId={AllListIdData}>
                 </TeamConfigurationCard>
             </div>
             <div>
-                <TimeEntryPopup props={TeamConfigInfo} />
+                <TimeEntryPopup props={TeamConfigInfo} Context = {props.props.context}/>
             </div>
         </div>
     )
