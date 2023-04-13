@@ -38,7 +38,7 @@ const CreateActivity = (props: any) => {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
         SelectedTasks.push(AllItems)
-        if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+        if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
             portfolioId = AllItems.Services[0].Id
         }
 
@@ -79,45 +79,45 @@ const CreateActivity = (props: any) => {
 
   
     React.useEffect(() => {
-        if (AllItems.Clientcategories != undefined && AllItems.Clientcategories.length > 0) {
+        if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
-        if (AllItems.Portfolio_x0020_Type != undefined) {
+        if (AllItems?.Portfolio_x0020_Type != undefined) {
             if (AllItems.Portfolio_x0020_Type == 'Component') {
                 smartComponentData.push(AllItems);
             }
-            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
     
-            if (AllItems.Portfolio_x0020_Type == 'Service') {
+            if (AllItems?.Portfolio_x0020_Type == 'Service') {
                 linkedComponentData.push(AllItems);
             }
-            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
     
-            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
         }
-        if (AllItems.Portfolio_x0020_Type == undefined) {
-            if (AllItems.Component != undefined && AllItems.Component.length > 0) {
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
+            if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
                 smartComponentData.push(AllItems);
             }
     
-            if (AllItems.Services != undefined && AllItems.Services.length > 0) {
+            if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
                 linkedComponentData.push(AllItems);
             }
-            linkedComponentData = linkedComponentData.filter((val: any, id: any, array: any) => {
+            linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-            smartComponentData = smartComponentData.filter((val: any, id: any, array: any) => {
+            smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
     
@@ -130,7 +130,7 @@ const CreateActivity = (props: any) => {
         var SitesTypes: any = [];
         var siteConfig = []
         var AllMetadata: any = []
-        let web = new Web(dynamicList.siteUrl);
+        let web = new Web(dynamicList?.siteUrl);
         let MetaData = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
@@ -149,10 +149,10 @@ const CreateActivity = (props: any) => {
             }
 
         })
-        if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type != 'Component' && AllItems.Item_x0020_Type != 'SubComponent' && AllItems.Item_x0020_Type != 'Feature') {
+        if (AllItems?.NoteCall == 'Task' && AllItems?.Item_x0020_Type != 'Component' && AllItems?.Item_x0020_Type != 'SubComponent' && AllItems?.Item_x0020_Type != 'Feature') {
             SitesTypes?.forEach((type: any) => {
                 if (type.listId != null) {
-                    if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
+                    if (type.listId.toLowerCase() == AllItems?.listId?.toLowerCase()) {
                         type.IscreateTask = true;
                     }
                 }
@@ -166,15 +166,15 @@ const CreateActivity = (props: any) => {
                 .items
                 .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
                 .orderBy("Created", false)
                 .top(4999)
                 .get()
             console.log(componentDetails)
-            if (componentDetails.length == 0) {
+            if (componentDetails?.length == 0) {
                 WorstreamLatestId = 1;
             } else {
-                WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
+                WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
             }
             getTasktype();
         }
@@ -382,7 +382,7 @@ const CreateActivity = (props: any) => {
         }
 
         if (CategoriesData != undefined) {
-            CategoriesData.forEach(function (type: any) {
+            CategoriesData?.forEach(function (type: any) {
                 CheckCategory.forEach(function (val: any) {
                     if (type.Id == val.Id) {
                         BackupCat = type.Id
@@ -452,7 +452,7 @@ const CreateActivity = (props: any) => {
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
-            .getById(item.listId)
+            .getById(item?.listId)
             .items
             .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,StartDate,DueDate,Status,Body,PercentComplete,Attachments,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
             .expand("SharewebTaskType,ParentTask,AssignedTo,AttachmentFiles,Author,Editor")
@@ -470,14 +470,14 @@ const CreateActivity = (props: any) => {
             item.LatestTaskNumber = LatestTaskNumber
         }
         if (AllItems != undefined) {
-            if (AllItems.Portfolio_x0020_Type != undefined) {
-                if (AllItems.Portfolio_x0020_Type == 'Component') {
+            if (AllItems?.Portfolio_x0020_Type != undefined) {
+                if (AllItems?.Portfolio_x0020_Type == 'Component') {
                     SharewebID = 'CA' + LatestTaskNumber;
                 }
-                if (AllItems.Portfolio_x0020_Type == 'Service') {
+                if (AllItems?.Portfolio_x0020_Type == 'Service') {
                     SharewebID = 'SA' + LatestTaskNumber;
                 }
-                if (AllItems.Portfolio_x0020_Type == 'Events') {
+                if (AllItems?.Portfolio_x0020_Type == 'Events') {
                     SharewebID = 'EA' + LatestTaskNumber;
                 }
             } else {
@@ -684,6 +684,8 @@ const CreateActivity = (props: any) => {
                     }).then((res: any) => {
                         res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                         res.data['listId'] = value.listId
+                        res.data['SharewebTaskType'] = { Title: 'Activities' }
+                        res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                         res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value.SharewebID
                         res.data.ParentTaskId = AllItems.Id
@@ -694,7 +696,7 @@ const CreateActivity = (props: any) => {
 
                     })
                 }
-                if (AllItems.NoteCall == 'Task') {
+                if (AllItems?.NoteCall == 'Task') {
                     let web = new Web(dynamicList.siteUrl);
                     let componentDetails: any = [];
                     componentDetails = await web.lists
@@ -714,17 +716,17 @@ const CreateActivity = (props: any) => {
                     }
                     if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
                         var SharewebID = '';
-                        if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component' || Task.Component != undefined && Task.Component.length > 0) {
+                        if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
                             SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if (Task.Services != undefined && Task.Portfolio_x0020_Type == 'Service' || Task.Services != undefined && Task.Services.length > 0) {
+                        if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if (Task.Events != undefined && Task.Portfolio_x0020_Type == 'Events') {
-                            SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                        if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
+                            SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
                         }
                         if(AllItems.SharewebTaskLevel1No == undefined){
-                            WorstreamLatestId  = AllItems.SharewebTaskLevel1No;
+                            WorstreamLatestId  = AllItems?.SharewebTaskLevel1No;
                         }
                         // var Component: any = []
                         // smartComponentData.forEach((com: any) => {
@@ -791,6 +793,8 @@ const CreateActivity = (props: any) => {
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                            res.data['SharewebTaskType'] = { Title: 'Task' }
+                            res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
                             res.data['siteType'] = value.siteName
                             console.log(res);
@@ -893,7 +897,7 @@ const CreateActivity = (props: any) => {
                         {`Create Activity`}
                     </span>
                 </div>
-                <Tooltip ComponentId={AllItems.Id} />
+                <Tooltip ComponentId={AllItems?.Id} />
             </div>
         );
     };
@@ -917,13 +921,13 @@ const CreateActivity = (props: any) => {
                 <div className="modal-body">
 
 
-                    <div className={AllItems.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                    <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div className='row mt-2 border Create-taskpage'>
-                            {(AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') &&
+                            {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature') &&
                                 <fieldset>
                                     <legend className="border-bottom fs-6 ">Sites</legend>
                                     <ul className="quick-actions">
-                                        {siteTypess.map(function (item: any) {
+                                        {siteTypess?.map(function (item: any) {
                                             return (
                                                 <>
                                                     {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
@@ -955,10 +959,10 @@ const CreateActivity = (props: any) => {
                                                 onClick={SelectSiteType}>Site Name</a>
                                         </label>
                                         <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
-                                            defaultValue={`${AllItems.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
+                                            defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                     </div>
-                                    <div className="col-sm-2 mb-10 padL-0 mt-2">
+                                    <div className="col-sm-2 mb-10 padL-0 mt-2">?
                                         <label>Due Date</label>
                                         <input type="date" className="form-control"
                                             defaultValue={Moment(date).format("DD/MM/YYYY")}
@@ -980,7 +984,7 @@ const CreateActivity = (props: any) => {
                                     </div>
                                     <div className='col-sm-7'>
                                         <FroalaCommentBox
-                                            EditorValue={AllItems.Body != undefined ? AllItems.Body : ''}
+                                            EditorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
                                             callBack={HtmlEditorCallBack}
                                         >
                                         </FroalaCommentBox>
@@ -1027,7 +1031,7 @@ const CreateActivity = (props: any) => {
                                 </div>} */}
 
 
-                                {AllItems.Portfolio_x0020_Type == 'Service' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Component Portfolio
@@ -1042,7 +1046,7 @@ const CreateActivity = (props: any) => {
                                         </span>
                                     </div>
                                 }
-                                {AllItems.Portfolio_x0020_Type == 'Component' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Service Portfolio
@@ -1057,7 +1061,7 @@ const CreateActivity = (props: any) => {
                                         </span>
                                     </div>
                                 }
-                                {AllItems.Portfolio_x0020_Type == 'Service' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
                                     <div className="input-group">
 
                                         {
@@ -1157,7 +1161,7 @@ const CreateActivity = (props: any) => {
 
                                 <div className="row">
                                     <div className="col-sm-12 mt-2">
-                                        {CheckCategory.map((item: any) => {
+                                        {CheckCategory?.map((item: any) => {
                                             return (
                                                 <>
                                                     <div
@@ -1212,7 +1216,7 @@ const CreateActivity = (props: any) => {
 
 
                                 </div>
-                                {(ClientCategoriesData != undefined && ClientCategoriesData.length > 0) ?
+                                {(ClientCategoriesData != undefined && ClientCategoriesData?.length > 0) ?
                                     <div>
                                         {ClientCategoriesData?.map((type: any, index: number) => {
                                             return (
@@ -1263,8 +1267,8 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {(IsComponent && AllItems.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Call={Call}></LinkedComponent>}
-            {(IsComponent && AllItems.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
             {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>
