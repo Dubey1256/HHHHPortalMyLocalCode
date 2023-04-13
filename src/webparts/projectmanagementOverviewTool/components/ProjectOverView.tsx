@@ -21,7 +21,8 @@ import InlineEditingcolumns from './inlineEditingcolumns';
 var siteConfig: any = []
 var AllTaskUsers: any = []
 var Idd: number;
-export default function ProjectOverview() {
+var AllListId: any = {};
+export default function ProjectOverview(props: any) {
     const [listIsVisible, setListIsVisible] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
@@ -36,6 +37,16 @@ export default function ProjectOverview() {
     // const [Masterdata,setMasterdata] = React.useState([])
     //const [QueryId, setQueryId] = React.useState()
     React.useEffect(() => {
+        AllListId = {
+            MasterTaskListID: props.MasterTaskListID,
+            TaskUsertListID: props.TaskUsertListID,
+            SmartMetadataListID: props.SmartMetadataListID,
+            //SiteTaskListID:this.props.SiteTaskListID,
+            TaskTimeSheetListID: props.TaskTimeSheetListID,
+            DocumentsListID: props.DocumentsListID,
+            SmartInformationListID: props.SmartInformationListID,
+            siteUrl:props.siteUrl
+          }
         TaskUser()
         GetMasterData();
     }, [])
@@ -85,7 +96,7 @@ export default function ProjectOverview() {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
@@ -96,7 +107,7 @@ export default function ProjectOverview() {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
                     </span>
                 ),
             },
@@ -107,7 +118,7 @@ export default function ProjectOverview() {
                 style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={CallBack} columnName='Team' item={row?.original}  TaskUsers={AllTaskUser} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original}  TaskUsers={AllTaskUser} />
                         {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 )
@@ -317,7 +328,7 @@ export default function ProjectOverview() {
                     </div>
                 </div>
             </div>
-            {IsComponent && <EditProjectPopup props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+            {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
 
         </div>
     )

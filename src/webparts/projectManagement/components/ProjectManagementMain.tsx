@@ -65,7 +65,8 @@ const ProjectManagementMain = (props: any) => {
       //SiteTaskListID:this.props.SiteTaskListID,
       TaskTimeSheetListID: props.TaskTimeSheetListID,
       DocumentsListID: props.DocumentsListID,
-      SmartInformationListID: props.SmartInformationListID
+      SmartInformationListID: props.SmartInformationListID,
+      siteUrl:props.siteUrl
     }
     GetMasterData();
     GetMetaData();
@@ -1219,6 +1220,7 @@ const ProjectManagementMain = (props: any) => {
                 <span>
                   {QueryId && (
                     <CommentCard 
+                    AllListId={AllListId}
                       Context={props.Context}
                       siteUrl={props.siteUrl}
                       listName={"Master Tasks"}

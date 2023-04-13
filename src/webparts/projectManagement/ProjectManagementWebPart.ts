@@ -45,7 +45,6 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         SmartInformationListID: this.properties.SmartInformationListID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-
       }
     );
 

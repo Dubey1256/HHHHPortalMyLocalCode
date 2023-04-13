@@ -31,6 +31,7 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
+var AllListId:any={}
 var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
@@ -56,6 +57,16 @@ const TaskDashboard = (props: any) => {
     });
     React.useEffect(() => {
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        AllListId = {
+            MasterTaskListID: props.MasterTaskListID,
+            TaskUsertListID: props.TaskUsertListID,
+            SmartMetadataListID: props.SmartMetadataListID,
+            //SiteTaskListID:this.props.SiteTaskListID,
+            TaskTimeSheetListID: props.TaskTimeSheetListID,
+            DocumentsListID: props.DocumentsListID,
+            SmartInformationListID: props.SmartInformationListID,
+            siteUrl:props.siteUrl
+          }
         setPageLoader(true);
         getCurrentUserDetails();
         createDisplayDate();
@@ -463,7 +474,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                     </span>
                 ),
             },
@@ -474,6 +485,7 @@ const TaskDashboard = (props: any) => {
                 accessor: "DueDate",
                 style: { width: '80px' },
                 Cell: ({ row }: any) => <InlineEditingcolumns
+                AllListId={AllListId}
                     callBack={inlineCallBack}
                     columnName="DisplayDueDate"
                     item={row?.original}
@@ -489,7 +501,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
 
                     <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                     </span>
                 ),
             },
@@ -500,7 +512,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
                     </span>
                 ),
             },
@@ -1353,7 +1365,7 @@ const TaskDashboard = (props: any) => {
                     </div>
                     <div>
                         {isOpenEditPopup ? (
-                            <EditTaskPopup Items={passdata} Call={editTaskCallBack} />
+                            <EditTaskPopup AllListId={AllListId} Items={passdata} Call={editTaskCallBack} />
                         ) : (
                             ""
                         )}
