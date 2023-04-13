@@ -17,13 +17,13 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
  
 
   const updateData=async( permission:any)=>{
-   const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
+   const feedback:any=props?.items?.FeedBack!=null?props.items?.FeedBack:null;
       feedback?.map((items:any)=>{
-       if( items.FeedBackDescriptions!=undefined&&items.FeedBackDescriptions.length>0){
-        items.FeedBackDescriptions.map((feedback:any)=>{
-          if(feedback.Subtext!=undefined){
-            feedback.Subtext.map((subtext:any)=>{
-              if(subtext.isShowLight===""){
+       if( items?.FeedBackDescriptions!=undefined&&items?.FeedBackDescriptions?.length>0){
+        items?.FeedBackDescriptions?.map((feedback:any)=>{
+          if(feedback?.Subtext!=undefined){
+            feedback?.Subtext?.map((subtext:any)=>{
+              if(subtext?.isShowLight===""){
             
                 subtext.isShowLight=permission
               }else{
@@ -65,9 +65,11 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
         percentageComplete=0.02;
         percentage=2;
       }
-      const feedback:any=props.items?.FeedBack!=null?props.items.FeedBack:null;
-         const web = new Web(props.items?.siteUrl );
-      await web.lists.getByTitle(props.items.listName).items.getById(props.items.Id).update({
+      const feedback:any=props.items?.FeedBack!=null?props.items?.FeedBack:null;
+         const web = new Web(props?.items?.siteUrl );
+      await web.lists.getByTitle(props.items.listName)
+      // await web.lists.getById(props.SiteTaskListID)
+        .items.getById(props?.items?.Id).update({
         PercentComplete: percentageComplete,
         FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
       }).then((res:any)=>{
@@ -82,7 +84,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
   console.log(props);
   
     let mention_To: any = [];
-    mention_To.push(props?.items?.Author[0]?.Name.replace('{', '').replace('}', '').trim());
+    mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
@@ -132,14 +134,14 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
       <>
      
    
-   {props.items != null  &&props.items.Approver!=undefined&&
+   {props.items != null  &&props?.items?.Approver!=undefined&&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{marginTop:"2pt"}}>Hi,</div>
         {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
         {taskpermission!=null&&taskpermission=="Reject"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props?.items?.Approver?.Title}. Refer {taskpermission} Comments.</div>}
          
           <div style={{ marginTop: "11.25pt" }}>
-            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props.items.siteType}`} target="_blank"  data-interception="off">{props.items["Title"]}</a><u></u><u></u></div>
+            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank"  data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
           <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
             <tbody>
               <tr>
@@ -163,7 +165,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                           <p>{props.items["Component"] != null &&
                             props.items["Component"].length > 0 &&
                             <span style={{ fontSize: '10.0pt', color: 'black' }}>
-                              {joinObjectValues(props.items["Component"])}
+                              {joinObjectValues(props?.items?.Component)}
                             </span>
                           }
                             <span style={{ color: "black" }}> </span><u></u><u></u></p>
@@ -172,7 +174,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Priority"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items?.Priority}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
@@ -286,18 +288,18 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
                       {props.items["FeedBack"] != null &&
                        props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
-                       props.items["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
-                       props.items["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
+                       props.items["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
+                       props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                           return <>
                             <tr>
                               <td>
                                 <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                               </td>
                               <td><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
-                                {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
+                                {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
                                   return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                     <div style={{ marginBottom: '3.75pt' }}>
-                                      <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                      <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment?.AuthorName} - {fbComment?.Created}<u></u><u></u></span></p>
                                     </div>
                                     <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                   </div>
@@ -305,7 +307,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                                 })}
                               </td>
                             </tr>
-                            {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
+                            {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                               return <>
                                 <tr>
                                   <td>
@@ -315,7 +317,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                                     {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                       return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                         <div style={{ marginBottom: '3.75pt' }}>
-                                          <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                          <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}<u></u><u></u></span></p>
                                         </div>
                                         <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
                                       </div>
@@ -349,10 +351,10 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                             return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                               <div style={{ marginBottom: "3.75pt" }}>
                                 <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                  <span style={{ color: 'black' }}>{cmtData.AuthorName} - {cmtData.Created}</span></p>
+                                  <span style={{ color: 'black' }}>{cmtData?.AuthorName} - {cmtData?.Created}</span></p>
                               </div>
                               <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
-                                <span style={{ color: 'black' }}>{cmtData.Description}</span></p>
+                                <span style={{ color: 'black' }}>{cmtData?.Description}</span></p>
                             </div>
                           })}
                         </td>
