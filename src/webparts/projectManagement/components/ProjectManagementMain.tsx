@@ -57,17 +57,17 @@ const ProjectManagementMain = (props: any) => {
   });
 
   React.useEffect(() => {
-    getQueryVariable((e: any) => e);
     AllListId = {
-      MasterTaskListID: props.MasterTaskListID,
-      TaskUsertListID: props.TaskUsertListID,
-      SmartMetadataListID: props.SmartMetadataListID,
-      //SiteTaskListID:this.props.SiteTaskListID,
-      TaskTimeSheetListID: props.TaskTimeSheetListID,
-      DocumentsListID: props.DocumentsListID,
-      SmartInformationListID: props.SmartInformationListID,
-      siteUrl:props.siteUrl
+      MasterTaskListID: props?.props?.MasterTaskListID,
+      TaskUsertListID: props?.props?.TaskUsertListID,
+      SmartMetadataListID: props?.props?.SmartMetadataListID,
+      //SiteTaskListID:this.props?.props?.SiteTaskListID,
+      TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+      DocumentsListID: props?.props?.DocumentsListID,
+      SmartInformationListID: props?.props?.SmartInformationListID,
+      siteUrl: props?.props?.siteUrl
     }
+    getQueryVariable((e: any) => e);
     GetMasterData();
     GetMetaData();
     try {
@@ -517,6 +517,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               type="Task"
               callBack={tagAndCreateCallBack}
               columnName="Priority"
@@ -534,6 +535,7 @@ const ProjectManagementMain = (props: any) => {
         accessor: "DueDate",
         Cell: ({ row }: any) => (
           <InlineEditingcolumns
+            AllListId={AllListId}
             callBack={tagAndCreateCallBack}
             columnName="DisplayDueDate"
             item={row?.original}
@@ -550,6 +552,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               callBack={tagAndCreateCallBack}
               columnName="PercentComplete"
               item={row?.original}
@@ -566,6 +569,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               callBack={tagAndCreateCallBack}
               columnName="Team"
               item={row?.original}
@@ -1203,7 +1207,7 @@ const ProjectManagementMain = (props: any) => {
                     )}
                     {IsComponent ? (
                       <EditProjectPopup
-                      AllListId={AllListId}
+                        AllListId={AllListId}
                         props={SharewebComponent}
                         Call={Call}
                         showProgressBar={showProgressBar}
@@ -1219,8 +1223,8 @@ const ProjectManagementMain = (props: any) => {
               <div>
                 <span>
                   {QueryId && (
-                    <CommentCard 
-                    AllListId={AllListId}
+                    <CommentCard
+                      AllListId={AllListId}
                       Context={props.Context}
                       siteUrl={props.siteUrl}
                       listName={"Master Tasks"}
@@ -1231,7 +1235,7 @@ const ProjectManagementMain = (props: any) => {
                 <span>
                   {QueryId && (
                     <SmartInformation
-                    AllListId={AllListId}
+                      AllListId={AllListId}
                       listName={"Master Tasks"}
                       Context={props.Context.pageContext.web}
                       siteurl={props.siteUrl}
@@ -1245,7 +1249,7 @@ const ProjectManagementMain = (props: any) => {
 
           {IsPortfolio && (
             <PortfolioTagging
-            AllListId={AllListId}
+              AllListId={AllListId}
               props={ShareWebComponent}
               type={portfolioType}
               Call={Call}

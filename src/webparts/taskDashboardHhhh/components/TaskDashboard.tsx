@@ -58,14 +58,14 @@ const TaskDashboard = (props: any) => {
     React.useEffect(() => {
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         AllListId = {
-            MasterTaskListID: props.MasterTaskListID,
-            TaskUsertListID: props.TaskUsertListID,
-            SmartMetadataListID: props.SmartMetadataListID,
-            //SiteTaskListID:this.props.SiteTaskListID,
-            TaskTimeSheetListID: props.TaskTimeSheetListID,
-            DocumentsListID: props.DocumentsListID,
-            SmartInformationListID: props.SmartInformationListID,
-            siteUrl:props.siteUrl
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            siteUrl:props?.props?.siteUrl
           }
         setPageLoader(true);
         getCurrentUserDetails();

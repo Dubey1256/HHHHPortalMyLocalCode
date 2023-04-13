@@ -1385,7 +1385,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       await web.lists
         .getById(RequireData.MasterTaskListID)
         .items.getById(item.Id)
-        .delete()
+        .recycle()
         .then((i:any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);

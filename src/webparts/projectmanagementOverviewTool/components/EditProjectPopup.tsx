@@ -1337,7 +1337,7 @@ function EditProjectPopup(item: any) {
       await web.lists
         .getByTitle("Master Tasks")
         .items.getById(item.props.Id)
-        .delete()
+        .recycle()
         .then((i) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);

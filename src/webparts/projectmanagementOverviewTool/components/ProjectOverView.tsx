@@ -38,14 +38,14 @@ export default function ProjectOverview(props: any) {
     //const [QueryId, setQueryId] = React.useState()
     React.useEffect(() => {
         AllListId = {
-            MasterTaskListID: props.MasterTaskListID,
-            TaskUsertListID: props.TaskUsertListID,
-            SmartMetadataListID: props.SmartMetadataListID,
-            //SiteTaskListID:this.props.SiteTaskListID,
-            TaskTimeSheetListID: props.TaskTimeSheetListID,
-            DocumentsListID: props.DocumentsListID,
-            SmartInformationListID: props.SmartInformationListID,
-            siteUrl:props.siteUrl
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            siteUrl:props?.props?.siteUrl
           }
         TaskUser()
         GetMasterData();
