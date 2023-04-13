@@ -90,9 +90,9 @@ const SmartTimeTotalFunction = (item: any) => {
                   //TasksTimesheet2
        
         }
-        else if (item.props.sitePage == "SH") {
+        else if (item?.props?.sitePage == "SH") {
             var allurls = [{
-                'Url': `${item.props.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`
+                'Url': `${item?.props?.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`
             }]
 
         }
@@ -100,7 +100,7 @@ const SmartTimeTotalFunction = (item: any) => {
             var allurls = [{ 
                 // 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
 
-            'Url': `${item.props.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
+            'Url': `${item?.props?.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
               
                 //	TaskTimeSheetListNew
         }]
