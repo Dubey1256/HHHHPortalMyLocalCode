@@ -31,8 +31,10 @@ var feedbackArray: any = [];
 var dynamicList:any={}
 var SiteTypeBackupArray: any = [];
 const CreateActivity = (props: any) => {
-    if(props.SelectedProp != undefined){
+    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
+    }else{
+        dynamicList = props.SelectedProp;
     }
     if (props != undefined) {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY

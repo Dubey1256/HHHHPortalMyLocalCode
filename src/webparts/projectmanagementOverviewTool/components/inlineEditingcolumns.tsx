@@ -860,7 +860,7 @@ console.log(err)
             >
                 <div>
                     <TeamConfigurationCard
-                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} ></TeamConfigurationCard>
+                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} AllListId={props} ></TeamConfigurationCard>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
                             OK
