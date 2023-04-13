@@ -29,7 +29,8 @@ const SmartTimeTotalFunction = (item: any) => {
         let web = new Web(item.props.siteUrl);
         let MetaData = [];
         MetaData = await web.lists
-            .getByTitle('SmartMetadata')
+            // .getByTitle('SmartMetadata')
+            .getById(item.AllListId.SmartMetadataListID)
             .items
             .top(4999)
             .get();
@@ -42,7 +43,8 @@ const SmartTimeTotalFunction = (item: any) => {
         let web = new Web(item.props.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getByTitle('Task Users')
+            // .getByTitle('Task Users')
+            .getById(item.AllListId.TaskUsertListID)
             .items
             .top(4999)
             .get();
@@ -85,6 +87,8 @@ const SmartTimeTotalFunction = (item: any) => {
         var count = 0;
         if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
+                  //TasksTimesheet2
+       
         }
         else if (item.props.sitePage == "SH") {
             var allurls = [{
@@ -93,9 +97,13 @@ const SmartTimeTotalFunction = (item: any) => {
 
         }
         else {
-            var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-                //{ 'Url': `${item.props.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select= ${select}`}
-            ]
+            var allurls = [{ 
+                // 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
+
+            'Url': `${item.props.siteUrl}/_api/web/lists/getbyId('${item.AllListId.TaskTimeSheetListID}')/items?$select=${select}`
+              
+                //	TaskTimeSheetListNew
+        }]
         }
 
 
@@ -107,16 +115,14 @@ const SmartTimeTotalFunction = (item: any) => {
                 method: "GET",
 
                 headers: {
-
-                    "Accept": "application/json; odata=verbose"
-
+               "Accept": "application/json; odata=verbose"
                 },
 
                 success: function (data) {
                     count++;
-                    if (data.d.results != undefined && data.d.results.length > 0) {
+                    if (data?.d?.results != undefined && data?.d?.results?.length > 0) {
 
-                        AllTimeSpentDetails = AllTimeSpentDetails.concat(data.d.results);
+                        AllTimeSpentDetails = AllTimeSpentDetails.concat(data?.d?.results);
                         // AllTimeSpentDetails.map((items:any)=>{
                         //    if(items.AdditionalTimeEntry!=null){
                         //     item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry)
@@ -125,7 +131,7 @@ const SmartTimeTotalFunction = (item: any) => {
                         // })
 
                     }
-                    if (allurls.length === count) {
+                    if (allurls?.length === count) {
                         let totletimeparentcount = 0;
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
@@ -143,13 +149,13 @@ const SmartTimeTotalFunction = (item: any) => {
                             item.siteUrl = null;
 
 
-                            if (item.TimesheetTitle.Id != undefined) {
-                                if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
+                            if (item?.TimesheetTitle?.Id != undefined) {
+                                if (item?.AdditionalTimeEntry != undefined && item?.AdditionalTimeEntry != '') {
                                     try {
-                                        item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry);
-                                        if (item.AdditionalTime.length > 0) {
-                                            $.each(item.AdditionalTime, function (index: any, additionalTime: any) {
-                                                var time = parseFloat(additionalTime.TaskTime)
+                                        item.AdditionalTime = JSON.parse(item?.AdditionalTimeEntry);
+                                        if (item?.AdditionalTime?.length > 0) {
+                                            $.each(item?.AdditionalTime, function (index: any, additionalTime: any) {
+                                                var time = parseFloat(additionalTime?.TaskTime)
                                                 if (!isNaN(time)) {
                                                     totletimeparentcount += time;
                                                     // $scope.totletimeparentcount += time;;
@@ -164,13 +170,13 @@ const SmartTimeTotalFunction = (item: any) => {
                                 setAllUser(AllUsers)
 
                                 $.each(AllUsers, function (index: any, taskUser: any) {
-                                    if (taskUser.AssingedToUserId === item.AuthorId) {
-                                        item.AuthorName = taskUser.Title;
-                                        item.AuthorImage = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+                                    if (taskUser?.AssingedToUserId === item.AuthorId) {
+                                        item.AuthorName = taskUser?.Title;
+                                        item.AuthorImage = (taskUser?.Item_x0020_Cover != undefined && taskUser?.Item_x0020_Cover?.Url != undefined) ? taskUser?.Item_x0020_Cover?.Url : '';
                                     }
                                 });
-                                if (item.TaskTime != undefined) {
-                                    var TimeInHours = item.TaskTime / 60;
+                                if (item?.TaskTime != undefined) {
+                                    var TimeInHours = item?.TaskTime / 60;
 
                                     item.TaskTime = TimeInHours.toFixed(2);
                                 }
@@ -178,7 +184,7 @@ const SmartTimeTotalFunction = (item: any) => {
                                 AllAvailableTitle.push(item);
                             }
 
-                            if (item.AdditionalTime === undefined) {
+                            if (item?.AdditionalTime === undefined) {
                                 item.AdditionalTime = [];
                             }
 
@@ -381,7 +387,7 @@ const SmartTimeTotalFunction = (item: any) => {
                         </table>
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item.props} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
         </>
     )
 }
