@@ -45,10 +45,19 @@ var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
 let web:any='';
+let RequireData:any={};
 function EditInstitution({item,SelectD,Calls}: any) {
   // Id:any
    
-  web = new Web(SelectD?.siteUrl);
+ 
+
+  if(SelectD != undefined && SelectD?.siteUrl !=  undefined){
+    web = new Web(SelectD?.siteUrl);
+    RequireData = SelectD
+  }else{
+    web = new Web(item.siteUrl);
+    RequireData = SelectD.SelectedProp
+  }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
   const [isDropItem, setisDropItem] = React.useState(false);
@@ -158,7 +167,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const GetTaskUsers = async () => {
    
     let taskUsers = [];
-    taskUsers = await web.lists.getById(SelectD.TaskUsertListID).items.top(4999).get();
+    taskUsers = await web.lists.getById(RequireData.TaskUsertListID).items.top(4999).get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -264,7 +273,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
    
     let componentDetails = [];
     componentDetails = await web.lists
-      .getById(SelectD.MasterTaskListID)
+      .getById(RequireData.MasterTaskListID)
       .items.select(
         "ComponentPortfolio/Id",
         "ComponentPortfolio/Title",
@@ -510,7 +519,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
-      item.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+      item.siteUrl = RequireData.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
@@ -533,7 +542,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         item.Item_x0020_Type == "Feature"
       ) {
         ParentId = item.Parent.Id;
-        let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid(${SelectD.MasterTaskListID})/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+        let urln = `${RequireData.siteUrl}/_api/lists/getbyid(${RequireData.MasterTaskListID})/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
         $.ajax({
           url: urln,
           method: "GET",
@@ -586,7 +595,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     let smartmetaDetails = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getById(SelectD.SmartMetadataListID)
+      .getById(RequireData.SmartMetadataListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
@@ -635,8 +644,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
         }
         GetSmartmetadata();
 
-        ListId = "ec34b38f-0669-480a-910c-f84e92e58adf";
-        CurrentSiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
+        ListId = RequireData.MasterTaskListID;
+        CurrentSiteUrl = RequireData.siteUrl;
         TaskItemRank.push([
           { rankTitle: "Select Item Rank", rank: null },
           { rankTitle: "(8) Top Highlights", rank: 8 },
@@ -668,7 +677,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getById(SelectD.MasterTaskListID)
+      .getById(RequireData.MasterTaskListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID",
@@ -1073,7 +1082,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       )[0].rank;
    
     await web.lists
-      .getById(SelectD.MasterTaskListID)
+      .getById(RequireData.MasterTaskListID)
       .items.getById(Items.ID)
       .update({
         Title: Items.Title,
@@ -1282,7 +1291,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     Services: TeamConfigInfo ? TeamConfigInfo?.Services : "",
     siteUrl: TeamConfigInfo
       ? TeamConfigInfo?.siteUrl
-      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP",
+      : RequireData.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo?.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo?.Id : "",
   };
@@ -1314,7 +1323,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`${SelectD.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                            href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
                           >
                             {EditData?.Portfolio_x0020_Type}-Portfolio
                           </a>
@@ -1329,7 +1338,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
                             >
                               {ParentData[0].Parent.Title}
                             </a>
@@ -1342,7 +1351,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={`${SelectD.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
                             >
                               {EditData?.Parent.Title}
                             </a>
@@ -1374,7 +1383,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     if (confirmDelete) {
      
       await web.lists
-        .getById(SelectD.MasterTaskListID)
+        .getById(RequireData.MasterTaskListID)
         .items.getById(item.Id)
         .delete()
         .then((i:any) => {
@@ -2323,7 +2332,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       <div className="row">
                         <TeamConfigurationCard
                           ItemInfo={item}
-                          Sitel={SelectD}
+                          Sitel={RequireData}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
                       </div>
@@ -2883,7 +2892,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       {EditData?.ID ? (
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
-                          listId={SelectD.MasterTask}
+                          listId={RequireData.MasterTask}
                         />
                       ) : (
                         ""
@@ -2946,14 +2955,14 @@ function EditInstitution({item,SelectD,Calls}: any) {
             {IsComponent && item.Portfolio_x0020_Type == "Component" && (
               <LinkedComponent
                 props={SharewebComponent}
-                Dynamic={SelectD}
+                Dynamic={RequireData}
                 Call={Call}
               ></LinkedComponent>
             )}
             {IsComponent && item.Portfolio_x0020_Type == "Service" && (
               <ComponentPortPolioPopup
                 props={SharewebComponent}
-                Dynamic={SelectD}
+                Dynamic={RequireData}
                 Call={Call}
               ></ComponentPortPolioPopup>
             )}

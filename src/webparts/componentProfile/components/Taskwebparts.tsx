@@ -4185,6 +4185,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                       <div style={{ width: "2%" }}></div>
                     </th>
                     <th style={{ width: "2%" }}></th>
+                    <th style={{ width: "2%" }}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -4212,7 +4213,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             return (
                               <>
                                 <tr>
-                                  <td className="p-0" colSpan={13}>
+                                  <td className="p-0" colSpan={14}>
                                     <table
                                       className="table m-0"
                                       style={{ width: "100%" }}
@@ -4280,7 +4281,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                             {item.Shareweb_x0020_ID}
                                           </span>
                                         </td>
-                                        <td style={{ width: "23%" }}>
+                                        <td style={{ width: "26%" }}>
                                           {/* {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" onClick={() => window.open(GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId= + ${item.Id}`, '_blank')} */}
                                           {item.siteType === "Master Tasks" && (
                                             <a
@@ -4530,7 +4531,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                         return (
                                           <>
                                             <tr>
-                                              <td className="p-0" colSpan={13}>
+                                              <td className="p-0" colSpan={14}>
                                                 <table
                                                   className="table m-0"
                                                   style={{ width: "100%" }}
@@ -4878,7 +4879,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                             <tr>
                                                               <td
                                                                 className="p-0"
-                                                                colSpan={13}
+                                                                colSpan={14}
                                                               >
                                                                 <table
                                                                   className="table m-0"
@@ -5359,7 +5360,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                             <td
                                                                               className="p-0"
                                                                               colSpan={
-                                                                                13
+                                                                                14
                                                                               }
                                                                             >
                                                                               <table
@@ -5836,7 +5837,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                           <td
                                                                                             className="p-0"
                                                                                             colSpan={
-                                                                                              13
+                                                                                              14
                                                                                             }
                                                                                           >
                                                                                             <table
