@@ -3901,10 +3901,10 @@ const EditTaskPopup = (Items: any) => {
                                 })} */}
                     </div>
 
-                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
+                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Dynamic={AllListIdData}  Call={Call}>
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" siteUrls={siteUrls} AllListId={AllListIdData} CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
+                    {IsServices && <LinkedComponent props={ShareWebComponent}  Dynamic={AllListIdData}  Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
                     {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>

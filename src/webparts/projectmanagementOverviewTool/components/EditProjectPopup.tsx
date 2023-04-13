@@ -1337,7 +1337,7 @@ function EditProjectPopup(item: any) {
       await web.lists
         .getByTitle("Master Tasks")
         .items.getById(item.props.Id)
-        .delete()
+        .recycle()
         .then((i) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
@@ -2161,6 +2161,7 @@ function EditProjectPopup(item: any) {
                       <div className="row">
                         <TeamConfigurationCard
                           ItemInfo={item.props}
+                          AllListId={listID}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
                       </div>
