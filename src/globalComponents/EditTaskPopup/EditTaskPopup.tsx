@@ -1737,7 +1737,7 @@ const EditTaskPopup = (Items: any) => {
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
                 ClientTime: JSON.stringify(ClientCategoryData),
                 ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                // SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) :  JSON.stringify(EditData.SiteCompositionSettings)
+                SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) :  EditData.SiteCompositionSettings
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
