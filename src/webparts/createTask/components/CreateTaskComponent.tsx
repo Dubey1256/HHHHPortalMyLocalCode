@@ -1397,7 +1397,7 @@ function CreateTaskComponent(props: any) {
                                                     className=" col-sm-2 mt-1 text-center"  >
                                                     <div id={"subcategorytasks" + Task.Id} className={isActiveCategory ? 'task manage_tiles' : 'task manage_tiles'}>
                                                         <div className='bg-siteColor py-3'>
-                                                            {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover.Url !== undefined) &&
+                                                            {(Task.Item_x005F_x0020_Cover !== undefined && Task.Item_x005F_x0020_Cover?.Url !== undefined) &&
                                                                 <img className="icon-task"
                                                                     src={Task.Item_x005F_x0020_Cover.Url} />}
                                                             <p className='m-0'>{Task.Title}</p>
