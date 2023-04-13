@@ -240,7 +240,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         TaskTimeSheetListID:this.props.TaskTimeSheetListID,
         DocumentsListID:this.props.DocumentsListID,
         SmartInformationListID:this.props.SmartInformationListID,
-        SiteUrl: this.props.SiteUrl
+        siteUrl: this.props.siteUrl
       }
     taskDetails["listName"] = this.state?.listName;
     taskDetails["siteType"] = this.state?.listName;
