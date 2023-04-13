@@ -21,7 +21,7 @@ const RelevantDocuments = (props: any) => {
         console.log(filter);
         try{
             // await web.lists.getByTitle("Documents")
-            await web.lists.getByTitle(props.DocumentsListID)
+            await web.lists.getById(props.DocumentsListID)
             .items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
             .expand("Author,Editor").filter(`${props?.siteName}/Id eq ${props?.ID}`).top(4999)
             .get()
