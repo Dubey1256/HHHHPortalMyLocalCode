@@ -7,6 +7,7 @@ import { Suggest } from "@pnp/sp/search";
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
+var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var ClientTime = Props.ClientTime;
@@ -49,6 +50,7 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(SiteData);
         let tempData: any = [];
         let tempData2: any = [];
+        BackupSiteTypeData = []
         setClientTimeData(ClientTime);
         loadAllCategoryData();
         if (SelectedClientCategoryFromProps != undefined && SelectedClientCategoryFromProps.length > 0) {
@@ -80,13 +82,26 @@ const SiteCompositionComponent = (Props: any) => {
                     ClientTime?.map((ClientItem: any) => {
                         if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
                             "DA E+E" && data.Title == "ALAKDigital")) {
+                            data.ClienTimeDescription = ClientItem.ClienTimeDescription;
                             data.BtnStatus = true
                         }
                     })
                     tempData2.push(data);
+                    BackupSiteTypeData.push(data);
                 })
             }
             setSiteTypes(tempData2);
+        }
+        if(SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0){
+            if(SiteCompositionSettings[0].Proportional){
+                setProportionalStatus(true);
+            }
+            if(SiteCompositionSettings[0].Manual){
+                setProportionalStatus(false);
+            }
+            if(SiteCompositionSettings[0].Portfolio){
+                setProportionalStatus(true);
+            }
         }
     }, [])
 
@@ -156,6 +171,8 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0] = object;
             setProportionalStatus(true);
         }
+        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+        callBack(SiteCompositionObject);
 
     }
     //    ************** this is for Client Category Popup Functions **************
@@ -378,6 +395,37 @@ const SiteCompositionComponent = (Props: any) => {
         setSelectedClientCategory(SelectedClientCategoryBackupArray);
     }
 
+    const ChangeTimeManuallyFunction = (e: any, SiteName: any) => {
+        let TempArray: any = [];
+        if (BackupSiteTypeData != undefined && BackupSiteTypeData) {
+            BackupSiteTypeData?.map((SiteData: any) => {
+                if (SiteData.Title == SiteName) {
+                    SiteData.ClienTimeDescription = e.target.value;
+                    TempArray.push(SiteData);
+                } else {
+                    TempArray.push(SiteData);
+                }
+
+            })
+        }
+        setSiteTypes(TempArray);
+        let ClientTimeTemp: any = [];
+        if (TempArray != undefined && TempArray.length > 0) {
+            TempArray?.map((TempData: any) => {
+                if (TempData.BtnStatus) {
+                    const object = {
+                        SiteName: TempData.Title,
+                        ClienTimeDescription: TempData.ClienTimeDescription,
+                        localSiteComposition: true,
+                        siteIcons: TempData.Item_x005F_x0020_Cover
+                    }
+                    ClientTimeTemp.push(object)
+                }
+            })
+            SiteCompositionObject.ClientTime = ClientTimeTemp;
+        }
+        callBack(SiteCompositionObject);
+    }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
 
@@ -495,14 +543,20 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {siteData.Title}
                                             </td>
                                             <td className="m-0 p-1" style={{ width: "12%" }}>
-                                                <input type="number" min="1" style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}} defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} className="form-control p-1" readOnly={ProportionalStatus}
-                                                />
+                                                {ProportionalStatus ?
+                                                    <input type="number" min="1" style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}} defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} className="form-control p-1" readOnly={ProportionalStatus}
+                                                    /> : <> {siteData.BtnStatus ? <input
+                                                        type="number" min="1" defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : (100 / selectedSiteCount).toFixed(2)} className="form-control p-1" onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                    /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }} />}</>
+                                                }
+
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "12%" }}>
-                                                <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span>
+                                                {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
+
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
 

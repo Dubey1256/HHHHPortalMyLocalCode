@@ -25,6 +25,7 @@ let smartComponentData: any = [];
 let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
+var AllListId: any = {};
 var DataSiteIcon: any = [];
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
@@ -56,6 +57,16 @@ const ProjectManagementMain = (props: any) => {
   });
 
   React.useEffect(() => {
+    AllListId = {
+      MasterTaskListID: props?.props?.MasterTaskListID,
+      TaskUsertListID: props?.props?.TaskUsertListID,
+      SmartMetadataListID: props?.props?.SmartMetadataListID,
+      //SiteTaskListID:this.props?.props?.SiteTaskListID,
+      TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+      DocumentsListID: props?.props?.DocumentsListID,
+      SmartInformationListID: props?.props?.SmartInformationListID,
+      siteUrl: props?.props?.siteUrl
+    }
     getQueryVariable((e: any) => e);
     GetMasterData();
     GetMetaData();
@@ -91,7 +102,7 @@ const ProjectManagementMain = (props: any) => {
     var AllUsers: any = [];
     taskUsers = await web.lists
       .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title","DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
       .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
       .getById(QueryId)
       .get();
@@ -100,7 +111,7 @@ const ProjectManagementMain = (props: any) => {
     if (taskUsers.Body != undefined) {
       taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
     }
-   
+
     let allPortfolios: any[] = [];
     allPortfolios = await globalCommon.getPortfolio("All");
 
@@ -466,7 +477,7 @@ const ProjectManagementMain = (props: any) => {
       },
       {
         internalHeader: "Site",
-        accessor:'siteType',
+        accessor: 'siteType',
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
@@ -506,6 +517,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               type="Task"
               callBack={tagAndCreateCallBack}
               columnName="Priority"
@@ -522,12 +534,13 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "80px" },
         accessor: "DueDate",
         Cell: ({ row }: any) => (
-           <InlineEditingcolumns
-              callBack={tagAndCreateCallBack}
-              columnName="DisplayDueDate"
-              item={row?.original}
-              TaskUsers={AllUser}
-            />
+          <InlineEditingcolumns
+            AllListId={AllListId}
+            callBack={tagAndCreateCallBack}
+            columnName="DisplayDueDate"
+            item={row?.original}
+            TaskUsers={AllUser}
+          />
         ),
       },
 
@@ -539,6 +552,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               callBack={tagAndCreateCallBack}
               columnName="PercentComplete"
               item={row?.original}
@@ -555,6 +569,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
+              AllListId={AllListId}
               callBack={tagAndCreateCallBack}
               columnName="Team"
               item={row?.original}
@@ -572,7 +587,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            <img className="imgAuthor" src={row?.original?.createdImg}/>
+            <img className="imgAuthor" src={row?.original?.createdImg} />
           </span>
         ),
       },
@@ -1058,43 +1073,43 @@ const ProjectManagementMain = (props: any) => {
 
 
                               {
-                                Masterdata?.Body != undefined ?<div className="mt-2 p-0 row">
+                                Masterdata?.Body != undefined ? <div className="mt-2 p-0 row">
                                   <details className="pe-0">
-                                <summary>Description</summary>
-                           <div  className="AccordionContent">{Masterdata?.Body}</div>
-                           </details>
+                                    <summary>Description</summary>
+                                    <div className="AccordionContent">{Masterdata?.Body}</div>
+                                  </details>
                                 </div>
-                                   : ''
+                                  : ''
                               }
 
-{
+                              {
                                 Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
-                                       <details className="pe-0">
-                                <summary>Background</summary>
-                           <div className="AccordionContent">{Masterdata?.Background}</div>
-                           </details> 
-                                </div>  : ''
+                                  <details className="pe-0">
+                                    <summary>Background</summary>
+                                    <div className="AccordionContent">{Masterdata?.Background}</div>
+                                  </details>
+                                </div> : ''
                               }
 
-{
+                              {
                                 Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
                                   <details className="pe-0">
-                                <summary>Idea</summary>
-                           <div className="AccordionContent">{Masterdata?.Idea}</div>
-                           </details>
-                                </div>   : ''
+                                    <summary>Idea</summary>
+                                    <div className="AccordionContent">{Masterdata?.Idea}</div>
+                                  </details>
+                                </div> : ''
                               }
 
-{
+                              {
                                 Masterdata?.Deliverables != undefined ? <div className="mt-2 p-0 row">
-                                       <details className="pe-0">
-                                <summary>Deliverables</summary>
-                           <div className="AccordionContent">{Masterdata?.Deliverables}</div>
-                           </details>
-                                </div>   : ''
+                                  <details className="pe-0">
+                                    <summary>Deliverables</summary>
+                                    <div className="AccordionContent">{Masterdata?.Deliverables}</div>
+                                  </details>
+                                </div> : ''
                               }
 
-                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1147,7 +1162,7 @@ const ProjectManagementMain = (props: any) => {
                                 {page.map((row: any) => {
                                   prepareRow(row);
                                   return (
-                                    <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''}{...row.getRowProps()}>
+                                    <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}{...row.getRowProps()}>
                                       {row.cells.map(
                                         (cell: {
                                           getCellProps: () => JSX.IntrinsicAttributes &
@@ -1186,12 +1201,13 @@ const ProjectManagementMain = (props: any) => {
                       />
                     </div>
                     {isOpenEditPopup ? (
-                      <EditTaskPopup Items={passdata} Call={CallBack} />
+                      <EditTaskPopup AllListId={AllListId} Items={passdata} Call={CallBack} />
                     ) : (
                       ""
                     )}
                     {IsComponent ? (
                       <EditProjectPopup
+                        AllListId={AllListId}
                         props={SharewebComponent}
                         Call={Call}
                         showProgressBar={showProgressBar}
@@ -1208,6 +1224,7 @@ const ProjectManagementMain = (props: any) => {
                 <span>
                   {QueryId && (
                     <CommentCard
+                      AllListId={AllListId}
                       Context={props.Context}
                       siteUrl={props.siteUrl}
                       listName={"Master Tasks"}
@@ -1218,6 +1235,7 @@ const ProjectManagementMain = (props: any) => {
                 <span>
                   {QueryId && (
                     <SmartInformation
+                      AllListId={AllListId}
                       listName={"Master Tasks"}
                       Context={props.Context.pageContext.web}
                       siteurl={props.siteUrl}
@@ -1231,6 +1249,7 @@ const ProjectManagementMain = (props: any) => {
 
           {IsPortfolio && (
             <PortfolioTagging
+              AllListId={AllListId}
               props={ShareWebComponent}
               type={portfolioType}
               Call={Call}
