@@ -1,12 +1,13 @@
 import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
-import Tooltip from '../Tooltip';
+import Tooltip from '../../globalComponents/Tooltip';
 
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
     ItemInfo: any;
-    AllListId: any;
+    // AllListId: any;
+    Sitel:any
 }
 
 export interface ITeamConfigurationState {
@@ -47,12 +48,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.ItemInfo.siteUrl);
+        let web = new Web(this.props.Sitel.siteUrl);
         let results: any = [];
 
         let taskUsers: any = [];
         results = await web.lists
-            .getById(this.props.AllListId.TaskUsertListID)
+            .getById(this.props.Sitel.TaskUsertListID)
             .items
             .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
             .filter('IsActive eq 1')

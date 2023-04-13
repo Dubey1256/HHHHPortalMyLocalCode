@@ -22,7 +22,7 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
     },
         []);
     function Example(callBack: any, type: any) {
-        Call(callBack.props, type);
+        Call(callBack, type);
     }
     const setModalIsOpenToFalse = () => {
         Example(props, "LinkedServices");

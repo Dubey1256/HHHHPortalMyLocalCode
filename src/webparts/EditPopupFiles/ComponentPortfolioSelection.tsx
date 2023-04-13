@@ -28,7 +28,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
     GetComponents();
   }, []);
   function Example(callBack: any, type: any) {
-    Call(callBack.props, type);
+    Call(callBack, type);
   }
 
   const setModalIsOpenToFalse = () => {
