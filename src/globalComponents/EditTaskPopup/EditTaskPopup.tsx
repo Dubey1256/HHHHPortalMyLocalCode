@@ -261,7 +261,7 @@ const EditTaskPopup = (Items: any) => {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid(${AllListIdData?.SmartMetadataListID})/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
         $.ajax({
             url: url,
             method: "GET",
@@ -560,7 +560,7 @@ const EditTaskPopup = (Items: any) => {
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
-        axios.get(`${siteUrls}/_api/web/lists/getbyid(${AllListIdData?.TaskUsertListID})/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
+        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
                 getAllEmployeeData();
@@ -3901,10 +3901,10 @@ const EditTaskPopup = (Items: any) => {
                                 })} */}
                     </div>
 
-                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Dynamic={AllListIdData}  Call={Call}>
+                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListIdData}>
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" siteUrls={siteUrls} AllListId={AllListIdData} CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent}  Dynamic={AllListIdData}  Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
+                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType} Dynamic={AllListIdData}></LinkedComponent>}
                     {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>
@@ -5067,13 +5067,14 @@ export default React.memo(EditTaskPopup);
 
 // step-2A :
 // var Items = {
-//     siteUrl:{Enter Site url here},
-//     siteType: {Enter Site type here},
-//     listId:{Enter Site listId here},
-//     ***** OR *****
-//     listName:{Enter Site listName here},
-//     Context:{Context}
-//     AllListIdData: { AllListIdData }
+    // siteUrl:{Enter Site url here},
+    // siteType: {Enter Site type here},
+    // listId:{Enter Site listId here},
+    // ***** OR *****
+    // listName:{Enter Site listName here},
+    // Context:{Context}
+    // AllListIdData: { AllListIdData with site url }
+    // context:{Page Context}
 // }
 
 // step-2B :
