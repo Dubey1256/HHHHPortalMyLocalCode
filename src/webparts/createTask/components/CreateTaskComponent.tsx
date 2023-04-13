@@ -396,7 +396,7 @@ function CreateTaskComponent(props: any) {
                 })
                 count++;
                 if (count == SitesTypes.length - 1) {
-                    console.log("inside Set Task")
+                   
                     if (type == "ComponentId") {
                         setRelTask.ComponentRelevantTask = SiteTaskTaggedToComp;
                     }
@@ -478,7 +478,7 @@ function CreateTaskComponent(props: any) {
         let AllTaskUsers: any = [];
         AllTaskUsers = await globalCommon.loadTaskUsers();
         // let pageContent = await globalCommon.pageContext();
-        // console.log(pageContent)
+    
         taskUsers = AllTaskUsers;
         let UserIds;
         AllTaskUsers?.map((item: any) => {
@@ -539,7 +539,7 @@ function CreateTaskComponent(props: any) {
         data['priorityRank'] = save.rank;
         data['Time'] = save.Time;
         data['portfolioType'] = save.portfolioType;
-        console.log(data)
+     
     }
     let PageContent: any;
     const pageContext = async () => {
@@ -804,8 +804,8 @@ function CreateTaskComponent(props: any) {
                         createdTask.Id= data?.data?.Id
                         createdTask.siteType=save.siteType
                         if (props?.projectId != undefined) {
-                            EditPopup(data?.data)
-                            props?.callBack
+                            props?.callBack()
+                            EditPopup(data?.data);  
                         } else {
                             EditPopup(data?.data)
                         }
@@ -1183,7 +1183,7 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (taskCreated) {
+        if (taskCreated&&props?.projectId == undefined) {
             window.open(base_Url+"/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
         }
         createdTask={};

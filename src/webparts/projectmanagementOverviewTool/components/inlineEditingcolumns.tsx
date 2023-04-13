@@ -17,7 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-    console.log(props);
+  
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -30,7 +30,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([]);
-    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false, selectDateName:''})
+    const [dueDate, setDueDate] = useState({editDate:props.item.DueDate, editPopup:false, selectDateName:''})
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
@@ -303,6 +303,7 @@ const inlineEditingcolumns = (props: any) => {
         })
 
         setPercentCompleteCheck(false);
+        let newDueDate= new Date(dueDate.editDate);
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
@@ -314,6 +315,7 @@ const inlineEditingcolumns = (props: any) => {
             "Categories": CategoryTitle,
             "Priority_x0020_Rank": priorityRank,
             SharewebCategoriesId: { "results": selectedCatId },
+            DueDate : newDueDate
         })
             .then((res: any) => {
                 web.lists.getById(props?.item?.listId).items.select(
@@ -386,6 +388,7 @@ const inlineEditingcolumns = (props: any) => {
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
+                setDueDate({...dueDate, editPopup:false});
             })
 
     }
@@ -403,7 +406,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt);
-        console.log(TeamConfig);
+     
         if (dt?.AssignedTo?.length > 0) {
             let tempArray: any = [];
             dt.AssignedTo?.map((arrayData: any) => {
@@ -414,7 +417,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskAssignedTo(tempArray);
-            console.log("Team Config  assigadf=====", tempArray);
+           
         }
         if (dt?.TeamMemberUsers?.length > 0) {
             let tempArray: any = [];
@@ -426,7 +429,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskTeamMembers(tempArray);
-            console.log("Team Config member=====", tempArray);
+          
         }
         if (dt?.ResponsibleTeam?.length > 0) {
             let tempArray: any = [];
@@ -438,7 +441,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskResponsibleTeam(tempArray);
-            console.log("Team Config reasponsible ===== ", tempArray);
+          
         }
     };
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
@@ -625,24 +628,24 @@ const inlineEditingcolumns = (props: any) => {
                 }
     }
 
-    const updateTaskDueDate=async ()=> {
+//     const updateTaskDueDate=async ()=> {
        
-           let newDate = new Date(dueDate.editDate);
-        let web = new Web(props?.item?.siteUrl);
-        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-           DueDate : newDate
-        })
-            .then((res: any) => {
-                console.log(res);
-                props?.callBack();
-                setTaskStatusPopup(false);
-                setTaskPriorityPopup(false);
-                setTeamMembersPopup(false);
-                setDueDate({...dueDate, editPopup:false})
-            }).catch((err:any)=>{
-console.log(err)
-            })
-    }
+//            let newDate = new Date(dueDate.editDate);
+//         let web = new Web(props?.item?.siteUrl);
+//         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+//            DueDate : newDate
+//         })
+//             .then((res: any) => {
+//                 console.log(res);
+//                 props?.callBack();
+//                 setTaskStatusPopup(false);
+//                 setTaskPriorityPopup(false);
+//                 setTeamMembersPopup(false);
+//                 setDueDate({...dueDate, editPopup:false})
+//             }).catch((err:any)=>{
+// console.log(err)
+//             })
+//     }
 
     
 
@@ -761,11 +764,11 @@ console.log(err)
 
 {/* Panel to edit due-date */}
 
-             {props.item.DisplayDueDate!=undefined&& <Panel
+              <Panel
                 headerText={`Update Due Date`}
                 isOpen={dueDate.editPopup}
                 onDismiss={closeTaskDueDate}
-              
+                isBlocking={dueDate.editPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                 
@@ -790,15 +793,14 @@ console.log(err)
       </div>
                     </div>
                     <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={updateTaskDueDate}>
+                        <button type="button" className="btn btn-primary px-3" onClick={UpdateTaskStatus}>
                             OK
                         </button>
                     </footer>
                 </div>
-            </Panel>}
-
-            {props?.columnName == 'DisplayDueDate' ?  <span onClick={() => setDueDate({...dueDate, editPopup:true}) }>{props?.item?.DisplayDueDate}</span>    : " "
-            }
+            </Panel>
+           {props?.columnName == 'DueDate' ?   <span style={{width:'100px' , display:'inline-block' , height:'7px' ,padding:'5px'}} onClick={() => setDueDate({...dueDate, editPopup:true}) }> &emsp;{props?.item?.DisplayDueDate} </span>  : ''}
+            
 
             {/* Pannel To select Status */}
             <Panel

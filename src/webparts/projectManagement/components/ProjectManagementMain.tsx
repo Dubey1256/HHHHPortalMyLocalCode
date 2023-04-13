@@ -517,14 +517,14 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        internalHeader: "Due Date",
+        internalHeader: "Due Date", 
         showSortIcon: true,
         style: { width: "80px" },
         accessor: "DueDate",
         Cell: ({ row }: any) => (
            <InlineEditingcolumns
               callBack={tagAndCreateCallBack}
-              columnName="DisplayDueDate"
+              columnName="DueDate"
               item={row?.original}
               TaskUsers={AllUser}
             />
@@ -537,7 +537,7 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "70px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
+          <span >
             <InlineEditingcolumns
               callBack={tagAndCreateCallBack}
               columnName="PercentComplete"
