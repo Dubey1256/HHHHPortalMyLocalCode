@@ -19,6 +19,7 @@ export interface IServicePortfolioWebPartProps {
   description: string;
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a'
   dropdownvalue:string,
 }
@@ -47,6 +48,7 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
+        TaskTypeID:this.properties.TaskTypeID,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         Context: this.context,
@@ -124,6 +126,9 @@ export default class ServicePortfolioWebPart extends BaseClientSideWebPart<IServ
                 }),
                 PropertyPaneTextField('MasterTaskListID', {
                   label: 'Master Task List',
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: 'Task Type List',
                 }),
               ]
             }

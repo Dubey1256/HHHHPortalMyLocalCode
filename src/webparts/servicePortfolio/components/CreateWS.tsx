@@ -26,8 +26,10 @@ var TeamMemberIds: any = [];
 
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
-    if(props.SelectedProp != undefined){
+    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
+    }else{
+        dynamicList = props.SelectedProp;
     }
     SelectedTasks = []
     if (props != undefined) {
