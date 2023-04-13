@@ -14,6 +14,13 @@ import { IProjectmanagementOverviewToolProps } from './components/IProjectmanage
 
 export interface IProjectmanagementOverviewToolWebPartProps {
   description: string;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
+  SiteUrl:'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
 }
 
 export default class ProjectmanagementOverviewToolWebPart extends BaseClientSideWebPart<IProjectmanagementOverviewToolWebPartProps> {
@@ -29,7 +36,15 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        Context: this.context,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        DocumentsListID: this.properties.DocumentsListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
       }
     );
 
@@ -89,6 +104,24 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "TaskUsertListID"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
                 })
               ]
             }
