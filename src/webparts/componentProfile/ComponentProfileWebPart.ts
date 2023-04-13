@@ -20,6 +20,7 @@ export interface IComponentProfileWebPartProps {
   DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
   SmartHelptListID:'9cf872fc-afcd-42a5-87c0-aab0c80c5457',
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc',
   dropdownvalue:string,
 }
 
@@ -40,6 +41,7 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskUsertListID: this.properties.TaskUsertListID,
+        TaskTypeID:this.properties.TaskTypeID,
         DocumentsListID:this.properties.DocumentsListID,
         SmartHelptListID:this.properties.SmartHelptListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
@@ -118,6 +120,9 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
                 }),
                 PropertyPaneTextField('MasterTaskListID', {
                   label: 'Master Task List',
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: 'Task Type List',
                 }),
               ]
             }

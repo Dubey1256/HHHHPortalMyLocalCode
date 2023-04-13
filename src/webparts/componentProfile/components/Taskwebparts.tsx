@@ -6335,7 +6335,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} Siteu={NextProp.siteUrl} Call={Call}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
@@ -6352,10 +6352,11 @@ export default function ComponentTable({ props,NextProp }: any) {
           props={MeetingItems[0]}
           Call={Call}
           LoadAllSiteTasks={LoadAllSiteTasks}
+          SelectedProp={NextProp}
         ></CreateActivity>
       )}
       {WSPopup && (
-        <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>
+        <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
 
       <Panel
@@ -6369,7 +6370,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           CreatOpen={CreateOpenCall}
           Close={CloseCall}
           PortfolioType={IsUpdated}
-          PropsValue={props} 
+          PropsValue={NextProp} 
           SelectedItem={
             checkedList != null && checkedList.length > 0
               ? checkedList[0]
