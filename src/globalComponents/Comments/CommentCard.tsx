@@ -26,7 +26,7 @@ export interface ICommentCardProps {
   listName?: string;
   itemID?: number;
   Context?: any;
-
+  AllListId?:any
 }
 const sp = spfi();
 
@@ -59,8 +59,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     this.state = {
       Result: {},
-      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props.listName),
-      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props.itemID),
+      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
+      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
 
       CommenttoPost: '',
       updateComment: false,
@@ -135,7 +135,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-      tempTask["Comments"].map((item: any) => {
+      tempTask["Comments"]?.map((item: any) => {
         if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
           var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
           item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
@@ -201,6 +201,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let taskUsers = [];
     taskUsers = await web.lists
       .getByTitle('Task Users')
+      // .getById(this.props.AllListId.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
