@@ -26,7 +26,7 @@ export interface ITaskprofileWebPartProps {
   SmartInformationListID:'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
   DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID:'464fb776-e4b3-404c-8261-7d3c50ff343f';
-  SiteUrl:'https://hhhhteams.sharepoint.com/sites/HHHH/SP'
+
 }
 
 export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofileWebPartProps> {
@@ -61,7 +61,7 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
        SmartInformationListID:this.properties.SmartInformationListID,
         DocumentsListID:this.properties.DocumentsListID,
         TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
-       SiteUrl:this.properties.SiteUrl
+      
       
        }
     );
@@ -132,9 +132,7 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
                 }),
-                PropertyPaneTextField('SiteUrl', {
-                  label: "SiteUrl"
-                })
+                
               ]
             }
           ]
