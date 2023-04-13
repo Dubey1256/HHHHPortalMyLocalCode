@@ -30,7 +30,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([]);
-    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false})
+    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false, selectDateName:''})
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
@@ -598,15 +598,39 @@ const inlineEditingcolumns = (props: any) => {
 
     }
     const closeTaskDueDate=()=> {
-        setDueDate({...dueDate, editPopup:false})
+        setDueDate({...dueDate, editPopup:false, editDate:props.item.DisplayDueDate})
+    }
+
+
+    const duedatechange=(item:any)=>{
+        let dates = new Date();
+
+                if(item==='Today'){
+                 setDueDate({...dueDate, editDate: dates, selectDateName:item});
+                }
+                if(item==='Tommorow'){
+                   
+                setDueDate({...dueDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName:item});
+                }
+                if(item==='This Week'){
+                    setDueDate({...dueDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName:item});
+                }
+                if(item==='Next Week'){
+               let nextweek = new Date(dates.setDate(dates.getDate() - (dates.getDay() - 1) + 6));
+                 setDueDate({...dueDate, editDate:  nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6), selectDateName:item});
+                }
+                if(item==='This Month'){
+                    let lastDay=  new Date(dates.getFullYear(), dates.getMonth() + 1, 0);;
+                 setDueDate({...dueDate, editDate: lastDay, selectDateName:item});
+                }
     }
 
     const updateTaskDueDate=async ()=> {
-        console.log("hjbdhjcbhjdbhjcbjhbdj" ,dueDate,   props);
-
+       
+           let newDate = new Date(dueDate.editDate);
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-           DueDate : dueDate.editDate
+           DueDate : newDate
         })
             .then((res: any) => {
                 console.log(res);
@@ -752,7 +776,18 @@ console.log(err)
                       value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : Moment(new Date(props.item.DueDate)).format('YYYY-MM-DD') }
                           onChange={(e:any) => setDueDate({...dueDate, editDate:e.target.value})} />
                               
-
+                              <div className='d-flex flex-column mt-2 mb-2'>
+                                <span className='m-1'><input className='me-1' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={()=>duedatechange('Today')} /> Today</span>
+                                <span className='m-1'>        <input className='me-1'  type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={()=>duedatechange('Tommorow')} /> Tommorow
+                                                        </span>
+                                <span className='m-1'>        <input className='me-1' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={()=>duedatechange('This Week')} /> This Week
+                                                        </span>
+                                <span className='m-1'>        <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={()=>duedatechange('Next Week')} /> Next Week
+                                      </span>
+                                <span className='m-1'>        <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={()=>duedatechange('This Month')} /> This Month
+                                      </span>
+        
+      </div>
                     </div>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={updateTaskDueDate}>
