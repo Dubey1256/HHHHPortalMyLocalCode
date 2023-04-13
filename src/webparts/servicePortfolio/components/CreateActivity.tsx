@@ -971,7 +971,7 @@ const CreateActivity = (props: any) => {
                                 </div>
                                 <div className='row mt-2'>
 
-                                    <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                    <TeamConfigurationCard ItemInfo={AllItems} AllListId={props.SelectedProp}  parentCallback={DDComponentCallBack}></TeamConfigurationCard>
 
                                 </div>
                                 <div className='row'>
