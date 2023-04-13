@@ -1,15 +1,15 @@
 import * as React from 'react';
-// import * as Moment from 'moment';
+
 import * as moment from 'moment';
-///import styles from './Taskprofile.module.scss';
+
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
-// import { escape } from '@microsoft/sp-lodash-subset';
+
 import { Web } from "sp-pnp-js";
-// import { Modal } from 'office-ui-fabric-react';
+
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-// import  {GlobalConstants} from '../../../globalComponents/LocalCommon'
+
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
@@ -23,6 +23,7 @@ import EmailComponenet from './emailComponent';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
+var AllListId:any;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -157,8 +158,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       let web = new Web(this.props?.siteUrl);
       let AllDataMatches = [];
       AllDataMatches = await web.lists
-        .getByTitle("Master Tasks")
-        // .getById(this.props.MasterTaskListID)
+        // .getByTitle("Master Tasks")
+        .getById(this.props.MasterTaskListID)
         .items
         .select('ComponentCategory/Id', 'PortfolioStructureID', 'SharewebTaskType/Id', "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
         .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
@@ -190,8 +191,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async loadOtherComponentsData(query: any, AllDataMatches: any) {
     let web = new Web(this.props?.siteUrl);
     let Data = await web.lists
-      .getByTitle("Master Tasks")
-      // .getById(this.props.MasterTaskListID)
+      // .getByTitle("Master Tasks")
+      .getById(this.props.MasterTaskListID)
       .items
       .select('ComponentCategory/Id', 'PortfolioStructureID', "SharewebTaskType/Id", "SharewebTaskType/Title", 'Portfolio_x0020_Type', 'ComponentCategory/Title', 'Id', 'ValueAdded', 'Idea', 'Sitestagging', 'TechnicalExplanations', 'Short_x0020_Description_x0020_On', 'Short_x0020_Description_x0020__x', 'Short_x0020_description_x0020__x0', 'Admin_x0020_Notes', 'Background', 'Help_x0020_Information', 'Item_x0020_Type', 'Title', 'Parent/Id', 'Parent/Title')
       .expand('Parent', 'ComponentCategory', 'SharewebTaskType')
@@ -220,19 +221,27 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails: any = [];
-    // let listInfo = await web.lists.getById(this.props.SiteTaskListID).get();
-      let listInfo = await web.lists.getByTitle(this.state?.listName).get();
+    let listInfo = await web.lists.getByTitle(this.state?.listName).get();
     // console.log(listInfo);
  
     taskDetails = await web.lists
+    // .getById(this.props.SiteTaskListID)
     .getByTitle(this.state?.listName)
-      // .getById(this.props.SiteTaskListID)
       .items
       .getById(this.state?.itemID)
       .select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
-
+      AllListId={
+        MasterTaskListID:this.props.MasterTaskListID,
+        TaskUsertListID:this.props.TaskUsertListID,
+        SmartMetadataListID:this.props.SmartMetadataListID,
+        //SiteTaskListID:this.props.SiteTaskListID,
+        TaskTimeSheetListID:this.props.TaskTimeSheetListID,
+        DocumentsListID:this.props.DocumentsListID,
+        SmartInformationListID:this.props.SmartInformationListID,
+        siteUrl: this.props.siteUrl
+      }
     taskDetails["listName"] = this.state?.listName;
     taskDetails["siteType"] = this.state?.listName;
     taskDetails["siteUrl"] = this.props?.siteUrl;
@@ -419,8 +428,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     let web = new Web(this.props?.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists
-      .getByTitle("Task Users")
-      // .getById(this.props.TaskUsertListID)
+      // .getByTitle("Task Users")
+      .getById(this.props.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
       .filter("ItemType eq 'User'")
@@ -458,8 +467,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
     let web = new Web(this.props?.siteUrl);
     var smartMetaData = await web.lists
-      .getByTitle('SmartMetadata')
-      // .getById(this.props.SmartMetadataListID)
+      // .getByTitle('SmartMetadata')
+      .getById(this.props.SmartMetadataListID)
       .items
       .select('Id', 'Title', 'IsVisible', 'TaxType', 'Parent/Id', 'Parent/Title', 'siteName', 'siteUrl', 'SmartSuggestions', "SmartFilters",)
 
@@ -1153,7 +1162,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <dl>
                     <dt className='bg-fxdark'>SmartTime Total</dt>
                     <dd className='bg-light '>
-                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal props={this.state.Result} /> : null}</span>
+                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ?<SmartTimeTotal  AllListId={AllListId} props={this.state.Result} /> : null}</span>
                     </dd>
 
                   </dl>
@@ -1408,6 +1417,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                                 Approver={this.state.Result["Approver"]}
                                 Result={this.state.Result}
                                 Context={this.props?.Context}
+                               
                               >
                               </TaskFeedbackCard>
                             }
@@ -1497,10 +1507,10 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
             </div>
             <div className="col-3">
               <div>
-              {this.state.Result!=undefined&&<CommentCard siteUrl={this.props.siteUrl} Context={this.props.Context}></CommentCard>}
+              {this.state.Result!=undefined&&<CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
               </div>
-              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} Context={this.props.Context} taskTitle={this.state.Result.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context._pageContext._web} />}</div>
-              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl} ID={this.state.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId}Context={this.props?.Context} taskTitle={this.state.Result?.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context?._pageContext?._web} />}</div>
+              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl}DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
@@ -1517,7 +1527,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                 <div>Created <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                 </div>
                 <div>Last modified <span className="ng-binding">{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor ng-binding">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
-                  <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} isOpen={this.state.isopenversionHistory} /> : ''}</span>
+                  <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                 </div>
               </div>
              }
@@ -1533,7 +1543,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           </div>
         </div>
 
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
 
       </div>
