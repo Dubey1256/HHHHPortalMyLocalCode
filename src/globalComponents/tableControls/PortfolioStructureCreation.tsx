@@ -920,7 +920,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                     </div>
                                                     {index == 0 &&
                                                         <div ng-show="$index==0" className="col-sm-12  ">
-                                                            <TeamConfigurationCard ItemInfo={this.state.SelectedItem} Sitel={this.state.PropValue} parentCallback={this.DDComponentCallBack} />
+                                                            <TeamConfigurationCard ItemInfo={this.state.SelectedItem} Sitel={this.state.PropValue} parentCallback={this.DDComponentCallBack}  />
                                                             <div className="clearfix">
                                                             </div>
                                                         </div>

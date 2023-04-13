@@ -2159,9 +2159,8 @@ function EditProjectPopup(item: any) {
                   <div className="row">
                     <div className="col-sm-7">
                       <div className="row">
-                        <TeamConfigurationCard
-                          ItemInfo={item.props}
-                          AllListId={listID}
+                        <TeamConfigurationCard AllListId={item?.AllListId}
+                          ItemInfo={item?.props}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
                       </div>
