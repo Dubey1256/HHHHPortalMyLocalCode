@@ -6,6 +6,7 @@ import Tooltip from '../../globalComponents/Tooltip';
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
     ItemInfo: any;
+    Sitel:any;
 }
 
 export interface ITeamConfigurationState {
@@ -46,7 +47,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.ItemInfo.siteUrl);
+        let web = new Web(this.props.Sitel.siteUrl);
         let results: any = [];
 
         let taskUsers: any = [];
