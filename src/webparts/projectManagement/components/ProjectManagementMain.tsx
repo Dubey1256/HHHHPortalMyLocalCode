@@ -1,10 +1,10 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
-import {Button,Table,Row,Col,Pagination,PaginationLink,PaginationItem,Input} from "reactstrap";
-import {FaAngleDoubleLeft,FaAngleDoubleRight,FaAngleLeft,FaAngleRight,FaCaretDown,FaCaretRight,FaSort,FaSortDown,FaSortUp,} from "react-icons/fa";
-import {useTable,useSortBy,useFilters,useExpanded,usePagination,HeaderGroup,} from "react-table";
-import {Filter,DefaultColumnFilter,} from "../../projectmanagementOverviewTool/components/filters";
+import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
+import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
@@ -95,8 +95,8 @@ const ProjectManagementMain = (props: any) => {
     var AllUsers: any = [];
     taskUsers = await web.lists
       .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
-      .items.select("ComponentCategory/Id","ComponentCategory/Title","SiteCompositionSettings","PortfolioStructureID","ItemRank","ShortDescriptionVerified","Portfolio_x0020_Type","BackgroundVerified","descriptionVerified","Synonyms","BasicImageInfo","Deliverable_x002d_Synonyms","OffshoreComments","OffshoreImageUrl","HelpInformationVerified","IdeaVerified","TechnicalExplanationsVerified","Deliverables","DeliverablesVerified","ValueAddedVerified","CompletedDate","Idea","ValueAdded","TechnicalExplanations","Item_x0020_Type","Sitestagging","Package","Parent/Id","Parent/Title","Short_x0020_Description_x0020_On","Short_x0020_Description_x0020__x","Short_x0020_description_x0020__x0","Admin_x0020_Notes","AdminStatus","Background","Help_x0020_Information","SharewebComponent/Id","SharewebCategories/Id","SharewebCategories/Title","Priority_x0020_Rank","Reference_x0020_Item_x0020_Json","Team_x0020_Members/Title","Team_x0020_Members/Name","Component/Id","Services/Id","Services/Title","Services/ItemType","Component/Title","Component/ItemType","Team_x0020_Members/Id","Item_x002d_Image","component_x0020_link","IsTodaysTask","AssignedTo/Title","AssignedTo/Name","AssignedTo/Id","AttachmentFiles/FileName","FileLeafRef","FeedBack","Title","Id","PercentComplete","Company","StartDate","DueDate","Comments","Categories","Status","WebpartId","Body","Mileage","PercentComplete","Attachments","Priority","Created","Modified","Author/Id","Author/Title","Editor/Id","Editor/Title","ClientCategory/Id","ClientCategory/Title")
-      .expand("ClientCategory","ComponentCategory","AssignedTo","Component","Services","AttachmentFiles","Author","Editor","Team_x0020_Members","SharewebComponent","SharewebCategories","Parent")
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title","DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
       .getById(QueryId)
       .get();
     if ((taskUsers.PercentComplete = undefined))
@@ -104,6 +104,7 @@ const ProjectManagementMain = (props: any) => {
     if (taskUsers.Body != undefined) {
       taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
     }
+   
     let allPortfolios: any[] = [];
     allPortfolios = await globalCommon.getPortfolio("All");
 
@@ -163,7 +164,7 @@ const ProjectManagementMain = (props: any) => {
     let TaxonomyItems = [];
     smartmeta = await web.lists
       .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-      .items.select("Id","IsVisible","ParentID","Title","SmartSuggestions","TaxType","Description1","Item_x005F_x0020_Cover","listId","siteName","siteUrl","SortOrder","SmartFilters","Selectable","Parent/Id","Parent/Title")
+      .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
       .top(5000)
       .filter("TaxType eq 'Sites'")
       .expand("Parent")
@@ -225,7 +226,7 @@ const ProjectManagementMain = (props: any) => {
             }
           });
         },
-        function (error) {}
+        function (error) { }
       );
   };
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -303,8 +304,8 @@ const ProjectManagementMain = (props: any) => {
           }
           items.componentString =
             items.Component != undefined &&
-            items.Component != undefined &&
-            items.Component.length > 0
+              items.Component != undefined &&
+              items.Component.length > 0
               ? getComponentasString(items.Component)
               : "";
           items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
@@ -432,15 +433,7 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "70px" },
         showSortIcon: false,
         Cell: ({ row }: any) => (
-          <span
-            style={{
-              color: `${
-                row?.original?.Component?.length > 0
-                  ? "#000066"
-                  : "serviepannelgreena"
-              }`,
-            }}
-          >
+          <span>
             {row?.original?.Shareweb_x0020_ID}
           </span>
         ),
@@ -451,15 +444,7 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <a
-              style={{
-                textDecoration: "none",
-                color: `${
-                  row?.original?.Component?.length > 0
-                    ? "#000066"
-                    : "serviepannelgreena"
-                }`,
-              }}
+            <a className='hreflink'
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
@@ -487,7 +472,8 @@ const ProjectManagementMain = (props: any) => {
         ),
       },
       {
-        internalHeader: "",
+        internalHeader: "Site",
+        accessor:'siteType',
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
@@ -505,18 +491,9 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Portfolio",
         accessor: "PortfolioTitle",
         showSortIcon: true,
-        style: { width: "100px" },
         Cell: ({ row }: any) => (
           <span>
-            <a
-              style={{
-                textDecoration: "none",
-                color: `${
-                  row?.original?.Component?.length > 0
-                    ? "#000066"
-                    : "serviepannelgreena"
-                }`,
-              }}
+            <a className='hreflink'
               data-interception="off"
               target="blank"
               href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
@@ -540,6 +517,7 @@ const ProjectManagementMain = (props: any) => {
               callBack={tagAndCreateCallBack}
               columnName="Priority"
               item={row?.original}
+              TaskUsers={AllUser}
             />
           </span>
         ),
@@ -551,24 +529,19 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "80px" },
         accessor: "DueDate",
         Cell: ({ row }: any) => (
-          <span
-            style={{
-              color: `${
-                row?.original?.Component?.length > 0
-                  ? "#000066"
-                  : "serviepannelgreena"
-              }`,
-            }}
-          >
-            {row?.original?.DisplayDueDate}
-          </span>
+           <InlineEditingcolumns
+              callBack={tagAndCreateCallBack}
+              columnName="DisplayDueDate"
+              item={row?.original}
+              TaskUsers={AllUser}
+            />
         ),
       },
 
       {
         internalHeader: "% Complete",
         accessor: "PercentComplete",
-        style: { width: "100px" },
+        style: { width: "70px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
@@ -576,6 +549,7 @@ const ProjectManagementMain = (props: any) => {
               callBack={tagAndCreateCallBack}
               columnName="PercentComplete"
               item={row?.original}
+              TaskUsers={AllUser}
             />
           </span>
         ),
@@ -586,15 +560,7 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         style: { width: "150px" },
         Cell: ({ row }: any) => (
-          <span
-            style={{
-              color: `${
-                row?.original?.Component?.length > 0
-                  ? "#000066"
-                  : "serviepannelgreena"
-              }`,
-            }}
-          >
+          <span>
             <InlineEditingcolumns
               callBack={tagAndCreateCallBack}
               columnName="Team"
@@ -609,23 +575,11 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Created",
         accessor: "DisplayCreateDate",
         showSortIcon: true,
-        style: { width: "110px" },
+        style: { width: "125px" },
         Cell: ({ row }: any) => (
-          <span
-            className="d-flex"
-            style={{
-              color: `${
-                row?.original?.Component?.length > 0
-                  ? "#000066"
-                  : "serviepannelgreena"
-              }`,
-            }}
-          >
+          <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            <img
-              style={{ height: "25px", width: "25px", borderRadius: "20px" }}
-              src={row?.original?.createdImg}
-            />
+            <img className="imgAuthor" src={row?.original?.createdImg}/>
           </span>
         ),
       },
@@ -1026,8 +980,8 @@ const ProjectManagementMain = (props: any) => {
                                       <a>
                                         {Masterdata.DueDate != null
                                           ? Moment(Masterdata.Created).format(
-                                              "DD/MM/YYYY"
-                                            )
+                                            "DD/MM/YYYY"
+                                          )
                                           : ""}
                                       </a>
                                     </span>
@@ -1108,234 +1062,46 @@ const ProjectManagementMain = (props: any) => {
                                 </dl>
                               </div>
 
-                              <div className="accordionbox mt-1 p-0">
-                                
-
-                              <Accordion defaultActiveKey="0" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="0" onClick={ChangeIcon}>
-                                           <span className={icon?"svg__icon--arrowUp":"svg__icon--arrowDown"}>Working Today Tasks</span>  
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="0">
-                                        <Card.Body className='text-center' style={{ maxHeight: '250px', overflow: 'auto' }} 
-                                           >
-                                           <span>No Working Today Tasks Available</span>
 
 
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
-
-
-
-                                
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2 "
-                                  id="accordionFlushExample"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="accordion-header"
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Description:
-                                            !expendcollapsAccordion.Description,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapseOne"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Description ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Description
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapseOne"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample"
-                                    >
-                                      <div>
-                                        {Masterdata.Body != null
-                                          ? Masterdata.Body
-                                          : "No Description Available "}
-                                      </div>
-                                    </div>
-                                  </div>
+                              {
+                                Masterdata?.Body != undefined ?<div className="mt-2 p-0 row">
+                                  <details className="pe-0">
+                                <summary>Description</summary>
+                           <div  className="AccordionContent">{Masterdata?.Body}</div>
+                           </details>
                                 </div>
+                                   : ''
+                              }
 
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2"
-                                  id="accordionFlushExample1"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="card-header p-0 border-bottom-0 "
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Background:
-                                            !expendcollapsAccordion.Background,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapseOneee"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Background ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Background
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapseOneee"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample1"
-                                    >
-                                      <div>
-                                        {Masterdata.Background != null
-                                          ? Masterdata.Background
-                                          : "No Background Available"}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+{
+                                Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
+                                       <details className="pe-0">
+                                <summary>Background</summary>
+                           <div className="AccordionContent">{Masterdata?.Background}</div>
+                           </details> 
+                                </div>  : ''
+                              }
 
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2"
-                                  id="accordionFlushExample2"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="accordion-header"
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Idea: !expendcollapsAccordion.Idea,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button collapsed btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapsethree"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Idea ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Idea
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapsethree"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample2"
-                                    >
-                                      <div>
-                                        {Masterdata.Idea != null
-                                          ? Masterdata.Idea
-                                          : "No Idea Available"}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+{
+                                Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
+                                  <details className="pe-0">
+                                <summary>Idea</summary>
+                           <div className="AccordionContent">{Masterdata?.Idea}</div>
+                           </details>
+                                </div>   : ''
+                              }
 
-                                <div
-                                  className="accordion accordion-flush mb-1 me-2"
-                                  id="accordionFlushExample3"
-                                >
-                                  <div className="accordion-item border">
-                                    <h2
-                                      className="accordion-header"
-                                      id="flush-headingOne"
-                                      onClick={() =>
-                                        setExpendcollapsAccordion({
-                                          ...expendcollapsAccordion,
-                                          Deliverables:
-                                            !expendcollapsAccordion.Deliverables,
-                                        })
-                                      }
-                                    >
-                                      <button
-                                        className="accordion-button collapsed text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#flush-collapsefour"
-                                        aria-expanded="false"
-                                        aria-controls="flush-collapseOne"
-                                      >
-                                        <span className="fw-medium font-sans-serif text-900">
-                                          <span className="sign">
-                                            {expendcollapsAccordion.Deliverables ? (
-                                              <IoMdArrowDropdown />
-                                            ) : (
-                                              <IoMdArrowDropright />
-                                            )}
-                                          </span>
-                                          Deliverables
-                                        </span>
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id="flush-collapsefour"
-                                      className="accordion-collapse collapse p-2"
-                                      aria-labelledby="flush-headingOne"
-                                      data-bs-parent="#accordionFlushExample3"
-                                    >
-                                      <div>
-                                        {Masterdata.Deliverables != null
-                                          ? Masterdata.Deliverables
-                                          : "No Deliverables Available"}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
+{
+                                Masterdata?.Deliverables != undefined ? <div className="mt-2 p-0 row">
+                                       <details className="pe-0">
+                                <summary>Deliverables</summary>
+                           <div className="AccordionContent">{Masterdata?.Deliverables}</div>
+                           </details>
+                                </div>   : ''
+                              }
+
                               </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -1388,7 +1154,7 @@ const ProjectManagementMain = (props: any) => {
                                 {page.map((row: any) => {
                                   prepareRow(row);
                                   return (
-                                    <tr {...row.getRowProps()}>
+                                    <tr className={row?.original?.Services?.length > 0?'serviepannelgreena':''}{...row.getRowProps()}>
                                       {row.cells.map(
                                         (cell: {
                                           getCellProps: () => JSX.IntrinsicAttributes &
@@ -1415,7 +1181,7 @@ const ProjectManagementMain = (props: any) => {
                               </tbody>
                             </Table>
                           </div>
-                        
+
                         </div>
                       </div>
                     </div>

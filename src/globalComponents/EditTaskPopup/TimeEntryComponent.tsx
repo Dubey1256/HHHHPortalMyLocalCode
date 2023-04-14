@@ -2297,7 +2297,7 @@ function TimeEntryPopup(item: any) {
 
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-primary" onClick={saveTimeSpent}>
+                    <button type="button" className="btn btn-primary"  disabled={TimeInMinutes==0?true:false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
@@ -3016,7 +3016,7 @@ function TimeEntryPopup(item: any) {
             </div> */}
                                 <div className="col-sm-12 text-end mt-2">
 
-                                    <button type="button" className="btn btn-primary ms-2"
+                                    <button  disabled={TimeInMinutes==0?true:false} type="button" className="btn btn-primary ms-2"
                                         onClick={AddTaskTime}>
                                         Save
                                     </button>

@@ -21,10 +21,14 @@ var SelectedTasks: any = []
 var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
+var dynamicList:any={}
 var TeamMemberIds: any = [];
 
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
+    if(props.SelectedProp != undefined){
+        dynamicList = props.SelectedProp.SelectedProp;
+    }
     SelectedTasks = []
     if (props != undefined) {
         var AllItems = props.props
@@ -205,7 +209,7 @@ const CreateWS = (props: any) => {
             TaskprofileId = AllItems[0].Id;
         }
         console.log(Type)
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
             .getById(AllItems.listId)
@@ -337,7 +341,7 @@ const CreateWS = (props: any) => {
             }
         }
 
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(dynamicList.siteUrl);
         await web.lists.getById(AllItems.listId).items.add({
             Title: AllItems.Title,
             ComponentId: { "results": Component },
@@ -420,7 +424,7 @@ const CreateWS = (props: any) => {
     const createChildAsTask = async (item: any, Type: any, index: any) => {
         var NewDate = ''
         var RelevantPortfolioIds: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
         componentDetails = await web.lists
             .getById(AllItems.listId)
@@ -542,7 +546,7 @@ const CreateWS = (props: any) => {
                     })
                 }
             }
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+            let web = new Web(dynamicList.siteUrl);
             await web.lists.getById(AllItems.listId).items.add({
                 Title: AllItems.Title,
                 ComponentId: { "results": Component },
@@ -594,9 +598,9 @@ const CreateWS = (props: any) => {
             setcheckedTask(false)
         }
 
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(dynamicList.siteUrl);
         TaskTypeItems = await web.lists
-            .getById('21b55c7b-5748-483a-905a-62ef663972dc')
+            .getById(dynamicList.TaskTypeID)
             .items
             .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
             .top(4999)
@@ -890,7 +894,7 @@ const CreateWS = (props: any) => {
                                                             <a className="hreflink" target="_blank"
                                                                 ng-href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
-                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" />
+                                                            <span className='svg__iconbox svg__icon--cross'></span>
                                                             </a>
                                                         </div>
                                                     </>
@@ -1169,7 +1173,7 @@ const CreateWS = (props: any) => {
                                   
 
 
-                      {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"></img></a> : ''}
+                      {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
 
 
                        

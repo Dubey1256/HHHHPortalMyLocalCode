@@ -1,6 +1,6 @@
 import { Panel, PanelType } from 'office-ui-fabric-react'
 import { Web } from "sp-pnp-js";
-import React from 'react'
+import React, { useState } from 'react'
 import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
@@ -17,6 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
+    console.log(props);
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -28,7 +29,8 @@ const inlineEditingcolumns = (props: any) => {
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
-    const [priorityRank, setpriorityRank] = React.useState([])
+    const [priorityRank, setpriorityRank] = React.useState([]);
+    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false})
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
@@ -67,6 +69,9 @@ const inlineEditingcolumns = (props: any) => {
         props?.item?.SharewebCategories?.map((category: any) => {
             selectedCategoryId.push(category.Id);
         })
+        setTaskAssignedTo(props?.item?.AssignedTo)
+        setTaskTeamMembers(props?.item?.Team_x0020_Members)
+        setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
         GetSmartMetadata();
@@ -84,38 +89,59 @@ const inlineEditingcolumns = (props: any) => {
         return result
     }
     const GetSmartMetadata = async () => {
-        var TaskTypes: any = []
-        var Priority: any = []
-        var Timing: any = []
-        var Task: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let MetaData = [];
-        MetaData = await web.lists
-            .getByTitle('SmartMetadata')
-            .items
-            .select("Id,Title,listId,siteUrl,siteName,spfxIconName,Item_x005F_x0020_Cover,ProfileType,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-            .top(4999)
-            .expand('Author,Editor')
-            .get();
-        AllMetadata = MetaData;
         let impSharewebCategories: any = [];
-        let SharewebtaskCategories: any = []
-        AllMetadata?.map((metadata: any) => {
-            if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
-                impSharewebCategories.push(metadata);
-            }
-            if (metadata.Title == 'Immediate') {
-                impSharewebCategories.push(metadata);
-            }
-            if (metadata.TaxType == 'Categories') {
-                SharewebtaskCategories.push(metadata);
-            }
+        let SharewebtaskCategories: any = [];
+        var Priority: any = []
 
-        })
-        setTaskCategoryType(SharewebtaskCategories);
-        setImpTaskCategoryType(impSharewebCategories);
-        Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
-        setpriorityRank(Priority)
+        try {
+            impSharewebCategories = JSON.parse(localStorage.getItem("impTaskCategoryType"));
+            SharewebtaskCategories = JSON.parse(localStorage.getItem("taskCategoryType"));
+            Priority = JSON.parse(localStorage.getItem("Priority"));
+            let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
+            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null) && !DataLoaded) {
+                impSharewebCategories = [];
+                SharewebtaskCategories = [];
+                Priority = [];
+                var TaskTypes: any = []
+                var Timing: any = []
+                var Task: any = []
+                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                let MetaData = [];
+                localStorage.setItem("inlineMetaDataLoaded", JSON.stringify(true));
+                MetaData = await web.lists
+                    .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
+                    .items.select("Id", "IsVisible", "ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .top(5000)
+                    .expand("Parent")
+                    .get();
+                AllMetadata = MetaData;
+                AllMetadata?.map((metadata: any) => {
+                    if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
+                        impSharewebCategories.push(metadata);
+                    }
+                    if (metadata.Title == 'Immediate') {
+                        impSharewebCategories.push(metadata);
+                    }
+                    if (metadata.TaxType == 'Categories') {
+                        SharewebtaskCategories.push(metadata);
+                    }
+
+                })
+                localStorage.setItem("taskCategoryType", JSON.stringify(SharewebtaskCategories));
+                localStorage.setItem("Priority", JSON.stringify(getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank')));
+                localStorage.setItem("impTaskCategoryType", JSON.stringify(impSharewebCategories));
+                Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
+                setTaskCategoryType(SharewebtaskCategories);
+                setImpTaskCategoryType(impSharewebCategories);
+                setpriorityRank(Priority)
+            }
+            setTaskCategoryType(SharewebtaskCategories);
+            setImpTaskCategoryType(impSharewebCategories);
+            setpriorityRank(Priority)
+        }
+        catch (e) {
+            console.log(e)
+        }
 
 
     }
@@ -132,7 +158,7 @@ const inlineEditingcolumns = (props: any) => {
         return Items;
     }
     const loadTaskUsers = async () => {
-        taskUsers = await globalCommon.loadTaskUsers()
+        taskUsers = props?.TaskUsers;
         setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {
@@ -290,8 +316,73 @@ const inlineEditingcolumns = (props: any) => {
             SharewebCategoriesId: { "results": selectedCatId },
         })
             .then((res: any) => {
-                console.log(res);
-                props?.callBack();
+                web.lists.getById(props?.item?.listId).items.select(
+                    "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+                )
+                .expand(
+                    "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
+                ).getById(props?.item?.Id).get().then((task) => {
+                    task.AllTeamMember = [];
+                    task.siteType = props?.item?.siteType;
+                    task.listId =props?.item?.listId;
+                    task.siteUrl =props?.item?.siteUrl;
+                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                    task.DisplayDueDate =
+                        task.DueDate != null
+                            ? Moment(task.DueDate).format("DD/MM/YYYY")
+                            : "";
+                    task.portfolio = {};
+                    if (task?.Component?.length > 0) {
+                        task.portfolio = task?.Component[0];
+                        task.PortfolioTitle = task?.Component[0]?.Title;
+                        task["Portfoliotype"] = "Component";
+                    }
+                    if (task?.Services?.length > 0) {
+                        task.portfolio = task?.Services[0];
+                        task.PortfolioTitle = task?.Services[0]?.Title;
+                        task["Portfoliotype"] = "Service";
+                    }
+
+                    task.TeamMembersSearch = "";
+                    task.ApproverIds = [];
+                    task?.Approver?.map((approverUser: any) => {
+                        task.ApproverIds.push(approverUser?.Id);
+                    })
+                    task.AssignedToIds = [];
+                    task?.AssignedToId?.map((assignedUser: any) => {
+                        task.AssignedToIds.push(assignedUser)
+                        AllTaskUser?.map((user: any) => {
+                            if (user.AssingedToUserId == assignedUser.Id) {
+                                if (user?.Title != undefined) {
+                                    task.TeamMembersSearch =
+                                        task.TeamMembersSearch + " " + user?.Title;
+                                }
+                            }
+                        });
+                    });
+                    task.TeamMembersId = [];
+                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                    task?.Team_x0020_MembersId?.map((taskUser: any) => {
+                        task.TeamMembersId.push(taskUser);
+                        var newuserdata: any = {};
+                        AllTaskUser?.map((user: any) => {
+                            if (user?.AssingedToUserId == taskUser?.Id) {
+                                if (user?.Title != undefined) {
+                                    task.TeamMembersSearch =
+                                        task.TeamMembersSearch + " " + user?.Title;
+                                }
+                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                newuserdata["Suffix"] = user?.Suffix;
+                                newuserdata["Title"] = user?.Title;
+                                newuserdata["UserId"] = user?.AssingedToUserId;
+                                task["Usertitlename"] = user?.Title;
+                            }
+                            task.AllTeamMember.push(newuserdata);
+                        });
+                    });
+                    props.item=task;
+                    props?.callBack(task, props?.rowIndex);
+                });
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
@@ -506,6 +597,31 @@ const inlineEditingcolumns = (props: any) => {
 
 
     }
+    const closeTaskDueDate=()=> {
+        setDueDate({...dueDate, editPopup:false})
+    }
+
+    const updateTaskDueDate=async ()=> {
+        console.log("hjbdhjcbhjdbhjcbjhbdj" ,dueDate,   props);
+
+        let web = new Web(props?.item?.siteUrl);
+        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+           DueDate : dueDate.editDate
+        })
+            .then((res: any) => {
+                console.log(res);
+                props?.callBack();
+                setTaskStatusPopup(false);
+                setTaskPriorityPopup(false);
+                setTeamMembersPopup(false);
+                setDueDate({...dueDate, editPopup:false})
+            }).catch((err:any)=>{
+console.log(err)
+            })
+    }
+
+    
+
     return (
         <>
             {
@@ -617,6 +733,38 @@ const inlineEditingcolumns = (props: any) => {
                     </>
                     : ''
             }
+
+
+{/* Panel to edit due-date */}
+
+             {props.item.DisplayDueDate!=undefined&& <Panel
+                headerText={`Update Due Date`}
+                isOpen={dueDate.editPopup}
+                onDismiss={closeTaskDueDate}
+              
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                
+                    <div className="modal-body mt-3 mb-3 d-flex flex-column">
+                    <label className="form-check-label mt-5 mb-2">Edit Due Date</label>
+                    <input className="form-check-input p-3 w-100"
+                       type='date' 
+                      value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : Moment(new Date(props.item.DueDate)).format('YYYY-MM-DD') }
+                          onChange={(e:any) => setDueDate({...dueDate, editDate:e.target.value})} />
+                              
+
+                    </div>
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={updateTaskDueDate}>
+                            OK
+                        </button>
+                    </footer>
+                </div>
+            </Panel>}
+
+            {props?.columnName == 'DisplayDueDate' ?  <span onClick={() => setDueDate({...dueDate, editPopup:true}) }>{props?.item?.DisplayDueDate}</span>    : " "
+            }
+
             {/* Pannel To select Status */}
             <Panel
                 headerText={`Update Status`}

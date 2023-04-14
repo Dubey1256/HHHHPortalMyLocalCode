@@ -6368,6 +6368,7 @@ export default function ComponentTable({ props }: any) {
           CreatOpen={CreateOpenCall}
           Close={CloseCall}
           PortfolioType={IsUpdated}
+          PropsValue={props} 
           SelectedItem={
             checkedList != null && checkedList.length > 0
               ? checkedList[0]
