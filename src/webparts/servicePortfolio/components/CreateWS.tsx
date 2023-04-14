@@ -1039,7 +1039,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                        <TeamConfigurationCard ItemInfo={AllItems} AllListId={props.SelectedProp} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                        <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
