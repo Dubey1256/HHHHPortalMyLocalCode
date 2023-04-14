@@ -26,8 +26,10 @@ var TeamMemberIds: any = [];
 
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
-    if (props.SelectedProp != undefined) {
+    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
+    }else{
+        dynamicList = props.SelectedProp;
     }
     SelectedTasks = []
     if (props != undefined) {
@@ -1037,7 +1039,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                        <TeamConfigurationCard ItemInfo={AllItems} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                        <TeamConfigurationCard ItemInfo={AllItems} AllListId={props.SelectedProp} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>

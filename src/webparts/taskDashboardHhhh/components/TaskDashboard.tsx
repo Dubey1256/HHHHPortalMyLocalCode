@@ -11,9 +11,11 @@ import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } f
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+import PageLoader from '../../../globalComponents/pageLoader';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: '';
@@ -21,8 +23,19 @@ var DataSiteIcon: any = [];
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
+var backupTaskArray: any = {
+    AllAssignedTasks: [],
+    workingTodayTasks: [],
+    thisWeekTasks: [],
+    bottleneckTasks: [],
+    assignedApproverTasks: [],
+    allTasks: []
+};
+var AllListId:any={}
+var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
+    const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
@@ -44,6 +57,17 @@ const TaskDashboard = (props: any) => {
     });
     React.useEffect(() => {
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        AllListId = {
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            siteUrl:props?.props?.siteUrl
+          }
+        setPageLoader(true);
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -57,7 +81,7 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
-        currentUserTimeEntry()
+        loadAllTimeEntry()
     }, [currentUserId, timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
@@ -121,37 +145,56 @@ const TaskDashboard = (props: any) => {
     //End
 
     //Load This Week Time Entry 
-    const currentUserTimeEntry = async () => {
-        let WeekStartDate = getThisWeekStartingDate();
-        let count = 0;
-        let AllTimeEntries: any = [];
+    const loadMigrationTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName=='TasksTimesheet2') {
                     await web.lists
-                        .getById(list?.listId)
-                        .items.select(
-                            "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle"
-                        )
-                        .top(200).orderBy('Created')
-                        .filter(`Author/Id eq '${currentUserId}'`)
-                        .get().then((data: any) => {
-                            data?.map((item: any) => {
-                                if (item?.TaskDate >= WeekStartDate)
-                                    AllTimeEntries.push(item)
-                            })
-                            count++;
-                        });
-                    if (count == timesheetLists?.lenght) {
-                        weekTimeEntry = AllTimeEntries
-                        console.log(weekTimeEntry)
-                    }
+                    .getById(list?.listId)
+                    .items.select( "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand=Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
+                    .getAll().then((data: any) => {
+                        data?.map((item: any) => {
+                            AllTaskTimeEntries.push(item)
+                        })
+                    });
+                   }
                 })
             }
         }
+    }
+    const loadAllTimeEntry = async () => {
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            if (timesheetLists?.length > 0) {
+                timesheetLists?.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName!='TasksTimesheet2') {
+                    await web.lists
+                    .getById(list?.listId)
+                    .items.select( 'Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title&$expand=Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects')
+                    .getAll().then((data: any) => {
+                        data?.map((item: any) => {
+                            AllTaskTimeEntries.push(item)
+                        })
+                    });
+                   }
+                })
+                loadMigrationTimeEntry();
+            }
+        }
+    }
+    const timeEntryTaskExist = (task: any) => {
+
+    }
+    const currentUserWeekTimeEntry = () => {
+        AllTaskTimeEntries?.map((taskEntry: any) => {
+
+        })
     }
     //End 
 
@@ -233,11 +276,18 @@ const TaskDashboard = (props: any) => {
                                             }
                                         });
                                     });
+                                    task.DisplayCreateDate =
+                                        task.Created != null
+                                            ? Moment(task.Created).format("DD/MM/YYYY")
+                                            : "";
                                     task.TeamMembersId = [];
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
+                                            if (user.AssingedToUserId == task.Author.Id) {
+                                                task.createdImg = user.Item_x0020_Cover.Url;
+                                            }
                                             if (user.AssingedToUserId == taskUser.Id) {
                                                 if (user?.Title != undefined) {
                                                     task.TeamMembersSearch =
@@ -260,6 +310,8 @@ const TaskDashboard = (props: any) => {
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
                             filterCurrentUserTask();
+                            backupTaskArray.allTasks = AllSiteTasks;
+                            setPageLoader(false);
                         }
                     } else {
                         arraycount++;
@@ -272,13 +324,13 @@ const TaskDashboard = (props: any) => {
     };
     const getChilds1 = function (item: any, array: any) {
         item.childs = [];
-        
+
         array?.map((childItem: any) => {
             childItem.selected = false;
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if((item?.Title=='HHHH Team'||item?.Title=='Smalsus Lead Team')&&currentUser?.AssingedToUserId==childItem?.AssingedToUserId){
-                    currentUser.isAdmin=true;
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                    currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }
             }
@@ -286,9 +338,19 @@ const TaskDashboard = (props: any) => {
     }
 
     //Edit CallBack
-    const inlineCallBack = React.useCallback(() => {
+    const editTaskCallBack = React.useCallback(() => {
         setisOpenEditPopup(false);
-        LoadAllSiteTasks();
+    }, []);
+    const inlineCallBack = React.useCallback((item: any, index: any) => {
+        AllTasks?.map((task: any, index: any) => {
+            if (task.Id == item.Id) {
+                AllTasks[index] = { ...task, ...item };
+            }
+        })
+        backupTaskArray.allTasks = AllTasks;
+        // setUpdateContent(CONTENT);
+        filterCurrentUserTask();
+        setisOpenEditPopup(false);
     }, []);
     //end
     const EditPopup = React.useCallback((item: any) => {
@@ -304,12 +366,12 @@ const TaskDashboard = (props: any) => {
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
         let approverTask: any = [];
-        
+
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
                 const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUserId);
-                const isCurrentUserApprover = task?.TeamMembersId?.includes(currentUserId);
+                const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
                 const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                 let alreadyPushed = false;
                 if (isCurrentUserApprover && task?.PercentComplete == '1') {
@@ -330,6 +392,11 @@ const TaskDashboard = (props: any) => {
                 }
             })
         }
+        backupTaskArray.AllAssignedTasks = AllAssignedTask;
+        backupTaskArray.workingTodayTasks = workingTodayTask;
+        backupTaskArray.thisWeekTasks = workingThisWeekTask;
+        backupTaskArray.bottleneckTasks = bottleneckTask;
+        backupTaskArray.assignedApproverTasks = approverTask;
         setAllAssignedTasks(AllAssignedTask);
         setWorkingTodayTasks(workingTodayTask)
         setThisWeekTasks(workingThisWeekTask)
@@ -407,7 +474,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns type='Task' callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                     </span>
                 ),
             },
@@ -417,18 +484,24 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "DueDate",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => <span >{row?.original?.DisplayDueDate}</span>,
+                Cell: ({ row }: any) => <InlineEditingcolumns
+                AllListId={AllListId}
+                    callBack={inlineCallBack}
+                    columnName="DisplayDueDate"
+                    item={row?.original}
+                    TaskUsers={taskUsers}
+                />,
             },
 
             {
-                internalHeader: "Percent Complete",
+                internalHeader: "% Complete",
                 accessor: "PercentComplete",
-                style: { width: '100px' },
+                style: { width: '70px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
                     <span>
-                        <InlineEditingcolumns callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                     </span>
                 ),
             },
@@ -439,7 +512,19 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Created",
+                accessor: "DisplayCreateDate",
+                showSortIcon: true,
+                style: { width: "125px" },
+                Cell: ({ row }: any) => (
+                    <span>
+                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <img className="imgAuthor" src={row?.original?.createdImg} />
                     </span>
                 ),
             },
@@ -557,13 +642,19 @@ const TaskDashboard = (props: any) => {
         prepareRow: prepareRowAll,
         gotoPage: gotoPageAll,
         setPageSize: setPageSizeAll,
+        canPreviousPage: canPreviousPageAll,
+        canNextPage: canNextPageAll,
+        pageOptions: pageOptionsAll,
+        pageCount: pageCountAll,
+        nextPage: nextPageAll,
+        previousPage: previousPageAll,
         state: { pageIndex: pageIndexAll, pageSize: pageSizeAll },
     }: any = useTable(
         {
             columns: columns,
             data: AllAssignedTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 100000 },
+            initialState: { pageIndex: 0, pageSize: 10 },
         },
         useFilters,
         useSortBy,
@@ -668,7 +759,7 @@ const TaskDashboard = (props: any) => {
 
         taskUsers = await globalCommon.loadTaskUsers();
         taskUsers?.map((item: any) => {
-            item.isAdmin=false;
+            item.isAdmin = false;
             if (currentUserId == item?.AssingedToUser?.Id) {
                 currentUser = item;
                 setCurrentUserData(item);
@@ -684,7 +775,7 @@ const TaskDashboard = (props: any) => {
         let Groups: any = [];
         taskUsers?.map((item: any) => {
             item.expanded = false;
-            item.isAdmin=false;
+            item.isAdmin = false;
             getChilds1(item, taskUsers);
             Groups.push(item);
         })
@@ -719,7 +810,7 @@ const TaskDashboard = (props: any) => {
 
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        if (currentUserId == currentUserData?.AssingedToUserId||currentUserData?.isAdmin==true) {
+        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) {
             let todayTasks = workingTodayTasks;
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
@@ -779,143 +870,140 @@ const TaskDashboard = (props: any) => {
         setGroupedUsers(userGroups);
         setUpdateContent(CONTENT);
     }
+    const onChangeInSelectAll = (event: any) => {
+        setPageSizeAll(Number(event.target.value));
+    };
     //End
     return (
-        <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
-            <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
-                <aside className="sidebar">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            toggleSideBar();
-                        }}
-                        className="collapse-toggle"
-                    ></button>
-                    <section className="sidebar__section sidebar__section--menu">
-                        <nav className="nav__item">
-                            <ul className="nav__list">
-                                <li id="DefaultViewSelectId" className="nav__item ">
-                                    <a className="nav__link border-bottom pb-1" >
-                                        <span className="nav__icon nav__icon--home"></span>
-                                        <span className="nav__text">
-                                            Welcome, {currentUserData?.AssingedToUser?.Title}
+        <>
+            <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
+                <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
+                    <aside className="sidebar">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                toggleSideBar();
+                            }}
+                            className="collapse-toggle"
+                        ></button>
+                        <section className="sidebar__section sidebar__section--menu">
+                            <nav className="nav__item">
+                                <ul className="nav__list">
+                                    <li id="DefaultViewSelectId" className="nav__item ">
+                                        <a className="nav__link border-bottom pb-1" >
+                                            <span className="nav__icon nav__icon--home"></span>
+                                            <span className="nav__text">
+                                                Welcome, {currentUserData?.AssingedToUser?.Title}
 
-                                        </span>
-                                    </a>
-                                </li>
-                                <li className="nav__item  pb-1 pt-0">
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li className="nav__item  pb-1 pt-0">
 
-                                </li>
-                            </ul>
-                        </nav>
-                    </section>
-                    <section className="sidebar__section sidebar__section--menu">
-                        <nav className="nav__item">
-                            <ul className="nav__list">
-                                <li id="DefaultViewSelectId" className="nav__item  pt-0  ">
-                                    <a className="nav__link border-bottom pb-1" >
-                                        <span className="nav__icon nav__icon--home"></span>
-                                        <div className="nav__text text-center">
-                                            <h6>
-                                                {today.day}
-                                            </h6>
-                                            <h4>
-                                                {today.date}
-                                            </h4>
-                                            <h5>
-                                                {today.month}
-                                            </h5>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li id="DefaultViewSelectId" className="nav__item  pb-1 pt-0">
+                                    </li>
+                                </ul>
+                            </nav>
+                        </section>
+                        <section className="sidebar__section sidebar__section--menu">
+                            <nav className="nav__item">
+                                <ul className="nav__list">
+                                    <li id="DefaultViewSelectId" className="nav__item  pt-0  ">
+                                        <a className="nav__link border-bottom pb-1" >
+                                            <span className="nav__icon nav__icon--home"></span>
+                                            <div className="nav__text text-center">
+                                                <h6>
+                                                    {today.day}
+                                                </h6>
+                                                <h4>
+                                                    {today.date}
+                                                </h4>
+                                                <h5>
+                                                    {today.month}
+                                                </h5>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li id="DefaultViewSelectId" className="nav__item  pb-1 pt-0">
 
-                                </li>
-                            </ul>
-                        </nav>
-                    </section>
-                    <section className="sidebar__section sidebar__section--menu">
-                        <nav className="nav__item">
-                            <ul className="nav__list">
-                                {groupedUsers?.map((filterItem: any, index: any) => {
-                                    if (filterItem?.childs?.length > 0) {
-                                        return (
-                                            <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink  pt-0 " : "nav__text hreflink  pt-0 "}>
-                                                {filterItem?.Title}
-                                                {filterItem?.expanded ? <FaSortUp className='text-white' /> : <FaSortDown className='text-white' />}
-                                                {
-                                                    filterItem?.expanded == true ?
-                                                        <ul className="nav__list">
-                                                            {filterItem?.childs?.map((childUsers: any) => {
-                                                                return (
-                                                                    <li id="DefaultViewSelectId" className="nav__text  ms-3  ">
-                                                                        <a className={childUsers?.selected ? 'bg-ee hreflink ' : 'text-white hreflink'}
-                                                                            target="_blank" data-interception="off" title={childUsers.Title} onClick={() => changeSelectedUser(childUsers)}>
-                                                                            {childUsers.Title}
-                                                                        </a>
-                                                                    </li>
-                                                                )
-                                                            })}
-                                                        </ul>
-                                                        : ''
-                                                }
-                                            </li>
-                                        )
-                                    }
-                                })}
-                            </ul>
-                        </nav>
-                    </section>
-                </aside>
-                <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
-                    <article className="row">
-                        {selectedUser?.Title != undefined ?
-                            <div className="col-md-12 clearfix">
-                                <h5 className="d-inline-block">
-                                    {`${selectedUser?.Title}'s Dashboard`}
-                                </h5>
-                                <span className='pull-right hreflink' onClick={() => unSelectUser()}>Go Back To Your Dashboard</span>
-                            </div>
-                            : ''}
-                        <div className="col-md-12">
-
-                            <Accordion defaultActiveKey="0" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="0">
-                                            Working Today Tasks {'(' + pageToday?.length + ')'}
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="0">
-                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
-                                            onDragOver={(e: any) => e.preventDefault()}>
-                                            {pageToday?.length > 0 ?
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
-                                                    <thead>
-                                                        {headerGroupsToday?.map((headerGroup: any) => (
-                                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                {headerGroup.headers.map((column: any) => (
-                                                                    <th {...column.getHeaderProps()} style={column?.style}>
-                                                                        <span
-                                                                            class="Table-SortingIcon"
-                                                                            style={{ marginTop: "-6px" }}
-                                                                            {...column.getSortByToggleProps()}
-                                                                        >
-                                                                            {column.render("Header")}
-                                                                            {generateSortingIndicator(column)}
-                                                                        </span>
-                                                                        <Filter column={column} />
-                                                                    </th>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </thead>
-
-                                                    <tbody {...getTableBodyPropsToday}>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </section>
+                        <section className="sidebar__section sidebar__section--menu">
+                       <nav className="nav__item">
+                                <ul className="nav__list">
+                                    {groupedUsers?.map((filterItem: any, index: any) => {
+                                        if (filterItem?.childs?.length > 0) {
+                                            return (
+                                                <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink bg-shade  mb-1 " : "nav__text bg-shade hreflink mb-1 "}>
+                                                    {filterItem?.Title}
+                                                    {filterItem?.expanded ? <span className='svg__iconbox svg__icon--arrowDown  float-start me-1 '></span>: <span className='svg__iconbox svg__icon--arrowRight  float-start me-1'></span>}
+                                                    {
+                                                        filterItem?.expanded == true ?
+                                                            <ul className="nav__list ms-2">
+                                                                {filterItem?.childs?.map((childUsers: any) => {
+                                                                    return (
+                                                                        <li id="DefaultViewSelectId" className="nav__text  ms-3">
+                                                                            <a className={childUsers?.selected ? 'bg-ee hreflink ' : 'text-white hreflink'}
+                                                                                target="_blank" data-interception="off" title={childUsers.Title} onClick={() => changeSelectedUser(childUsers)}>
+                                                                                {childUsers.Title}
+                                                                            </a>
+                                                                        </li>
+                                                                    )
+                                                                })}
+                                                            </ul>
+                                                            : ''
+                                                    }
+                                                </li>
+                                            )
+                                        }
+                                    })}
+                                </ul>
+                            </nav>
+                        </section>
+                    </aside>
+                    <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
+                        <article className="row">
+                            {selectedUser?.Title != undefined ?
+                                <div className="col-md-12 clearfix">
+                                    <h5 className="d-inline-block">
+                                        {`${selectedUser?.Title}'s Dashboard`}
+                                    </h5>
+                                    <span className='pull-right hreflink' onClick={() => unSelectUser()}>Go Back To Your Dashboard</span>
+                                </div>
+                                : ''}
+                            <div className="col-md-12">
+                                <details open>
+                                    <summary> Working Today Tasks {'(' + pageToday?.length + ')'}</summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
+                                        onDragOver={(e: any) => e.preventDefault()}>
+                                        {workingTodayTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
+                                                <thead>
+                                                    {headerGroupsToday?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageToday?.length > 0 ?
+                                                    <tbody className={updateContent ? 'p-0' : ''} {...getTableBodyPropsToday}>
                                                         {pageToday?.map((row: any) => {
                                                             prepareRowToday(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                <tr onClick={() => { selectedInlineTask = { table: "workingToday", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'workingToday')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -941,54 +1029,51 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody>
-                                                </Table>
-                                                : <div className='text-center full-width'>
-                                                    <span>No Working Today Tasks Available</span>
-                                                </div>}
-
-
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="1" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="1">
-                                            Working This Week Tasks {'(' + pageWeek?.length + ')'}
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="1">
-                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
-                                            onDragOver={(e: any) => e.preventDefault()}>
-                                            {pageWeek?.length > 0 ?
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
-                                                    <thead>
-                                                        {headerGroupsWeek?.map((headerGroup: any) => (
-                                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                {headerGroup.headers.map((column: any) => (
-                                                                    <th {...column.getHeaderProps()} style={column?.style}>
-                                                                        <span
-                                                                            class="Table-SortingIcon"
-                                                                            style={{ marginTop: "-6px" }}
-                                                                            {...column.getSortByToggleProps()}
-                                                                        >
-                                                                            {column.render("Header")}
-                                                                            {generateSortingIndicator(column)}
-                                                                        </span>
-                                                                        <Filter column={column} />
-                                                                    </th>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </thead>
-
+                                                    </tbody> :
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+                                            </Table>
+                                            : <div className='text-center full-width'>
+                                                <span>No Working Today Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
+                                        onDragOver={(e: any) => e.preventDefault()}>
+                                        {thisWeekTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
+                                                <thead>
+                                                    {headerGroupsWeek?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageWeek?.length > 0 ?
                                                     <tbody {...getTableBodyPropsWeek()}>
                                                         {pageWeek?.map((row: any) => {
                                                             prepareRowWeek(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                <tr onClick={() => { selectedInlineTask = { table: "workingThisWeek", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'thisWeek')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -1014,50 +1099,49 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody>
-                                                </Table> : <div className='text-center full-width'>
-                                                    <span>No Working This Week Tasks Available</span>
-                                                </div>}
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="3" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="3">
-                                            Bottleneck Tasks {'(' + pageBottleneck?.length + ')'}
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="3">
-                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} >
-                                            {pageBottleneck?.lenght > 0 ?
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
-                                                    <thead>
-                                                        {headerGroupsBottleneck?.map((headerGroup: any) => (
-                                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                {headerGroup.headers.map((column: any) => (
-                                                                    <th {...column.getHeaderProps()} style={column?.style}>
-                                                                        <span
-                                                                            class="Table-SortingIcon"
-                                                                            style={{ marginTop: "-6px" }}
-                                                                            {...column.getSortByToggleProps()}
-                                                                        >
-                                                                            {column.render("Header")}
-                                                                            {generateSortingIndicator(column)}
-                                                                        </span>
-                                                                        <Filter column={column} />
-                                                                    </th>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </thead>
-
+                                                    </tbody> :
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+                                            </Table> : <div className='text-center full-width'>
+                                                <span>No Working This Week Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                        {bottleneckTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
+                                                <thead>
+                                                    {headerGroupsBottleneck?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageBottleneck?.length > 0 ?
                                                     <tbody {...getTableBodyPropsBottleneck}>
                                                         {pageBottleneck?.map((row: any) => {
                                                             prepareRowBottleneck(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                <tr onClick={() => { selectedInlineTask = { table: "bottleneck", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1081,52 +1165,50 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody>
-                                                </Table>
-                                                : <div className='text-center full-width'>
-                                                    <span>No Bottleneck Tasks Available</span>
-                                                </div>}
-
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="4" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="4">
-                                            Approver Tasks {'(' + pageApprover?.length + ')'}
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="4">
-                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} >
-                                            {pageApprover?.length > 0 ?
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
-                                                    <thead>
-                                                        {headerGroupsApprover?.map((headerGroup: any) => (
-                                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                                {headerGroup.headers.map((column: any) => (
-                                                                    <th {...column.getHeaderProps()} style={column?.style}>
-                                                                        <span
-                                                                            class="Table-SortingIcon"
-                                                                            style={{ marginTop: "-6px" }}
-                                                                            {...column.getSortByToggleProps()}
-                                                                        >
-                                                                            {column.render("Header")}
-                                                                            {generateSortingIndicator(column)}
-                                                                        </span>
-                                                                        <Filter column={column} />
-                                                                    </th>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </thead>
-
+                                                    </tbody> :
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+                                            </Table>
+                                            : <div className='text-center full-width'>
+                                                <span>No Bottleneck Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                        {assignedApproverTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                                <thead>
+                                                    {headerGroupsApprover?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageApprover?.length > 0 ?
                                                     <tbody {...getTableBodyPropsApprover}>
                                                         {pageApprover?.map((row: any) => {
                                                             prepareRowApprover(row);
                                                             return (
-                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
@@ -1150,27 +1232,27 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody>
-                                                </Table> : <div className='text-center full-width'>
-                                                    <span>No Approver Tasks Available</span>
-                                                </div>}
-
-
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
-                            <Accordion defaultActiveKey="2" className="mt-2 ">
-                                <Card>
-                                    <Card.Header className="p-0">
-                                        <Accordion.Toggle className="accordianBtn full-width text-start" eventKey="2">
-                                            Assigned Tasks {'(' + pageAll?.length + ')'}
-                                        </Accordion.Toggle>
-                                    </Card.Header>
-                                    <Accordion.Collapse eventKey="2">
-                                        <Card.Body style={{ maxHeight: '250px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
-                                            onDragOver={(e: any) => e.preventDefault()}>
-                                            {pageAll?.length > 0 ?
+                                                    </tbody> :
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+                                            </Table> : <div className='text-center full-width'>
+                                                <span>No Approver Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                <details>
+                                    <summary>
+                                        Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
+                                    </summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
+                                        onDragOver={(e: any) => e.preventDefault()}>
+                                        {AllAssignedTasks?.length > 0 ?
+                                            <>
                                                 <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
                                                     <thead>
                                                         {headerGroupsAll?.map((headerGroup: any) => (
@@ -1191,12 +1273,11 @@ const TaskDashboard = (props: any) => {
                                                             </tr>
                                                         ))}
                                                     </thead>
-
-                                                    <tbody {...getTableBodyPropsAll()}>
+                                                    {pageAll?.length > 0 ? <tbody {...getTableBodyPropsAll()}>
                                                         {pageAll?.map((row: any) => {
                                                             prepareRowAll(row);
                                                             return (
-                                                                <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
+                                                                <tr onClick={() => { selectedInlineTask = { table: "allAssignedTask", taskId: row?.original?.Id } }} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''} draggable data-value={row?.original}
                                                                     onDragStart={(e) => startDrag(row?.original, row?.original.Shareweb_x0020_ID, 'AllTasks')}
                                                                     onDragOver={(e) => e.preventDefault()} key={row?.original.Id}{...row.getRowProps()}>
                                                                     {row.cells.map(
@@ -1222,28 +1303,79 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody>
-                                                </Table> : <div className='text-center full-width'>
-                                                    <span>No Assigned Tasks Available</span>
-                                                </div>}
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
+                                                    </tbody> : <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
 
+                                                </Table>
+                                                <nav>
+                                                    <Pagination>
+                                                        <PaginationItem>
+                                                            <PaginationLink onClick={() => previousPageAll()} disabled={!canPreviousPageAll}>
+                                                                <span aria-hidden={true}>
+                                                                    <FaAngleLeft aria-hidden={true} />
+                                                                </span>
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <PaginationItem>
+                                                            <PaginationLink>
+                                                                {pageIndexAll + 1}
 
-                        </div>
-                    </article>
-                </div>
-                <div>
-                    {isOpenEditPopup ? (
-                        <EditTaskPopup Items={passdata} Call={inlineCallBack} />
-                    ) : (
-                        ""
-                    )}
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <PaginationItem>
+                                                            <PaginationLink onClick={() => nextPageAll()} disabled={!canNextPageAll}>
+                                                                <span aria-hidden={true}>
+                                                                    <FaAngleRight
+                                                                        aria-hidden={true}
+
+                                                                    />
+                                                                </span>
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <Col md={2}>
+                                                            <Input
+                                                                type='select'
+                                                                value={pageSizeAll}
+                                                                onChange={onChangeInSelectAll}
+                                                            >
+
+                                                                {[10, 20, 30, 40, 50].map((pageSizeAll) => (
+                                                                    <option key={pageSizeAll} value={pageSizeAll}>
+                                                                        Show {pageSizeAll}
+                                                                    </option>
+                                                                ))}
+                                                            </Input>
+                                                        </Col>
+                                                    </Pagination>
+                                                </nav>
+                                            </>
+                                            : <div className='text-center full-width'>
+                                                <span>No Assigned Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+
+                            </div>
+                        </article>
+                    </div>
+                    <div>
+                        {isOpenEditPopup ? (
+                            <EditTaskPopup AllListId={AllListId} Items={passdata} Call={editTaskCallBack} />
+                        ) : (
+                            ""
+                        )}
+
+                    </div>
+
                 </div>
             </div>
-        </div>
+            {pageLoaderActive ? <PageLoader /> : ''}
+        </>
     )
 }
 export default React.memo(TaskDashboard)

@@ -69,6 +69,7 @@ var selectedClientCategoryData: any = [];
 
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
+    const AllListIdData = Items.AllListId;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -260,7 +261,7 @@ const EditTaskPopup = (Items: any) => {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
-        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomy + "'")
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
         $.ajax({
             url: url,
             method: "GET",
@@ -559,7 +560,7 @@ const EditTaskPopup = (Items: any) => {
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
-        axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
+        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
                 getAllEmployeeData();
@@ -755,7 +756,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -765,7 +766,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -1089,7 +1090,7 @@ const EditTaskPopup = (Items: any) => {
         try {
             let web = new Web(siteUrls);
             let AllProjects: any = [];
-            AllProjects = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+            AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
                 .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
                 .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
@@ -1735,7 +1736,8 @@ const EditTaskPopup = (Items: any) => {
                 ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
                 ClientTime: JSON.stringify(ClientCategoryData),
-                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] }
+                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+                SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) :  EditData.SiteCompositionSettings
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -2168,6 +2170,8 @@ const EditTaskPopup = (Items: any) => {
                     ImageUrl: imgItem.data_url,
                     UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
                     UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
+                    // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
+                    // UserName: "Test Dev",
                 };
                 tempArray.push(ImgArray);
             } else {
@@ -2495,7 +2499,7 @@ const EditTaskPopup = (Items: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -2690,8 +2694,6 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
             setSiteCompositionSetting(Data.SiteCompositionSettings);
-        } else {
-            setSiteCompositionSetting([])
         }
         console.log("Site Composition final Call back Data =========", Data);
     }, [])
@@ -2798,7 +2800,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
                             </span>
                         </div>
                     </div>
@@ -3018,7 +3020,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </span>
                                                 </label>
                                                 <input type="text" className="form-control" placeholder="Task Name"
-                                                    ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                    defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                             </div>
                                         </div>
                                         <div className="mx-0 row  ">
@@ -3037,8 +3039,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="input-group ">
                                                     <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
-                                                            ng-model="dueDatePopUp"
-                                                            ng-click="OpenDueDatePopup()" />
+                                                        />
                                                     </span></label>
 
                                                     <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
@@ -3077,14 +3078,13 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2">
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
+                                                    <label className="full-width">
                                                         <span className="form-check form-check-inline mb-0 l-radio">
                                                             <input type="radio" id="Components"
                                                                 name="Portfolios" checked={ComponentTaskCheck}
                                                                 onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                 title="Component"
-                                                                ng-model="PortfolioTypes"
-                                                                ng-click="getPortfoliosData()"
+
                                                                 className="form-check-input" />
                                                             <label className="form-check-label mb-0">Component</label>
                                                         </span>
@@ -3100,7 +3100,7 @@ const EditTaskPopup = (Items: any) => {
                                                     </label>
                                                     {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
                                                         <>
-                                                            <input type="text" ng-model="SearchService"
+                                                            <input type="text"
                                                                 className="form-control"
                                                                 id="{{PortfoliosID}}" autoComplete="off"
 
@@ -3875,7 +3875,7 @@ const EditTaskPopup = (Items: any) => {
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
-                                        <NewTameSheetComponent props={Items}
+                                        <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                             TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
@@ -3901,10 +3901,10 @@ const EditTaskPopup = (Items: any) => {
                                 })} */}
                     </div>
 
-                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
+                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListIdData}>
                     </ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
+                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" siteUrls={siteUrls} AllListId={AllListIdData} CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
+                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType} Dynamic={AllListIdData}></LinkedComponent>}
                     {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>
@@ -4048,14 +4048,14 @@ const EditTaskPopup = (Items: any) => {
                                                                 </span>
                                                             </label>
                                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                                ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                                defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row  ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control start-date" max="9999-12-31"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -4067,11 +4067,10 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
                                                                     <input type="checkbox" className="form-check-input rounded-0 ms-2"
-                                                                        ng-model="dueDatePopUp"
-                                                                        ng-click="OpenDueDatePopup()" />
+                                                                    />
                                                                 </span></label>
 
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control due-date" max="9999-12-31"
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4083,7 +4082,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
                                                                 >Completed Date</label>
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control complete-Date " max="9999-12-31"
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -4107,13 +4106,12 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row mt-2">
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
-                                                                <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
+                                                                <label className="full-width">
                                                                     <span className="form-check l-radio form-check-inline mb-0">
                                                                         <input type="radio" id="Components"
                                                                             name="Portfolios" checked={ComponentTaskCheck}
                                                                             title="Component"
-                                                                            ng-model="PortfolioTypes"
-                                                                            ng-click="getPortfoliosData()"
+
                                                                             className="form-check-input " />
                                                                         <label className="form-check-label mb-0">Component</label>
                                                                     </span>
@@ -4128,7 +4126,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </label>
                                                                 {smartComponentData?.length > 0 || smartServicesData?.length > 0 ? null :
                                                                     <>
-                                                                        <input type="text" ng-model="SearchService"
+                                                                        <input type="text"
                                                                             className="form-control"
                                                                             id="{{PortfoliosID}}" autoComplete="off"
                                                                         />
@@ -4147,7 +4145,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </>
                                                                     )
                                                                 }) : <>
-                                                                    <input type="text" ng-model="SearchService"
+                                                                    <input type="text"
                                                                         className="form-control"
                                                                         id="{{PortfoliosID}}" autoComplete="off"
                                                                     />
@@ -4166,7 +4164,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </>
                                                                         )
                                                                     }) : <>
-                                                                        <input type="text" ng-model="SearchService"
+                                                                        <input type="text"
                                                                             className="form-control"
                                                                             id="{{PortfoliosID}}" autoComplete="off"
                                                                         />
@@ -4999,7 +4997,7 @@ const EditTaskPopup = (Items: any) => {
                                     return (
                                         <>
                                             <span>
-                                                <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+                                                <a className="hreflink block p-1 px-2 mx-1" > {val.Title}
                                                     <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                 </a>
                                             </span>
@@ -5017,7 +5015,7 @@ const EditTaskPopup = (Items: any) => {
                                                         {item.Title}
                                                     </a>
                                                 </p>
-                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                <ul className="sub-menu clr mar0">
                                                     {item.Child?.map(function (child1: any) {
                                                         return (
                                                             <>
@@ -5069,11 +5067,14 @@ export default React.memo(EditTaskPopup);
 
 // step-2A :
 // var Items = {
-//     siteUrl:{Enter Site url here},
-//     siteType: {Enter Site type here},
-//     listId:{Enter Site listId here},
-//     ***** OR *****
-//     listName:{Enter Site listName here},
+    // siteUrl:{Enter Site url here},
+    // siteType: {Enter Site type here},
+    // listId:{Enter Site listId here},
+    // ***** OR *****
+    // listName:{Enter Site listName here},
+    // Context:{Context}
+    // AllListIdData: { AllListIdData with site url }
+    // context:{Page Context}
 // }
 
 // step-2B :

@@ -3,6 +3,7 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
+  PropertyPaneDropdown,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
@@ -14,6 +15,13 @@ import { IComponentProfileProps } from './components/IComponentProfileProps';
 
 export interface IComponentProfileWebPartProps {
   description: string;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a',
+  SmartHelptListID:'9cf872fc-afcd-42a5-87c0-aab0c80c5457',
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc',
+  dropdownvalue:string,
 }
 
 export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComponentProfileWebPartProps> {
@@ -29,7 +37,16 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        TaskTypeID:this.properties.TaskTypeID,
+        DocumentsListID:this.properties.DocumentsListID,
+        SmartHelptListID:this.properties.SmartHelptListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        Context: this.context,
+        dropdownvalue:this.properties.dropdownvalue,
       }
     );
 
@@ -85,9 +102,28 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                })
+                // PropertyPaneTextField('description', {
+                //   label: strings.DescriptionFieldLabel
+                // }),
+            
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'Task User List'
+                }),
+                PropertyPaneTextField('SmartHelptListID', {
+                  label: 'SmartHelp List'
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: 'Smart Metadata List'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: 'Documents List'
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: 'Master Task List',
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: 'Task Type List',
+                }),
               ]
             }
           ]
