@@ -241,7 +241,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             }
         }
-        if (type == "LinkedComponent") {
+        if (type == "LinkedServices") {
             if (PopupItemData?.linkedComponent?.length > 0) {
                 Items.Items.linkedComponent = PopupItemData.linkedComponent;
                 setLinkedComponentData(PopupItemData.linkedComponent);
