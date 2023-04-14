@@ -1083,7 +1083,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
                       </li>
                     }
-                    {breadcrumbitem.ChildTask != undefined && breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined &&
+                    {breadcrumbitem.ChildTask != undefined &&
                       <li className="ng-scope" >
 
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem?.ChildTask?.siteType}`}>{breadcrumbitem?.ChildTask?.Title}</a>
@@ -1292,7 +1292,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                             {ClientTimeArray?.map((cltime: any, i: any) => {
                               return <li className="Sitelist">
                                 <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName)} />
+                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName)?this.GetSiteIcon(cltime?.SiteName):this.GetSiteIcon(cltime?.Title)} />
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
@@ -1306,31 +1306,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         </div>
                       </div>
                     }
-                    {/*  allready commented 
-                    
-                    {this.state.Result["ClientTime"] != null && this.state.Result["ClientTime"].length > 0 &&
-                      <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
-                          <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                        </a>
-                        <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
-                          <ul>
-                            {this.state.Result["ClientTime"].map((cltime: any, i: any) => {
-                              return <li className="dropdown-item">
-                                <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime.SiteName)} />
-                                </span>
-                                {cltime.ClienTimeDescription != undefined &&
-                                  <span>
-                                    {cltime.ClienTimeDescription}.00%
-                                  </span>
-                                }
-                              </li>
-                            })}
-                          </ul>
-                        </div>
-                      </div>
-                    } */}
+                   
 
                   </dl>
 
@@ -1429,7 +1405,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </div>
                 </div>
 
-                {/* Backgroundimage code and comment */}
+                {/*===================Backgroundimage code and comment========== */}
 
                 {this.backGroundComment ? <div className="col">
                   <div className="Taskaddcomment row">
@@ -1461,15 +1437,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                                     <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                   }
                                 </span>
-
-                              </div>
-                              {/* <div>
-                                <span >
-                                  {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
-                                </span>
-                                <span>|</span>
-                              </div> */}
-
+                                   </div>
                             </div>
 
                           </div>
