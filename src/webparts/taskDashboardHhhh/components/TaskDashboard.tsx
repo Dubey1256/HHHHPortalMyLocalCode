@@ -1249,7 +1249,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
+                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
                                         onDragOver={(e: any) => e.preventDefault()}>
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
