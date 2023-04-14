@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-// import { useExpanded, useFilters, usePagination, useSortBy, useTable } from 'react-table'
+import { useExpanded, useFilters, usePagination, useSortBy, useTable } from 'react-table'
 import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
-
+import { RankingInfo, rankItem, compareItems } from '@tanstack/match-sorter-utils'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
@@ -483,22 +483,24 @@ const TimeReport = () => {
         ],
         [data]
     );
-    // const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    //     // Rank the item
-    //     // const itemRank = rankItem(row.getValue(columnId), value)
+    const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+        // Rank the item
+        const itemRank = rankItem(row.getValue(columnId), value)
 
-    //     // Store the itemRank info
-    //     addMeta({
-    //         itemRank,
-    //     })
+        // Store the itemRank info
+        addMeta({
+            itemRank,
+        })
 
-    //     // Return if the item should be filtered in/out
-    //     return itemRank.passed
-    // }
+        // Return if the item should be filtered in/out
+        return itemRank.passed
+    }
     const table = useReactTable({
         data,
         columns,
-        
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
         state: {
             columnFilters,
             globalFilter,
@@ -506,7 +508,7 @@ const TimeReport = () => {
         onColumnFiltersChange: setColumnFilters,
         // onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
-       
+        globalFilterFn: fuzzyFilter,
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         // getPaginationRowModel: getPaginationRowModel(),
