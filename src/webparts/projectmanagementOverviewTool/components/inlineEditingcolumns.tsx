@@ -859,8 +859,8 @@ console.log(err)
                 type={PanelType.medium}
             >
                 <div>
-                    <TeamConfigurationCard
-                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} AllListId={props} ></TeamConfigurationCard>
+                    <TeamConfigurationCard AllListId={props?.AllListId}
+                        ItemInfo={props?.item} parentCallback={DDComponentCallBack} ></TeamConfigurationCard>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
                             OK

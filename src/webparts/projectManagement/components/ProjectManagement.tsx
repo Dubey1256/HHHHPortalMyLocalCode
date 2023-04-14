@@ -15,11 +15,17 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
       hasTeamsContext,
       userDisplayName,
       Context,
-      siteUrl
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID
     } = this.props;
     return (
       <div>
-       <ProjectManagementMain pageContext={this.props.Context.pageContext} Context={this.props.Context} siteUrl={this.props.siteUrl}/> 
+       <ProjectManagementMain pageContext={this.props.Context.pageContext} Context={this.props.Context} props={this.props} siteUrl={this.props.siteUrl}/> 
       </div>
     );
   }

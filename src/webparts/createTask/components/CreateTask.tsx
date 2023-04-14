@@ -12,11 +12,18 @@ export default class CreateTask extends React.Component<ICreateTaskProps, {}> {
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      pageContext
+      pageContext,
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID
     } = this.props;
 
     return (
-     <CreateTaskComponent pageContext={this.props.pageContext}/>
+      <CreateTaskComponent pageContext={this.props.pageContext} props={this.props}/>
     );
   }
 }
