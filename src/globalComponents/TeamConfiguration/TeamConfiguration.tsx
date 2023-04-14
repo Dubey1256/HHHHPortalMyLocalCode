@@ -6,7 +6,7 @@ import Tooltip from '../Tooltip';
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
     ItemInfo: any;
-    AllListId:any;
+    AllListId: any;
 }
 
 export interface ITeamConfigurationState {
@@ -21,6 +21,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
+let web:any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -47,7 +48,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.ItemInfo.siteUrl);
+        if (this.props.ItemInfo.siteUrl != undefined) {
+            web = new Web(this.props.ItemInfo.siteUrl);
+        } else {
+            web = new Web(this.props.AllListId.siteUrl);
+        }
         let results: any = [];
 
         let taskUsers: any = [];
@@ -64,7 +69,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let self = this;
         results.forEach(function (item: any) {
             if (item.ItemType != 'Group') {
-                if (self.props.ItemInfo.Services !=undefined && self.props.ItemInfo.Services.length > 0) {
+                if (self.props.ItemInfo.Services != undefined && self.props.ItemInfo.Services.length > 0) {
                     if (item.Role != null && item.Role.length > 0 &&
                         item.Role.join(';').indexOf('Service Teams') > -1) {
                         self.AllUsers.push(item);
@@ -92,24 +97,24 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private async GetTaskDetails() {
         let web = new Web(this.props.ItemInfo.siteUrl);
         let taskDetails = [];
-        if(this.props.ItemInfo.listId != undefined){
+        if (this.props.ItemInfo.listId != undefined) {
             taskDetails = await web.lists
-            .getById(this.props.ItemInfo.listId)
-            .items
-            .getById(this.props.ItemInfo.Id)
-            .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-            .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
-            .get()
-        }else{
+                .getById(this.props.ItemInfo.listId)
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                .get()
+        } else {
             taskDetails = await web.lists
-            .getByTitle(this.props.ItemInfo.listName)
-            .items
-            .getById(this.props.ItemInfo.Id)
-            .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
-            .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
-            .get()
+                .getByTitle(this.props.ItemInfo.listName)
+                .items
+                .getById(this.props.ItemInfo.Id)
+                .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
+                .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                .get()
         }
-       
+
 
         console.log('Task Details---');
         console.log(taskDetails);
@@ -122,7 +127,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-                if (this.props.ItemInfo.Portfolio_x0020_Type !=undefined && this.props.ItemInfo.Portfolio_x0020_Type == 'Service') {
+                if (this.props.ItemInfo.Portfolio_x0020_Type != undefined && this.props.ItemInfo.Portfolio_x0020_Type == 'Service') {
                     if (childItem.Role != null && childItem.Role.length > 0 && childItem.Role.join(';').indexOf('Service Teams') > -1) {
                         item.childs.push(childItem);
                     }
@@ -372,8 +377,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             TeamMemberUsers: this.state.TeamMemberUsers,
             ResponsibleTeam: this.state.ResponsibleTeam,
             AssignedTo: this.state.AssignedToUsers,
-            isDrop : true,
-            isDropRes : true
+            isDrop: true,
+            isDropRes: true
         }
         //set state of array element
         this.setState({
@@ -436,7 +441,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 }
                             </div>
                             <div className="row">
-                                
+
                                 <div className="col-sm-7">
                                     <h6>Team Members</h6>
                                     <div className="d-flex p-1  UserTimeTabGray">
@@ -445,7 +450,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers)}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{height:"30px"}}>
+                                                    <div className='d-flex flex-wrap' style={{ height: "30px" }}>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -463,7 +468,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{height:"30px"}}>
+                                                    <div className='d-flex flex-wrap' style={{ height: "30px" }}>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -479,31 +484,31 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
                                     </div>
                                 </div>
-                                
-                                    <div className='col-sm-3'>
-                                        <h6 >Working Members</h6>
-                                        <div className="col"
-                                            onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
-                                            onDragOver={(e) => e.preventDefault()}>
-                                            <div className="working-box p-1" >
-                                                <div className='d-flex flex-wrap' style={{height:"30px"}}>
-                                                    {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
-                                                        return <div
-                                                            className="ProirityAssignedUserPhoto"
-                                                            style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
-                                                            title={image.Title}
-                                                            draggable
-                                                            onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
-                                                            onDragOver={(e) => e.preventDefault()} ></div>
-                                                    })
-                                                    }
-                                                </div>
 
+                                <div className='col-sm-3'>
+                                    <h6 >Working Members</h6>
+                                    <div className="col"
+                                        onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
+                                        onDragOver={(e) => e.preventDefault()}>
+                                        <div className="working-box p-1" >
+                                            <div className='d-flex flex-wrap' style={{ height: "30px" }}>
+                                                {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
+                                                    return <div
+                                                        className="ProirityAssignedUserPhoto"
+                                                        style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                        title={image.Title}
+                                                        draggable
+                                                        onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
+                                                        onDragOver={(e) => e.preventDefault()} ></div>
+                                                })
+                                                }
                                             </div>
 
                                         </div>
+
                                     </div>
-                                
+                                </div>
+
                                 <div className="col-sm-2">
                                     <div>
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
