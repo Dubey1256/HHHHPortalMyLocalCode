@@ -21,6 +21,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
+let web:any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -47,7 +48,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.ItemInfo.siteUrl);
+        if (this.props.ItemInfo.siteUrl != undefined) {
+            web = new Web(this.props.ItemInfo.siteUrl);
+        } else {
+            web = new Web(this.props.AllListId.siteUrl);
+        }
         let results: any = [];
 
         let taskUsers: any = [];

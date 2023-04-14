@@ -180,7 +180,7 @@ const EditTaskPopup = (Items: any) => {
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
         GetMasterData();
-        // getInformationForSmartLight();
+        // getInformationForSmartLight()
         // Descriptions();
     }, [])
 
