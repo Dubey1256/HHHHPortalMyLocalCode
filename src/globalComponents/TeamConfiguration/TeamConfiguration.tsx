@@ -70,26 +70,24 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         results.forEach(function (item: any) {
             if (item.ItemType != 'Group') {
                 if (self.props.ItemInfo.Services != undefined && self.props.ItemInfo.Services.length > 0) {
-                    if (item.Role != null && item.Role.length > 0 &&
-                        item.Role.join(';').indexOf('Service Teams') > -1) {
-                        self.AllUsers.push(item);
+                    if (item.Role != null && item.Role.length > 0) {
+                        let FindServiceUser = item.Role.join(';').indexOf('Service Teams');
+                        if (FindServiceUser > -1) {
+                            self.AllUsers.push(item);
+                        }
                     }
                 } else {
                     self.AllUsers.push(item);
                 }
-                //self.AllUsers.push(item);
             }
         })
-
         results.forEach(function (item: any) {
             if (item.UserGroupId == undefined) {
                 self.getChilds(item, results);
                 taskUsers.push(item);
             }
         });
-        console.log('Task Users---');
         console.log(taskUsers);
-
         this.setState({
             taskUsers
         })
@@ -127,7 +125,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-                if (this.props.ItemInfo.Portfolio_x0020_Type != undefined && this.props.ItemInfo.Portfolio_x0020_Type == 'Service') {
+                if (this.props.ItemInfo.Services != undefined && this.props.ItemInfo.Services.length > 0) {
                     if (childItem.Role != null && childItem.Role.length > 0 && childItem.Role.join(';').indexOf('Service Teams') > -1) {
                         item.childs.push(childItem);
                     }
