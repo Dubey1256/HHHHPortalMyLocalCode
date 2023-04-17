@@ -11,12 +11,19 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID
     } = this.props;
 
     return (
     <div>
-    <ProjectOverview/> 
+    <ProjectOverview props={this.props} /> 
     </div>
     );
   }

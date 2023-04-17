@@ -341,7 +341,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 } });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String , onRender:(item, index, column) => {
                     if(item.PercentComplete == undefined) return "";
-                    return  <div style={{color:'green'}}>{moment(item.DueDate).format("DD/MM/YYYY")  }</div>
+                    return  <div style={{color:'green'}}>{item.DueDate}</div>
                 }  });
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.PercentComplete == 0) return "";
