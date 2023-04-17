@@ -862,7 +862,15 @@ const EditTaskPopup = (Items: any) => {
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
-                            let siteName = siteData.SiteName.toLowerCase();
+                            let siteName 
+                            if(siteData!=undefined){
+                                if(siteData.SiteName!=undefined){
+                                    siteName = siteData.SiteName.toLowerCase();
+                                }else{
+                                    siteName = siteData.Title.toLowerCase();
+                                }
+                            }
+                            // let siteName = siteData.SiteName.toLowerCase();
                             if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
                                 siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
                             }
