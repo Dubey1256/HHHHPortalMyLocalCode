@@ -125,8 +125,8 @@ export default function ProjectOverview() {
                 showSortIcon: false,
                 style: { width: '30px' },
                 Cell: ({ row }: any) => (
-                    <span>
-                        <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)}></img>
+                    <span title='Edit' onClick={(e) => EditComponentPopup(row?.original)} className='svg__iconbox svg__icon--edit'>
+        
                     </span>
                 ),
             },
