@@ -119,6 +119,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let curListId = curNavItem.listId;
         let curSiteURL = curNavItem.siteUrl;
         let curSiteType = curNavItem.site;
+        let curSiteIcon = curNavItem.siteIcon;
         let queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
 
         let qStrings = this.getQueryStrings(queryStrings);
@@ -164,7 +165,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -188,7 +190,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+               
             }));
         }
         else if(selTabName=="SERVICES") {
@@ -212,7 +215,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                
             }));
         }
         else if(selTabName=="ALL") {
@@ -259,7 +263,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         Id: resListItem.Id,
                         ListId: curListId,
                         siteType: curSiteType,
-                        siteUrl: curSiteURL
+                        siteUrl: curSiteURL,
+                        siteIcon : curSiteIcon
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -302,7 +307,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                siteIcon : curSiteIcon
             }));
         }        
 
