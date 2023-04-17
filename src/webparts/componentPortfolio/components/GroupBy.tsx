@@ -1164,7 +1164,7 @@ function ComponentTable(SelectedProp: any) {
                     AllTasks = $.grep(AllTasks, function (type: any) { return type.isDrafted == false });
                     if (Counter == siteConfig.length) {
                         map(AllTasks, (result: any) => {
-                            result.ID = result.Id != undefined ? result.Id : result.ID;
+                            result.Id = result.Id != undefined ? result.Id : result.ID;
                             result.TeamLeaderUser = []
                             result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
                             result.chekbox = false;
@@ -3546,24 +3546,29 @@ function ComponentTable(SelectedProp: any) {
                             ) : (
                                 ""
                             )}{" "}
-                            <IndeterminateCheckbox
+                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
                                 {...{
                                     checked: row.getIsSelected(),
                                     indeterminate: row.getIsSomeSelected(),
                                     onChange: row.getToggleSelectedHandler(),
 
                                 }}
-                            />{" "}
-                            <a
+                            /> : ""}{" "}
+                            {row?.original?.SiteIcon != undefined ?
+                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                            }
+                            {/* <a
                                 className="hreflink"
                                 title="Show All Child"
                                 data-toggle="modal"
                             >
                                 <img
                                     className="icon-sites-img ml20 me-1"
-                                    src={row?.original?.SiteIcon}
+                                    src={row?.original?.SiteIconTitle}
                                 ></img>
-                            </a>
+                            </a> */}
                             {getValue()}
                         </>
                     </div>
@@ -3595,6 +3600,9 @@ function ComponentTable(SelectedProp: any) {
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a>}
+                        {row?.original.Title === 'Others' &&
+                            <span>{row?.original.Title}</span>}
+
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
@@ -3685,7 +3693,7 @@ function ComponentTable(SelectedProp: any) {
                 cell: ({ row, getValue }) => (
                     <>
                         {row?.original?.siteType === "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)} /></a>}
-                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)} /></a>}
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(row?.original)} /></a>}
                         {getValue()}
                     </>
                 ),
@@ -4319,8 +4327,8 @@ function ComponentTable(SelectedProp: any) {
                         </div></section>
                 </div></section>
 
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}></EditTaskPopup>}
+            {IsComponent && <EditInstituton item={SharewebComponent} Calls={Call} showProgressBar={showProgressBar} SelectD={SelectedProp}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={SelectedProp}></CreateWS>}

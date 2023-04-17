@@ -70,6 +70,7 @@ var selectedClientCategoryData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
+    Items.Items.Id=Items.Items.ID
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -180,6 +181,7 @@ const EditTaskPopup = (Items: any) => {
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
         GetMasterData();
+      
         // getInformationForSmartLight()
         // Descriptions();
     }, [])
