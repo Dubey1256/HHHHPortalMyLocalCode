@@ -4290,7 +4290,7 @@ function ComponentTable(SelectedProp: any) {
                 </div></section>
 
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsComponent && <EditInstituton props={SharewebComponent} Call={Call} showProgressBar={showProgressBar}> </EditInstituton>}
+            {IsComponent && <EditInstituton item={SharewebComponent} SelectD={SelectedProp} Calls={Call}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={SelectedProp}></CreateWS>}

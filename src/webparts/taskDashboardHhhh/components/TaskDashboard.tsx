@@ -15,6 +15,7 @@ import PageLoader from '../../../globalComponents/pageLoader';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: '';
@@ -30,6 +31,7 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
+var AllListId:any={}
 var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
@@ -55,6 +57,16 @@ const TaskDashboard = (props: any) => {
     });
     React.useEffect(() => {
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        AllListId = {
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            siteUrl:props?.props?.siteUrl
+          }
         setPageLoader(true);
         getCurrentUserDetails();
         createDisplayDate();
@@ -69,7 +81,7 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
-        currentUserTimeEntry()
+        loadAllTimeEntry()
     }, [currentUserId, timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
@@ -133,37 +145,56 @@ const TaskDashboard = (props: any) => {
     //End
 
     //Load This Week Time Entry 
-    const currentUserTimeEntry = async () => {
-        let WeekStartDate = getThisWeekStartingDate();
-        let count = 0;
-        let AllTimeEntries: any = [];
+    const loadMigrationTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName=='TasksTimesheet2') {
                     await web.lists
-                        .getById(list?.listId)
-                        .items.select(
-                            "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle"
-                        )
-                        .top(200).orderBy('Created')
-                        .filter(`Author/Id eq '${currentUserId}'`)
-                        .get().then((data: any) => {
-                            data?.map((item: any) => {
-                                if (item?.TaskDate >= WeekStartDate)
-                                    AllTimeEntries.push(item)
-                            })
-                            count++;
-                        });
-                    if (count == timesheetLists?.lenght) {
-                        weekTimeEntry = AllTimeEntries
-                        console.log(weekTimeEntry)
-                    }
+                    .getById(list?.listId)
+                    .items.select( "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand=Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
+                    .getAll().then((data: any) => {
+                        data?.map((item: any) => {
+                            AllTaskTimeEntries.push(item)
+                        })
+                    });
+                   }
                 })
             }
         }
+    }
+    const loadAllTimeEntry = async () => {
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            if (timesheetLists?.length > 0) {
+                timesheetLists?.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName!='TasksTimesheet2') {
+                    await web.lists
+                    .getById(list?.listId)
+                    .items.select( 'Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title&$expand=Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects')
+                    .getAll().then((data: any) => {
+                        data?.map((item: any) => {
+                            AllTaskTimeEntries.push(item)
+                        })
+                    });
+                   }
+                })
+                loadMigrationTimeEntry();
+            }
+        }
+    }
+    const timeEntryTaskExist = (task: any) => {
+
+    }
+    const currentUserWeekTimeEntry = () => {
+        AllTaskTimeEntries?.map((taskEntry: any) => {
+
+        })
     }
     //End 
 
@@ -443,7 +474,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
                     </span>
                 ),
             },
@@ -453,7 +484,13 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "DueDate",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => <span >{row?.original?.DisplayDueDate}</span>,
+                Cell: ({ row }: any) => <InlineEditingcolumns
+                AllListId={AllListId}
+                    callBack={inlineCallBack}
+                    columnName="DisplayDueDate"
+                    item={row?.original}
+                    TaskUsers={taskUsers}
+                />,
             },
 
             {
@@ -464,7 +501,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
 
                     <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
                     </span>
                 ),
             },
@@ -475,7 +512,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
                     </span>
                 ),
             },
@@ -893,7 +930,7 @@ const TaskDashboard = (props: any) => {
                             </nav>
                         </section>
                         <section className="sidebar__section sidebar__section--menu">
-                            <nav className="nav__item">
+                       <nav className="nav__item">
                                 <ul className="nav__list">
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
@@ -1212,7 +1249,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }}  onDrop={(e: any) => handleDrop('AllTasks')}
+                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
                                         onDragOver={(e: any) => e.preventDefault()}>
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
@@ -1266,9 +1303,13 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody> : <div className='text-center full-width'>
-                                                        <span>No Search Result</span>
-                                                    </div>}
+                                                    </tbody> : <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
 
                                                 </Table>
                                                 <nav>
@@ -1324,7 +1365,7 @@ const TaskDashboard = (props: any) => {
                     </div>
                     <div>
                         {isOpenEditPopup ? (
-                            <EditTaskPopup Items={passdata} Call={editTaskCallBack} />
+                            <EditTaskPopup AllListId={AllListId} Items={passdata} Call={editTaskCallBack} />
                         ) : (
                             ""
                         )}

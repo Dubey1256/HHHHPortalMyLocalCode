@@ -20,6 +20,7 @@ let taskUsers: any = [];
 let taskCreated = false;
 let createdTask: any = {}
 let loggedInUser: any;
+var AllListId:any={}
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 function CreateTaskComponent(props: any) {
@@ -62,6 +63,16 @@ function CreateTaskComponent(props: any) {
     });
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
+         AllListId = {
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            siteUrl:props?.props?.siteUrl
+          }
         LoadTaskUsers();
         GetComponents();
         GetSmartMetadata();
@@ -1527,9 +1538,9 @@ function CreateTaskComponent(props: any) {
                     }
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </div>
-                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
-                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                {IsComponent && <ComponentPortPolioPopup Dynamic={AllListId}  props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
+                {IsServices && <LinkedComponent Dynamic={AllListId}  props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
         </>

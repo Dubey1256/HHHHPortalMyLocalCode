@@ -12,11 +12,18 @@ export default class TaskDashboardHhhh extends React.Component<ITaskDashboardHhh
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      pageContext
+      pageContext,
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID
     } = this.props;
 
     return (
-     <TaskDashboard pageContext={this.props.pageContext}/>
+      <TaskDashboard pageContext={this.props.pageContext} props={this.props} />
     );
   }
 }

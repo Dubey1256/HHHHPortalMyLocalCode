@@ -44,10 +44,20 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
-let listID = "EC34B38F-0669-480A-910C-F84E92E58ADF";
-function EditInstitution(item: any) {
+let web:any='';
+let RequireData:any={};
+function EditInstitution({item,SelectD,Calls}: any) {
   // Id:any
+   
+ 
 
+  if(SelectD != undefined && SelectD?.siteUrl !=  undefined){
+    web = new Web(SelectD?.siteUrl);
+    RequireData = SelectD
+  }else{
+    web = new Web(item.siteUrl);
+    RequireData = SelectD.SelectedProp
+  }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
   const [isDropItem, setisDropItem] = React.useState(false);
@@ -61,7 +71,7 @@ function EditInstitution(item: any) {
   const [SharewebCategory, setSharewebCategory] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
   const [CategoriesData, setCategoriesData] = React.useState([]);
-  const TeamConfigInfo = item.props;
+  const TeamConfigInfo = item;
   const [smartComponentData, setSmartComponentData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
   const [date, setDate] = React.useState(undefined);
@@ -97,7 +107,7 @@ function EditInstitution(item: any) {
   const Call = React.useCallback((item1: any, type: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
-        item.props.smartComponent = item1.smartComponent;
+        item.smartComponent = item1.smartComponent;
         setSmartComponentData(item1.smartComponent);
       }
     }
@@ -117,13 +127,13 @@ function EditInstitution(item: any) {
 
         //  Backupdata = CategoriesData
         setCategoriesData(CategoriesData);
-        //item.props.smartCategories = item1.smartCategories;
-        //  item.props.smartCategories.push(title);
+        //item.smartCategories = item1.smartCategories;
+        //  item.smartCategories.push(title);
       }
     }
     if (type == "LinkedComponent") {
       if (item1?.linkedComponent?.length > 0) {
-        // Item.props.linkedComponent = item1.linkedComponent;
+        // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
         setLinkedComponentData(item1.linkedComponent);
         console.log("Popup component linkedComponent", item1.linkedComponent);
@@ -155,13 +165,13 @@ function EditInstitution(item: any) {
     return isExists;
   };
   const GetTaskUsers = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+   
     let taskUsers = [];
-    taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
+    taskUsers = await web.lists.getById(RequireData.TaskUsertListID).items.top(4999).get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
-      // item.props.AssignedTo.forEach(function(assign:any){
+      // item.AssignedTo.forEach(function(assign:any){
       //     if (taskUser.AssingedToUserId == assign.Id) {
       //         UpdatedData['AuthorName'] = taskUser.Title;
       //         UpdatedData['Company'] = taskUser.Company;
@@ -260,12 +270,10 @@ function EditInstitution(item: any) {
 
   var getMasterTaskListTasks = async function () {
     //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+   
     let componentDetails = [];
     componentDetails = await web.lists
-      //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(RequireData.MasterTaskListID)
       .items.select(
         "ComponentPortfolio/Id",
         "ComponentPortfolio/Title",
@@ -365,11 +373,11 @@ function EditInstitution(item: any) {
         "SharewebCategories",
         "Responsible_x0020_Team", "Parent"
       )
-      .filter("Id eq " + item.props.Id + "")
+      .filter("Id eq " + item.Id + "")
       .get();
     console.log(componentDetails);
 
-    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.props.Id + "";
+    // var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title&$expand=ClientCategory,ComponentCategory,AssignedTo,Component,ComponentPortfolio,ServicePortfolio,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Id eq " + item.Id + "";
     // $.ajax({
     //     url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('ec34b38f-0669-480a-910c-f84e92e58adf')/items?$select=" + query + "",
     //     method: "GET",
@@ -511,7 +519,7 @@ function EditInstitution(item: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
-      item.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+      item.siteUrl = RequireData.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
@@ -534,7 +542,7 @@ function EditInstitution(item: any) {
         item.Item_x0020_Type == "Feature"
       ) {
         ParentId = item.Parent.Id;
-        let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+        let urln = `${RequireData.siteUrl}/_api/lists/getbyid(${RequireData.MasterTaskListID})/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
         $.ajax({
           url: urln,
           method: "GET",
@@ -583,11 +591,11 @@ function EditInstitution(item: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+   
     let smartmetaDetails = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("SmartMetadata")
+      .getById(RequireData.SmartMetadataListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
@@ -629,15 +637,15 @@ function EditInstitution(item: any) {
   React.useEffect(() => {
     GetTaskUsers();
     var initLoading = function () {
-      if (item.props != undefined) {
-        var Item = item.props;
+      if (item != undefined) {
+        var Item = item;
         if (Item.siteType == "HTTPS:") {
           Item.siteType = "HHHH";
         }
         GetSmartmetadata();
 
-        ListId = "ec34b38f-0669-480a-910c-f84e92e58adf";
-        CurrentSiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
+        ListId = RequireData.MasterTaskListID;
+        CurrentSiteUrl = RequireData.siteUrl;
         TaskItemRank.push([
           { rankTitle: "Select Item Rank", rank: null },
           { rankTitle: "(8) Top Highlights", rank: 8 },
@@ -665,11 +673,11 @@ function EditInstitution(item: any) {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+   
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(RequireData.MasterTaskListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID",
@@ -706,7 +714,7 @@ function EditInstitution(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    item.Call();
+    Calls();
   }
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
@@ -1012,8 +1020,8 @@ function EditInstitution(item: any) {
         });
       }
     } else {
-      if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-        EditData.AssignedTo.map((taskInfo: any) => {
+      if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
+        EditData?.AssignedTo.map((taskInfo: any) => {
           AssignedToIds.push(taskInfo.Id);
         });
       }
@@ -1026,10 +1034,10 @@ function EditInstitution(item: any) {
       }
     } else {
       if (
-        EditData.Team_x0020_Members != undefined &&
-        EditData.Team_x0020_Members?.length > 0
+        EditData?.Team_x0020_Members != undefined &&
+        EditData?.Team_x0020_Members?.length > 0
       ) {
-        EditData.Team_x0020_Members.map((taskInfo: any) => {
+        EditData?.Team_x0020_Members.map((taskInfo: any) => {
           TeamMemberIds.push(taskInfo.Id);
         });
       }
@@ -1041,8 +1049,8 @@ function EditInstitution(item: any) {
     //     })
     // }
 
-    //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-    //         EditData.Responsible_x0020_Team.map((taskInfo: any) => {
+    //     if (EditData?.Responsible_x0020_Team != undefined && EditData?.Responsible_x0020_Team?.length > 0) {
+    //         EditData?.Responsible_x0020_Team.map((taskInfo: any) => {
     //             ResponsibleTeamIds.push(taskInfo.Id);
     //         })
     //     }
@@ -1072,9 +1080,9 @@ function EditInstitution(item: any) {
       var ItemRank = SharewebItemRank.filter(
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+   
     await web.lists
-      .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+      .getById(RequireData.MasterTaskListID)
       .items.getById(Items.ID)
       .update({
         Title: Items.Title,
@@ -1083,11 +1091,11 @@ function EditInstitution(item: any) {
         Priority_x0020_Rank: Items.Priority_x0020_Rank,
         ComponentId: { results: smartComponentsIds },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-        DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-        CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+        StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
+        DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
+        CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
         
-        // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
+        // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
         Categories: categoriesItem ? categoriesItem : null,
         SharewebCategoriesId: { results: CategoryID },
         // ClientCategoryId: { "results": RelevantPortfolioIds },
@@ -1116,18 +1124,18 @@ function EditInstitution(item: any) {
           PostTechnicalExplanations != undefined &&
           PostTechnicalExplanations != ""
             ? PostTechnicalExplanations
-            : EditData.TechnicalExplanations,
+            : EditData?.TechnicalExplanations,
         Deliverables:
           PostDeliverables != undefined && PostDeliverables != ""
             ? PostDeliverables
-            : EditData.Deliverables,
+            : EditData?.Deliverables,
         Short_x0020_Description_x0020_On:
           PostShort_x0020_Description_x0020_On != undefined &&
           PostShort_x0020_Description_x0020_On != ""
             ? PostShort_x0020_Description_x0020_On
-            : EditData.Short_x0020_Description_x0020_On,
+            : EditData?.Short_x0020_Description_x0020_On,
         Body:
-          PostBody != undefined && PostBody != "" ? PostBody : EditData.Body,
+          PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
         AssignedToId: {
           results:
             AssignedToIds != undefined && AssignedToIds?.length > 0
@@ -1146,7 +1154,7 @@ function EditInstitution(item: any) {
               ? TeamMemberIds
               : [],
         },
-        // PercentComplete: saveData.PercentComplete == undefined ? EditData.PercentComplete : saveData.PercentComplete,
+        // PercentComplete: saveData.PercentComplete == undefined ? EditData?.PercentComplete : saveData.PercentComplete,
 
         // Categories: Items.Categories
 
@@ -1187,21 +1195,21 @@ function EditInstitution(item: any) {
   const HtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
     let message: any = Editorvalue;
     EditData.Body = message;
-    PostBody = EditData.Body;
+    PostBody = EditData?.Body;
     console.log("Editor Data call back ====", Editorvalue);
   }, []);
   const SortHtmlEditorCallBack = React.useCallback((Editorvalue: any) => {
     let message: any = Editorvalue;
     EditData.Short_x0020_Description_x0020_On = message;
     PostShort_x0020_Description_x0020_On =
-      EditData.Short_x0020_Description_x0020_On;
+      EditData?.Short_x0020_Description_x0020_On;
     console.log("Editor Data call back ====", Editorvalue);
   }, []);
   const DeliverablesHtmlEditorCallBack = React.useCallback(
     (Editorvalue: any) => {
       let message: any = Editorvalue;
       EditData.Deliverables = message;
-      PostDeliverables = EditData.Deliverables;
+      PostDeliverables = EditData?.Deliverables;
       console.log("Editor Data call back ====", Editorvalue);
     },
     []
@@ -1210,7 +1218,7 @@ function EditInstitution(item: any) {
     (Editorvalue: any) => {
       let message: any = Editorvalue;
       EditData.TechnicalExplanations = message;
-      PostTechnicalExplanations = EditData.TechnicalExplanations;
+      PostTechnicalExplanations = EditData?.TechnicalExplanations;
       console.log("Editor Data call back ====", Editorvalue);
     },
     []
@@ -1278,14 +1286,14 @@ function EditInstitution(item: any) {
   };
   var itemInfo = {
     Portfolio_x0020_Type: TeamConfigInfo
-      ? TeamConfigInfo.Portfolio_x0020_Type
+      ? TeamConfigInfo?.Portfolio_x0020_Type
       : "",
-    Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
+    Services: TeamConfigInfo ? TeamConfigInfo?.Services : "",
     siteUrl: TeamConfigInfo
-      ? TeamConfigInfo.siteUrl
-      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP",
-    listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
-    itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
+      ? TeamConfigInfo?.siteUrl
+      : RequireData.siteUrl,
+    listName: TeamConfigInfo ? TeamConfigInfo?.siteType : "",
+    itemID: TeamConfigInfo ? TeamConfigInfo?.Id : "",
   };
   const deleteCategories = (id: any) => {
     CategoriesData.map((catId, index) => {
@@ -1296,7 +1304,7 @@ function EditInstitution(item: any) {
     setCategoriesData((CategoriesData) => [...CategoriesData]);
   };
   const deleteComponent = (type: any) => {
-    if (type == "EditData.Component") {
+    if (type == "EditData?.Component") {
       EditData.Component = "";
     } else {
       EditData.smartComponent = "";
@@ -1311,26 +1319,26 @@ function EditInstitution(item: any) {
         >
            <li>
                         {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                        {EditData.Portfolio_x0020_Type != undefined && (
+                        {EditData?.Portfolio_x0020_Type != undefined && (
                           <a
                             target="_blank"
                             data-interception="off"
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/${EditData.Portfolio_x0020_Type}-Portfolio.aspx`}
+                            href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
                           >
-                            {EditData.Portfolio_x0020_Type}-Portfolio
+                            {EditData?.Portfolio_x0020_Type}-Portfolio
                           </a>
                         )}
                       </li>
-                      {(EditData.Item_x0020_Type == "SubComponent" ||
-                        EditData.Item_x0020_Type == "Feature") && (
+                      {(EditData?.Item_x0020_Type == "SubComponent" ||
+                        EditData?.Item_x0020_Type == "Feature") && (
                          <> <li>
                           {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {(EditData.Parent != undefined && ParentData != undefined && ParentData.length != 0 )&& (
+                          {(EditData?.Parent != undefined && ParentData != undefined && ParentData.length != 0 )&& (
                            
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
                             >
                               {ParentData[0].Parent.Title}
                             </a>
@@ -1339,13 +1347,13 @@ function EditInstitution(item: any) {
                         </li>
                         <li>
                           {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {EditData.Parent != undefined && (
+                          {EditData?.Parent != undefined && (
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${EditData.Parent.Id}`}
+                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
                             >
-                              {EditData.Parent.Title}
+                              {EditData?.Parent.Title}
                             </a>
                           )}
                         </li>
@@ -1353,14 +1361,14 @@ function EditInstitution(item: any) {
                       )}
 
                       <li>
-                      {EditData.Item_x0020_Type == "Feature"&&<a>
-                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData.Title}</>
+                      {EditData?.Item_x0020_Type == "Feature"&&<a>
+                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData?.Title}</>
                         </a>}
-                        {EditData.Item_x0020_Type == "SubComponent"&&<a>
-                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"}/>{EditData.Title}</>
+                        {EditData?.Item_x0020_Type == "SubComponent"&&<a>
+                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"}/>{EditData?.Title}</>
                         </a>}
-                         {EditData.Item_x0020_Type == "Component"&&<a>
-                        <><img style={{    width: "20px", marginRight: "2px"}}src={EditData.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData.Title}</>
+                         {EditData?.Item_x0020_Type == "Component"&&<a>
+                        <><img style={{    width: "20px", marginRight: "2px"}}src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData?.Title}</>
                         </a>}
                       </li>
         </ul></div>
@@ -1373,12 +1381,12 @@ function EditInstitution(item: any) {
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+     
       await web.lists
-        .getByTitle("Master Tasks")
-        .items.getById(item.props.Id)
-        .delete()
-        .then((i) => {
+        .getById(RequireData.MasterTaskListID)
+        .items.getById(item.Id)
+        .recycle()
+        .then((i:any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
           setModalIsOpenToFalse();
@@ -1398,15 +1406,15 @@ function EditInstitution(item: any) {
   return (
     <>
       {console.log("Done")}
-      <Panel className={`${EditData.Portfolio_x0020_Type == "Service" ? " serviepannelgreena":""}`}
-        headerText={`${EditData.Portfolio_x0020_Type}-Portfolio > ${EditData.Title}`}
+      <Panel className={`${EditData?.Portfolio_x0020_Type == "Service" ? " serviepannelgreena":""}`}
+        headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
         onRenderHeader={onRenderCustomHeader}
         isBlocking={false}
         type={PanelType.large}
       >
-        {EditData != undefined && EditData.Title != undefined && (
+        {EditData != undefined && EditData?.Title != undefined && (
           <div id="EditGrueneContactSearch">
             <div className="modal-body">
               <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -1488,7 +1496,7 @@ function EditInstitution(item: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData.Title != undefined ? EditData.Title : ""
+                              EditData?.Title != undefined ? EditData?.Title : ""
                             }
                             onChange={(e) => (EditData.Title = e.target.value)}
                           />
@@ -1503,25 +1511,25 @@ function EditInstitution(item: any) {
                             </label>
                             <select
                               className="full_width searchbox_height"
-                              defaultValue={EditData.ItemRankTitle}
+                              defaultValue={EditData?.ItemRankTitle}
                               onChange={(e) =>
                                 (EditData.ItemRankTitle = e.target.value)
                               }
                             >
                               <option>
-                                {EditData.ItemRankTitle == undefined
+                                {EditData?.ItemRankTitle == undefined
                                   ? "select Item Rank"
-                                  : EditData.ItemRankTitle}
+                                  : EditData?.ItemRankTitle}
                               </option>
                               {SharewebItemRank &&
                                 SharewebItemRank.map(function (h: any, i: any) {
                                   return (
                                     <option
                                       key={i}
-                                      defaultValue={EditData.ItemRankTitle}
+                                      defaultValue={EditData?.ItemRankTitle}
                                     >
-                                      {EditData.ItemRankTitle == h.rankTitle
-                                        ? EditData.ItemRankTitle
+                                      {EditData?.ItemRankTitle == h.rankTitle
+                                        ? EditData?.ItemRankTitle
                                         : h.rankTitle}
                                     </option>
                                   );
@@ -1539,8 +1547,8 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Deliverable_x002d_Synonyms != undefined
-                                  ? EditData.Deliverable_x002d_Synonyms
+                                EditData?.Deliverable_x002d_Synonyms != undefined
+                                  ? EditData?.Deliverable_x002d_Synonyms
                                   : ""
                               }
                               onChange={(e) =>
@@ -1551,26 +1559,17 @@ function EditInstitution(item: any) {
                           </div>
                         </div>
                         <div className="col-4 ps-0 pe-0 mt-2 ">
-                          {EditData.Portfolio_x0020_Type == "Service" && (
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Component Portfolio
-                              
-                              <span>
-                              <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                              <div className="popover__content">
-                                                <span>
-                                                Click to activate auto suggest for components/services
-                                                </span>
-
-                                            </div>
-                                            </div>
-                              </span>
                               </label>
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <svg
+                              <span title="Edit Task" className="svg__iconbox svg__icon--editBox"  onClick={(e) =>
+                                    EditComponent(EditData, "Componet")
+                                  }></span>
+                                {/* <svg
                                   onClick={(e) =>
                                     EditComponent(EditData, "Componet")
                                   }
@@ -1584,33 +1583,20 @@ function EditInstitution(item: any) {
                                     d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
                                     fill="#333333"
                                   />
-                                </svg>
+                                </svg> */}
                               </span>
                             </div>
                           )}
-                          {EditData.Portfolio_x0020_Type == "Component" && (
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               <label className="form-label full-width">
                                 Service Portfolio
-                                <span>
-                              <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                              <div className="popover__content">
-                                                <span>
-                                                Click to activate auto suggest for components/services
-                                                </span>
-
-                                            </div>
-                                            </div>
-                              </span>
                               </label>
-                              
                               <input type="text" className="form-control" />
                               <span className="input-group-text">
-                                <svg
-                                  onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
-                                  }
+                              <span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={(e) =>EditComponent(EditData, "Componet")}></span>
+                                {/* <svg
+                                  onClick={(e) =>EditComponent(EditData, "Componet")}
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
                                   fill="none"
@@ -1621,11 +1607,11 @@ function EditInstitution(item: any) {
                                     d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
                                     fill="#333333"
                                   />
-                                </svg>
+                                </svg> */}
                               </span>
                             </div>
                           )}
-                          {EditData.Portfolio_x0020_Type == "Component" && (
+                          {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
@@ -1661,7 +1647,7 @@ function EditInstitution(item: any) {
                                                         </span> */}
                             </div>
                           )}
-                           {EditData.Portfolio_x0020_Type == "Service" && (
+                           {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
@@ -1700,15 +1686,15 @@ function EditInstitution(item: any) {
 
                           <div className="col-sm-12  inner-tabb">
                             <div>
-                              {/* {(EditData != undefined && EditData.smartComponent != undefined)?
+                              {/* {(EditData != undefined && EditData?.smartComponent != undefined)?
                                                                 <>
-                                                                {(EditData != undefined && EditData.smartComponent != undefined && EditData.smartComponent.length>0)&& EditData.smartComponent.map((childinew: any) =>{
+                                                                {(EditData != undefined && EditData?.smartComponent != undefined && EditData?.smartComponent.length>0)&& EditData?.smartComponent.map((childinew: any) =>{
                                                                 return(
                                                                     < div className="block bgsiteColor"
 
                                                                     >
                                                                         <a className="hreflink" target="_blank"
-                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData?.Id}}&amp;Site={{EditData?.siteType}}">{childinew.Title}</a>
                                                                         <a className="hreflink"
                                                                         >
                                                                             <img src="/_layouts/images/delete.gif" ></img>
@@ -1717,13 +1703,13 @@ function EditInstitution(item: any) {
                                                                 )}
                                                                 )}
                                                                 </>:<>
-                                                                 {(EditData != undefined && EditData.Component != undefined  && EditData.Component.length>0) && EditData.Component.map((childinew: any) =>{
+                                                                 {(EditData != undefined && EditData?.Component != undefined  && EditData?.Component.length>0) && EditData?.Component.map((childinew: any) =>{
                                                                  return(
                                                                     < div className="block bgsiteColor"
 
                                                                     >
                                                                         <a className="hreflink" target="_blank"
-                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData.Id}}&amp;Site={{EditData.siteType}}">{childinew.Title}</a>
+                                                                            href="{{pageContext}}/SitePages/Portfolio-Profile.aspx?taskId={{EditData?.Id}}&amp;Site={{EditData?.siteType}}">{childinew.Title}</a>
                                                                         <a className="hreflink"
                                                                         >
                                                                             <img src="/_layouts/images/delete.gif" ></img>
@@ -1781,7 +1767,7 @@ function EditInstitution(item: any) {
                               Start Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={moment(EditData.StartDate).format("YYYY-MM-DD")}
+                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
                                                         })}
@@ -1795,7 +1781,7 @@ function EditInstitution(item: any) {
                               Due Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
+                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
                                                         })}
@@ -1809,7 +1795,7 @@ function EditInstitution(item: any) {
                               Completion Date{" "}
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
+                                                        defaultValue={EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
                                                         })}
@@ -1826,17 +1812,17 @@ function EditInstitution(item: any) {
                             <input
                               type="text"
                               className="form-control"
-                              defaultValue={EditData.SynonymsTitle}
+                              defaultValue={EditData?.SynonymsTitle}
                               onChange={(e) =>
                                 (EditData.SynonymsTitle = e.target.value)
                               }
                             />
-                            <span
-                              className="input-group-text"
+                            <span className="input-group-text"
                               onClick={(e) => createSynonyms(EditData)}
                             >
                               {" "}
-                              <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img>
+                              <span title="Edit Task" className="svg__iconbox svg__icon--Save"></span>
+                              {/* <img src="https://www.shareweb.ch/site/Joint/SiteCollectionImages/ICONS/24/save.png"></img> */}
                             </span>
                           </div>
                           <div className="">
@@ -1869,8 +1855,8 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Twitter != null
-                                  ? EditData.Twitter.Description
+                                EditData?.Twitter != null
+                                  ? EditData?.Twitter.Description
                                   : ""
                               }
                             />
@@ -1886,7 +1872,7 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData.Package != null ? EditData.Package : ""
+                                EditData?.Package != null ? EditData?.Package : ""
                               }
                               onChange={(e) =>
                                 (EditData.Package = e.target.value)
@@ -1904,7 +1890,7 @@ function EditInstitution(item: any) {
                             <input
                               type="text"
                               className="form-control"
-                              value={EditData.AdminStatus}
+                              value={EditData?.AdminStatus}
                               onChange={(e) => ChangeStatus(e, EditData)}
                             />
                           </div>
@@ -1916,7 +1902,7 @@ function EditInstitution(item: any) {
                               type="radio"
                               value="Not Started"
                               checked={
-                                EditData.AdminStatus === "Not Started"
+                                EditData?.AdminStatus === "Not Started"
                                   ? true
                                   : false
                               }
@@ -1938,7 +1924,7 @@ function EditInstitution(item: any) {
                                 setStatus(EditData, "In Preparation")
                               }
                               checked={
-                                EditData.AdminStatus === "In Preparation"
+                                EditData?.AdminStatus === "In Preparation"
                                   ? true
                                   : false
                               }
@@ -1958,7 +1944,7 @@ function EditInstitution(item: any) {
                                 setStatus(EditData, "In Development")
                               }
                               checked={
-                                EditData.AdminStatus === "In Development"
+                                EditData?.AdminStatus === "In Development"
                                   ? true
                                   : false
                               }
@@ -1976,7 +1962,7 @@ function EditInstitution(item: any) {
                               value="Active"
                               onChange={(e) => setStatus(EditData, "Active")}
                               checked={
-                                EditData.AdminStatus === "Active" ? true : false
+                                EditData?.AdminStatus === "Active" ? true : false
                               }
                             ></input>
                             <label className="form-check-label">Active</label>
@@ -1989,7 +1975,7 @@ function EditInstitution(item: any) {
                               value="Archived"
                               onChange={(e) => setStatus(EditData, "Archived")}
                               checked={
-                                EditData.AdminStatus === "Archived"
+                                EditData?.AdminStatus === "Archived"
                                   ? true
                                   : false
                               }
@@ -2008,7 +1994,7 @@ function EditInstitution(item: any) {
                               type="text"
                               className="form-control"
                               value={
-                                EditData.Mileage != null ? EditData.Mileage : ""
+                                EditData?.Mileage != null ? EditData?.Mileage : ""
                               }
                               onChange={(e) => changeTime(e, EditData)}
                             />
@@ -2019,7 +2005,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
-                              checked={EditData.Mileage === "05" ? true : false}
+                              checked={EditData?.Mileage === "05" ? true : false}
                               type="radio"
                             ></input>
                             <label className="form-check-label">
@@ -2031,7 +2017,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
-                              checked={EditData.Mileage === "15" ? true : false}
+                              checked={EditData?.Mileage === "15" ? true : false}
                               type="radio"
                             ></input>
 
@@ -2042,7 +2028,7 @@ function EditInstitution(item: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
-                              checked={EditData.Mileage === "60" ? true : false}
+                              checked={EditData?.Mileage === "60" ? true : false}
                               type="radio"
                             ></input>
                             <label className="form-check-label">Medium</label>
@@ -2053,7 +2039,7 @@ function EditInstitution(item: any) {
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "240")}
                               checked={
-                                EditData.Mileage === "240" ? true : false
+                                EditData?.Mileage === "240" ? true : false
                               }
                               type="radio"
                             ></input>
@@ -2071,7 +2057,7 @@ function EditInstitution(item: any) {
                           <input
                             type="text"
                             className="form-control"
-                            value={EditData.Priority_x0020_Rank}
+                            value={EditData?.Priority_x0020_Rank}
                             onChange={(e) => setPriorityNew(e, EditData)}
                             maxLength={2}
                           />
@@ -2085,7 +2071,7 @@ function EditInstitution(item: any) {
                             value="(1) High"
                             onChange={(e) => setPriority(EditData, 8)}
                             checked={
-                              EditData.Priority === "(1) High" ? true : false
+                              EditData?.Priority === "(1) High" ? true : false
                             }
                           ></input>
                           <label> High</label>
@@ -2098,7 +2084,7 @@ function EditInstitution(item: any) {
                             value="(2) Normal"
                             onChange={(e) => setPriority(EditData, 4)}
                             checked={
-                              EditData.Priority === "(2) Normal" ? true : false
+                              EditData?.Priority === "(2) Normal" ? true : false
                             }
                           ></input>
                           <label> Normal</label>
@@ -2111,7 +2097,7 @@ function EditInstitution(item: any) {
                             value="(3) Low"
                             onChange={(e) => setPriority(EditData, 1)}
                             checked={
-                              EditData.Priority === "(3) Low" ? true : false
+                              EditData?.Priority === "(3) Low" ? true : false
                             }
                           ></input>
                           <label> Low</label>
@@ -2123,7 +2109,7 @@ function EditInstitution(item: any) {
                                     <label className="form-label full-width  mx-2">
                                       Task Users
                                     </label>
-                                    {EditData.AssignedUsers?.map(
+                                    {EditData?.AssignedUsers?.map(
                               (userDtl: any, index: any) => {
                                 return (
                                     <a
@@ -2174,28 +2160,16 @@ function EditInstitution(item: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData.Facebook != null
-                                ? EditData.Facebook.Description
+                              EditData?.Facebook != null
+                                ? EditData?.Facebook.Description
                                 : ""
                             }
                           />
 
                           <span className="input-group-text">
-                            <svg
-                              onClick={(e) =>
-                                EditComponentPicker(EditData, "Categories")
-                              }
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 48 48"
-                              fill="none"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                fill="#333333"
-                              />
-                            </svg>
+                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox"   onClick={(e) => EditComponentPicker(EditData, "Categories")
+                              }></span>
+              
                           </span>
                         </div>
 
@@ -2204,7 +2178,7 @@ function EditInstitution(item: any) {
                                                        
                                                         {CategoriesData != "" ?
                                                             <div className="Component-container-edit-task d-flex justify-content-between">
-                                                                <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}>
                                                                     {CategoriesData}
                                                                 </a>
                                                                 <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setCategoriesData('')} className="p-1" />
@@ -2284,7 +2258,7 @@ function EditInstitution(item: any) {
                                                   }}
                                                   target="_blank"
                                                   data-interception="off"
-                                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
+                                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
                                                 >
                                                   {type.Title}
                                                 </a>
@@ -2310,21 +2284,21 @@ function EditInstitution(item: any) {
                     </div>
                     <div className="col-sm-4  ">
                       <CommentCard
-                        siteUrl={EditData.siteUrl}
-                        userDisplayName={EditData.userDisplayName}
-                        listName={EditData.siteType}
-                        itemID={EditData.Id}
+                        siteUrl={EditData?.siteUrl}
+                        userDisplayName={EditData?.userDisplayName}
+                        listName={EditData?.siteType}
+                        itemID={EditData?.Id}
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width"></label>
+                        <label className="form-label  full-width">Url</label>
                         <input
                           type="text"
                           className="form-control"
                           defaultValue={
-                            EditData.component_x0020_link != null
-                              ? EditData.component_x0020_link
+                            EditData?.component_x0020_link != null
+                              ? EditData?.component_x0020_link
                               : ""
                           }
                           onChange={(e) =>
@@ -2332,7 +2306,6 @@ function EditInstitution(item: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" href={EditData.component_x0020_link}>Open</a></span>
                       </div>
                     </div>
                   </div>
@@ -2348,7 +2321,8 @@ function EditInstitution(item: any) {
                     <div className="col-sm-7">
                       <div className="row">
                         <TeamConfigurationCard
-                          ItemInfo={item.props}
+                          ItemInfo={item}
+                          Sitel={RequireData}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
                       </div>
@@ -2374,7 +2348,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showsAdmin ? (
+                                      {EditData?.showsAdmin ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2387,7 +2361,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showsAdmin && (
+                                  {EditData?.showsAdmin && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2395,7 +2369,7 @@ function EditInstitution(item: any) {
                                       <textarea
                                         className="full_width"
                                         defaultValue={
-                                          EditData.Admin_x0020_Notes
+                                          EditData?.Admin_x0020_Notes
                                         }
                                         onChange={(e) =>
                                           (EditData.Admin_x0020_Notes =
@@ -2424,7 +2398,7 @@ function EditInstitution(item: any) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {EditData.showdes ? (
+                                        {EditData?.showdes ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -2435,7 +2409,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showdes && (
+                                  {EditData?.showdes && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2444,7 +2418,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.descriptionVerified ===
+                                            EditData?.descriptionVerified ===
                                             true
                                           }
                                         ></input>
@@ -2453,8 +2427,8 @@ function EditInstitution(item: any) {
                                       {/* <HtmlEditorCard editorValue={this.state.editorValue} HtmlEditorStateChange={this.HtmlEditorStateChange}></HtmlEditorCard> */}
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Body != undefined
-                                            ? EditData.Body
+                                          EditData?.Body != undefined
+                                            ? EditData?.Body
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2483,7 +2457,7 @@ function EditInstitution(item: any) {
                                   >
                                     <span className="fw-medium font-sans-serif text-900">
                                       <span className="sign">
-                                        {EditData.show ? (
+                                        {EditData?.show ? (
                                           <IoMdArrowDropdown />
                                         ) : (
                                           <IoMdArrowDropright />
@@ -2494,7 +2468,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.show && (
+                                  {EditData?.show && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2503,7 +2477,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.ShortDescriptionVerified ===
+                                            EditData?.ShortDescriptionVerified ===
                                             true
                                           }
                                         ></input>
@@ -2512,9 +2486,9 @@ function EditInstitution(item: any) {
 
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Short_x0020_Description_x0020_On !=
+                                          EditData?.Short_x0020_Description_x0020_On !=
                                           undefined
-                                            ? EditData.Short_x0020_Description_x0020_On
+                                            ? EditData?.Short_x0020_Description_x0020_On
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2543,7 +2517,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showl ? (
+                                      {EditData?.showl ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2556,7 +2530,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showl && (
+                                  {EditData?.showl && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2565,7 +2539,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.BackgroundVerified === true
+                                            EditData?.BackgroundVerified === true
                                           }
                                           onChange={(e) =>
                                             (EditData.BackgroundVerified =
@@ -2576,7 +2550,7 @@ function EditInstitution(item: any) {
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.Background}
+                                        defaultValue={EditData?.Background}
                                         onChange={(e) =>
                                           (EditData.Background = e.target.value)
                                         }
@@ -2603,7 +2577,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.shows ? (
+                                      {EditData?.shows ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2616,7 +2590,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.shows && (
+                                  {EditData?.shows && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2625,7 +2599,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.IdeaVerified === true
+                                            EditData?.IdeaVerified === true
                                           }
                                           onChange={(e) =>
                                             (EditData.BackgroundVerified =
@@ -2636,7 +2610,7 @@ function EditInstitution(item: any) {
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.Idea}
+                                        defaultValue={EditData?.Idea}
                                         onChange={(e) =>
                                           (EditData.Idea = e.target.value)
                                         }
@@ -2663,7 +2637,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showj ? (
+                                      {EditData?.showj ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2676,7 +2650,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showj && (
+                                  {EditData?.showj && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2685,7 +2659,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.ValueAddedVerified === true
+                                            EditData?.ValueAddedVerified === true
                                           }
                                           onChange={(e) =>
                                             (EditData.ValueAddedVerified =
@@ -2696,7 +2670,7 @@ function EditInstitution(item: any) {
                                       </span>
                                       <textarea
                                         className="full_width"
-                                        defaultValue={EditData.ValueAdded}
+                                        defaultValue={EditData?.ValueAdded}
                                         onChange={(e) =>
                                           (EditData.ValueAdded = e.target.value)
                                         }
@@ -2723,7 +2697,7 @@ function EditInstitution(item: any) {
                                     data-bs-toggle="collapse"
                                   >
                                     <span className="sign">
-                                      {EditData.showm ? (
+                                      {EditData?.showm ? (
                                         <IoMdArrowDropdown />
                                       ) : (
                                         <IoMdArrowDropright />
@@ -2736,7 +2710,7 @@ function EditInstitution(item: any) {
                                   </button>
                                 </div>
                                 <div className="accordion-collapse collapse show">
-                                  {EditData.showm && (
+                                  {EditData?.showm && (
                                     <div
                                       className="accordion-body pt-1"
                                       id="testDiv1"
@@ -2745,7 +2719,7 @@ function EditInstitution(item: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData.DeliverablesVerified ===
+                                            EditData?.DeliverablesVerified ===
                                             true
                                           }
                                         ></input>
@@ -2753,8 +2727,8 @@ function EditInstitution(item: any) {
                                       </span>
                                       <HtmlEditorCard
                                         editorValue={
-                                          EditData.Deliverables != undefined
-                                            ? EditData.Deliverables
+                                          EditData?.Deliverables != undefined
+                                            ? EditData?.Deliverables
                                             : ""
                                         }
                                         HtmlEditorStateChange={
@@ -2819,7 +2793,7 @@ function EditInstitution(item: any) {
                                 <input
                                   type="checkbox"
                                   defaultValue={
-                                    EditData.TechnicalExplanationsVerified
+                                    EditData?.TechnicalExplanationsVerified
                                   }
                                 />
                                 <span className="ps-1">Verified</span>
@@ -2827,8 +2801,8 @@ function EditInstitution(item: any) {
 
                               <HtmlEditorCard
                                 editorValue={
-                                  EditData.TechnicalExplanations != undefined
-                                    ? EditData.TechnicalExplanations
+                                  EditData?.TechnicalExplanations != undefined
+                                    ? EditData?.TechnicalExplanations
                                     : ""
                                 }
                                 HtmlEditorStateChange={
@@ -2859,30 +2833,30 @@ function EditInstitution(item: any) {
                 <div>
                   <div className="text-left">
                     Created{" "}
-                    <span ng-bind="EditData.Created | date:'dd/MM/yyyy'">
+                    <span ng-bind="EditData?.Created | date:'dd/MM/yyyy'">
                       {" "}
-                      {EditData.Created != null
-                        ? moment(EditData.Created).format("DD/MM/YYYY MM:SS")
+                      {EditData?.Created != null
+                        ? moment(EditData?.Created).format("DD/MM/YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by
                     <span className="panel-title ps-1">
-                      {EditData.Author?.Title != undefined
-                        ? EditData.Author?.Title
+                      {EditData?.Author?.Title != undefined
+                        ? EditData?.Author?.Title
                         : ""}
                     </span>
                   </div>
                   <div className="text-left">
                     Last modified{" "}
                     <span>
-                      {EditData.Modified != null
-                        ? moment(EditData.Modified).format("DD/MM/YYYY MM:SS")
+                      {EditData?.Modified != null
+                        ? moment(EditData?.Modified).format("DD/MM/YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by{" "}
                     <span className="panel-title">
-                      {EditData.Editor.Title != undefined
-                        ? EditData.Editor.Title
+                      {EditData?.Editor.Title != undefined
+                        ? EditData?.Editor.Title
                         : ""}
                     </span>
                   </div>
@@ -2905,10 +2879,10 @@ function EditInstitution(item: any) {
                     </a>
                     <span>
                       {" "}
-                      {EditData.ID ? (
+                      {EditData?.ID ? (
                         <VersionHistoryPopup
-                          taskId={EditData.ID}
-                          listId={listID}
+                          taskId={EditData?.ID}
+                          listId={RequireData.MasterTask}
                         />
                       ) : (
                         ""
@@ -2921,7 +2895,7 @@ function EditInstitution(item: any) {
                     <span>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${EditData.Id}`}
+                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData?.Id}&name=${EditData?.Title}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page
@@ -2933,7 +2907,7 @@ function EditInstitution(item: any) {
                       />
                       <a
                         href={`mailto:?subject=${"Test"}&body=${
-                          EditData.component_x0020_link
+                          EditData?.component_x0020_link
                         }`}
                       >
                         {" "}
@@ -2943,7 +2917,7 @@ function EditInstitution(item: any) {
                     <span className="p-1">|</span>
                     <a
                       className="p-1"
-                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
+                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData?.Id}`}
                       target="_blank"
                       data-interception="off"
                     >
@@ -2968,15 +2942,17 @@ function EditInstitution(item: any) {
               </div>
             </footer>
 
-            {IsComponent && item.props.Portfolio_x0020_Type == "Component" && (
+            {IsComponent && item.Portfolio_x0020_Type == "Component" && (
               <LinkedComponent
                 props={SharewebComponent}
+                Dynamic={RequireData}
                 Call={Call}
               ></LinkedComponent>
             )}
-            {IsComponent && item.props.Portfolio_x0020_Type == "Service" && (
+            {IsComponent && item.Portfolio_x0020_Type == "Service" && (
               <ComponentPortPolioPopup
                 props={SharewebComponent}
+                Dynamic={RequireData}
                 Call={Call}
               ></ComponentPortPolioPopup>
             )}
