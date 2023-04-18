@@ -37,6 +37,7 @@ export default class TaskDashboardHhhhWebPart extends BaseClientSideWebPart<ITas
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         pageContext: this.context.pageContext,
+        Context:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskUsertListID: this.properties.TaskUsertListID,
