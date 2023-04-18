@@ -1083,7 +1083,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ParentTask.Id}&Site=${breadcrumbitem?.ParentTask?.siteType}`}>{breadcrumbitem?.ParentTask?.Title}</a>
                       </li>
                     }
-                    {breadcrumbitem.ChildTask != undefined && breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined &&
+                    {breadcrumbitem.ChildTask != undefined &&
                       <li className="ng-scope" >
 
                         <a target="_blank" data-interception="off" className="ng-binding" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${breadcrumbitem.ChildTask.Id}&Site=${breadcrumbitem?.ChildTask?.siteType}`}>{breadcrumbitem?.ChildTask?.Title}</a>
@@ -1135,33 +1135,33 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
               <div className="team_member row">
                 <div className='col-md-4 p-0'>
                   <dl>
-                    <dt className='bg-fxdark'>Task Id</dt>
-                    <dd className='bg-light position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
+                    <dt className='bg-Fa'>Task Id</dt>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
                       {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF.replace("-",">")}{TaskIdAW==""&&this.state.Result["TaskId"]!=undefined&&<span className='text-body'>{">"+this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
                    
                     </dd>
 
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>Due Date</dt>
-                    <dd className='bg-light'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
+                    <dt className='bg-Fa'>Due Date</dt>
+                    <dd className='bg-Ff'>{this.state.Result["DueDate"] != null && this.state.Result["DueDate"] != undefined ? moment(this.state.Result["DueDate"]).format("DD/MM/YYYY") : ''}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>Start Date</dt>
-                    <dd className='bg-light'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
+                    <dt className='bg-Fa'>Start Date</dt>
+                    <dd className='bg-Ff'>{this.state.Result["StartDate"] != undefined ? this.state.Result["StartDate"] : ""}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>Completion Date</dt>
-                    <dd className='bg-light'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
+                    <dt className='bg-Fa'>Completion Date</dt>
+                    <dd className='bg-Ff'> {this.state.Result["CompletedDate"] != undefined ? this.state.Result["CompletedDate"] : ""}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark' title="Task Id">Categories</dt>
+                    <dt className='bg-Fa' title="Task Id">Categories</dt>
 
-                    <dd className='bg-light text-break'>{this.state.Result["Categories"]}</dd>
+                    <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>SmartTime Total</dt>
-                    <dd className='bg-light '>
+                    <dt className='bg-Fa'>SmartTime Total</dt>
+                    <dd className='bg-Ff'>
                       <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ?<SmartTimeTotal  AllListId={AllListId} props={this.state.Result} /> : null}</span>
                     </dd>
 
@@ -1170,8 +1170,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                 <div className='col-md-4 p-0'>
                   <dl>
-                    <dt className='bg-fxdark'>Team Members</dt>
-                    <dd className='bg-light'>
+                    <dt className='bg-Fa'>Team Members</dt>
+                    <dd className='bg-Ff'>
                       <div className="d-flex align-items-center">
                         {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
                           return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
@@ -1228,25 +1228,25 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </dl>
 
                   <dl>
-                    <dt className='bg-fxdark'>Status</dt>
-                    <dd className='bg-light'>{this.state.Result["Status"]}</dd>
+                    <dt className='bg-Fa'>Status</dt>
+                    <dd className='bg-Ff'>{this.state.Result["Status"]}</dd>
                   </dl>
 
                   <dl>
-                    <dt className='bg-fxdark'>Item Rank</dt>
-                    <dd className='bg-light'>{this.state.Result["ItemRank"]}</dd>
+                    <dt className='bg-Fa'>Item Rank</dt>
+                    <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>% Complete</dt>
-                    <dd className='bg-light'>{this.state.Result["PercentComplete"]}</dd>
+                    <dt className='bg-Fa'>% Complete</dt>
+                    <dd className='bg-Ff'>{this.state.Result["PercentComplete"]}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>Priority</dt>
-                    <dd className='bg-light'>{this.state.Result["Priority"]}</dd>
+                    <dt className='bg-Fa'>Priority</dt>
+                    <dd className='bg-Ff'>{this.state.Result["Priority"]}</dd>
                   </dl>
                   <dl>
-                    <dt className='bg-fxdark'>Created</dt>
-                    <dd className='bg-light'>
+                    <dt className='bg-Fa'>Created</dt>
+                    <dd className='bg-Ff'>
                       {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                           <a title={this.state.Result["Author"][0].Title} >
@@ -1264,8 +1264,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                   <dl>
 
-                    <dt className='bg-fxdark'>Portfolio</dt>
-                    <dd className='bg-light full-width'>
+                    <dt className='bg-Fa'>Portfolio</dt>
+                    <dd className='bg-Ff full-width'>
                       {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 && this.state.Result["Component"]?.map((componentdt: any, i: any) => {
                         return (
                           <a className="hreflink ng-binding" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${componentdt.Id}`}>{componentdt.Title}</a>
@@ -1292,7 +1292,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                             {ClientTimeArray?.map((cltime: any, i: any) => {
                               return <li className="Sitelist">
                                 <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName)} />
+                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName)?this.GetSiteIcon(cltime?.SiteName):this.GetSiteIcon(cltime?.Title)} />
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
@@ -1306,31 +1306,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         </div>
                       </div>
                     }
-                    {/*  allready commented 
-                    
-                    {this.state.Result["ClientTime"] != null && this.state.Result["ClientTime"].length > 0 &&
-                      <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
-                          <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                        </a>
-                        <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
-                          <ul>
-                            {this.state.Result["ClientTime"].map((cltime: any, i: any) => {
-                              return <li className="dropdown-item">
-                                <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime.SiteName)} />
-                                </span>
-                                {cltime.ClienTimeDescription != undefined &&
-                                  <span>
-                                    {cltime.ClienTimeDescription}.00%
-                                  </span>
-                                }
-                              </li>
-                            })}
-                          </ul>
-                        </div>
-                      </div>
-                    } */}
+                   
 
                   </dl>
 
@@ -1340,8 +1316,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
               </div>
               <div className='row'>
                 <div className="d-flex p-0">
-                  <div className='bg-fxdark p-2'><label>Url</label></div>
-                  <div className='bg-light p-2 text-break full-width'>
+                  <div className='bg-Fa p-2'><label>Url</label></div>
+                  <div className='bg-Ff p-2 text-break full-width'>
                     {this.state.Result["component_url"] != null &&
                       <a target="_blank" data-interception="off" href={this.state.Result["component_url"].Url}>{this.state.Result["component_url"].Url}</a>
                     }
@@ -1367,7 +1343,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                             <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
                               <div className='usericons'>
-                                <span ng-show="attachedFiles.FileName==imageInfo.ImageName" ng-repeat="imageInfo in BasicImageInfo">
+                                <span>
                                   <span >{imgData?.UploadeDate}</span>
                                   <span className='round px-1'>
                                     {imgData?.UserImage != null &&
@@ -1429,7 +1405,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </div>
                 </div>
 
-                {/* Backgroundimage code and comment */}
+                {/*===================Backgroundimage code and comment========== */}
 
                 {this.backGroundComment ? <div className="col">
                   <div className="Taskaddcomment row">
@@ -1461,15 +1437,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                                     <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                   }
                                 </span>
-
-                              </div>
-                              {/* <div>
-                                <span >
-                                  {imgData.ImageName.length > 15 ? imgData.ImageName.substring(0, 15) + '...' : imgData.ImageName}
-                                </span>
-                                <span>|</span>
-                              </div> */}
-
+                                   </div>
                             </div>
 
                           </div>
