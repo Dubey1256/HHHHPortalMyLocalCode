@@ -43,9 +43,9 @@ import {
 } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { BsFillCaretRightFill, BsFillCaretDownFill } from "react-icons/bs";
 import { HTMLProps } from 'react';
 import HighlightableCell from './highlight';
+import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/Bs';
 
 
 

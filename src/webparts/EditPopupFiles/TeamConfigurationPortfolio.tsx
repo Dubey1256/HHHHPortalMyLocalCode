@@ -385,7 +385,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     public render(): React.ReactElement<ITeamConfigurationProps> {
         return (
             <>
-                <div className="col">
+                <div className={(this.props.ItemInfo.Portfolio_x0020_Type!=undefined && this.props.ItemInfo.Portfolio_x0020_Type == "Service")?"serviepannelgreena col":"col"}>
                     <div className="col bg-ee p-1">
                         <div ng-if="teamUserExpanded" className="d-flex justify-content-between align-items-center" ng-click="forCollapse()">
                             <span>
@@ -407,7 +407,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, index: number) => {
                                     return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
                                         {user.childs.length > 0 &&
-                                            <div ng-if="user.childs.length >0" className="team ng-scope">
+                                            <div ng-if="user.childs.length >0" className="team siteColor">
                                                 <label className="BdrBtm">
                                                     {user.Title}
                                                 </label>
@@ -479,7 +479,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     </div>
                                 </div>
 
-                                <div className='col-sm-3'>
+                                {/* <div className='col-sm-3'>
                                     <h6 >Working Members</h6>
                                     <div className="col"
                                         onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
@@ -501,14 +501,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
 
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="col-sm-2">
                                     <div>
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
+                                                src={(this.props.ItemInfo.Portfolio_x0020_Type!=undefined && this.props.ItemInfo.Portfolio_x0020_Type == "Service")?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"} />
                                         </div>
                                     </div>
                                 </div>

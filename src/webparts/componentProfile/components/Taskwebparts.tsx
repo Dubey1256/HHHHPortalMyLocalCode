@@ -91,6 +91,34 @@ export default function ComponentTable({ props,NextProp }: any) {
   const [RestructureChecked, setRestructureChecked] = React.useState([]);
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
 
+
+
+
+
+  // CustomHeader of the Add Structure
+  
+  const onRenderCustomHeader = () => {
+    return (
+        <div className= {IsUpdated == 'Service Portfolio' ? 'd-flex full-width pb-1 serviepannelgreena' : 'd-flex full-width pb-1'} >
+        
+            <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <span>
+                 
+                {(props!=undefined||checkedList[0]!=undefined) &&
+                <>
+                 <a href={NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+checkedList[0].Id}><img src={checkedList[0]?.SiteIcon} className='Dyicons '/>{(props!=undefined&&checkedList[0]===undefined)?props.Title:checkedList[0].Title}- Create Child Item</a>
+                
+                </>
+                }
+                </span>
+            </div>
+            <Tooltip ComponentId={1272} />
+        </div>
+    );
+};
+
+// CustomHeader of the Add Structure End
+
   function handleClick(item: any) {
     const index = items.indexOf(item);
     if (index !== -1) {
@@ -4496,24 +4524,18 @@ export default function ComponentTable({ props,NextProp }: any) {
                                           <a>
                                             {item.siteType ==
                                               "Master Tasks" && (
-                                              <img
-                                                src={require("../../../Assets/ICON/edit_page.svg")}
-                                                width="25"
-                                                onClick={(e) =>
-                                                  EditComponentPopup(item)
-                                                }
-                                              />
+                                             
+                                             <span className="svg__iconbox svg__icon--edit" onClick={(e) =>
+                                              EditComponentPopup(item)
+                                            }> 
+
+                                              </span>
                                             )}
                                             {item.Item_x0020_Type == "Task" &&
                                               item.siteType !=
                                                 "Master Tasks" && (
-                                                <img
-                                                  src={require("../../../Assets/ICON/edit_page.svg")}
-                                                  width="25"
-                                                  onClick={(e) =>
-                                                    EditItemTaskPopup(item)
-                                                  }
-                                                />
+                                                  <span  onClick={(e) => EditItemTaskPopup(item)} className="svg__iconbox svg__icon--edit"></span>
+                                               
                                               )}
                                           </a>
                                         </td>
@@ -4833,29 +4855,15 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                       <a>
                                                         {childitem.siteType ==
                                                           "Master Tasks" && (
-                                                          <img
-                                                            src={require("../../../Assets/ICON/edit_page.svg")}
-                                                            width="25"
-                                                            onClick={(e) =>
-                                                              EditComponentPopup(
-                                                                childitem
-                                                              )
-                                                            }
-                                                          />
+                                                            <span  onClick={(e) => EditComponentPopup(childitem)} className="svg__iconbox svg__icon--edit"></span>
+                                            
                                                         )}
                                                         {childitem.Item_x0020_Type ==
                                                           "Task" &&
                                                           childitem.siteType !=
                                                             "Master Tasks" && (
-                                                            <img
-                                                              src={require("../../../Assets/ICON/edit_page.svg")}
-                                                              width="25"
-                                                              onClick={(e) =>
-                                                                EditItemTaskPopup(
-                                                                  childitem
-                                                                )
-                                                              }
-                                                            />
+                                                              <span  onClick={(e) => EditItemTaskPopup(childitem)} className="svg__iconbox svg__icon--edit"></span>
+                                                 
                                                           )}
                                                       </a>
                                                     </td>
@@ -5309,33 +5317,15 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                       <a>
                                                                         {childinew.siteType ==
                                                                           "Master Tasks" && (
-                                                                          <img
-                                                                            src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                            width="25"
-                                                                            onClick={(
-                                                                              e
-                                                                            ) =>
-                                                                              EditComponentPopup(
-                                                                                childinew
-                                                                              )
-                                                                            }
-                                                                          />
+                                                                            <span onClick={(e) => EditComponentPopup(childinew )}  className="svg__iconbox svg__icon--edit"></span>
+                                                                        
                                                                         )}
                                                                         {childinew.Item_x0020_Type ==
                                                                           "Task" &&
                                                                           childinew.siteType !=
                                                                             "Master Tasks" && (
-                                                                            <img
-                                                                              src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                              width="25"
-                                                                              onClick={(
-                                                                                e
-                                                                              ) =>
-                                                                                EditItemTaskPopup(
-                                                                                  childinew
-                                                                                )
-                                                                              }
-                                                                            />
+                                                                              <span onClick={(e) => EditItemTaskPopup(childinew )}  className="svg__iconbox svg__icon--edit"></span>
+                                                            
                                                                           )}
                                                                       </a>
                                                                     </td>
@@ -5784,33 +5774,15 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                     <a>
                                                                                       {subchilditem.siteType ==
                                                                                         "Master Tasks" && (
-                                                                                        <img
-                                                                                          src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                          width="25"
-                                                                                          onClick={(
-                                                                                            e
-                                                                                          ) =>
-                                                                                            EditComponentPopup(
-                                                                                              subchilditem
-                                                                                            )
-                                                                                          }
-                                                                                        />
+                                                                                          <span onClick={(e) => EditComponentPopup(subchilditem )}  className="svg__iconbox svg__icon--edit"></span>
+                                                                                       
                                                                                       )}
                                                                                       {subchilditem.Item_x0020_Type ==
                                                                                         "Task" &&
                                                                                         subchilditem.siteType !=
                                                                                           "Master Tasks" && (
-                                                                                          <img
-                                                                                            src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                            width="25"
-                                                                                            onClick={(
-                                                                                              e
-                                                                                            ) =>
-                                                                                              EditItemTaskPopup(
-                                                                                                subchilditem
-                                                                                              )
-                                                                                            }
-                                                                                          />
+                                                                                            <span onClick={(e) => EditItemTaskPopup(subchilditem )}  className="svg__iconbox svg__icon--edit"></span>
+                                                                                   
                                                                                         )}
                                                                                     </a>
                                                                                   </td>
@@ -6260,33 +6232,24 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                                   <a>
                                                                                                     {nextsubchilditem.siteType ==
                                                                                                       "Master Tasks" && (
-                                                                                                      <img
-                                                                                                        src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                                        width="25"
-                                                                                                        onClick={(
+                                                                                                        <span onClick={(
                                                                                                           e
                                                                                                         ) =>
                                                                                                           EditComponentPopup(
-                                                                                                            nextsubchilditem
-                                                                                                          )
-                                                                                                        }
-                                                                                                      />
+                                                                                                            nextsubchilditem)} className="svg__iconbox svg__icon--clock"></span>
+                                                                                                  
                                                                                                     )}
                                                                                                     {nextsubchilditem.Item_x0020_Type ==
                                                                                                       "Task" &&
                                                                                                       nextsubchilditem.siteType !=
                                                                                                         "Master Tasks" && (
-                                                                                                        <img
-                                                                                                          src={require("../../../Assets/ICON/edit_page.svg")}
-                                                                                                          width="25"
-                                                                                                          onClick={(
+                                                                                                          <span onClick={(
                                                                                                             e
                                                                                                           ) =>
-                                                                                                            EditItemTaskPopup(
-                                                                                                              nextsubchilditem
-                                                                                                            )
-                                                                                                          }
-                                                                                                        />
+                                                                                                          EditItemTaskPopup(
+                                                                                                              nextsubchilditem)} className="svg__iconbox svg__icon--clock"></span>
+
+                                                          
                                                                                                       )}
                                                                                                   </a>
                                                                                                 </td>
@@ -6360,7 +6323,8 @@ export default function ComponentTable({ props,NextProp }: any) {
       )}
 
       <Panel
-        headerText={` Create Component `}
+        
+        onRenderHeader={onRenderCustomHeader} 
         type={PanelType.medium}
         isOpen={addModalOpen}
         isBlocking={false}
