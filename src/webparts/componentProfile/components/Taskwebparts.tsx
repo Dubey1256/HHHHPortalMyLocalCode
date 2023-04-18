@@ -99,14 +99,14 @@ export default function ComponentTable({ props,NextProp }: any) {
   
   const onRenderCustomHeader = () => {
     return (
-        <div className= {IsUpdated == 'Service Portfolio' ? 'd-flex full-width pb-1 serviepannelgreena' : 'd-flex full-width pb-1'} >
+        <div className= {IsUpdated == "Service" ? 'd-flex full-width pb-1 serviepannelgreena' : 'd-flex full-width pb-1'} >
         
             <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                 <span>
                  
                 {(props!=undefined||checkedList[0]!=undefined) &&
                 <>
-                 <a href={NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+checkedList[0].Id}><img src={checkedList[0]?.SiteIcon} className='Dyicons '/>{(props!=undefined&&checkedList[0]===undefined)?props.Title:checkedList[0].Title}- Create Child Item</a>
+                 <a href={NextProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+checkedList[0]?.Id}><img className="icon-sites-img" src={checkedList[0]?.SiteIcon} />{(props!=undefined&&checkedList[0]===undefined)?props.Title:checkedList[0].Title}- Create Child Item</a>
                 
                 </>
                 }

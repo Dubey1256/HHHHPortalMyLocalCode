@@ -363,7 +363,7 @@ private approvalcallback(){
         { this.state?.emailcomponentopen && countemailbutton==0&&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />}
         <div className="col mb-2">
           <div className='justify-content-between d-flex'>
-            <div className="pt-2">
+            <div className="pt-1">
               {this.props?.ApprovalStatus ?
                 <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                   <span title="Rejected" onClick={()=> this.changeTrafficLigth(this.state.index,"Reject")}
