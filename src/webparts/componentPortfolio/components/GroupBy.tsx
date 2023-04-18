@@ -4,7 +4,7 @@ import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
@@ -2873,16 +2873,16 @@ function ComponentTable(SelectedProp: any) {
                 }
 
             })
-            if (ComponentsData != undefined && ComponentsData.length > 0) {
+            if (array != undefined && array.length > 0) {
 
-                ComponentsData.forEach((compnew: any, index: any) => {
+                array.forEach((compnew: any, index: any) => {
                     if (compnew.childs != undefined && compnew.childs.length > 0) {
                         item.props.SelectedItem.downArrowIcon = compnew.downArrowIcon;
                         item.props.SelectedItem.RightArrowIcon = compnew.RightArrowIcon;
                         return false;
                     }
                 })
-                ComponentsData.forEach((comp: any, index: any) => {
+                array.forEach((comp: any, index: any) => {
                     // comp.downArrowIcon =comp.downArrowIcon;
                     if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id) {
                         comp.childsLength = item.props.SelectedItem.childs.length;
@@ -2909,11 +2909,13 @@ function ComponentTable(SelectedProp: any) {
                 })
                 // }
             }
-            setData((data) => [...ComponentsData]);
+            setData((array) => [...array]);
             if (item.CreateOpenType != undefined && item.CreateOpenType === 'CreatePopup') {
                 setSharewebComponent(item.CreatedItem[0].data)
                 setIsComponent(true);
             }
+            refreshData()
+            rerender()
         }
         if (!isOpenPopup && item.data != undefined) {
             item.data.childs = [];
@@ -2935,8 +2937,11 @@ function ComponentTable(SelectedProp: any) {
             // if (checkedList != undefined && checkedList.length > 0)
             //     checkedList[0].childs.unshift(item.data);
             // else 
-            ComponentsData.unshift(item.data);
-            setData((data) => [...ComponentsData]);
+            array.unshift(item.data);
+            setData((array) => [...array]);
+            refreshData()
+            rerender()
+
         }
         setAddModalOpen(false)
     }, []);
@@ -2958,11 +2963,13 @@ function ComponentTable(SelectedProp: any) {
         item.data['Shareweb_x0020_ID'] = item.data.PortfolioStructureID;
         if (checkedList != undefined && checkedList.length > 0)
             checkedList[0].childs.unshift(item.data);
-        else ComponentsData.unshift(item.data);
+        else array.unshift(item.data);
 
         setSharewebComponent(item.data)
         setIsComponent(true);
-        setData((data) => [...ComponentsData]);
+        setData((array) => [...array]);
+        refreshData()
+        rerender()
         // setSharewebComponent(item);
     }, []);
     const buttonRestructuring = () => {
@@ -3600,8 +3607,8 @@ function ComponentTable(SelectedProp: any) {
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a>}
-                        {row?.original.Title === 'Others' &&
-                            <span>{row?.original.Title}</span>}
+                        {row?.original.Title === 'Others' ?
+                            <span>{row?.original.Title}</span> : ""}
 
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -3790,6 +3797,69 @@ function ComponentTable(SelectedProp: any) {
     }
 
 
+    let activity = 0;
+    let workstrim = 0;
+    let task = 0;
+    data.map((Com) => {
+        Com?.subRows?.map((Sub: any) => {
+            if (Sub?.SharewebTaskType?.Title == "Activities") {
+                activity = activity + 1;
+            }
+            if (Sub?.SharewebTaskType?.Title == "Workstream") {
+                workstrim = workstrim + 1;
+            }
+            if (Sub?.SharewebTaskType?.Title == "Task") {
+                task = task + 1;
+            }
+            Sub?.subRows?.map((feat: any) => {
+                if (feat?.SharewebTaskType?.Title == "Activities") {
+                    activity = activity + 1;
+                }
+                if (feat?.SharewebTaskType?.Title == "Workstream") {
+                    workstrim = workstrim + 1;
+                }
+                if (feat?.SharewebTaskType?.Title == "Task") {
+                    task = task + 1;
+                }
+                feat?.subRows?.map((acti: any) => {
+                    if (acti?.SharewebTaskType?.Title == "Activities") {
+                        activity = activity + 1;
+                    }
+                    if (acti?.SharewebTaskType?.Title == "Workstream") {
+                        workstrim = workstrim + 1;
+                    }
+                    if (acti?.SharewebTaskType?.Title == "Task") {
+                        task = task + 1;
+                    }
+                    acti?.subRows?.map((works: any) => {
+                        if (works?.SharewebTaskType?.Title == "Activities") {
+                            activity = activity + 1;
+                        }
+                        if (works?.SharewebTaskType?.Title == "Workstream") {
+                            workstrim = workstrim + 1;
+                        }
+                        if (works?.SharewebTaskType?.Title == "Task") {
+                            task = task + 1;
+                        }
+                        works?.subRows?.map((taskss: any) => {
+                            if (taskss?.SharewebTaskType?.Title == "Activities") {
+                                activity = activity + 1;
+                            }
+                            if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                                workstrim = workstrim + 1;
+                            }
+                            if (taskss?.SharewebTaskType?.Title == "Task") {
+                                task = task + 1;
+                            }
+                        })
+                    })
+                })
+
+            })
+        })
+    })
+
+
 
 
 
@@ -3798,9 +3868,9 @@ function ComponentTable(SelectedProp: any) {
     let SubComponentCopy = 0;
     let FeatureCopy = 0;
     let FilterShowhideShwingData: any = false;
-    // let activityCopy = 0;
-    // let workstrimCopy = 0;
-    // let task = 0;
+    let activityCopy = 0;
+    let workstrimCopy = 0;
+    let taskCopy = 0;
 
     if (AfterSearch != undefined && AfterSearch.length > 0) {
         AfterSearch?.map((Comp: any) => {
@@ -3817,15 +3887,15 @@ function ComponentTable(SelectedProp: any) {
                 if (Comp?.original?.Item_x0020_Type == "Feature") {
                     FeatureCopy = FeatureCopy + 1;
                 }
-                // if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
-                //     activityCopy = activityCopy + 1;
-                // }
-                // if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
-                //     workstrimCopy = workstrimCopy + 1;
-                // }
-                // if (Comp?.original?.SharewebTaskType?.Title == "Task") {
-                //     task = task + 1;
-                // }
+                if (Comp?.original?.SharewebTaskType?.Title == "Activities") {
+                    activityCopy = activityCopy + 1;
+                }
+                if (Comp?.original?.SharewebTaskType?.Title == "Workstream") {
+                    workstrimCopy = workstrimCopy + 1;
+                }
+                if (Comp?.original?.SharewebTaskType?.Title == "Task") {
+                    taskCopy = taskCopy + 1;
+                }
             }
         })
     }
@@ -4211,7 +4281,38 @@ function ComponentTable(SelectedProp: any) {
                                             <label>
                                                 {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
                                             </label>}
+
+                                        <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {activityCopy}  of {activity} Activities
+                                        </label> :
+                                            <label>
+                                                {activity}  of {activity} Activities
+                                            </label>}
+                                        <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {workstrimCopy}  of {workstrim} Workstreams
+                                        </label> :
+                                            <label>
+                                                {workstrim}  of {workstrim} Workstreams
+                                            </label>}
+                                        <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {taskCopy}  of {task} Tasks
+                                        </label> :
+                                            <label>
+                                                {task}  of {task} Tasks
+                                            </label>}
                                     </span>
+                                    {/* <span id="second-app-title">
+                                        <FaInfoCircle style={{ color: "#228b22" }} />
+                                    </span>
+                                    <ReactTooltip
+                                        anchorId="second-app-title"
+                                        place="bottom"
+                                        variant="info"
+                                        content=""
+                                    /> */}
                                     <span className="toolbox mx-auto">
                                         {checkedList != undefined && checkedList.length > 0 && checkedList[0]?.Item_x0020_Type === 'Feature' ?
                                             <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
