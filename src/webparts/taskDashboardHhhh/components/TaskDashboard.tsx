@@ -31,7 +31,7 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
-var AllListId:any={}
+var AllListId: any = {}
 var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
@@ -65,8 +65,8 @@ const TaskDashboard = (props: any) => {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl:props?.props?.siteUrl
-          }
+            siteUrl: props?.props?.siteUrl
+        }
         setPageLoader(true);
         getCurrentUserDetails();
         createDisplayDate();
@@ -96,7 +96,7 @@ const TaskDashboard = (props: any) => {
             month: '',
             fullDate: new Date()
         }
-        displayDate.day = displayDate.fullDate.toLocaleString('en-GB', { weekday: 'short' });
+        displayDate.day = displayDate.fullDate.toLocaleString('en-GB', { weekday: 'long' });
         displayDate.date = displayDate.fullDate.toLocaleString('en-GB', { day: 'numeric' });
         displayDate.month = displayDate.fullDate.toLocaleString('en-GB', { month: 'long' });
         today = displayDate;
@@ -152,16 +152,16 @@ const TaskDashboard = (props: any) => {
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
-                    if (timesheetLists?.listName=='TasksTimesheet2') {
-                    await web.lists
-                    .getById(list?.listId)
-                    .items.select( "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand=Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
-                    .getAll().then((data: any) => {
-                        data?.map((item: any) => {
-                            AllTaskTimeEntries.push(item)
-                        })
-                    });
-                   }
+                    if (timesheetLists?.listName == 'TasksTimesheet2') {
+                        await web.lists
+                            .getById(list?.listId)
+                            .items.select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand=Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
+                            .getAll().then((data: any) => {
+                                data?.map((item: any) => {
+                                    AllTaskTimeEntries.push(item)
+                                })
+                            });
+                    }
                 })
             }
         }
@@ -173,16 +173,16 @@ const TaskDashboard = (props: any) => {
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
-                    if (timesheetLists?.listName!='TasksTimesheet2') {
-                    await web.lists
-                    .getById(list?.listId)
-                    .items.select( 'Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title&$expand=Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects')
-                    .getAll().then((data: any) => {
-                        data?.map((item: any) => {
-                            AllTaskTimeEntries.push(item)
-                        })
-                    });
-                   }
+                    if (timesheetLists?.listName != 'TasksTimesheet2') {
+                        await web.lists
+                            .getById(list?.listId)
+                            .items.select('Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title&$expand=Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects')
+                            .getAll().then((data: any) => {
+                                data?.map((item: any) => {
+                                    AllTaskTimeEntries.push(item)
+                                })
+                            });
+                    }
                 })
                 loadMigrationTimeEntry();
             }
@@ -216,12 +216,8 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select(
-                                "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
-                            )
-                            .expand(
-                                "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
-                            )
+                            .items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
@@ -286,18 +282,18 @@ const TaskDashboard = (props: any) => {
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
                                             if (user.AssingedToUserId == task.Author.Id) {
-                                                task.createdImg = user.Item_x0020_Cover.Url;
+                                                task.createdImg = user?.Item_x0020_Cover?.Url;
                                             }
                                             if (user.AssingedToUserId == taskUser.Id) {
                                                 if (user?.Title != undefined) {
                                                     task.TeamMembersSearch =
                                                         task.TeamMembersSearch + " " + user?.Title;
                                                 }
-                                                newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
-                                                newuserdata["Suffix"] = user.Suffix;
-                                                newuserdata["Title"] = user.Title;
-                                                newuserdata["UserId"] = user.AssingedToUserId;
-                                                task["Usertitlename"] = user.Title;
+                                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                                newuserdata["Suffix"] = user?.Suffix;
+                                                newuserdata["Title"] = user?.Title;
+                                                newuserdata["UserId"] = user?.AssingedToUserId;
+                                                task["Usertitlename"] = user?.Title;
                                             }
                                             task.AllTeamMember.push(newuserdata);
                                         });
@@ -341,9 +337,9 @@ const TaskDashboard = (props: any) => {
     const editTaskCallBack = React.useCallback(() => {
         setisOpenEditPopup(false);
     }, []);
-    const inlineCallBack = React.useCallback((item: any, index: any) => {
+    const inlineCallBack = React.useCallback((item: any) => {
         AllTasks?.map((task: any, index: any) => {
-            if (task.Id == item.Id) {
+            if (task.Id == item.Id && task.siteType == item.siteType) {
                 AllTasks[index] = { ...task, ...item };
             }
         })
@@ -485,9 +481,9 @@ const TaskDashboard = (props: any) => {
                 accessor: "DueDate",
                 style: { width: '80px' },
                 Cell: ({ row }: any) => <InlineEditingcolumns
-                AllListId={AllListId}
+                    AllListId={AllListId}
                     callBack={inlineCallBack}
-                    columnName="DisplayDueDate"
+                    columnName="DueDate"
                     item={row?.original}
                     TaskUsers={taskUsers}
                 />,
@@ -518,7 +514,7 @@ const TaskDashboard = (props: any) => {
             },
             {
                 internalHeader: "Created",
-                accessor: "DisplayCreateDate",
+                accessor: "Created",
                 showSortIcon: true,
                 style: { width: "125px" },
                 Cell: ({ row }: any) => (
@@ -539,7 +535,7 @@ const TaskDashboard = (props: any) => {
                     <span
                         title="Edit Task"
                         onClick={() => EditPopup(row?.original)}
-                        className="svg__iconbox svg__icon--edit"
+                        className="svg__iconbox svg__icon--edit hreflink"
                     ></span>
                 ),
             },
@@ -680,15 +676,16 @@ const TaskDashboard = (props: any) => {
     //Update Task After Drop
     const UpdateTaskStatus = async (task: any) => {
         let postToday = task?.IsTodaysTask != undefined ? task.IsTodaysTask : false
+        let AssignedUsers = task?.AssignedToIds?.length > 0 ? task?.AssignedToIds : [];
         let postworkingThisWeekTask = task?.workingThisWeek != undefined ? task.workingThisWeek : false
         let web = new Web(task?.siteUrl);
         await web.lists.getById(task?.listId).items.getById(task?.Id).update({
             IsTodaysTask: postToday,
-            workingThisWeek: postworkingThisWeekTask
-        })
-            .then((res: any) => {
+            workingThisWeek: postworkingThisWeekTask,
+            AssignedToId: { "results": AssignedUsers }
+        }).then((res: any) => {
                 console.log("Drop Updated");
-            })
+        })
 
     }
     //end
@@ -838,6 +835,15 @@ const TaskDashboard = (props: any) => {
                 todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
                 thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
             }
+            if (destination == 'UnAssign') {
+                task.IsTodaysTask = false;
+                task.workingThisWeek = false;
+                task.AssignedToIds = task?.AssignedToIds?.filter((user: string) => user != currentUserId)
+                UpdateTaskStatus(task);
+                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+            }
             setAllAssignedTasks(allTasks);
             setThisWeekTasks(thisWeekTask);
             setWorkingTodayTasks(todayTasks);
@@ -914,11 +920,8 @@ const TaskDashboard = (props: any) => {
                                                 <h6>
                                                     {today.day}
                                                 </h6>
-                                                <h4>
-                                                    {today.date}
-                                                </h4>
                                                 <h5>
-                                                    {today.month}
+                                                    {today.date} {today.month}
                                                 </h5>
                                             </div>
                                         </a>
@@ -930,14 +933,20 @@ const TaskDashboard = (props: any) => {
                             </nav>
                         </section>
                         <section className="sidebar__section sidebar__section--menu">
-                       <nav className="nav__item">
+                            <nav className="nav__item">
+                                {
+                                    currentUserId == currentUserData?.AssingedToUserId ?
+                                        <div  style={{ height: "100px" }} onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center nav__text" onDragOver={(e: any) => e.preventDefault()}>
+                                            Drop here to Un-Assign
+                                        </div> : ""
+                                }
                                 <ul className="nav__list">
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
                                             return (
                                                 <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink bg-shade  mb-1 " : "nav__text bg-shade hreflink mb-1 "}>
                                                     {filterItem?.Title}
-                                                    {filterItem?.expanded ? <span className='svg__iconbox svg__icon--arrowDown  float-start me-1 '></span>: <span className='svg__iconbox svg__icon--arrowRight  float-start me-1'></span>}
+                                                    {filterItem?.expanded ? <span className='svg__iconbox svg__icon--arrowDown  float-start me-1 '></span> : <span className='svg__iconbox svg__icon--arrowRight  float-start me-1'></span>}
                                                     {
                                                         filterItem?.expanded == true ?
                                                             <ul className="nav__list ms-2">
