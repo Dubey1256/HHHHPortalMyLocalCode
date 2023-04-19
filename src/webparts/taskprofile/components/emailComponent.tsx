@@ -1,7 +1,7 @@
 import * as React from 'react';
 import  { useState,useEffect } from 'react';
 import "@pnp/sp/sputilities";
-import { IEmailProperties } from "@pnp/sp/sputilities";
+
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
  import { Web } from 'sp-pnp-js';
 
