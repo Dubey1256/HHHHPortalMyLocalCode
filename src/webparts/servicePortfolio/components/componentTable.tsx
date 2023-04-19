@@ -3346,11 +3346,11 @@ function ComponentTable(SelectedProp: any) {
                 <div className="col-sm-12 clearfix">
                     <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
-                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
-                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
                         {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div>Component Portfolio</div>}
-                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
                     </h2>
                 </div>
                 <div className="bg-wihite border p-2">
@@ -3412,12 +3412,7 @@ function ComponentTable(SelectedProp: any) {
 
                                     </span>}
                             </span>
-                            <span className="pull-right siteColor">
-                                <span className="hreflink" ng-if="!smartfilter2.expanded">
-                                    <img ng-show="pagesType=='componentportfolio'" className="hreflink wid22"
-                                        ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />
-                                </span>
-                            </span>
+                           
                         </label>
                         {IsSmartfilter ?
                             <div className="togglecontent mt-1">
@@ -3788,14 +3783,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                                     {item?.Isexpend ?
                                                                                                         <span>
                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(item)}>
-                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"}></img>
                                                                                                             </a>
                                                                                                         </span>
                                                                                                         : ''}
                                                                                                     {!item?.Isexpend ?
                                                                                                         <span>
                                                                                                             <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(item)}>
-                                                                                                                <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"}></img>
                                                                                                             </a>
                                                                                                         </span>
                                                                                                         : ''}
@@ -3918,14 +3913,14 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                         {childitem?.Isexpend ?
                                                                                                                             <span>
                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childitem)}>
-                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"></img>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"}></img>
                                                                                                                                 </a>
                                                                                                                             </span>
                                                                                                                             : ''}
                                                                                                                         {!childitem?.Isexpend ?
                                                                                                                             <span>
                                                                                                                                 <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childitem)}>
-                                                                                                                                    <img className="icon-sites-img me-1 ml20" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"></img>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"}></img>
                                                                                                                                 </a>
                                                                                                                             </span>
                                                                                                                             : ''}
@@ -4451,7 +4446,7 @@ function ComponentTable(SelectedProp: any) {
                         <div className='bg-ee p-2 restructurebox'>
                             <div>
                                 {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
                             </div>
@@ -4463,7 +4458,7 @@ function ComponentTable(SelectedProp: any) {
                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
                                             {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
                                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
                                             ><span>{obj.Title}  </span>
                                             </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                     )
@@ -4478,7 +4473,7 @@ function ComponentTable(SelectedProp: any) {
                                                 <div className='Dyicons '>{newobj.SiteIconTitle}</div>
                                                 {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
                                                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
@@ -4487,7 +4482,7 @@ function ComponentTable(SelectedProp: any) {
                                     <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
                                     {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
                                     <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                             </div>
