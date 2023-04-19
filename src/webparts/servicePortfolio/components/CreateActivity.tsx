@@ -894,7 +894,7 @@ const CreateActivity = (props: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
                         {`Create Quick Option - ${AllItems.NoteCall}` }
@@ -921,7 +921,7 @@ const CreateActivity = (props: any) => {
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className="modal-body">
+                <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena modal-body":"modal-body"}>
 
 
                     <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
