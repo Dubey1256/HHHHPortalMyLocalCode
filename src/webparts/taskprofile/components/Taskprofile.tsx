@@ -486,7 +486,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     if (ClientTimeArray != undefined && ClientTimeArray != null) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if (item.Title == items?.SiteName) {
+          if ((item?.Title == items?.SiteName)||(item?.SiteName==items?.SiteName)) {
             item.ClientCategory = items?.Title;
           }
         })
