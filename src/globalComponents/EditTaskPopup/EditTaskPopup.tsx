@@ -178,9 +178,9 @@ const EditTaskPopup = (Items: any) => {
         getCurrentUserDetails();
         getSmartMetaData();
         loadAllCategoryData("Categories");
-        loadAllCategoryData("Client Category");
+        loadAllClientCategoryData("Client Category");
         GetMasterData();
-        // getInformationForSmartLight();
+        // getInformationForSmartLight()
         // Descriptions();
     }, [])
 
@@ -254,10 +254,51 @@ const EditTaskPopup = (Items: any) => {
     }, []);
 
     // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+
+    const loadAllClientCategoryData = function (SmartTaxonomy: any) {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+
+                })
+                if (SmartTaxonomy == "Client Category") {
+                    setAllClientCategoryData(AllMetaData);
+                    AllClientCategoryDataBackup = AllMetaData;
+
+                }
+            },
+            error: function (error: any) {
+                console.log('Error:', error)
+            }
+        })
+    };
+
     var SmartTaxonomyName: any = '';
     var AutoCompleteItems: any = [];
     const loadAllCategoryData = function (SmartTaxonomy: any) {
-        SmartTaxonomyName = SmartTaxonomy;
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
@@ -287,25 +328,21 @@ const EditTaskPopup = (Items: any) => {
 
                 })
                 if (SmartTaxonomy == "Categories") {
-                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
+                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
                 }
-                if (SmartTaxonomy == "Client Category") {
-                    setAllClientCategoryData(AllMetaData);
-                    AllClientCategoryDataBackup = AllMetaData;
-                    console.log("All Client Category Data on Task Popup ========", AllMetaData);
-                }
+
             },
             error: function (error: any) {
                 console.log('Error:', error)
             }
         })
     };
-    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any) => {
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
         var TaxonomyItems: any = [];
         var uniqueNames: any = [];
         $.each(AllTaxonomyItems, function (index: any, item: any) {
-            if (item.ParentID == 0 && SmartTaxonomyName == item.TaxType) {
+            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
                 TaxonomyItems.push(item);
                 getChilds(item, AllTaxonomyItems);
                 if (item.childs != undefined && item.childs.length > 0) {
@@ -317,6 +354,7 @@ const EditTaskPopup = (Items: any) => {
 
             }
         });
+
         return uniqueNames;
     }
     const getChilds = (item: any, items: any) => {
@@ -468,7 +506,7 @@ const EditTaskPopup = (Items: any) => {
         let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
-            .getByTitle('SmartMetadata')
+            .getById(AllListIdData.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
@@ -822,7 +860,15 @@ const EditTaskPopup = (Items: any) => {
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
-                            let siteName = siteData.SiteName.toLowerCase();
+                            let siteName 
+                            if(siteData!=undefined){
+                                if(siteData.SiteName!=undefined){
+                                    siteName = siteData.SiteName.toLowerCase();
+                                }else{
+                                    siteName = siteData.Title.toLowerCase();
+                                }
+                            }
+                            // let siteName = siteData.SiteName.toLowerCase();
                             if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
                                 siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
                             }
@@ -1737,7 +1783,7 @@ const EditTaskPopup = (Items: any) => {
                 ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
                 ClientTime: JSON.stringify(ClientCategoryData),
                 ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) :  EditData.SiteCompositionSettings
+                SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings
             }).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
@@ -3881,6 +3927,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-sm-5">
                                         {EditData.Id != null ? <SiteCompositionComponent
+                                            AllListId={AllListIdData}
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
                                             ClientTime={EditData.siteCompositionData}
@@ -5072,7 +5119,6 @@ export default React.memo(EditTaskPopup);
     // listId:{Enter Site listId here},
     // ***** OR *****
     // listName:{Enter Site listName here},
-    // Context:{Context}
     // AllListIdData: { AllListIdData with site url }
     // context:{Page Context}
 // }

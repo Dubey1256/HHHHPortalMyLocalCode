@@ -30,6 +30,7 @@ var NewArray: any = [];
 var feedbackArray: any = [];
 var dynamicList:any={}
 var SiteTypeBackupArray: any = [];
+
 const CreateActivity = (props: any) => {
     if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
@@ -556,7 +557,7 @@ const CreateActivity = (props: any) => {
         }
         var RelevantPortfolioIds: any = []
         var Component: any = []
-        smartComponentData.forEach((com: any) => {
+        smartComponentData?.forEach((com: any) => {
             if (smartComponentData[0] != undefined && smartComponentData[0].SharewebTaskType != undefined && smartComponentData[0].SharewebTaskType.Title == 'Workstream') {
                 $.each(com.Component, function (index: any, smart: any) {
                     Component.push(smart.Id)
@@ -777,7 +778,7 @@ const CreateActivity = (props: any) => {
                             Categories: categoriesItem ? categoriesItem : null,
                             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
                            // DueDate: date != undefined ? new Date(date).toDateString() : date,
-                            DueDate: date != undefined ?Moment(date).format("MM-DD-YYYY") : null,
+                            DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
                             ParentTaskId: AllItems.Id,
@@ -896,7 +897,7 @@ const CreateActivity = (props: any) => {
             <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
-                        {`Create Activity`}
+                        {`Create Quick Option - ${AllItems.NoteCall}` }
                     </span>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
@@ -964,7 +965,7 @@ const CreateActivity = (props: any) => {
                                             defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                     </div>
-                                    <div className="col-sm-2 mb-10 padL-0 mt-2">?
+                                    <div className="col-sm-2 mb-10 padL-0 mt-2">
                                         <label>Due Date</label>
                                         <input type="date" className="form-control"
                                             defaultValue={Moment(date).format("DD/MM/YYYY")}
@@ -977,7 +978,7 @@ const CreateActivity = (props: any) => {
                                 </div>
                                 <div className='row mt-2'>
 
-                                    <TeamConfigurationCard ItemInfo={AllItems} AllListId={props.SelectedProp}  parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                                    <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList}  parentCallback={DDComponentCallBack}></TeamConfigurationCard>
 
                                 </div>
                                 <div className='row'>
@@ -1269,9 +1270,9 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Call={Call}></LinkedComponent>}
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} Call={Call}></Picker>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>}
+            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>
     )

@@ -66,7 +66,7 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("fifty")}
                   // props.prop("fifty")}
-                  className={props.prop1 == "fifty"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  className={props.prop1 == "fifty"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
                   id={props.prop1 == "fifty" ? "boxtrue " : "boxfalse"}
                 >
                   50%
@@ -75,7 +75,7 @@ const ExpndTable = (props: any) => {
                   data-bs-dismiss="modal"
                   role={"button"}
                   onClick={() => showExpended("sixty")}
-                  className={props.prop1 == "sixty"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  className={props.prop1 == "sixty"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
                    id={props.prop1 == "sixty" ? "boxtrue " : "boxfalse"}
                 >
                   60%
@@ -85,7 +85,7 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("seventyfive")}
                   // props.prop("seventyfive")}
-                  className={props.prop1 == "seventyfive"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  className={props.prop1 == "seventyfive"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
                   id={props.prop1 == "seventyfive" ? "boxtrue " : "boxfalse"}
                 >
                   75%
@@ -95,7 +95,7 @@ const ExpndTable = (props: any) => {
                   role={"button"}
                   onClick={() => showExpended("hundred")}
                   // props.prop("hundred")}
-                  className={props.prop1 == "hundred"?"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":"card block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
+                  className={props.prop1 == "hundred"?" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center BoxShadow":" block p-5 text-light fw-bold  m-2  expandtiles  rounded-0 d-flex align-items-center justify-content-center"}
                   id={props.prop1 == "hundred" ? "boxtrue " : "boxfalse"}
                 >
                   100%

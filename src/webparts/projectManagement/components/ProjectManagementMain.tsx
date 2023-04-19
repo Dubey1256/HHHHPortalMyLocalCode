@@ -26,6 +26,7 @@ let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
 var AllListId: any = {};
+var backupAllTasks:any=[];
 var DataSiteIcon: any = [];
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
@@ -239,6 +240,17 @@ const ProjectManagementMain = (props: any) => {
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
   }, []);
+  const inlineCallBack = React.useCallback((item: any) => {
+    const tasks=backupAllTasks;
+    tasks?.map((task: any,index:any) => {
+        if (task.Id == item.Id && task.siteType==item.siteType) {
+          backupAllTasks[index] = { ...task, ...item };
+        }
+    })
+    backupAllTasks=tasks;
+    setAllTasks(backupAllTasks);
+    setData(backupAllTasks);
+}, []);
   const LoadAllSiteTasks = function () {
     loadAdminConfigurations();
     var AllTask: any = [];
@@ -339,6 +351,7 @@ const ProjectManagementMain = (props: any) => {
         if (arraycount === 17) {
           setAllTasks(AllTask);
           setData(AllTask);
+          backupAllTasks=AllTask;
           console.log("this is main tabke data ", AllTask);
         }
       } else {
@@ -519,7 +532,7 @@ const ProjectManagementMain = (props: any) => {
             <InlineEditingcolumns
               AllListId={AllListId}
               type="Task"
-              callBack={tagAndCreateCallBack}
+              callBack={inlineCallBack}
               columnName="Priority"
               item={row?.original}
               TaskUsers={AllUser}
@@ -529,15 +542,15 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        internalHeader: "Due Date",
+        internalHeader: "Due Date", 
         showSortIcon: true,
         style: { width: "80px" },
         accessor: "DueDate",
         Cell: ({ row }: any) => (
           <InlineEditingcolumns
             AllListId={AllListId}
-            callBack={tagAndCreateCallBack}
-            columnName="DisplayDueDate"
+            callBack={inlineCallBack}
+            columnName="DueDate"
             item={row?.original}
             TaskUsers={AllUser}
           />
@@ -550,10 +563,10 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "70px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
+          <span >
             <InlineEditingcolumns
               AllListId={AllListId}
-              callBack={tagAndCreateCallBack}
+              callBack={inlineCallBack}
               columnName="PercentComplete"
               item={row?.original}
               TaskUsers={AllUser}
@@ -570,7 +583,7 @@ const ProjectManagementMain = (props: any) => {
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
-              callBack={tagAndCreateCallBack}
+              callBack={inlineCallBack}
               columnName="Team"
               item={row?.original}
               TaskUsers={AllUser}
@@ -587,7 +600,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            <img className="imgAuthor" src={row?.original?.createdImg} />
+            <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} />
           </span>
         ),
       },
@@ -603,19 +616,19 @@ const ProjectManagementMain = (props: any) => {
             <span
               title="Edit Task"
               onClick={() => EditPopup(row?.original)}
-              className="svg__iconbox svg__icon--edit"
+              className="svg__iconbox svg__icon--edit hreflink"
             ></span>
             <span
               style={{ marginLeft: "6px" }}
               title="Remove Task"
               onClick={() => untagTask(row?.original)}
-              className="svg__iconbox svg__icon--cross"
+              className="svg__iconbox svg__icon--cross hreflink"
             ></span>
           </span>
         ),
       },
     ],
-    [AllTasks]
+    [AllTasks,data,backupAllTasks]
   );
 
   const {
