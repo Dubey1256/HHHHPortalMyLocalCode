@@ -88,14 +88,14 @@ const CreateActivity = (props: any) => {
             })
         }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
-            if (AllItems.Portfolio_x0020_Type == 'Component') {
+            if (AllItems.Portfolio_x0020_Type == 'Component'|| (AllItems.Component != undefined && AllItems.Component.length >0)) {
                 smartComponentData.push(AllItems);
             }
             smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
     
-            if (AllItems?.Portfolio_x0020_Type == 'Service') {
+            if (AllItems?.Portfolio_x0020_Type == 'Service' || (AllItems.Service != undefined && AllItems.Service.length >0) ) {
                 linkedComponentData.push(AllItems);
             }
             linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
@@ -894,11 +894,11 @@ const CreateActivity = (props: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
+                    <h2 className='heading'>
                         {`Create Quick Option - ${AllItems.NoteCall}` }
-                    </span>
+                    </h2>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
             </div>
@@ -920,8 +920,10 @@ const CreateActivity = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
+                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                
             >
-                <div className="modal-body">
+                <div className= "modal-body active">
 
 
                     <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
