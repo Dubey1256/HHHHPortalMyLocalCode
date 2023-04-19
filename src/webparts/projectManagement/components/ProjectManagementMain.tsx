@@ -1257,7 +1257,7 @@ const ProjectManagementMain = (props: any) => {
           {IsPortfolio && (
             <PortfolioTagging
               AllListId={AllListId}
-              props={ShareWebComponent}
+              props={SharewebComponent}
               type={portfolioType}
               Call={Call}
             ></PortfolioTagging>
