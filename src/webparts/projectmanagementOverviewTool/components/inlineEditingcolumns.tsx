@@ -17,7 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-    console.log(props);
+  
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -30,7 +30,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([]);
-    const [dueDate, setDueDate] = useState({editDate:null, editPopup:false})
+    const [dueDate, setDueDate] = useState({ editDate: props?.item?.DueDate != undefined ? props?.item?.DueDate : null, editPopup: false, selectDateName: '' })
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
@@ -303,6 +303,7 @@ const inlineEditingcolumns = (props: any) => {
         })
 
         setPercentCompleteCheck(false);
+        let newDueDate = new Date(dueDate.editDate);
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
@@ -314,78 +315,65 @@ const inlineEditingcolumns = (props: any) => {
             "Categories": CategoryTitle,
             "Priority_x0020_Rank": priorityRank,
             SharewebCategoriesId: { "results": selectedCatId },
+            DueDate: newDueDate
         })
             .then((res: any) => {
-                web.lists.getById(props?.item?.listId).items.select(
-                    "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
-                )
-                .expand(
-                    "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
-                ).getById(props?.item?.Id).get().then((task) => {
-                    task.AllTeamMember = [];
-                    task.siteType = props?.item?.siteType;
-                    task.listId =props?.item?.listId;
-                    task.siteUrl =props?.item?.siteUrl;
-                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
-                    task.DisplayDueDate =
-                        task.DueDate != null
-                            ? Moment(task.DueDate).format("DD/MM/YYYY")
-                            : "";
-                    task.portfolio = {};
-                    if (task?.Component?.length > 0) {
-                        task.portfolio = task?.Component[0];
-                        task.PortfolioTitle = task?.Component[0]?.Title;
-                        task["Portfoliotype"] = "Component";
-                    }
-                    if (task?.Services?.length > 0) {
-                        task.portfolio = task?.Services[0];
-                        task.PortfolioTitle = task?.Services[0]?.Title;
-                        task["Portfoliotype"] = "Service";
-                    }
-
-                    task.TeamMembersSearch = "";
-                    task.ApproverIds = [];
-                    task?.Approver?.map((approverUser: any) => {
-                        task.ApproverIds.push(approverUser?.Id);
-                    })
-                    task.AssignedToIds = [];
-                    task?.AssignedToId?.map((assignedUser: any) => {
-                        task.AssignedToIds.push(assignedUser)
-                        AllTaskUser?.map((user: any) => {
-                            if (user.AssingedToUserId == assignedUser.Id) {
-                                if (user?.Title != undefined) {
-                                    task.TeamMembersSearch =
-                                        task.TeamMembersSearch + " " + user?.Title;
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title","workingThisWeek","IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank","Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+                .getById(props?.item?.Id).get().then((task) => {
+                        task.AllTeamMember = [];
+                        task.siteType = props?.item?.siteType;
+                        task.listId = props?.item?.listId;
+                        task.siteUrl = props?.item?.siteUrl;
+                        task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                        task.DisplayDueDate =
+                            task.DueDate != null
+                                ? Moment(task.DueDate).format("DD/MM/YYYY")
+                                : "";
+                        task.TeamMembersSearch = "";
+                        task.ApproverIds = [];
+                        task?.Approver?.map((approverUser: any) => {
+                            task.ApproverIds.push(approverUser?.Id);
+                        })
+                        task.AssignedToIds = [];
+                        task?.AssignedToId?.map((assignedUser: any) => {
+                            task.AssignedToIds.push(assignedUser)
+                            AllTaskUser?.map((user: any) => {
+                                if (user.AssingedToUserId == assignedUser.Id) {
+                                    if (user?.Title != undefined) {
+                                        task.TeamMembersSearch =
+                                            task.TeamMembersSearch + " " + user?.Title;
+                                    }
                                 }
-                            }
+                            });
                         });
-                    });
-                    task.TeamMembersId = [];
-                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
-                    task?.Team_x0020_MembersId?.map((taskUser: any) => {
-                        task.TeamMembersId.push(taskUser);
-                        var newuserdata: any = {};
-                        AllTaskUser?.map((user: any) => {
-                            if (user?.AssingedToUserId == taskUser?.Id) {
-                                if (user?.Title != undefined) {
-                                    task.TeamMembersSearch =
-                                        task.TeamMembersSearch + " " + user?.Title;
+                        task.TeamMembersId = [];
+                        task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                        task?.Team_x0020_MembersId?.map((taskUser: any) => {
+                            task.TeamMembersId.push(taskUser);
+                            var newuserdata: any = {};
+                            AllTaskUser?.map((user: any) => {
+                                if (user?.AssingedToUserId == taskUser?.Id) {
+                                    if (user?.Title != undefined) {
+                                        task.TeamMembersSearch =
+                                            task.TeamMembersSearch + " " + user?.Title;
+                                    }
+                                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                    newuserdata["Suffix"] = user?.Suffix;
+                                    newuserdata["Title"] = user?.Title;
+                                    newuserdata["UserId"] = user?.AssingedToUserId;
+                                    task["Usertitlename"] = user?.Title;
                                 }
-                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                                newuserdata["Suffix"] = user?.Suffix;
-                                newuserdata["Title"] = user?.Title;
-                                newuserdata["UserId"] = user?.AssingedToUserId;
-                                task["Usertitlename"] = user?.Title;
-                            }
-                            task.AllTeamMember.push(newuserdata);
+                                task.AllTeamMember.push(newuserdata);
+                            });
                         });
+                        props.item = task;
+                        props?.callBack(task);
                     });
-                    props.item=task;
-                    props?.callBack(task, props?.rowIndex);
-                });
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
+                setDueDate({ ...dueDate, editPopup: false });
             })
 
     }
@@ -403,7 +391,7 @@ const inlineEditingcolumns = (props: any) => {
     }
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt);
-        console.log(TeamConfig);
+
         if (dt?.AssignedTo?.length > 0) {
             let tempArray: any = [];
             dt.AssignedTo?.map((arrayData: any) => {
@@ -414,7 +402,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskAssignedTo(tempArray);
-            console.log("Team Config  assigadf=====", tempArray);
+
         }
         if (dt?.TeamMemberUsers?.length > 0) {
             let tempArray: any = [];
@@ -426,7 +414,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskTeamMembers(tempArray);
-            console.log("Team Config member=====", tempArray);
+
         }
         if (dt?.ResponsibleTeam?.length > 0) {
             let tempArray: any = [];
@@ -438,7 +426,7 @@ const inlineEditingcolumns = (props: any) => {
                 }
             });
             setTaskResponsibleTeam(tempArray);
-            console.log("Team Config reasponsible ===== ", tempArray);
+
         }
     };
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
@@ -597,37 +585,61 @@ const inlineEditingcolumns = (props: any) => {
 
 
     }
-    const closeTaskDueDate=()=> {
-        setDueDate({...dueDate, editPopup:false})
+    const closeTaskDueDate = () => {
+        setDueDate({ ...dueDate, editPopup: false, editDate: props.item.DisplayDueDate })
     }
 
-    const updateTaskDueDate=async ()=> {
-        console.log("hjbdhjcbhjdbhjcbjhbdj" ,dueDate,   props);
 
-        let web = new Web(props?.item?.siteUrl);
-        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-           DueDate : dueDate.editDate
-        })
-            .then((res: any) => {
-                console.log(res);
-                props?.callBack();
-                setTaskStatusPopup(false);
-                setTaskPriorityPopup(false);
-                setTeamMembersPopup(false);
-                setDueDate({...dueDate, editPopup:false})
-            }).catch((err:any)=>{
-console.log(err)
-            })
+    const duedatechange = (item: any) => {
+        let dates = new Date();
+
+        if (item === 'Today') {
+            setDueDate({ ...dueDate, editDate: dates, selectDateName: item });
+        }
+        if (item === 'Tommorow') {
+
+            setDueDate({ ...dueDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item });
+        }
+        if (item === 'This Week') {
+            setDueDate({ ...dueDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
+        }
+        if (item === 'Next Week') {
+            let nextweek = new Date(dates.setDate(dates.getDate() - (dates.getDay() - 1) + 6));
+            setDueDate({ ...dueDate, editDate: nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6), selectDateName: item });
+        }
+        if (item === 'This Month') {
+            let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);;
+            setDueDate({ ...dueDate, editDate: lastDay, selectDateName: item });
+        }
     }
 
-    
+    //     const updateTaskDueDate=async ()=> {
+
+    //            let newDate = new Date(dueDate.editDate);
+    //         let web = new Web(props?.item?.siteUrl);
+    //         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+    //            DueDate : newDate
+    //         })
+    //             .then((res: any) => {
+    //                 console.log(res);
+    //                 props?.callBack();
+    //                 setTaskStatusPopup(false);
+    //                 setTaskPriorityPopup(false);
+    //                 setTeamMembersPopup(false);
+    //                 setDueDate({...dueDate, editPopup:false})
+    //             }).catch((err:any)=>{
+    // console.log(err)
+    //             })
+    //     }
+
+
 
     return (
         <>
             {
                 props?.columnName == 'Team' ?
                     <>
-                        <span style={{ display: "block", width: "100%" }} onClick={() => setTeamMembersPopup(true)} >
+                        <span style={{ display: "block", width: "100%", height: "100%" }} className='hreflink' onClick={() => setTeamMembersPopup(true)} >
                             <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
                         </span>
                     </>
@@ -636,39 +648,37 @@ console.log(err)
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span style={{ display: "block", width: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
+                        <span className={ServicesTaskCheck ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
-                            <span className='ms-1'>
                                 {
                                     props?.item?.SharewebCategories?.map((category: any) => {
                                         if (category?.Title == 'Immediate') {
                                             return (
-                                                <a className='d-inline-block' title="Immediate">
-                                                    <span className="svg__iconbox svg__icon--alert" ></span>
+                                                <a  title="Immediate">
+                                                    <span className="workmember svg__iconbox svg__icon--alert " ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                                                 </a>
                                             )
                                         }
                                         if (category?.Title == 'Bottleneck') {
                                             return (
-                                                <a className='d-inline-block' title="Bottleneck">
+                                                <a  title="Bottleneck">
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                                                    <span className="svg__iconbox svg__icon--bottleneck" ></span>
+                                                    <span className="workmember svg__iconbox svg__icon--bottleneck" ></span>
                                                 </a>
                                             )
                                         }
                                         if (category?.Title == 'Favorite') {
                                             return (
-                                                <a className='d-inline-block' title="Favorite">
-                                                    <span className="svg__iconbox svg__icon--Star" ></span>
+                                                <a  title="Favorite">
+                                                    <span className="workmember svg__iconbox svg__icon--Star" ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                                                 </a>
                                             )
                                         }
                                     })
                                 }
-                            </span>
                         </span>
                     </>
                     : ''
@@ -677,12 +687,12 @@ console.log(err)
                 props?.columnName == 'PercentComplete' ?
                     <>
 
-                        <span style={{ display: "block", width: "100%" }} onClick={() => openTaskStatusUpdatePopup()}>
+                        <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena" : ""} onClick={() => openTaskStatusUpdatePopup()}>
                             {/* {props?.item?.PercentComplete} */}
                             {parseInt(props?.item?.PercentComplete) <= 5 &&
                                 parseInt(props?.item?.PercentComplete) >= 0 ? (
                                 <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="svg__iconbox svg__icon--Ellipse" ></span>
+                                    <span className="workmember svg__iconbox svg__icon--Ellipse" ></span>
                                     {/* <img src={require("../../../Assets/ICON/Ellipse.svg")} /> */}
                                 </a>
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
@@ -696,7 +706,7 @@ console.log(err)
                                 </a>
                             ) : (
                                 <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="svg__iconbox svg__icon--completed" ></span>
+                                    <span className="workmember svg__iconbox svg__icon--completed" ></span>
                                     {/* <img src={require("../../../Assets/ICON/completed.svg")} /> */}
                                 </a>
                             )}
@@ -715,7 +725,7 @@ console.log(err)
                                                                     data-interception="off"
                                                                     title={user.Title}
                                                                 >
-                                                                    <img className="imgAuthor" src={user?.Item_x0020_Cover?.Url}></img>
+                                                                    <img className="workmember" src={user?.Item_x0020_Cover?.Url}></img>
                                                                 </a>
                                                             </span>
                                                         )
@@ -735,35 +745,45 @@ console.log(err)
             }
 
 
-{/* Panel to edit due-date */}
+            {/* Panel to edit due-date */}
 
-             {props.item.DisplayDueDate!=undefined&& <Panel
+            <Panel
                 headerText={`Update Due Date`}
                 isOpen={dueDate.editPopup}
                 onDismiss={closeTaskDueDate}
-              
+                isBlocking={dueDate.editPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-                
-                    <div className="modal-body mt-3 mb-3 d-flex flex-column">
-                    <label className="form-check-label mt-5 mb-2">Edit Due Date</label>
-                    <input className="form-check-input p-3 w-100"
-                       type='date' 
-                      value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : Moment(new Date(props.item.DueDate)).format('YYYY-MM-DD') }
-                          onChange={(e:any) => setDueDate({...dueDate, editDate:e.target.value})} />
-                              
 
+                    <div className="modal-body mt-3 mb-3 d-flex flex-column">
+                        <label className="form-check-label mt-5 mb-2">Edit Due Date</label>
+                        <input className="form-check-input p-3 w-100"
+                            type='date'
+                            value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : ''}
+                            onChange={(e: any) => setDueDate({ ...dueDate, editDate: e.target.value })} />
+
+                        <div className='d-flex flex-column mt-2 mb-2'>
+                            <span className='m-1'><input className='me-1' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
+                            <span className='m-1'>        <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
+                            </span>
+                            <span className='m-1'>        <input className='me-1' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
+                            </span>
+                            <span className='m-1'>        <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
+                            </span>
+                            <span className='m-1'>        <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
+                            </span>
+
+                        </div>
                     </div>
                     <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={updateTaskDueDate}>
+                        <button type="button" className="btn btn-primary px-3" onClick={UpdateTaskStatus}>
                             OK
                         </button>
                     </footer>
                 </div>
-            </Panel>}
+            </Panel>
+            {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() => setDueDate({ ...dueDate, editPopup: true })}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
 
-            {props?.columnName == 'DisplayDueDate' ?  <span onClick={() => setDueDate({...dueDate, editPopup:true}) }>{props?.item?.DisplayDueDate}</span>    : " "
-            }
 
             {/* Pannel To select Status */}
             <Panel
@@ -829,7 +849,7 @@ console.log(err)
                         </table>
                     </div>
                     {impTaskCategoryType?.map((option) => (
-                        <div className='d-flex' key={option.Id}>
+                        <div className={ServicesTaskCheck ? "serviepannelgreena d-flex" : "d-flex"} key={option.Id}>
                             <input
                                 type="checkbox"
                                 id={option.Id}
@@ -841,7 +861,7 @@ console.log(err)
                                 <span className={option.spfxIconName} ></span>
                                 {/* <img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} />  */}
                             </a>
-                            <label htmlFor={option.Id}>{option.Title}</label>
+                            <label htmlFor={option.Id} className='ms-2'>{option.Title}</label>
                         </div>
                     ))}
                     <footer className="float-end">

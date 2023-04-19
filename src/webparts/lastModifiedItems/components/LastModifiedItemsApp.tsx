@@ -119,6 +119,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let curListId = curNavItem.listId;
         let curSiteURL = curNavItem.siteUrl;
         let curSiteType = curNavItem.site;
+        let curSiteIcon = curNavItem.siteIcon;
         let queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
 
         let qStrings = this.getQueryStrings(queryStrings);
@@ -164,7 +165,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -188,7 +190,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+               
             }));
         }
         else if(selTabName=="SERVICES") {
@@ -212,7 +215,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                
             }));
         }
         else if(selTabName=="ALL") {
@@ -259,7 +263,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         Id: resListItem.Id,
                         ListId: curListId,
                         siteType: curSiteType,
-                        siteUrl: curSiteURL
+                        siteUrl: curSiteURL,
+                        siteIcon : curSiteIcon
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -302,7 +307,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                siteUrl: curSiteURL
+                siteUrl: curSiteURL,
+                siteIcon : curSiteIcon
             }));
         }        
 
@@ -446,7 +452,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         selNavItem.displaySiteName = currentNavItem.DisplaySiteName;
         selNavItem.listId = currentNavItem.ListId;
         selNavItem.site = currentNavItem.Site;
-        selNavItem.siteIcon = currentNavItem.SiteIcon;
+        selNavItem.siteIcon = currentNavItem.SiteIcon != undefined ? currentNavItem.SiteIcon : selNavItem.siteIcon ;
         selNavItem.siteUrl = currentNavItem.SiteUrl;
         selNavItem.sortOrder = currentNavItem.SortOrder;
         selNavItem.tabName = currentNavItem.TabName;
@@ -551,17 +557,22 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 <span className="leftsec">
                 <span> <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label></span> <span className="ms-1"> <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} /></span>
                 </span>
-                <span className="toolbox mx-auto">
-                    <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
-                    <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
-                    {elemClearFilter}
-                </span>
+                {
+                    this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
+                         "" : <span className="toolbox mx-auto">
+                         <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
+                         <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
+                         {elemClearFilter}
+                     </span>
+                }
+                
             </div>
         );
 
-        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems Items={this.state.filteredItems} TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} />);
+        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems Items={this.state.filteredItems} TabName={this.state.selNavItem?.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} />);
         
         const elemDeleteRecord = (<Dialog
+        
             hidden = {this.state.hideDeleteDialog}
             onDismiss = {this.onCancelDeleteDialog}
             dialogContentProps = {deleteDialogContentProps}

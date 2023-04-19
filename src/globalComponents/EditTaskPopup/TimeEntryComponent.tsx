@@ -6,6 +6,10 @@ import * as $ from 'jquery';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
 import pnp, { PermissionKind } from "sp-pnp-js";
+import { parseISO, format } from 'date-fns';
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
@@ -19,16 +23,18 @@ var Categoryy = '';
 var CategoryyID: any = ''
 var TaskCate: any = []
 var AllUsers: any = [];
-var isShowCate:any=''
-var change = Moment().format()
+var isShowCate: any = ''
+var change: any = new Date()
 function TimeEntryPopup(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
+    const [date, setDate] = React.useState(undefined);
     const [showCat, setshowCat] = React.useState('')
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
     const [disabled, setDisabled] = React.useState(false);
     const [collapseItem, setcollapseItem] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(false);
     const [Editcategory, setEditcategory] = React.useState(false);
@@ -37,6 +43,7 @@ function TimeEntryPopup(item: any) {
     const [AddTaskTimepopup, setAddTaskTimepopup] = React.useState(false);
     const [TimeSheet, setTimeSheets] = React.useState([])
     const [changeDates, setchangeDates] = React.useState(Moment().format())
+    //const [changeDates, setchangeDates] = React.useState(new Date())
     const [changeTimeAdd, setchangeTimeAdd] = React.useState()
     const [AdditionalTime, setAdditionalTime] = React.useState([])
     const [count, setCount] = React.useState(1)
@@ -184,7 +191,7 @@ function TimeEntryPopup(item: any) {
     const changeTimesEdit = (val: any, time: any, type: any) => {
         changeTime = Number(changeTime)
         if (type === 'EditTask' && val === '15') {
-            if(TimeInMinutes != undefined){
+            if (TimeInMinutes != undefined) {
                 time.TaskTimeInMin = Number(time.TaskTimeInMin)
                 if (changeTime == 0) {
                     changeTime = time.TaskTimeInMin + 15
@@ -192,15 +199,15 @@ function TimeEntryPopup(item: any) {
                 else {
                     changeTime = changeTime + 15
                 }
-    
+
                 if (changeTime != undefined) {
                     var TimeInHour: any = changeTime / 60;
                     setTimeInHours(TimeInHour.toFixed(2))
-    
+
                 }
                 setTimeInMinutes(changeTime)
             }
-            if(TimeInMinutes == undefined){
+            if (TimeInMinutes == undefined) {
                 changeTime = 0
                 if (changeTime == 0) {
                     changeTime = changeTime + 15
@@ -208,20 +215,20 @@ function TimeEntryPopup(item: any) {
                 else {
                     changeTime = changeTime + 15
                 }
-    
+
                 if (changeTime != undefined) {
                     var TimeInHour: any = changeTime / 60;
                     setTimeInHours(TimeInHour.toFixed(2))
-    
+
                 }
                 setTimeInMinutes(changeTime)
             }
-           
+
 
         }
         if (type === 'EditTask' && val === '60') {
             changeTime = Number(changeTime)
-            if(TimeInMinutes != undefined){
+            if (TimeInMinutes != undefined) {
                 time.TaskTimeInMin = Number(time.TaskTimeInMin)
                 if (changeTime == 0) {
                     changeTime = time.TaskTimeInMin + 60
@@ -229,15 +236,15 @@ function TimeEntryPopup(item: any) {
                 else {
                     changeTime = changeTime + 60
                 }
-    
+
                 if (changeTime != undefined) {
                     var TimeInHour: any = changeTime / 60;
                     setTimeInHours(TimeInHour.toFixed(2))
-    
+
                 }
                 setTimeInMinutes(changeTime)
             }
-            if(TimeInMinutes == undefined){
+            if (TimeInMinutes == undefined) {
                 changeTime = 0
                 if (changeTime == 0) {
                     changeTime = changeTime + 60
@@ -245,17 +252,17 @@ function TimeEntryPopup(item: any) {
                 else {
                     changeTime = changeTime + 60
                 }
-    
+
                 if (changeTime != undefined) {
                     var TimeInHour: any = changeTime / 60;
                     setTimeInHours(TimeInHour.toFixed(2))
-    
+
                 }
                 setTimeInMinutes(changeTime)
             }
-            }
-            
-           
+        }
+
+
     }
     const changeTimesDecEdit = (val: any, time: any, type: any) => {
 
@@ -354,22 +361,22 @@ function TimeEntryPopup(item: any) {
 
     }
     const openTaskStatusUpdatePoup = () => {
-        AllUsers.forEach((val:any)=>{
-            TimeSheet.forEach((time:any)=>{
-              if(val.AssingedToUserId == CurntUserId){
-                isShowCate = val.TimeCategory;
-                if(val.TimeCategory == time.Title){
-                    setshowCat(time.Title)
-                    setcheckCategories(time.Title)
+        AllUsers.forEach((val: any) => {
+            TimeSheet.forEach((time: any) => {
+                if (val.AssingedToUserId == CurntUserId) {
+                    isShowCate = val.TimeCategory;
+                    if (val.TimeCategory == time.Title) {
+                        setshowCat(time.Title)
+                        setcheckCategories(time.Title)
+                    }
+
                 }
-                
-              }
             })
         })
         setTaskStatuspopup(true)
     }
     const Editcategorypopup = (child: any) => {
-        var array:any=[]
+        var array: any = []
         Categoryy = child.Category.Title
         CategoryyID = child.ID
         array.push(child)
@@ -548,19 +555,19 @@ function TimeEntryPopup(item: any) {
 
         //     })
         //     })
-        TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Development", "Id": 299,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Investigation", "Id": 296,"isShow":false  },
-            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298 ,"isShow":false },
-            { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335 ,"isShow":false }, { "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315 ,"isShow":false });
+        TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Development", "Id": 299, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Investigation", "Id": 296, "isShow": false },
+            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298, "isShow": false },
+            { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315, "isShow": false });
         setTimeSheets(TimeSheets)
 
     }
-    const selectCategories = (e:any,Title: any) => {
+    const selectCategories = (e: any, Title: any) => {
         const target = e.target;
         if (target.checked) {
             setcheckCategories(Title);
             setshowCat(Title)
         }
-       
+
     }
     React.useEffect(() => {
         GetTimeSheet();
@@ -616,7 +623,7 @@ function TimeEntryPopup(item: any) {
 
     const getStructureData = function () {
         TaskCate = AllTimeSpentDetails
-        
+
 
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.TimesheetTitle.Id === undefined) {
@@ -707,7 +714,7 @@ function TimeEntryPopup(item: any) {
                                 if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
 
                                     AdditionalTimes.push(Subchild)
-                                  //  AdditionalTimes.sort(datecomp);
+                                    //  AdditionalTimes.sort(datecomp);
                                     console.log(AdditionalTimes)
 
 
@@ -721,81 +728,81 @@ function TimeEntryPopup(item: any) {
                     }
 
                 })
-               
+
             }
 
-            
 
-            
+
+
             //AdditionalTimes= AdditionalTimes.reverse()
-            
+
         });
         console.log(AdditionalTimes)
         setAdditionalTime(AdditionalTimes)
-        var mainArray:any =[]
-        var sortedCars:any=[]
-        TaskTimeSheetCategoriesGrouping.forEach((temp:any)=>{
-            
+        var mainArray: any = []
+        var sortedCars: any = []
+        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
+
             if (temp.Childs != undefined && temp.Childs.length > 0) {
                 $.each(temp.Childs, function (index: any, child: any) {
-                    child.AdditionalTimes=[]
+                    child.AdditionalTimes = []
                     if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
                         $.each(child.AdditionalTime, function (index: any, ch: any) {
                             mainArray.push(ch)
-                    })
-                    sortedCars =mainArray.sort(datecomp);
-                    
-                }
+                        })
+                        sortedCars = mainArray.sort(datecomp);
 
-            })
-           
-        }
+                    }
+
+                })
+
+            }
 
         })
         const finalData = sortedCars.filter((val: any, id: any, array: any) => {
             return array.indexOf(val) == id;
         })
-        TaskTimeSheetCategoriesGrouping.forEach((temp:any)=>{
-            
-            if (temp.Childs != undefined && temp.Childs.length > 0) {
-                
-                $.each(temp.Childs, function (index: any, child: any) {
-                    child.AdditionalTime=[]
-                     $.each(finalData, function (index: any, ch: any) {
-                             if(child.Id == ch.MainParentId){
-                                child.AdditionalTimes.push(ch)
-                             }
-                            })
-                   
+        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-            })
-           
-        }
+            if (temp.Childs != undefined && temp.Childs.length > 0) {
+
+                $.each(temp.Childs, function (index: any, child: any) {
+                    child.AdditionalTime = []
+                    $.each(finalData, function (index: any, ch: any) {
+                        if (child.Id == ch.MainParentId) {
+                            child.AdditionalTimes.push(ch)
+                        }
+                    })
+
+
+                })
+
+            }
 
         })
-        TaskTimeSheetCategoriesGrouping.forEach((temp:any)=>{
-            
-            if (temp.Childs != undefined && temp.Childs.length > 0) {
-                
-                $.each(temp.Childs, function (index: any, child: any) {
-                     $.each(child.AdditionalTimes, function (index: any, ch: any) {
-                             
-                             child.AdditionalTime.push(ch)
-                             
-                            })
-                   
+        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-            })
-           
-        }
+            if (temp.Childs != undefined && temp.Childs.length > 0) {
+
+                $.each(temp.Childs, function (index: any, child: any) {
+                    $.each(child.AdditionalTimes, function (index: any, ch: any) {
+
+                        child.AdditionalTime.push(ch)
+
+                    })
+
+
+                })
+
+            }
 
         })
         console.log(finalData)
-          console.log(mainArray)
+        console.log(mainArray)
         setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
         if (TaskStatuspopup == true) {
-            
+
             setupdateData(updateData + 1)
             showProgressHide()
         }
@@ -805,7 +812,7 @@ function TimeEntryPopup(item: any) {
         setModalIsTimeOpenToTrue();
 
     }
-    
+
 
     const setModalIsTimeOpenToTrue = () => {
         setTimeModalIsOpen(true)
@@ -815,11 +822,11 @@ function TimeEntryPopup(item: any) {
         item.CallBackTimeEntry();
 
     }
-    function datecomp(d1:any, d2:any) {
-        var a1 = d1.TaskDate.split("/"); 
+    function datecomp(d1: any, d2: any) {
+        var a1 = d1.TaskDate.split("/");
         var a2 = d2.TaskDate.split("/");
-       // a1 = a1[2] + a1[0] + a1[1];
-       // a2 = a2[2] + a2[0] + a2[1];
+        // a1 = a1[2] + a1[0] + a1[1];
+        // a2 = a2[2] + a2[0] + a2[1];
         a1 = a1[1] + a1[0] + a1[2];
         a2 = a2[1] + a2[0] + a2[2];
         //var a1:any= new Date(d1.TaskDate)
@@ -952,8 +959,8 @@ function TimeEntryPopup(item: any) {
         }
         else {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-            // { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }  
-        ]
+                // { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }  
+            ]
         }
         $.each(allurls, async function (index: any, item: any) {
             await $.ajax({
@@ -1226,15 +1233,15 @@ function TimeEntryPopup(item: any) {
     }
 
     const UpdateAdditionaltime = async (child: any) => {
-        var Dateee =''
-        if(editeddata != undefined){
-           var a =  Moment(editeddata).format()
+        var Dateee = ''
+        if (editeddata != undefined) {
+            var a = Moment(editeddata).format()
             Dateee = Moment(a).format('DD/MM/YYYY')
         }
-        else{
+        else {
             Dateee = Moment(changeEdited).format('DD/MM/YYYY')
         }
-         
+
         var DateFormate = new Date(Eyd)
         var UpdatedData: any = []
         $.each(saveEditTaskTime, function (index: any, update: any) {
@@ -1289,7 +1296,7 @@ function TimeEntryPopup(item: any) {
         var UpdatedData: any = {}
         smartTermId = "Task" + item.props.siteType + "Id";
         showProgressBar();
-        
+
         var AddedData: any = []
 
         if (checkCategories == undefined && checkCategories == undefined) {
@@ -1333,7 +1340,7 @@ function TimeEntryPopup(item: any) {
         //-------------Post Method------------------------------------------------------------
 
         //let folderUri: string = '/Smalsus'
-        let folderUri:string = `/${UpdatedData.Company}`
+        let folderUri: string = `/${UpdatedData.Company}`
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = '/sites/HHHH/SP/Lists/TasksTimesheet2';
             var listName = 'TasksTimesheet2'
@@ -1343,7 +1350,7 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined?newData.Title:checkCategories,
+            'Title': newData != undefined && newData.Title != undefined ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1384,11 +1391,11 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
 
-       // let folderUri: string = '/Smalsus/Santosh Kumar';
-        let folderUri:string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
+        // let folderUri: string = '/Smalsus/Santosh Kumar';
+        let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
         // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined?newData.Title:checkCategories,
+            'Title': newData != undefined && newData.Title != undefined ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1521,11 +1528,11 @@ function TimeEntryPopup(item: any) {
             .then(i => {
                 console.log(i);
             });
-        setupdateData(updateData + 5)
-       // setTimeSheet((AllTimeSheetDataNew) => [...AllTimeSheetDataNew])
+            setupdateData(updateData + 3)
+        
     }
 
- 
+
 
 
 
@@ -1545,7 +1552,7 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-        var Dateee =''
+        var Dateee = ''
         // if(editeddata != undefined){
         //    var a =  Moment(editeddata).format()
         //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
@@ -1553,8 +1560,8 @@ function TimeEntryPopup(item: any) {
         // else{
         //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
         // }
-        
-       // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+
+        // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
         //var DateFormate = new Date(Eyd)
 
         $.each(TaskCate, function (index: any, subItem: any) {
@@ -1638,7 +1645,7 @@ function TimeEntryPopup(item: any) {
         await web.lists.getById(ListId).items.getById(CategoryyID).update({
 
 
-            Title: newData != undefined ?newData.Title:checkCategories,
+            Title: newData != undefined ? newData.Title : checkCategories,
             CategoryId: Category
 
         }).then((res: any) => {
@@ -1667,109 +1674,136 @@ function TimeEntryPopup(item: any) {
         }
         if (type == 'Edit') {
 
-          if(e.target.value > 0){
-            changeTime = e.target.value
+            if (e.target.value > 0) {
+                changeTime = e.target.value
 
-            if (changeTime != undefined) {
-                var TimeInHour: any = changeTime / 60;
-                setTimeInHours(TimeInHour.toFixed(2))
+                if (changeTime != undefined) {
+                    var TimeInHour: any = changeTime / 60;
+                    setTimeInHours(TimeInHour.toFixed(2))
 
+                }
+                setTimeInMinutes(changeTime)
             }
-            setTimeInMinutes(changeTime)
-          }
-          else{
-            setTimeInMinutes(undefined)
-            setTimeInHours(0)
-          }
+            else {
+                setTimeInMinutes(undefined)
+                setTimeInHours(0)
+            }
 
+
+
+
+
+        }
+
+    }
+
+    const changeDatetodayQuickly = (date: any, type: any, Popup: any) => {
+        if (Popup == 'Edit') {
+            if (type == 'firstdate') {
+                var a1 = date.split("/");
+                a1[0] = '01'
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == '15thdate') {
+                var a1 = date.split("/");
+                a1[0] = '15'
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == '1Jandate') {
+                var a1 = date.split("/");
+                a1[1] = '01'
+                a1[0] = '01'
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == 'Today') {
+                var newStartDate: any = Moment().format("DD/MM/YYYY")
+                var a1 = newStartDate.split("/");
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+        }
+        if (Popup == 'Add') {
+            if (type == 'firstdate') {
+               
+                var newStartDate: any = Moment(date).format("DD/MM/YYYY")
+                var a1 = newStartDate.split("/");
+                a1[0] = '01'
+                a1 = a1[2] + a1[1] + a1[0];
+               var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == '15thdate') {
                 
-           
-           
-
+                var newStartDate: any = Moment(date).format("DD/MM/YYYY")
+                var a1 = newStartDate.split("/");
+                a1[0] = '15'
+                a1 = a1[2] + a1[1] + a1[0];
+                let finalDate: any = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == '1Jandate') {
+               
+                var newStartDate: any = Moment(date).format("DD/MM/YYYY")
+                var a1 = newStartDate.split("/");
+                a1[1] = '01'
+                a1[0] = '01'
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
+            if (type == 'Today') {
+                var newStartDate: any = Moment().format("DD/MM/YYYY")
+                var a1 = newStartDate.split("/");
+                a1 = a1[2] + a1[1] + a1[0];
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                change = new window.Date(finalDate)
+                setchangeDates(finalDate)
+                setediteddata(finalDate)
+            }
         }
+
 
     }
-
-    const changeDatetodayQuickly = (date: any, type: any,Popup:any) => {
-        if(Popup == 'Edit'){
-        if(type == 'firstdate'){
-           // var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
-            a1[0] = '01'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == '15thdate'){
-            //var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
-            a1[0] = '15'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == '1Jandate'){
-            //var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = date.split("/"); 
-            a1[1] = '01'
-            a1[0] = '01'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == 'Today'){
-            var newStartDate: any = Moment().format("DD/MM/YYYY")
-            var a1 = newStartDate.split("/"); 
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-       }
-       if(Popup == 'Add'){
-        if(type == 'firstdate'){
-            var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = newStartDate.split("/"); 
-            a1[0] = '01'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == '15thdate'){
-           var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-            var a1 = newStartDate.split("/"); 
-            a1[0] = '15'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == '1Jandate'){
-         var newStartDate: any = Moment(date).format("DD/MM/YYYY")
-             var a1 = newStartDate.split("/"); 
-            a1[1] = '01'
-            a1[0] = '01'
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-        if(type == 'Today'){
-           var newStartDate: any = Moment().format("DD/MM/YYYY")
-            var a1 = newStartDate.split("/"); 
-            a1 = a1[2] + a1[1] + a1[0];
-            var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
-            setchangeDates(finalDate)
-            setediteddata(finalDate)
-        }
-       }
-        
-        
+    function convert(str: any) {
+        var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+        return [date.getFullYear(), mnth, day].join("-");
     }
+    const handleDatedue = (date: any) => {
+        change = new window.Date(date)
+        var NewDate = new window.Date(date).toString()
+        var FinalDate = moment(NewDate).format("ddd, DD MMM yyyy")
+        setchangeDates(FinalDate)
+        setediteddata(FinalDate)
+    }
+    const handleOnBlur = (event: any) => {
+        setNewData({ ...newData, TaskDate: event.target.value })
+    }
+    const formatDate = React.useCallback((Date) =>
+        Date.toLocaleString(), []);
+
     return (
         <div>
             <div className="container mt-0 p-0">
@@ -1777,8 +1811,7 @@ function TimeEntryPopup(item: any) {
                     <span ng-if="Item!=undefined">
 
                     </span>
-                    <div className="col-sm-12 p-0 mt-10" ng-form
-                        role="form">
+                    <div className="col-sm-12 p-0 mt-10">
                         <div className="col-sm-12 ps-0 pr-5 TimeTabBox">
                             <a className="hreflink pull-right mt-1 mr-0" onClick={openTaskStatusUpdatePoup}>
 
@@ -1859,9 +1892,9 @@ function TimeEntryPopup(item: any) {
                                         </thead>
                                         <tbody>
                                             {AllTimeSheetDataNew != undefined && AllTimeSheetDataNew.length > 0 && AllTimeSheetDataNew.map(function (item, index) {
-                                                 <div id="SpfxProgressbar" style={{ display: "none" }}>
-                                                 <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                                             </div>
+                                                <div id="SpfxProgressbar" style={{ display: "none" }}>
+                                                    <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                </div>
                                                 if (item.Childs != undefined && item.Childs.length > 0) {
 
                                                     return (
@@ -1869,14 +1902,14 @@ function TimeEntryPopup(item: any) {
 
                                                             {item.Childs != undefined && item.Childs.length > 0 && (
                                                                 <>
-                                                               
+
                                                                     {item.Childs.map(function (childitem: any) {
 
                                                                         return (
 
                                                                             <>
                                                                                 <tr >
-                                                                                
+
                                                                                     <td className="p-0" colSpan={9}>
                                                                                         <table className="table m-0" style={{ width: "100%" }}>
                                                                                             <tr className="for-c02">
@@ -1962,7 +1995,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                             <tr >
                                                                                                                                 <td className="p-0" colSpan={9}>
                                                                                                                                     <table className="table m-0" style={{ width: "100%" }}>
-                                                                                                                                   
+
                                                                                                                                         <tr className="for-c02">
 
                                                                                                                                             <td colSpan={2} style={{ width: "22%" }}>
@@ -2066,7 +2099,7 @@ function TimeEntryPopup(item: any) {
                             <div className='mb-3'>
                                 <div className=" form-group" key={checkCategories}>
                                     <label>Title</label>
-                                    <input type="text" 
+                                    <input type="text"
                                         className="form-control" name="TimeTitle"
                                         defaultValue={checkCategories}
                                         onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
@@ -2082,17 +2115,17 @@ function TimeEntryPopup(item: any) {
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'firstdate','Add')}>1st</span>
+                                                        onClick={() => changeDatetodayQuickly(changeDates, 'firstdate', 'Add')}>1st</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '15thdate','Add')}>15th</span>
+                                                        onClick={() => changeDatetodayQuickly(changeDates, '15thdate', 'Add')}>15th</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '1Jandate','Add')}>
+                                                        onClick={() => changeDatetodayQuickly(changeDates, '1Jandate', 'Add')}>
                                                         1
                                                         Jan
                                                     </span>
@@ -2101,21 +2134,33 @@ function TimeEntryPopup(item: any) {
 
                                                         id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'Today','Add')}>Today</span>
+                                                        onClick={() => changeDatetodayQuickly(changeDates, 'Today', 'Add')}>Today</span>
                                                 </div>
                                                 <label className="full_width">
                                                     Date
 
                                                 </label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    id="AdditionalNewDatePicker"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    placeholder="DD/MM/YYYY"
-                                                    ng-model="AdditionalnewDate"
+                                                {/* <DatePicker selected={date}  value={Moment(changeDates).format("ddd, DD MMM yyyy")} 
+                                                 minDate={new Date("ddd, DD MMM yyyy")}
+                                                 maxDate={new Date("ddd, DD MMM yyyy")}
+                                                 onChange={date => setDate(date)} />     */}
+                                                <DatePicker className="form-control"
                                                     value={Moment(changeDates).format("ddd, DD MMM yyyy")}
-                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
+                                                    onChange={handleDatedue}
+                                                    dateFormat="dd/MM/yyyy"
+
+                                                />
+                                                {/* <DatePicker
+
+                                                    label="Start Date"
+
+                                                    styles={{ root: { width: "70%" } }}
+
+                                                    value={date == undefined || date == null?Moment(changeDates).format("ddd, DD MMM yyyy")}
+
+                                                    onSelectDate={(date) => setDate(date)}
+
+                                                /> */}
 
                                             </div>
                                         </div>
@@ -2185,7 +2230,7 @@ function TimeEntryPopup(item: any) {
                                         <div className="col-sm-3 ps-0">
                                             <label></label>
                                             <input className="form-control bg-e9" type="text" value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
-                                                 />
+                                            />
                                         </div>
                                         <div
                                             className="col-sm-6  Time-control-buttons">
@@ -2263,9 +2308,9 @@ function TimeEntryPopup(item: any) {
                                                 id="subcategorytasksPriority{{item.Id}}">
                                                 <input
                                                     type="radio" className="form-check-input"
-                                                    checked={showCat==Items.Title?true:false}
+                                                    checked={showCat == Items.Title ? true : false}
                                                     // checked={selectCategories === Items.Title ? true : false}
-                                                    onChange={(e)=>selectCategories(e,Items.Title)}
+                                                    onChange={(e) => selectCategories(e, Items.Title)}
 
                                                     name="taskcategory" />
                                                 <label className='form-check-label'>{Items.Title}</label>
@@ -2280,7 +2325,7 @@ function TimeEntryPopup(item: any) {
 
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-primary"  disabled={TimeInMinutes==0?true:false} onClick={saveTimeSpent}>
+                    <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
@@ -2321,48 +2366,54 @@ function TimeEntryPopup(item: any) {
                                                 <div className="col ">
                                                     <div className='row'>
                                                         <div className="col-sm-6 ">
-                                                        <div className="date-div">
-                                                        <div className="Date-Div-BAR d-flex">
-                                                    <span className="href"
+                                                            <div className="date-div">
+                                                                <div className="Date-Div-BAR d-flex">
+                                                                    <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate','Edit')}>1st</span>
-                                                    | <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate', 'Edit')}>1st</span>
+                                                                    | <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate','Edit')}>15th</span>
-                                                    | <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate', 'Edit')}>15th</span>
+                                                                    | <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate','Edit')}>
-                                                        1
-                                                        Jan
-                                                    </span>
-                                                    |
-                                                    <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate', 'Edit')}>
+                                                                        1
+                                                                        Jan
+                                                                    </span>
+                                                                    |
+                                                                    <span className="href"
 
-                                                        id="selectedToday"
+                                                                        id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today','Edit')}>Today</span>
-                                                </div>
-                                                <label className="full_width">
-                                                    Date
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today', 'Edit')}>Today</span>
+                                                                </div>
+                                                                <label className="full_width">
+                                                                    Date
 
-                                                </label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    id="AdditionalNewDatePicker"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    placeholder="DD/MM/YYYY"
-                                                    ng-model="AdditionalnewDate"
-                                                    value={editeddata}
-                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
+                                                                </label>
+                                                                {/* <input type="text"
+                                                                    autoComplete="off"
+                                                                    id="AdditionalNewDatePicker"
+                                                                    className="form-control"
+                                                                    ng-required="true"
+                                                                    placeholder="DD/MM/YYYY"
+                                                                    ng-model="AdditionalnewDate"
+                                                                    value={editeddata}
+                                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
+                                                                     <DatePicker className="form-control"
+                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
+                                                    onChange={handleDatedue}
+                                                    dateFormat="dd/MM/yyyy"
 
-                                                       </div>
+                                                />
+
+                                                            </div>
                                                         </div>
 
                                                         <div className="col-sm-6 session-control-buttons">
@@ -2425,12 +2476,12 @@ function TimeEntryPopup(item: any) {
                                                                 ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
                                                             <input type="text"
                                                                 className="form-control"
-                                                                value={(TimeInMinutes > 0 || TimeInMinutes == undefined)  ? TimeInMinutes : child.TaskTimeInMin}  onChange={(e) => changeTimeFunction(e, 'Edit')} />
+                                                                value={(TimeInMinutes > 0 || TimeInMinutes == undefined) ? TimeInMinutes : child.TaskTimeInMin} onChange={(e) => changeTimeFunction(e, 'Edit')} />
 
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
                                                             <label></label>
-                                                            <input className="form-control bg-e9" type="text" value={`${(TimeInHours > 0 || TimeInMinutes == undefined)? TimeInHours : child.TaskTime} Hours`}
+                                                            <input className="form-control bg-e9" type="text" value={`${(TimeInHours > 0 || TimeInMinutes == undefined) ? TimeInHours : child.TaskTime} Hours`}
                                                             />
                                                         </div>
                                                         <div
@@ -2572,48 +2623,52 @@ function TimeEntryPopup(item: any) {
                                                 <div className="col">
                                                     <div className='row'>
                                                         <div className="col-sm-6 ">
-                                                        <div className="date-div">
-                                                        <div className="Date-Div-BAR d-flex">
-                                                    <span className="href"
+                                                            <div className="date-div">
+                                                                <div className="Date-Div-BAR d-flex">
+                                                                    <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate','Add')}>1st</span>
-                                                    | <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'firstdate', 'Edit')}>1st</span>
+                                                                    | <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate','Add')}>15th</span>
-                                                    | <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '15thdate', 'Edit')}>15th</span>
+                                                                    | <span className="href"
 
-                                                        id="selectedYear"
+                                                                        id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate','Add')}>
-                                                        1
-                                                        Jan
-                                                    </span>
-                                                    |
-                                                    <span className="href"
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, '1Jandate', 'Edit')}>
+                                                                        1
+                                                                        Jan
+                                                                    </span>
+                                                                    |
+                                                                    <span className="href"
 
-                                                        id="selectedToday"
+                                                                        id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today','Add')}>Today</span>
-                                                </div>
-                                                <label className="full_width">
-                                                    Date
+                                                                        onClick={() => changeDatetodayQuickly(child.TaskDate, 'Today', 'Edit')}>Today</span>
+                                                                </div>
+                                                                <label className="full_width">
+                                                                    Date
 
-                                                </label>
-                                                <input type="text"
-                                                    autoComplete="off"
-                                                    id="AdditionalNewDatePicker"
-                                                    className="form-control"
-                                                    ng-required="true"
-                                                    placeholder="DD/MM/YYYY"
-                                                    ng-model="AdditionalnewDate"
-                                                    value={Moment(changeDates).format('ddd, DD MMM yyyy')}
-                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} />
+                                                                </label>
+                                                                {/* <input type="text"
+                                                                    autoComplete="off"
+                                                                    id="AdditionalNewDatePicker"
+                                                                    className="form-control"
+                                                                    ng-required="true"
+                                                                    placeholder="DD/MM/YYYY"
+                                                                    ng-model="AdditionalnewDate"
+                                                                    value={Moment(changeDates).format('ddd, DD MMM yyyy')}
+                                                                    onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
+                                                                     <DatePicker className="form-control"
+                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                    onChange={handleDatedue}
+                                                    dateFormat="dd/MM/yyyy"/>
 
-                                                       </div>
+                                                            </div>
                                                         </div>
 
                                                         <div className="col-sm-6 session-control-buttons">
@@ -2675,10 +2730,10 @@ function TimeEntryPopup(item: any) {
                                                             <label
                                                                 ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
                                                             <input type="text"
-                                                               className='form-control'
+                                                                className='form-control'
                                                                 name="timeSpent"
                                                                 ng-model="TimeSpentInMinutes" ng-change="getInHours(TimeSpentInMinutes)"
-                                                                value={(TimeInMinutes > 0 || TimeInMinutes == undefined)  ? TimeInMinutes : child.TaskTimeInMin}  onChange={(e) => changeTimeFunction(e, 'Edit')} />
+                                                                value={(TimeInMinutes > 0 || TimeInMinutes == undefined) ? TimeInMinutes : child.TaskTimeInMin} onChange={(e) => changeTimeFunction(e, 'Edit')} />
 
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
@@ -2812,37 +2867,37 @@ function TimeEntryPopup(item: any) {
                             <div className='row'>
                                 <div className="col-sm-6">
                                     <div className="date-div">
-                                    <div className="Date-Div-BAR d-flex">
-                                                    <span className="href"
+                                        <div className="Date-Div-BAR d-flex">
+                                            <span className="href"
 
-                                                        id="selectedYear"
+                                                id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'firstdate','Add')}>1st</span>
-                                                    | <span className="href"
+                                                onClick={() => changeDatetodayQuickly(changeDates, 'firstdate', 'Add')}>1st</span>
+                                            | <span className="href"
 
-                                                        id="selectedYear"
+                                                id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '15thdate','Add')}>15th</span>
-                                                    | <span className="href"
+                                                onClick={() => changeDatetodayQuickly(changeDates, '15thdate', 'Add')}>15th</span>
+                                            | <span className="href"
 
-                                                        id="selectedYear"
+                                                id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '1Jandate','Add')}>
-                                                        1
-                                                        Jan
-                                                    </span>
-                                                    |
-                                                    <span className="href"
+                                                onClick={() => changeDatetodayQuickly(changeDates, '1Jandate', 'Add')}>
+                                                1
+                                                Jan
+                                            </span>
+                                            |
+                                            <span className="href"
 
-                                                        id="selectedToday"
+                                                id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'Today','Add')}>Today</span>
-                                                </div>
+                                                onClick={() => changeDatetodayQuickly(changeDates, 'Today', 'Add')}>Today</span>
+                                        </div>
                                         <label className="full_width">
                                             Date
 
                                         </label>
-                                        <input type="text"
+                                        {/* <input type="text"
                                             autoComplete="off"
                                             id="AdditionalNewDatePicker"
                                             className="form-control"
@@ -2850,7 +2905,11 @@ function TimeEntryPopup(item: any) {
                                             placeholder="DD/MM/YYYY"
 
                                             value={Moment(changeDates).format('ddd, DD MMM yyyy')}
-                                            onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} />
+                                            onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} /> */}
+                                             <DatePicker className="form-control"
+                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                    onChange={handleDatedue}
+                                                    dateFormat="dd/MM/yyyy"/>
 
                                     </div>
                                 </div>
@@ -2999,7 +3058,7 @@ function TimeEntryPopup(item: any) {
             </div> */}
                                 <div className="col-sm-12 text-end mt-2">
 
-                                    <button  disabled={TimeInMinutes==0?true:false} type="button" className="btn btn-primary ms-2"
+                                    <button disabled={TimeInMinutes == 0 ? true : false} type="button" className="btn btn-primary ms-2"
                                         onClick={AddTaskTime}>
                                         Save
                                     </button>
@@ -3030,33 +3089,33 @@ function TimeEntryPopup(item: any) {
                 <div className="modal-body border  p-3  ">
 
                     <div className='row'>
-                        {categoryData?.map((item)=>{
-                            return(
+                        {categoryData?.map((item) => {
+                            return (
                                 <div className="col-sm-9 border-end" >
-                                <div className='mb-3'>
-                                    <div className=" form-group">
-                                        <label>Selected Category</label>
-                                        <input type="text" autoComplete="off"
-                                            className="form-control"
-                                            name="CategoriesTitle"
-                                            value={checkCategories != undefined ? checkCategories : item.Category.Title}
-                                        />
+                                    <div className='mb-3'>
+                                        <div className=" form-group">
+                                            <label>Selected Category</label>
+                                            <input type="text" autoComplete="off"
+                                                className="form-control"
+                                                name="CategoriesTitle"
+                                                value={checkCategories != undefined ? checkCategories : item.Category.Title}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='mb-3'>
-                                    <div className=" form-group" key={checkCategories}>
-                                        <label>Title</label>
-                                        <input type="text" autoComplete="off"
-                                            className="form-control" name="TimeTitle"
-                                            defaultValue={checkCategories != undefined ? checkCategories : item.Title}
-                                            onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
+                                    <div className='mb-3'>
+                                        <div className=" form-group" key={checkCategories}>
+                                            <label>Title</label>
+                                            <input type="text" autoComplete="off"
+                                                className="form-control" name="TimeTitle"
+                                                defaultValue={checkCategories != undefined ? checkCategories : item.Title}
+                                                onChange={(e) => setNewData({ ...newData, Title: e.target.value })} />
+                                        </div>
                                     </div>
+
                                 </div>
-    
-                            </div>
                             )
                         })}
-                       
+
                         <div className="col-sm-3">
 
                             <div className="col mb-2">

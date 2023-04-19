@@ -486,7 +486,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     if (ClientTimeArray != undefined && ClientTimeArray != null) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if (item.SiteName == items?.SiteName) {
+          if ((item?.Title == items?.SiteName)||(item?.SiteName==items?.SiteName)) {
             item.ClientCategory = items?.Title;
           }
         })
@@ -570,6 +570,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
         })
       }
+   
     }
     return userDeatails;
   }
@@ -591,6 +592,9 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           'Title': senderObject[0]?.Title,
           'userImage': senderObject[0]?.Item_x0020_Cover != null ? senderObject[0]?.Item_x0020_Cover.Url : ""
         })
+      }   if(senderObject.length==0){
+        userDeatails.push({
+          'Title':username})
       }
       return userDeatails; 
     }
@@ -1040,19 +1044,18 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           <div className='row'>
             <div className="col-sm-12 p-0 ng-scope">
               <ul className="spfxbreadcrumb m-0 p-0">
-                {this.state.maincollection?.map((breadcrumbitem: any) => {
+                 {this.state.maincollection?.map((breadcrumbitem: any) => {
                   return <>
-                    {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) &&
-                      <li>
-                        {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
+                   {(this.state.Result["Component"]!= null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"]!= null && this.state.Result["Services"].length > 0) ?
+                      <li >
+                        {this.state.Result["Component"]!= null && this.state.Result["Component"].length > 0 &&
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
                         }
                         {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
                         }
-                      </li>
+                      </li>:null
                     }
-
                     {breadcrumbitem.Subchild == undefined && breadcrumbitem.Child == undefined && this.state.Result["Services"].length == 0 &&
                       this.state.Result["Component"].length == 0 && breadcrumbitem.ParentTask != undefined &&
                       <li className="ng-scope" >
@@ -1475,7 +1478,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
             </div>
             <div className="col-3">
               <div>
-              {this.state.Result!=undefined&&<CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+              {this.state.Result!=undefined&& AllListId!=undefined&&<CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId}Context={this.props?.Context} taskTitle={this.state.Result?.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context?._pageContext?._web} />}</div>
               <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl}DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>

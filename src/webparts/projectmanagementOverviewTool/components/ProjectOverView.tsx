@@ -45,8 +45,8 @@ export default function ProjectOverview(props: any) {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl:props?.props?.siteUrl
-          }
+            siteUrl: props?.props?.siteUrl
+        }
         TaskUser()
         GetMasterData();
     }, [])
@@ -114,11 +114,11 @@ export default function ProjectOverview(props: any) {
             {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
-                showSortIcon: true,    
+                showSortIcon: true,
                 style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original}  TaskUsers={AllTaskUser} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} />
                         {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 )
@@ -136,9 +136,7 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: false,
                 style: { width: '30px' },
                 Cell: ({ row }: any) => (
-                    <span title='Edit' onClick={(e) => EditComponentPopup(row?.original)} className='svg__iconbox svg__icon--edit'>
-        
-                    </span>
+                    <span title="Edit Task" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>
                 ),
             },
         ],
@@ -169,10 +167,10 @@ export default function ProjectOverview(props: any) {
         usePagination
     );
     //Inline Editing Callback
-    const inlineEditingCall = (item:any) => {
-        page?.map((tasks:any)=>{
-            if(tasks.Id==item.Id){
-                tasks=item;
+    const inlineEditingCall = (item: any) => {
+        page?.map((tasks: any) => {
+            if (tasks.Id == item.Id) {
+                tasks = item;
             }
         })
     }
@@ -204,7 +202,7 @@ export default function ProjectOverview(props: any) {
         Alltask.map((items: any) => {
             items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
             items.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
-            items.listId='EC34B38F-0669-480A-910C-F84E92E58ADF';
+            items.listId = 'EC34B38F-0669-480A-910C-F84E92E58ADF';
             items.AssignedUser = []
             items.TeamMembersSearch = '';
             if (items.AssignedTo != undefined) {
