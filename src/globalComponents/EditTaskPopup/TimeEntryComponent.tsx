@@ -1921,28 +1921,13 @@ function TimeEntryPopup(item: any) {
                                                                                                 </td>
 
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span>{item.Title} - {childitem.Title}</span>
+                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
 
-                                                                                                    <span className="mx-2">
-                                                                                                        <img src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif' className="button-icon hreflink" title="Edit" onClick={() => Editcategorypopup(childitem)}>
-                                                                                                        </img>
-                                                                                                    </span>
-                                                                                                    <span className="mx-2">
-                                                                                                        <a
-                                                                                                            className="hreflink" title="Delete" onClick={() => deleteCategory(childitem)}>
-                                                                                                            <img
-                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete.gif"></img>
-                                                                                                        </a>
-                                                                                                    </span>
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>
-                                                                                                    <button type="button" className="btn btn-primary me-1"
-
-                                                                                                        onClick={() => openAddTasktimepopup(childitem)} >
-                                                                                                        Add Time
-                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 48 48" fill="#fff">
-                                                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M22.8746 14.3436C22.8774 18.8722 22.8262 22.6308 22.7608 22.6962C22.6954 22.7616 18.9893 22.8128 14.525 22.8101C10.0606 22.8073 6.32545 22.8876 6.22467 22.9884C5.99582 23.2172 6.00541 24.6394 6.23742 24.8714C6.33182 24.9658 10.0617 25.0442 14.526 25.0455C18.9903 25.0469 22.6959 25.1009 22.7606 25.1657C22.8254 25.2304 22.8808 28.9921 22.8834 33.5248L22.8884 41.7663L23.9461 41.757L25.0039 41.7476L25.0012 33.3997L24.9986 25.0516L33.2932 25.0542C37.8555 25.0556 41.6431 25.0017 41.7105 24.9343C41.8606 24.7842 41.8537 23.0904 41.7024 22.9392C41.6425 22.8793 37.8594 22.8258 33.2955 22.8204L24.9975 22.8104L24.9925 14.4606L24.9874 6.11084L23.9285 6.11035L22.8695 6.10998L22.8746 14.3436Z" fill="#fff" />
-                                                                                                        </svg>
+                                                                                                    <button type="button" className="btn btn-primary me-1 d-flex "  onClick={() => openAddTasktimepopup(childitem)} >
+                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--cross svg__iconbox"></span>
+                                                                                                
                                                                                                     </button>
                                                                                                 </td>
 
@@ -1989,12 +1974,12 @@ function TimeEntryPopup(item: any) {
 
                                                                                                                         <td style={{ width: "2%" }}>  <a className="hreflink"
                                                                                                                         >
-                                                                                                                            <img
-                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></img>
+                                                                                                                            <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></span>
+                                                                                                                       
                                                                                                                         </a></td>
                                                                                                                         <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                            <img style={{ width: "19px" }}
-                                                                                                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg" onClick={() => deleteTaskTime(childinew)}></img>
+                                                                                                                        <span className="mt-1 svg__icon--trash  svg__iconbox"  onClick={() => deleteTaskTime(childinew)}></span>
+                                                                                                                            
                                                                                                                         </a></td>
                                                                                                                     </tr>
                                                                                                                 </table>
@@ -2036,18 +2021,16 @@ function TimeEntryPopup(item: any) {
                                                                                                                                                 <img
                                                                                                                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png"></img>
                                                                                                                                             </a></td>
-
-
                                                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                                                 <a className="hreflink"
                                                                                                                                                 >
-                                                                                                                                                    <img
-                                                                                                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/edititem.gif"></img>
+                                                                                                                                                    
+                                                                                                                                                    <span className="svg__iconbox svg__icon--edit"></span>
                                                                                                                                                 </a></td>
                                                                                                                                             <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
                                                                                                                                             >
-                                                                                                                                                <img style={{ width: "19px" }}
-                                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/delete_m.svg"></img>
+                                                                                                                                                           <span className="mt-1 svg__icon--trash  svg__iconbox"></span>
+                                                                                                                                             
                                                                                                                                             </a></td>
                                                                                                                                         </tr>
                                                                                                                                     </table>
