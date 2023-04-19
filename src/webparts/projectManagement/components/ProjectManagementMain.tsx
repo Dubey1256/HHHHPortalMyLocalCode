@@ -542,7 +542,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        internalHeader: "Due Date",
+        internalHeader: "Due Date", 
         showSortIcon: true,
         style: { width: "80px" },
         accessor: "DueDate",
@@ -563,7 +563,7 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "70px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
-          <span>
+          <span >
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
