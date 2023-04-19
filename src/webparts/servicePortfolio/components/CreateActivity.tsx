@@ -897,7 +897,7 @@ const CreateActivity = (props: any) => {
             <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <span>
-                        {`Create Activity`}
+                        {`Create Quick Option - ${AllItems.NoteCall}` }
                     </span>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
