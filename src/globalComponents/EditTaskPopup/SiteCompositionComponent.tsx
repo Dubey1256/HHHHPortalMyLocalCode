@@ -11,6 +11,7 @@ var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var ClientTime = Props.ClientTime;
+    const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
     const TotalTime = Props.SmartTotalTimeData;
     const callBack = Props.callBack;
@@ -92,14 +93,14 @@ const SiteCompositionComponent = (Props: any) => {
             }
             setSiteTypes(tempData2);
         }
-        if(SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0){
-            if(SiteCompositionSettings[0].Proportional){
+        if (SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
+            if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
             }
-            if(SiteCompositionSettings[0].Manual){
+            if (SiteCompositionSettings[0].Manual) {
                 setProportionalStatus(false);
             }
-            if(SiteCompositionSettings[0].Portfolio){
+            if (SiteCompositionSettings[0].Portfolio) {
                 setProportionalStatus(true);
             }
         }
@@ -160,6 +161,13 @@ const SiteCompositionComponent = (Props: any) => {
             const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
             SiteCompositionSettings[0] = object;
             setProportionalStatus(true);
+            let tempData: any = [];
+            ClientTime?.map((TimeData: any) => {
+                TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
+                tempData.push(TimeData);
+            })
+            SiteCompositionObject.ClientTime = tempData;
+            callBack(SiteCompositionObject);
         }
         if (Type == "Manual") {
             const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
@@ -182,7 +190,7 @@ const SiteCompositionComponent = (Props: any) => {
     const loadAllCategoryData = function () {
         var AllTaskUsers = []
         var AllMetaData: any = []
-        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomyName + "'")
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomyName + "'")
         $.ajax({
             url: url,
             method: "GET",
@@ -220,7 +228,6 @@ const SiteCompositionComponent = (Props: any) => {
         setSearchedKey('');
         setClientCategoryPopupStatus(true);
         BuildIndividualAllDataArray(SiteParentId);
-
     }
 
     const BuildIndividualAllDataArray = (SiteParentId: any) => {
@@ -249,8 +256,6 @@ const SiteCompositionComponent = (Props: any) => {
         }
         setSelectedSiteClientCategoryData(ParentArray);
     }
-
-
 
     const AutoSuggestionForClientCategory = (e: any, usedFor: any) => {
         let SearchedKey: any = e.target.value;
@@ -549,14 +554,12 @@ const SiteCompositionComponent = (Props: any) => {
                                                         type="number" min="1" defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : (100 / selectedSiteCount).toFixed(2)} className="form-control p-1" onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                     /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }} />}</>
                                                 }
-
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
                                                 <span>{siteData.BtnStatus ? "%" : ''}</span>
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "12%" }}>
                                                 {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
-
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
 
@@ -592,7 +595,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     </a>
                                                                     : null
                                                             }
-
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -641,7 +643,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     </a>
                                                                     : null
                                                             }
-
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EPS" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -932,7 +933,6 @@ const SiteCompositionComponent = (Props: any) => {
                                     })}
                                 </ul>
                                 : null}
-
                         </div>
                     </div>
                     <footer className="float-end mt-1">
