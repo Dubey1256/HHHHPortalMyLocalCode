@@ -3817,7 +3817,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                             </a>}
                                                                                         {item.Title === 'Others' &&
                                                                                             <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>}
-                                                                                        {item.childs != undefined &&
+                                                                                        {item.childs != undefined && item.childs.length >0 && 
                                                                                             <span className='ms-1'>({item.childsLength})</span>
                                                                                         }
 
