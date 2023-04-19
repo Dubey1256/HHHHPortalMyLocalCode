@@ -896,9 +896,9 @@ const CreateActivity = (props: any) => {
         return (
             <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
+                    <h2 className='heading'>
                         {`Create Quick Option - ${AllItems.NoteCall}` }
-                    </span>
+                    </h2>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
             </div>
@@ -920,8 +920,10 @@ const CreateActivity = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
+                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                
             >
-                <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena modal-body":"modal-body"}>
+                <div className= "modal-body active">
 
 
                     <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>

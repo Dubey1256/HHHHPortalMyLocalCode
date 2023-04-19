@@ -1373,7 +1373,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       </li>
         </ul></div>
       
-       <div className="feedbkicon"> <Tooltip /> </div>
+       <div className="feedbkicon"> <Tooltip  ComponentId={1258}/> </div>
        </div>
       </>
     );
@@ -1619,7 +1619,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div className="">
+                                          <div className="serviepannelgreena">
                                             <a
                                               className="hreflink service"
                                               target="_blank"
@@ -1655,7 +1655,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div className="serviepannelgreena">
+                                          <div >
                                             <a
                                               className="hreflink service "
                                               target="_blank"
