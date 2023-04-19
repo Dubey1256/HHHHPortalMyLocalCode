@@ -17,7 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-
+  
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);

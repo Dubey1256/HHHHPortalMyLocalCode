@@ -640,11 +640,11 @@ const CreateWS = (props: any) => {
     };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1" >
+            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
+                    <h2 className='heading'>
                         {`Create Item`}
-                    </span>
+                    </h2>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
             </div>
@@ -832,8 +832,9 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
+                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
             >
-                <div className="modal-body border p-3 bg-f5f5">
+                <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
                         {
                             ParentArray?.map((pare: any) => {

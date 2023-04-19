@@ -39,7 +39,7 @@ const CreateTaskFromProject = (props: any) => {
                isOpen={lgShow}
                onDismiss={() => setLgShow(false)}
                isBlocking={false}>
-                <CreateTaskComponent callBack={props?.callBack} projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent}/>
+                <CreateTaskComponent callBack={callBack}  projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent}/>
             </Panel>
            
         </>
