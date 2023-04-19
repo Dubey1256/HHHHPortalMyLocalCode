@@ -17,7 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-
+  
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -318,7 +318,7 @@ const inlineEditingcolumns = (props: any) => {
             DueDate: newDueDate
         })
             .then((res: any) => {
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title","workingThisWeek","IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank","Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title","workingThisWeek","IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank","Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                 .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                 .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
@@ -656,7 +656,7 @@ const inlineEditingcolumns = (props: any) => {
                                         if (category?.Title == 'Immediate') {
                                             return (
                                                 <a  title="Immediate">
-                                                    <span className="svg__iconbox svg__icon--alert " ></span>
+                                                    <span className="workmember svg__iconbox svg__icon--alert " ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                                                 </a>
                                             )
@@ -665,14 +665,14 @@ const inlineEditingcolumns = (props: any) => {
                                             return (
                                                 <a  title="Bottleneck">
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                                                    <span className="svg__iconbox svg__icon--bottleneck" ></span>
+                                                    <span className="workmember svg__iconbox svg__icon--bottleneck" ></span>
                                                 </a>
                                             )
                                         }
                                         if (category?.Title == 'Favorite') {
                                             return (
                                                 <a  title="Favorite">
-                                                    <span className="svg__iconbox svg__icon--Star" ></span>
+                                                    <span className="workmember svg__iconbox svg__icon--Star" ></span>
                                                     {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                                                 </a>
                                             )
@@ -692,7 +692,7 @@ const inlineEditingcolumns = (props: any) => {
                             {parseInt(props?.item?.PercentComplete) <= 5 &&
                                 parseInt(props?.item?.PercentComplete) >= 0 ? (
                                 <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="svg__iconbox svg__icon--Ellipse" ></span>
+                                    <span className="workmember svg__iconbox svg__icon--Ellipse" ></span>
                                     {/* <img src={require("../../../Assets/ICON/Ellipse.svg")} /> */}
                                 </a>
                             ) : parseInt(props?.item?.PercentComplete) >= 6 &&
@@ -706,7 +706,7 @@ const inlineEditingcolumns = (props: any) => {
                                 </a>
                             ) : (
                                 <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="svg__iconbox svg__icon--completed" ></span>
+                                    <span className="workmember svg__iconbox svg__icon--completed" ></span>
                                     {/* <img src={require("../../../Assets/ICON/completed.svg")} /> */}
                                 </a>
                             )}

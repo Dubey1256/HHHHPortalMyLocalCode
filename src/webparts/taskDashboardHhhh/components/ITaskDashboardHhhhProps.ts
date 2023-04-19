@@ -5,6 +5,7 @@ export interface ITaskDashboardHhhhProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   pageContext:any;
+  Context:any;
   siteUrl:any;
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
