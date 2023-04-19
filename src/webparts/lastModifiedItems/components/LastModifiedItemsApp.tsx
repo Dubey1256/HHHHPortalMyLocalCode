@@ -264,7 +264,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         ListId: curListId,
                         siteType: curSiteType,
                         siteUrl: curSiteURL,
-                        siteIcon : curSiteIcon
+                        siteIcon : tabItem.SiteIcon
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
