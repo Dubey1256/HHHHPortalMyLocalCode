@@ -497,9 +497,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 })
                                                 }
                                             </div>
-
                                         </div>
-
                                     </div>
                                 </div> */}
 

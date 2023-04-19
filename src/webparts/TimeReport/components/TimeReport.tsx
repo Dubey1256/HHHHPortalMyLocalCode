@@ -445,7 +445,7 @@ const TimeReport = () => {
                 header: '',
                 accessorKey: 'TimeSpent',
                 placeholder: "Effort",
-                size: 50
+               
 
             },
             {
