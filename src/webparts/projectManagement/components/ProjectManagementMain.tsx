@@ -739,7 +739,6 @@ const ProjectManagementMain = (props: any) => {
           <div className="row">
             <div
               className="d-flex justify-content-between p-0"
-              ng-if="(Task.Item_x0020_Type=='Component Category')"
             >
               <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                 <li>
