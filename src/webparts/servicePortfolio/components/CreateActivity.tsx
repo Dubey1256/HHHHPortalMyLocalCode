@@ -88,14 +88,14 @@ const CreateActivity = (props: any) => {
             })
         }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
-            if (AllItems.Portfolio_x0020_Type == 'Component') {
+            if (AllItems.Portfolio_x0020_Type == 'Component'|| (AllItems.Component != undefined && AllItems.Component.length >0)) {
                 smartComponentData.push(AllItems);
             }
             smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
     
-            if (AllItems?.Portfolio_x0020_Type == 'Service') {
+            if (AllItems?.Portfolio_x0020_Type == 'Service' || (AllItems.Service != undefined && AllItems.Service.length >0) ) {
                 linkedComponentData.push(AllItems);
             }
             linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
