@@ -220,6 +220,30 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         );
     }
 
+    private _onRenderDocument(item: any, index: number, column: IColumn) {
+        const DocumentName = item.DocumentName;
+        const str = DocumentName || '';
+        let getExt ='docx' ;
+        if(str.includes(".") && str!=undefined ){
+          getExt=  str.split(".");
+          getExt = getExt[1];
+         
+          
+        }
+      
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+
+     
+        return (
+            <Stack horizontal tokens={stackTokens}>
+               <Stack.Item><span className={`svg__iconbox svg__icon--${getExt}`}></span></Stack.Item>
+                <Stack.Item>{DocumentName}</Stack.Item>
+            </Stack>
+        );
+    }
+
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
             <div>
@@ -316,14 +340,18 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         if(prevProps.TabName !== this.props.TabName) {
             const _columns: IColumn[] = [];
             if(this.props.TabName=="DOCUMENTS") {
-                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100,  onColumnClick: this._onColumnClick, onRender: this._onRenderDocument, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DocumentLink", name: "Document Link", fieldName: "DocumentLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="FOLDERS") {
-                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,
+                onRender:(item, index, column) => {
+                    if(item.FolderName == undefined) return "";
+                    return  (<div className="d-flex"><span className="svg__iconbox svg__icon--folder"></span><span className="ms-2">{item.FolderName}</span></div>)
+                }  });
                 _columns.push({key: "FolderLink", name: "Folder Link", fieldName: "FolderLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String,
                 onRender:(item, index, column) => {
                     if(item.FolderLink == undefined) return "";
