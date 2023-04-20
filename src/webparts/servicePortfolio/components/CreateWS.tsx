@@ -832,7 +832,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
