@@ -70,7 +70,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [SharewebCategory, setSharewebCategory] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
-  const [CategoriesData, setCategoriesData] = React.useState([]);
+  let [CategoriesData, setCategoriesData] = React.useState([]);
   const TeamConfigInfo = item;
   const [smartComponentData, setSmartComponentData] = React.useState([]);
   const [TeamConfig, setTeamConfig] = React.useState();
@@ -982,6 +982,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       });
     }
     if (NewArray != undefined && NewArray.length > 0) {
+      CategoriesData=[]
       NewArray.map((NeitemA: any) => {
         CategoriesData.push(NeitemA);
       });
@@ -1373,7 +1374,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       </li>
         </ul></div>
       
-       <div className="feedbkicon"> <Tooltip /> </div>
+       <div className="feedbkicon"> <Tooltip  ComponentId={1258}/> </div>
        </div>
       </>
     );
@@ -1617,12 +1618,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div className="">
+                                          <div className="serviepannelgreena">
                                             <a
                                               className="hreflink service"
                                               target="_blank"
                                               data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                             >
                                               {com.Title}
                                             </a>
@@ -1653,12 +1654,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div className="serviepannelgreena">
+                                          <div >
                                             <a
                                               className="hreflink service "
                                               target="_blank"
                                               data-interception="off"
-                                              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                             >
                                               {com.Title}
                                             </a>
@@ -1736,7 +1737,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                           <a
                                             style={{ color: "#fff !important" }}
                                             target="_blank"
-                                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                           >
                                             {com.Title}
                                           </a>
@@ -2207,7 +2208,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     <div className="form-check">
                                       <input
                                         className="form-check-input"
-                                        checked={
+                                        defaultChecked={
                                           BackupCat == type.Id
                                             ? checkedCat
                                             : false
@@ -2268,7 +2269,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                                   }}
                                                   target="_blank"
                                                   data-interception="off"
-                                                  href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
                                                 >
                                                   {type.Title}
                                                 </a>
@@ -2302,13 +2303,13 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     </div>
                     <div className="col-sm-8">
                       <div className="input-group mb-2">
-                        <label className="form-label  full-width">Url</label>
+                      <label className="form-label  full-width"></label>
                         <input
                           type="text"
                           className="form-control"
                           defaultValue={
-                            EditData?.component_x0020_link != null
-                              ? EditData?.component_x0020_link
+                            EditData.component_x0020_link != null
+                              ? EditData.component_x0020_link
                               : ""
                           }
                           onChange={(e) =>
@@ -2316,6 +2317,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           }
                           placeholder="Url"
                         ></input>
+                        <span><a target="_blank" href={EditData.component_x0020_link}>Open</a></span>
                       </div>
                     </div>
                   </div>
@@ -2905,7 +2907,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     <span>
                       <a
                         target="_blank"
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile-SPFx.aspx?taskId=${EditData?.Id}&name=${EditData?.Title}`}
+                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page
@@ -2927,7 +2929,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     <span className="p-1">|</span>
                     <a
                       className="p-1"
-                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData?.Id}`}
+                      href={`${RequireData.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData?.Id}`}
                       target="_blank"
                       data-interception="off"
                     >
