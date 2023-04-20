@@ -229,9 +229,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             const str = DocumentName ;
             if(str.includes(".")){
                 getExt=  str.split(".");
-                getExt = getExt[1];
+                getExt = getExt[getExt.length-1];
 
-                if(getExt=='aspx' || getExt=='xlsx'){
+                if(getExt=='aspx' || getExt=='xlsx' || getExt=='XLSX'){
                     getExt = 'csv';
                  }
                else if(getExt=='msg'){
@@ -239,6 +239,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                  }
                else if(getExt=='pptx'){
                     getExt = 'ppt';
+                 }
+                 else if(getExt=='rar'){
+                    getExt = 'docx';
                  }
                  else{
                     getExt;
@@ -258,6 +261,29 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             <Stack horizontal tokens={stackTokens}>
                <Stack.Item><span className={`svg__iconbox svg__icon--${getExt}`}></span></Stack.Item>
                 <Stack.Item>{DocumentName}</Stack.Item>
+            </Stack>
+        );
+    }
+
+    private _onRenderComponents(item: any, index: number, column: IColumn) {
+      
+
+             
+      
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+
+     
+        return (
+            <Stack horizontal tokens={stackTokens}>
+               <Stack.Item>{
+                item?.Component?.map((item:any)=>{
+                    item?.ItemType=='Components' ? <span className="bg-primary text-light">C</span> :  (item?.ItemType=="SubComponent" ? <span className="bg-primary text-light">S</span> :    (item?.ItemType=="Feature" ? <span className="bg-primary text-light">F</span> : '' ) )
+                })
+                }
+             </Stack.Item>
+                <Stack.Item>{item.ComponentId}</Stack.Item>
             </Stack>
         );
     }
@@ -294,6 +320,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             </TooltipHost>            
         );
     }
+
+  
+
 
     private getAdditionalMembers(memberItems:any[]) {
 
@@ -380,7 +409,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="COMPONENTS") {
-                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderComponents, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Title", name: "Component Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String});
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
