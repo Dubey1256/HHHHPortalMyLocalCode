@@ -761,7 +761,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         </button>
         <button
           type="button"
-          className="btn btn-primary px-4 mx-1"
+          className="btn btn-primary mx-1"
           onClick={setModalIsOpenToOK}
         >
           OK
