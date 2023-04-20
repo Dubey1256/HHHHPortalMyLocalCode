@@ -2959,7 +2959,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls}/> : null}
                             </span>
                         </div>
                     </div>
