@@ -222,14 +222,32 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
 
     private _onRenderDocument(item: any, index: number, column: IColumn) {
         const DocumentName = item.DocumentName;
-        const str = DocumentName || '';
+        
         let getExt ='docx' ;
-        if(str.includes(".") && str!=undefined ){
-          getExt=  str.split(".");
-          getExt = getExt[1];
-         
-          
+
+        if(DocumentName != undefined){
+            const str = DocumentName ;
+            if(str.includes(".")){
+                getExt=  str.split(".");
+                getExt = getExt[1];
+
+                if(getExt=='aspx' || getExt=='xlsx'){
+                    getExt = 'csv';
+                 }
+               else if(getExt=='msg'){
+                    getExt = 'mail';
+                 }
+               else if(getExt=='pptx'){
+                    getExt = 'ppt';
+                 }
+                 else{
+                    getExt;
+                 }
+            }
         }
+       
+
+             
       
         const stackTokens: IStackTokens = {
             childrenGap: 5
