@@ -220,6 +220,74 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         );
     }
 
+    private _onRenderDocument(item: any, index: number, column: IColumn) {
+        const DocumentName = item.DocumentName;
+        
+        let getExt ='docx' ;
+
+        if(DocumentName != undefined){
+            const str = DocumentName ;
+            if(str.includes(".")){
+                getExt=  str.split(".");
+                getExt = getExt[getExt.length-1];
+
+                if(getExt=='aspx' || getExt=='xlsx' || getExt=='XLSX'){
+                    getExt = 'csv';
+                 }
+               else if(getExt=='msg'){
+                    getExt = 'mail';
+                 }
+               else if(getExt=='pptx'){
+                    getExt = 'ppt';
+                 }
+                 else if(getExt=='rar'){
+                    getExt = 'docx';
+                 }
+                 else{
+                    getExt;
+                 }
+            }
+        }
+       
+
+             
+      
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+
+     
+        return (
+            <Stack horizontal tokens={stackTokens}>
+               <Stack.Item><span className={`svg__iconbox svg__icon--${getExt}`}></span></Stack.Item>
+                <Stack.Item>{DocumentName}</Stack.Item>
+            </Stack>
+        );
+    }
+
+    private _onRenderComponents(item: any, index: number, column: IColumn) {
+      
+
+             
+      
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+
+     
+        return (
+            <Stack horizontal tokens={stackTokens}>
+               <Stack.Item>{
+                item?.Component?.map((item:any)=>{
+                    item?.ItemType=='Components' ? <span className="bg-primary text-light">C</span> :  (item?.ItemType=="SubComponent" ? <span className="bg-primary text-light">S</span> :    (item?.ItemType=="Feature" ? <span className="bg-primary text-light">F</span> : '' ) )
+                })
+                }
+             </Stack.Item>
+                <Stack.Item>{item.ComponentId}</Stack.Item>
+            </Stack>
+        );
+    }
+
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
             <div>
@@ -252,6 +320,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             </TooltipHost>            
         );
     }
+
+  
+
 
     private getAdditionalMembers(memberItems:any[]) {
 
@@ -316,14 +387,18 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         if(prevProps.TabName !== this.props.TabName) {
             const _columns: IColumn[] = [];
             if(this.props.TabName=="DOCUMENTS") {
-                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100,  onColumnClick: this._onColumnClick, onRender: this._onRenderDocument, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DocumentLink", name: "Document Link", fieldName: "DocumentLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="FOLDERS") {
-                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,
+                onRender:(item, index, column) => {
+                    if(item.FolderName == undefined) return "";
+                    return  (<div className="d-flex"><span className="svg__iconbox svg__icon--folder"></span><span className="ms-2">{item.FolderName}</span></div>)
+                }  });
                 _columns.push({key: "FolderLink", name: "Folder Link", fieldName: "FolderLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String,
                 onRender:(item, index, column) => {
                     if(item.FolderLink == undefined) return "";
@@ -334,7 +409,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="COMPONENTS") {
-                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderComponents, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Title", name: "Component Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String});
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
