@@ -145,7 +145,7 @@ const TaskDashboard = (props: any) => {
     function getStartingDate(startDateOf: any) {
         const startingDate = new Date();
         let formattedDate = startingDate;
-        if (startDateOf == 'ThisWeek') {
+        if (startDateOf == 'This Week') {
             startingDate.setDate(startingDate.getDate() - startingDate.getDay());
             formattedDate = startingDate;
         } else if (startDateOf == 'Today') {
@@ -153,7 +153,7 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'Yesterday') {
             startingDate.setDate(startingDate.getDate() - 1);
             formattedDate = startingDate;
-        } else if (startDateOf == 'ThisMonth') {
+        } else if (startDateOf == 'This Month') {
             startingDate.setDate(1);
             formattedDate = startingDate;
         }
@@ -166,7 +166,7 @@ const TaskDashboard = (props: any) => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             let taskLists: any = [];
-            let startDate = getStartingDate('ThisMonth').toISOString();
+            let startDate = getStartingDate('This Month').toISOString();
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
@@ -182,7 +182,7 @@ const TaskDashboard = (props: any) => {
                                     item.taskDetails = checkTimeEntrySite(item, taskLists)
                                     AllTaskTimeEntries.push(item)
                                 })
-                                currentUserTimeEntry('ThisWeek')
+                                currentUserTimeEntry('This Week')
                             });
                     }
                 })
@@ -192,7 +192,7 @@ const TaskDashboard = (props: any) => {
     const loadAllTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
-            let startDate = getStartingDate('ThisMonth').toISOString();
+            let startDate = getStartingDate('This Month').toISOString();
             let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
@@ -209,7 +209,7 @@ const TaskDashboard = (props: any) => {
                                     item.taskDetails = checkTimeEntrySite(item, taskLists)
                                     AllTaskTimeEntries.push(item)
                                 })
-                                currentUserTimeEntry('ThisWeek')
+                                currentUserTimeEntry('This Week')
                             });
                     }
                 })
@@ -1029,7 +1029,7 @@ const TaskDashboard = (props: any) => {
                 currentUserId = user?.AssingedToUserId;
                 setSelectedUser(user);
                 filterCurrentUserTask();
-                currentUserTimeEntry('ThisWeek');
+                currentUserTimeEntry('This Week');
             } else {
                 unSelectUser();
             }
@@ -1042,7 +1042,7 @@ const TaskDashboard = (props: any) => {
     const unSelectUser = () => {
         currentUserId = currentUserData?.AssingedToUserId;
         filterCurrentUserTask()
-        currentUserTimeEntry('ThisWeek');
+        currentUserTimeEntry('This Week');
         setSelectedUser({})
         createGroupUsers();
     }
@@ -1743,14 +1743,14 @@ const TaskDashboard = (props: any) => {
                                                     <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
                                                 </span>
                                                 <span className='m-1'>
-                                                    <input className='me-1' type="radio" value="Other" name="date" checked={selectedTimeReport == 'ThisWeek'} onClick={() => currentUserTimeEntry('ThisWeek')} /> This Week
+                                                    <input className='me-1' type="radio" value="Other" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
                                                 </span>
                                                 <span className='m-1'>
-                                                    <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'ThisMonth'} onClick={() => currentUserTimeEntry('ThisMonth')} /> This Month
+                                                    <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
                                                 </span>
                                             </div>
                                             <details>
-                                                <summary>This Week Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
                                                 <div className='AccordionContent mx-height'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
