@@ -1675,7 +1675,7 @@ function ComponentTable(SelectedProp: any) {
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(ContextValue.SmartMetadataListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "Id",
         "Title",
@@ -1963,7 +1963,7 @@ function ComponentTable(SelectedProp: any) {
     componentDetails = await web.lists
       .getById(ContextValue.MasterTaskListID)
       //.getByTitle('Master Tasks')
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID",
         "Id",
@@ -3015,6 +3015,7 @@ function ComponentTable(SelectedProp: any) {
       }
     }
   }, []);
+
   const TimeEntryCallBack = React.useCallback((item1) => {
     setIsTimeEntry(false);
   }, []);
@@ -5755,6 +5756,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                     .childs
                                                                                     .length
                                                                                 }
+
                                                                                 )
                                                                               </span>
                                                                             )}
@@ -5772,6 +5774,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                 {
                                                                                   childinew.childsLength
                                                                                 }
+
                                                                                 )
                                                                               </span>
                                                                             )}
@@ -6223,6 +6226,7 @@ function ComponentTable(SelectedProp: any) {
                                                                                                     .childs
                                                                                                     .length
                                                                                                 }
+
                                                                                                 )
                                                                                               </span>
                                                                                             )}
@@ -6428,7 +6432,11 @@ function ComponentTable(SelectedProp: any) {
       </section>
 
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>
+        <EditTaskPopup
+          Items={SharewebTask}
+          Call={Call}
+          AllListId={SelectedProp.SelectedProp}
+        ></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton

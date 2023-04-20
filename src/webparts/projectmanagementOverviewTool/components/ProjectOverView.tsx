@@ -45,7 +45,7 @@ export default function ProjectOverview(props: any) {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl: props?.props?.siteUrl
+            siteUrl:props?.props?.siteUrl
         }
         TaskUser()
         GetMasterData();
