@@ -753,7 +753,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
   const CustomFooter = () => {
     return (
       <footer className="d-flex justify-content-end me-4 mt-2">
-        <button type="button" className="btn btn-primary mx-2">
+        <button type="button" className="btn btn-primary">
           <a target="_blank" className="text-light" data-interception="off"
             href={`${Dynamic.siteUrl}/SitePages/Component-Portfolio.aspx`}>
             Create New One
@@ -761,14 +761,14 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary mx-1"
           onClick={setModalIsOpenToOK}
         >
           OK
         </button>
         <button
           type="button"
-          className="btn btn-default ms-2"
+          className="btn btn-default"
           onClick={setModalIsOpenToFalse}
         >
           Cancel

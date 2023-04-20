@@ -9,9 +9,9 @@ import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
-import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
+import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -88,7 +88,7 @@ const CreateActivity = (props: any) => {
             })
         }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
-            if (AllItems?.Portfolio_x0020_Type == 'Component'|| (AllItems.Component != undefined && AllItems.Component.length >0)) {
+            if (AllItems.Portfolio_x0020_Type == 'Component'|| (AllItems.Component != undefined && AllItems.Component.length >0)) {
                 smartComponentData.push(AllItems);
             }
             smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
@@ -217,7 +217,7 @@ const CreateActivity = (props: any) => {
         //setModalIsOpenToTrue();
     }
     const getTasktype = async () => {
-        if (AllItems?.NoteCall == 'Task') {
+        if (AllItems.NoteCall == 'Task') {
             let web = new Web(dynamicList.siteUrl);
             TaskTypeItems = await web.lists
                 .getById(dynamicList.TaskTypeID)
@@ -227,7 +227,7 @@ const CreateActivity = (props: any) => {
                 .get()
             console.log(TaskTypeItems)
             TaskTypeItems?.forEach((item: any, index: any) => {
-                if (item.Title == AllItems?.NoteCall) {
+                if (item.Title == AllItems.NoteCall) {
                     SharewebTasknewTypeId = item.Id;
                     SharewebTasknewType = item.Title;
                     newIndex = index
@@ -490,7 +490,7 @@ const CreateActivity = (props: any) => {
         }
         siteTypess?.forEach(async (val: any) => {
             if (val.IscreateTask == true) {
-                if (AllItems?.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
+                if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
 
                     let web = new Web(dynamicList.siteUrl);
                     let componentDetails = [];
@@ -651,11 +651,11 @@ const CreateActivity = (props: any) => {
 
         siteTypess.forEach(async (value: any) => {
             if (value.IscreateTask == true) {
-                if (AllItems?.NoteCall == 'Activities') {
+                if (AllItems.NoteCall == 'Activities') {
                     if (AllItems.Title == undefined) {
                         alert("Enter The Task Name");
                     }
-                    else if (AllItems?.SiteListItem == undefined) {
+                    else if (AllItems.SiteListItem == undefined) {
                         alert("Select Task List.");
                     }
                     if (value.selectSiteName == true) {
@@ -685,7 +685,7 @@ const CreateActivity = (props: any) => {
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                     }).then((res: any) => {
-                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                         res.data['listId'] = value.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -795,7 +795,7 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
@@ -894,10 +894,10 @@ const CreateActivity = (props: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
-                        {`Create Quick Option - ${AllItems?.NoteCall}` }
+                        {`Create Quick Option - ${AllItems.NoteCall}` }
                     </h2>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
@@ -920,7 +920,7 @@ const CreateActivity = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
                 
             >
                 <div className= "modal-body active">
@@ -943,7 +943,7 @@ const CreateActivity = (props: any) => {
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
                                                                         <img className="icon-sites"
-                                                                            src={item.Item_x005F_x0020_Cover.Url} />
+                                                                            src={item?.Item_x005F_x0020_Cover?.Url} />
                                                                     </span>{item.Title}
                                                                 </a>
                                                             </li>
