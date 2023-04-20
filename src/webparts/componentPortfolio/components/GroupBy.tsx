@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Component } from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
@@ -46,6 +47,8 @@ import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } f
 import { HTMLProps } from 'react';
 import HighlightableCell from './highlight';
 import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/Bs';
+// import { Tooltip as ReactTooltip } from "react-tooltip";
+// import "react-tooltip/dist/react-tooltip.css";
 
 
 
@@ -3732,6 +3735,7 @@ function ComponentTable(SelectedProp: any) {
         debugTable: true,
         filterFromLeafRows: true,
         enableSubRowSelection: false,
+        filterFns: undefined
     });
 
     console.log(".........", table.getSelectedRowModel().flatRows);
@@ -3748,35 +3752,35 @@ function ComponentTable(SelectedProp: any) {
         if (table?.getSelectedRowModel()?.flatRows.length > 0) {
             table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                 if (elem?.getParentRows() != undefined) {
-                    // parentData = elem?.parentRow;
-                    // parentDataCopy = elem?.parentRow?.original
-                    parentDataCopy = elem?.getParentRows()[0]?.original
-                    // if (parentData != undefined && parentData?.parentRow != undefined) {
+                // parentData = elem?.parentRow;
+                // parentDataCopy = elem?.parentRow?.original
+                parentDataCopy = elem?.getParentRows()[0]?.original
+                // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //     parentData = elem?.parentRow?.parentRow
-                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                //     parentData = elem?.parentRow?.parentRow
+                //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    // }
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                // }
                 }
 
                 elem.original.Id = elem.original.ID
@@ -3795,8 +3799,6 @@ function ComponentTable(SelectedProp: any) {
         }
 
     }
-
-
     let activity = 0;
     let workstrim = 0;
     let task = 0;
@@ -3899,18 +3901,13 @@ function ComponentTable(SelectedProp: any) {
             }
         })
     }
-
-
-
-
-
-
-
-
-
-
-
-
+    React.useEffect(() => {
+        if (table.getState().columnFilters.length) {
+            setExpanded(true);
+        } else {
+            setExpanded({});
+        }
+    }, [table.getState().columnFilters]);
 
 
     return (
@@ -4282,7 +4279,7 @@ function ComponentTable(SelectedProp: any) {
                                                 {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
                                             </label>}
 
-                                        <label className="ms-1 me-1"> | </label>
+                                        {/* <label className="ms-1 me-1"> | </label>
                                         {FilterShowhideShwingData === true ? <label>
                                             {activityCopy}  of {activity} Activities
                                         </label> :
@@ -4302,16 +4299,70 @@ function ComponentTable(SelectedProp: any) {
                                         </label> :
                                             <label>
                                                 {task}  of {task} Tasks
-                                            </label>}
+                                            </label>} */}
+
+
+
+
+                                        <span className='popover__wrapper ms-1' style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
+                                            <FaInfoCircle style={{ color: "#228b22" }} />
+
+                                            <span className="popover__content mt-3 m-3" style={{ width: "1000px" }}>
+                                                <label>
+                                                    Showing {ComponentCopy}  of {AllCountItems.AllComponentItems.length} Components
+                                                </label>
+                                                <label className="ms-1 me-1"> | </label>
+                                                {FilterShowhideShwingData === true ? <label>
+                                                    {SubComponentCopy} of {AllCountItems.AllSubComponentItems.length} SubComponents
+                                                </label> :
+                                                    <label>
+                                                        {AllCountItems.AllSubComponentItems.length} of {AllCountItems.AllSubComponentItems.length} SubComponents
+                                                    </label>}
+                                                <label className="ms-1 me-1"> | </label>
+                                                {FilterShowhideShwingData === true ? <label>
+                                                    {FeatureCopy}  of {AllCountItems.AllFeaturesItems.length} Features
+                                                </label> :
+                                                    <label>
+                                                        {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
+                                                    </label>}
+
+                                                <label className="ms-1 me-1"> | </label>
+                                                {FilterShowhideShwingData === true ? <label>
+                                                    {activityCopy}  of {activity} Activities
+                                                </label> :
+                                                    <label>
+                                                        {activity}  of {activity} Activities
+                                                    </label>}
+                                                <label className="ms-1 me-1"> | </label>
+                                                {FilterShowhideShwingData === true ? <label>
+                                                    {workstrimCopy}  of {workstrim} Workstreams
+                                                </label> :
+                                                    <label>
+                                                        {workstrim}  of {workstrim} Workstreams
+                                                    </label>}
+                                                <label className="ms-1 me-1"> | </label>
+                                                {FilterShowhideShwingData === true ? <label>
+                                                    {taskCopy}  of {task} Tasks
+                                                </label> :
+                                                    <label>
+                                                        {task}  of {task} Tasks
+                                                    </label>}
+                                            </span>
+                                        </span>
                                     </span>
-                                    {/* <span id="second-app-title">
-                                        <FaInfoCircle style={{ color: "#228b22" }} />
+                                    {/* <span id="showing-all-tool">
+                                        <FaInfoCircle style={{ color: "#228b22" }} /> 
                                     </span>
                                     <ReactTooltip
-                                        anchorId="second-app-title"
+                                        anchorId="showing-all-tool"
                                         place="bottom"
                                         variant="info"
-                                        content=""
+                                        content={"Showing " + ComponentCopy + " of " + `${AllCountItems?.AllComponentItems?.length}` + " Components " + " | " +
+                                         FilterShowhideShwingData === "true" ? SubComponentCopy + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " : AllCountItems.AllSubComponentItems.length + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " + 
+                                         FilterShowhideShwingData === "true" ? FeatureCopy + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | " : AllCountItems.AllFeaturesItems.length + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | "  +
+                                         FilterShowhideShwingData === "true" ? activityCopy + " of " + activity + " Activities " + " | " : activity + " of " + activity + " Activities " + " | " +  
+                                         FilterShowhideShwingData === "true" ? workstrimCopy + " of " + workstrim + " Workstreams " + " | " : workstrim + " of " + workstrim + " Workstreams " + " | " + 
+                                         FilterShowhideShwingData === "true" ? taskCopy + " of " + task + " Tasks " + " | " : task + " of " + task + " Tasks "}
                                     /> */}
                                     <span className="toolbox mx-auto">
                                         {checkedList != undefined && checkedList.length > 0 && checkedList[0]?.Item_x0020_Type === 'Feature' ?

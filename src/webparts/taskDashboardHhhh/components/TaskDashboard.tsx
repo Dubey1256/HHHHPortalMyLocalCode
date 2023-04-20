@@ -1,6 +1,9 @@
 import * as React from 'react'
 import $ from 'jquery';
 import axios from 'axios';
+import "@pnp/sp/sputilities";
+import { IEmailProperties } from "@pnp/sp/sputilities";
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as Moment from "moment";
@@ -12,6 +15,7 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
+import { getStartDateOfWeek } from '@fluentui/react';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -35,11 +39,13 @@ var AllListId: any = {}
 var selectedInlineTask: any = {};
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
+    const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
@@ -82,7 +88,7 @@ const TaskDashboard = (props: any) => {
     }, []);
     React.useEffect(() => {
         loadAllTimeEntry()
-    }, [currentUserId, timesheetListConfig]);
+    }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
         setUpdateContent(CONTENT);
@@ -136,10 +142,21 @@ const TaskDashboard = (props: any) => {
     }
     //End 
     // Get Week Start Date 
-    function getThisWeekStartingDate() {
+    function getStartingDate(startDateOf: any) {
         const startingDate = new Date();
-        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
-        const formattedDate = Moment(startingDate).format('YYYY-MM-DDTHH:mm:ssZ');
+        let formattedDate = startingDate;
+        if (startDateOf == 'ThisWeek') {
+            startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Today') {
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Yesterday') {
+            startingDate.setDate(startingDate.getDate() - 1);
+            formattedDate = startingDate;
+        } else if (startDateOf == 'ThisMonth') {
+            startingDate.setDate(1);
+            formattedDate = startingDate;
+        }
         return formattedDate;
     }
     //End
@@ -148,7 +165,10 @@ const TaskDashboard = (props: any) => {
     const loadMigrationTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
+            let taskLists: any = [];
+            let startDate = getStartingDate('ThisMonth').toISOString();
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
@@ -156,10 +176,13 @@ const TaskDashboard = (props: any) => {
                         await web.lists
                             .getById(list?.listId)
                             .items.select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand=Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
+                            .filter("Modified gt '" + startDate + "'")
                             .getAll().then((data: any) => {
                                 data?.map((item: any) => {
+                                    item.taskDetails = checkTimeEntrySite(item, taskLists)
                                     AllTaskTimeEntries.push(item)
                                 })
+                                currentUserTimeEntry('ThisWeek')
                             });
                     }
                 })
@@ -169,7 +192,10 @@ const TaskDashboard = (props: any) => {
     const loadAllTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
+            let startDate = getStartingDate('ThisMonth').toISOString();
+            let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
@@ -177,10 +203,13 @@ const TaskDashboard = (props: any) => {
                         await web.lists
                             .getById(list?.listId)
                             .items.select('Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title&$expand=Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects')
+                            .filter("Modified gt '" + startDate + "'")
                             .getAll().then((data: any) => {
                                 data?.map((item: any) => {
+                                    item.taskDetails = checkTimeEntrySite(item, taskLists)
                                     AllTaskTimeEntries.push(item)
                                 })
+                                currentUserTimeEntry('ThisWeek')
                             });
                     }
                 })
@@ -188,14 +217,52 @@ const TaskDashboard = (props: any) => {
             }
         }
     }
-    const timeEntryTaskExist = (task: any) => {
-
-    }
-    const currentUserWeekTimeEntry = () => {
-        AllTaskTimeEntries?.map((taskEntry: any) => {
-
+    const checkTimeEntrySite = (timeEntry: any, sitesArray: any) => {
+        let result = ''
+        sitesArray?.map((site: any) => {
+            if (timeEntry[site.Tasklist]?.Id != undefined) {
+                result = AllTasks?.filter((task: any) => {
+                    if (task?.Id == timeEntry[site.Tasklist]?.Id && task?.siteType.toLowerCase() == site.siteType.toLowerCase()) {
+                        return task;
+                    }
+                });
+                //  = getTaskDetails(timeEntry[site.Tasklist].Id, site.siteType)
+            }
         })
+        return result;
     }
+    const currentUserTimeEntry = (start: any) => {
+        setSelectedTimeReport(start)
+        let startDate = getStartingDate(start);
+        let weekTimeEntries: any = [];
+        AllTaskTimeEntries?.map((timeEntry: any) => {
+            if (timeEntry?.AdditionalTimeEntry != undefined) {
+                let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
+                AdditionalTime?.map((filledTime: any) => {
+                    let [day, month, year] = filledTime?.TaskDate?.split('/')
+                    const timeFillDate = new Date(+year, +month - 1, +day)
+                    // let timeFillDate = new Date(filledTime?.TaskDate);
+                    // if (filledTime?.AuthorId == currentUserId && timeFillDate > startDate && timeEntry?.taskDetails != '' && timeEntry?.taskDetails != undefined) {
+                    if (filledTime?.AuthorId == currentUserId && timeFillDate >= startDate) {
+                        let data = { ...timeEntry?.taskDetails[0] };
+                        if (data == '' || data == undefined)
+                            data = {};
+                        data.TaskTime = filledTime?.TaskTime;
+                        data.timeDate = filledTime?.TaskDate;
+                        data.Description = filledTime?.Description
+                        data.timeFillDate = timeFillDate;
+                        weekTimeEntries.push(data);
+                    }
+                })
+            }
+        })
+        weekTimeEntries.sort((a: any, b: any) => {
+            return b.timeFillDate - a.timeFillDate;
+        });
+        setWeeklyTimeReport(weekTimeEntries)
+        weekTimeEntry = weekTimeEntries;
+    }
+
     //End 
 
 
@@ -216,7 +283,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -277,6 +344,11 @@ const TaskDashboard = (props: any) => {
                                             ? Moment(task.Created).format("DD/MM/YYYY")
                                             : "";
                                     task.TeamMembersId = [];
+                                    taskUsers?.map((user: any) => {
+                                        if (user.AssingedToUserId == task.Author.Id) {
+                                            task.createdImg = user?.Item_x0020_Cover?.Url;
+                                        }
+                                    })
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
@@ -323,6 +395,18 @@ const TaskDashboard = (props: any) => {
 
         array?.map((childItem: any) => {
             childItem.selected = false;
+            childItem.UserManagerMail = [];
+            childItem.UserManagerName = ''
+            childItem?.Approver?.map((Approver: any, index: any) => {
+                if (index == 0) {
+
+                    childItem.UserManagerName = Approver?.Title;
+                } else {
+                    childItem.UserManagerName += ' ,' + Approver?.Title
+                }
+                let Mail = Approver?.Name?.split('|')[2]
+                childItem.UserManagerMail.push(Mail)
+            })
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
                 if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
@@ -439,8 +523,8 @@ const TaskDashboard = (props: any) => {
                 style: { width: '40px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <img
-                            className="circularImage rounded-circle"
+                        <img title={row?.original?.siteType}
+                            className="workmember"
                             src={row?.original?.siteIcon}
                         />
                     </span>
@@ -520,7 +604,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img className="imgAuthor" src={row?.original?.createdImg} />
+                        <img title={row?.original?.Author?.Title} className="workmember" src={row?.original?.createdImg} />
                     </span>
                 ),
             },
@@ -542,6 +626,141 @@ const TaskDashboard = (props: any) => {
         ],
         [AllAssignedTasks, thisWeekTasks, workingTodayTasks]
     );
+    const columnTimeReport = React.useMemo(
+        () => [
+            {
+                internalHeader: "Task Id",
+                accessor: "Shareweb_x0020_ID",
+                style: { width: '70px' },
+                showSortIcon: false,
+                Cell: ({ row }: any) => (
+                    <span>
+
+                        {row?.original?.Shareweb_x0020_ID}
+
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Title",
+                accessor: "Title",
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <a className='hreflink'
+                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            data-interception="off"
+                            target="_blank"
+                        >
+                            {row?.values?.Title}
+                        </a>
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Site",
+                accessor: 'siteType',
+                id: "siteIcon", // 'id' is required
+                showSortIcon: false,
+                style: { width: '40px' },
+                Cell: ({ row }: any) => (
+                    <span>
+                        <img title={row?.original?.siteType}
+                            className="workmember"
+                            src={row?.original?.siteIcon}
+                        />
+                    </span>
+                ),
+            },
+            // {
+            //     internalHeader: "Priority",
+            //     isSorted: true,
+            //     isSortedDesc: true,
+            //     accessor: "Priority_x0020_Rank",
+            //     style: { width: '100px' },
+            //     showSortIcon: true,
+            //     Cell: ({ row }: any) => (
+            //         <span>
+            //             <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+            //         </span>
+            //     ),
+            // },
+
+            // {
+            //     internalHeader: "Due Date",
+            //     showSortIcon: true,
+            //     accessor: "DueDate",
+            //     style: { width: '80px' },
+            //     Cell: ({ row }: any) => <InlineEditingcolumns
+            //         AllListId={AllListId}
+            //         callBack={inlineCallBack}
+            //         columnName="DueDate"
+            //         item={row?.original}
+            //         TaskUsers={taskUsers}
+            //     />,
+            // },
+            {
+                internalHeader: "Entry Date",
+                showSortIcon: true,
+                accessor: "timeDate",
+                style: { width: '80px' },
+            },
+
+            {
+                internalHeader: "Time",
+                showSortIcon: true,
+                accessor: "TaskTime",
+                style: { width: '60px' },
+            },
+            {
+                internalHeader: "Description",
+                showSortIcon: true,
+                accessor: "Description",
+                style: { width: '200px' },
+            },
+
+            {
+                internalHeader: "% Complete",
+                accessor: "PercentComplete",
+                style: { width: '70px' },
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+
+                    <span>
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Created",
+                accessor: "Created",
+                showSortIcon: true,
+                style: { width: "125px" },
+                Cell: ({ row }: any) => (
+                    <span>
+                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        <img title={row?.original?.Author?.Title} className="workmember" src={row?.original?.createdImg} />
+                    </span>
+                ),
+            },
+
+            {
+                internalHeader: "",
+                id: "Id", // 'id' is required
+                isSorted: false,
+                style: { width: '35px' },
+                showSortIcon: false,
+                Cell: ({ row }: any) => (
+                    <span
+                        title="Edit Task"
+                        onClick={() => EditPopup(row?.original)}
+                        className="svg__iconbox svg__icon--edit hreflink"
+                    ></span>
+                ),
+            },
+        ],
+        [weeklyTimeReport]
+    );
 
     const {
         getTableProps: getTablePropsToday,
@@ -556,6 +775,27 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: workingTodayTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 100000 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsTimeReport,
+        getTableBodyProps: getTableBodyPropsTimeReport,
+        headerGroups: headerGroupsTimeReport,
+        page: pageTimeReport,
+        prepareRow: prepareRowTimeReport,
+        gotoPage: gotoPageTimeReport,
+        setPageSize: setPageSizeTimeReport,
+        state: { pageIndex: pageIndexTimeReport, pageSize: pageSizeTimeReport },
+    }: any = useTable(
+        {
+            columns: columnTimeReport,
+            data: weeklyTimeReport,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
@@ -684,7 +924,7 @@ const TaskDashboard = (props: any) => {
             workingThisWeek: postworkingThisWeekTask,
             AssignedToId: { "results": AssignedUsers }
         }).then((res: any) => {
-                console.log("Drop Updated");
+            console.log("Drop Updated");
         })
 
     }
@@ -697,7 +937,7 @@ const TaskDashboard = (props: any) => {
         try {
             smartmeta = await web.lists
                 .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Description", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                 .top(5000)
                 .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
                 .expand("Parent")
@@ -787,19 +1027,22 @@ const TaskDashboard = (props: any) => {
             user.selected = !user.selected;
             if (user?.AssingedToUserId != currentUserData?.AssingedToUserId) {
                 currentUserId = user?.AssingedToUserId;
-                setSelectedUser(user)
-                filterCurrentUserTask()
+                setSelectedUser(user);
+                filterCurrentUserTask();
+                currentUserTimeEntry('ThisWeek');
             } else {
                 unSelectUser();
             }
         } else {
             user.selected = !user.selected;
             unSelectUser();
+
         }
     }
     const unSelectUser = () => {
         currentUserId = currentUserData?.AssingedToUserId;
         filterCurrentUserTask()
+        currentUserTimeEntry('ThisWeek');
         setSelectedUser({})
         createGroupUsers();
     }
@@ -862,6 +1105,122 @@ const TaskDashboard = (props: any) => {
         console.log(task, origin);
     }
     //region end
+
+    //Shareworking Today's Task In Email
+    const shareTaskInEmail = (input: any) => {
+        let currentLoginUser = currentUserData?.Title;
+        let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
+        let body: any = '';
+        let text = '';
+        let to: any = [];
+        let body1: any = [];
+        let userApprover = '';
+        let tasksCopy = workingTodayTasks;
+        taskUsers?.map((user: any) => {
+            if (user?.Title == currentLoginUser && user?.Title != undefined) {
+                to = user?.UserManagerMail;
+                userApprover = user?.UserManagerName;
+            }
+        });
+        tasksCopy.sort((a: any, b: any) => {
+            return b.Priority_x0020_Rank - a.Priority_x0020_Rank;
+        });
+        let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
+        if (confirmation) {
+            if (input == 'today working tasks') {
+                var subject = currentLoginUser + '-Today Working Tasks';
+                tasksCopy?.map((item: any) => {
+                    let teamUsers: any = [];
+                    item?.Team_x0020_Members?.map((item1: any) => {
+                        teamUsers.push(item1?.Title)
+                    });
+                    if (item.DueDate != undefined) {
+                        item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                    }
+                    if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                        item.TaskDueDatenew = '';
+                    if (item.Categories == undefined || item.Categories == '')
+                        item.Categories = '';
+                    if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                        item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                        item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+                    }
+                    if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                        item.EstimatedTime = ''
+                    }
+
+
+                    text =
+                        '<tr>' +
+                        '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.shortDescription + '</td>'
+                    body1.push(text);
+                });
+                body =
+                    '<h2>'
+                    + currentLoginUser + '- Today Working Tasks'
+                    + '</h2>'
+                    + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                    + '<thead>'
+                    + '<tr>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Short Description' + '</th>'
+                    + '</tr>'
+                    + '</thead>'
+                    + '<tbody>'
+                    + body1
+                    + '</tbody>'
+                    + '</table>'
+                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' + 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
+
+
+            }
+            body = body.replaceAll('>,<', '><')
+        }
+
+        if (body1.length > 0 && body1 != undefined) {
+            SendEmailFinal(to, subject, body);
+        } else {
+            alert("No entries available");
+        }
+    }
+    const SendEmailFinal = async (to: any, subject: any, body: any) => {
+        let sp = spfi().using(spSPFx(props?.props?.Context));
+        sp.utility.sendEmail({
+            //Body of Email  
+            Body: body,
+            //Subject of Email  
+            Subject: subject,
+            //Array of string for To of Email  
+            To: to,
+            AdditionalHeaders: {
+                "content-type": "text/html"
+            },
+        }).then(() => {
+            console.log("Email Sent!");
+
+        }).catch((err) => {
+            console.log(err.message);
+        });
+    }
+    //end
+
     //Toggle Team 
     const toggleTeamUsers = (index: any) => {
         let userGroups = groupedUsers;
@@ -882,6 +1241,9 @@ const TaskDashboard = (props: any) => {
     //End
     return (
         <>
+            <div className='header-section justify-content-between'>
+                <h2 style={{ color: "#000066", fontWeight: "600" }}>Task Dashboard</h2>
+            </div>
             <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
                 <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
                     <aside className="sidebar">
@@ -935,8 +1297,8 @@ const TaskDashboard = (props: any) => {
                         <section className="sidebar__section sidebar__section--menu">
                             <nav className="nav__item">
                                 {
-                                    currentUserId == currentUserData?.AssingedToUserId ?
-                                        <div  style={{ height: "100px" }} onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center nav__text" onDragOver={(e: any) => e.preventDefault()}>
+                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
+                                        <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
                                             Drop here to Un-Assign
                                         </div> : ""
                                 }
@@ -982,10 +1344,13 @@ const TaskDashboard = (props: any) => {
                                 </div>
                                 : ''}
                             <div className="col-md-12">
-                                <details open>
-                                    <summary> Working Today Tasks {'(' + pageToday?.length + ')'}</summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                <details open onDrop={(e: any) => handleDrop('workingToday')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
+                                    <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
+                                        {
+                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="float-end d-flex" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail" ></span>Share Today Working Tasks</span> : ""
+                                        }</summary>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }}>
                                         {workingTodayTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
                                                 <thead>
@@ -1052,10 +1417,10 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                <details>
+                                <details onDrop={(e: any) => handleDrop('thisWeek')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
                                         {thisWeekTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
                                                 <thead>
@@ -1254,12 +1619,12 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                <details>
+                                <details onDrop={(e: any) => handleDrop('AllTasks')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('AllTasks')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }}>
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
                                                 <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
@@ -1368,6 +1733,89 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
+                                {
+                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
+                                        <>
+                                            <div>
+                                                <span className='m-1'>
+                                                    <input className='me-1' type="radio" value="Male" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday</span>
+                                                <span className='m-1'>
+                                                    <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
+                                                </span>
+                                                <span className='m-1'>
+                                                    <input className='me-1' type="radio" value="Other" name="date" checked={selectedTimeReport == 'ThisWeek'} onClick={() => currentUserTimeEntry('ThisWeek')} /> This Week
+                                                </span>
+                                                <span className='m-1'>
+                                                    <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'ThisMonth'} onClick={() => currentUserTimeEntry('ThisMonth')} /> This Month
+                                                </span>
+                                            </div>
+                                            <details>
+                                                <summary>This Week Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
+                                                <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                                    {weeklyTimeReport?.length > 0 ?
+                                                        <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                                            <thead>
+                                                                {headerGroupsTimeReport?.map((headerGroup: any) => (
+                                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                        {headerGroup.headers.map((column: any) => (
+                                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                                <span
+                                                                                    class="Table-SortingIcon"
+                                                                                    style={{ marginTop: "-6px" }}
+                                                                                    {...column.getSortByToggleProps()}
+                                                                                >
+                                                                                    {column.render("Header")}
+                                                                                    {generateSortingIndicator(column)}
+                                                                                </span>
+                                                                                <Filter column={column} />
+                                                                            </th>
+                                                                        ))}
+                                                                    </tr>
+                                                                ))}
+                                                            </thead>
+                                                            {pageTimeReport?.length > 0 ?
+                                                                <tbody {...getTableBodyPropsTimeReport}>
+                                                                    {pageTimeReport?.map((row: any) => {
+                                                                        prepareRowTimeReport(row);
+                                                                        return (
+                                                                            <tr onClick={() => { selectedInlineTask = { table: "timeEntry Task", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                                {row.cells.map(
+                                                                                    (cell: {
+                                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                                        render: (
+                                                                                            arg0: string
+                                                                                        ) =>
+                                                                                            | boolean
+                                                                                            | React.ReactChild
+                                                                                            | React.ReactFragment
+                                                                                            | React.ReactPortal;
+                                                                                    }) => {
+                                                                                        return (
+                                                                                            <td {...cell.getCellProps()}>
+                                                                                                {cell.render("Cell")}
+                                                                                            </td>
+                                                                                        );
+                                                                                    }
+                                                                                )}
+                                                                            </tr>
+                                                                        );
+                                                                    })}
+                                                                </tbody> :
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colSpan={columns?.length}>
+                                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>}
+                                                        </Table> : <div className='text-center full-width'>
+                                                            <span>No Time Entry Available</span>
+                                                        </div>}
+                                                </div>
+                                            </details>
+                                        </> : ''}
 
                             </div>
                         </article>

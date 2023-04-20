@@ -9,37 +9,46 @@ import Tooltip from '../Tooltip';
 var NewArray: any = []
 var AutoCompleteItems: any = [];
 var AutoCompleteItemsArray: any = [];
+var SelectedCategoryBackupArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
     const isServiceTask: any = item.isServiceTask;
-    const AllListIdData= item.AllListId;
-    const siteUrls = item.siteUrls;
+    const AllListIdData: any = item.AllListId;
+    const siteUrls: any = item.siteUrls;
+    const selectedCategoryData: any = item.selectedCategoryData;
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);
     const [select, setSelect] = React.useState([]);
     const [update, set] = React.useState([]);
     const [value, setValue] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState([]);
-    const [searchedData, setSearchedData] = React.useState([])
-
+    const [searchedData, setSearchedData] = React.useState([]);
+    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(false);
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
-
     }
     React.useEffect(() => {
         loadGmBHTaskUsers();
-
+        if (selectedCategoryData != undefined && selectedCategoryData.length > 0) {
+            setSelect(selectedCategoryData)
+            selectedCategoryData?.map((selectedData: any) => {
+                SelectedCategoryBackupArray.push(selectedData)
+            })
+        }
     }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
         NewArray = []
         setSelect([])
         item.closePopupCallBack();
-
+        SelectedCategoryBackupArray = [];
     }
     const saveCategories = () => {
         if (usedFor == "Task-Popup") {
-            item.CallBack(selectedCategory);
+            item.CallBack(SelectedCategoryBackupArray);
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
         } else {
             item.props.categories = [];
             item.props.smartCategories = [];
@@ -85,7 +94,6 @@ const Picker = (item: any) => {
                 setPopupSmartTaxanomy(true)
             },
             error: function (error) {
-
             }
         })
     };
@@ -120,33 +128,43 @@ const Picker = (item: any) => {
 
     const selectPickerData = (item: any) => {
         if (usedFor == "Task-Popup") {
-            setSelectedCategory([item])
+            let tempArray: any = [];
+            let checkDataExistCount = 0;
+            if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
+                SelectedCategoryBackupArray.map((CheckData: any) => {
+                    if (CheckData.Title == item.Title) {
+                        checkDataExistCount++;
+                    }
+                })
+            }
+            if (checkDataExistCount == 0) {
+                tempArray.push(item);
+            }
+            if (tempArray != undefined && tempArray.length > 0) {
+                SelectedCategoryBackupArray = SelectedCategoryBackupArray.concat(tempArray)
+            } else {
+                SelectedCategoryBackupArray = SelectedCategoryBackupArray
+            }
+            // setSelect(SelectedCategoryBackupArray => ([...SelectedCategoryBackupArray]));
+            setSelect(SelectedCategoryBackupArray);
         } else {
             NewArray.push(item)
-            //setSelect(NewArray)
             showSelectedData(NewArray);
+            setValue('');
+            setSearchedData([]);
         }
-        setValue('');
-        setSearchedData([]);
     }
     const showSelectedData = (itemss: any) => {
-        if (usedFor == "Task-Popup") {
-
-        } else {
-            var categoriesItem: any = []
-            itemss.forEach(function (val: any) {
-                if (val.Title != undefined) {
-                    categoriesItem.push(val);
-
-                }
-            })
-            const uniqueNames = categoriesItem.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-
-            setSelect(uniqueNames)
-        }
-
+        var categoriesItem: any = []
+        itemss.forEach(function (val: any) {
+            if (val.Title != undefined) {
+                categoriesItem.push(val);
+            }
+        })
+        const uniqueNames = categoriesItem.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        setSelect(uniqueNames)
     }
     function Example(callBack: any, type: any) {
         NewArray = []
@@ -157,24 +175,17 @@ const Picker = (item: any) => {
         setPopupSmartTaxanomy(false)
     }
     const deleteSelectedCat = (val: any) => {
-        if (usedFor == "Task-Popup") {
-            setSelectedCategory([])
-        } else {
-            select.map((valuee: any, index) => {
-                if (val.Id == valuee.Id) {
-                    select.splice(index, 1)
-                }
-
-            })
-            NewArray.map((valuee: any, index: any) => {
-                if (val.Id == valuee.Id) {
-                    NewArray.splice(index, 1)
-                }
-
-            })
-
-            setSelect(select => ([...select]));
-        }
+        select.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                select.splice(index, 1)
+            }
+        })
+        NewArray.map((valuee: any, index: any) => {
+            if (val.Id == valuee.Id) {
+                NewArray.splice(index, 1)
+            }
+        })
+        setSelect(select => ([...select]));
     }
     // Autosuggestion
 
@@ -182,17 +193,32 @@ const Picker = (item: any) => {
         setValue(event.target.value);
         let searchedKey: any = event.target.value;
         let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray.map((itemData: any) => {
-                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                    tempArray.push(itemData);
-                }
-            })
-            setSearchedData(tempArray)
-        } else {
-            setSearchedData([]);
+        if (!isSearchWithDesciptions) {
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                        tempArray.push(itemData);
+                    }
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
         }
-
+        else {
+            if (searchedKey?.length > 0) {
+                AutoCompleteItemsArray.map((itemData: any) => {
+                    if (itemData.Description1 != null) {
+                        if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase()) || itemData.Description1.toLowerCase().includes(searchedKey.toLowerCase())) {
+                            tempArray.push(itemData);
+                        }
+                    }
+                })
+                setSearchedData(tempArray)
+            } else {
+                setSearchedData([]);
+            }
+        }
     };
     if (AllCategories.length > 0) {
         AllCategories.map((item: any) => {
@@ -321,7 +347,7 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="checkbox" className="form-check-input me-1 rounded-0"/> <label> Search With Description (Info Icons)</label>
+                                    <input type="checkbox" onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label> Search With Description (Info Icons)</label>
                                     <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
@@ -355,30 +381,19 @@ const Picker = (item: any) => {
                                     </ul> */}
                                 </div>
                             </div>
-                            <div className="col-sm-12 ActivityBox">
-                                {usedFor == "Task-Popup" ? <div>
-                                    {selectedCategory.map((val: any) => {
-                                        return (
-                                            <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
-                                            </>
-                                        )
-                                    })}
-                                </div> : <div>
-                                    {select.map((val: any) => {
-                                        return (
-                                            <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
-                                            </>
-                                        )
-                                    })}
-                                </div>}
+                            <div className="border full-width my-2 p-2 pb-1 ActivityBox">
+                                {select.map((val: any) => {
+                                    return (
+                                        <>
+                                            <span className="bg-69 p-1 ps-2 me-1"> {val.Title}
+                                                <a>
+                                                    <img src={require('../../Assets/ICON/cross.svg')} width="20" className="bg-e9 border mb-1 mx-1 p-1 rounded-5" onClick={() => deleteSelectedCat(val)} />
+                                                </a>
+                                            </span>
+                                        </>
+                                    )
+                                })}
+
                             </div>
                             {/* <div className="col-sm-12 ActivityBox">
                                     <span>

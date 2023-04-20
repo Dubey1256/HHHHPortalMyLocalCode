@@ -636,7 +636,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     public render(): React.ReactElement<IStructureCreationProps> {
         return (
             <>
-                <div id="ExandTableIds" className={this.state.PortfolioType == 'Events' ? 'eventpannelorange' : (this.state.PortfolioType == 'Service Portfolio' ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
+                <div id="ExandTableIds" className={this.state.PortfolioType == 'Events' ? 'eventpannelorange' : ((this.state.PortfolioType == 'Service' ||this.state.PortfolioType == 'Service Portfolio') ? 'serviepannelgreena' : 'component Portfolio clearfix')}>
 
                     {this.state.OpenModal == 'Component' &&
                         <div >
@@ -820,7 +820,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             } */}
 
                             </div>
-                            <footer className='text-end  mt-2'>
+                            <footer className={(this.state.PortfolioType == 'Service' ||this.state.PortfolioType == 'Service Portfolio') ?"serviepannelgreena text-end  mt-2":"text-end  mt-2"}>
                                 <button type="button" className="btn btn-primary me-1" onClick={() => this.CreateFolder('CreatePopup')}
                                 >
                                     Create & Open Popup
@@ -931,7 +931,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                     <div ng-repeat-end></div>
 
                                 </div>
-                                <footer className='text-end  mt-2'>
+                                <footer className={(this.state.PortfolioType == 'Service' ||this.state.PortfolioType == 'Service Portfolio') ?"serviepannelgreena text-end  mt-2":"text-end  mt-2"}>
                                     <a className="me-1" onClick={() => this.addNewTextField()} ng-click="addNewTextField()">
                                         <img className="icon-sites-img" ng-show="Portfolio_x0020_Type=='Component'"
                                             src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New.png" />
