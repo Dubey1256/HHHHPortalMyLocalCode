@@ -277,7 +277,7 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        if ( AllItems.Component[0] != undefined && AllItems.Component.length>0) {
+        if (AllItems.Component[0] != undefined && AllItems.Component.length>0) {
             Component.push(AllItems.Component[0].Id)
         }
         if (AllItems.Services[0] != undefined && AllItems.Services.length>0) {

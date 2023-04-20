@@ -20,10 +20,10 @@ let taskUsers: any = [];
 let taskCreated = false;
 let createdTask: any = {}
 let loggedInUser: any;
-var AllListId:any={}
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
-function CreateTaskComponent(props: any) {
+var ContextValue: any = {};
+function CreateTaskComponent(props:any) {
     let base_Url=props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
@@ -63,16 +63,7 @@ function CreateTaskComponent(props: any) {
     });
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
-         AllListId = {
-            MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
-            SmartMetadataListID: props?.props?.SmartMetadataListID,
-            //SiteTaskListID:this.props?.props?.SiteTaskListID,
-            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
-            DocumentsListID: props?.props?.DocumentsListID,
-            SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl:props?.props?.siteUrl
-          }
+        ContextValue = props.SelectedProp;
         LoadTaskUsers();
         GetComponents();
         GetSmartMetadata();
@@ -85,8 +76,8 @@ function CreateTaskComponent(props: any) {
         let web = new Web(base_Url);
         let componentDetails = [];
         componentDetails = await web.lists
-            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-            .getByTitle('Master Tasks')
+            .getById(ContextValue.MasterTaskListID)
+            //.getByTitle('Master Tasks')
             .items
             //.getById(this.state.itemID)
             .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
@@ -407,7 +398,7 @@ function CreateTaskComponent(props: any) {
                 })
                 count++;
                 if (count == SitesTypes.length - 1) {
-                   
+                    console.log("inside Set Task")
                     if (type == "ComponentId") {
                         setRelTask.ComponentRelevantTask = SiteTaskTaggedToComp;
                     }
@@ -439,7 +430,7 @@ function CreateTaskComponent(props: any) {
         let web = new Web(base_Url);
         let MetaData = [];
         MetaData = await web.lists
-            .getByTitle('SmartMetadata')
+            .getById(ContextValue.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
@@ -489,7 +480,7 @@ function CreateTaskComponent(props: any) {
         let AllTaskUsers: any = [];
         AllTaskUsers = await globalCommon.loadTaskUsers();
         // let pageContent = await globalCommon.pageContext();
-    
+        // console.log(pageContent)
         taskUsers = AllTaskUsers;
         let UserIds;
         AllTaskUsers?.map((item: any) => {
@@ -550,7 +541,7 @@ function CreateTaskComponent(props: any) {
         data['priorityRank'] = save.rank;
         data['Time'] = save.Time;
         data['portfolioType'] = save.portfolioType;
-     
+        console.log(data)
     }
     let PageContent: any;
     const pageContext = async () => {
@@ -691,7 +682,7 @@ function CreateTaskComponent(props: any) {
 
                         var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
                         const web = new Web(PageContent?.SiteFullUrl + '/sp');
-                        await web.lists.getById(GlobalConstants.MASTER_TASKS_LISTID).items.select(query).get().then((data: any) => {
+                        await web.lists.getById(ContextValue.MasterTaskListID).items.select(query).get().then((data: any) => {
                             Tasks = data[0];
                         });
                     }
@@ -815,8 +806,8 @@ function CreateTaskComponent(props: any) {
                         createdTask.Id= data?.data?.Id
                         createdTask.siteType=save.siteType
                         if (props?.projectId != undefined) {
-                            props?.callBack()
-                            EditPopup(data?.data);  
+                            EditPopup(data?.data)
+                            props?.callBack
                         } else {
                             EditPopup(data?.data)
                         }
@@ -1194,7 +1185,7 @@ function CreateTaskComponent(props: any) {
             isOpenEditPopup: false,
             passdata: null
         })
-        if (taskCreated&&props?.projectId == undefined) {
+        if (taskCreated) {
             window.open(base_Url+"/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
         }
         createdTask={};
@@ -1538,9 +1529,9 @@ function CreateTaskComponent(props: any) {
                     }
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </div>
-                {IsComponent && <ComponentPortPolioPopup Dynamic={AllListId}  props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
-                {IsServices && <LinkedComponent Dynamic={AllListId}  props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
+                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
         </>
