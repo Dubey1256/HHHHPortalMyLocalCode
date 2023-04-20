@@ -21,15 +21,13 @@ var SelectedTasks: any = []
 var Task: any = []
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
-var dynamicList: any = {}
+var dynamicList:any={}
 var TeamMemberIds: any = [];
 
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
-    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
+    if(props.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
-    }else{
-        dynamicList = props.SelectedProp;
     }
     SelectedTasks = []
     if (props != undefined) {
@@ -277,10 +275,10 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        if (AllItems.Component[0] != undefined && AllItems.Component.length>0) {
+        if (AllItems.Portfolio_x0020_Type == 'Component') {
             Component.push(AllItems.Component[0].Id)
         }
-        if (AllItems.Services[0] != undefined && AllItems.Services.length>0) {
+        if (AllItems.Portfolio_x0020_Type == 'Service') {
             RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
         if (AllItems.Portfolio_x0020_Type == undefined) {
@@ -368,8 +366,6 @@ const CreateWS = (props: any) => {
             if (PopupType == 'CreatePopup') {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
@@ -379,8 +375,6 @@ const CreateWS = (props: any) => {
             else {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 setSharewebTask(res.data)
@@ -456,7 +450,7 @@ const CreateWS = (props: any) => {
             if (Task.Services != undefined && Task.Services.length > 0 || Task.Portfolio_x0020_Type == 'Service') {
                 SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Events != undefined && Task.Events.length > 0 || Task.Portfolio_x0020_Type == 'Events') {
+            if (Task.Events != undefined && Task.Events.length >0 || Task.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
             if (Task.Component != undefined && Task.Component.length > 0) {
@@ -513,10 +507,10 @@ const CreateWS = (props: any) => {
                 var Dateet = new Date(dp)
                 NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
             }
-            if (AllItems.Portfolio_x0020_Type == 'Component' || AllItems.Component != undefined && AllItems.Component.length > 0) {
+            if (AllItems.Portfolio_x0020_Type == 'Component' ||  AllItems.Component != undefined && AllItems.Component.length > 0) {
                 Component.push(AllItems.Component[0].Id)
             }
-            if (AllItems.Portfolio_x0020_Type == 'Service' || AllItems.Services != undefined && AllItems.Services.length > 0) {
+            if (AllItems.Portfolio_x0020_Type == 'Service' ||  AllItems.Services != undefined && AllItems.Services.length > 0) {
                 RelevantPortfolioIds.push(AllItems.Services[0].Id)
             }
             var categoriesItem = '';
@@ -576,8 +570,6 @@ const CreateWS = (props: any) => {
                 console.log(res);
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
-                res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 closeTaskStatusUpdatePoup(res);
@@ -622,31 +614,31 @@ const CreateWS = (props: any) => {
         })
     }
     const handleDatedue = (date: any) => {
-        let selectedDate = new window.Date(date)
+        let selectedDate =   new window.Date(date)
         let formatDate = moment(selectedDate).format('DDMMYYYY')
         let datee = formatDate.length < 9
-        if (datee) {
+        if(datee){
             var final = moment(selectedDate).format("DD/MM/YYYY")
             AllItems.DueDate = date;
-            setDate(date);
+            setDate(date);  
         }
-        else {
+        else{
             setDate(undefined)
         }
-
-
-
+        
+        
+        
 
     };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+            <div className="d-flex full-width pb-1" >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <h2 className='heading'>
+                    <span>
                         {`Create Item`}
-                    </h2>
+                    </span>
                 </div>
-                <Tooltip ComponentId={AllItems?.Id} />
+                <Tooltip ComponentId={AllItems.Id} />
             </div>
         );
     };
@@ -832,9 +824,8 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
             >
-                <div className="modal-body border p-3 bg-f5f5 active">
+                <div className="modal-body border p-3 bg-f5f5">
                     <div className='row'>
                         {
                             ParentArray?.map((pare: any) => {
@@ -903,7 +894,7 @@ const CreateWS = (props: any) => {
                                                             <a className="hreflink" target="_blank"
                                                                 ng-href="{{CuurentSiteUrl}}/SitePages/Portfolio-Profile.aspx?taskId={{item.Id}}">{cat.Title}</a>
                                                             <a className="hreflink" ng-click="removeSmartComponent(item.Id)">
-                                                                <span className='svg__iconbox svg__icon--cross'></span>
+                                                            <span className='svg__iconbox svg__icon--cross'></span>
                                                             </a>
                                                         </div>
                                                     </>
@@ -1002,11 +993,11 @@ const CreateWS = (props: any) => {
                         </div>
                         <div className='col-sm-4'>
                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                            <input className="form-control"
-                                type="date"
+                            <DatePicker className="form-control"
+                                selected={date}
                                 value={myDate}
                                 onChange={handleDatedue}
-                            // dateFormat="dd/MM/yyyy"
+                                dateFormat="dd/MM/yyyy"
 
 
                             />
@@ -1040,7 +1031,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                        <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                        <TeamConfigurationCard  ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
@@ -1053,7 +1044,7 @@ const CreateWS = (props: any) => {
                     {/* _________________Add More Item____________________________________________________________________________________________________________ */}
 
                     {
-                        showChildData == true && inputFields?.map((data, index) => {
+                        showChildData==true && inputFields?.map((data, index) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
@@ -1105,12 +1096,13 @@ const CreateWS = (props: any) => {
 
                                         <div className='col-sm-4'>
                                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
-                                            <input className="form-control"
-                                                // selected={date}
-                                                type="date"
+                                            <DatePicker className="form-control"
+                                                selected={date}
                                                 value={myDate}
                                                 onChange={handleDatedue}
-                                            // dateFormat="dd/MM/yyyy"
+                                                dateFormat="dd/MM/yyyy"
+
+
                                             />
                                             <div className="">
                                                 <label>
@@ -1170,7 +1162,7 @@ const CreateWS = (props: any) => {
                                         </div>
 
 
-
+                                       
                                     </div>
                                     <div className='row'>
                                         <div className='col-sm-12 mt-1'>
@@ -1178,13 +1170,13 @@ const CreateWS = (props: any) => {
                                             <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
                                         </div>
                                     </div>
+                                  
 
 
-
-                                    {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
-
+                      {(inputFields.length > 0) ? <a className="pull-left" onClick={removeInputFields}><span className='svg__iconbox svg__icon--cross'></span></a> : ''}
 
 
+                       
                                 </div>
                             )
                         })
