@@ -3989,7 +3989,7 @@ const EditTaskPopup = (Items: any) => {
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {EditData.Id != null && AllListIdData.SiteCompositionComponent ? <SiteCompositionComponent
+                                        {EditData.Title != null && AllListIdData.isShowSiteCompostion ? <SiteCompositionComponent
                                             AllListId={AllListIdData}
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
