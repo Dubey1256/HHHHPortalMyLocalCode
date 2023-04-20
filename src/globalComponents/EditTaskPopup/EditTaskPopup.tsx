@@ -1037,7 +1037,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.PercentComplete != undefined) {
                     statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    if (statusValue < 70 && statusValue > 20) {
+                    if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
@@ -1306,7 +1306,7 @@ const EditTaskPopup = (Items: any) => {
                 setPercentCompleteStatus('Not Started');
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
             }
-            if (StatusInput < 70 && StatusInput > 20 || StatusInput < 80 && StatusInput > 70) {
+            if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
                 setTaskStatus("In Progress");
                 setPercentCompleteStatus(`${StatusInput}% In Progress`);
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
@@ -3004,7 +3004,7 @@ const EditTaskPopup = (Items: any) => {
                 <button type="button" className="btn btn-primary">
                     <a target="_blank" className="text-light" data-interception="off"
                         href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
-                         <span className="text-light">Create New One</span>
+                        <span className="text-light">Create New One</span>
                     </a>
                 </button>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
@@ -4101,7 +4101,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
@@ -4921,7 +4921,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
