@@ -285,7 +285,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             <Stack horizontal tokens={stackTokens}>
                <Stack.Item>{getExt=='' ?   <span >{getExt}</span>:<span className="Dyicons">{getExt}</span>}
              </Stack.Item>
-                <Stack.Item>{item.ComponentId}</Stack.Item>
+                <Stack.Item>{item.ComponentId == null ? <span>{item.TaskId}</span> : <span>{item.ComponentId}</span>}</Stack.Item>
             </Stack>
         );
     }
@@ -308,7 +308,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
              <Stack horizontal tokens={stackTokens}>
                 <Stack.Item><span className={getExt==''? '':'Dyicons bg-success'}>{getExt}</span>
               </Stack.Item>
-                 <Stack.Item><span className="text-success">{item.ServiceId}</span></Stack.Item>
+                 <Stack.Item>{item.ServiceId == null ? <span className="text-success">{item.TaskId}</span> : <span className="text-success">{item.ServiceId}</span>}</Stack.Item>
              </Stack>
          );
      }
@@ -445,8 +445,8 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                     if(item.Priority == 0) return "";
                     return item.Priority;
                 }});
-                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 75, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
-                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 75, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 120, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 120, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="SERVICES") {
@@ -467,8 +467,8 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                     if(item.Priority == 0) return "";
                     return  <div style={{color:'green'}}>{item.Priority}</div>
                 } });
-                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 75, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
-                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 75, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
+                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 120, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
+                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 120, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else {
