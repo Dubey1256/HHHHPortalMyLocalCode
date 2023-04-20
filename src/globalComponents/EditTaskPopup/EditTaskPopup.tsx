@@ -3001,6 +3001,12 @@ const EditTaskPopup = (Items: any) => {
     const customFooterForProjectManagement = () => {
         return (
             <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+                <button type="button" className="btn btn-primary">
+                    <a target="_blank" className="text-light" data-interception="off"
+                        href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
+                        Create New One
+                    </a>
+                </button>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
                     Save
                 </button>
@@ -5151,12 +5157,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
-                        <button type="button" className="btn btn-primary mx-2">
-                            <a target="_blank" className="text-light" data-interception="off"
-                                href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
-                                Create New One
-                            </a>
-                        </button>
+
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
                             Save
                         </button>
