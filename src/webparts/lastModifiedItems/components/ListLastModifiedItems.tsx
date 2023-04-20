@@ -266,8 +266,14 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     }
 
     private _onRenderComponents(item: any, index: number, column: IColumn) {
-      
-
+       let getExt :string='';
+        if(item.ComponentId != undefined || item.ComponentId!= null){
+            let compoIcon = item.ComponentId;
+            getExt=  compoIcon.split("-");
+            getExt = getExt[getExt.length-1];
+            getExt = getExt.charAt(0).toUpperCase();
+        }
+        
              
       
         const stackTokens: IStackTokens = {
@@ -277,16 +283,35 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
      
         return (
             <Stack horizontal tokens={stackTokens}>
-               <Stack.Item>{
-                item?.Component?.map((item:any)=>{
-                    item?.ItemType=='Components' ? <span className="bg-primary text-light">C</span> :  (item?.ItemType=="SubComponent" ? <span className="bg-primary text-light">S</span> :    (item?.ItemType=="Feature" ? <span className="bg-primary text-light">F</span> : '' ) )
-                })
-                }
+               <Stack.Item>{getExt=='' ?   <span >{getExt}</span>:<span className="Dyicons">{getExt}</span>}
              </Stack.Item>
                 <Stack.Item>{item.ComponentId}</Stack.Item>
             </Stack>
         );
     }
+
+    private _onRenderServices(item: any, index: number, column: IColumn) {
+        let getExt ='';
+         if(item.ServiceId != undefined || item.ServiceId!= null){
+             let compoIcon = item.ServiceId;
+             getExt=  compoIcon.split("-");
+             getExt = getExt[getExt.length-1];
+             getExt = getExt.charAt(0).toUpperCase();
+         }
+   
+         const stackTokens: IStackTokens = {
+             childrenGap: 5
+         };
+ 
+      
+         return (
+             <Stack horizontal tokens={stackTokens}>
+                <Stack.Item><span className={getExt==''? '':'Dyicons bg-success'}>{getExt}</span>
+              </Stack.Item>
+                 <Stack.Item><span className="text-success">{item.ServiceId}</span></Stack.Item>
+             </Stack>
+         );
+     }
 
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
@@ -425,10 +450,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="SERVICES") {
-                _columns.push({key: "ServiceId", name: "ID",  fieldName: "ServiceId" , minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String , onRender:(item, index, column) => {
-                    if(item.ServiceId == undefined) return "";
-                    return  <div style={{color:'green'}}>{item.ServiceId}</div>
-                }   });
+                _columns.push({key: "ServiceId", name: "ID",  fieldName: "ServiceId" , minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderServices, columnActionsMode:ColumnActionsMode.hasDropdown, data: String  });
                 _columns.push({key: "Title", name: "Service Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,  onRender:(item, index, column) => {
                     if(item.Title == undefined) return "";
                     return  <div style={{color:'green'}}>{item.Title}</div>
