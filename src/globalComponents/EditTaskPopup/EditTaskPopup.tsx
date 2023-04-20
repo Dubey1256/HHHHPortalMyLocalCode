@@ -3004,7 +3004,7 @@ const EditTaskPopup = (Items: any) => {
                 <button type="button" className="btn btn-primary">
                     <a target="_blank" className="text-light" data-interception="off"
                         href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
-                        Create New One
+                         <span className="text-light">Create New One</span>
                     </a>
                 </button>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
