@@ -259,7 +259,7 @@ const Picker = (item: any) => {
         return (
             <footer className={isServiceTask ? "serviepannelgreena" : ""}>
                 <span>
-                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                 </span>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
                     Save
