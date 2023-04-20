@@ -24,6 +24,8 @@ var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
 var AllListId:any;
+var isShowTimeEntry:any;
+var isShowSiteCompostion:any;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -219,6 +221,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async GetResult() {
+    try{
+      isShowTimeEntry=this.props.TimeEntry!=""?JSON.parse(this.props.TimeEntry):"";
+      isShowSiteCompostion=this.props.SiteCompostion!=""?JSON.parse(this.props.SiteCompostion):""
+    }catch(error:any){
+      console.log(error)
+    }
+  
     let web = new Web(this.props.siteUrl);
     let taskDetails: any = [];
     let listInfo = await web.lists.getByTitle(this.state?.listName).get();
@@ -240,7 +249,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         TaskTimeSheetListID:this.props.TaskTimeSheetListID,
         DocumentsListID:this.props.DocumentsListID,
         SmartInformationListID:this.props.SmartInformationListID,
-        siteUrl: this.props.siteUrl
+        siteUrl: this.props.siteUrl,
+        isShowTimeEntry:isShowTimeEntry,
+        isShowSiteCompostion:isShowSiteCompostion
       }
     taskDetails["listName"] = this.state?.listName;
     taskDetails["siteType"] = this.state?.listName;
@@ -498,54 +509,54 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     if (listName != undefined) {
       let siteicon = '';
       if (listName?.toLowerCase() == 'migration') {
-        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
       }
       if (listName?.toLowerCase() == 'health') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
       }
       if (listName?.toLowerCase() == 'eps') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
       }
       if (listName?.toLowerCase() == 'ei') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
       }
       if (listName?.toLowerCase() == 'qa') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
       }
       if (listName?.toLowerCase() == 'gender') {
-        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
       }
       if (listName?.toLowerCase() == 'education') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
       }
       if (listName?.toLowerCase() == 'development-effectiveness' || listName?.toLowerCase() == 'de') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
       }
       if (listName?.toLowerCase() == 'cep') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
       }
       if (listName?.toLowerCase() == 'alakdigital' || listName?.toLowerCase() == 'da e+e') {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
       }
       if (listName?.toLowerCase() == 'hhhh')
-        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
 
       if (listName?.toLowerCase() == 'gruene')
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
 
       if (listName?.toLowerCase() == 'shareweb')
-        siteicon = `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
 
       if (listName?.toLowerCase() == 'small projects')
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
 
       if (listName?.toLowerCase() == 'offshore tasks')
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
 
       if (listName?.toLowerCase() == 'kathabeck')
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
-      if (listName?.toLowerCase() == 'tasks' && this.props.Context._pageContext._web.title == "SH") {
-        siteicon =  `${this.props.Context._pageContext._site.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
+      if (listName?.toLowerCase() == 'tasks' && this.props.Context?._pageContext?._web.title == "SH") {
+        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
       }
       return siteicon;
     }
@@ -594,7 +605,10 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
         })
       }   if(senderObject.length==0){
         userDeatails.push({
-          'Title':username})
+          'Title':username,
+          'userImage':"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+        })
+
       }
       return userDeatails; 
     }
@@ -1162,13 +1176,13 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                     <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                   </dl>
-                  <dl>
+                  {isShowTimeEntry&&<dl>
                     <dt className='bg-Fa'>SmartTime Total</dt>
                     <dd className='bg-Ff'>
                       <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ?<SmartTimeTotal  AllListId={AllListId} props={this.state.Result} /> : null}</span>
                     </dd>
 
-                  </dl>
+                  </dl>}
                 </div>
 
                 <div className='col-md-4 p-0'>
@@ -1284,7 +1298,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                     </dd>
                   </dl>
-                  <dl className="Sitecomposition">
+                 {isShowSiteCompostion &&<dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
                         <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
@@ -1311,7 +1325,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                     }
                    
 
-                  </dl>
+                  </dl>}
 
 
 
@@ -1514,7 +1528,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           </div>
         </div>
 
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result}context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
 
       </div>

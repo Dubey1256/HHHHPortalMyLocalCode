@@ -1350,7 +1350,7 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined ? newData.Title : checkCategories,
+            'Title': newData != undefined && newData.Title != undefined && newData.Title != ''? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1395,7 +1395,7 @@ function TimeEntryPopup(item: any) {
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
         // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined ? newData.Title : checkCategories,
+            'Title': newData != undefined && newData.Title != undefined && newData.Title != ''? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };

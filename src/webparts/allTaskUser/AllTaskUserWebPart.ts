@@ -37,7 +37,7 @@ export default class AllTaskUserWebPart extends BaseClientSideWebPart<IAllTaskUs
 
   protected async onInit(): Promise<void> {
     await super.onInit();
-     getSP(this.context);    
+    getSP(this.context);    
   }
 
 
