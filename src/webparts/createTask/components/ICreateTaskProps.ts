@@ -5,5 +5,7 @@ export interface ICreateTaskProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   pageContext:any;
-  
+  MasterTaskListID: 'MasterTaskListID';
+  TaskUsertListID: 'TaskUsertListID';
+  SmartMetadataListID: 'SmartMetadataListID'  
 }

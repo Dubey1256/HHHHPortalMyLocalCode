@@ -22,7 +22,8 @@ let createdTask: any = {}
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
-function CreateTaskComponent(props: any) {
+var ContextValue: any = {};
+function CreateTaskComponent(props:any) {
     let base_Url=props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
@@ -62,6 +63,7 @@ function CreateTaskComponent(props: any) {
     });
     const [save, setSave] = React.useState({ siteType: '', linkedServices: [], recentClick: undefined, Mileage: '', DueDate: undefined, dueDate: '', taskCategory: '', taskCategoryParent: '', rank: undefined, Time: '', taskName: '', taskUrl: undefined, portfolioType: 'Component', Component: [] })
     React.useEffect(() => {
+        ContextValue = props.SelectedProp;
         LoadTaskUsers();
         GetComponents();
         GetSmartMetadata();
@@ -74,8 +76,8 @@ function CreateTaskComponent(props: any) {
         let web = new Web(base_Url);
         let componentDetails = [];
         componentDetails = await web.lists
-            //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-            .getByTitle('Master Tasks')
+            .getById(ContextValue.MasterTaskListID)
+            //.getByTitle('Master Tasks')
             .items
             //.getById(this.state.itemID)
             .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
@@ -428,7 +430,7 @@ function CreateTaskComponent(props: any) {
         let web = new Web(base_Url);
         let MetaData = [];
         MetaData = await web.lists
-            .getByTitle('SmartMetadata')
+            .getById(ContextValue.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
@@ -680,7 +682,7 @@ function CreateTaskComponent(props: any) {
 
                         var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
                         const web = new Web(PageContent?.SiteFullUrl + '/sp');
-                        await web.lists.getById(GlobalConstants.MASTER_TASKS_LISTID).items.select(query).get().then((data: any) => {
+                        await web.lists.getById(ContextValue.MasterTaskListID).items.select(query).get().then((data: any) => {
                             Tasks = data[0];
                         });
                     }
