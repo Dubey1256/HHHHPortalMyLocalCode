@@ -283,7 +283,7 @@ const CreateWS = (props: any) => {
         if (AllItems.Services[0] != undefined && AllItems.Services.length>0) {
             RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
-        if (AllItems.Portfolio_x0020_Type == undefined) {
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
             if (AllItems.Component != undefined && AllItems.Component.length > 0) {
                 smartComponentData.push(AllItems.Component);
             }
@@ -450,22 +450,22 @@ const CreateWS = (props: any) => {
 
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
-            if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
+            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
                 SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Services != undefined && Task.Services.length > 0 || Task.Portfolio_x0020_Type == 'Service') {
+            if (Task?.Services != undefined && Task.Services.length > 0 || Task?.Portfolio_x0020_Type == 'Service') {
                 SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Events != undefined && Task.Events.length > 0 || Task.Portfolio_x0020_Type == 'Events') {
+            if (Task?.Events != undefined && Task.Events.length > 0 || Task?.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Component != undefined && Task.Component.length > 0) {
+            if (Task?.Component != undefined && Task.Component.length > 0) {
                 SharewebID = 'CA' + Task.SharewebTaskLevel1No + 'T' + LatestId;
             }
-            if (Task.Component == undefined && Task.Services == undefined) {
+            if (Task?.Component == undefined && Task.Services == undefined) {
                 SharewebID = 'T' + LatestId;
             }
-            if (AllItems.Portfolio_x0020_Type == undefined) {
+            if (AllItems?.Portfolio_x0020_Type == undefined) {
                 if (AllItems.Component != undefined && AllItems.Component.length > 0) {
                     smartComponentData.push(AllItems.Component);
                 }
@@ -513,10 +513,10 @@ const CreateWS = (props: any) => {
                 var Dateet = new Date(dp)
                 NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
             }
-            if (AllItems.Portfolio_x0020_Type == 'Component' || AllItems.Component != undefined && AllItems.Component.length > 0) {
+            if (AllItems?.Portfolio_x0020_Type == 'Component' || AllItems.Component != undefined && AllItems.Component.length > 0) {
                 Component.push(AllItems.Component[0].Id)
             }
-            if (AllItems.Portfolio_x0020_Type == 'Service' || AllItems.Services != undefined && AllItems.Services.length > 0) {
+            if (AllItems?.Portfolio_x0020_Type == 'Service' || AllItems.Services != undefined && AllItems.Services.length > 0) {
                 RelevantPortfolioIds.push(AllItems.Services[0].Id)
             }
             var categoriesItem = '';
@@ -640,7 +640,7 @@ const CreateWS = (props: any) => {
     };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -832,7 +832,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
