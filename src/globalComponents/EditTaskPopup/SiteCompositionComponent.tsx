@@ -11,6 +11,7 @@ var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var ClientTime = Props.ClientTime;
+    const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
     const TotalTime = Props.SmartTotalTimeData;
@@ -40,6 +41,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EIClientCategory, setEIClientCategory] = useState([]);
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
+    const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
 
     const SiteCompositionObject: any = {
         ClientTime: [],
@@ -93,6 +95,12 @@ const SiteCompositionComponent = (Props: any) => {
             }
             setSiteTypes(tempData2);
         }
+
+        if(isPortfolioConncted){
+            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
+            SiteCompositionSettings[0] = object;
+        }
+
         if (SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
             if (SiteCompositionSettings[0].Proportional) {
                 setProportionalStatus(true);
@@ -101,7 +109,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setProportionalStatus(false);
             }
             if (SiteCompositionSettings[0].Portfolio) {
-                setProportionalStatus(true);
+                setIsPortfolioComposition(true);
             }
         }
     }, [])
@@ -157,32 +165,40 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
     }
     const ChangeSiteCompositionSettings = (Type: any) => {
-        if (Type == "Proportional") {
-            const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
-            SiteCompositionSettings[0] = object;
-            setProportionalStatus(true);
-            let tempData: any = [];
-            ClientTime?.map((TimeData: any) => {
-                TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
-                tempData.push(TimeData);
-            })
-            SiteCompositionObject.ClientTime = tempData;
+        if (!isPortfolioConncted) {
+            alert("There are No Tagged Component/Services")
+        } else {
+            if (Type == "Proportional") {
+                const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
+                SiteCompositionSettings[0] = object;
+                setProportionalStatus(true);
+                let tempData: any = [];
+                ClientTime?.map((TimeData: any) => {
+                    TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
+                    tempData.push(TimeData);
+                })
+                SiteCompositionObject.ClientTime = tempData;
+                callBack(SiteCompositionObject);
+                setIsPortfolioComposition(false);
+            }
+            if (Type == "Manual") {
+                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
+                SiteCompositionSettings[0] = object;
+                setProportionalStatus(false);
+                setIsPortfolioComposition(false);
+            }
+            if (Type == "Portfolio") {
+                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
+                SiteCompositionSettings[0] = object;
+                setIsPortfolioComposition(true);
+                setProportionalStatus(true);
+            }
+            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
             callBack(SiteCompositionObject);
         }
-        if (Type == "Manual") {
-            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
-            SiteCompositionSettings[0] = object;
-            setProportionalStatus(false);
-        }
-        if (Type == "Portfolio") {
-            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-            SiteCompositionSettings[0] = object;
-            setProportionalStatus(true);
-        }
-        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-        callBack(SiteCompositionObject);
 
     }
+
     //    ************** this is for Client Category Popup Functions **************
 
     // ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
@@ -480,7 +496,7 @@ const SiteCompositionComponent = (Props: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {console.log("All Category Data in Div ======", AllClientCategoryData)}
             <div className="row">
-                <a target="_blank " className="text-end siteColor" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx" data-interception="off">
+                <a target="_blank " className="text-end siteColor" href={`${siteUrls}/SitePages/TaskUser-Management.aspx`} data-interception="off">
                     Task User Management
                 </a>
             </div>
@@ -540,6 +556,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                     className="form-check-input rounded-0" type="checkbox"
                                                     defaultChecked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
+                                                    disabled={isPortfolioComposition}
+                                                    style={isPortfolioComposition ? { cursor: "not-allowed" } : {}}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
                                                 />
                                             </th>
@@ -549,10 +567,25 @@ const SiteCompositionComponent = (Props: any) => {
                                             </td>
                                             <td className="m-0 p-1" style={{ width: "12%" }}>
                                                 {ProportionalStatus ?
-                                                    <input type="number" min="1" style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}} defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""} className="form-control p-1" readOnly={ProportionalStatus}
-                                                    /> : <> {siteData.BtnStatus ? <input
-                                                        type="number" min="1" defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : (100 / selectedSiteCount).toFixed(2)} className="form-control p-1" onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                    /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }} />}</>
+                                                    <>{isPortfolioComposition ? <input
+                                                        type="number" min="1"
+                                                        defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                        className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
+                                                        onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                    /> : <input type="number" min="1"
+                                                        style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}}
+                                                        defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
+                                                        value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
+                                                        className="form-control p-1" readOnly={ProportionalStatus}
+                                                    />}  </>
+                                                    : <> {siteData.BtnStatus ?
+                                                        <input
+                                                            type="number" min="1"
+                                                            defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                            className="form-control p-1"
+                                                            onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
+                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }}
+                                                        />}</>
                                                 }
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "3%" }}>
@@ -585,7 +618,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                 })}
                                                                 </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
-
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <a className="bg-white border border-secondary"
@@ -633,7 +665,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     }
                                                                 })}
                                                                 </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
-
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <a className="bg-white border border-secondary"
@@ -789,7 +820,7 @@ const SiteCompositionComponent = (Props: any) => {
                                 <div className="pb-3 mb-0">
                                     <div id="addNewTermDescription">
                                         <p className="mb-1"> New items are added under the currently selected item.
-                                            <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                            <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                         </p>
                                     </div>
                                     <div id="SendFeedbackTr">
@@ -937,7 +968,7 @@ const SiteCompositionComponent = (Props: any) => {
                     </div>
                     <footer className="float-end mt-1">
                         <span>
-                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                         </span>
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedClientCategoryData} >
                             Save

@@ -6,6 +6,7 @@ import Example from "./SubCommentComponent";
 // import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
 
 const CommentBoxComponent = (commentData: any) => {
+    const Context = commentData.Context;
     const [commentArray, setCommentArray] = useState([])
     const CallBack = commentData.callBack;
     const [postBtnStatus, setPostBtnStatus] = useState(false);
@@ -213,6 +214,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         allUsers={commentData.allUsers}
                                         callBack={postBtnHandleCallBack}
                                         CancelCallback={postBtnHandleCallBackCancel}
+                                        Context={Context}
                                     />
                                 </div>
                                 <div>
@@ -226,6 +228,7 @@ const CommentBoxComponent = (commentData: any) => {
                                         ApprovalStatus={ApprovalStatus}
                                         SmartLightStatus={SmartLightStatus}
                                         SmartLightPercentStatus={SmartLightPercentStatus}
+                                        Context={Context}
                                     />
                                 </div>
                             </div>
