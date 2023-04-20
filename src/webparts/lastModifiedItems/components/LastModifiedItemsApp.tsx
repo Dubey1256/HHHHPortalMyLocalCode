@@ -174,6 +174,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ComponentId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
+                TaskId: `T${resListItem.Id}`,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -198,6 +199,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ServiceId: resListItem.PortfolioStructureID,
+                TaskId: `T${resListItem.Id}`,
                 Title: resListItem.Title,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
