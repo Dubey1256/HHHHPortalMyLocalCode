@@ -1350,7 +1350,7 @@ const TaskDashboard = (props: any) => {
                                         {
                                             currentUserId == currentUserData?.AssingedToUserId ? <span className="float-end d-flex" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail" ></span>Share Today Working Tasks</span> : ""
                                         }</summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }}>
+                                    <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
                                                 <thead>
@@ -1420,7 +1420,7 @@ const TaskDashboard = (props: any) => {
                                 <details onDrop={(e: any) => handleDrop('thisWeek')}
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                    <div className='AccordionContent mx-height'  >
                                         {thisWeekTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
                                                 <thead>
@@ -1488,7 +1488,7 @@ const TaskDashboard = (props: any) => {
                                 </details>
                                 <details>
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                    <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
                                                 <thead>
@@ -1555,7 +1555,7 @@ const TaskDashboard = (props: any) => {
                                 </details>
                                 <details>
                                     <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                    <div className='AccordionContent mx-height'  >
                                         {assignedApproverTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
                                                 <thead>
@@ -1624,7 +1624,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '600px', overflow: 'auto' }}>
+                                    <div className='AccordionContent mx-height' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
                                                 <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
@@ -1751,7 +1751,7 @@ const TaskDashboard = (props: any) => {
                                             </div>
                                             <details>
                                                 <summary>This Week Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
-                                                <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                                <div className='AccordionContent mx-height'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
                                                             <thead>
