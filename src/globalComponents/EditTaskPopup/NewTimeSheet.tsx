@@ -24,7 +24,7 @@ const NewTameSheetComponent = (props: any) => {
                 </TeamConfigurationCard>
             </div>
             <div>
-                <TimeEntryPopup props={TeamConfigInfo} Context = {props.props.context}/>
+                {AllListIdData.isShowTimeEntry ? <TimeEntryPopup props={TeamConfigInfo} Context={props.props.context} /> : null}
             </div>
         </div>
     )

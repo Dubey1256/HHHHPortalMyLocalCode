@@ -1,20 +1,20 @@
 import * as React from "react";
-import {Panel, PanelType } from 'office-ui-fabric-react';
-import pnp, { Web} from "sp-pnp-js";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import pnp, { Web } from "sp-pnp-js";
 
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp} from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import * as moment from "moment";
 var LinkedServicesBackupArray: any = [];
-const LinkedServices = ({props,Dynamic,Call}: any) => {
+const LinkedServices = ({ props, Dynamic, Call }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [table, setTable] = React.useState(data);
     const [selectedComponent, setSelectedComponent] = React.useState('');
-    
-    const PopupType:any = props?.PopupType;
+
+    const PopupType: any = props?.PopupType;
     React.useEffect(() => {
         if (props.smartComponent != undefined && props.smartComponent.length > 0)
             setSelectedComponent(props?.smartComponent[0]);
@@ -30,7 +30,7 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
-        props.linkedComponent = CheckBoxData;
+            props.linkedComponent = CheckBoxData;
         else {
             props.linkedComponent = [];
             props.linkedComponent = CheckBoxData;
@@ -199,14 +199,20 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
         if (columnName == "Status") { }
         if (columnName == "Item-Rank") { }
         if (columnName == "Due-Date") { }
-        if(searchKey.length == 0){
+        if (searchKey.length == 0) {
             setData(LinkedServicesBackupArray);
         }
     }
 
     const CustomFooter = () => {
         return (
-            <div className="me-4 p-2 pe-3 text-end">
+            <div className="me-4 p-2 pe-3 text-end serviepannelgreena">
+                <button type="button" className="btn btn-primary mx-2">
+                    <a target="_blank" className="text-light" data-interception="off" style={{color:"#fff !important"}}
+                        href={`${Dynamic.siteUrl}/SitePages/Service-Portfolio.aspx`}>
+                        Create New One
+                    </a>
+                </button>
                 <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
                 <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
             </div>
@@ -388,7 +394,7 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
                                                                         </td>
                                                                         <td style={{ width: "22%" }}>
                                                                             <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                href={Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
+                                                                                href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
                                                                             >{item?.Title}
                                                                             </a>
                                                                             {item?.Child != undefined &&
@@ -493,7 +499,7 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
                                                                                             </td>
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                    href={Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
@@ -572,7 +578,7 @@ const LinkedServices = ({props,Dynamic,Call}: any) => {
                                                                                                             <td style={{ width: "22%" }}>
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&
