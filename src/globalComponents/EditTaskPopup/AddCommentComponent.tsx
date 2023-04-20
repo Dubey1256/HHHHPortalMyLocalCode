@@ -6,6 +6,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react';
 
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
+    const Context = FbData.Context;
     const [FeedBackArray, setFeedBackArray] = useState([]);
     const [postTextInput, setPostTextInput] = useState('');
     const [currentUserData, setCurrentUserData] = useState([]);
@@ -26,7 +27,7 @@ const AddCommentComponent = (FbData: any) => {
         }
         getCurrentUserDetails();
     }, [])
-  
+
     const openEditModal = (comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) => {
         const commentDetails = {
             Title: comment,
@@ -49,7 +50,7 @@ const AddCommentComponent = (FbData: any) => {
     const handleChangeInput = (e: any) => {
         setPostTextInput(e.target.value)
     }
-   
+
     const getCurrentUserDetails = async () => {
         let currentUserId: number;
         await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
@@ -71,8 +72,8 @@ const AddCommentComponent = (FbData: any) => {
         let txtComment = postTextInput;
         if (txtComment != '') {
             let temp = {
-                AuthorImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
-                AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
+                AuthorImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : Context.pageContext._user.displayName,
                 Created: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
                 Title: txtComment
             };
@@ -112,8 +113,8 @@ const AddCommentComponent = (FbData: any) => {
                                                     {commentDtl.AuthorName} - {commentDtl.Created}
                                                 </span>
                                                 <span>
-                                                    <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src={require('../../Assets/ICON/edit_page.svg')}  width="25"/></a>
-                                                    <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src={require('../../Assets/ICON/cross.svg')}  width="25"></img></a>
+                                                    <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
+                                                    <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
                                                 </span>
                                             </div>
                                             <div><span dangerouslySetInnerHTML={{ __html: commentDtl.Title }}></span></div>

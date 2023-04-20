@@ -131,8 +131,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         if(selTabName=="DOCUMENTS") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
-                FolderName: resListItem.FileLeafRef,
-                FolderLink: resListItem.EncodedAbsUrl,
+                DocumentName: resListItem.FileLeafRef,
+                DocumentLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
                     UserName: resListItem.Editor.Title,
