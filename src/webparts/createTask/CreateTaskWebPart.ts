@@ -14,6 +14,9 @@ import { ICreateTaskProps } from './components/ICreateTaskProps';
 
 export interface ICreateTaskWebPartProps {
   description: string;
+  MasterTaskListID: 'MasterTaskListID';
+  TaskUsertListID: 'TaskUsertListID';
+  SmartMetadataListID: 'SmartMetadataListID'  
 }
 
 export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTaskWebPartProps> {
@@ -30,7 +33,10 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        pageContext: this.context.pageContext
+        pageContext: this.context.pageContext,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
       }
     );
 
@@ -110,6 +116,15 @@ export default class CreateTaskWebPart extends BaseClientSideWebPart<ICreateTask
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'Task User List'
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: 'Smart Metadata List'
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: 'Master Task List',
                 })
               ]
             }

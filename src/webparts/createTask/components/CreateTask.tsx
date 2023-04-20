@@ -16,7 +16,7 @@ export default class CreateTask extends React.Component<ICreateTaskProps, {}> {
     } = this.props;
 
     return (
-     <CreateTaskComponent pageContext={this.props.pageContext}/>
+     <CreateTaskComponent SelectedProp={this.props} pageContext={this.props.pageContext}/>
     );
   }
 }
