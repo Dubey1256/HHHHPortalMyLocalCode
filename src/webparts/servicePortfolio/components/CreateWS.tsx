@@ -596,9 +596,9 @@ const CreateWS = (props: any) => {
             setcheckedTask(false)
         }
 
-        let web = new Web(dynamicList.siteUrl);
+        let web = new Web(dynamicList?.siteUrl);
         TaskTypeItems = await web.lists
-            .getById(dynamicList.TaskTypeID)
+            .getById(dynamicList?.TaskTypeID)
             .items
             .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
             .top(4999)

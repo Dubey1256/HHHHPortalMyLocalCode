@@ -1845,6 +1845,24 @@ function ComponentTable(SelectedProp: any) {
         value: 100000000,
         label: "Feature",
         childs: [],
+      },
+      {
+        Group: "Portfolio",
+        TaxType: "Portfolio",
+        Title: "Activities",
+        Selected: true,
+        value: 100000000,
+        label: "Feature",
+        childs: [],
+      },
+      {
+        Group: "Portfolio",
+        TaxType: "Portfolio",
+        Title: "Workstream",
+        Selected: true,
+        value: 100000000,
+        label: "Feature",
+        childs: [],
       }
     );
     map(filterItems, (item) => {
@@ -6435,7 +6453,7 @@ function ComponentTable(SelectedProp: any) {
         <EditTaskPopup
           Items={SharewebTask}
           Call={Call}
-          AllListId={SelectedProp.SelectedProp}
+          context={SelectedProp.SelectedProp}
         ></EditTaskPopup>
       )}
       {IsComponent && (
