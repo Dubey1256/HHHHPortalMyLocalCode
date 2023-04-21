@@ -3717,6 +3717,7 @@ function ComponentTable(SelectedProp: any) {
         debugTable: true,
         filterFromLeafRows: true,
         enableSubRowSelection: false,
+        filterFns: undefined
     });
 
     console.log(".........", table.getSelectedRowModel().flatRows);
