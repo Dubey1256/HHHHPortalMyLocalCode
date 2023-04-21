@@ -56,8 +56,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
     web = new Web(SelectD?.siteUrl);
     RequireData = SelectD
   }else{
-    web = new Web(item.siteUrl);
+    if(item?.siteUrl != undefined){
+      web = new Web(item?.siteUrl);
+    }
+
     RequireData = SelectD.SelectedProp
+    web = new Web(RequireData?.siteUrl);
   }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
@@ -2960,7 +2964,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
               ></ComponentPortPolioPopup>
             )}
             {IsComponentPicker && (
+
               <Picker props={SharewebCategory} Call={Call} AllListId={RequireData}></Picker>
+
             )}
           </div>
         )}

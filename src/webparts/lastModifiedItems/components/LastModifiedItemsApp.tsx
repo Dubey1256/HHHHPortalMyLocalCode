@@ -13,7 +13,7 @@ import * as moment from "moment-timezone";
 
 const controlStyles = {
     root: {
-        // margin: '10px 5px 20px 0px',
+        margin: '10px 5px 20px 0px',
         maxWidth: '300px'
     }
 };
@@ -80,9 +80,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     }
 
     private async loadConfigurations() {
-        const configItemsRes = await this.spService.getLastModifiedItemsConfiguration();
-        const taskUsersRes = await this.spService.getTasks();
-        const taskUsers = taskUsersRes.filter((taskUser:any)=>taskUser.AssingedToUser&&taskUser.Item_x0020_Cover).map((taskUser:any)=>({
+        const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
+        const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
+        const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser&&taskUser.Item_x0020_Cover).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
             ImageUrl: taskUser.Item_x0020_Cover.Url
         }));
@@ -119,7 +119,6 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let curListId = curNavItem.listId;
         let curSiteURL = curNavItem.siteUrl;
         let curSiteType = curNavItem.site;
-        let curSiteIcon = curNavItem.siteIcon;
         let queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
 
         let qStrings = this.getQueryStrings(queryStrings);
@@ -144,7 +143,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                
+                ListId: curListId,
+                SiteType: curSiteType,
+                SiteURL: curSiteURL
             }));
         }
         else if(selTabName=="FOLDERS") {
@@ -163,10 +164,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                listId: curListId,
-                siteType: curSiteType,
-                siteUrl: curSiteURL,
-                
+                ListId: curListId,
+                SiteType: curSiteType,
+                SiteURL: curSiteURL
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -174,7 +174,6 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ComponentId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
-                TaskId: `T${resListItem.Id}`,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -189,17 +188,15 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                listId: curListId,
-                siteType: curSiteType,
-                siteUrl: curSiteURL,
-               
+                ListId: curListId,
+                SiteType: curSiteType,
+                SiteURL: curSiteURL
             }));
         }
         else if(selTabName=="SERVICES") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ServiceId: resListItem.PortfolioStructureID,
-                TaskId: `T${resListItem.Id}`,
                 Title: resListItem.Title,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
@@ -215,10 +212,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                listId: curListId,
-                siteType: curSiteType,
-                siteUrl: curSiteURL,
-                
+                ListId: curListId,
+                SiteType: curSiteType,
+                SiteURL: curSiteURL
             }));
         }
         else if(selTabName=="ALL") {
@@ -236,7 +232,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 qStrings.Top = 100;
                 _resListItems = await this.getListItems(curListId, qStrings);
                 if(_resListItems.length) {
-                    resListItems = _resListItems.map((resListItem:any )=> ({
+                    resListItems = _resListItems.map(resListItem => ({
                         TaskId: `T${resListItem.Id}`,
                         TaskName: resListItem.Title,
                         PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
@@ -246,7 +242,6 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         Components: resListItem.Component,
                         Services: resListItem.Services,
                         Events: resListItem.Events,
-                        SiteType: resListItem.siteType,
                         ComponentLink: resListItem.component_x0020_link ? resListItem.component_x0020_link.Url : "#",
                         DueDate: this.formatDate(resListItem.DueDate),
                         PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
@@ -264,9 +259,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         },
                         Id: resListItem.Id,
                         ListId: curListId,
-                        siteType: curSiteType,
-                        siteUrl: curSiteURL,
-                        siteIcon : tabItem.SiteIcon
+                        SiteType: curSiteType,
+                        SiteURL: curSiteURL
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -290,7 +284,6 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Components: resListItem.Component,
                 Services: resListItem.Services,
                 Events: resListItem.Events,
-                SiteType: resListItem.siteType,
                 ComponentLink: resListItem.component_x0020_link ? resListItem.component_x0020_link.Url : "#",
                 DueDate: this.formatDate(resListItem.DueDate),
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
@@ -307,10 +300,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                listId: curListId,
-                siteType: curSiteType,
-                siteUrl: curSiteURL,
-                siteIcon : curSiteIcon
+                ListId: curListId,
+                SiteType: curSiteType,
+                SiteURL: curSiteURL
             }));
         }        
 
@@ -454,7 +446,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         selNavItem.displaySiteName = currentNavItem.DisplaySiteName;
         selNavItem.listId = currentNavItem.ListId;
         selNavItem.site = currentNavItem.Site;
-        selNavItem.siteIcon = currentNavItem.SiteIcon != undefined ? currentNavItem.SiteIcon : selNavItem.siteIcon ;
+        selNavItem.siteIcon = currentNavItem.SiteIcon;
         selNavItem.siteUrl = currentNavItem.SiteUrl;
         selNavItem.sortOrder = currentNavItem.SortOrder;
         selNavItem.tabName = currentNavItem.TabName;
@@ -541,10 +533,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
 
     render(): JSX.Element {        
         
-        const elemPivotNav = (<div className="p-0">
-           
+        const elemPivotNav = (<div style={{ display: 'flex', padding: '5px' }}>
+            <div className={styles.centerDiv}>
                 <PivotNavItems Items={this.state.navItems} SelectedKey={this.state.selNavItem.tabName} OnMenuClick={this.onNavItemMenuClick} />
-          
+            </div>
         </div>);
 
         //const elemFilter = (<SectionFilter SearchText={this.state.searchText} FilterByComponents={false} FilterByService={false} OnSearchTextChange={this.onSearchTextChange} OnComponentsCheck={this.onComponentsChecked} OnServiceCheck={this.onServiceChecked} />);
@@ -554,27 +546,28 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         const elemClearFilter = this.state.showResetFilters && <Icon iconName="ClearFilter" role="button" onClick={this._onResetFiltersClicked} styles={iconStyles} />
         
         const elemFilter = (
-            <div className="tbl-headings">
-
-                <span className="leftsec">
-                <span> <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label></span> <span className="ms-1"> <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} /></span>
-                </span>
-                {
-                    this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
-                         "" : <span className="toolbox mx-auto">
-                         <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" className="me-2" styles={controlStyles} />
-                         <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
-                         {elemClearFilter}
-                     </span>
-                }
-                
+            <div>
+                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                    <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>
+                </div>
+                <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
+                    <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
+                </div>
+                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                    <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
+                </div>
+                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                    <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
+                </div>
+                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                    {elemClearFilter}
+                </div>
             </div>
         );
 
-        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems Items={this.state.filteredItems} TabName={this.state.selNavItem?.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} />);
+        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems Items={this.state.filteredItems} TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} />);
         
         const elemDeleteRecord = (<Dialog
-        
             hidden = {this.state.hideDeleteDialog}
             onDismiss = {this.onCancelDeleteDialog}
             dialogContentProps = {deleteDialogContentProps}
@@ -585,24 +578,20 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             </DialogFooter>
         </Dialog>)
         
-        return (<div>
-            <div className="col">
+        return (<div className="ms-Grid">
+            <div className="ms-Grid-row">
                 <SectionTitle Title="Last Modified Views" />
             </div>
-            <div className="col">
+            <div className="ms-Grid-row">
                 { elemPivotNav }
             </div>
-            <div className="Alltable border border-top-0 full-width p-2 px-0 pt-0 mt-2">
-            <div className="col">
+            <div className="ms-Grid-row">
                 { elemFilter }
             </div>
-            <div className="col">
+            <div className={css("ms-Grid-row", styles.content)}>
                 { elemListLMI }
-            </div>
             </div>
             { elemDeleteRecord }            
         </div>);
-     
-       
     }
 }

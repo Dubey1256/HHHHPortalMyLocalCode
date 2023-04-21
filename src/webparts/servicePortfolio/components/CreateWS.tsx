@@ -271,7 +271,9 @@ const CreateWS = (props: any) => {
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        if (AllItems.Portfolio_x0020_Type == 'Component') {
+
+        if ( AllItems.Component[0] != undefined && AllItems.Component.length>0) {
+
             Component.push(AllItems.Component[0].Id)
         }
         if (AllItems.Portfolio_x0020_Type == 'Service') {
