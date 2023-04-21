@@ -259,7 +259,7 @@ const Picker = (item: any) => {
         return (
             <footer className={isServiceTask ? "serviepannelgreena" : ""}>
                 <span>
-                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                 </span>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
                     Save
@@ -326,7 +326,7 @@ const Picker = (item: any) => {
                                     <div className="pb-3 mb-0">
                                         <div id="addNewTermDescription">
                                             <p className="mb-1"> New items are added under the currently selected item.
-                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
+                                                <span><a className="hreflink" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} > Add New Item </a></span>
                                             </p>
                                         </div>
                                         <div id="SendFeedbackTr">
@@ -488,7 +488,7 @@ const Picker = (item: any) => {
                     </div>
                     <footer className={isServiceTask ? "serviepannelgreena float-end" : "float-end"}>
                         <span>
-                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
+                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                         </span>
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveCategories} >
                             Save

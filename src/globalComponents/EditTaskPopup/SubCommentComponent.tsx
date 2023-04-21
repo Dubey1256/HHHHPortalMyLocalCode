@@ -6,6 +6,7 @@ import AddCommentComponent from './AddCommentComponent'
 export default function subCommentComponent(SubTextItemsArray: any) {
     const SubTextItems = SubTextItemsArray.SubTextItemsArray;
     const callBack = SubTextItemsArray.callBack
+    const Context = SubTextItemsArray.Context;
     const [Texts, setTexts] = useState(false);
     const [subCommentsData, setSubCommentsData] = useState([]);
     const [UpdatedFeedBackChildArray, setUpdatedFeedBackChildArray] = useState([]);
@@ -98,7 +99,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             const { id } = e.currentTarget.dataset;
             const { name, value } = e.target;
             const copy = [...subCommentsData];
-            const obj = {...subCommentsData[id], [name]: value == "true" ? false : true };
+            const obj = { ...subCommentsData[id], [name]: value == "true" ? false : true };
             copy[id] = obj;
             setSubCommentsData(copy);
             if (name == "Phone") {
@@ -247,10 +248,11 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         Data={obj.Comments != null ? obj.Comments : []}
                                         allFbData={SubTextItems}
                                         index={index}
-                                        postStatus={index == Number(currentIndex) && postBtnStatus ? true :false}
+                                        postStatus={index == Number(currentIndex) && postBtnStatus ? true : false}
                                         allUsers={SubTextItemsArray.allUsers}
                                         callBack={postBtnHandleCallBack}
                                         CancelCallback={postBtnHandleCallBackCancel}
+                                        Context={Context}
                                     />
                                 </div>
                             </div>
