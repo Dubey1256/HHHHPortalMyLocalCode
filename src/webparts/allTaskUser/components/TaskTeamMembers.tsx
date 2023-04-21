@@ -89,7 +89,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 userId: undefined,
                 userMail: [],
                 timeCategory: "",
-                approverId: [36],
+                approverId: [],
                 approverMail: [],
                 approvalType: undefined,
                 selSmartMetadataItems: [],
@@ -183,7 +183,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }];
 
         let taxTypes: string[] = ["TimesheetCategories"];
-        const resTimesheetCategories = await this.props.spService.getSmartMetadata(taxTypes);
+        const resTimesheetCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         if(resTimesheetCategories.length>0) {
             resTimesheetCategories.forEach((tsCategory)=>timesheetCategories.push({
                 key: tsCategory.Title,
@@ -192,7 +192,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }
 
         taxTypes = ["Categories", "Category", "teamSites", "Sites", "TimesheetCategories"];
-        let resCategories = await this.props.spService.getSmartMetadata(taxTypes);
+        let resCategories = await this.props.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         let smartMetadataItems: IContextualMenuItem[] = [];
         
         resCategories.filter(({TaxType, ParentID})=>(TaxType=="Categories"&&ParentID==0)).forEach(item=>{
@@ -208,12 +208,17 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         
         const listTasks: any[] = [...this.props.tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
 
-        let filteredImages = await this.props.spService.getImages(this.state.selImageFolder);
+        let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
         let _filteredImages = filteredImages.map((filteredImage: any) => ({
             Id: filteredImage.Id,
             Name: filteredImage.FileLeafRef,
             URL: filteredImage.EncodedAbsUrl
         }));
+
+        const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
+        const _taskItem = {...this.state.taskItem};
+        _taskItem.approverMail.push(this.props.defaultApproverEMail);
+        _taskItem.approverId.push(_approverId);
 
         this.setState({
             tasks: this.props.tasks,
@@ -221,7 +226,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             columns: this._buildColumns(listTasks),
             timesheetCategories: timesheetCategories,
             smartMetadataItems: smartMetadataItems,
-            filteredImages: _filteredImages
+            filteredImages: _filteredImages,
+            taskItem: _taskItem
         });
     }
 
@@ -408,7 +414,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ItemType: taskItem.itemType
         }
 
-        const newTask = await this.props.spService.createTask(newTaskItem);
+        const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
         
         if(newTask) {
             this.updateGallery();
@@ -453,7 +459,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         };
         console.log(updateTaskItem);
 
-        const updateTask = await this.props.spService.editTask(this.state.selTaskId, updateTaskItem);
+        const updateTask = await this.props.spService.editTask(this.props.taskUsersListId, this.state.selTaskId, updateTaskItem);
 
         if(updateTask) {
             this.updateGallery();
@@ -466,7 +472,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private async deleteTask() {
 
-        await this.props.spService.deleteTask(this.state.selTaskId);
+        await this.props.spService.deleteTask(this.props.taskUsersListId, this.state.selTaskId);
 
         this.updateGallery();
         
@@ -675,7 +681,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private async onImageFolderChanged(ev:any, optImageFolder: IChoiceGroupOption) {
         let selFolderName: string = optImageFolder.key;
-        let filteredImages = await this.props.spService.getImages(selFolderName);
+        let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, selFolderName);
         let _filteredImages = filteredImages.map((filteredImage: any) => ({
             Id: filteredImage.Id,
             Name: filteredImage.FileLeafRef,

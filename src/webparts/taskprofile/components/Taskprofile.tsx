@@ -249,7 +249,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         TaskTimeSheetListID:this.props.TaskTimeSheetListID,
         DocumentsListID:this.props.DocumentsListID,
         SmartInformationListID:this.props.SmartInformationListID,
-        siteUrl: this.props.siteUrl
+        siteUrl: this.props.siteUrl,
+        isShowTimeEntry:isShowTimeEntry,
+        isShowSiteCompostion:isShowSiteCompostion
       }
     taskDetails["listName"] = this.state?.listName;
     taskDetails["siteType"] = this.state?.listName;
@@ -1526,7 +1528,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           </div>
         </div>
 
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result}context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
 
       </div>

@@ -283,7 +283,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
 
         console.log(newTaskItem);
 
-        const newTask = await this.props.spService.createTask(newTaskItem);
+        const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
         if(newTask) {
             this.updateGallery();
             let taskItem = {...this.state.taskItem};
@@ -308,7 +308,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             AssingedToUserId: taskItem.userId ? taskItem.userId : null
         };
         console.log(updateTakItem);
-        await this.props.spService.editTask(this.state.selTaskId, updateTakItem);
+        await this.props.spService.editTask(this.props.taskUsersListId, this.state.selTaskId, updateTakItem);
         
         this.updateGallery();
         this.setState({
@@ -320,7 +320,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
 
     private async deleteTask() {
         
-        this.props.spService.deleteTask(this.state.selTaskId);
+        this.props.spService.deleteTask(this.props.taskUsersListId, this.state.selTaskId);
 
         this.updateGallery();
         

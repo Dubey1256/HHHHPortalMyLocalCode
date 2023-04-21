@@ -605,7 +605,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img title={row?.original?.Author?.Title} className="workmember" src={row?.original?.createdImg} />
+                        <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                     </span>
                 ),
             },
@@ -740,7 +740,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img title={row?.original?.Author?.Title} className="workmember" src={row?.original?.createdImg} />
+                        <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
                     </span>
                 ),
             },
@@ -1257,7 +1257,7 @@ const TaskDashboard = (props: any) => {
                         ></button>
                         <section className="sidebar__section sidebar__section--menu">
                             <nav className="nav__item">
-                                <ul className="nav__list">
+                                <ul className="nav__list mb-0">
                                     <li id="DefaultViewSelectId" className="nav__item ">
                                         <a className="nav__link border-bottom pb-1" >
                                             <span className="nav__icon nav__icon--home"></span>
@@ -1349,11 +1349,11 @@ const TaskDashboard = (props: any) => {
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
                                         {
-                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="float-end d-flex" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail" ></span>Share Today Working Tasks</span> : ""
+                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
                                         }</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsToday()}>
                                                 <thead>
                                                     {headerGroupsToday?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1423,7 +1423,7 @@ const TaskDashboard = (props: any) => {
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {thisWeekTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsWeek()} >
                                                 <thead>
                                                     {headerGroupsWeek?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1491,7 +1491,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
                                                 <thead>
                                                     {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1558,7 +1558,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
                                     <div className='AccordionContent mx-height'  >
                                         {assignedApproverTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
                                                 <thead>
                                                     {headerGroupsApprover?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1628,7 +1628,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
+                                                <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAll()} >
                                                     <thead>
                                                         {headerGroupsAll?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -1754,7 +1754,7 @@ const TaskDashboard = (props: any) => {
                                                 <summary>{selectedTimeReport}'s Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
                                                 <div className='AccordionContent mx-height'  >
                                                     {weeklyTimeReport?.length > 0 ?
-                                                        <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
+                                                        <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
                                                             <thead>
                                                                 {headerGroupsTimeReport?.map((headerGroup: any) => (
                                                                     <tr {...headerGroup.getHeaderGroupProps()}>

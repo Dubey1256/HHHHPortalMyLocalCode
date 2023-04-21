@@ -11,10 +11,11 @@ import * as strings from 'AllTaskUserWebPartStrings';
 import { ITaskUserProps } from './components/ITaskUserProps';
 import { getSP } from '../../spservices/pnpjsConfig';
 import AllTaskUserApp from './components/AllTaskUserApp';
-//import { TermLabel } from './components/Test';
 
 export interface IAllTaskUserWebPartProps {
-  description: string;
+  TaskUsertListID: string;
+  SmartMetadataListID: string;
+  ImagesLibraryID: string;
 }
 
 export default class AllTaskUserWebPart extends BaseClientSideWebPart<IAllTaskUserWebPartProps> {
@@ -24,13 +25,12 @@ export default class AllTaskUserWebPart extends BaseClientSideWebPart<IAllTaskUs
       AllTaskUserApp,
       {        
         userDisplayName: this.context.pageContext.user.displayName,
-        context: this.context
+        context: this.context,
+        taskUsersListId: this.properties.TaskUsertListID,
+        smartMetadataListId: this.properties.SmartMetadataListID,
+        imagesLibraryId: this.properties.ImagesLibraryID
       }
-    );
-
-    /*const element: React.ReactElement = React.createElement(
-      TermLabel
-    );*/
+    );   
 
     ReactDom.render(element, this.domElement);
   }
@@ -58,10 +58,16 @@ export default class AllTaskUserWebPart extends BaseClientSideWebPart<IAllTaskUs
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: "All Task User Webpart Configuration",
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField("SmartMetadataListID", {
+                  label: "Smart Metadata List"
+                }),
+                PropertyPaneTextField("ImagesLibraryID", {
+                  label: "Images Library"
                 })
               ]
             }

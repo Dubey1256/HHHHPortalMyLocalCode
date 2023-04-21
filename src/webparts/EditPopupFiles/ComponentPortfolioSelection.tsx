@@ -9,7 +9,7 @@ import Tooltip from "../../globalComponents/Tooltip";
 import { Title } from "@material-ui/icons";
 var serachTitle: any = "";
 var search: any = "";
-const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
+const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [backupComponentsData, setBackupComponentsData] = React.useState([]);
   const [componentsData, setComponentsData] = React.useState([]);
@@ -24,7 +24,6 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   React.useEffect(() => {
     if (props.smartComponent != undefined && props.smartComponent.length > 0)
       selctedCompo(props.smartComponent[0]);
-
     GetComponents();
   }, []);
   function Example(callBack: any, type: any) {
@@ -40,7 +39,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
       props?.smartComponent != undefined &&
       props?.smartComponent.length == 0
     )
-    props.smartComponent = CheckBoxdata;
+      props.smartComponent = CheckBoxdata;
     else {
       props.smartComponent = [];
       props.smartComponent = CheckBoxdata;
@@ -87,6 +86,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
         "DueDate",
         "Status",
         "ItemRank",
+        "ClientTime",
         "Item_x0020_Type",
         "Parent/Id",
         "Author/Id",
@@ -479,7 +479,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //         item?.flag == true;
   //         AllFilteredTagNews.push(item);
   //       } if(item[Title] != undefined && Title == "ItemRank" && item?.childs != undefined && item?.childs.length>0 ) {
-            
+
   //         AllFilteredTagNews.map((Child:any,index:any)=>{
 
   //           Child.childs.map((subChild:any)=>{
@@ -489,7 +489,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //                   Child.push(subChild)
   //                subChild.childs.map((nextsubchild:any,nextindex:any)=>{
   //                   if(nextsubchild!=undefined && nextsubchild[Title]==searchTerms){
-                        
+
   //                       subChild.show == true;
   //                       subChild.flag == true;
   //                       Child.push(nextsubchild)
@@ -497,7 +497,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //               })
   //               }
   //        }) })
-         
+
   //           isSearchTermAvailable = true;
   //       }
   //     } if (
@@ -507,7 +507,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //     ) {
   //       item?.ClientCategory.map((Client: any) => {
   //         if (Client.Title.toLowerCase().includes(searchTerms.toLowerCase())) {
-            
+
   //           isSearchTermAvailable = true;
   //           item?.flag == true;
   //           AllFilteredTagNews.push(item);
@@ -532,7 +532,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //         }
   //       });
   //     } if (
-        
+
   //       item[Title] != undefined &&
   //       Title != "ItemRank" &&
   //       Title != "ClientCategory" &&
@@ -543,7 +543,7 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //         item?.flag == true;
   //         AllFilteredTagNews.push(item);
   //       //   getHighlightdata(item, searchTerms.toLowerCase());
-          
+
   //       } else {
   //         isSearchTermAvailable = false;
   //       }
@@ -551,41 +551,41 @@ const ComponentPortPolioPopup = ({props,Dynamic,Call}: any) => {
   //       // }}
   //     } else {
   //       isSearchTermAvailable = false;
-        
+
   //     }}
   //     else {
   //       isSearchTermAvailable = false;
   //       setComponentsData(MainDataBackup);
   //     }
   //     return isSearchTermAvailable;
-    
+
   // };
 
-var LocalArray:any=[];
+  var LocalArray: any = [];
   var getSearchTermAvialable1 = function (
     searchTerms: any,
     item: any,
     Title: any
-  ){
-      if(searchTerms!=undefined && searchTerms.length>0){
-        if(item[Title] != undefined && item[Title] == searchTerms){
-                    LocalArray.push(item)
-                    if(LocalArray!=undefined && LocalArray.length>0){
-                      LocalArray.map((child:any,index:any)=>{
-                        child.childs.map((subChild:any)=>{
-                             if(subChild[Title]==searchTerms){
-                              child.childs.push(subChild)
-                              child.childs.map((nextSub:any)=>{
-                                if(nextSub[Title]==searchTerms){
-                                  nextSub.childs.push(nextSub)
-                                }
-                              })
-                             }
-                        })
-                      })
-                    }
+  ) {
+    if (searchTerms != undefined && searchTerms.length > 0) {
+      if (item[Title] != undefined && item[Title] == searchTerms) {
+        LocalArray.push(item)
+        if (LocalArray != undefined && LocalArray.length > 0) {
+          LocalArray.map((child: any, index: any) => {
+            child.childs.map((subChild: any) => {
+              if (subChild[Title] == searchTerms) {
+                child.childs.push(subChild)
+                child.childs.map((nextSub: any) => {
+                  if (nextSub[Title] == searchTerms) {
+                    nextSub.childs.push(nextSub)
+                  }
+                })
+              }
+            })
+          })
         }
       }
+    }
   }
 
 
@@ -646,9 +646,9 @@ var LocalArray:any=[];
               MainDataBackup[pareIndex].flag = child1.flag;
               item.childs[parentIndex].show = child1.flag;
               MainDataBackup[pareIndex].show = true;
-            //   if (!isItemExistsNew(AllFilteredTagNews, item)) {
-            //     AllFilteredTagNews.push(item);
-            //   }
+              //   if (!isItemExistsNew(AllFilteredTagNews, item)) {
+              //     AllFilteredTagNews.push(item);
+              //   }
               childData.push(child1);
               ALllTAsk.push(item);
             }
@@ -668,9 +668,9 @@ var LocalArray:any=[];
                   item.childs[parentIndex].show = subchild.flag;
                   MainDataBackup[pareIndex].flag = subchild.flag;
                   MainDataBackup[pareIndex].show = subchild.flag;
-                //   if (!isItemExistsNew(AllFilteredTagNews, item)) {
-                //     AllFilteredTagNews.push(item);
-                //   }
+                  //   if (!isItemExistsNew(AllFilteredTagNews, item)) {
+                  //     AllFilteredTagNews.push(item);
+                  //   }
                   if (!isItemExistsNew(childData, child1))
                     childData.push(child1);
                   subChild.push(subchild);
@@ -757,16 +757,22 @@ var LocalArray:any=[];
   const CustomFooter = () => {
     return (
       <footer className="d-flex justify-content-end me-4 mt-2">
+        <button type="button" className="btn btn-primary">
+          <a target="_blank" className="text-light" data-interception="off"
+            href={`${Dynamic.siteUrl}/SitePages/Component-Portfolio.aspx`}>
+            Create New One
+          </a>
+        </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary mx-1"
           onClick={setModalIsOpenToOK}
         >
           OK
         </button>
         <button
           type="button"
-          className="btn btn-default ms-2"
+          className="btn btn-default"
           onClick={setModalIsOpenToFalse}
         >
           Cancel
@@ -822,7 +828,7 @@ var LocalArray:any=[];
                               onClick={() => handleOpen(props)}
                             >
                               {props?.childs?.length > 0 &&
-                              props?.childs != undefined ? (
+                                props?.childs != undefined ? (
                                 <a
                                   className="hreflink"
                                   title="Tap to expand the childs"
@@ -933,7 +939,7 @@ var LocalArray:any=[];
                               placeholder="Status"
                               title="Client Category"
                               className="full_width searchbox_height"
-                              // onChange={event => handleChange1(event, 'PercentComplete')}
+                            // onChange={event => handleChange1(event, 'PercentComplete')}
                             />
                             <span className="sorticon">
                               <span className="up" onClick={sortBy}>
@@ -1043,10 +1049,10 @@ var LocalArray:any=[];
                                           name="Active"
                                           checked={
                                             item?.Id ==
-                                            (CheckBoxdata.length > 0 &&
-                                            CheckBoxdata[0]["Id"]
-                                              ? CheckBoxdata[0]["Id"]
-                                              : CheckBoxdata)
+                                              (CheckBoxdata.length > 0 &&
+                                                CheckBoxdata[0]["Id"]
+                                                ? CheckBoxdata[0]["Id"]
+                                                : CheckBoxdata)
                                               ? true
                                               : false
                                           }
@@ -1054,9 +1060,9 @@ var LocalArray:any=[];
                                             item.checked = !item?.checked;
                                             setcheckbox([
                                               item?.Title ==
-                                              (CheckBoxdata.length > 0
-                                                ? CheckBoxdata[0]["Title"]
-                                                : CheckBoxdata)
+                                                (CheckBoxdata.length > 0
+                                                  ? CheckBoxdata[0]["Title"]
+                                                  : CheckBoxdata)
                                                 ? []
                                                 : item,
                                             ]);
@@ -1122,7 +1128,7 @@ var LocalArray:any=[];
                                           target="_blank"
                                           className="hreflink serviceColor_Active"
                                           href={
-                                            Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                            Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                             item?.Id
                                           }
                                         >
@@ -1142,20 +1148,20 @@ var LocalArray:any=[];
 
                                         {item?.Short_x0020_Description_x0020_On !=
                                           null && (
-                                          <div
-                                            className="popover__wrapper ms-1"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="auto"
-                                          >
-                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                            <div
+                                              className="popover__wrapper ms-1"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="auto"
+                                            >
+                                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
-                                            <div className="popover__content">
-                                              {
-                                                item?.Short_x0020_Description_x0020_On
-                                              }
+                                              <div className="popover__content">
+                                                {
+                                                  item?.Short_x0020_Description_x0020_On
+                                                }
+                                              </div>
                                             </div>
-                                          </div>
-                                        )}
+                                          )}
                                       </td>
                                       <td style={{ width: "18%" }}>
                                         <div>
@@ -1237,19 +1243,19 @@ var LocalArray:any=[];
                                                   >
                                                     {childitem.childs.length >
                                                       0 && (
-                                                      <a
-                                                        className="hreflink"
-                                                        title="Tap to expand the childs"
-                                                      >
-                                                        <div className="sign">
-                                                          {childitem.show ? (
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
-                                                          ) : (
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />
-                                                          )}
-                                                        </div>
-                                                      </a>
-                                                    )}
+                                                        <a
+                                                          className="hreflink"
+                                                          title="Tap to expand the childs"
+                                                        >
+                                                          <div className="sign">
+                                                            {childitem.show ? (
+                                                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png" />
+                                                            ) : (
+                                                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png" />
+                                                            )}
+                                                          </div>
+                                                        </a>
+                                                      )}
                                                   </div>
                                                 </td>
                                                 <td style={{ width: "2%" }}>
@@ -1258,11 +1264,11 @@ var LocalArray:any=[];
                                                     name="Active"
                                                     checked={
                                                       childitem.Id ==
-                                                      (CheckBoxdata.length >
-                                                        0 &&
-                                                      CheckBoxdata[0]["Id"]
-                                                        ? CheckBoxdata[0]["Id"]
-                                                        : CheckBoxdata)
+                                                        (CheckBoxdata.length >
+                                                          0 &&
+                                                          CheckBoxdata[0]["Id"]
+                                                          ? CheckBoxdata[0]["Id"]
+                                                          : CheckBoxdata)
                                                         ? true
                                                         : false
                                                     }
@@ -1271,11 +1277,11 @@ var LocalArray:any=[];
                                                         !childitem.checked;
                                                       setcheckbox([
                                                         childitem.Title ==
-                                                        (CheckBoxdata.length > 0
-                                                          ? CheckBoxdata[0][
-                                                              "Title"
+                                                          (CheckBoxdata.length > 0
+                                                            ? CheckBoxdata[0][
+                                                            "Title"
                                                             ]
-                                                          : CheckBoxdata)
+                                                            : CheckBoxdata)
                                                           ? []
                                                           : childitem,
                                                       ]);
@@ -1318,7 +1324,7 @@ var LocalArray:any=[];
                                                     className="hreflink serviceColor_Active"
                                                     target="_blank"
                                                     href={
-                                                      Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                      Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                       childitem.Id
                                                     }
                                                   >
@@ -1331,29 +1337,29 @@ var LocalArray:any=[];
                                                   </a>
                                                   {childitem.childs.length >
                                                     0 && (
-                                                    <span className="ms-1 siteColor">
-                                                      ({childitem.childs.length}
-                                                      )
-                                                    </span>
-                                                  )}
+                                                      <span className="ms-1 siteColor">
+                                                        ({childitem.childs.length}
+                                                        )
+                                                      </span>
+                                                    )}
 
                                                   {childitem.Short_x0020_Description_x0020_On !=
                                                     null && (
-                                                    <span className="project-tool">
-                                                      <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                      <span className="tooltipte">
-                                                        <span className="tooltiptext">
-                                                          <div className="tooltip_Desc">
-                                                            <span>
-                                                              {
-                                                                childitem.Short_x0020_Description_x0020_On
-                                                              }
-                                                            </span>
-                                                          </div>
+                                                      <span className="project-tool">
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                        <span className="tooltipte">
+                                                          <span className="tooltiptext">
+                                                            <div className="tooltip_Desc">
+                                                              <span>
+                                                                {
+                                                                  childitem.Short_x0020_Description_x0020_On
+                                                                }
+                                                              </span>
+                                                            </div>
+                                                          </span>
                                                         </span>
                                                       </span>
-                                                    </span>
-                                                  )}
+                                                    )}
                                                 </td>
                                                 <td style={{ width: "18%" }}>
                                                   <div>
@@ -1449,15 +1455,15 @@ var LocalArray:any=[];
                                                             name="Active"
                                                             checked={
                                                               childinew.Id ==
-                                                              (CheckBoxdata.length >
-                                                                0 &&
-                                                              CheckBoxdata[0][
-                                                                "Id"
-                                                              ]
-                                                                ? CheckBoxdata[0][
-                                                                    "Id"
+                                                                (CheckBoxdata.length >
+                                                                  0 &&
+                                                                  CheckBoxdata[0][
+                                                                  "Id"
                                                                   ]
-                                                                : CheckBoxdata)
+                                                                  ? CheckBoxdata[0][
+                                                                  "Id"
+                                                                  ]
+                                                                  : CheckBoxdata)
                                                                 ? true
                                                                 : false
                                                             }
@@ -1466,12 +1472,12 @@ var LocalArray:any=[];
                                                                 !childinew.checked;
                                                               setcheckbox([
                                                                 childinew.Title ==
-                                                                (CheckBoxdata.length >
-                                                                0
-                                                                  ? CheckBoxdata[0][
-                                                                      "Title"
+                                                                  (CheckBoxdata.length >
+                                                                    0
+                                                                    ? CheckBoxdata[0][
+                                                                    "Title"
                                                                     ]
-                                                                  : CheckBoxdata)
+                                                                    : CheckBoxdata)
                                                                   ? []
                                                                   : childinew,
                                                               ]);
@@ -1509,7 +1515,7 @@ var LocalArray:any=[];
                                                             className="hreflink serviceColor_Active"
                                                             target="_blank"
                                                             href={
-                                                              Dynamic.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                              Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                               childinew.Id
                                                             }
                                                           >
@@ -1522,33 +1528,33 @@ var LocalArray:any=[];
                                                           </a>
                                                           {childinew.childs
                                                             .length > 0 && (
-                                                            <span className="ms-1 siteColor">
-                                                              (
-                                                              {
-                                                                childinew.childs
-                                                                  .length
-                                                              }
-                                                              )
-                                                            </span>
-                                                          )}
+                                                              <span className="ms-1 siteColor">
+                                                                (
+                                                                {
+                                                                  childinew.childs
+                                                                    .length
+                                                                }
+                                                                )
+                                                              </span>
+                                                            )}
 
                                                           {childinew.Short_x0020_Description_x0020_On !=
                                                             null && (
-                                                            <span className="project-tool">
-                                                              <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-                                                              <span className="tooltipte">
-                                                                <span className="tooltiptext">
-                                                                  <div className="tooltip_Desc">
-                                                                    <span>
-                                                                      {
-                                                                        childinew.Short_x0020_Description_x0020_On
-                                                                      }
-                                                                    </span>
-                                                                  </div>
+                                                              <span className="project-tool">
+                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                <span className="tooltipte">
+                                                                  <span className="tooltiptext">
+                                                                    <div className="tooltip_Desc">
+                                                                      <span>
+                                                                        {
+                                                                          childinew.Short_x0020_Description_x0020_On
+                                                                        }
+                                                                      </span>
+                                                                    </div>
+                                                                  </span>
                                                                 </span>
                                                               </span>
-                                                            </span>
-                                                          )}
+                                                            )}
                                                         </td>
                                                         <td
                                                           style={{
