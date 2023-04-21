@@ -5,7 +5,7 @@ import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
@@ -46,7 +46,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
 import HighlightableCell from './highlight';
-import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/Bs';
+// import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
 
@@ -88,7 +88,7 @@ function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{width:"100%"}} className="me-1 mb-1 on-search-cross"
+        <input style={{ width: "100%" }} className="me-1 mb-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -2553,7 +2553,9 @@ function ComponentTable(SelectedProp: any) {
             if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
                 ParentTaskId = childItem.data.ParentTaskId
             }
-
+            if (childItem?.data?.DueDate != undefined && childItem?.data?.DueDate != "" && childItem?.data?.DueDate != "Invalid date") {
+                childItem.data.DueDate = childItem.data.DueDate ? Moment(childItem?.data?.DueDate).format("MM-DD-YYYY") : null
+            }
             // if (array != undefined) {
             //     array.forEach((val: any) => {
             //         val.flag = true;
@@ -2588,7 +2590,7 @@ function ComponentTable(SelectedProp: any) {
                             }
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
-                                    if (Feat?.DueDate?.length > 0) {
+                                    if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
                                         Feat.DueDate = Feat?.DueDate ? Moment(Feat?.DueDate).format("MM-DD-YYYY") : null
                                     } else {
                                         Feat.DueDate = ''
@@ -2603,7 +2605,7 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
-                                            if (Activity?.DueDate?.length > 0) {
+                                            if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
                                                 Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
                                             } else {
                                                 Activity.DueDate = ''
@@ -2618,10 +2620,10 @@ function ComponentTable(SelectedProp: any) {
                                             }
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
-                                                    if (Activity?.DueDate?.length > 0) {
-                                                        Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
+                                                    if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
+                                                        workst.DueDate = workst?.DueDate ? Moment(workst?.DueDate).format("MM-DD-YYYY") : null
                                                     } else {
-                                                        Activity.DueDate = ''
+                                                        workst.DueDate = ''
                                                     }
                                                     workst.flag = true;
                                                     workst.show = false;
@@ -2853,6 +2855,7 @@ function ComponentTable(SelectedProp: any) {
     }
     let isOpenPopup = false;
     const CloseCall = React.useCallback((item) => {
+        setRowSelection(false)
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];
@@ -2950,6 +2953,7 @@ function ComponentTable(SelectedProp: any) {
     }, []);
 
     const CreateOpenCall = React.useCallback((item) => {
+        setRowSelection(false)
         isOpenPopup = true;
         item.data.childs = [];
         item.data.flag = true;
@@ -3527,7 +3531,7 @@ function ComponentTable(SelectedProp: any) {
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
                         >
-                            {table.getIsAllRowsExpanded() ? <BsFillCaretDownFill /> : <BsFillCaretRightFill />}
+                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                         </button>{" "}
                         <IndeterminateCheckbox {...{
                             checked: table.getIsAllRowsSelected(),
@@ -3552,7 +3556,7 @@ function ComponentTable(SelectedProp: any) {
                                         style: { cursor: "pointer" },
                                     }}
                                 >
-                                    {row.getIsExpanded() ? <BsFillCaretDownFill /> : <BsFillCaretRightFill />}
+                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                                 </button>
                             ) : (
                                 ""
@@ -3758,35 +3762,35 @@ function ComponentTable(SelectedProp: any) {
         if (table?.getSelectedRowModel()?.flatRows.length > 0) {
             table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                 if (elem?.getParentRows() != undefined) {
-                // parentData = elem?.parentRow;
-                // parentDataCopy = elem?.parentRow?.original
-                parentDataCopy = elem?.getParentRows()[0]?.original
-                // if (parentData != undefined && parentData?.parentRow != undefined) {
+                    // parentData = elem?.parentRow;
+                    // parentDataCopy = elem?.parentRow?.original
+                    parentDataCopy = elem?.getParentRows()[0]?.original
+                    // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                //     parentData = elem?.parentRow?.parentRow
-                //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                    //     parentData = elem?.parentRow?.parentRow
+                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                //         parentData = elem?.parentRow?.parentRow?.parentRow
-                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                //     }
-                //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                //     }
-                //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                //     }
-                //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                //     }
-                // }
+                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                    //     }
+                    // }
                 }
 
                 elem.original.Id = elem.original.ID
@@ -4425,7 +4429,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <tr key={headerGroup.id}>
                                                             {headerGroup.headers.map((header) => {
                                                                 return (
-                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size+"%" }}>
+                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
                                                                         {header.isPlaceholder ? null : (
                                                                             <div className='position-relative' style={{ display: "flex" }}>
                                                                                 {flexRender(

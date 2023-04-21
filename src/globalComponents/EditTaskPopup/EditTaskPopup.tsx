@@ -47,8 +47,8 @@ import SmartTotalTime from './SmartTimeTotal';
 // import 'react-calendar/dist/Calendar.css';
 // import {CDatePicker} from '@coreui/react';
 // import SiteComposition from "../SiteComposition";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -76,7 +76,6 @@ var selectedClientCategoryData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
-    Items.Items.Id=Items.Items.ID
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -416,11 +415,13 @@ const EditTaskPopup = (Items: any) => {
         let TempArray: any = [];
         selectCategoryData.map((existingData: any) => {
             let elementFoundCount: any = 0;
-            tempShareWebTypeData.map((currentData: any) => {
-                if (existingData.Title == currentData.Title) {
-                    elementFoundCount++;
-                }
-            })
+            if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                tempShareWebTypeData.map((currentData: any) => {
+                    if (existingData.Title == currentData.Title) {
+                        elementFoundCount++;
+                    }
+                })
+            }
             if (elementFoundCount == 0) {
                 let category: any;
                 if (selectCategoryData != undefined && selectCategoryData.length > 0) {
@@ -432,8 +433,10 @@ const EditTaskPopup = (Items: any) => {
                         let isExists: any = 0;
                         if (tempCategoryData != undefined) {
                             isExists = tempCategoryData.search(categoryData.Title);
+                        } else {
+                            category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
                         }
-                        if (isExists >= 0) {
+                        if (isExists < 0) {
                             category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
                         }
                     })
@@ -623,7 +626,7 @@ const EditTaskPopup = (Items: any) => {
         let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
-            .getById(AllListIdData.SmartMetadataListID)
+            .getById(AllListIdData?.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
@@ -1034,10 +1037,11 @@ const EditTaskPopup = (Items: any) => {
                 if (item.PercentComplete != undefined) {
                     statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    if (statusValue < 70 && statusValue > 20) {
+                    if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+                        
                     } else {
                         StatusArray?.map((item: any) => {
                             if (statusValue == item.value) {
@@ -1296,155 +1300,158 @@ const EditTaskPopup = (Items: any) => {
     const StatusAutoSuggestion = (e: any) => {
         let StatusInput = e.target.value;
         let value = Number(e.target.value)
-        if (value <= 100) {
-            if (StatusInput.length > 0) {
-                if (StatusInput == 0) {
-                    setTaskStatus('Not Started');
-                    setPercentCompleteStatus('Not Started');
-                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
-                }
-                if (StatusInput < 70 && StatusInput > 20 || StatusInput < 80 && StatusInput > 70) {
-                    setTaskStatus("In Progress");
-                    setPercentCompleteStatus(`${StatusInput}% In Progress`);
-                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                } else {
-                    StatusArray.map((percentStatus: any, index: number) => {
-                        if (percentStatus.value == StatusInput) {
-                            setTaskStatus(percentStatus.taskStatusComment);
-                            setPercentCompleteStatus(percentStatus.status);
-                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                        }
-                    })
-                }
-                if (StatusInput == 80) {
-                    // let tempArray: any = [];
-                    if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                        setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
-                    } else {
-                        setWorkingMember(143);
-                    }
-                    EditData.IsTodaysTask = false;
-                    EditData.CompletedDate = undefined;
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                }
-                if (StatusInput == 5) {
-                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                    // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                    //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-
-                    // } else {
-                    //     setWorkingMember(156);
-                    // }
-                    EditData.CompletedDate = undefined;
-                    EditData.IsTodaysTask = false;
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                }
-                if (StatusInput == 10) {
-                    EditData.CompletedDate = undefined;
-                    if (EditData.StartDate == undefined) {
-                        EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
-                    }
-                    EditData.IsTodaysTask = true;
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                    // } else {
-                    //     setWorkingMember(156);
-                    // }
-                }
-                if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
-                    setWorkingMember(9);
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                }
-                if (StatusInput == 90) {
-                    if (EditData.siteType == 'Offshore Tasks') {
-                        setWorkingMember(36);
-                    } else if (DesignStatus) {
-                        setWorkingMember(172);
-                    } else {
-                        setWorkingMember(42);
-                    }
-                    EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                }
-                if (StatusInput == 2) {
-                    setInputFieldDisable(true)
-                    StatusArray.map((percentStatus: any, index: number) => {
-                        if (percentStatus.value == StatusInput) {
-                            setTaskStatus(percentStatus.taskStatusComment);
-                            setPercentCompleteStatus(percentStatus.status);
-                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                        }
-                    })
-                }
-                if (StatusInput != 2) {
-                    setInputFieldDisable(false)
-                }
-                if (StatusInput <= 3 && ApprovalStatusGlobal) {
-                    ChangeTaskUserStatus = false;
-                } else {
-                    ChangeTaskUserStatus = true;
-                }
-                if (StatusInput == 1) {
-                    let tempArray: any = [];
-                    if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                        if (TaskApproverBackupArray?.length > 0) {
-                            TaskApproverBackupArray.map((dataItem: any) => {
-                                tempArray.push(dataItem);
-                            })
-                        }
-                    } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                        if (TaskCreatorApproverBackupArray?.length > 0) {
-                            TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                                tempArray.push(dataItem);
-                            })
-                        }
-                    }
-                    StatusArray?.map((item: any) => {
-                        if (StatusInput == item.value) {
-                            setPercentCompleteStatus(item.status);
-                            setTaskStatus(item.taskStatusComment);
-                        }
-                    })
-                    setTaskAssignedTo(tempArray);
-                    setTaskTeamMembers(tempArray);
-                    setApproverData(tempArray);
-                }
-            } else {
-                setTaskStatus('');
-                setPercentCompleteStatus('');
+        // if (value <= 100) {
+        if (StatusInput.length > 0) {
+            if (StatusInput == 0) {
+                setTaskStatus('Not Started');
+                setPercentCompleteStatus('Not Started');
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
             }
+            if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
+                setTaskStatus("In Progress");
+                setPercentCompleteStatus(`${StatusInput}% In Progress`);
+                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                EditData.IsTodaysTask = false;
+            } else {
+                StatusArray.map((percentStatus: any, index: number) => {
+                    if (percentStatus.value == StatusInput) {
+                        setTaskStatus(percentStatus.taskStatusComment);
+                        setPercentCompleteStatus(percentStatus.status);
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                    }
+                })
+            }
+            if (StatusInput == 80) {
+                // let tempArray: any = [];
+                if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                    setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+                } else {
+                    setWorkingMember(143);
+                }
+                EditData.IsTodaysTask = false;
+                EditData.CompletedDate = undefined;
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (StatusInput == 5) {
+                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+                // } else {
+                //     setWorkingMember(156);
+                // }
+                EditData.CompletedDate = undefined;
+                EditData.IsTodaysTask = false;
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (StatusInput == 10) {
+                EditData.CompletedDate = undefined;
+                if (EditData.StartDate == undefined) {
+                    EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+                }
+                EditData.IsTodaysTask = true;
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                // } else {
+                //     setWorkingMember(156);
+                // }
+            }
+            if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
+                setWorkingMember(9);
+                EditData.IsTodaysTask = false;
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (StatusInput == 90) {
+                EditData.IsTodaysTask = false;
+                if (EditData.siteType == 'Offshore Tasks') {
+                    setWorkingMember(36);
+                } else if (DesignStatus) {
+                    setWorkingMember(172);
+                } else {
+                    setWorkingMember(42);
+                }
+                EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (StatusInput == 2) {
+                setInputFieldDisable(true)
+                StatusArray.map((percentStatus: any, index: number) => {
+                    if (percentStatus.value == StatusInput) {
+                        setTaskStatus(percentStatus.taskStatusComment);
+                        setPercentCompleteStatus(percentStatus.status);
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                    }
+                })
+            }
+            if (StatusInput != 2) {
+                setInputFieldDisable(false)
+            }
+            if (StatusInput <= 3 && ApprovalStatusGlobal) {
+                ChangeTaskUserStatus = false;
+            } else {
+                ChangeTaskUserStatus = true;
+            }
+            if (StatusInput == 1) {
+                let tempArray: any = [];
+                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                    if (TaskApproverBackupArray?.length > 0) {
+                        TaskApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        })
+                    }
+                } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                    if (TaskCreatorApproverBackupArray?.length > 0) {
+                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                            tempArray.push(dataItem);
+                        })
+                    }
+                }
+                StatusArray?.map((item: any) => {
+                    if (StatusInput == item.value) {
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+                setTaskAssignedTo(tempArray);
+                setTaskTeamMembers(tempArray);
+                setApproverData(tempArray);
+            }
         } else {
-            alert("Status not should be greater than 100");
-            setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+            setTaskStatus('');
+            setPercentCompleteStatus('');
+            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
         }
+        // } else {
+        //     alert("Status not should be greater than 100");
+        //     setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+        // }
 
 
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
@@ -1479,6 +1486,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (StatusData.value == 80) {
             // let tempArray: any = [];
+            EditData.IsTodaysTask = false;
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
             } else {
@@ -1523,6 +1531,7 @@ const EditTaskPopup = (Items: any) => {
         // }
 
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            EditData.IsTodaysTask = false;
             setWorkingMember(9);
             StatusArray?.map((item: any) => {
                 if (StatusData.value == item.value) {
@@ -1532,6 +1541,7 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         if (StatusData.value == 90) {
+            EditData.IsTodaysTask = false;
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
@@ -2248,8 +2258,8 @@ const EditTaskPopup = (Items: any) => {
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
-                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
+                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : Items.context.pageContext._user.displayName,
                     // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
                     // UserName: "Test Dev",
                 };
@@ -2869,6 +2879,7 @@ const EditTaskPopup = (Items: any) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
+                                {/* <RiDeleteBin6Line /> */}
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -2943,6 +2954,7 @@ const EditTaskPopup = (Items: any) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
+                                {/* <RiDeleteBin6Line /> */}
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -2954,7 +2966,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls}/> : null}
                             </span>
                         </div>
                     </div>
@@ -2996,6 +3008,12 @@ const EditTaskPopup = (Items: any) => {
     const customFooterForProjectManagement = () => {
         return (
             <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+                <button type="button" className="btn btn-primary">
+                    <a target="_blank" className="text-light" data-interception="off"
+                        href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
+                        <span className="text-light">Create New One</span>
+                    </a>
+                </button>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
                     Save
                 </button>
@@ -3080,7 +3098,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                                <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
+                                                <div className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                     <span className="d-flex">
                                                         <span className="form-check mx-2">
                                                             <input className="form-check-input rounded-0" type="checkbox"
@@ -3098,7 +3116,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-check-label">Working Today?</label>
                                                         </span>
                                                     </span>
-                                                </label>
+                                                </div>
                                                 <input type="text" className="form-control" placeholder="Task Name"
                                                     defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                             </div>
@@ -3111,7 +3129,7 @@ const EditTaskPopup = (Items: any) => {
                                                         ...EditData, StartDate: date
                                                     })} /> */}
                                                     <label className="form-label full-width" >Start Date</label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
@@ -3121,12 +3139,12 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
-                                                    <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                    <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                         />
-                                                    </span></label>
+                                                    </span></div>
 
-                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
@@ -3137,7 +3155,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width" > Completed Date </label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
@@ -3196,8 +3214,8 @@ const EditTaskPopup = (Items: any) => {
                                                                 <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
-                                                                    <span onClick={() => setSmartComponentData([])} title="cross" className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                       
+                                                                        <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                        {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                     </a>
                                                                 </div>
                                                             </>
@@ -3210,8 +3228,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
-                                                                        <span onClick={() => setSmartServicesData([])}  className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                            
+                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                            {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                         </a>
                                                                     </div>
                                                                 </>
@@ -3221,10 +3239,19 @@ const EditTaskPopup = (Items: any) => {
 
                                                     <span className="input-group-text">
                                                         {ComponentTaskCheck ?
-                                                         <span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={() => EditComponent(EditData, 'Component')}></span> : null}
+                                                            <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            : null}
 
-                                                        {ServicesTaskCheck ?  <span onClick={(e) => EditLinkedServices(EditData, 'Services')}  className="bg-light svg__icon--cross svg__iconbox"></span> : null}
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={(e) => alert("Please select anyone from Portfolio/Services")}></span> : null}
+                                                        {ServicesTaskCheck ?
+                                                            <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={(e) => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> 
+                                                            : null}
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
+                                                            <span title="Component/Service Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}
+                                                                className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={(e) => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            : null}
 
                                                     </span>
                                                 </div>
@@ -3234,9 +3261,8 @@ const EditTaskPopup = (Items: any) => {
                                                     </label>
                                                     <input type="text" className="form-control"
                                                         id="txtCategories" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
-                                                  
-                                                    <span className="input-group-text" onClick={(e) => EditComponentPicker(EditData, 'Categories')}>
-                                                    <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                    <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, 'Categories')}>
+                                                        <span className="svg__iconbox svg__icon--editBox"></span>
                                                         {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                     </span>
                                                 </div>
@@ -3302,8 +3328,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
-                                                                                
-                                                                                <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                {/* <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                             </div>
                                                                         )
                                                                     }
@@ -3361,7 +3387,9 @@ const EditTaskPopup = (Items: any) => {
                                                                     onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
                                                                 />
                                                                 <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
+
+                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
 
                                                                 </span>
                                                             </div>
@@ -3388,8 +3416,9 @@ const EditTaskPopup = (Items: any) => {
                                                                                     <a className="hreflink " target="_blank" data-interception="off" >
                                                                                         {Approver.Title}
                                                                                     </a>
-                                                                                    <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
-                                                                                    </svg>
+                                                                                    <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                    {/* <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
+                                                                                    </svg> */}
                                                                                 </div>
                                                                             </div>
                                                                         )
@@ -3469,9 +3498,9 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="text" readOnly
                                                             className="form-control "
                                                         />
-                                                        <span className="input-group-text" onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")}>
-                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-                                                      
+                                                        <span className="input-group-text" title="Linked Component Task Popup" onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")}>
+                                                            <span className="svg__iconbox svg__icon--editBox"></span>
+                                                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -3485,8 +3514,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input type="text"
                                                                     className="form-control"
                                                                 />
-                                                                <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                                <span className="input-group-text" title="Linked Service Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                                 </span>
                                                             </div>
                                                             {
@@ -3500,7 +3530,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                             {com.Title}
                                                                                         </a>
                                                                                         <a>
-                                                                                            <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                            {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                                         </a>
                                                                                     </div>
                                                                                 </div>
@@ -3519,8 +3550,9 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text"
                                                                 className="form-control "
                                                             />
-                                                            <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            <span className="input-group-text" title="Linked Component Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                             </span>
                                                         </div>
 
@@ -3535,7 +3567,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                     {com.Title}
                                                                                 </a>
                                                                                 <a>
-                                                                                    <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                    <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                    {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                                 </a>
                                                                             </div>
                                                                         </div>
@@ -3557,11 +3590,19 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
+                                                            <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" />
+                                                                </svg> */}
+                                                            </span>
 
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>  <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>  </span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                        <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>  </span>}
-
-
+                                                            : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                <span className="svg__iconbox svg__icon--editBox">
+                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                </span>
+                                                            </span>}
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
@@ -3585,7 +3626,6 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                 {ProjectData.Title}
                                                                             </a>
-
                                                                             <svg onClick={() => setSelectedProject([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                         </div>
                                                                     </div>
@@ -3603,15 +3643,17 @@ const EditTaskPopup = (Items: any) => {
                                                 <span className={EditData.component_x0020_link != null ? "input-group-text" : "input-group-text Disabled-Link"}>
                                                     <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">                                                                      
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
+                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.3677 13.2672C11.023 13.7134 9.87201 14.4471 8.99831 15.4154C6.25928 18.4508 6.34631 23.1488 9.19578 26.0801C10.6475 27.5735 12.4385 28.3466 14.4466 28.3466H15.4749V27.2499V26.1532H14.8471C12.6381 26.1532 10.4448 24.914 9.60203 23.1898C8.93003 21.8151 8.9251 19.6793 9.5906 18.3208C10.4149 16.6384 11.9076 15.488 13.646 15.1955C14.7953 15.0022 22.5955 14.9933 23.7189 15.184C26.5649 15.6671 28.5593 18.3872 28.258 21.3748C27.9869 24.0644 26.0094 25.839 22.9861 26.1059L21.9635 26.1961V27.2913V28.3866L23.2682 28.3075C27.0127 28.0805 29.7128 25.512 30.295 21.6234C30.8413 17.9725 28.3779 14.1694 24.8492 13.2166C24.1713 13.0335 23.0284 12.9942 18.5838 13.0006C13.785 13.0075 13.0561 13.0388 12.3677 13.2672ZM23.3224 19.8049C18.7512 20.9519 16.3624 26.253 18.4395 30.6405C19.3933 32.6554 20.9948 34.0425 23.1625 34.7311C23.9208 34.9721 24.5664 35 29.3689 35C34.1715 35 34.8171 34.9721 35.5754 34.7311C38.1439 33.9151 39.9013 32.1306 40.6772 29.5502C41 28.4774 41.035 28.1574 40.977 26.806C40.9152 25.3658 40.8763 25.203 40.3137 24.0261C39.0067 21.2919 36.834 19.8097 33.8475 19.6151L32.5427 19.53V20.6267V21.7236L33.5653 21.8132C35.9159 22.0195 37.6393 23.0705 38.4041 24.7641C39.8789 28.0293 38.2035 31.7542 34.8532 32.6588C33.8456 32.9309 25.4951 32.9788 24.1462 32.7205C22.4243 32.3904 21.0539 31.276 20.2416 29.5453C19.8211 28.6492 19.7822 28.448 19.783 27.1768C19.7837 26.0703 19.8454 25.6485 20.0853 25.1039C20.4635 24.2463 21.3756 23.2103 22.1868 22.7175C22.8985 22.2851 24.7121 21.7664 25.5124 21.7664H26.0541V20.6697V19.573L25.102 19.5851C24.5782 19.5919 23.7775 19.6909 23.3224 19.8049Z" fill="#333333" />
                                                         </svg>
                                                     </a>
-                                                </span>          
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className="col-md-3">
-                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
                                             <div className="Sitecomposition">
                                                 <div className='dropdown'>
                                                     <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
@@ -3663,11 +3705,12 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onMouseOut={(e) => StatusAutoSuggestion(e)} />
-                                                <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
-                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
+                                                    <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                 </span>
                                                 {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width l-radio">
@@ -3683,31 +3726,31 @@ const EditTaskPopup = (Items: any) => {
                                                 <div>
                                                     <div className="input-group">
                                                         <label className="form-label full-width ">Time</label>
-                                                        <input type="text" className="form-control" placeholder="Time"
-                                                            defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
+                                                        <input type="text" maxLength={3} className="form-control" placeholder="Time"
+                                                            defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e) => setEditData({ ...EditData, Mileage: e.target.value })} />
                                                     </div>
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '15'} type="radio"
+                                                                checked={EditData.Mileage <= 15 && EditData.Mileage >= 0 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
-                                                                defaultChecked={EditData.Mileage == "15" ? true : false}
+                                                                defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
                                                             />
                                                             <label className="form-check-label">Very Quick</label>
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '60'} type="radio"
+                                                                checked={EditData.Mileage <= 60 && EditData.Mileage >= 15 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
-                                                                defaultChecked={EditData.Mileage == "60"}
+                                                                defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
                                                             />
                                                             <label className="form-check-label">Quick</label>
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '240'} type="radio"
+                                                                checked={EditData.Mileage <= 240 && EditData.Mileage >= 60 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
-                                                                defaultChecked={EditData.Mileage == "240"}
+                                                                defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
                                                             />
                                                             <label className="form-check-label">Medium</label>
                                                         </li>
@@ -3715,7 +3758,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input name="radioTime" className="form-check-input"
                                                                 checked={EditData.Mileage === '480'} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
-                                                                defaultChecked={EditData.Mileage == "480"}
+                                                                defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
                                                             />
                                                             <label className="form-check-label">Long</label>
                                                         </li>
@@ -3747,7 +3790,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -3825,7 +3868,6 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                         <div>
-
                                                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                             <span className="mx-1">
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
@@ -3902,6 +3944,7 @@ const EditTaskPopup = (Items: any) => {
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
+                                                Context={Context}
                                             />
                                             <Example
                                                 textItems={EditData.FeedBackArray}
@@ -3912,7 +3955,7 @@ const EditTaskPopup = (Items: any) => {
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
-
+                                                Context={Context}
                                             />
                                         </>
                                             : null}
@@ -3953,7 +3996,7 @@ const EditTaskPopup = (Items: any) => {
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {EditData.Id != null ? <SiteCompositionComponent
+                                        {EditData.Title != null && AllListIdData.isShowSiteCompostion ? <SiteCompositionComponent
                                             AllListId={AllListIdData}
                                             siteUrls={siteUrls}
                                             SiteTypes={SiteTypes}
@@ -3964,6 +4007,7 @@ const EditTaskPopup = (Items: any) => {
                                             callBack={SiteCompositionCallBack}
                                             isServiceTask={ServicesTaskCheck}
                                             SelectedClientCategory={selectedClientCategory}
+                                            isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
                                         /> : null}
 
                                     </div>
@@ -4064,7 +4108,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
@@ -4103,7 +4147,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-md-5">
                                                     <div className="col-12 ">
                                                         <div className="input-group">
-                                                            <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
+                                                            <div className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                                 <span className="d-flex">
                                                                     <span className="form-check mx-2">
                                                                         <input className="form-check-input rounded-0" type="checkbox"
@@ -4120,7 +4164,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <label className="form-check-label">Working Today?</label>
                                                                     </span>
                                                                 </span>
-                                                            </label>
+                                                            </div>
                                                             <input type="text" className="form-control" placeholder="Task Name"
                                                                 defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                                         </div>
@@ -4129,7 +4173,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control start-date" max="9999-12-31"
+                                                                <input type="date" className="form-control start-date" max="9999-12-31" min="2000-01-01"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -4139,12 +4183,12 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group ">
-                                                                <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                                <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                                     <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                                     />
-                                                                </span></label>
+                                                                </span></div>
 
-                                                                <input type="date" className="form-control due-date" max="9999-12-31"
+                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4155,8 +4199,8 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
-                                                                >Completed Date</label>
-                                                                <input type="date" className="form-control complete-Date " max="9999-12-31"
+                                                                >Completed Date</label> 
+                                                                <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -4245,8 +4289,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     </>
                                                                 }
                                                                 <span className="input-group-text">
-                                                                    {ComponentTaskCheck ?<span title="Edit Task" className="svg__iconbox svg__icon--editBox"  onClick={() => EditComponent(EditData, 'Component')}></span> : null}
-                                                                    {ServicesTaskCheck ? <span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={() => EditLinkedServices(EditData, 'Services')}></span> : null}
+                                                                    {ComponentTaskCheck ? <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
+                                                                    {ServicesTaskCheck ? <svg onClick={() => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
                                                                     {ComponentTaskCheck == false && ServicesTaskCheck == false ? <svg onClick={() => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
 
                                                                 </span>
@@ -4259,8 +4303,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 <input type="text" className="form-control"
                                                                     id="txtCategories" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
                                                                 <span className="input-group-text">
-                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox" onClick={(e) => EditComponentPicker(EditData, 'Categories')} ></span>
-                                                                   
+                                                                    <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                                                 </span>
                                                             </div>
                                                             {SearchedCategoryData?.length > 0 ? (
@@ -4659,43 +4702,43 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3">
-
-                                                    <div className="Sitecomposition">
-                                                        <div className='dropdown'>
-                                                            <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
-                                                                <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                                                            </a>
-                                                            {composition ?
-                                                                <div className="mt-1 spxdropdown-menu">
-                                                                    <ul>
-                                                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
-                                                                            <>
-                                                                                {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                                    return (<li className="Sitelist">
-                                                                                        <span className="ms-2">
-                                                                                            <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
-                                                                                        </span>
-
-                                                                                        {SiteDtls.ClienTimeDescription != undefined &&
-                                                                                            <span className="mx-2">
-                                                                                                {SiteDtls.ClienTimeDescription}%
+                                                    {AllListIdData.isShowSiteCompostion ?
+                                                        <div className="Sitecomposition">
+                                                            <div className='dropdown'>
+                                                                <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
+                                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                                </a>
+                                                                {composition ?
+                                                                    <div className="mt-1 spxdropdown-menu">
+                                                                        <ul>
+                                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                                <>
+                                                                                    {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                                        return (<li className="Sitelist">
+                                                                                            <span className="ms-2">
+                                                                                                <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                             </span>
-                                                                                        }
-                                                                                    </li>)
-                                                                                })}
-                                                                            </> : null
-                                                                        }
 
-                                                                    </ul>
-                                                                </div> : null
-                                                            }
-                                                        </div>
-                                                        <div className="bg-e9 border-1 p-2">
-                                                            <label className="siteColor">Total Time</label>
-                                                            {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                        </div>
+                                                                                            {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                                <span className="mx-2">
+                                                                                                    {SiteDtls.ClienTimeDescription}%
+                                                                                                </span>
+                                                                                            }
+                                                                                        </li>)
+                                                                                    })}
+                                                                                </> : null
+                                                                            }
 
-                                                    </div>
+                                                                        </ul>
+                                                                    </div> : null
+                                                                }
+                                                            </div>
+                                                            <div className="bg-e9 border-1 p-2">
+                                                                <label className="siteColor">Total Time</label>
+                                                                {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                            </div>
+
+                                                        </div> : null}
 
                                                     <div className="col mt-2">
                                                         <div className="input-group">
@@ -4885,7 +4928,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
@@ -5121,6 +5164,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
+
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
                             Save
                         </button>
@@ -5148,7 +5192,7 @@ export default React.memo(EditTaskPopup);
     // ***** OR *****
     // listName:{Enter Site listName here},
     // Context:{Context}
-    // AllListIdData: { AllListIdData with site url }
+    // AllListIdData: { AllListIdData with site url,  }
     // context:{Page Context}
 // }
 

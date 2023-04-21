@@ -392,7 +392,7 @@ function Portfolio({SelectedProp}:any) {
                             <a
                               target="_blank"
                               data-interception="off"
-                              href={SelectedProp.siteUrl+"SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
+                              href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
                             >
                               {item.Parent.Title}
                             </a>

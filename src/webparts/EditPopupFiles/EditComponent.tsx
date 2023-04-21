@@ -55,8 +55,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
     web = new Web(SelectD?.siteUrl);
     RequireData = SelectD
   }else{
-    web = new Web(item.siteUrl);
+    if(item?.siteUrl != undefined){
+      web = new Web(item?.siteUrl);
+    }
+
     RequireData = SelectD.SelectedProp
+    web = new Web(RequireData?.siteUrl);
   }
   const [CompoenetItem, setComponent] = React.useState([]);
   const [update, setUpdate] = React.useState(0);
@@ -1374,7 +1378,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       </li>
         </ul></div>
       
-       <div className="feedbkicon"> <Tooltip  ComponentId={1258}/> </div>
+       <div className="feedbkicon"> <Tooltip /> </div>
        </div>
       </>
     );
@@ -1618,7 +1622,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div className="serviepannelgreena">
+                                          <div className="">
                                             <a
                                               className="hreflink service"
                                               target="_blank"
@@ -1654,7 +1658,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div >
+                                          <div className="serviepannelgreena">
                                             <a
                                               className="hreflink service "
                                               target="_blank"
@@ -1766,7 +1770,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Start Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
+                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-DD-MM")}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
                                                         })}
@@ -1780,7 +1784,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Due Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
+                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-DD-MM") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
                                                         })}
@@ -2969,7 +2973,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
               ></ComponentPortPolioPopup>
             )}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}></Picker>
+              <Picker props={SharewebCategory} Call={Call}  AllListId={RequireData}></Picker>
             )}
           </div>
         )}

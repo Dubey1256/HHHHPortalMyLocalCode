@@ -671,7 +671,7 @@ const CreateActivity = (props: any) => {
                         ComponentId: { "results": Component },
                         Categories: categoriesItem ? categoriesItem : null,
                         //DueDate: date != undefined ? new Date(date).toDateString() : date,
-                        DueDate: date != undefined ?Moment(date).format("MM-DD-YYYY") : null,
+                        DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                         SharewebCategoriesId: { "results": CategoryID },
                         ClientCategoryId: { "results": ClientCategory },
                         ServicesId: { "results": RelevantPortfolioIds },
@@ -688,7 +688,7 @@ const CreateActivity = (props: any) => {
                         res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                         res.data['listId'] = value.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
-                        res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
+                        res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                         res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value.SharewebID
                         res.data.ParentTaskId = AllItems.Id
@@ -797,7 +797,7 @@ const CreateActivity = (props: any) => {
                             res.data.ParentTaskId = AllItems.Id
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
-                            res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
+                            res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
                             res.data['siteType'] = value.siteName
                             console.log(res);
