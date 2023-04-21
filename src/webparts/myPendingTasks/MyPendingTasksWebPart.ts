@@ -11,10 +11,11 @@ import * as strings from 'MyPendingTasksWebPartStrings';
 import MyPendingTasksApp from './components/MyPendingTasksApp';
 import { IMyPendingTasksAppProps } from './components/IMyPendingTasksAppProps';
 
-import {getSP} from "../../spservices/pnpjsConfig"
+import { getSP } from '../../spservices/pnpjsConfig';
 
 export interface IMyPendingTasksWebPartProps {
-  description: string;
+  TaskUsertListID: string;
+  SmartMetadataListID: string;
 }
 
 export default class MyPendingTasksWebPart extends BaseClientSideWebPart<IMyPendingTasksWebPartProps> {
@@ -23,7 +24,9 @@ export default class MyPendingTasksWebPart extends BaseClientSideWebPart<IMyPend
     const element: React.ReactElement<IMyPendingTasksAppProps> = React.createElement(
       MyPendingTasksApp,
       {
-        userEMail: this.context.pageContext.user.loginName
+        userEMail: this.context.pageContext.user.loginName,
+        taskUsersListId: this.properties.TaskUsertListID,
+        smartMetadataListId: this.properties.SmartMetadataListID
       }
     );
 
@@ -54,8 +57,11 @@ export default class MyPendingTasksWebPart extends BaseClientSideWebPart<IMyPend
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: "Smart Metadata List"
                 })
               ]
             }
