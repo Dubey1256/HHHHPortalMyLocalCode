@@ -20,6 +20,7 @@ export default class TaskDashboardHhhh extends React.Component<ITaskDashboardHhh
       SmartInformationListID,
       DocumentsListID,
       TaskTimeSheetListID,
+      AdminConfigrationListID,
       Context,
       TimeEntry,
       SiteCompostion

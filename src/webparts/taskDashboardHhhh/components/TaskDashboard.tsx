@@ -79,6 +79,7 @@ const TaskDashboard = (props: any) => {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
+            AdminConfigrationListID: props?.props?.AdminConfigrationListID,
             siteUrl: props?.props?.siteUrl,
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion
@@ -97,7 +98,10 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
-        loadAllTimeEntry()
+        if(AllListId?.isShowTimeEntry==true){
+            loadAllTimeEntry()
+        }
+       
     }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
@@ -118,25 +122,29 @@ const TaskDashboard = (props: any) => {
         today = displayDate;
     }
     const loadAdminConfigurations = async () => {
-        try {
-            var CurrentSiteType = "";
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
-            await web.lists
-                .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
-                .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
-                .top(4999)
-                .get().then((response) => {
-                    var SmartFavoritesConfig = [];
-                    $.each(response, function (index: any, smart: any) {
-                        if (smart.Configurations != undefined) {
-                            DataSiteIcon = JSON.parse(smart.Configurations);
-                        }
-                    });
-                },
-                    function (error) { }
-                );
-        } catch (e) {
-            console.log(e)
+        if (AllListId?.AdminConfigrationListID != undefined) {
+            try {
+                var CurrentSiteType = "";
+                let web = new Web(AllListId?.siteUrl)
+                await web.lists
+                    .getById(AllListId?.AdminConfigrationListID)
+                    .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
+                    .top(4999)
+                    .get().then((response) => {
+                        var SmartFavoritesConfig = [];
+                        $.each(response, function (index: any, smart: any) {
+                            if (smart.Configurations != undefined) {
+                                DataSiteIcon = JSON.parse(smart.Configurations);
+                            }
+                        });
+                    },
+                        function (error) { }
+                    );
+            } catch (e) {
+                console.log(e)
+            }
+        } else {
+            alert("Admin Configration List Id not present")
         }
     };
 
@@ -284,10 +292,10 @@ const TaskDashboard = (props: any) => {
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(AllListId?.siteUrl);
         let arraycount = 0;
         try {
-            if (currentUserId != undefined) {
+            if (currentUserId != undefined && siteConfig?.length > 0) {
 
                 siteConfig.map(async (config: any) => {
                     if (config.Title != "SDC Sites") {
@@ -517,7 +525,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <a className='hreflink'
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
                         >
@@ -549,7 +557,7 @@ const TaskDashboard = (props: any) => {
                     <span>
                         <a className='hreflink' data-interception="off"
                             target="blank"
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            href={`${AllListId?.siteUrl}/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                         >
                             {row?.original?.portfolio?.Title}
                         </a>
@@ -659,7 +667,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <a className='hreflink'
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
                         >
@@ -941,32 +949,36 @@ const TaskDashboard = (props: any) => {
     }
     //end
     const GetMetaData = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let smartmeta = [];
+        if (AllListId?.SmartMetadataListID != undefined) {
+            let web = new Web(AllListId?.siteUrl);
+            let smartmeta = [];
 
-        let TaxonomyItems = [];
-        try {
-            smartmeta = await web.lists
-                .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Description", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
-                .top(5000)
-                .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
-                .expand("Parent")
-                .get();
-            siteConfig = smartmeta.filter((data: any) => {
-                if (data?.IsVisible && data?.TaxType == 'Sites') {
-                    return data;
-                }
-            });
-            timesheetListConfig = smartmeta.filter((data: any) => {
-                if (data?.TaxType == 'timesheetListConfigrations') {
-                    return data;
-                }
-            });
-            LoadAllSiteTasks();
+            let TaxonomyItems = [];
+            try {
+                smartmeta = await web.lists
+                    .getById(AllListId?.SmartMetadataListID)
+                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Description", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .top(5000)
+                    .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
+                    .expand("Parent")
+                    .get();
+                siteConfig = smartmeta.filter((data: any) => {
+                    if (data?.IsVisible && data?.TaxType == 'Sites') {
+                        return data;
+                    }
+                });
+                timesheetListConfig = smartmeta.filter((data: any) => {
+                    if (data?.TaxType == 'timesheetListConfigrations') {
+                        return data;
+                    }
+                });
+                LoadAllSiteTasks();
 
-        } catch (error) {
+            } catch (error) {
 
+            }
+        } else {
+            alert("Smart Metadata List Id Not available")
         }
 
     };
@@ -1198,7 +1210,7 @@ const TaskDashboard = (props: any) => {
                     + body1
                     + '</tbody>'
                     + '</table>'
-                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' + 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
+                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + AllListId?.siteUrl+'/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' +  AllListId?.siteUrl+'/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
 
 
             }
@@ -1745,7 +1757,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 {
-                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
+                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true&&AllListId?.isShowTimeEntry==true) ?
                                         <>
                                             <div>
                                                 <span className='m-1'>

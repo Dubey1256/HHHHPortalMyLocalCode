@@ -162,7 +162,7 @@ const CreateActivity = (props: any) => {
             })
 
             if(AllItems.listId != undefined){
-            let web = new Web(dynamicList.siteUrl);
+            let web = new Web(dynamicList?.siteUrl);
             let componentDetails = [];
             componentDetails = await web.lists
                 .getById(AllItems.listId)
@@ -218,7 +218,7 @@ const CreateActivity = (props: any) => {
     }
     const getTasktype = async () => {
         if (AllItems.NoteCall == 'Task') {
-            let web = new Web(dynamicList.siteUrl);
+            let web = new Web(dynamicList?.siteUrl);
             TaskTypeItems = await web.lists
                 .getById(dynamicList.TaskTypeID)
                 .items
@@ -452,7 +452,7 @@ const CreateActivity = (props: any) => {
    
     const getActivitiesDetails =  async(item: any) => {
         console.log(item)
-        let web = new Web(dynamicList.siteUrl);
+        let web = new Web(dynamicList?.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
             .getById(item?.listId)
@@ -492,7 +492,7 @@ const CreateActivity = (props: any) => {
             if (val.IscreateTask == true) {
                 if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
 
-                    let web = new Web(dynamicList.siteUrl);
+                    let web = new Web(dynamicList?.siteUrl);
                     let componentDetails = [];
                     componentDetails = await web.lists
                         .getById(val.listId)
@@ -665,7 +665,7 @@ const CreateActivity = (props: any) => {
                     else {
                         var Title = save.Title != undefined && save.Title != '' ? save.Title : post.Title
                     }
-                    let web = new Web(dynamicList.siteUrl);
+                    let web = new Web(dynamicList?.siteUrl);
                     await web.lists.getById(value.listId).items.add({
                         Title: Title != undefined && Title != '' ? Title : post.Title,
                         ComponentId: { "results": Component },
@@ -685,7 +685,7 @@ const CreateActivity = (props: any) => {
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                     }).then((res: any) => {
-                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                        res.data['SiteIcon'] = value?.Item_x005F_x0020_Cover?.Url
                         res.data['listId'] = value.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -700,7 +700,7 @@ const CreateActivity = (props: any) => {
                     })
                 }
                 if (AllItems?.NoteCall == 'Task') {
-                    let web = new Web(dynamicList.siteUrl);
+                    let web = new Web(dynamicList?.siteUrl);
                     let componentDetails: any = [];
                     componentDetails = await web.lists
                         .getById(value.listId)
@@ -771,7 +771,7 @@ const CreateActivity = (props: any) => {
                         //         })
                         //     }
                         // }
-                        let web = new Web(dynamicList.siteUrl);
+                        let web = new Web(dynamicList?.siteUrl);
                         await web.lists.getById(value.listId).items.add({
                             Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
                             ComponentId: { "results": Component },
@@ -795,7 +795,7 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                            res.data['SiteIcon'] = value?.Item_x005F_x0020_Cover?.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
@@ -943,7 +943,7 @@ const CreateActivity = (props: any) => {
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
                                                                         <img className="icon-sites"
-                                                                            src={item.Item_x005F_x0020_Cover.Url} />
+                                                                            src={item?.Item_x005F_x0020_Cover?.Url} />
                                                                     </span>{item.Title}
                                                                 </a>
                                                             </li>
@@ -1076,7 +1076,7 @@ const CreateActivity = (props: any) => {
                                                         <>
                                                             <div className="d-flex block full-width p-2">
                                                                 <div>
-                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
                                                                     <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
@@ -1101,7 +1101,7 @@ const CreateActivity = (props: any) => {
                                             return (
                                                 <>
                                                     <div className="d-flex Component-container-edit-task mb-1" style={{ width: "81%" }}>
-                                                        <a style={{ color: "#fff !important" }} target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <a style={{ color: "#fff !important" }} target="_blank" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                         <a>
                                                             <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
                                                         </a>
@@ -1190,7 +1190,7 @@ const CreateActivity = (props: any) => {
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
                                                         <div className="d-flex block full-width p-2">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
                                                                 {type.Title}
                                                             </a>
                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
@@ -1229,7 +1229,7 @@ const CreateActivity = (props: any) => {
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
                                                         <div className="d-flex block full-width p-2 mb-1">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
                                                                 {type.Title}
                                                             </a>
                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
