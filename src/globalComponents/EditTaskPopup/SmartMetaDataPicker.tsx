@@ -14,7 +14,7 @@ const Picker = (item: any) => {
     const usedFor = item.usedFor;
     const isServiceTask: any = item.isServiceTask;
     const AllListIdData: any = item.AllListId;
-    const siteUrls: any = item.siteUrls;
+    const siteUrls: any = item.AllListId.siteUrl;
     const selectedCategoryData: any = item.selectedCategoryData;
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
     const [AllCategories, setAllCategories] = React.useState([]);

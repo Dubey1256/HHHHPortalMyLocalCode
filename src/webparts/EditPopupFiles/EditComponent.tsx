@@ -46,6 +46,7 @@ var Backupdata: any = [];
 var BackupCat: any = "";
 let web:any='';
 let RequireData:any={};
+
 function EditInstitution({item,SelectD,Calls}: any) {
   // Id:any
    
@@ -2969,7 +2970,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
               ></ComponentPortPolioPopup>
             )}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}></Picker>
+              <Picker props={SharewebCategory} Call={Call} AllListId={RequireData}></Picker>
             )}
           </div>
         )}
