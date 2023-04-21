@@ -1041,6 +1041,7 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+                        
                     } else {
                         StatusArray?.map((item: any) => {
                             if (statusValue == item.value) {
@@ -1310,6 +1311,7 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus("In Progress");
                 setPercentCompleteStatus(`${StatusInput}% In Progress`);
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                EditData.IsTodaysTask = false;
             } else {
                 StatusArray.map((percentStatus: any, index: number) => {
                     if (percentStatus.value == StatusInput) {
@@ -1373,6 +1375,7 @@ const EditTaskPopup = (Items: any) => {
             }
             if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
                 setWorkingMember(9);
+                EditData.IsTodaysTask = false;
                 StatusArray?.map((item: any) => {
                     if (StatusInput == item.value) {
                         setPercentCompleteStatus(item.status);
@@ -1381,6 +1384,7 @@ const EditTaskPopup = (Items: any) => {
                 })
             }
             if (StatusInput == 90) {
+                EditData.IsTodaysTask = false;
                 if (EditData.siteType == 'Offshore Tasks') {
                     setWorkingMember(36);
                 } else if (DesignStatus) {
@@ -1482,6 +1486,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (StatusData.value == 80) {
             // let tempArray: any = [];
+            EditData.IsTodaysTask = false;
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
             } else {
@@ -1526,6 +1531,7 @@ const EditTaskPopup = (Items: any) => {
         // }
 
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            EditData.IsTodaysTask = false;
             setWorkingMember(9);
             StatusArray?.map((item: any) => {
                 if (StatusData.value == item.value) {
@@ -1535,6 +1541,7 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         if (StatusData.value == 90) {
+            EditData.IsTodaysTask = false;
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
@@ -3122,7 +3129,7 @@ const EditTaskPopup = (Items: any) => {
                                                         ...EditData, StartDate: date
                                                     })} /> */}
                                                     <label className="form-label full-width" >Start Date</label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
@@ -3132,12 +3139,12 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
-                                                    <div className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                    <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                         />
                                                     </span></div>
 
-                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
@@ -3148,7 +3155,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
                                                     <label className="form-label full-width" > Completed Date </label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
@@ -4166,7 +4173,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control start-date" max="9999-12-31"
+                                                                <input type="date" className="form-control start-date" max="9999-12-31" min="2000-01-01"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -4176,12 +4183,12 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group ">
-                                                                <div className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                                <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                                     <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                                     />
                                                                 </span></div>
 
-                                                                <input type="date" className="form-control due-date" max="9999-12-31"
+                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4192,8 +4199,8 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
-                                                                >Completed Date</label>
-                                                                <input type="date" className="form-control complete-Date " max="9999-12-31"
+                                                                >Completed Date</label> 
+                                                                <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
