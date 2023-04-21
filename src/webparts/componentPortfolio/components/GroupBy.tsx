@@ -86,9 +86,9 @@ function Filter({
     placeholder: any
 }): any {
     const columnFilterValue = column.getFilterValue();
-
+    // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: placeholder?.size }} className="me-1 mb-1 on-search-cross"
+        <input style={{width:"100%"}} className="me-1 mb-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -3519,6 +3519,7 @@ function ComponentTable(SelectedProp: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "ID",
+                size: 15,
                 header: ({ table }: any) => (
                     <>
                         <button className='bg-white border-0'
@@ -3626,7 +3627,7 @@ function ComponentTable(SelectedProp: any) {
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 200,
+                size: 27,
             },
             {
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3642,6 +3643,7 @@ function ComponentTable(SelectedProp: any) {
                 id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: "",
+                size: 15,
             },
             {
                 accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -3653,24 +3655,25 @@ function ComponentTable(SelectedProp: any) {
                 id: 'TeamLeaderUser',
                 placeholder: "Team",
                 header: "",
+                size: 15,
             },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                size: 100,
+                size: 7,
             },
             {
                 accessorKey: "ItemRank",
                 placeholder: "Item Rank",
                 header: "",
-                size: 100,
+                size: 7,
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                size: 100,
+                size: 9,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3684,6 +3687,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3698,6 +3702,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3711,6 +3716,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
 
         ],
@@ -4419,7 +4425,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <tr key={headerGroup.id}>
                                                             {headerGroup.headers.map((header) => {
                                                                 return (
-                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }}>
+                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size+"%" }}>
                                                                         {header.isPlaceholder ? null : (
                                                                             <div className='position-relative' style={{ display: "flex" }}>
                                                                                 {flexRender(
