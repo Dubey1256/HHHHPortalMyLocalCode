@@ -17,7 +17,7 @@ let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-  
+
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -74,6 +74,9 @@ const inlineEditingcolumns = (props: any) => {
         setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
+        if (props?.item?.PercentComplete != undefined) {
+            props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
+        }
         GetSmartMetadata();
     }, [])
     const getPercentCompleteTitle = (percent: any) => {
@@ -105,11 +108,11 @@ const inlineEditingcolumns = (props: any) => {
                 var TaskTypes: any = []
                 var Timing: any = []
                 var Task: any = []
-                let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+                let web = new Web(props?.AllListId?.siteUrl);
                 let MetaData = [];
                 localStorage.setItem("inlineMetaDataLoaded", JSON.stringify(true));
                 MetaData = await web.lists
-                    .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
+                    .getById(props?.AllListId?.SmartMetadataListID)
                     .items.select("Id", "IsVisible", "ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
@@ -318,9 +321,9 @@ const inlineEditingcolumns = (props: any) => {
             DueDate: newDueDate
         })
             .then((res: any) => {
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title","workingThisWeek","IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank","Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
-                .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
-                .getById(props?.item?.Id).get().then((task) => {
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                    .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+                    .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
                         task.siteType = props?.item?.siteType;
                         task.listId = props?.item?.listId;
@@ -651,34 +654,34 @@ const inlineEditingcolumns = (props: any) => {
                         <span className={ServicesTaskCheck ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
                             {props?.item?.Priority_x0020_Rank}
-                                {
-                                    props?.item?.SharewebCategories?.map((category: any) => {
-                                        if (category?.Title == 'Immediate') {
-                                            return (
-                                                <a  title="Immediate">
-                                                    <span className="workmember svg__iconbox svg__icon--alert " ></span>
-                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
-                                                </a>
-                                            )
-                                        }
-                                        if (category?.Title == 'Bottleneck') {
-                                            return (
-                                                <a  title="Bottleneck">
-                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                                                    <span className="workmember svg__iconbox svg__icon--bottleneck" ></span>
-                                                </a>
-                                            )
-                                        }
-                                        if (category?.Title == 'Favorite') {
-                                            return (
-                                                <a  title="Favorite">
-                                                    <span className="workmember svg__iconbox svg__icon--Star" ></span>
-                                                    {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
-                                                </a>
-                                            )
-                                        }
-                                    })
-                                }
+                            {
+                                props?.item?.SharewebCategories?.map((category: any) => {
+                                    if (category?.Title == 'Immediate') {
+                                        return (
+                                            <a title="Immediate">
+                                                <span className="workmember svg__iconbox svg__icon--alert " ></span>
+                                                {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
+                                            </a>
+                                        )
+                                    }
+                                    if (category?.Title == 'Bottleneck') {
+                                        return (
+                                            <a title="Bottleneck">
+                                                {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
+                                                <span className="workmember svg__iconbox svg__icon--bottleneck" ></span>
+                                            </a>
+                                        )
+                                    }
+                                    if (category?.Title == 'Favorite') {
+                                        return (
+                                            <a title="Favorite">
+                                                <span className="workmember svg__iconbox svg__icon--Star" ></span>
+                                                {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
+                                            </a>
+                                        )
+                                    }
+                                })
+                            }
                         </span>
                     </>
                     : ''
@@ -687,29 +690,22 @@ const inlineEditingcolumns = (props: any) => {
                 props?.columnName == 'PercentComplete' ?
                     <>
 
-                        <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena" : ""} onClick={() => openTaskStatusUpdatePopup()}>
+                        <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
                             {/* {props?.item?.PercentComplete} */}
-                            {parseInt(props?.item?.PercentComplete) <= 5 &&
-                                parseInt(props?.item?.PercentComplete) >= 0 ? (
-                                <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="workmember svg__iconbox svg__icon--Ellipse" ></span>
-                                    {/* <img src={require("../../../Assets/ICON/Ellipse.svg")} /> */}
-                                </a>
-                            ) : parseInt(props?.item?.PercentComplete) >= 6 &&
-                                parseInt(props?.item?.PercentComplete) <= 98 ? (
-                                <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30" fill="none">
-                                        <circle cx="15" cy="15" r="14" fill="white" stroke="#414141" stroke-width="2" />
-                                        <path d="M30 15C30 16.9698 29.612 18.9204 28.8582 20.7403C28.1044 22.5601 26.9995 24.2137 25.6066 25.6066C24.2137 26.9995 22.5601 28.1044 20.7403 28.8582C18.9204 29.612 16.9698 30 15 30C13.0302 30 11.0796 29.612 9.25975 28.8582C7.43986 28.1044 5.78628 26.9995 4.3934 25.6066C3.00052 24.2137 1.89563 22.5601 1.14181 20.7403C0.387986 18.9204 -1.72208e-07 16.9698 0 15L15 15L30 15Z" fill="#414141" />
-                                    </svg>
-                                    {/* <img src={require("../../../Assets/ICON/Ellipse-haf.svg")} /> */}
-                                </a>
-                            ) : (
-                                <a className='d-inline-block' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    <span className="workmember svg__iconbox svg__icon--completed" ></span>
-                                    {/* <img src={require("../../../Assets/ICON/completed.svg")} /> */}
-                                </a>
-                            )}
+                            {
+                                (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
+                                    <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                    </a> : (props.item.PercentComplete == 5) ?
+                                        <a className='svg__iconbox svg__icon--Acknowledged' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                        </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
+                                            <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                            </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
+                                                <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}> 
+                                                </a> : (props.item.PercentComplete > 90) ?
+                                                    <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>                              
+                                                    </a> : ''
+
+                            }
                             {
                                 props?.item?.IsTodaysTask ? <>
                                     {
@@ -718,16 +714,14 @@ const inlineEditingcolumns = (props: any) => {
                                                 AllTaskUser?.map((user: any) => {
                                                     if (AssignedUser.Id == user.AssingedToUserId) {
                                                         return (
-                                                            <span className="user_Member_img">
                                                                 <a
-                                                                    href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
+                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
                                                                     target="_blank"
                                                                     data-interception="off"
                                                                     title={user.Title}
                                                                 >
                                                                     <img className="workmember" src={user?.Item_x0020_Cover?.Url}></img>
                                                                 </a>
-                                                            </span>
                                                         )
                                                     }
 
@@ -765,16 +759,16 @@ const inlineEditingcolumns = (props: any) => {
                         <div className='d-flex flex-column mt-2 mb-2'>
                             <span className='m-1'>
                                 <input className='me-1' type="radio" value="Male" name="date" checked={dueDate.selectDateName == 'Today'} onClick={() => duedatechange('Today')} /> Today</span>
-                            <span className='m-1'>        
+                            <span className='m-1'>
                                 <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Tommorow'} onClick={() => duedatechange('Tommorow')} /> Tommorow
                             </span>
-                            <span className='m-1'>        
+                            <span className='m-1'>
                                 <input className='me-1' type="radio" value="Other" name="date" checked={dueDate.selectDateName == 'This Week'} onClick={() => duedatechange('This Week')} /> This Week
                             </span>
-                            <span className='m-1'>        
+                            <span className='m-1'>
                                 <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'Next Week'} onClick={() => duedatechange('Next Week')} /> Next Week
                             </span>
-                            <span className='m-1'>        
+                            <span className='m-1'>
                                 <input className='me-1' type="radio" value="Female" name="date" checked={dueDate.selectDateName == 'This Month'} onClick={() => duedatechange('This Month')} /> This Month
                             </span>
 
