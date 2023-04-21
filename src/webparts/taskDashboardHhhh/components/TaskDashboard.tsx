@@ -47,6 +47,7 @@ const TaskDashboard = (props: any) => {
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
@@ -66,6 +67,7 @@ const TaskDashboard = (props: any) => {
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+            setIsTimeEntry(isShowTimeEntry)
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
         } catch (error: any) {
             console.log(error)
@@ -1757,7 +1759,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 {
-                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true&&AllListId?.isShowTimeEntry==true) ?
+                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true&&isTimeEntry==true) ?
                                         <>
                                             <div>
                                                 <span className='m-1'>
