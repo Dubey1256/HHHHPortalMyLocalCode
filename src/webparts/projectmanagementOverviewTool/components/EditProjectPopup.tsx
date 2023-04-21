@@ -258,10 +258,10 @@ function EditProjectPopup(item: any) {
       let TaskListItem = TaskListsConfiguration.filter(function (
         filterItem: any
       ) {
-        let SiteRelativeUrl = filterItem.siteUrl;
+        let SiteRelativeUrl = filterItem?.siteUrl;
         return (
-          filterItem.Title.toLowerCase() == listName.toLowerCase() &&
-          SiteRelativeUrl.toLowerCase() == listUrl.toLowerCase()
+          filterItem.Title?.toLowerCase() == listName?.toLowerCase() &&
+          SiteRelativeUrl?.toLowerCase() == listUrl?.toLowerCase()
         );
       });
       if (TaskListItem.length > 0) {
@@ -2062,7 +2062,7 @@ function EditProjectPopup(item: any) {
                       </div>
                       <div className="col-sm-4  ">
                         <CommentCard
-                          siteUrl={EditData.siteUrl}
+                          siteUrl={EditData?.siteUrl}
                           userDisplayName={EditData.userDisplayName}
                           listName={EditData.siteType}
                           itemID={EditData.Id}

@@ -37,6 +37,8 @@ var backupTaskArray: any = {
 };
 var AllListId: any = {}
 var selectedInlineTask: any = {};
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
@@ -62,6 +64,12 @@ const TaskDashboard = (props: any) => {
         origin: ''
     });
     React.useEffect(() => {
+        try {
+            isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+            isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+        } catch (error: any) {
+            console.log(error)
+        }
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
@@ -71,7 +79,9 @@ const TaskDashboard = (props: any) => {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl: props?.props?.siteUrl
+            siteUrl: props?.props?.siteUrl,
+            isShowTimeEntry: isShowTimeEntry,
+            isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
         getCurrentUserDetails();
@@ -234,7 +244,7 @@ const TaskDashboard = (props: any) => {
     const currentUserTimeEntry = (start: any) => {
         setSelectedTimeReport(start)
         let startDate = getStartingDate(start);
-        startDate=new Date(startDate.setHours(0,0,0,0));
+        startDate = new Date(startDate.setHours(0, 0, 0, 0));
         let weekTimeEntries: any = [];
         AllTaskTimeEntries?.map((timeEntry: any) => {
             if (timeEntry?.AdditionalTimeEntry != undefined) {
@@ -410,7 +420,7 @@ const TaskDashboard = (props: any) => {
             })
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team'||childItem?.AssingedToUserId==182) && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team' || childItem?.AssingedToUserId == 182) && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
                     currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }

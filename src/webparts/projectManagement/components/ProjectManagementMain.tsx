@@ -31,6 +31,8 @@ var siteConfig: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
 var DataSiteIcon: any = [];
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
   const [icon, seticon] = React.useState(false);
@@ -62,6 +64,12 @@ const ProjectManagementMain = (props: any) => {
   });
 
   React.useEffect(() => {
+    try {
+      isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+      isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+    } catch (error: any) {
+      console.log(error)
+    }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
       TaskUsertListID: props?.props?.TaskUsertListID,
@@ -71,7 +79,9 @@ const ProjectManagementMain = (props: any) => {
       DocumentsListID: props?.props?.DocumentsListID,
       SmartInformationListID: props?.props?.SmartInformationListID,
       siteUrl: props?.props?.siteUrl,
-      AdminConfigrationListID:props?.props?.AdminConfigrationListID
+      AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+      isShowTimeEntry: isShowTimeEntry,
+      isShowSiteCompostion: isShowSiteCompostion
     }
     getQueryVariable((e: any) => e);
     GetMasterData();
@@ -103,18 +113,18 @@ const ProjectManagementMain = (props: any) => {
   const loadTaskUsers = async () => {
     let taskUser;
     try {
-        let web = new Web(AllListId?.siteUrl);
-        taskUser = await web.lists
-            .getById(AllListId?.TaskUsertListID)
-            .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
-            .get();
+      let web = new Web(AllListId?.siteUrl);
+      taskUser = await web.lists
+        .getById(AllListId?.TaskUsertListID)
+        .items
+        .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+        .get();
     }
     catch (error) {
-        return Promise.reject(error);
+      return Promise.reject(error);
     }
     return taskUser;
-}
+  }
 
   const GetMasterData = async () => {
     if (AllListId?.MasterTaskListID != undefined) {
@@ -206,7 +216,7 @@ const ProjectManagementMain = (props: any) => {
       LoadAllSiteTasks();
     } else {
       alert('Smart Metadata List Id not present')
-      siteConfig=[];
+      siteConfig = [];
     }
   };
 
@@ -245,7 +255,7 @@ const ProjectManagementMain = (props: any) => {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const loadAdminConfigurations = async () => {
-    if(AllListId?.AdminConfigrationListID!=undefined){
+    if (AllListId?.AdminConfigrationListID != undefined) {
       var CurrentSiteType = "";
       let web = new Web(props?.siteUrl);
       await web.lists
@@ -266,9 +276,9 @@ const ProjectManagementMain = (props: any) => {
           },
           function (error) { }
         );
-    }else{
+    } else {
       alert('Admin Configration List Id not present')
-      DataSiteIcon=[];
+      DataSiteIcon = [];
     }
   };
   const tagAndCreateCallBack = React.useCallback(() => {
@@ -287,115 +297,115 @@ const ProjectManagementMain = (props: any) => {
   }, []);
   const LoadAllSiteTasks = function () {
     loadAdminConfigurations();
-   if(siteConfig?.length>0){
-    var AllTask: any = [];
-    var query =
-      "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-    var Counter = 0;
-    let web = new Web(props?.siteUrl);
-    var arraycount = 0;
-    siteConfig.map(async (config: any) => {
-      if (config.Title != "SDC Sites") {
-        let smartmeta = [];
-        smartmeta = await web.lists
-          .getById(config.listId)
-          .items.select(
-            "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
-          )
-          .top(4999)
-          .filter("ProjectId eq " + QueryId)
-          .orderBy("Priority_x0020_Rank", false)
-          .expand(
-            "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType"
-          )
-          .get();
-        arraycount++;
-        smartmeta.map((items: any) => {
-          items.AllTeamMember = [];
-          items.siteType = config.Title;
-          items.listId = config.listId;
-          items.siteUrl = config.siteUrl.Url;
-          items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-          items.DisplayDueDate =
-            items.DueDate != null
-              ? Moment(items.DueDate).format("DD/MM/YYYY")
-              : "";
-          items.DisplayCreateDate =
-            items.Created != null
-              ? Moment(items.Created).format("DD/MM/YYYY")
-              : "";
-          items.portfolio = {};
-          if (items?.Component?.length > 0) {
-            items.portfolio = items?.Component[0];
-            items.PortfolioTitle = items?.Component[0]?.Title;
-            items["Portfoliotype"] = "Component";
-          }
-          if (items?.Services?.length > 0) {
-            items.portfolio = items?.Services[0];
-            items.PortfolioTitle = items?.Services[0]?.Title;
-            items["Portfoliotype"] = "Service";
-          }
-          if (DataSiteIcon != undefined) {
-            DataSiteIcon.map((site: any) => {
-              if (site.Site == items.siteType) {
-                items["siteIcon"] = site.SiteIcon;
-              }
-            });
-          }
-
-          items.TeamMembersSearch = "";
-          if (items.AssignedTo != undefined) {
-            items?.AssignedTo?.map((taskUser: any) => {
-              AllUser.map((user: any) => {
-                if (user.AssingedToUserId == taskUser.Id) {
-                  if (user?.Title != undefined) {
-                    items.TeamMembersSearch =
-                      items.TeamMembersSearch + " " + user?.Title;
-                  }
+    if (siteConfig?.length > 0) {
+      var AllTask: any = [];
+      var query =
+        "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+      var Counter = 0;
+      let web = new Web(props?.siteUrl);
+      var arraycount = 0;
+      siteConfig.map(async (config: any) => {
+        if (config.Title != "SDC Sites") {
+          let smartmeta = [];
+          smartmeta = await web.lists
+            .getById(config.listId)
+            .items.select(
+              "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+            )
+            .top(4999)
+            .filter("ProjectId eq " + QueryId)
+            .orderBy("Priority_x0020_Rank", false)
+            .expand(
+              "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType"
+            )
+            .get();
+          arraycount++;
+          smartmeta.map((items: any) => {
+            items.AllTeamMember = [];
+            items.siteType = config.Title;
+            items.listId = config.listId;
+            items.siteUrl = config.siteUrl.Url;
+            items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+            items.DisplayDueDate =
+              items.DueDate != null
+                ? Moment(items.DueDate).format("DD/MM/YYYY")
+                : "";
+            items.DisplayCreateDate =
+              items.Created != null
+                ? Moment(items.Created).format("DD/MM/YYYY")
+                : "";
+            items.portfolio = {};
+            if (items?.Component?.length > 0) {
+              items.portfolio = items?.Component[0];
+              items.PortfolioTitle = items?.Component[0]?.Title;
+              items["Portfoliotype"] = "Component";
+            }
+            if (items?.Services?.length > 0) {
+              items.portfolio = items?.Services[0];
+              items.PortfolioTitle = items?.Services[0]?.Title;
+              items["Portfoliotype"] = "Service";
+            }
+            if (DataSiteIcon != undefined) {
+              DataSiteIcon.map((site: any) => {
+                if (site.Site == items.siteType) {
+                  items["siteIcon"] = site.SiteIcon;
                 }
-              });
-            });
-          }
-          items.componentString =
-            items.Component != undefined &&
-              items.Component != undefined &&
-              items.Component.length > 0
-              ? getComponentasString(items.Component)
-              : "";
-          items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
-          AllUser?.map((user: any) => {
-            if (items.Team_x0020_Members != undefined) {
-              items.Team_x0020_Members.map((taskUser: any) => {
-                var newuserdata: any = {};
-                if (user.AssingedToUserId == items.Author.Id) {
-                  items.createdImg = user?.Item_x0020_Cover?.Url;
-                }
-                if (user.AssingedToUserId == taskUser.Id) {
-                  newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
-                  newuserdata["Suffix"] = user?.Suffix;
-                  newuserdata["Title"] = user?.Title;
-                  newuserdata["UserId"] = user?.AssingedToUserId;
-                  items["Usertitlename"] = user?.Title;
-                }
-                items.AllTeamMember.push(newuserdata);
               });
             }
+
+            items.TeamMembersSearch = "";
+            if (items.AssignedTo != undefined) {
+              items?.AssignedTo?.map((taskUser: any) => {
+                AllUser.map((user: any) => {
+                  if (user.AssingedToUserId == taskUser.Id) {
+                    if (user?.Title != undefined) {
+                      items.TeamMembersSearch =
+                        items.TeamMembersSearch + " " + user?.Title;
+                    }
+                  }
+                });
+              });
+            }
+            items.componentString =
+              items.Component != undefined &&
+                items.Component != undefined &&
+                items.Component.length > 0
+                ? getComponentasString(items.Component)
+                : "";
+            items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+            AllUser?.map((user: any) => {
+              if (items.Team_x0020_Members != undefined) {
+                items.Team_x0020_Members.map((taskUser: any) => {
+                  var newuserdata: any = {};
+                  if (user.AssingedToUserId == items.Author.Id) {
+                    items.createdImg = user?.Item_x0020_Cover?.Url;
+                  }
+                  if (user.AssingedToUserId == taskUser.Id) {
+                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                    newuserdata["Suffix"] = user?.Suffix;
+                    newuserdata["Title"] = user?.Title;
+                    newuserdata["UserId"] = user?.AssingedToUserId;
+                    items["Usertitlename"] = user?.Title;
+                  }
+                  items.AllTeamMember.push(newuserdata);
+                });
+              }
+            });
+            AllTask.push(items);
           });
-          AllTask.push(items);
-        });
-        if (arraycount === 17) {
-          setAllTasks(AllTask);
-          setData(AllTask);
-          backupAllTasks = AllTask;
-          console.log("this is main tabke data ", AllTask);
+          if (arraycount === 17) {
+            setAllTasks(AllTask);
+            setData(AllTask);
+            backupAllTasks = AllTask;
+            console.log("this is main tabke data ", AllTask);
+          }
+        } else {
+          arraycount++;
         }
-      } else {
-        arraycount++;
-      }
-    });
-   }else {
-    alert('Site Config Length less than 0')
-   }
+      });
+    } else {
+      alert('Site Config Length less than 0')
+    }
   };
   const getComponentasString = function (results: any) {
     var component = "";
@@ -438,7 +448,7 @@ const ProjectManagementMain = (props: any) => {
     seticon(!icon)
   }
   const TagPotfolioToProject = async () => {
-    if (Masterdata?.Id != undefined&&AllListId?.MasterTaskListID!= undefined) {
+    if (Masterdata?.Id != undefined && AllListId?.MasterTaskListID != undefined) {
       let selectedComponent: any[] = [];
       if (smartComponentData !== undefined && smartComponentData.length > 0) {
         $.each(smartComponentData, function (index: any, smart: any) {
