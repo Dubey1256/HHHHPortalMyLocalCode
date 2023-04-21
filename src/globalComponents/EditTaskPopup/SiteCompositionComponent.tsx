@@ -42,6 +42,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
+    const [checkBoxStatus, setCheckBoxStatus] = useState(false)
 
     const SiteCompositionObject: any = {
         ClientTime: [],
@@ -96,10 +97,11 @@ const SiteCompositionComponent = (Props: any) => {
             setSiteTypes(tempData2);
         }
 
-        if(isPortfolioConncted){
-            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-            SiteCompositionSettings[0] = object;
-        }
+        // if (isPortfolioConncted && SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
+        //     const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
+        //     SiteCompositionSettings[0] = object;
+        //     setCheckBoxStatus(true);
+        // }
 
         if (SiteCompositionSettings != undefined && SiteCompositionSettings.length > 0) {
             if (SiteCompositionSettings[0].Proportional) {
@@ -110,6 +112,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
             if (SiteCompositionSettings[0].Portfolio) {
                 setIsPortfolioComposition(true);
+                setCheckBoxStatus(true)
             }
         }
     }, [])
@@ -180,18 +183,22 @@ const SiteCompositionComponent = (Props: any) => {
                 SiteCompositionObject.ClientTime = tempData;
                 callBack(SiteCompositionObject);
                 setIsPortfolioComposition(false);
+                // setCheckBoxStatus(false);
             }
             if (Type == "Manual") {
                 const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
                 SiteCompositionSettings[0] = object;
                 setProportionalStatus(false);
                 setIsPortfolioComposition(false);
+                // setCheckBoxStatus(false);
             }
             if (Type == "Portfolio") {
                 const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
                 SiteCompositionSettings[0] = object;
                 setIsPortfolioComposition(true);
                 setProportionalStatus(true);
+                setCheckBoxStatus(true);
+                // setCheckBoxStatus(true);
             }
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
             callBack(SiteCompositionObject);
@@ -556,8 +563,8 @@ const SiteCompositionComponent = (Props: any) => {
                                                     className="form-check-input rounded-0" type="checkbox"
                                                     defaultChecked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
-                                                    disabled={isPortfolioComposition}
-                                                    style={isPortfolioComposition ? { cursor: "not-allowed" } : {}}
+                                                    disabled={checkBoxStatus ? true : false}
+                                                    style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
                                                 />
                                             </th>
@@ -626,7 +633,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                                     </a>
                                                                     : null
-                                                            }
+                                                            }     
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">
