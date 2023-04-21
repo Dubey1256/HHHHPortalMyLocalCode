@@ -8,6 +8,7 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
+import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo:any=[];
 let hhhsmartinfoId: any = [];
 const SmartInformation = (props: any) => {
@@ -15,7 +16,7 @@ const SmartInformation = (props: any) => {
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformation, setsmartInformation] = useState(true);
   const [allValue, setallSetValue] = useState({
-    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "",LinkTitle:"",LinkUrl:"",taskTitle:""
+    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "",LinkTitle:"",LinkUrl:"",taskTitle:"",Dragdropdoc:"",emailDragdrop:""
   })
   const [uplodDoc, setUploaddoc] = useState(null);
   const [PostSmartInfo, setPostSmartInfo] = useState(null);
@@ -28,16 +29,19 @@ const SmartInformation = (props: any) => {
   const [editvalue, seteditvalue] = useState(null);
   const [SelectedTilesTitle, setSelectedTilesTitle] = useState("");
   const [smartDocumentpostData, setsmartDocumentpostData] = useState(null);
-  // const [AllTasktagsmartinfo, setAllTasktagsmartinfo] = useState([]);
-
+  const [EditdocumentsData, setEditdocumentsData] = useState(null);
+  const [Editdocpanel, setEditdocpanel] = useState(false);
   const handleClose = () => {
     setpopupEdit(false);
     setshowAdddocument(false);
     setSelectedTilesTitle("")
     setShow(false);
     seteditvalue(null);
-    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "" ,LinkTitle:"",LinkUrl:"",taskTitle:""});
+    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "" ,LinkTitle:"",LinkUrl:"",taskTitle:"",Dragdropdoc:"",emailDragdrop:""});
 
+  }
+  const handleClosedoc=()=>{
+    setEditdocpanel(false)
   }
   const handleShow = async (item: any, value: any) => {
 
@@ -58,6 +62,7 @@ const SmartInformation = (props: any) => {
 
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
+    AllTasktagsmartinfo=[];
     let web = new Web(props.siteurl);
     let taskDetails: any = [];
 
@@ -203,11 +208,27 @@ const SmartInformation = (props: any) => {
     console.log(items);
     setallSetValue({ ...allValue, Description: items })
   }
-  // set infoType function 
+
+  // ============set infoType function ==============
+
   const InfoType = (InfoType: any) => {
     setallSetValue({ ...allValue, InfoType: InfoType })
   }
-  const onRenderCustomHeader = () => {
+
+  //=========pannel header for smartinformation  post and edit ===================
+  const onRenderCustomHeadersmartinfo = () => {
+    return (
+      <>
+
+        <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+          {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
+        </div>
+        <Tooltip ComponentId='993' />
+      </>
+    );
+  };
+  //=========pannel header for documents upload and edit  ===================
+  const onRenderCustomHeaderDocuments = () => {
     return (
       <>
 
@@ -267,7 +288,7 @@ const SmartInformation = (props: any) => {
       let postdata = {
         Title: allValue.Title != null ? allValue?.Title : "",
         Acronym: allValue.Acronym != null ? allValue?.Acronym : "",
-        InfoTypeId: metaDataId,
+        InfoTypeId: metaDataId!=undefined?metaDataId:null,
         Description: allValue.Description != null ? allValue?.Description : "",
         SelectedFolder: allValue.SelectedFolder,
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
@@ -280,7 +301,7 @@ const SmartInformation = (props: any) => {
       }
 
 
-      //=============edit the data call ===============
+      //=============edit the data  save function   ===============
 
       if (popupEdit) {
         // await web.lists.getByTitle("SmartInformation")
@@ -292,6 +313,7 @@ const SmartInformation = (props: any) => {
                 .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
               console.log(movedata);
             }
+            GetResult();
             handleClose();
           })
           .catch((error: any) => {
@@ -321,9 +343,9 @@ const SmartInformation = (props: any) => {
               }
             ).then(async (data: any) => {
               console.log(data);
-
-              handleClose();
               GetResult();
+              handleClose();
+             
 
             }).catch((err) => {
               console.log(err.message);
@@ -422,7 +444,7 @@ if(folderName!=""){
   var libraryName = "Documents";
   var newFolderResult = await sp.web.rootFolder.folders.getByName(libraryName).folders.add(folderName);
   console.log("Four folders created",newFolderResult);
-  alert("folders created");
+
 }
  
     uploadDocumentFinal(folderName);
@@ -486,6 +508,7 @@ if(folderName!=""){
         // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
       });
       console.log(updatedItem)
+      alert("Document(s) upload successfully");
       handleClose();
       GetResult();
     setshowAdddocument(false)
@@ -498,7 +521,8 @@ if(folderName!=""){
   //==========create Task function============
    const creatTask=async()=>{
     console.log(props.listName)
-    const web = new Web(props.siteurl)
+    if(allValue.taskTitle!=null){
+      const web = new Web(props.siteurl)
       await web.lists.getByTitle(props.listName).items.add(
             {
              Title:allValue.taskTitle,
@@ -508,14 +532,25 @@ if(folderName!=""){
       )
      .then((res:any)=>{
        console.log(res);
+       alert("task created")
       //  GetAllTask(712)
-       GetResult();
+      GetResult();
        handleClose();
        setshowAdddocument(false)
      })
      .catch((err) => {
        console.log(err.message);
     });
+    }else{
+      alert("please Mention Task Title")
+    }
+    
+   }
+
+   //======================= Edit documents function ===================
+   const editDocuments=(editData:any)=>{
+    setEditdocpanel(true);
+    console.log(editData)
    }
 
 
@@ -547,7 +582,7 @@ if(folderName!=""){
     for (var i = 0; i < files.length; i++) {
       console.log("Filename: " + files[i]?.name);
       console.log("Path: " + files[i]?.fullPath);
-      setallSetValue({ ...allValue, fileupload: files[i]?.name });
+      setallSetValue({ ...allValue, Dragdropdoc: files[i]?.name });
 
     }
   }
@@ -562,7 +597,7 @@ if(folderName!=""){
         {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
           return (
             <>
-              <div className='border dropdown shadow'>
+              <div className='border dropdown mt-2 shadow'>
                 <div className='bg-ee d-flex py-1 '>
                   <span className='full-width'>
                     <a onClick={showhideComposition}>
@@ -580,7 +615,7 @@ if(folderName!=""){
                 </div>
 
                 <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformation ? 'block' : 'none' }}>
-                  <div className="ps-3" dangerouslySetInnerHTML={{ __html: SmartInformation?.Description }}></div>
+                  <div className="ps-3" dangerouslySetInnerHTML={{ __html: SmartInformation?.Description!=null?SmartInformation?.Description:"No description available"}}></div>
                   {SmartInformation?.TagDocument!=undefined && SmartInformation?.TagDocument.length>0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
                         <div className='card-body p-1 bg-ee mt-1'>
@@ -605,7 +640,7 @@ if(folderName!=""){
                                  {item.Url!=null&& <span><a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.FileLeafRef}</span></a></span>}
                                 </li>
                                 <li className='d-end'>
-                                  <span title="Edit" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                  <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={()=>editDocuments(item)}></span>
                                   </li>
                                 
                                 </ul>
@@ -617,7 +652,7 @@ if(folderName!=""){
           <div className='card-body p-1 bg-ee mt-1'>
           <ul  className='alignCenter list-none'>
            <li>
-          <span><a href= {`${props.siteurl}/SitePages/Task-Profile.aspx?taskId=${tagtask.Id}&Site=${props.listName}`}><span  className='svg__iconbox svg__icon--Task.'></span></a></span>
+          <span><a href= {`${props.siteurl}/SitePages/Task-Profile.aspx?taskId=${tagtask.Id}&Site=${props.listName}`}><span  className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
            </li>
           <li>
               <span className='px-2'><a href={`${props.siteurl}/SitePages/Task-Profile.aspx?taskId=${tagtask.Id}&Site=${props.listName}`}>{tagtask.Title}</a></span>
@@ -644,8 +679,9 @@ if(folderName!=""){
 
 
       </div>
+                 {/* ================= smartInformation add and edit panel=========== */}
 
-      <Panel onRenderHeader={onRenderCustomHeader}
+      <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
         isOpen={show}
         type={PanelType.custom}
         customWidth="1091px"
@@ -690,7 +726,7 @@ if(folderName!=""){
             </div>}
           </div>
         </div>
-        <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != "" ? allValue.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+        <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">
@@ -715,8 +751,9 @@ if(folderName!=""){
       </Panel>
 
 
+      {/* ================ upload documents panel=========== */}
 
-      <Panel onRenderHeader={onRenderCustomHeader}
+      <Panel onRenderHeader={onRenderCustomHeadersmartinfo}
         isOpen={showAdddocument}
         type={PanelType.custom}
         customWidth="1091px"
@@ -755,14 +792,7 @@ if(folderName!=""){
               </p>
               <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Task.png" title="Tasks" data-themekey="#" />
             </a>
-            {/* <a className="tile ng-scope ng-hide" ng-show="CurrentSiteUrl=='GmBH'" onClick={()=>SelectedTiles('Contact')}>
-                            <span>
-                                Contact
-                                <div className="col-sm-12">
-                                    <img src="https://hhhhteams.sharepoint.com/sites/Joint/SiteCollectionImages/Tiles/Tile_Contactinfo.png" className="d-block" title="Contacts" data-themekey="#"/>
-                                </div>
-                            </span>
-                        </a> */}
+           
           </div>
 
           {SelectedTilesTitle === "UploadDocument" && <div className='mt-2'>
@@ -774,8 +804,8 @@ if(folderName!=""){
               iconName="Upload"
             //labelMessage= "My custom upload File"
             >
-              <div className='BorderDas py-5 px-2 text-center'> {allValue.fileupload == "" && <span>Drag and drop here...</span>}
-                <span>{allValue.fileupload != "" ? allValue.fileupload : ""}</span>
+              <div className='BorderDas py-5 px-2 text-center'> {allValue.Dragdropdoc == "" && <span>Drag and drop here...</span>}
+                <span>{allValue.Dragdropdoc != "" ? allValue.Dragdropdoc : ""}</span>
               </div>
 
             </DragDropFiles>
@@ -785,7 +815,8 @@ if(folderName!=""){
               </div>
               <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue.fileupload != "" ? allValue.fileupload : ""}></input></div>
             </div>
-            <div className='mt-2 text-end' ><button className='btn  text-end btn btn-primary 'onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button> 
+            <div className='mt-2 text-end' >
+              <button className='btn btn-primary mx-3 text-end 'onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button> 
              <Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>
               Cancel
             </Button> </div>
@@ -799,8 +830,8 @@ if(folderName!=""){
             iconName="Upload"
             labelMessage="Drag and drop here..."
           >
-            <div className='BorderDas py-5 px-2 text-center'> {allValue.fileupload == "" && <span>Drag and drop here...</span>}
-              <span>{allValue.fileupload != "" ? allValue.fileupload : ""}</span>
+            <div className='BorderDas py-5 px-2 text-center'> {allValue.emailDragdrop == "" && <span>Drag and drop here...</span>}
+              <span>{allValue.emailDragdrop != "" ? allValue.emailDragdrop : ""}</span>
             </div>
            </DragDropFiles>
            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>Cancel</Button></div>
@@ -829,6 +860,32 @@ if(folderName!=""){
                </div>}
         </div>
 
+      </Panel>
+
+       {/* ===============edit  uploaded documents data panel============== */}
+       <Panel onRenderHeader={onRenderCustomHeaderDocuments}
+        isOpen={Editdocpanel}
+        type={PanelType.custom}
+        customWidth="1091px"
+        onDismiss={handleClosedoc}>
+          <div>
+          <ul className="nav nav-tabs" id="myTab" role="tablist">
+          <li className="nav-item" role="presentation">
+    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+    </li>
+    <li className="nav-item" role="presentation">
+    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+    </li>
+      <li className="nav-item" role="presentation">
+    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+     </li>
+     </ul>
+    <div className="tab-content" id="myTabContent">
+    <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">...</div>
+     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+       </div>
+          </div>
       </Panel>
     </div>
   )
