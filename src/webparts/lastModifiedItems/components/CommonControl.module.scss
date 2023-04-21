@@ -6,25 +6,22 @@
 .pivotControl {
     margin-top: -4px;
     div[role="tablist"] {
-        white-space:pre-wrap;
-        
+        border: 1px solid #7f7f7f;
+        border-radius: 12px;
+        padding: 1px;
     }
     button {
-        padding: 2px 12px 3px;
-        // height: 25px;
+        padding: 2px 8px 3px;
+        height: 25px;
         cursor: pointer;
-        font-weight: 600;
         text-align: center;
         border-radius: 10px;
         background-clip: padding-box;
         overflow: hidden;
         text-overflow: ellipsis;
         border: 1px solid transparent!important;
-        font-size: 14px;
+        font-size: 13px;
         margin-right: 0px;
-        border: 1px solid #ccc !important;
-        background-color: #ffffff !important;
-        background-image: -webkit-linear-gradient(top,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.05) 20%,rgba(0,0,0,0.05) 100%) !important;
         &:hover {
             background-color: lightgrey;
             border-color: lightgrey;
@@ -32,8 +29,8 @@
         &[aria-selected="true"] {
             background-color: #0078d4;
             border-color: #0078d4;
-            color: #000;
-            fill: #000;
+            color: #fff;
+            fill: #fff;
         }
     }
 }
@@ -56,14 +53,14 @@
     font-size: 16px;
 }
 .secTitleContainer {
-    // display: flex;
+    display: flex;
     padding-bottom: 10px;
     .title {
         font-size: 18px;
         font-weight: bold;
-        // display: flex; 
-        // width: auto; 
-        // margin: 0 auto;
+        display: flex; 
+        width: auto; 
+        margin: 0 auto;
     }
 }
 
