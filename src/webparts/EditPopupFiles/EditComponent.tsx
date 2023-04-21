@@ -2883,7 +2883,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       {EditData?.ID ? (
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
-                          listId={RequireData.MasterTask}
+                          listId={RequireData.MasterTaskListID}
+                          siteUrls={RequireData.siteUrl}
                         />
                       ) : (
                         ""
