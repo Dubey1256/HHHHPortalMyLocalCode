@@ -80,7 +80,7 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a className='hreflink' href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
