@@ -234,6 +234,7 @@ const TaskDashboard = (props: any) => {
     const currentUserTimeEntry = (start: any) => {
         setSelectedTimeReport(start)
         let startDate = getStartingDate(start);
+        startDate=new Date(startDate.setHours(0,0,0,0));
         let weekTimeEntries: any = [];
         AllTaskTimeEntries?.map((timeEntry: any) => {
             if (timeEntry?.AdditionalTimeEntry != undefined) {
@@ -409,7 +410,7 @@ const TaskDashboard = (props: any) => {
             })
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team'||childItem?.AssingedToUserId==182) && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
                     currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }

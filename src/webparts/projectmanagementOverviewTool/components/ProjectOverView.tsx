@@ -11,10 +11,8 @@ import {
 
 } from 'react-table';
 import { Filter, DefaultColumnFilter } from './filters';
-import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
-import { Modal } from 'office-ui-fabric-react';
 import AddProject from './AddProject'
 import EditProjectPopup from './EditProjectPopup';
 import InlineEditingcolumns from './inlineEditingcolumns';
@@ -26,16 +24,10 @@ export default function ProjectOverview(props: any) {
     const [listIsVisible, setListIsVisible] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [AllTaskUser, setAllTaskUser] = React.useState([]);
-    const [AssignedTaskUser, SetAssignedTaskUser] = React.useState({ Title: '' });
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [searchedNameData, setSearchedDataName] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [AllTasks, setAllTasks]: any = React.useState([]);
-    const [inputStatus, setInputStatus] = React.useState(false);
-    const [EditmodalIsOpen, setEditmodalIsOpen] = React.useState(false);
-    const [AddmodalIsOpen, setAddmodalIsOpen] = React.useState(false);
-    // const [Masterdata,setMasterdata] = React.useState([])
-    //const [QueryId, setQueryId] = React.useState()
     React.useEffect(() => {
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
@@ -63,19 +55,22 @@ export default function ProjectOverview(props: any) {
         $(' #SpfxProgressbar').hide();
     }
     const TaskUser = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUser = [];
-        taskUser = await web.lists
-            .getById('b318ba84-e21d-4876-8851-88b94b9dc300')
-            .items
-            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
-            .top(5000)
-            .expand("AssingedToUser,Approver")
-            .get();
-        setAllTaskUser(taskUser);
-        AllTaskUsers = taskUser;
+        if (AllListId?.TaskUsertListID != undefined) {
+            let web = new Web(AllListId?.siteUrl);
+            let taskUser = [];
+            taskUser = await web.lists
+                .getById(AllListId?.TaskUsertListID)
+                .items
+                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name")
+                .top(5000)
+                .expand("AssingedToUser,Approver")
+                .get();
+            setAllTaskUser(taskUser);
+            AllTaskUsers = taskUser;
+        } else {
+            alert('Task User List Id not available')
+        }
         // console.log("all task user =====", taskUser)
-        setSearchedDataName(taskUser)
     }
     const columns = React.useMemo(
         () => [
@@ -85,7 +80,7 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a className='hreflink' href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a className='hreflink' href={`${props?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -179,7 +174,7 @@ export default function ProjectOverview(props: any) {
     };
 
     const EditComponentPopup = (item: any) => {
-        item['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+        item['siteUrl'] = `${props?.siteUrl}`;
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);
@@ -187,40 +182,45 @@ export default function ProjectOverview(props: any) {
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const GetMasterData = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUsers: any = [];
-        let Alltask: any = [];
-        // var AllUsers: any = []
-        Alltask = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-            .select("Deliverables,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title, Approver/Id, Approver/Title").expand("Approver,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();
-
-        // if(taskUsers.ItemType=="Project"){
-        // taskUsers.map((item: any) => {
-        //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
-        //         Alltask.push(item)
-        //     }
-        Alltask.map((items: any) => {
-            items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-            items.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
-            items.listId = 'EC34B38F-0669-480A-910C-F84E92E58ADF';
-            items.AssignedUser = []
-            items.TeamMembersSearch = '';
-            if (items.AssignedTo != undefined) {
-                items.AssignedTo.map((taskUser: any) => {
-                    AllTaskUsers.map((user: any) => {
-                        if (user.AssingedToUserId == taskUser.Id) {
-                            if (user?.Title != undefined) {
-                                items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
+        if(AllListId?.MasterTaskListID!=undefined){
+            let web = new Web(`${AllListId?.siteUrl}`);
+            let taskUsers: any = [];
+            let Alltask: any = [];
+            // var AllUsers: any = []
+            Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
+                .select("Deliverables,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title").expand("ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();
+    
+            // if(taskUsers.ItemType=="Project"){
+            // taskUsers.map((item: any) => {
+            //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
+            //         Alltask.push(item)
+            //     }
+            Alltask.map((items: any) => {
+                items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+                items.siteUrl = props?.siteUrl;
+                items.listId = AllListId?.MasterTaskListID;
+                items.AssignedUser = []
+                items.TeamMembersSearch = '';
+                if (items.AssignedTo != undefined) {
+                    items.AssignedTo.map((taskUser: any) => {
+                        AllTaskUsers.map((user: any) => {
+                            if (user.AssingedToUserId == taskUser.Id) {
+                                if (user?.Title != undefined) {
+                                    items.TeamMembersSearch = items.TeamMembersSearch + ' ' + user?.Title
+                                }
                             }
-                        }
+                        })
                     })
-                })
-            }
-            items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
-        })
-        // })
-        setAllTasks(Alltask);
-        setData(Alltask);
+                }
+                items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+            })
+            // })
+            setAllTasks(Alltask);
+            setData(Alltask);
+        }else{
+            alert('Master Task List Id Not Available')
+        }
+        
     }
     //    Save data in master task list
     const [title, settitle] = React.useState('')
@@ -246,7 +246,7 @@ export default function ProjectOverview(props: any) {
                         <div className='header-section justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
                             <div className="text-end">
-                                <AddProject CallBack={CallBack} />
+                                <AddProject CallBack={CallBack} AllListId={AllListId}/>
                             </div>
                         </div>
                         <div>

@@ -195,9 +195,9 @@ function EditProjectPopup(item: any) {
     return isExists;
   };
   const GetTaskUsers = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(item?.AllListId?.siteUrl);
     let taskUsers = [];
-    taskUsers = await web.lists.getByTitle("Task Users").items.top(4999).get();
+    taskUsers = await web.lists.getById(item?.AllListId?.TaskUsertListID).items.top(4999).get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -300,12 +300,12 @@ function EditProjectPopup(item: any) {
 
   var getMasterTaskListTasks = async function () {
     //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(item?.AllListId?.siteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       // .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(item?.AllListId?.MasterTaskListID)
       .items.select(
         "ComponentCategory/Id",
         "ComponentCategory/Title",
@@ -544,17 +544,17 @@ function EditProjectPopup(item: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
-      item.siteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+      item.siteUrl =item?.AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
               item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+              item?.AllListId?.siteUrl,
               undefined
             )
           : GetIconImageUrl(
               item.siteType,
-              "https://hhhhteams.sharepoint.com/sites/HHHH/SP/",
+              item?.AllListId?.siteUrl,
               undefined
             );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
@@ -583,11 +583,11 @@ function EditProjectPopup(item: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(item?.AllListId?.siteUrl);
     let smartmetaDetails = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("SmartMetadata")
+      .getById(item?.AllListId?.SmartMetadataListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
@@ -633,7 +633,7 @@ function EditProjectPopup(item: any) {
         GetSmartmetadata();
 
         ListId = "ec34b38f-0669-480a-910c-f84e92e58adf";
-        CurrentSiteUrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/";
+        CurrentSiteUrl = item?.AllListId?.siteUrl;
         TaskItemRank.push([
           { rankTitle: "Select Item Rank", rank: null },
           { rankTitle: "(8) Top Highlights", rank: 8 },
@@ -661,11 +661,11 @@ function EditProjectPopup(item: any) {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(item?.AllListId?.siteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-      .getByTitle("Master Tasks")
+      .getById(item?.AllListId?.MasterTaskListID)
       .items//.getById(this.state.itemID)
       .select(
         "ID",
@@ -1082,9 +1082,9 @@ function EditProjectPopup(item: any) {
       var ItemRank = SharewebItemRank.filter(
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(item?.AllListId?.siteUrl);
     await web.lists
-      .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+      .getById(item?.AllListId?.MasterTaskListID)
       .items.getById(Items.ID)
       .update({
         Title: Items.Title,
@@ -1295,7 +1295,7 @@ function EditProjectPopup(item: any) {
     Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
     siteUrl: TeamConfigInfo
       ? TeamConfigInfo.siteUrl
-      : "https://hhhhteams.sharepoint.com/sites/HHHH/SP",
+      :item?.AllListId?.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
   };
@@ -1333,9 +1333,9 @@ function EditProjectPopup(item: any) {
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(item?.AllListId?.siteUrl);
       await web.lists
-        .getByTitle("Master Tasks")
+        .getById(item?.AllListId?.MasterTaskListID)
         .items.getById(item.props.Id)
         .recycle()
         .then((i) => {
@@ -1534,14 +1534,14 @@ function EditProjectPopup(item: any) {
                                                         color: "#fff !important",
                                                       }}
                                                       target="_blank"
-                                                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                                      href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                                     >
                                                       {com.Title}
                                                     </a>
                                                     <a>
                                                       <img
                                                         className="mx-2"
-                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                        src={`${item?.AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                         onClick={() =>
                                                           unTagComponent(
                                                             smartComponentData,
@@ -1597,12 +1597,12 @@ function EditProjectPopup(item: any) {
                                                       className="hreflink "
                                                       target="_blank"
                                                       data-interception="off"
-                                                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                                      href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                                     >
                                                       {com.Title}
                                                     </a>
                                                     <img
-                                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                      src={`${item?.AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                       onClick={() =>
                                                         unTagService(
                                                           linkedComponentData,
@@ -1853,12 +1853,12 @@ function EditProjectPopup(item: any) {
                                                       }}
                                                       target="_blank"
                                                       data-interception="off"
-                                                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
+                                                      href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
                                                     >
                                                       {type.Title}
                                                     </a>
                                                     <img
-                                                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                      src={`${item?.AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                       onClick={() =>
                                                         deleteCategories(
                                                           type.Id
