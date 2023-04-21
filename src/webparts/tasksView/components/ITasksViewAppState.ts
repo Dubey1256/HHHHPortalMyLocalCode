@@ -6,6 +6,7 @@ export interface ITasksViewAppState {
     taskUsers: any[];
     allTaskItems: any[];
     displayedTaskItems: any[];
+    loadedTaskItems: any[];
     columns: IColumn[];
     searchText: string;
     contextualMenuProps: IContextualMenuProps

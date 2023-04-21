@@ -31,6 +31,8 @@ import {
 } from '@tanstack/match-sorter-utils';
 import { Icon, Link, PrimaryButton } from '@fluentui/react';
 
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+
 interface ITaskGroup {
   Title: string;
   SortOrder: string;
@@ -95,8 +97,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
     () => [      
       {
         accessorKey: 'Title',
+        id: "Title",
         header: "",
-        placeholder: "Title"
+        placeholder: "Title",
+        sortDescFirst: false
       },
       {
         accessorKey: "SortOrder",
@@ -146,9 +150,9 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   })
 
   React.useEffect(() => {
-    if (table.getState().columnFilters[0]?.id === 'fullName') {
-      if (table.getState().sorting[0]?.id !== 'fullName') {
-        table.setSorting([{ id: 'fullName', desc: false }])
+    if (table.getState().columnFilters[0]?.id === 'Title') {
+      if (table.getState().sorting[0]?.id !== 'Title') {
+        table.setSorting([{ id: 'Title', desc: false }])
       }
     }
   }, [table.getState().columnFilters[0]?.id])
@@ -165,7 +169,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
           />
         </div>
         <div style={{display:"inline",width:"50%"}}>
-          <PrimaryButton text="Add Team Member" onClick={()=>props.AddTask()} style={{float:"right"}} />
+          <PrimaryButton text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
         </div>        
       </div>
       <br />
@@ -201,10 +205,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
                         }}
                       >
                         {header.column.getIsSorted()
-                          ? { asc: " 🔼", desc: " 🔽" }[
+                          ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
                               header.column.getIsSorted() as string
                             ] ?? null
-                          : "="}
+                          : <FaSort />}
                       </div>
                     </div>
                     )}

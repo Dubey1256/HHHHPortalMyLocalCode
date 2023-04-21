@@ -9,9 +9,9 @@ import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
+import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
-import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -685,7 +685,7 @@ const CreateActivity = (props: any) => {
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                     }).then((res: any) => {
-                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                         res.data['listId'] = value.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
@@ -795,7 +795,7 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
@@ -943,7 +943,7 @@ const CreateActivity = (props: any) => {
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
                                                                         <img className="icon-sites"
-                                                                            src={item?.Item_x005F_x0020_Cover?.Url} />
+                                                                            src={item.Item_x005F_x0020_Cover.Url} />
                                                                     </span>{item.Title}
                                                                 </a>
                                                             </li>

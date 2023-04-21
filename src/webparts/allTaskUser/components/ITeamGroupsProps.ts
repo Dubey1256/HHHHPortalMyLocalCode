@@ -6,4 +6,5 @@ export interface ITeamGroupsProps {
     spService: spservices;
     context: WebPartContext;
     loadTasks: any;
+    taskUsersListId: string;
 }
