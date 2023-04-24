@@ -23,6 +23,9 @@ let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 var ContextValue: any = {};
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
+var AllListId={}
 function CreateTaskComponent(props:any) {
     let base_Url=props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -69,6 +72,25 @@ function CreateTaskComponent(props:any) {
         GetSmartMetadata();
     }, [])
     React.useEffect(() => {
+         try {
+      isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
+      isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : ""
+    } catch (error: any) {
+      console.log(error)
+    }
+    AllListId = {
+      MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
+      TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
+      SmartMetadataListID: props?.SelectedProp?.SmartMetadataListID,
+      //SiteTaskListID:this.props?.props?.SiteTaskListID,
+      TaskTimeSheetListID: props?.SelectedProp?.TaskTimeSheetListID,
+      DocumentsListID: props?.SelectedProp?.DocumentsListID,
+      SmartInformationListID: props?.SelectedProp?.SmartInformationListID,
+      siteUrl: props?.SelectedProp?.siteUrl,
+      AdminConfigrationListID: props?.SelectedProp?.AdminConfigrationListID,
+      isShowTimeEntry: isShowTimeEntry,
+      isShowSiteCompostion: isShowSiteCompostion
+    }
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
 
@@ -1531,7 +1553,7 @@ function CreateTaskComponent(props:any) {
                 </div>
                 {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
                 {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup  AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
         </>
