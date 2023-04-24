@@ -99,6 +99,9 @@ const SmartInformation = (props: any) => {
           Data?.map(async(tagsmartinfo: any) => {
             if (tagsmartinfo?.Id == items?.Id) {
 
+           if(tagsmartinfo.Description.includes("<p></p>")){
+            tagsmartinfo.Description=null;
+           }
               allSmartInformationglobal.push(tagsmartinfo);
              
             }
@@ -152,6 +155,7 @@ const SmartInformation = (props: any) => {
        
       }).catch((err) => {
         console.log(err.message);
+        setSmartInformation(allSmartInformationglobal)
       });
     
     })
@@ -215,7 +219,7 @@ const SmartInformation = (props: any) => {
     setallSetValue({ ...allValue, InfoType: InfoType })
   }
 
-  //=========pannel header for smartinformation  post and edit ===================
+  //=========panel header for smartinformation  post and edit ===================
   const onRenderCustomHeadersmartinfo = () => {
     return (
       <>
@@ -227,13 +231,13 @@ const SmartInformation = (props: any) => {
       </>
     );
   };
-  //=========pannel header for documents upload and edit  ===================
+  //=========panel header for documents upload and edit  ===================
   const onRenderCustomHeaderDocuments = () => {
     return (
       <>
 
         <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-          {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
+          {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}`:null}
         </div>
         <Tooltip ComponentId='993' />
       </>
@@ -384,7 +388,7 @@ const SmartInformation = (props: any) => {
     const web = new Web(props.siteurl);
     // await web.lists.getByTitle("SmartInformation")
     await web.lists.getById(props.AllListId.SmartInformationListID)
-    .items.getById(DeletItemId).delete()
+    .items.getById(DeletItemId).recycle()
       .then((res: any) => {
         console.log(res);
         handleClose();
@@ -407,7 +411,9 @@ const SmartInformation = (props: any) => {
       await saveSharewebItem();
       alert('Information saved now items can be attached.');
       console.log(PostSmartInfo);
-      setshowAdddocument(true)
+      // post smartinformaion then posopup open 
+
+      // setshowAdddocument(true)
     }
 
 
@@ -450,7 +456,7 @@ if(folderName!=""){
     uploadDocumentFinal(folderName);
   }
 
-  // ================final document and file  upload  link title update=====================
+  // ================final document and file  upload  link title update inside folder and outside folder=====================
 
   const uploadDocumentFinal = async (folderName: any) => {
     const web = new Web(props?.siteurl);
@@ -500,6 +506,7 @@ if(folderName!=""){
       const updatedItem = await web.lists.getById(props.AllListId.DocumentsListID)
       .items.getById(res.Id).update({
         SmartInformationId:{"results":[(smartDocumentpostData.Id)] },
+        Title:fileName.split(".")[0],
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': allValue?.LinkUrl!=""?allValue?.LinkUrl:"",
@@ -551,6 +558,7 @@ if(folderName!=""){
    const editDocuments=(editData:any)=>{
     setEditdocpanel(true);
     console.log(editData)
+    setEditdocumentsData(editData);
    }
 
 
@@ -636,8 +644,8 @@ if(folderName!=""){
                                     </a></span>
                                  </li>
                                 <li>
-                                 {item.Url==null&& <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.FileLeafRef}</span></a></span>}
-                                 {item.Url!=null&& <span><a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.FileLeafRef}</span></a></span>}
+                                 {item.Url==null&& <span><a className='px-2' href={`${item?.EncodedAbsUrl}?web=1`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
+                                 {item.Url!=null&& <span><a className='px-2' href={`${item?.Url?.Url}`}target="_blank" data-interception="off"> <span>{item?.Title}</span></a></span>}
                                 </li>
                                 <li className='d-end'>
                                   <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={()=>editDocuments(item)}></span>
@@ -868,24 +876,88 @@ if(folderName!=""){
         type={PanelType.custom}
         customWidth="1091px"
         onDismiss={handleClosedoc}>
-          <div>
+         
           <ul className="nav nav-tabs" id="myTab" role="tablist">
           <li className="nav-item" role="presentation">
-    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
     </li>
     <li className="nav-item" role="presentation">
-    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="profile" aria-selected="false">IMAGE INFORMATION</button>
     </li>
-      <li className="nav-item" role="presentation">
-    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
-     </li>
      </ul>
-    <div className="tab-content" id="myTabContent">
-    <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">...</div>
-     <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
-     <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+    <div className="border border-top-0 clearfix p-3 tab-content bg-f4 " id="myTabContent">
+    <div className="tab-pane fade show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="home-tab">
+      <div className='d-flex mt-3'> 
+      <div className="input-group"><label className="form-label full-width ">Name </label>
+    <input type="text"  className="form-control"value={EditdocumentsData?.Title}/>.{EditdocumentsData?.File_x0020_Type}
+    {/* <span className="input-group-text" title="Linked Component Task Popup">
+      <span className="svg__iconbox svg__icon--editBox"></span>
+      </span> */}
+    </div>
+    
+    <div className="input-group mx-4"><label className="form-label full-width ">Year </label>
+    <input type="text"  className="form-control"/>
+    <span className="input-group-text" title="Linked Component Task Popup">
+      <span className="svg__iconbox svg__icon--editBox"></span>
+      </span>
+    </div>
+    <div className="input-group "><label className="form-label full-width ">Item Rank </label>
+    <select id="cars" name="cars"className='w-100'>
+    <option value="volvo">Volvo</option>
+    <option value="saab">Saab</option>
+    <option value="fiat" selected>Fiat</option>
+    <option value="audi">Audi</option>
+  </select>
+     
+    </div>
+    </div>
+    <div className='d-flex mt-3'>
+       <div className="input-group"><label className="form-label full-width ">Title </label>
+    <input type="text"  className="form-control"value={EditdocumentsData?.Title}/>
+    </div>
+    <div className="input-group mx-4">
+      <label className="form-label full-width">
+        <span><input type="radio" className="form-check-input"/> Component</span>
+        <span className='ps-3'><input type="radio" className="form-check-input"/> Service</span>
+      </label>
+    <input type="text"  className="form-control"/>
+    <span className="input-group-text" title="Linked Component Task Popup">
+      <span className="svg__iconbox svg__icon--editBox"></span>
+      </span>
+    </div>
+    <div className="input-group"><label className="form-label full-width ">Document Type </label>
+    <input type="text"  className="form-control"/>
+    <span className="input-group-text" title="Linked Component Task Popup">
+      <span className="svg__iconbox svg__icon--editBox"></span>
+      </span>
+    </div>
+    </div>
+   
+   </div>
+     <div className="tab-pane fade" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="profile-tab">.....</div>
+   
        </div>
+       <footer className='text-end mt-2'>
+          <div className='col-sm-12 row m-0'>
+            <div className="col-sm-6 text-lg-start">
+              {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
+                <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
+                <div><a onClick={() => deleteData(EditdocumentsData.Id)}><span className="svg__iconbox svg__icon--trash"></span>Delete this item</a></div>
+              </div>}
+            </div>
+
+            <div className='col-sm-6 mt-2 p-0'>
+             <span className='pe-2'><a target="_blank" data-interception="off" href={`${props.spPageContext.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
+             
+              <Button className='btn btn-primary ms-1  mx-2'>
+                Save
+              </Button>
+              <Button className='btn btn-default' onClick={() => handleClosedoc()}>
+                Cancel
+              </Button>
+            </div>
           </div>
+        </footer>
       </Panel>
     </div>
   )

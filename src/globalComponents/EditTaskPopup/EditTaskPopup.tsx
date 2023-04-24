@@ -626,7 +626,7 @@ const EditTaskPopup = (Items: any) => {
         let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
-            .getById(AllListIdData.SmartMetadataListID)
+            .getById(AllListIdData?.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
