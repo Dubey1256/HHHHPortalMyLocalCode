@@ -67,10 +67,14 @@ const TaskDashboard = (props: any) => {
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
-            setIsTimeEntry(isShowTimeEntry)
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
         } catch (error: any) {
             console.log(error)
+        }
+        if(AllListId?.TaskTimeSheetListID!=undefined&&AllListId?.TaskTimeSheetListID!=''){
+            setIsTimeEntry(true)
+        }else{
+            setIsTimeEntry(false)
         }
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         AllListId = {
@@ -954,12 +958,17 @@ const TaskDashboard = (props: any) => {
         if (AllListId?.SmartMetadataListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let smartmeta = [];
-
+            let select:any='';
+            if(AllListId?.TaskTimeSheetListID!=undefined&&AllListId?.TaskTimeSheetListID!=''){
+                select= 'Id,IsVisible,ParentID,Title,SmartSuggestions,Description,Configurations,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            }else{
+               select= 'Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            }
             let TaxonomyItems = [];
             try {
                 smartmeta = await web.lists
                     .getById(AllListId?.SmartMetadataListID)
-                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Description", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .items.select(select)
                     .top(5000)
                     .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
                     .expand("Parent")
@@ -1778,7 +1787,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 {
-                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true&&isTimeEntry==true) ?
+                                    ((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true)&&isTimeEntry==true) ?
                                         <>
                                             <div>
                                                 <span className='m-1'>
