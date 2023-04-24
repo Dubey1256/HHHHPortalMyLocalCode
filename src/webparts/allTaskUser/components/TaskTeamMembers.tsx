@@ -426,7 +426,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.setState({
             taskItem: taskItem,
             showCreatePanel: true,
-            enableUser: true
+            enableUser: true,
+            enableSave: false
         });
     }
 
