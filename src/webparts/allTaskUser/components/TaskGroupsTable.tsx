@@ -93,6 +93,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   )
   const [globalFilter, setGlobalFilter] = React.useState('')
 
+  const [data, setData] = React.useState<ITaskGroup[]>(() => props.TaskUsers);
+  const refreshData = () => setData(props.TaskUsers);
+  React.useEffect(()=>refreshData(), [props.TaskUsers]);
+
   const columns = React.useMemo<ColumnDef<ITaskGroup, any>[]>(
     () => [      
       {
@@ -109,21 +113,19 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
       },
       {
         accessorKey: "TaskId",
-        header: ()=><div>Edit/Delete</div>,
+        header: null,
         cell: (info)=>(<div>
           <Link href="#" onClick={()=>props.EditTask(info.getValue())}><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} /></Link>
           <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} /></Link>
         </div>),
         enableColumnFilter: false,
-        enableSorting: false
+        enableSorting: false,
+        minSize:60
       }
     ],
-    []
+    [data]
   )
-
-  const [data, setData] = React.useState<ITaskGroup[]>(() => props.TaskUsers);
-  const refreshData = () => setData(props.TaskUsers);
-
+  
   const table = useReactTable({
     data,
     columns,
@@ -196,20 +198,23 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
                           />
                         </div>
                       ) : null}
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {header.column.getIsSorted()
-                          ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                              header.column.getIsSorted() as string
-                            ] ?? null
-                          : <FaSort />}
-                      </div>
+                      {
+                        header.column.id=="TaskId" ? null :
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {header.column.getIsSorted()
+                            ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                header.column.getIsSorted() as string
+                              ] ?? null
+                            : <FaSort />}
+                        </div>
+                      }
                     </div>
                     )}
                   </th>
@@ -238,7 +243,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
         </tbody>
       </BTable>
       <div className="h-2" />
-      <div className="flex items-center gap-2">
+      {data.length>10 && <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"
           onClick={() => table.setPageIndex(0)}
@@ -298,7 +303,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
             </option>
           ))}
         </select>
-      </div>
+      </div>}
       <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
       {
         false &&

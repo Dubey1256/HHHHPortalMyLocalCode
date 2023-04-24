@@ -119,6 +119,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let curListId = curNavItem.listId;
         let curSiteURL = curNavItem.siteUrl;
         let curSiteType = curNavItem.site;
+        let curSiteIcon = curNavItem.siteIcon;
         let queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
 
         let qStrings = this.getQueryStrings(queryStrings);
@@ -174,6 +175,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ComponentId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
+                TaskId: `T${resListItem.Id}`,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -198,6 +200,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             listLastModifiedItems = resListItems.map( resListItem => ({
                 ServiceId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
+                TaskId: `T${resListItem.Id}`,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -257,10 +260,12 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                             UserName: resListItem.Author.Title,
                             ...this.getUserInfo(resListItem.Author.Id)
                         },
+                        
                         Id: resListItem.Id,
                         ListId: curListId,
                         SiteType: curSiteType,
-                        SiteURL: curSiteURL
+                        SiteURL: curSiteURL,
+                        SiteIcon : tabItem.SiteIcon
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -302,7 +307,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 ListId: curListId,
                 SiteType: curSiteType,
-                SiteURL: curSiteURL
+                SiteURL: curSiteURL,
+                SiteIcon : curSiteIcon
             }));
         }        
 
@@ -508,8 +514,16 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         this.deleteTask();
     }
 
-    private onDeleteIconClick(delItemId:number) {
+    private async onDeleteIconClick(delItemId:number) {
         const curListId: string = this.state.selNavItem.listId;
+        let confirmation = confirm(
+            "Are you sure you want to delete this project ?"
+          );
+          if(confirmation){
+           await this.spService.deleteTask(curListId,delItemId);
+           this.loadConfigurations();
+          }
+        
         console.log(delItemId,curListId);
     }
 
@@ -553,12 +567,17 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
                     <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
                 </div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
-                </div>
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                {this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
+                 "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                 <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
+             </div>         }
+                {
+                    this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
+                  "":  <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                     <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
-                </div>
+                </div>                       
+                }
+                
                 <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                     {elemClearFilter}
                 </div>
