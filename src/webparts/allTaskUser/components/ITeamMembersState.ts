@@ -21,6 +21,7 @@ export interface ITeamMembersState {
     uploadedImage?: IFile;
     selImageId?: number;
     onImageHover: boolean;
+    enableUser: boolean;
 }
 
 interface ITaskItem {
