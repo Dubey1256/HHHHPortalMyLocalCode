@@ -262,6 +262,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                             UserName: resListItem.Author.Title,
                             ...this.getUserInfo(resListItem.Author.Id)
                         },
+                        
                         Id: resListItem.Id,
                         ListId: curListId,
                         siteType: curSiteType,
