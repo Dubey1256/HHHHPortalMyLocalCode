@@ -49,6 +49,8 @@ const ProjectManagementMain = (props: any) => {
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
+  const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
+
   const [expendcollapsAccordion, setExpendcollapsAccordion]: any =
     React.useState({
       description: false,
@@ -82,6 +84,9 @@ const ProjectManagementMain = (props: any) => {
       AdminConfigrationListID: props?.props?.AdminConfigrationListID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
+    }
+    if(props?.props?.SmartInformationListID!=undefined){
+      setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
     GetMasterData();
@@ -1449,15 +1454,15 @@ const ProjectManagementMain = (props: any) => {
                   )}
                 </span>
                 <span>
-                  {QueryId && (
+                  {(QueryId!=undefined&& isSmartInfoAvailable)? 
                     <SmartInformation
                       AllListId={AllListId}
                       listName={"Master Tasks"}
                       Context={props.Context.pageContext.web}
                       siteurl={props.siteUrl}
                       Id={QueryId}
-                    />
-                  )}
+                    />:""
+                  }
                 </span>
               </div>
             </div>
