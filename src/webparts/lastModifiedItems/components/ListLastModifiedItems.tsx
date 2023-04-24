@@ -43,25 +43,34 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         this.ClickFilter = this.ClickFilter.bind(this);        
 
         const _columns: IColumn[] = [];    
-        _columns.push({key: "TaskId", name: "Task ID", fieldName: "TaskId", minWidth: 75, maxWidth: 100, onColumnClick: this._onColumnClick, onColumnContextMenu: this._onColumnContextMenu, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+        _columns.push({key: "TaskId", name: "Task ID", fieldName: "TaskId", minWidth: 75, maxWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderTaskSiteIcon , onColumnContextMenu: this._onColumnContextMenu, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
         _columns.push({key: "TaskName", name: "Task Name", fieldName: "TaskName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
-            return <Link href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>
+            return (
+                <div>
+                     {item.Services.length > 0 ? <Link className="text-success" href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link> :
+                <Link href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>}   
+                </div>
+               )  
         } });
         _columns.push({key: "PortfolioType", name: "Component", fieldName: "PortfolioType", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
             return (<div>
-                {item.Components && item.Components.map((comp: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${comp.Id}`}>{comp.Title}</Link>)}
-                {item.Services && item.Services.map((service: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${service.Id}`}>{service.Title}</Link>)}
-                {item.Events && item.Events.map((event: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${event.Id}`}>{event.Title}</Link>)}
+                {item.Components && item.Components.map((comp: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${comp.Id}`} target="_blank">{comp.Title}</Link>)}
+                {item.Services && item.Services.map((service: any)=><Link className="text-success" href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${service.Id}`} target="_blank">{service.Title}</Link>)}
+                {item.Events && item.Events.map((event: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${event.Id}`} target="_blank">{event.Title}</Link>)}
             </div>)
         }});
-        _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+        _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date,
+        onRender:(item, index, column) => {
+            if(item.DueDate == undefined) return "";
+                 return  (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.DueDate}</span> : <span>{item.DueDate}</span> }</div>)    
+        }});
         _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
             if(item.PercentComplete == 0) return "";
-            return `${item.PercentComplete}%`
+                 return  (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.PercentComplete}%</span> : <span>{item.PercentComplete}%</span> }</div>)   
         }});
         _columns.push({key: "Priority", name: "Priority", fieldName: "Priority", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
             if(item.Priority == 0) return "";
-            return item.Priority;
+            return (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.Priority}</span> : <span>{item.Priority}</span> }</div>) 
         }});
         _columns.push({key: "TeamUsers", name: "Team Members", fieldName: "TeamUsers", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderTeamMembers, columnActionsMode:ColumnActionsMode.hasDropdown, data: Object});
         _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Object});
@@ -139,15 +148,36 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     private _onRenderModified(item: any, index: number, column: IColumn) {
         const modifiedInfo = item.Modified;        
         const modifiedDate = modifiedInfo.Date;
-        
+        if(item.Services == undefined){
+            item.Services = [];
+         }
         const stackTokens: IStackTokens = {
             childrenGap: 5
         };
         const personaUserModified = this.getUserPersona(modifiedInfo);
         return (
             <Stack horizontal tokens={stackTokens}>
-                <Stack.Item><div style={{fontSize: "12px", fontWeight: 400}}>{modifiedDate}</div></Stack.Item>
+                <Stack.Item>{this.props.TabName=="SERVICES" || item.Services.length > 0 ? <div style={{fontSize: "12px", fontWeight: 400, color:'green'}}>{modifiedDate}</div> :<div style={{fontSize: "12px", fontWeight: 400}}>{modifiedDate}</div> }</Stack.Item>
                 <Stack.Item>{personaUserModified}</Stack.Item>
+            </Stack>
+        );
+    }
+
+    private _onRenderTaskSiteIcon(item: any, index: number, column: IColumn) {
+        const taskSiteIcon = item.SiteIcon;        
+        const taskid = item.TaskId;
+     if(item.Services == undefined){
+        item.Services = [];
+     }
+        
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+        
+        return (
+            <Stack horizontal tokens={stackTokens}>
+                <Stack.Item><div><img style={{width:'25px', height:'25px'}} src={`https://hhhhteams.sharepoint.com/sites/HHHH${taskSiteIcon}`} /></div></Stack.Item>
+                <Stack.Item>{item.Services.length > 0 ? <div style={{fontSize: "12px", fontWeight: 400, color:'green'}}>{taskid}</div> : <div style={{fontSize: "12px", fontWeight: 400}}>{taskid}</div> }</Stack.Item>
             </Stack>
         );
     }
@@ -155,7 +185,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     private _onRenderCreated(item: any, index: number, column: IColumn) {
         const createdInfo = item.Created;
         const createdDate = createdInfo.Date;
-        
+        if(item.Services == undefined){
+            item.Services = [];
+         }
         const stackTokens: IStackTokens = {
             childrenGap: 5
         };
@@ -163,7 +195,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         const personaUserCreated = this.getUserPersona(createdInfo)
         return (
             <Stack horizontal tokens={stackTokens}>
-                <Stack.Item><div style={{fontSize: "12px", fontWeight: 400}}>{createdDate}</div></Stack.Item>
+                <Stack.Item> {this.props.TabName=="SERVICES" || item.Services.length > 0 ? <div style={{fontSize: "12px", fontWeight: 400, color:'green'}}>{createdDate}</div> :<div style={{fontSize: "12px", fontWeight: 400}}>{createdDate}</div> } </Stack.Item>
                 <Stack.Item>{personaUserCreated}</Stack.Item>
             </Stack>
         );
@@ -179,6 +211,104 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             </div>
         );
     }
+
+
+    private _onRenderComponents(item: any, index: number, column: IColumn) {
+        let getExt :string='';
+         if(item.ComponentId != undefined || item.ComponentId!= null){
+             let compoIcon = item.ComponentId;
+             getExt=  compoIcon.split("-");
+             getExt = getExt[getExt.length-1];
+             getExt = getExt.charAt(0).toUpperCase();
+         }
+         
+              
+       
+         const stackTokens: IStackTokens = {
+             childrenGap: 5
+         };
+ 
+      
+         return (
+             <Stack horizontal tokens={stackTokens}>
+                <Stack.Item>{getExt=='' ?   <span >{getExt}</span>:<span className="Dyicons">{getExt}</span>}
+              </Stack.Item>
+                 <Stack.Item>{item.ComponentId == null ? <span>{item.TaskId}</span> : <span>{item.ComponentId}</span>}</Stack.Item>
+             </Stack>
+         );
+     }
+     
+
+
+     private _onRenderServices(item: any, index: number, column: IColumn) {
+        let getExt ='';
+         if(item.ServiceId != undefined || item.ServiceId!= null){
+             let compoIcon = item.ServiceId;
+             getExt=  compoIcon.split("-");
+             getExt = getExt[getExt.length-1];
+             getExt = getExt.charAt(0).toUpperCase();
+         }
+   
+         const stackTokens: IStackTokens = {
+             childrenGap: 5
+         };
+ 
+      
+         return (
+             <Stack horizontal tokens={stackTokens}>
+                <Stack.Item><span className={getExt==''? '':'Dyicons bg-success'}>{getExt}</span>
+              </Stack.Item>
+                 <Stack.Item>{item.ServiceId == null ? <span className="text-success">{item.TaskId}</span> : <span className="text-success">{item.ServiceId}</span>}</Stack.Item>
+             </Stack>
+         );
+     }
+
+
+    private _onRenderDocument(item: any, index: number, column: IColumn) {
+        const DocumentName = item.DocumentName;
+        
+        let getExt ='docx' ;
+
+        if(DocumentName != undefined){
+            const str = DocumentName ;
+            if(str.includes(".")){
+                getExt=  str.split(".");
+                getExt = getExt[getExt.length-1];
+
+                if(getExt=='aspx' || getExt=='xlsx' || getExt=='XLSX'){
+                    getExt = 'csv';
+                 }
+               else if(getExt=='msg'){
+                    getExt = 'mail';
+                 }
+               else if(getExt=='pptx'){
+                    getExt = 'ppt';
+                 }
+                 else if(getExt=='rar'){
+                    getExt = 'docx';
+                 }
+                 else{
+                    getExt;
+                 }
+            }
+        }
+       
+
+             
+      
+        const stackTokens: IStackTokens = {
+            childrenGap: 5
+        };
+
+     
+        return (
+            <Stack horizontal tokens={stackTokens}>
+               <Stack.Item><span className={`svg__iconbox svg__icon--${getExt}`}></span></Stack.Item>
+                <Stack.Item>{DocumentName}</Stack.Item>
+            </Stack>
+        );
+    }
+
 
     private getUserPersona(userInfo: any) {
         const personaProps: IPersonaProps = {
@@ -265,21 +395,29 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         if(prevProps.TabName !== this.props.TabName) {
             const _columns: IColumn[] = [];
             if(this.props.TabName=="DOCUMENTS") {
-                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100,  onColumnClick: this._onColumnClick, onRender: this._onRenderDocument, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DocumentLink", name: "Document Link", fieldName: "DocumentLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="FOLDERS") {
-                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
-                _columns.push({key: "FolderLink", name: "Folder Link", fieldName: "FolderLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,
+                onRender:(item, index, column) => {
+                    if(item.FolderName == undefined) return "";
+                    return  (<div className="d-flex"><span className="svg__iconbox svg__icon--folder"></span><span className="ms-2">{item.FolderName}</span></div>)
+                }  });
+                _columns.push({key: "FolderLink", name: "Folder Link", fieldName: "FolderLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String,
+                onRender:(item, index, column) => {
+                    if(item.FolderLink == undefined) return "";
+                    return  (<div><a href={`${item.FolderLink}`} style={{textDecoration:'none'}} className="text-dark" target="_blank">{item.FolderLink}</a></div>)
+                } });
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="COMPONENTS") {
-                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderComponents, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "Title", name: "Component Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String});
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
@@ -290,52 +428,69 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                     if(item.Priority == 0) return "";
                     return item.Priority;
                 }});
-                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 75, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
-                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 75, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 120, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 120, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else if(this.props.TabName=="SERVICES") {
-                _columns.push({key: "ServiceId", name: "ID", fieldName: "ServiceId", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
-                _columns.push({key: "Title", name: "Service Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
-                _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "ServiceId", name: "ID",  fieldName: "ServiceId" , minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderServices, columnActionsMode:ColumnActionsMode.hasDropdown, data: String  });
+                _columns.push({key: "Title", name: "Service Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,  onRender:(item, index, column) => {
+                    if(item.Title == undefined) return "";
+                    return  <div style={{color:'green'}}>{item.Title}</div>
+                } });
+                _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String , onRender:(item, index, column) => {
+                    if(item.PercentComplete == undefined) return "";
+                    return  <div style={{color:'green'}}>{item.DueDate}</div>
+                }  });
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.PercentComplete == 0) return "";
-                    return `${item.PercentComplete}%`
+                    return  <div style={{color:'green'}}>{item.PercentComplete}%</div>
                 } });
                 _columns.push({key: "Priority", name: "Priority", fieldName: "Priority", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.Priority == 0) return "";
-                    return item.Priority;
+                    return  <div style={{color:'green'}}>{item.Priority}</div>
                 } });
-                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 75, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
-                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 75, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
+                _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 120, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
+                _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 120, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
             else {
-                _columns.push({key: "TaskId", name: "Task ID", fieldName: "TaskId", minWidth: 50, onColumnClick: this._onColumnClick, onColumnContextMenu: this._onColumnContextMenu, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "TaskId", name: "Task ID", fieldName: "TaskId", minWidth: 50, onColumnClick: this._onColumnClick,onRender: this._onRenderTaskSiteIcon ,onColumnContextMenu: this._onColumnContextMenu, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
                 _columns.push({key: "TaskName", name: "Task Name", fieldName: "TaskName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
-                    return <Link href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.TaskId}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>
+                    return (
+                        <div>
+                             {item.Services.length > 0 ? <Link className="text-success" href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link> :
+                        <Link href={`${SiteURL}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>}   
+                        </div>
+                       )  
                 } });
                 _columns.push({key: "PortfolioType", name: "Component", fieldName: "PortfolioType", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
                     return (<div>
-                        {item.Components && item.Components.map((comp: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${comp.Id}`}>{comp.Title}</Link>)}
-                        {item.Services && item.Services.map((service: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${service.Id}`}>{service.Title}</Link>)}
-                        {item.Events && item.Events.map((event: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${event.Id}`}>{event.Title}</Link>)}
+                        {item.Components && item.Components.map((comp: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${comp.Id}`} target="_blank">{comp.Title}</Link>)}
+                        {item.Services && item.Services.map((service: any)=><Link className="text-success" href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${service.Id}`} target="_blank">{service.Title}</Link>)}
+                        {item.Events && item.Events.map((event: any)=><Link href={`${SiteURL}/SitePages/Portfolio-Profile.aspx?taskId=${event.Id}`} target="_blank">{event.Title}</Link>)}
                     </div>)
                 }});
-                _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
+                _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date ,
+                onRender:(item, index, column) => {
+                    if(item.DueDate == undefined) return "";
+                         return  (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.DueDate}</span> : <span>{item.DueDate}</span> }</div>)    
+                }});
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.PercentComplete == 0) return "";
-                    return `${item.PercentComplete}%`
+                    return  (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.PercentComplete}%</span> : <span>{item.PercentComplete}%</span> }</div>) 
                 }});
                 _columns.push({key: "Priority", name: "Priority", fieldName: "Priority", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.Priority == 0) return "";
-                    return item.Priority;
+                    return  (<div>{item.Services.length > 0 ? <span style={{color:'green'}}>{item.Priority}</span> : <span>{item.Priority}</span> }</div>) 
+                    
                 }});
                 _columns.push({key: "TeamUsers", name: "Team Members", fieldName: "TeamUsers", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderTeamMembers, columnActionsMode:ColumnActionsMode.hasDropdown, data: Object});
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, isSorted: true, isSortedDescending: true, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date});
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
             }
+
 
             this.setState({
                 columns: _columns
