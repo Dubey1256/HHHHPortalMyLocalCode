@@ -246,8 +246,8 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
     }
 
     private async getTaskUsers() {
-        const taskUsersRes = await this.spService.getTasks();
-        const taskUsers = taskUsersRes.filter((taskUser:any)=>taskUser.AssingedToUser!=null).map((taskUser:any)=>({
+        const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
+        const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser!=null).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
             Title: taskUser.Title,
             ImageUrl: taskUser.Item_x0020_Cover ? taskUser.Item_x0020_Cover.Url : "",
@@ -261,10 +261,10 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
         const taxTypes: string[] = ["Sites"];
         const excludedSites: string[] = ["Master Tasks", "DRR"];
         let _sMetadatItem = undefined;
-        const sMetadataRes = await this.spService.getSmartMetadata(taxTypes);
+        const sMetadataRes = await this.spService.getSmartMetadata(this.props.smartMetadataListId, taxTypes);
         const sMetadataItems = sMetadataRes.filter(sMetadateItem => {
             return (sMetadateItem.listId != undefined && excludedSites.indexOf(sMetadateItem.Title)==-1);
-        }).map((sMetadateItem:any) => {
+        }).map(sMetadateItem => {
             _sMetadatItem = {
                 "Id": sMetadateItem.Id,
                 "ListId": sMetadateItem.listId,
@@ -934,7 +934,7 @@ class MyPendingTasksApp extends React.Component<IMyPendingTasksAppProps, IMyPend
                     </table>
                     <table style="width:99%;margin-top: 10px;">
                         <tbody>
-                            <tr> </tr>
+                            <tr>​</tr>
                         </tbody>
                     </table>
                 </td>

@@ -12,7 +12,8 @@ import LastModifiedItemsApp from './components/LastModifiedItemsApp';
 import { getSP } from '../../spservices/pnpjsConfig';
 
 export interface ILastModifiedItemsWebPartProps {
-  description: string;
+  TaskUsertListID: string;
+  ListConfigurationListID: string;
 }
 
 export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILastModifiedItemsWebPartProps> {
@@ -21,7 +22,11 @@ export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILas
   public render(): void {
     
     const element = React.createElement(
-      LastModifiedItemsApp
+      LastModifiedItemsApp,
+      {
+        taskUsersListId: this.properties.TaskUsertListID,
+        listConfigurationListId: this.properties.ListConfigurationListID
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -51,8 +56,11 @@ export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILas
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField("ListConfigurationListID", {
+                  label: "List Configuration List"
                 })
               ]
             }

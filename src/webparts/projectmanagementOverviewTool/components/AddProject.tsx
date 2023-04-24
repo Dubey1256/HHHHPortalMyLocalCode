@@ -33,8 +33,8 @@ const AddProject = (props: any) => {
                     selectedService.push(smart?.Id);
                 })
             }
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-            await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items.add({
+            let web = new Web(props?.AllListId?.siteUrl);
+            await web.lists.getById(props?.AllListId?.MasterTaskListID).items.add({
                 Title: `${title}`,
                 Item_x0020_Type: "Project",
                 ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
@@ -157,9 +157,9 @@ const AddProject = (props: any) => {
                                                 return (
                                                     <>
                                                         <span className="d-flex full-width Component-container-edit-task" >
-                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                             <a>
-                                                                <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagComponent(smartComponentData, index)} />
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagComponent(smartComponentData, index)} className="svg__iconbox svg__icon--cross hreflink"></span>
                                                             </a>
                                                         </span>
                                                     </>
@@ -194,10 +194,10 @@ const AddProject = (props: any) => {
                                                     <>
                                                         <span className="d-flex Component-container-edit-task" >
 
-                                                            <a className="hreflink " target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                            <a className="hreflink " target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                 {com.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => unTagService(linkedComponentData, index)} />
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagService(linkedComponentData, index)} className="svg__iconbox svg__icon--cross hreflink"></span>
 
                                                         </span>
                                                     </>

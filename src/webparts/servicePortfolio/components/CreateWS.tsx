@@ -26,9 +26,9 @@ var TeamMemberIds: any = [];
 
 //var checkedWS:boolean=true;
 const CreateWS = (props: any) => {
-    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
+    if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
-    }else{
+    } else {
         dynamicList = props.SelectedProp;
     }
     SelectedTasks = []
@@ -52,7 +52,7 @@ const CreateWS = (props: any) => {
     const [SharewebTask, setSharewebTask] = React.useState('');
     const [IsComponent, setIsComponent] = React.useState(false);
     const [date, setDate] = React.useState(undefined);
-    const [myDate, setMyDate] = React.useState(undefined);
+    const [myDate, setMyDate] = React.useState({ editDate: null, selectDateName: '' });
     const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
     const [selectPriority, setselectPriority] = React.useState('');
     const [Priorityy, setPriorityy] = React.useState(false);
@@ -268,22 +268,22 @@ const CreateWS = (props: any) => {
         //     }
 
         // })
-        if (myDate != undefined && myDate != null) {
-            var dateValue = myDate.split("/");
-            var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-            var Dateet = new Date(dp)
-            NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
-        }
+        // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+        //     var dateValue = myDate?.editDate?.split("/");
+        //     var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        //     var Dateet = new Date(dp)
+        //     NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
+        // }
         if (date != undefined) {
             NewDate = new Date(date).toDateString();
         }
-        if (AllItems.Component[0] != undefined && AllItems.Component.length>0) {
+        if (AllItems.Component[0] != undefined && AllItems.Component.length > 0) {
             Component.push(AllItems.Component[0].Id)
         }
-        if (AllItems.Services[0] != undefined && AllItems.Services.length>0) {
+        if (AllItems.Services[0] != undefined && AllItems.Services.length > 0) {
             RelevantPortfolioIds.push(AllItems.Services[0].Id)
         }
-        if (AllItems.Portfolio_x0020_Type == undefined) {
+        if (AllItems?.Portfolio_x0020_Type == undefined) {
             if (AllItems.Component != undefined && AllItems.Component.length > 0) {
                 smartComponentData.push(AllItems.Component);
             }
@@ -354,7 +354,8 @@ const CreateWS = (props: any) => {
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
             Body: AllItems.Description,
-            DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+            // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
@@ -369,8 +370,8 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data['siteType'] = AllItems.siteType
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                    res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
@@ -380,8 +381,8 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data['siteType'] = AllItems.siteType
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                    res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -428,7 +429,7 @@ const CreateWS = (props: any) => {
 
     }
     const createChildAsTask = async (item: any, Type: any, index: any) => {
-        var NewDate = ''
+        let NewDate = ''
         var RelevantPortfolioIds: any = []
         let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
@@ -450,22 +451,22 @@ const CreateWS = (props: any) => {
 
         if (SharewebTasknewTypeId == 2 || SharewebTasknewTypeId == 6) {
             var SharewebID = '';
-            if (Task.Portfolio_x0020_Type != undefined && Task.Portfolio_x0020_Type == 'Component') {
+            if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component') {
                 SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Services != undefined && Task.Services.length > 0 || Task.Portfolio_x0020_Type == 'Service') {
+            if (Task?.Services != undefined && Task.Services.length > 0 || Task?.Portfolio_x0020_Type == 'Service') {
                 SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Events != undefined && Task.Events.length > 0 || Task.Portfolio_x0020_Type == 'Events') {
+            if (Task?.Events != undefined && Task.Events.length > 0 || Task?.Portfolio_x0020_Type == 'Events') {
                 SharewebID = 'EA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
             }
-            if (Task.Component != undefined && Task.Component.length > 0) {
+            if (Task?.Component != undefined && Task.Component.length > 0) {
                 SharewebID = 'CA' + Task.SharewebTaskLevel1No + 'T' + LatestId;
             }
-            if (Task.Component == undefined && Task.Services == undefined) {
+            if (Task?.Component == undefined && Task.Services == undefined) {
                 SharewebID = 'T' + LatestId;
             }
-            if (AllItems.Portfolio_x0020_Type == undefined) {
+            if (AllItems?.Portfolio_x0020_Type == undefined) {
                 if (AllItems.Component != undefined && AllItems.Component.length > 0) {
                     smartComponentData.push(AllItems.Component);
                 }
@@ -507,16 +508,16 @@ const CreateWS = (props: any) => {
             //     })
             // }
 
-            if (myDate != undefined && myDate != null) {
-                var dateValue = myDate.split("/");
-                var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
-                var Dateet = new Date(dp)
-                NewDate = Moment(Dateet).format("ddd, DD MMM yyyy")
-            }
-            if (AllItems.Portfolio_x0020_Type == 'Component' || AllItems.Component != undefined && AllItems.Component.length > 0) {
+            // if (myDate?.editDate != undefined && myDate?.editDate != null) {
+            //     // var dateValue = myDate?.editDate.split("/");
+            //     // var dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+            //     // var Dateet = new Date(dp)
+            //     NewDate = Moment(myDate?.editDate).format("ddd, DD MMM yyyy")
+            // }
+            if (AllItems?.Portfolio_x0020_Type == 'Component' || AllItems.Component != undefined && AllItems.Component.length > 0) {
                 Component.push(AllItems.Component[0].Id)
             }
-            if (AllItems.Portfolio_x0020_Type == 'Service' || AllItems.Services != undefined && AllItems.Services.length > 0) {
+            if (AllItems?.Portfolio_x0020_Type == 'Service' || AllItems.Services != undefined && AllItems.Services.length > 0) {
                 RelevantPortfolioIds.push(AllItems.Services[0].Id)
             }
             var categoriesItem = '';
@@ -563,7 +564,8 @@ const CreateWS = (props: any) => {
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body: AllItems.Description,
-                DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+                // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
+                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
                 //SharewebTaskLevel2No: WorstreamLatestId,
@@ -577,8 +579,9 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data['siteType'] = AllItems.siteType
+                // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                    res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 closeTaskStatusUpdatePoup(res);
             })
@@ -621,26 +624,22 @@ const CreateWS = (props: any) => {
             }
         })
     }
-    const handleDatedue = (date: any) => {
-        let selectedDate = new window.Date(date)
-        let formatDate = moment(selectedDate).format('DDMMYYYY')
-        let datee = formatDate.length < 9
-        if (datee) {
-            var final = moment(selectedDate).format("DD/MM/YYYY")
-            AllItems.DueDate = date;
-            setDate(date);
-        }
-        else {
-            setDate(undefined)
-        }
-
-
-
-
-    };
+    // const handleDatedue = (date: any) => {
+    //     // let selectedDate = new window.Date(date)
+    //     // let formatDate = moment(selectedDate).format('DDMMYYYY')
+    //     // let datee = formatDate.length < 9
+    //     if (date) {
+    //         // var final = moment(selectedDate).format("DD/MM/YYYY")
+    //         // AllItems.DueDate = date;
+    //         setMyDate(date);
+    //     }
+    //     else {
+    //         setMyDate(undefined)
+    //     }
+    // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -650,36 +649,54 @@ const CreateWS = (props: any) => {
             </div>
         );
     };
-    const SelectDate = (Date: any) => {
-        if (Date == 'Today') {
+    // const SelectDate = (Date: any) => {
+    //     if (Date == 'Today') {
 
-            var change = moment().format('YYYY-MM-DD hh:mm:ss')
-            var NewDate = new window.Date().toString()
-            var FinalDate = moment(NewDate).format("DD/MM/YYYY")
+    //         let change = moment().format('YYYY-MM-DD hh:mm:ss')
+    //         let NewDate = new window.Date().toString()
+    //         let FinalDate = moment(NewDate).format("DD/MM/YYYY")
 
+    //     }
+    //     if (Date == 'Tomorrow') {
+    //         let Tommorrow = new window.Date();
+    //         Tommorrow.setDate(Tommorrow.getDate() + 1);
+    //         let FinalDate = moment(Tommorrow).format("DD/MM/YYYY")
+    //         console.log(FinalDate)
+    //     }
+    //     if (Date == 'This Week') {
+    //         let ThisWeek = new window.Date();
+    //         ThisWeek.setDate(ThisWeek.getDate());
+    //         let getdayitem = ThisWeek.getDay();
+    //         let dayscount = 7 - getdayitem
+    //         ThisWeek.setDate(ThisWeek.getDate() + dayscount);
+    //         let FinalDate = moment(ThisWeek).format("DD/MM/YYYY")
+    //     }
+    //     if (Date == 'This Month') {
+    //         let ThisMonth = new window.Date();
+    //         let year = ThisMonth.getFullYear();
+    //         let month = ThisMonth.getMonth();
+    //         let lastday = new window.Date(year, month + 1, 0);
+    //         var FinalDate = moment(lastday).format("DD/MM/YYYY")
+    //     }
+    //     setMyDate(FinalDate)
+    // }
+
+
+    const SelectDate = (item: any) => {
+        let dates = new Date();
+        if (item == 'Today') {
+            setMyDate({ ...myDate, editDate: dates, selectDateName: item });
         }
-        if (Date == 'Tomorrow') {
-            var Tommorrow = new window.Date();
-            Tommorrow.setDate(Tommorrow.getDate() + 1);
-            var FinalDate = moment(Tommorrow).format("DD/MM/YYYY")
-            console.log(FinalDate)
+        if (item == 'Tomorrow') {
+            setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
         }
-        if (Date == 'This Week') {
-            var ThisWeek = new window.Date();
-            ThisWeek.setDate(ThisWeek.getDate());
-            var getdayitem = ThisWeek.getDay();
-            var dayscount = 7 - getdayitem
-            ThisWeek.setDate(ThisWeek.getDate() + dayscount);
-            var FinalDate = moment(ThisWeek).format("DD/MM/YYYY")
+        if (item == 'This Week') {
+            setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
-        if (Date == 'This Month') {
-            var ThisMonth = new window.Date();
-            var year = ThisMonth.getFullYear();
-            var month = ThisMonth.getMonth();
-            var lastday = new window.Date(year, month + 1, 0);
-            var FinalDate = moment(lastday).format("DD/MM/YYYY")
+        if (item == 'This Month') {
+            let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
+            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
         }
-        setMyDate(FinalDate)
     }
     const AddchildItem = () => {
         setShowChildData(true)
@@ -832,7 +849,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
@@ -1004,34 +1021,34 @@ const CreateWS = (props: any) => {
                             <label className="full_width ng-binding" ng-bind-html="GetColumnDetails('dueDate') | trustedHTML">Due Date</label>
                             <input className="form-control"
                                 type="date"
-                                value={myDate}
-                                onChange={handleDatedue}
-                            // dateFormat="dd/MM/yyyy"
+                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
+                                // onChange={(e) => setMyDate(`${e.target.value}`)}
+                                // dateFormat="dd/MM/yyyy"
+                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
+                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
 
-
-                            />
                             <div className="">
                                 <label>
                                     <input className="form-check-input me-1" name="radioPriority"
-                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
                             </div>
                             <div className="">
                                 <label>
                                     <input className="form-check-input me-1" name="radioPriority"
-                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
                             </div>
                             <div className="">
                                 <label>
                                     <input className="form-check-input me-1" name="radioPriority"
-                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
                             </div>
                             <div className="">
                                 <label>
                                     <input className="form-check-input me-1" name="radioPriority"
-                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
                             </div>
                         </div>
@@ -1108,32 +1125,32 @@ const CreateWS = (props: any) => {
                                             <input className="form-control"
                                                 // selected={date}
                                                 type="date"
-                                                value={myDate}
-                                                onChange={handleDatedue}
-                                            // dateFormat="dd/MM/yyyy"
-                                            />
+                                                // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
+                                                // onChange={(e) => setMyDate(`${e.target.value}`)}
+                                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
+                                                onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Today')} />Today
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                                 </label>
                                             </div>
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                                 </label>
                                             </div>
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Week')} />This Week
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                                 </label>
                                             </div>
                                             <div className="">
                                                 <label>
                                                     <input className="form-check-input me-1" name="radioPriority"
-                                                        type="radio" value="(3) Low" defaultChecked={Priorityy} onClick={(e: any) => SelectDate('This Month')} />This Month
+                                                        type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                                 </label>
                                             </div>
                                         </div>
