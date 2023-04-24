@@ -312,12 +312,13 @@ function Portfolio({SelectedProp}:any) {
     item["listName"] = ContextValue.MasterTaskListID;
     setIsComponent(true);
     setSharewebComponent(item);
+    ++count;
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const Call = React.useCallback((item1) => {
     setIsComponent(false);
     setIsTask(false);
-    count++;
+    ++count;
     
   }, []);
 
@@ -1329,7 +1330,7 @@ function Portfolio({SelectedProp}:any) {
                                   data-interception="off"
                                   href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.Services?.results[0]?.Id}
                                 >
-                                  {item?.Services?.results[0]?.Id}
+                                  {item?.Services?.results[0]?.Title}
                                 </a>
                               </div>
                             </dd>

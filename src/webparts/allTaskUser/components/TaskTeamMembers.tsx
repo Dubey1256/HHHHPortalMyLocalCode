@@ -71,7 +71,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         }));
 
         this.state = {
-            tasks: this.props.tasks,
+            tasks: [],
             searchText: "",
             showCreatePanel: false,
             showEditPanel: false,
@@ -110,7 +110,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 fileName: "",
                 fileURL: ""
             },
-            onImageHover: false
+            onImageHover: false,
+            enableUser: false
         };
         this._selection = new Selection({
             onSelectionChanged: this._onItemsSelectionChanged,
@@ -175,7 +176,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ];
     }
 
-    public async componentDidMount() {       
+    public async componentDidMount() {
+        
+        const _tasksRes = await this.props.spService.getTasks(this.props.taskUsersListId);
+        const _tasks = this.getMemberTasks(_tasksRes);
 
         let timesheetCategories: IDropdownOption[] = [{
             key: "",
@@ -206,7 +210,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             smartMetadataItems.push(smartMetadataItem);
         });
         
-        const listTasks: any[] = [...this.props.tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+        const listTasks: any[] = [..._tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
 
         let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
         let _filteredImages = filteredImages.map((filteredImage: any) => ({
@@ -221,7 +225,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         _taskItem.approverId.push(_approverId);
 
         this.setState({
-            tasks: this.props.tasks,
+            tasks: _tasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks),
             timesheetCategories: timesheetCategories,
@@ -230,7 +234,37 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             taskItem: _taskItem
         });
     }
-
+    
+    private getMemberTasks(allTasks: any[]) {
+        const teamMembersTasks = allTasks.filter(taskItem=>taskItem.ItemType=="User").map(taskItem => ({
+            Title: taskItem.Title,
+            Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
+            Category: taskItem.TimeCategory,
+            Role: taskItem.Role ? (taskItem.Role.map((i: string)=> {
+                if(i=='Deliverable Teams') {return "Component Teams"}
+                else {return i}
+            }).join(",")) : "",
+            Company: taskItem.Company,            
+            Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; })=>i.Title).join(", ") : "",
+            TaskId: taskItem.Id,
+            Suffix: taskItem.Suffix,
+            GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",            
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
+            ApprovalType: taskItem.IsApprovalMail,
+            CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            TimeCategory: taskItem.TimeCategory,
+            IsActive: taskItem.IsActive,
+            IsTaskNotifications: taskItem.IsTaskNotifications,
+            ItemCover: taskItem.Item_x0020_Cover,
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title
+        }));
+        return teamMembersTasks;
+    }
+    
     private getSubMenuItems(menuColl: any[], allItems: any[]) {
         let items: any[] = [];
         menuColl.forEach(item=>{
@@ -250,7 +284,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private onSearchTextChange(ev: any, searchText: string) {
         let filterText = searchText.toLowerCase();
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         allTasks = allTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
         let fliteredTasks = [];
         let textExists: boolean;
@@ -282,12 +316,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private onEditIconClick(selTaskId: number) {
         this.setState({
-            selTaskId: selTaskId
+            selTaskId: selTaskId,
+            enableUser: false
         }, this.onEditTask);
     }
 
     private onEditTask() {
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t=>t.TaskId==this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = {...this.state.taskItem};
@@ -390,7 +425,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         taskItem.userMail = [];
         this.setState({
             taskItem: taskItem,
-            showCreatePanel: true
+            showCreatePanel: true,
+            enableUser: true
         });
     }
 
@@ -425,12 +461,13 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             _taskItem.userSuffix = newTask.Suffix;
             _taskItem.userId = newTask.AssingedToUserId;
             _taskItem.userMail = [assignedUserInfo.UserPrincipalName];
-            _taskItem.approverId = newTask.ApproverId[0];
+            _taskItem.approverId = newTask.ApproverId;
             _taskItem.approverMail = [approverInfo.UserPrincipalName];
             this.setState({
                 showCreatePanel: false,
                 selTaskId: newTask.Id,
                 showEditPanel: true,
+                enableUser: false,
                 taskItem: _taskItem
             });
         }
@@ -516,14 +553,43 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         this.deleteTask();
     }
 
-    private updateGallery() {
-        this.props.loadTasks();
-        let allTasks = [...this.props.tasks];
-        let listTasks = allTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+    private async updateGallery() {
+
+        const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
+        
+        const teamMembersTasks = allTasks.filter(taskItem=>taskItem.ItemType=="User").map(taskItem => ({
+            Title: taskItem.Title,
+            Group: taskItem.UserGroup ? taskItem.UserGroup.Title : "",
+            Category: taskItem.TimeCategory,
+            Role: taskItem.Role ? (taskItem.Role.map((i: string)=> {
+                if(i=='Deliverable Teams') {return "Component Teams"}
+                else {return i}
+            }).join(",")) : "",
+            Company: taskItem.Company,            
+            Approver: taskItem.Approver ? taskItem.Approver.map((i: { Title: any; })=>i.Title).join(", ") : "",
+            TaskId: taskItem.Id,
+            Suffix: taskItem.Suffix,
+            GroupId: taskItem.UserGroup ? taskItem.UserGroup.Id.toString() : "",            
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
+            ApprovalType: taskItem.IsApprovalMail,
+            CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            TimeCategory: taskItem.TimeCategory,
+            IsActive: taskItem.IsActive,
+            IsTaskNotifications: taskItem.IsTaskNotifications,
+            ItemCover: taskItem.Item_x0020_Cover,
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title
+        }));
+
+        let listTasks = teamMembersTasks.map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
+        
         this.setState({
             selTaskId: undefined,
             searchText: "",
-            tasks: allTasks,
+            tasks: teamMembersTasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks)
         });
@@ -766,7 +832,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             />
         </div>);
 
-        elemMemberTaskList = this.state.sortedItems.length>0 && <TaskUsersTable TaskUsers={this.state.sortedItems} GetUser={(userName, taskId)=>this.GetTaskUser(userName, taskId)} AddTask={this.onAddTeamMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
+        elemMemberTaskList = <TaskUsersTable TaskUsers={this.state.sortedItems} GetUser={(userName, taskId)=>this.GetTaskUser(userName, taskId)} AddTask={this.onAddTeamMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
 
         const elemTaskMetadata = (this.state.showEditPanel && <div style={{width:"40%",display:"inline-block"}}>
             <Label>Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</Label>
@@ -777,7 +843,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
         
-        const elemOOTBFormLink = (<Link href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" style={{marginRight:"8px"}}>Open out-of-the-box form</Link>);
+        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" style={{marginRight:"8px"}}>Open out-of-the-box form</Link>);
         const elemActionButons = (<div style={{float:"right",width:"60%",display:"inline-block",marginTop:"16px"}}>
             <div style={{float:"right"}}>
                 { this.state.selTaskId && elemOOTBFormLink }
@@ -811,7 +877,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             resolveDelay={1000}
             onChange = { this.getUserDetails }
             defaultSelectedUsers = {this.state.taskItem.userMail}
-            disabled={this.state.selTaskId!=undefined}
+            disabled={!this.state.enableUser}
         ></PeoplePicker>);
 
         const elemApprover = (<PeoplePicker 
@@ -966,7 +1032,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         const elemSelImage = (this.state.taskItem.itemCover && <div>
             <Image src={this.state.taskItem.itemCover} imageFit={ImageFit.centerContain} height={120} width={160} />
-            <Link target="_blank" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/${this.state.selImageFolder}`}>Image Folder</Link>
+            <Link target="_blank" href={`${this.props.context.pageContext.web.absoluteUrl}/PublishingImages/${this.state.selImageFolder}`}>Image Folder</Link>
             <Label onClick={this.onImageCleared}>
                 <Icon iconName="Delete" />
                 <Text>Clear Image</Text>
@@ -1181,9 +1247,9 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private getImageUrl(userId: number) {
-        const allTasks = [...this.props.tasks];
+        const allTasks = [...this.state.tasks];
         const userTaskItem = allTasks.filter(taskItem=>taskItem.TaskId==userId)[0];
-        return userTaskItem.ItemCover ? userTaskItem.ItemCover.Url : "";
+        return (userTaskItem && userTaskItem.ItemCover) ? userTaskItem.ItemCover.Url : "";
     }
 
     private async getUserInfo(userMail: string) {
