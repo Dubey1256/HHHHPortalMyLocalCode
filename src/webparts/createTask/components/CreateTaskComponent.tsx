@@ -25,7 +25,7 @@ let Isapproval;
 var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
-var AllListId={}
+var AllListId:any={}
 function CreateTaskComponent(props:any) {
     let base_Url=props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
@@ -91,6 +91,7 @@ function CreateTaskComponent(props:any) {
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
     }
+    base_Url=AllListId?.siteUrl
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
 
@@ -122,13 +123,13 @@ function CreateTaskComponent(props:any) {
         if (type === "LinkedComponent") {
             if (propsItems?.linkedComponent?.length > 0) {
                 setSave({ ...save, linkedServices: propsItems.linkedComponent});
-                setLinkedComponentData(propsItems.linkedComponent);
+                setSmartComponentData(propsItems.linkedComponent);
             }
         }
-        if (type === "SmartComponent") {
-            if (propsItems?.smartComponent?.length > 0) {
-                setSave({ ...save, Component: propsItems.smartComponent });
-                setSmartComponentData(propsItems.smartComponent);
+        if (type === "LinkedServices") {
+            if (propsItems?.linkedComponent?.length > 0) {
+                setSave({ ...save, Component: propsItems.linkedComponent });
+                setLinkedComponentData(propsItems.linkedComponent);
             }
         }
     };
@@ -1259,7 +1260,7 @@ function CreateTaskComponent(props:any) {
                                         />
                                     </>
                                 }
-                                {smartComponentData ? smartComponentData?.map((com: any) => {
+                                {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
                                     return (
                                         <>
                                             <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
@@ -1290,13 +1291,13 @@ function CreateTaskComponent(props:any) {
                                         {linkedComponentData?.map((com: any) => {
                                             return (
                                                 <>
-                                                    <div className="d-flex Component-container-edit-task">
-                                                        <div>
+                                                    <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
+                                                
                                                             <a className="hreflink " target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                 {com.Title}
                                                             </a>
                                                             <img src={`${base_Url}/_layouts/images/delete.gif`} onClick={() => setLinkedComponentData([])} />
-                                                        </div>
+                                                
                                                     </div>
                                                 </>
                                             )
@@ -1551,8 +1552,8 @@ function CreateTaskComponent(props:any) {
                     }
                     <button type="button" className='btn btn-primary bg-siteColor ' onClick={() => createTask()}>Submit</button>
                 </div>
-                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} AllListId={AllListId} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
-                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
+                {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
+                {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
                 {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup  AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>

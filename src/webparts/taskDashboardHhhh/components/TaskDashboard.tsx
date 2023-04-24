@@ -1019,7 +1019,7 @@ const TaskDashboard = (props: any) => {
                 console.log(error);
             });
 
-        taskUsers = await globalCommon.loadTaskUsers();
+        taskUsers = await loadTaskUsers();
         taskUsers?.map((item: any) => {
             item.isAdmin = false;
             if (currentUserId == item?.AssingedToUser?.Id) {
@@ -1033,6 +1033,25 @@ const TaskDashboard = (props: any) => {
         setGroupedUsers(userGroups);
         GetMetaData();
     }
+    const loadTaskUsers = async () => {
+        let taskUser;
+       if(AllListId?.TaskUsertListID!=undefined){
+        try {
+            let web = new Web(AllListId?.siteUrl);
+            taskUser = await web.lists
+              .getById(AllListId?.TaskUsertListID)
+              .items
+              .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+              .get();
+          }
+          catch (error) {
+            return Promise.reject(error);
+          }
+          return taskUser;
+       }else{
+        alert('Task User List Id not Available')
+       }
+      }
     const createGroupUsers = () => {
         let Groups: any = [];
         taskUsers?.map((item: any) => {
