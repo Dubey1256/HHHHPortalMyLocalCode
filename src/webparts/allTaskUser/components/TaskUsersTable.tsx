@@ -96,7 +96,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const [globalFilter, setGlobalFilter] = React.useState('')
+  const [globalFilter, setGlobalFilter] = React.useState('');
+
+  const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
+  const refreshData = () => setData(props.TaskUsers);
+  React.useEffect(()=>refreshData(), [props.TaskUsers]);
 
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
     () => [      
@@ -105,7 +109,8 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         header: "",
         placeholder: "Title",
         id: "Title",
-        cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId)
+        cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId),
+        sortDescFirst: false
       },
       {
         accessorKey: "Group",
@@ -135,20 +140,20 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       {
         id: "TaskId",
         accessorKey: "TaskId",
-        header: ()=><div>Edit/Delete</div>,
-        cell: (info)=>(<div>
+        header: null,
+        cell: (info)=>(<div style={{width:"60px"}}>
           <Link href="#" onClick={()=>props.EditTask(info.getValue())}><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} /></Link>
           <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} /></Link>
         </div>),
         enableColumnFilter: false,
-        enableSorting: false
+        enableSorting: false,
+        minSize: 60
       }
     ],
-    []
+    [data]
   )
 
-  const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
-  const refreshData = () => setData(props.TaskUsers);
+ 
 
   const table = useReactTable({
     data,
@@ -222,20 +227,23 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
                           />
                         </div>
                       ) : null}
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                       {header.column.getIsSorted()
-                          ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                              header.column.getIsSorted() as string
-                            ] ?? null
-                          : <FaSort />}
-                      </div>
+                      {
+                        header.column.id=="TaskId" ? null :
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                        {header.column.getIsSorted()
+                            ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                header.column.getIsSorted() as string
+                              ] ?? null
+                            : <FaSort />}
+                        </div>
+                    }
                     </div>
                     )}
                   </th>
@@ -264,7 +272,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         </tbody>
       </BTable>
       <div className="h-2" />
-      <div className="flex items-center gap-2">
+      {data.length>10 && <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"
           onClick={() => table.setPageIndex(0)}
@@ -325,6 +333,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
           ))}
         </select>
       </div>
+      }
       <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
       {false && <><div>
         <button onClick={() => rerender()}>Force Rerender</button>
