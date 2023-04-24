@@ -10,7 +10,7 @@ import PivotNavItems from "./PivotNavItems";
 //import SectionFilter from "./SectionFilter";
 import SectionTitle from "./SectionTitle";
 import * as moment from "moment-timezone";
-
+var AllListId:any;
 const controlStyles = {
     root: {
         margin: '10px 5px 20px 0px',
@@ -80,6 +80,15 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     }
 
     private async loadConfigurations() {
+     AllListId={
+        TaskUsertListID:this.props.taskUsersListId,
+        SmartMetadataListID: this.props.SmartMetadataListID,
+        SmartInformationListID:this.props.SmartInformationListID,
+        DocumentsListID:this.props.DocumentsListID,
+        TaskTimeSheetListID:this.props.TaskTimeSheetListID,
+        TimeEntry:this.props.TimeEntry,
+        SiteCompostion:this.props.SiteCompostion,
+     }
         const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
         const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
         const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser&&taskUser.Item_x0020_Cover).map(taskUser=>({
@@ -584,7 +593,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             </div>
         );
 
-        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems Items={this.state.filteredItems} TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} />);
+        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId}TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
         
         const elemDeleteRecord = (<Dialog
             hidden = {this.state.hideDeleteDialog}
