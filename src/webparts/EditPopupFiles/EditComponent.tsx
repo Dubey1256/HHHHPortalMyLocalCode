@@ -1598,7 +1598,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, "Service")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
