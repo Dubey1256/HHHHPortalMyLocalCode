@@ -2485,6 +2485,7 @@ function EditProjectPopup(item: any) {
             {IsPortfolio && (
               <PortfolioTagging
                 props={SharewebComponent}
+                AllListId={AllListId}
                 type={portfolioType}
                 Call={Call}
               ></PortfolioTagging>

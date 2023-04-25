@@ -720,7 +720,10 @@ const inlineEditingcolumns = (props: any) => {
                                                                     data-interception="off"
                                                                     title={user.Title}
                                                                 >
-                                                                    <img className="workmember" src={user?.Item_x0020_Cover?.Url}></img>
+                                                                    {user?.Item_x0020_Cover?.Url!=undefined?
+                                                                    <img className="workmember" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img>:
+                                                                    <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                                                                    
                                                                 </a>
                                                         )
                                                     }

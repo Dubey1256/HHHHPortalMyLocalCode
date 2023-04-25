@@ -3543,7 +3543,7 @@ function ComponentTable(SelectedProp: any) {
                         style={row.getCanExpand() ? {
                             paddingLeft: `${row.depth * 5}px`,
                         } : {
-                            paddingLeft: "24px",
+                            paddingLeft: "18px",
                         }}
                     >
                         <>
