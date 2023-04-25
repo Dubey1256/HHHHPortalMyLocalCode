@@ -6,7 +6,8 @@ import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSele
 import Button from 'react-bootstrap/Button';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
-let portfolioType = ''
+let portfolioType = '';
+let AllListId:any={};
 const AddProject = (props: any) => {
     const [title, settitle] = React.useState('')
     const [lgShow, setLgShow] = useState(false);
@@ -213,7 +214,7 @@ const AddProject = (props: any) => {
                 </div>
             </Panel>
 
-            {IsPortfolio && <PortfolioTagging props={ShareWebComponent} type={portfolioType} Call={Call}></PortfolioTagging>}
+            {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>}
         </>
     )
 }
