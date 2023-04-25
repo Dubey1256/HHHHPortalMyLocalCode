@@ -807,7 +807,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            {row?.original?.createdImg!=undefined?<img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} />:<span className="svg__iconbox svg__icon--jpeg" title={row?.original?.Author?.Title}></span>}
+            {row?.original?.createdImg!=undefined?<img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} />:<span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
             
           </span>
         ),
@@ -1356,7 +1356,7 @@ const ProjectManagementMain = (props: any) => {
                               hover
                               {...getTableProps()}
                             >
-                              <thead>
+                              <thead className="fixed-Header">
                                 {headerGroups.map((headerGroup: any) => (
                                   <tr {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column: any) => (

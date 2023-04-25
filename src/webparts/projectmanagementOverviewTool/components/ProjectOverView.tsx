@@ -251,7 +251,7 @@ export default function ProjectOverview(props: any) {
                         </div>
                         <div>
                             <Table className="SortingTable" bordered hover {...getTableProps()}>
-                                <thead>
+                                <thead className="fixed-Header">
                                     {headerGroups.map((headerGroup: any) => (
                                         <tr  {...headerGroup.getHeaderGroupProps()}>
                                             {headerGroup.headers.map((column: any) => (
