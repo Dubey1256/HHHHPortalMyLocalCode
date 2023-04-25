@@ -92,6 +92,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         "Author/Id",
         "Author/Title",
         "Parent/Title",
+        "Portfolio_x0020_Type",
         "SharewebCategories/Id",
         "SharewebCategories/Title",
         "AssignedTo/Id",
@@ -176,6 +177,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
           result.ClientCategory.push(catego);
         });
       }
+      if(result.Portfolio_x0020_Type == 'Component'){
       if (result.Item_x0020_Type == "Root Component") {
         result["childs"] = [];
         RootComponentsData.push(result);
@@ -193,6 +195,8 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
         result["childs"] = [];
         FeatureData.push(result);
       }
+      }
+      
     });
 
     $.each(SubComponentsData, function (index: any, subcomp: any) {

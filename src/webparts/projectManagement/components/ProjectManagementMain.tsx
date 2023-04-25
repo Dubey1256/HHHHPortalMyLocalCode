@@ -29,8 +29,10 @@ let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
 var AllListId: any = {};
-var backupAllTasks:any=[];
+var backupAllTasks: any = [];
 var DataSiteIcon: any = [];
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
   const [icon, seticon] = React.useState(false);
@@ -47,6 +49,8 @@ const ProjectManagementMain = (props: any) => {
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
+  const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
+
   const [expendcollapsAccordion, setExpendcollapsAccordion]: any =
     React.useState({
       description: false,
@@ -62,6 +66,12 @@ const ProjectManagementMain = (props: any) => {
   });
 
   React.useEffect(() => {
+    try {
+      isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+      isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+    } catch (error: any) {
+      console.log(error)
+    }
     AllListId = {
       MasterTaskListID: props?.props?.MasterTaskListID,
       TaskUsertListID: props?.props?.TaskUsertListID,
@@ -70,7 +80,13 @@ const ProjectManagementMain = (props: any) => {
       TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
       DocumentsListID: props?.props?.DocumentsListID,
       SmartInformationListID: props?.props?.SmartInformationListID,
-      siteUrl: props?.props?.siteUrl
+      siteUrl: props?.props?.siteUrl,
+      AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+      isShowTimeEntry: isShowTimeEntry,
+      isShowSiteCompostion: isShowSiteCompostion
+    }
+    if(props?.props?.SmartInformationListID!=undefined){
+      setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
     GetMasterData();
@@ -99,90 +115,261 @@ const ProjectManagementMain = (props: any) => {
     console.log(query); //"app=article&act=news_content&aid=160990"
     return false;
   };
+  const loadTaskUsers = async () => {
+    let taskUser;
+    try {
+      let web = new Web(AllListId?.siteUrl);
+      taskUser = await web.lists
+        .getById(AllListId?.TaskUsertListID)
+        .items
+        .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+        .get();
+    }
+    catch (error) {
+      return Promise.reject(error);
+    }
+    return taskUser;
+  }
 
   const GetMasterData = async () => {
-    AllUser = await globalCommon.loadTaskUsers();
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    let taskUsers: any = {};
-    var AllUsers: any = [];
-    taskUsers = await web.lists
-      .getById("EC34B38F-0669-480A-910C-F84E92E58ADF")
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
-      .getById(QueryId)
-      .get();
-    if ((taskUsers.PercentComplete = undefined))
-      taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
-    if (taskUsers.Body != undefined) {
-      taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
-    }
-
-    let allPortfolios: any[] = [];
-    allPortfolios = await globalCommon.getPortfolio("All");
-
-    taskUsers.smartService = [];
-    taskUsers?.ServicesId?.map((item: any) => {
-      allPortfolios?.map((portfolio: any) => {
-        if (portfolio?.Id == item) {
-          portfolio.filterActive = false;
-          taskUsers.smartService.push(portfolio);
-        }
-      });
-    });
-    taskUsers.smartComponent = [];
-    taskUsers?.ComponentId?.map((item: any) => {
-      allPortfolios?.map((portfolio: any) => {
-        if (portfolio?.Id == item) {
-          portfolio.filterActive = false;
-          taskUsers.smartComponent.push(portfolio);
-        }
-      });
-    });
-    AllUsers.push(taskUsers);
-
-    AllUsers?.map((items: any) => {
-      items.AssignedUser = [];
-      if (items.AssignedToId != undefined) {
-        items.AssignedToId.map((taskUser: any) => {
-          var newuserdata: any = {};
-
-          AllUser?.map((user: any) => {
-            if (user.AssingedToUserId == taskUser) {
-              newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
-              newuserdata["Suffix"] = user.Suffix;
-              newuserdata["Title"] = user.Title;
-              newuserdata["UserId"] = user.AssingedToUserId;
-              items["Usertitlename"] = user.Title;
-            }
-          });
-          items.AssignedUser.push(newuserdata);
-        });
+    if (AllListId?.MasterTaskListID != undefined) {
+      try{
+        AllUser = await loadTaskUsers();
+      let web = new Web(props?.siteUrl);
+      let taskUsers: any = {};
+      var AllUsers: any = [];
+      taskUsers = await web.lists
+        .getById(AllListId?.MasterTaskListID)
+        .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+        .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+        .getById(QueryId)
+        .get();
+      if ((taskUsers.PercentComplete = undefined))
+        taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
+      if (taskUsers.Body != undefined) {
+        taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
       }
-    });
-    if (AllUsers?.length > 0) {
-      setProjectTitle(AllUsers[0].Title);
+
+      let allPortfolios: any[] = [];
+      allPortfolios = await getPortfolio("All");
+
+      taskUsers.smartService = [];
+      taskUsers?.ServicesId?.map((item: any) => {
+        allPortfolios?.map((portfolio: any) => {
+          if (portfolio?.Id == item) {
+            portfolio.filterActive = false;
+            taskUsers.smartService.push(portfolio);
+          }
+        });
+      });
+      taskUsers.smartComponent = [];
+      taskUsers?.ComponentId?.map((item: any) => {
+        allPortfolios?.map((portfolio: any) => {
+          if (portfolio?.Id == item) {
+            portfolio.filterActive = false;
+            taskUsers.smartComponent.push(portfolio);
+          }
+        });
+      });
+      AllUsers.push(taskUsers);
+
+      AllUsers?.map((items: any) => {
+        items.AssignedUser = [];
+        if (items.AssignedToId != undefined) {
+          items.AssignedToId.map((taskUser: any) => { 
+            var newuserdata: any = {};
+
+            AllUser?.map((user: any) => {
+              if (user.AssingedToUserId == taskUser) {
+                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                newuserdata["Suffix"] = user?.Suffix;
+                newuserdata["Title"] = user?.Title;
+                newuserdata["UserId"] = user?.AssingedToUserId;
+                items["Usertitlename"] = user?.Title;
+              }
+            });
+            items.AssignedUser.push(newuserdata);
+          });
+        }
+      });
+      if (AllUsers?.length > 0) {
+        setProjectTitle(AllUsers[0].Title);
+      }
+      setMasterdata(AllUsers[0]);
+      }catch(error){
+        console.log(error)
+      }
+    } else {
+      alert('Master Task List Id not present')
     }
-    setMasterdata(AllUsers[0]);
+
   };
+  //Load All Component And Services
+  const getPortfolio = async (type: any) => {
+    let result;
+   if(AllListId?.MasterTaskListID != undefined){
+    try {
+      var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
+      var SubComponentsData: any[] = [];
+      var FeatureData: any[] = [];
+      if (type != undefined) {
+          let web = new Web(AllListId?.siteUrl);
+          let componentDetails = [];
+          if (type == 'All') {
+              componentDetails = await web.lists
+                  .getById(AllListId?.MasterTaskListID)
+                  .items
+                  .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                  .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
+                  .top(4999)
+                  .get()
+          } else {
+              componentDetails = await web.lists
+                  .getById(AllListId?.MasterTaskListID )
+                  .items
+                  .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                  .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + type + "'")
+                  .top(4999)
+                  .get()
+          }
+          let Response: ArrayLike<any> = [];
+          Response = await loadTaskUsers();
+
+          $.each(componentDetails, function (index: any, result: any) {
+
+              result.TitleNew = result.Title;
+              result.TeamLeaderUser = []
+              result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+
+              if (result.DueDate == 'Invalid date' || '') {
+                  result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+              }
+              if (result.PercentComplete != undefined)
+                  result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+              if (result.Short_x0020_Description_x0020_On != undefined) {
+                  result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+              }
+
+              if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                  $.each(result.AssignedTo, function (index: any, Assig: any) {
+                      if (Assig.Id != undefined) {
+                          $.each(Response, function (index: any, users: any) {
+
+                              if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                  users.ItemCover = users.Item_x0020_Cover;
+                                  result.TeamLeaderUser.push(users);
+                              }
+
+                          })
+                      }
+                  })
+              }
+              if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                  $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                      if (Assig.Id != undefined) {
+                          $.each(Response, function (index: any, users: any) {
+                              if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                  users.ItemCover = users.Item_x0020_Cover;
+                                  result.TeamLeaderUser.push(users);
+                              }
+
+                          })
+                      }
+                  })
+              }
+
+              if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                  $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                      result.ClientCategory.push(catego);
+                  })
+              }
+              if (result.Item_x0020_Type == 'Root Component') {
+                  result['Child'] = [];
+                  RootComponentsData.push(result);
+              }
+              if (result.Item_x0020_Type == 'Component') {
+                  result['Child'] = [];
+                  ComponentsData.push(result);
+
+
+              }
+
+              if (result.Item_x0020_Type == 'SubComponent') {
+                  result['Child'] = [];
+                  SubComponentsData.push(result);
+
+
+              }
+              if (result.Item_x0020_Type == 'Feature') {
+                  result['Child'] = [];
+                  FeatureData.push(result);
+              }
+          });
+
+          $.each(SubComponentsData, function (index: any, subcomp: any) {
+              if (subcomp.Title != undefined) {
+                  $.each(FeatureData, function (index: any, featurecomp: any) {
+                      if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                          subcomp['Child'].push(featurecomp);;
+                      }
+                  })
+              }
+          })
+
+          $.each(ComponentsData, function (index: any, subcomp: any) {
+              if (subcomp.Title != undefined) {
+                  $.each(SubComponentsData, function (index: any, featurecomp: any) {
+                      if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                          subcomp['Child'].push(featurecomp);;
+                      }
+                  })
+              }
+          })
+          result = componentDetails;
+          //maidataBackup.push(ComponentsData)
+          // setmaidataBackup(ComponentsData)
+
+      }
+  }
+  catch (error) {
+      return Promise.reject(error);
+  }
+   }else {
+    alert('Master Task List Id not present')
+   }
+
+    return result;
+
+}
 
   const CallBack = React.useCallback(() => {
     setisOpenEditPopup(false);
   }, []);
 
   const GetMetaData = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    let smartmeta = [];
-
-    let TaxonomyItems = [];
-    smartmeta = await web.lists
-      .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-      .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
-      .top(5000)
-      .filter("TaxType eq 'Sites'")
-      .expand("Parent")
-      .get();
-    siteConfig = smartmeta;
-    LoadAllSiteTasks();
+    if (AllListId?.SmartMetadataListID != undefined) {
+      try {
+        let web = new Web(props?.siteUrl);
+      let smartmeta = [];
+      let TaxonomyItems = [];
+      smartmeta = await web.lists
+        .getById(AllListId?.SmartMetadataListID)
+        .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+        .top(5000)
+        .filter("TaxType eq 'Sites'")
+        .expand("Parent")
+        .get();
+      siteConfig = smartmeta;
+      LoadAllSiteTasks();
+      } catch (error) {
+        console.log(error)
+        
+      }
+    } else {
+      alert('Smart Metadata List Id not present')
+      siteConfig = [];
+    }
   };
 
   const EditPopup = React.useCallback((item: any) => {
@@ -212,7 +399,7 @@ const ProjectManagementMain = (props: any) => {
   };
 
   const EditComponentPopup = (item: any) => {
-    item["siteUrl"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+    item["siteUrl"] = props?.siteUrl;
     item["listName"] = "Master Tasks";
     // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsComponent(true);
@@ -220,148 +407,163 @@ const ProjectManagementMain = (props: any) => {
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const loadAdminConfigurations = async () => {
-    var CurrentSiteType = "";
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    await web.lists
-      .getById("e968902a-3021-4af2-a30a-174ea95cf8fa")
-      .items.select(
-        "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-      )
-      .top(4999)
-      .get()
-      .then(
-        (response) => {
-          var SmartFavoritesConfig = [];
-          $.each(response, function (index: any, smart: any) {
-            if (smart.Configurations != undefined) {
-              DataSiteIcon = JSON.parse(smart.Configurations);
-            }
-          });
-        },
-        function (error) { }
-      );
+    if (AllListId?.AdminConfigrationListID != undefined) {
+      var CurrentSiteType = "";
+      let web = new Web(props?.siteUrl);
+      await web.lists
+        .getById(AllListId.AdminConfigrationListID)
+        .items.select(
+          "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
+        )
+        .top(4999)
+        .get()
+        .then(
+          (response) => {
+            var SmartFavoritesConfig = [];
+            $.each(response, function (index: any, smart: any) {
+              if (smart.Configurations != undefined) {
+                DataSiteIcon = JSON.parse(smart.Configurations);
+              }
+            });
+          },
+          function (error) { }
+        );
+    } else {
+      alert('Admin Configration List Id not present')
+      DataSiteIcon = [];
+    }
   };
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    const tasks=backupAllTasks;
-    tasks?.map((task: any,index:any) => {
-        if (task.Id == item.Id && task.siteType==item.siteType) {
-          backupAllTasks[index] = { ...task, ...item };
-        }
+    const tasks = backupAllTasks;
+    tasks?.map((task: any, index: any) => {
+      if (task.Id == item.Id && task.siteType == item.siteType) {
+        backupAllTasks[index] = { ...task, ...item };
+      }
     })
-    backupAllTasks=tasks;
+    backupAllTasks = tasks;
     setAllTasks(backupAllTasks);
     setData(backupAllTasks);
-}, []);
+  }, []);
   const LoadAllSiteTasks = function () {
     loadAdminConfigurations();
-    var AllTask: any = [];
-    var query =
-      "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-    var Counter = 0;
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-    var arraycount = 0;
-    siteConfig.map(async (config: any) => {
-      if (config.Title != "SDC Sites") {
-        let smartmeta = [];
-        smartmeta = await web.lists
-          .getById(config.listId)
-          .items.select(
-            "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
-          )
-          .top(4999)
-          .filter("ProjectId eq " + QueryId)
-          .orderBy("Priority_x0020_Rank", false)
-          .expand(
-            "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
-          )
-          .get();
-        arraycount++;
-        smartmeta.map((items: any) => {
-          items.AllTeamMember = [];
-          items.siteType = config.Title;
-          items.listId = config.listId;
-          items.siteUrl = config.siteUrl.Url;
-          items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-          items.DisplayDueDate =
-            items.DueDate != null
-              ? Moment(items.DueDate).format("DD/MM/YYYY")
-              : "";
-          items.DisplayCreateDate =
-            items.Created != null
-              ? Moment(items.Created).format("DD/MM/YYYY")
-              : "";
-          items.portfolio = {};
-          if (items?.Component?.length > 0) {
-            items.portfolio = items?.Component[0];
-            items.PortfolioTitle = items?.Component[0]?.Title;
-            items["Portfoliotype"] = "Component";
-          }
-          if (items?.Services?.length > 0) {
-            items.portfolio = items?.Services[0];
-            items.PortfolioTitle = items?.Services[0]?.Title;
-            items["Portfoliotype"] = "Service";
-          }
-          if (DataSiteIcon != undefined) {
-            DataSiteIcon.map((site: any) => {
-              if (site.Site == items.siteType) {
-                items["siteIcon"] = site.SiteIcon;
-              }
-            });
-          }
-
-          items.TeamMembersSearch = "";
-          if (items.AssignedTo != undefined) {
-            items?.AssignedTo?.map((taskUser: any) => {
-              AllUser.map((user: any) => {
-                if (user.AssingedToUserId == taskUser.Id) {
-                  if (user?.Title != undefined) {
-                    items.TeamMembersSearch =
-                      items.TeamMembersSearch + " " + user?.Title;
-                  }
+    if (siteConfig?.length > 0) {
+     try {
+      var AllTask: any = [];
+      var query =
+        "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+      var Counter = 0;
+      let web = new Web(props?.siteUrl);
+      var arraycount = 0;
+      siteConfig.map(async (config: any) => {
+        if (config.Title != "SDC Sites") {
+          let smartmeta = [];
+          smartmeta = await web.lists
+            .getById(config.listId)
+            .items.select(
+              "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+            )
+            .top(4999)
+            .filter("ProjectId eq " + QueryId)
+            .orderBy("Priority_x0020_Rank", false)
+            .expand(
+              "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType"
+            )
+            .get();
+          arraycount++;
+          smartmeta.map((items: any) => {
+            items.AllTeamMember = [];
+            items.siteType = config.Title;
+            items.listId = config.listId;
+            items.siteUrl = config.siteUrl.Url;
+            items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
+            items.DisplayDueDate =
+              items.DueDate != null
+                ? Moment(items.DueDate).format("DD/MM/YYYY")
+                : "";
+            items.DisplayCreateDate =
+              items.Created != null
+                ? Moment(items.Created).format("DD/MM/YYYY")
+                : "";
+            items.portfolio = {};
+            if (items?.Component?.length > 0) {
+              items.portfolio = items?.Component[0];
+              items.PortfolioTitle = items?.Component[0]?.Title;
+              items["Portfoliotype"] = "Component";
+            }
+            if (items?.Services?.length > 0) {
+              items.portfolio = items?.Services[0];
+              items.PortfolioTitle = items?.Services[0]?.Title;
+              items["Portfoliotype"] = "Service";
+            }
+            if (DataSiteIcon != undefined) {
+              DataSiteIcon.map((site: any) => {
+                if (site.Site == items.siteType) {
+                  items["siteIcon"] = site.SiteIcon;
                 }
-              });
-            });
-          }
-          items.componentString =
-            items.Component != undefined &&
-              items.Component != undefined &&
-              items.Component.length > 0
-              ? getComponentasString(items.Component)
-              : "";
-          items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
-          AllUser?.map((user: any) => {
-            if (items.Team_x0020_Members != undefined) {
-              items.Team_x0020_Members.map((taskUser: any) => {
-                var newuserdata: any = {};
-                if (user.AssingedToUserId == items.Author.Id) {
-                  items.createdImg = user.Item_x0020_Cover.Url;
-                }
-                if (user.AssingedToUserId == taskUser.Id) {
-                  newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
-                  newuserdata["Suffix"] = user.Suffix;
-                  newuserdata["Title"] = user.Title;
-                  newuserdata["UserId"] = user.AssingedToUserId;
-                  items["Usertitlename"] = user.Title;
-                }
-                items.AllTeamMember.push(newuserdata);
               });
             }
+
+            items.TeamMembersSearch = "";
+            if (items.AssignedTo != undefined) {
+              items?.AssignedTo?.map((taskUser: any) => {
+                AllUser.map((user: any) => {
+                  if (user.AssingedToUserId == taskUser.Id) {
+                    if (user?.Title != undefined) {
+                      items.TeamMembersSearch =
+                        items.TeamMembersSearch + " " + user?.Title;
+                    }
+                  }
+                });
+              });
+            }
+            items.componentString =
+              items.Component != undefined &&
+                items.Component != undefined &&
+                items.Component.length > 0
+                ? getComponentasString(items.Component)
+                : "";
+            items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+            AllUser?.map((user: any) => {
+              if (items.Team_x0020_Members != undefined) {
+                items.Team_x0020_Members.map((taskUser: any) => {
+                  var newuserdata: any = {};
+                  if (user.AssingedToUserId == items.Author.Id) {
+                    items.createdImg = user?.Item_x0020_Cover?.Url;
+                  }
+                  if (user.AssingedToUserId == taskUser.Id) {
+                    newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                    newuserdata["Suffix"] = user?.Suffix;
+                    newuserdata["Title"] = user?.Title;
+                    newuserdata["UserId"] = user?.AssingedToUserId;
+                    items["Usertitlename"] = user?.Title;
+                  }
+                  items.AllTeamMember.push(newuserdata);
+                });
+              }
+            });
+            AllTask.push(items);
           });
-          AllTask.push(items);
-        });
-        if (arraycount === 17) {
-          setAllTasks(AllTask);
-          setData(AllTask);
-          backupAllTasks=AllTask;
-          console.log("this is main tabke data ", AllTask);
+          let setCount=siteConfig?.length-1
+          if (arraycount === setCount) {
+            setAllTasks(AllTask);
+            setData(AllTask);
+            backupAllTasks = AllTask;
+            console.log("this is main tabke data ", AllTask);
+          }
+        } else {
+          arraycount++;
         }
-      } else {
-        arraycount++;
+      });
+      } catch (error) {
+        console.log(error)
+        
       }
-    });
+    } else {
+      alert('Site Config Length less than 0')
+    }
   };
   const getComponentasString = function (results: any) {
     var component = "";
@@ -381,8 +583,8 @@ const ProjectManagementMain = (props: any) => {
   }, [Masterdata]);
   const EditPortfolio = (item: any, type: any) => {
     portfolioType = type;
+    setSharewebComponent(item);
     setIsPortfolio(true);
-    setShareWebComponent(item);
   };
   const Call = (propsItems: any, type: any) => {
     setIsComponent(false);
@@ -399,12 +601,15 @@ const ProjectManagementMain = (props: any) => {
         TagPotfolioToProject();
       }
     }
+    if(type==="EditPopup"){
+      GetMasterData();
+    }
   };
-  const ChangeIcon=()=>{
-   seticon(!icon)
-  } 
+  const ChangeIcon = () => {
+    seticon(!icon)
+  }
   const TagPotfolioToProject = async () => {
-    if (Masterdata?.Id != undefined) {
+    if (Masterdata?.Id != undefined && AllListId?.MasterTaskListID != undefined) {
       let selectedComponent: any[] = [];
       if (smartComponentData !== undefined && smartComponentData.length > 0) {
         $.each(smartComponentData, function (index: any, smart: any) {
@@ -417,9 +622,9 @@ const ProjectManagementMain = (props: any) => {
           selectedService.push(smart?.Id);
         });
       }
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(props?.siteUrl);
       await web.lists
-        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+        .getById(AllListId?.MasterTaskListID)
         .items.getById(Masterdata?.Id)
         .update({
           ComponentId: {
@@ -469,20 +674,15 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <a className='hreflink'
-              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+              href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
             >
               {row?.values?.Title}
             </a>
             <span className="me-1">
-              <div
-                className="popover__wrapper ms-1"
-                data-bs-toggle="tooltip"
-                data-bs-placement="auto"
-              >
-                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
+              <div className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                <span className="svg__iconbox svg__icon--info " ></span>
                 <div className="popover__content">
                   <span>
                     <p
@@ -520,7 +720,7 @@ const ProjectManagementMain = (props: any) => {
             <a className='hreflink'
               data-interception="off"
               target="blank"
-              href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+              href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
             >
               {row?.original?.portfolio?.Title}
             </a>
@@ -549,7 +749,7 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
-        internalHeader: "Due Date", 
+        internalHeader: "Due Date",
         showSortIcon: true,
         style: { width: "80px" },
         accessor: "DueDate",
@@ -607,7 +807,8 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} />
+            {row?.original?.createdImg!=undefined?<img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} />:<span className="svg__iconbox svg__icon--jpeg" title={row?.original?.Author?.Title}></span>}
+            
           </span>
         ),
       },
@@ -635,7 +836,7 @@ const ProjectManagementMain = (props: any) => {
         ),
       },
     ],
-    [AllTasks,data,backupAllTasks]
+    [AllTasks, data, backupAllTasks]
   );
 
   const {
@@ -749,7 +950,7 @@ const ProjectManagementMain = (props: any) => {
             >
               <ul className="spfxbreadcrumb mb-2 ms-2 p-0">
                 <li>
-                  <a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management-Overview.aspx">
+                  <a href={`${props?.siteUrl}/SitePages/Project-Management-Overview.aspx`}>
                     Project Management
                   </a>
                 </li>
@@ -974,6 +1175,7 @@ const ProjectManagementMain = (props: any) => {
                               {projectId && (
                                 <CreateTaskFromProject
                                   projectItem={Masterdata}
+                                  SelectedProp={props?.props}
                                   pageContext={props.pageContext}
                                   projectId={projectId}
                                   callBack={tagAndCreateCallBack}
@@ -1215,7 +1417,7 @@ const ProjectManagementMain = (props: any) => {
                     <div id="SpfxProgressbar" style={{ display: "none" }}>
                       <img
                         id="sharewebprogressbar-image"
-                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif"
+                        src={`${AllListId?.siteUrl}/SiteCollectionImages/ICONS/32/loading_apple.gif`}
                         alt="Loading..."
                       />
                     </div>
@@ -1252,15 +1454,15 @@ const ProjectManagementMain = (props: any) => {
                   )}
                 </span>
                 <span>
-                  {QueryId && (
+                  {(QueryId!=undefined&& isSmartInfoAvailable)? 
                     <SmartInformation
                       AllListId={AllListId}
                       listName={"Master Tasks"}
                       Context={props.Context.pageContext.web}
                       siteurl={props.siteUrl}
                       Id={QueryId}
-                    />
-                  )}
+                    />:""
+                  }
                 </span>
               </div>
             </div>

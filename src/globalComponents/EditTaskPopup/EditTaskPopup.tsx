@@ -76,6 +76,7 @@ var selectedClientCategoryData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
+    Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -626,7 +627,7 @@ const EditTaskPopup = (Items: any) => {
         let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
-            .getById(AllListIdData.SmartMetadataListID)
+            .getById(AllListIdData?.SmartMetadataListID)
             .items
             .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
@@ -1041,7 +1042,7 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
-                        
+
                     } else {
                         StatusArray?.map((item: any) => {
                             if (statusValue == item.value) {
@@ -2966,7 +2967,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls}/> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
                             </span>
                         </div>
                     </div>
@@ -4199,7 +4200,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
-                                                                >Completed Date</label> 
+                                                                >Completed Date</label>
                                                                 <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({

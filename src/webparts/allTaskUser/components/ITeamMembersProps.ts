@@ -7,4 +7,8 @@ export interface ITeamMembersProps {
     context: WebPartContext;
     loadTasks: any;
     teamGroups: any[];
+    taskUsersListId: string;
+    smartMetadataListId: string;
+    imagesLibraryId: string;
+    defaultApproverEMail: string;
 }

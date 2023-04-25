@@ -5,7 +5,7 @@ import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
@@ -46,7 +46,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
 import HighlightableCell from './highlight';
-import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/Bs';
+// import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
 
@@ -86,9 +86,9 @@ function Filter({
     placeholder: any
 }): any {
     const columnFilterValue = column.getFilterValue();
-
+    // style={{ width: placeholder?.size }}
     return (
-        <input style={{ width: placeholder?.size }} className="me-1 mb-1 on-search-cross"
+        <input style={{width:"100%"}} className="me-1 mb-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -2553,7 +2553,9 @@ function ComponentTable(SelectedProp: any) {
             if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
                 ParentTaskId = childItem.data.ParentTaskId
             }
-
+            if (childItem?.data?.DueDate != undefined && childItem?.data?.DueDate != "" && childItem?.data?.DueDate != "Invalid date") {
+                childItem.data.DueDate = childItem.data.DueDate ? Moment(childItem?.data?.DueDate).format("MM-DD-YYYY") : null
+            }
             // if (array != undefined) {
             //     array.forEach((val: any) => {
             //         val.flag = true;
@@ -2588,7 +2590,7 @@ function ComponentTable(SelectedProp: any) {
                             }
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
-                                    if (Feat?.DueDate?.length > 0) {
+                                    if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
                                         Feat.DueDate = Feat?.DueDate ? Moment(Feat?.DueDate).format("MM-DD-YYYY") : null
                                     } else {
                                         Feat.DueDate = ''
@@ -2603,7 +2605,7 @@ function ComponentTable(SelectedProp: any) {
                                     }
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
-                                            if (Activity?.DueDate?.length > 0) {
+                                            if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
                                                 Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
                                             } else {
                                                 Activity.DueDate = ''
@@ -2618,10 +2620,10 @@ function ComponentTable(SelectedProp: any) {
                                             }
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
-                                                    if (Activity?.DueDate?.length > 0) {
-                                                        Activity.DueDate = Activity?.DueDate ? Moment(Activity?.DueDate).format("MM-DD-YYYY") : null
+                                                    if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
+                                                        workst.DueDate = workst?.DueDate ? Moment(workst?.DueDate).format("MM-DD-YYYY") : null
                                                     } else {
-                                                        Activity.DueDate = ''
+                                                        workst.DueDate = ''
                                                     }
                                                     workst.flag = true;
                                                     workst.show = false;
@@ -3519,15 +3521,16 @@ function ComponentTable(SelectedProp: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "ID",
+                size: 15,
                 header: ({ table }: any) => (
                     <>
-                        <button className='bg-white border-0'
+                        <span className='border-0'
                             {...{
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
                         >
-                            {table.getIsAllRowsExpanded() ? <BsFillCaretDownFill /> : <BsFillCaretRightFill />}
-                        </button>{" "}
+                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                        </span>{" "}
                         <IndeterminateCheckbox {...{
                             checked: table.getIsAllRowsSelected(),
                             indeterminate: table.getIsSomeRowsSelected(),
@@ -3545,14 +3548,14 @@ function ComponentTable(SelectedProp: any) {
                     >
                         <>
                             {row.getCanExpand() ? (
-                                <button className='bg-white border-0'
+                                <span className=' border-0'
                                     {...{
                                         onClick: row.getToggleExpandedHandler(),
                                         style: { cursor: "pointer" },
                                     }}
                                 >
-                                    {row.getIsExpanded() ? <BsFillCaretDownFill /> : <BsFillCaretRightFill />}
-                                </button>
+                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                </span>
                             ) : (
                                 ""
                             )}{" "}
@@ -3626,7 +3629,7 @@ function ComponentTable(SelectedProp: any) {
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 200,
+                size: 27,
             },
             {
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3642,6 +3645,7 @@ function ComponentTable(SelectedProp: any) {
                 id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: "",
+                size: 15,
             },
             {
                 accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -3653,24 +3657,25 @@ function ComponentTable(SelectedProp: any) {
                 id: 'TeamLeaderUser',
                 placeholder: "Team",
                 header: "",
+                size: 15,
             },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                size: 100,
+                size: 7,
             },
             {
                 accessorKey: "ItemRank",
                 placeholder: "Item Rank",
                 header: "",
-                size: 100,
+                size: 7,
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                size: 100,
+                size: 9,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3684,6 +3689,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3698,6 +3704,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
             {
                 cell: ({ row, getValue }) => (
@@ -3711,6 +3718,7 @@ function ComponentTable(SelectedProp: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                size: 2,
             },
 
         ],
@@ -4419,7 +4427,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <tr key={headerGroup.id}>
                                                             {headerGroup.headers.map((header) => {
                                                                 return (
-                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }}>
+                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size+"%" }}>
                                                                         {header.isPlaceholder ? null : (
                                                                             <div className='position-relative' style={{ display: "flex" }}>
                                                                                 {flexRender(
@@ -4454,10 +4462,11 @@ function ComponentTable(SelectedProp: any) {
                                                     ))}
                                                 </thead>
                                                 <tbody>
-                                                    {table.getRowModel().rows.map((row) => {
+                                                    {table.getRowModel().rows.map((row:any) => {
                                                         return (
-                                                            <tr key={row.id}>
-                                                                {row.getVisibleCells().map((cell) => {
+                                                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component"  ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg": (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""  ))))} 
+                                                             key={row.id}>
+                                                                {row.getVisibleCells().map((cell:any) => {
                                                                     return (
                                                                         <td key={cell.id}>
                                                                             {flexRender(

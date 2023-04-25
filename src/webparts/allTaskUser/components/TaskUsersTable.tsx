@@ -31,6 +31,8 @@ import {
 } from '@tanstack/match-sorter-utils';
 import { Icon, Link, PrimaryButton } from '@fluentui/react';
 
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+
 interface ITaskUser {
   Title: string;
   Group: string;
@@ -94,7 +96,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
-  const [globalFilter, setGlobalFilter] = React.useState('')
+  const [globalFilter, setGlobalFilter] = React.useState('');
+
+  const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
+  const refreshData = () => setData(props.TaskUsers);
+  React.useEffect(()=>refreshData(), [props.TaskUsers]);
 
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
     () => [      
@@ -103,7 +109,8 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         header: "",
         placeholder: "Title",
         id: "Title",
-        cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId)
+        cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId),
+        sortDescFirst: false
       },
       {
         accessorKey: "Group",
@@ -133,20 +140,20 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       {
         id: "TaskId",
         accessorKey: "TaskId",
-        header: ()=><div>Edit/Delete</div>,
-        cell: (info)=>(<div>
+        header: null,
+        cell: (info)=>(<div style={{width:"60px"}}>
           <Link href="#" onClick={()=>props.EditTask(info.getValue())}><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} /></Link>
           <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} /></Link>
         </div>),
         enableColumnFilter: false,
-        enableSorting: false
+        enableSorting: false,
+        minSize: 60
       }
     ],
-    []
+    [data]
   )
 
-  const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
-  const refreshData = () => setData(props.TaskUsers);
+ 
 
   const table = useReactTable({
     data,
@@ -220,20 +227,23 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
                           />
                         </div>
                       ) : null}
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
+                      {
+                        header.column.id=="TaskId" ? null :
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
                         {header.column.getIsSorted()
-                          ? { asc: " 🔼", desc: " 🔽" }[
-                              header.column.getIsSorted() as string
-                            ] ?? null
-                          : "="}
-                      </div>
+                            ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                header.column.getIsSorted() as string
+                              ] ?? null
+                            : <FaSort />}
+                        </div>
+                    }
                     </div>
                     )}
                   </th>
@@ -262,7 +272,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         </tbody>
       </BTable>
       <div className="h-2" />
-      <div className="flex items-center gap-2">
+      {data.length>10 && <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"
           onClick={() => table.setPageIndex(0)}
@@ -323,6 +333,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
           ))}
         </select>
       </div>
+      }
       <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
       {false && <><div>
         <button onClick={() => rerender()}>Force Rerender</button>
@@ -355,83 +366,6 @@ function Filter({
       />
   );
 }
-
-/*function Filter({
-  column,
-  table,
-}: {
-  column: Column<any, unknown>
-  table: Table<any>
-}) {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
-
-  const columnFilterValue = column.getFilterValue()
-
-  const sortedUniqueValues = React.useMemo(
-    () =>
-      typeof firstValue === 'number'
-        ? []
-        : Array.from(column.getFacetedUniqueValues().keys()).sort(),
-    [column.getFacetedUniqueValues()]
-  )
-
-  return typeof firstValue === 'number' ? (
-    <div>
-      <div className="flex space-x-2">
-        <DebouncedInput
-          type="number"
-          min={Number(column.getFacetedMinMaxValues()?.[0] ?? '')}
-          max={Number(column.getFacetedMinMaxValues()?.[1] ?? '')}
-          value={(columnFilterValue as [number, number])?.[0] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [value, old?.[1]])
-          }
-          placeholder={`Min ${
-            column.getFacetedMinMaxValues()?.[0]
-              ? `(${column.getFacetedMinMaxValues()?.[0]})`
-              : ''
-          }`}
-          className="w-24 border shadow rounded"
-        />
-        <DebouncedInput
-          type="number"
-          min={Number(column.getFacetedMinMaxValues()?.[0] ?? '')}
-          max={Number(column.getFacetedMinMaxValues()?.[1] ?? '')}
-          value={(columnFilterValue as [number, number])?.[1] ?? ''}
-          onChange={value =>
-            column.setFilterValue((old: [number, number]) => [old?.[0], value])
-          }
-          placeholder={`Max ${
-            column.getFacetedMinMaxValues()?.[1]
-              ? `(${column.getFacetedMinMaxValues()?.[1]})`
-              : ''
-          }`}
-          className="w-24 border shadow rounded"
-        />
-      </div>
-      <div className="h-1" />
-    </div>
-  ) : (
-    <>
-      <datalist id={column.id + 'list'}>
-        {sortedUniqueValues.slice(0, 5000).map((value: any) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-      <DebouncedInput
-        type="text"
-        value={(columnFilterValue ?? '') as string}
-        onChange={value => column.setFilterValue(value)}
-        placeholder={`Search... (${column.getFacetedUniqueValues().size})`}
-        className="w-36 border shadow rounded"
-        list={column.id + 'list'}
-      />
-      <div className="h-1" />
-    </>
-  )
-}*/
 
 // A debounced input react component
 function DebouncedInput({
