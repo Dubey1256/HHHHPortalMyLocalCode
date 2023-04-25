@@ -4028,419 +4028,207 @@ function ComponentTable(SelectedProp: any) {
             </Modal> */}
       {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
 
-      <section className="ContentSection">
-        <div className="col-sm-12 clearfix">
-          <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                <div>Service Portfolio</div>
-              )}
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                <div className="text-end fs-6">
-                  <a
-                    data-interception="off"
-                    target="_blank"
-                    className="hreflink serviceColor_Active"
-                    href={
-                      "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Service-Portfolio-Old.aspx"
-                    }
-                  >
-                    Old Service Portfolio
-                  </a>
+            <section className="ContentSection">
+                <div className="col-sm-12 clearfix">
+                    <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div>Service Portfolio</div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Service-Portfolio-Old.aspx"} >Old Service Portfolio</a></div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div>Event Portfolio</div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Event-Portfolio-Old.aspx"} >Old Event Portfolio</a></div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div>Component Portfolio</div>}
+                        {(IsUpdated != "" && IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <div className='text-end fs-6'><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Component-Portfolio-Old.aspx"} >Old Component Portfolio</a></div>}
+                    </h2>
                 </div>
-              )}
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("event") > -1 && (
-                <div>Event Portfolio</div>
-              )}
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("event") > -1 && (
-                <div className="text-end fs-6">
-                  <a
-                    data-interception="off"
-                    target="_blank"
-                    className="hreflink serviceColor_Active"
-                    href={
-                      "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Event-Portfolio-Old.aspx"
-                    }
-                  >
-                    Old Event Portfolio
-                  </a>
-                </div>
-              )}
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("component") > -1 && (
-                <div>Component Portfolio</div>
-              )}
-            {IsUpdated != "" &&
-              IsUpdated != undefined &&
-              IsUpdated.toLowerCase().indexOf("component") > -1 && (
-                <div className="text-end fs-6">
-                  <a
-                    data-interception="off"
-                    target="_blank"
-                    className="hreflink serviceColor_Active"
-                    href={
-                      "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Component-Portfolio-Old.aspx"
-                    }
-                  >
-                    Old Component Portfolio
-                  </a>
-                </div>
-              )}
-          </h2>
-        </div>
-        <div className="bg-wihite border p-2">
-          <div className="togglebox">
-            <label className="toggler full_width mb-10">
-              <span
-                className=" siteColor"
-                onClick={() =>
-                  setIsSmartfilter(IsSmartfilter === true ? false : true)
-                }
-              >
-                {/* <img className="hreflink wid22"
+                <div className="bg-wihite border p-2">
+                    <div className="togglebox">
+                        <label className="toggler full_width mb-10">
+                            <span className=" siteColor" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}>
+                                {/* <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
                 {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
                                     <path d="M36 11H11V15.0625L20.6774 23.1875V32.9375L27.129 37V23.1875L36 15.0625V11Z" stroke="#333333" stroke-width="0" />
                                 </svg> */}
-                {IsUpdated != undefined &&
-                  IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                    <img
-                      className="hreflink wid22"
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png"
-                    />
-                  )}
-                {IsUpdated != undefined &&
-                  IsUpdated.toLowerCase().indexOf("event") > -1 && (
-                    <img
-                      className="hreflink wid22"
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Event_Icons/Filter-12-WF.png"
-                    />
-                  )}
-                {IsUpdated != undefined &&
-                  IsUpdated.toLowerCase().indexOf("component") > -1 && (
-                    <img
-                      className="hreflink wid22"
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png"
-                    />
-                  )}
-                SmartSearch – Filters
-              </span>
-              <span className="ml-20 siteColor">
-                {ShowSelectdSmartfilter != undefined &&
-                  ShowSelectdSmartfilter.length > 0 && (
-                    <>
-                      {ShowSelectdSmartfilter.map(function (obj, index) {
-                        return (
-                          <>
-                            {obj.Title}
-                            <span className="font-normal">
-                              {obj.selectTitle}
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="hreflink wid22"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />}
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="hreflink wid22"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Event_Icons/Filter-12-WF.png" />}
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) && <img className="hreflink wid22"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Filter-12-WF.png" />}
+                                SmartSearch – Filters
                             </span>
-                            {index != ShowSelectdSmartfilter.length - 1 && (
-                              <span> | </span>
-                            )}
-                          </>
-                        );
-                      })}
-                    </>
-                  )}
-              </span>
-              <span className="pull-right bg-color">
-                {IsUpdated != undefined &&
-                  IsUpdated.toLowerCase().indexOf("service") > -1 && (
-                    <span>
-                      {" "}
-                      <img
-                        className="icon-sites-img  wid22 ml5"
-                        title="Share SmartFilters selection"
-                        onClick={() =>
-                          setIsSmartfilter(
-                            IsSmartfilter === true ? false : true
-                          )
-                        }
-                        src={
-                          IsSmartfilter === true
-                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png"
-                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Add-New.png"
-                        }
-                      />
-                      <img
-                        className="icon-sites-img  wid22 ml5"
-                        title="Share SmartFilters selection"
-                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png"
-                      />
-                    </span>
-                  )}
-                {((IsUpdated != undefined &&
-                  IsUpdated.toLowerCase().indexOf("component") > -1) ||
-                  (IsUpdated != undefined &&
-                    IsUpdated.toLowerCase().indexOf("event") > -1)) && (
-                  <span>
-                    <img
-                      className="icon-sites-img  wid22 ml5"
-                      title="Share SmartFilters selection"
-                      onClick={() =>
-                        setIsSmartfilter(IsSmartfilter === true ? false : true)
-                      }
-                      src={
-                        IsSmartfilter === true
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                      }
-                    />
-                    <img
-                      className="icon-sites-img  wid22 ml5"
-                      title="Share SmartFilters selection"
-                      ng-click="GenerateUrl()"
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png"
-                    />
-                  </span>
-                )}
-              </span>
-              <span className="pull-right siteColor">
-                <span className="hreflink" ng-if="!smartfilter2.expanded">
-                  <img
-                    ng-show="pagesType=='componentportfolio'"
-                    className="hreflink wid22"
-                    ng-src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                  />
-                </span>
-              </span>
-            </label>
-            {IsSmartfilter ? (
-              <div className="togglecontent mt-1">
-                <table width="100%" className="indicator_search">
-                  <tr>
-                    {filterGroups.map(function (item) {
-                      return (
-                        <>
-                          <td valign="top">
-                            <fieldset>
-                              {item != "teamSites" && (
-                                <legend>
-                                  <span className="mparent">{item}</span>
-                                </legend>
-                              )}
-                              {item == "teamSites" && (
-                                <legend>
-                                  <span className="mparent">Sites</span>
-                                </legend>
-                              )}
-                            </fieldset>
-                            {filterItems.map(function (ItemType, index) {
-                              return (
-                                <>
-                                  {ItemType.Group == item && (
-                                    <div style={{ display: "block" }}>
-                                      <>
-                                        {ItemType.TaxType != "Status" && (
-                                          <div className="align-items-center d-flex">
-                                            <span
-                                              className="hreflink me-1 GByicon"
-                                              onClick={() =>
-                                                handleOpen2(ItemType)
-                                              }
-                                            >
-                                              {ItemType.childs.length > 0 && (
-                                                <a title="Tap to expand the childs">
-                                                  {ItemType.showItem ? (
-                                                    <img
-                                                      src={
-                                                        ItemType.downArrowIcon
-                                                      }
-                                                    />
-                                                  ) : (
-                                                    <img
-                                                      src={
-                                                        ItemType.RightArrowIcon
-                                                      }
-                                                    />
-                                                  )}
-                                                </a>
-                                              )}
-                                            </span>
-                                            <input
-                                              className="form-check-input me-1"
-                                              defaultChecked={
-                                                ItemType.Selected == true
-                                              }
-                                              type="checkbox"
-                                              value={ItemType.Title}
-                                              onChange={(e) =>
-                                                SingleLookDatatest(
-                                                  e,
-                                                  ItemType,
-                                                  index
-                                                )
-                                              }
-                                            />
-                                            <label className="form-check-label">
-                                              {ItemType.Title}
-                                            </label>
-                                          </div>
-                                        )}
-                                        {ItemType.TaxType == "Status" && (
-                                          <div className="align-items-center d-flex">
-                                            <input
-                                              className="form-check-input me-1"
-                                              defaultChecked={
-                                                ItemType.Selected == true
-                                              }
-                                              type="checkbox"
-                                              value={ItemType.Title}
-                                              onChange={(e) =>
-                                                SingleLookDatatest(
-                                                  e,
-                                                  ItemType,
-                                                  index
-                                                )
-                                              }
-                                            />
-                                            <label className="form-check-label">
-                                              {ItemType.Title}
-                                            </label>
-                                          </div>
-                                        )}
-                                        <ul
-                                          id="id_{ItemType.Id}"
-                                          className="m-0 ps-3 pe-2"
-                                        >
-                                          <span>
-                                            {ItemType.show && (
-                                              <>
-                                                {ItemType.childs.map(function (
-                                                  child1: any,
-                                                  index: any
-                                                ) {
-                                                  return (
-                                                    <>
-                                                      <div className="align-items-center d-flex">
-                                                        {child1.childs.length >
-                                                          0 &&
-                                                          !child1.expanded && (
-                                                            <span className="hreflink me-1 GByicon">
-                                                              <span className="svg__iconbox svg__icon--GroupDown"></span>
-                                                            </span>
-                                                          )}
-                                                        {child1.childs.length >
-                                                          0 &&
-                                                          child1.expanded && (
-                                                            <span className="hreflink me-1 GByicon">
-                                                              <span className="svg__iconbox svg__icon--GroupRight "></span>
-                                                            </span>
-                                                          )}
-                                                        <input
-                                                          type="checkbox"
-                                                          defaultChecked={
-                                                            child1.Selected ==
-                                                            true
-                                                          }
-                                                          className="form-check-input me-1"
-                                                          onChange={(e) =>
-                                                            SingleLookDatatest(
-                                                              e,
-                                                              child1,
-                                                              index
+                            <span className="ml-20 siteColor">
+                                {ShowSelectdSmartfilter != undefined && ShowSelectdSmartfilter.length > 0 &&
+
+                                    <>
+                                        {ShowSelectdSmartfilter.map(function (obj, index) {
+                                            return (
+                                                <>
+                                                    {obj.Title}
+                                                    <span className="font-normal">{obj.selectTitle}</span>
+                                                    {index != ShowSelectdSmartfilter.length - 1 && <span> | </span>}
+                                                </>
+                                            )
+                                        })
+                                        }
+                                    </>
+                                }
+
+                            </span>
+                            <span className="pull-right bg-color">
+                                {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) &&
+                                    <span>  <img className="icon-sites-img  wid22 ml5"
+                                        title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
+                                        src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Add-New.png"} />
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Green.png" />
+
+
+                                    </span>
+
+                                }
+                                {((IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('component') > -1) || IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) &&
+                                    <span>
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}
+                                            src={IsSmartfilter === true ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"} />
+                                        <img className="icon-sites-img  wid22 ml5"
+                                            title="Share SmartFilters selection" ng-click="GenerateUrl()"
+                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png" />
+
+                                    </span>}
+                            </span>
+                           
+                        </label>
+                        {IsSmartfilter ?
+                            <div className="togglecontent mt-1">
+                                <table width="100%" className="indicator_search">
+                                    <tr>
+                                        {filterGroups.map(function (item) {
+                                            return (
+                                                <>
+
+                                                    <td valign="top">
+                                                        <fieldset>
+                                                            {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
+                                                            {item == 'teamSites' && <legend><span className="mparent">Sites</span></legend>}
+                                                        </fieldset>
+                                                        {filterItems.map(function (ItemType, index) {
+                                                            return (
+
+                                                                <>
+                                                                    {ItemType.Group == item &&
+                                                                        <div style={{ display: "block" }}>
+                                                                            <>
+
+                                                                                {ItemType.TaxType != 'Status' &&
+
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <span className="hreflink me-1 GByicon" onClick={() => handleOpen2(ItemType)}>
+                                                                                            {ItemType.childs.length > 0 &&
+                                                                                                <a title="Tap to expand the childs">
+                                                                                                    {ItemType.showItem ? <img src={ItemType.downArrowIcon} />
+                                                                                                        : <img src={ItemType.RightArrowIcon} />}
+
+                                                                                                </a>}
+                                                                                        </span>
+                                                                                        <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                {ItemType.TaxType == 'Status' &&
+
+                                                                                    <div className="align-items-center d-flex">
+                                                                                        <input className="form-check-input me-1" defaultChecked={ItemType.Selected == true} type="checkbox" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
+                                                                                        <label className="form-check-label">
+                                                                                            {ItemType.Title}
+                                                                                        </label>
+                                                                                    </div>
+                                                                                }
+                                                                                <ul id="id_{ItemType.Id}"
+                                                                                    className="m-0 ps-3 pe-2">
+                                                                                    <span>
+                                                                                        {ItemType.show && (
+                                                                                            <>
+                                                                                                {ItemType.childs.map(function (child1: any, index: any) {
+                                                                                                    return (
+                                                                                                        <>
+
+                                                                                                            <div className="align-items-center d-flex">
+                                                                                                                {child1.childs.length > 0 && !child1.expanded &&
+                                                                                                                    <span className="hreflink me-1 GByicon"  >
+                                                                                                                        <span className="svg__iconbox svg__icon--GroupDown"></span>
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                {child1.childs.length > 0 && child1.expanded &&
+                                                                                                                    <span className="hreflink me-1 GByicon"  >
+                                                                                                                        <span className="svg__iconbox svg__icon--GroupRight "></span>
+                                                                                                                    </span>
+                                                                                                                }
+                                                                                                                <input type="checkbox" defaultChecked={child1.Selected == true} className="form-check-input me-1" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                <label className="form-check-label">
+                                                                                                                    {child1.Title}
+                                                                                                                </label>
+                                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="m-0 ps-3 pe-2">
+                                                                                                                    {child1.childs.map(function (child2: any) {
+                                                                                                                        <li>
+                                                                                                                            <div className="align-items-center d-flex">
+                                                                                                                                <input className="form-check-input me-1" type="checkbox" defaultChecked={child1.Selected == true} ng-model="child2.Selected" onChange={(e) => SingleLookDatatest(e, child1, index)} />
+                                                                                                                                <label className="form-check-label">
+                                                                                                                                    {child2.Title}
+                                                                                                                                </label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                    })}
+                                                                                                                </ul>
+                                                                                                            </div>
+
+
+                                                                                                        </>
+                                                                                                    )
+
+                                                                                                })}
+                                                                                            </>
+                                                                                        )}
+                                                                                    </span>
+                                                                                </ul>
+
+                                                                            </>
+
+
+                                                                        </div>
+                                                                    }
+                                                                </>
+
                                                             )
-                                                          }
-                                                        />
-                                                        <label className="form-check-label">
-                                                          {child1.Title}
-                                                        </label>
-                                                        <ul
-                                                          id="id_{{child1.Id}}"
-                                                          style={{
-                                                            display: "none",
-                                                          }}
-                                                          className="m-0 ps-3 pe-2"
-                                                        >
-                                                          {child1.childs.map(
-                                                            function (
-                                                              child2: any
-                                                            ) {
-                                                              <li>
-                                                                <div className="align-items-center d-flex">
-                                                                  <input
-                                                                    className="form-check-input me-1"
-                                                                    type="checkbox"
-                                                                    defaultChecked={
-                                                                      child1.Selected ==
-                                                                      true
-                                                                    }
-                                                                    ng-model="child2.Selected"
-                                                                    onChange={(
-                                                                      e
-                                                                    ) =>
-                                                                      SingleLookDatatest(
-                                                                        e,
-                                                                        child1,
-                                                                        index
-                                                                      )
-                                                                    }
-                                                                  />
-                                                                  <label className="form-check-label">
-                                                                    {
-                                                                      child2.Title
-                                                                    }
-                                                                  </label>
-                                                                </div>
-                                                              </li>;
-                                                            }
-                                                          )}
-                                                        </ul>
-                                                      </div>
-                                                    </>
-                                                  );
-                                                })}
-                                              </>
-                                            )}
-                                          </span>
-                                        </ul>
-                                      </>
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })}
-                          </td>
-                        </>
-                      );
-                    })}
-                  </tr>
-                </table>
-                <div className="text-end mt-3">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    title="Smart Filter"
-                    onClick={() => Updateitem()}
-                  >
-                    Update Filters
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-grey ms-2"
-                    title="Clear All"
-                    onClick={() => Clearitem()}
-                  >
-                    Clear Filters
-                  </button>
+                                                        })}
+
+                                                    </td>
+
+                                                </>
+                                            )
+                                        })}
+                                    </tr>
+                                </table>
+                                <div className="text-end mt-3">
+                                    <button type="button" className="btn btn-primary"
+                                        title="Smart Filter" onClick={() => Updateitem()}>
+                                        Update Filters
+                                    </button>
+                                    <button type="button" className="btn btn-grey ms-2" title="Clear All"
+                                        onClick={() => Clearitem()} >
+                                        Clear Filters
+                                    </button>
+                                </div>
+
+                            </div>
+                            : ''}
+
+                    </div>
                 </div>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-      </section>
+            </section>
 
       <section
         className="TableContentSection taskprofilepagegreen"
@@ -4609,359 +4397,174 @@ function ComponentTable(SelectedProp: any) {
                                   }
                                 />
 
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "17%" }}>
-                              <div
-                                style={{ width: "16%" }}
-                                className="smart-relative"
-                              >
-                                <input
-                                  id="searchClientCategory"
-                                  type="search"
-                                  placeholder="Client Category"
-                                  title="Client Category"
-                                  className="full_width searchbox_height"
-                                  // onChange={event => handleChange(event, 'Client Category')}
-                                />
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "17%" }}>
-                              <div
-                                style={{ width: "16%" }}
-                                className="smart-relative"
-                              >
-                                <input
-                                  id="searchClientCategory"
-                                  type="search"
-                                  placeholder="Team"
-                                  title="Team members"
-                                  className="full_width searchbox_height"
-                                  // onChange={event => handleChange(event, 'Team')}
-                                />
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "6%" }}>
-                              <div
-                                style={{ width: "5%" }}
-                                className="smart-relative"
-                              >
-                                <input
-                                  id="searchClientCategory"
-                                  type="search"
-                                  placeholder="Status"
-                                  title="Status"
-                                  className="full_width searchbox_height"
-                                  onChange={(event) =>
-                                    handleChange1(event, "PercentComplete")
-                                  }
-                                />
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "10%" }}>
-                              <div
-                                style={{ width: "9%" }}
-                                className="smart-relative"
-                              >
-                                <input
-                                  id="searchClientCategory"
-                                  type="search"
-                                  placeholder="Item Rank"
-                                  title="Item Rank"
-                                  className="full_width searchbox_height"
-                                  onChange={(event) =>
-                                    handleChange1(event, "ItemRank")
-                                  }
-                                />
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "10%" }}>
-                              <div
-                                style={{ width: "9%" }}
-                                className="smart-relative"
-                              >
-                                <input
-                                  id="searchClientCategory"
-                                  type="search"
-                                  placeholder="Due"
-                                  title="Due Date"
-                                  className="full_width searchbox_height"
-                                  onChange={(event) =>
-                                    handleChange1(event, "DueDate")
-                                  }
-                                />
-                                <span className="sorticon">
-                                  <span className="up" onClick={sortBy}>
-                                    <FaAngleUp />
-                                  </span>
-                                  <span className="down" onClick={sortByDng}>
-                                    <FaAngleDown />
-                                  </span>
-                                </span>
-                              </div>
-                            </th>
-                            <th style={{ width: "3%" }}></th>
-                            <th style={{ width: "2%" }}></th>
-                            <th style={{ width: "2%" }}></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <div
-                            id="SpfxProgressbar"
-                            className="align-items-center"
-                            style={{ display: "none" }}
-                          >
-                            <img
-                              id="sharewebprogressbar-image"
-                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif"
-                              alt="Loading..."
-                            />
-                          </div>
-                          {data.length > 0 &&
-                            data &&
-                            data.map(function (item, index) {
-                              if (item.flag == true) {
-                                return (
-                                  <>
-                                    <tr>
-                                      <td className="p-0" colSpan={12}>
-                                        <table
-                                          className="table m-0"
-                                          style={{ width: "100%" }}
-                                        >
-                                          <tr className="bold for-c0l">
-                                            <td style={{ width: "2%" }}>
-                                              {item.childs != undefined &&
-                                                item.childs.length > 0 && (
-                                                  <div className="accordian-header">
-                                                    <a
-                                                      className="hreflink"
-                                                      title="Tap to expand the childs"
-                                                    >
-                                                      {/* <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+
+
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Client Category"
+                                                                    title="Client Category" className="full_width searchbox_height"
+                                                                // onChange={event => handleChange(event, 'Client Category')} 
+                                                                />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "17%" }}>
+                                                            <div style={{ width: "16%" }} className="smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Team"
+                                                                    title="Team members" className="full_width searchbox_height"
+                                                                // onChange={event => handleChange(event, 'Team')} 
+                                                                />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "6%" }}>
+                                                            <div style={{ width: "5%" }} className="smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Status"
+                                                                    title="Status" className="full_width searchbox_height"
+                                                                    onChange={event => handleChange1(event, 'PercentComplete')} />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "10%" }}>
+                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Item Rank"
+                                                                    title="Item Rank" className="full_width searchbox_height"
+                                                                    onChange={event => handleChange1(event, 'ItemRank')} />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "10%" }}>
+                                                            <div style={{ width: "9%" }} className="smart-relative">
+                                                                <input id="searchClientCategory" type="search" placeholder="Due"
+                                                                    title="Due Date" className="full_width searchbox_height"
+                                                                    onChange={event => handleChange1(event, 'DueDate')} />
+                                                                <span className="sorticon">
+                                                                    <span className="up" onClick={sortBy}>< FaAngleUp /></span>
+                                                                    <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                                </span>
+
+                                                            </div>
+                                                        </th>
+                                                        <th style={{ width: "3%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
+                                                        <th style={{ width: "2%" }}></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
+                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                    </div>
+                                                    {data.length > 0 && data && data.map(function (item, index) {
+                                                        if (item.flag == true) {
+                                                            return (
+                                                                <>
+                                                                    <tr >
+                                                                        <td className="p-0" colSpan={12}>
+                                                                            <table className="table m-0" style={{ width: "100%" }}>
+                                                                                <tr className="bold for-c0l">
+
+                                                                                    <td style={{ width: "2%" }}>
+                                                                                        {item.childs != undefined && item.childs.length > 0 &&
+                                                                                            <div className="accordian-header" >
+
+                                                                                                <a className='hreflink'
+                                                                                                    title="Tap to expand the childs">
+                                                                                                    {/* <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <img src={item.downArrowIcon} />
                                                                                                         : <img src={item.RightArrowIcon} />}
                                                                                                     </div> */}
-                                                      <div
-                                                        onClick={() =>
-                                                          handleOpen(item)
-                                                        }
-                                                        className="sign"
-                                                      >
-                                                        {item.childs.length >
-                                                          0 && item.show ? (
-                                                          <span className="svg__iconbox svg__icon--GroupDown"></span>
-                                                        ) : (
-                                                          <span className="svg__iconbox svg__icon--GroupRight "></span>
-                                                        )}
-                                                      </div>
-                                                    </a>
-                                                  </div>
-                                                )}
-                                            </td>
-                                            <td style={{ width: "2%" }}>
-                                              <div className="accordian-header">
-                                                {/* checked={item.checked === true ? true : false} */}
-                                                <span className="pe-2">
-                                                  <input
-                                                    type="checkbox"
-                                                    checked={item.chekBox}
-                                                    onChange={(e) =>
-                                                      onChangeHandler(
-                                                        item,
-                                                        "Parent",
-                                                        e
-                                                      )
-                                                    }
-                                                  />
-                                                </span>
-                                              </div>
-                                            </td>
+                                                                                                    <div onClick={() => handleOpen(item)} className="sign">{item.childs.length > 0 && item.show ? <span className="svg__iconbox svg__icon--GroupDown"></span>
+                                                                                                        : <span className="svg__iconbox svg__icon--GroupRight "></span>}
+                                                                                                    </div>
+                                                                                                </a>
 
-                                            <td style={{ width: "9%" }}>
-                                              <div className="">
-                                                <span>
-                                                  {item.SiteIcon !=
-                                                  undefined ? (
-                                                    <a
-                                                      className="hreflink"
-                                                      title="Show All Child"
-                                                      data-toggle="modal"
-                                                    >
-                                                      <img
-                                                        className="icon-sites-img ml20 me-1"
-                                                        src={item.SiteIcon}
-                                                      ></img>
-                                                    </a>
-                                                  ) : (
-                                                    <div className="Dyicons ">
-                                                      {item.SiteIconTitle}
-                                                    </div>
-                                                  )}
-                                                </span>
-                                                {search != undefined &&
-                                                search != "" &&
-                                                item.childs?.length > 0 ? (
-                                                  <>
-                                                    {item?.Isexpend ? (
-                                                      <span>
-                                                        <a
-                                                          className="hreflink"
-                                                          title="Show All Child"
-                                                          data-toggle="modal"
-                                                          onClick={() =>
-                                                            hideAllChildsMinus(
-                                                              item
-                                                            )
-                                                          }
-                                                        >
-                                                          <img
-                                                            className="icon-sites-img me-1 ml20"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"
-                                                          ></img>
-                                                        </a>
-                                                      </span>
-                                                    ) : (
-                                                      ""
-                                                    )}
-                                                    {!item?.Isexpend ? (
-                                                      <span>
-                                                        <a
-                                                          className="hreflink"
-                                                          title="Show All Child"
-                                                          data-toggle="modal"
-                                                          onClick={() =>
-                                                            ShowAllChildsPlus(
-                                                              item
-                                                            )
-                                                          }
-                                                        >
-                                                          <img
-                                                            className="icon-sites-img me-1 ml20"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"
-                                                          ></img>
-                                                        </a>
-                                                      </span>
-                                                    ) : (
-                                                      ""
-                                                    )}
-                                                  </>
-                                                ) : (
-                                                  ""
-                                                )}
-                                                <span>
-                                                  {item.Shareweb_x0020_ID}
-                                                </span>
-                                              </div>
-                                            </td>
-                                            {/* <td style={{ width: "6%" }}></td> */}
-                                            <td style={{ width: "20%" }}>
-                                              {item.siteType ==
-                                                "Master Tasks" &&
-                                                item.Title !== "Others" && (
-                                                  <a
-                                                    data-interception="off"
-                                                    target="_blank"
-                                                    className="hreflink serviceColor_Active"
-                                                    href={
-                                                      ContextValue.siteUrl +
-                                                      "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                      item.Id
-                                                    }
-                                                  >
-                                                    <span
-                                                      dangerouslySetInnerHTML={{
-                                                        __html: item.TitleNew,
-                                                      }}
-                                                    ></span>
-                                                    {/* {item.Title} */}
-                                                  </a>
-                                                )}
-                                              {item.siteType !=
-                                                "Master Tasks" &&
-                                                item.Title !== "Others" && (
-                                                  <a
-                                                    data-interception="off"
-                                                    target="_blank"
-                                                    className="hreflink serviceColor_Active"
-                                                    onClick={(e) =>
-                                                      EditData(e, item)
-                                                    }
-                                                    href={
-                                                      ContextValue.siteUrl +
-                                                      "/SitePages/Task-Profile.aspx?taskId=" +
-                                                      item.Id +
-                                                      "&Site=" +
-                                                      item.siteType
-                                                    }
-                                                  >
-                                                    <span
-                                                      dangerouslySetInnerHTML={{
-                                                        __html: item.TitleNew,
-                                                      }}
-                                                    ></span>
-                                                  </a>
-                                                )}
-                                              {item.Title === "Others" && (
-                                                <span
-                                                  dangerouslySetInnerHTML={{
-                                                    __html: item.TitleNew,
-                                                  }}
-                                                ></span>
-                                              )}
-                                              {item.childs != undefined && (
-                                                <span className="ms-1">
-                                                  ({item.childsLength})
-                                                </span>
-                                              )}
+                                                                                            </div>
+                                                                                        }
+                                                                                    </td>
+                                                                                    <td style={{ width: "2%" }}>
+                                                                                        <div className="accordian-header" >
+                                                                                            {/* checked={item.checked === true ? true : false} */}
+                                                                                            <span className='pe-2'><input type="checkbox" checked={item.chekBox}
+                                                                                                onChange={(e) => onChangeHandler(item, 'Parent', e)} /></span>
+                                                                                        </div>
 
-                                              {item.Short_x0020_Description_x0020_On !=
-                                                null && (
-                                                <div
-                                                  className="popover__wrapper ms-1"
-                                                  data-bs-toggle="tooltip"
-                                                  data-bs-placement="auto"
-                                                >
-                                                  <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                    </td>
+
+
+                                                                                    <td style={{ width: "9%" }}>
+                                                                                        <div className="">
+                                                                                            <span>
+                                                                                                {item.SiteIcon != undefined ?
+                                                                                                    <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                        <img className="icon-sites-img ml20 me-1" src={item.SiteIcon}></img>
+                                                                                                    </a>
+                                                                                                    : <div className='Dyicons '>{item.SiteIconTitle}</div>}
+                                                                                            </span>
+                                                                                            {search != undefined && search != '' && item.childs?.length > 0 ?
+                                                                                                <>
+                                                                                                    {item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"}></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                    {!item?.Isexpend ?
+                                                                                                        <span>
+                                                                                                            <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(item)}>
+                                                                                                                <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"}></img>
+                                                                                                            </a>
+                                                                                                        </span>
+                                                                                                        : ''}
+                                                                                                </> : ''}
+                                                                                            <span>{item.Shareweb_x0020_ID}</span>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    {/* <td style={{ width: "6%" }}></td> */}
+                                                                                    <td style={{ width: "20%" }}>
+                                                                                        {item.siteType == "Master Tasks" && item.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                            href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
+                                                                                        >
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+                                                                                            {/* {item.Title} */}
+                                                                                        </a>}
+                                                                                        {item.siteType != "Master Tasks" && item.Title !== 'Others' &&
+                                                                                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, item)}
+                                                                                                href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                                            >
+
+                                                                                                <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>
+
+
+                                                                                            </a>}
+                                                                                        {item.Title === 'Others' &&
+                                                                                            <span dangerouslySetInnerHTML={{ __html: item.TitleNew }}></span>}
+                                                                                        {item.childs != undefined && item.childs.length >0 && 
+                                                                                            <span className='ms-1'>({item.childsLength})</span>
+                                                                                        }
+
+                                                                                        {item.Short_x0020_Description_x0020_On != null &&
+                                                                                            <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
 
                                                   <div className="popover__content">
                                                     {
@@ -5122,216 +4725,70 @@ function ComponentTable(SelectedProp: any) {
                                                                   {/* <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <img src={childitem.downArrowIcon} />
                                                                                                                                 : <img src={childitem.RightArrowIcon} />}
                                                                                                                             </div>   */}
-                                                                  <div className="sign">
-                                                                    {childitem.childs !=
-                                                                      undefined &&
-                                                                    childitem
-                                                                      .childs
-                                                                      ?.length >
-                                                                      0 &&
-                                                                    childitem.show ? (
-                                                                      <span className="svg__iconbox svg__icon--GroupDown "></span>
-                                                                    ) : (
-                                                                      <span className="svg__iconbox svg__icon--GroupRight "></span>
-                                                                    )}
-                                                                  </div>
-                                                                </a>
-                                                              )}
-                                                          </div>
-                                                        </td>
-                                                        <td
-                                                          style={{
-                                                            width: "2%",
-                                                          }}
-                                                        >
-                                                          <div className="accordian-header">
-                                                            <span className="pe-2">
-                                                              <input
-                                                                type="checkbox"
-                                                                checked={
-                                                                  childitem.chekBox
-                                                                }
-                                                                onChange={(e) =>
-                                                                  onChangeHandler(
-                                                                    childitem,
-                                                                    item,
-                                                                    e
-                                                                  )
-                                                                }
-                                                              />
-                                                            </span>
-                                                          </div>
-                                                        </td>
-                                                        {/* <td style={{ width: "2%" }}></td> */}
-                                                        <td
-                                                          style={{
-                                                            width: "9%",
-                                                          }}
-                                                        >
-                                                          {" "}
-                                                          <div className="d-flex">
-                                                            <span>
-                                                              {childitem.SiteIcon !=
-                                                              undefined ? (
-                                                                <a
-                                                                  className="hreflink"
-                                                                  title="Show All Child"
-                                                                  data-toggle="modal"
-                                                                >
-                                                                  <img
-                                                                    className="icon-sites-img me-1 ml20"
-                                                                    src={
-                                                                      childitem.SiteIcon
-                                                                    }
-                                                                  ></img>
-                                                                </a>
-                                                              ) : (
-                                                                <div className="Dyicons ">
-                                                                  {
-                                                                    childitem.SiteIconTitle
-                                                                  }
-                                                                </div>
-                                                              )}
-                                                            </span>
-                                                            {search !=
-                                                              undefined &&
-                                                            search != "" &&
-                                                            childitem.childs
-                                                              ?.length > 0 ? (
-                                                              <>
-                                                                {childitem?.Isexpend ? (
-                                                                  <span>
-                                                                    <a
-                                                                      className="hreflink"
-                                                                      title="Show All Child"
-                                                                      data-toggle="modal"
-                                                                      onClick={() =>
-                                                                        hideAllChildsMinus(
-                                                                          childitem
-                                                                        )
-                                                                      }
-                                                                    >
-                                                                      <img
-                                                                        className="icon-sites-img me-1 ml20"
-                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"
-                                                                      ></img>
-                                                                    </a>
-                                                                  </span>
-                                                                ) : (
-                                                                  ""
-                                                                )}
-                                                                {!childitem?.Isexpend ? (
-                                                                  <span>
-                                                                    <a
-                                                                      className="hreflink"
-                                                                      title="Show All Child"
-                                                                      data-toggle="modal"
-                                                                      onClick={() =>
-                                                                        ShowAllChildsPlus(
-                                                                          childitem
-                                                                        )
-                                                                      }
-                                                                    >
-                                                                      <img
-                                                                        className="icon-sites-img me-1 ml20"
-                                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"
-                                                                      ></img>
-                                                                    </a>
-                                                                  </span>
-                                                                ) : (
-                                                                  ""
-                                                                )}
-                                                              </>
-                                                            ) : (
-                                                              ""
-                                                            )}
-                                                            <span className="ml-2">
-                                                              {
-                                                                childitem.Shareweb_x0020_ID
-                                                              }
-                                                            </span>
-                                                          </div>
-                                                        </td>
+                                                                                                                            <div className="sign">{(childitem.childs != undefined && childitem.childs?.length > 0) && childitem.show ? <span className="svg__iconbox svg__icon--GroupDown "></span>
+                                                                                                                                : <span className="svg__iconbox svg__icon--GroupRight "></span>}
+                                                                                                                            </div>
+                                                                                                                        </a>
+                                                                                                                    }
 
-                                                        <td
-                                                          style={{
-                                                            width: "20%",
-                                                          }}
-                                                        >
-                                                          {childitem.siteType ==
-                                                            "Master Tasks" && (
-                                                            <a
-                                                              data-interception="off"
-                                                              target="_blank"
-                                                              className="hreflink serviceColor_Active"
-                                                              href={
-                                                                ContextValue.siteUrl +
-                                                                "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                childitem.Id
-                                                              }
-                                                            >
-                                                              <span
-                                                                dangerouslySetInnerHTML={{
-                                                                  __html:
-                                                                    childitem.TitleNew,
-                                                                }}
-                                                              ></span>
-                                                            </a>
-                                                          )}
-                                                          {childitem.siteType !=
-                                                            "Master Tasks" && (
-                                                            <a
-                                                              data-interception="off"
-                                                              target="_blank"
-                                                              className="hreflink serviceColor_Active"
-                                                              href={
-                                                                ContextValue.siteUrl +
-                                                                "/SitePages/Task-Profile.aspx?taskId=" +
-                                                                childitem.Id +
-                                                                "&Site=" +
-                                                                childitem.siteType
-                                                              }
-                                                            >
-                                                              <span
-                                                                dangerouslySetInnerHTML={{
-                                                                  __html:
-                                                                    childitem.TitleNew,
-                                                                }}
-                                                              ></span>
-                                                            </a>
-                                                          )}
-                                                          {childitem.childs !=
-                                                            undefined &&
-                                                            childitem.childs
-                                                              .length > 0 &&
-                                                            childitem.Item_x0020_Type ==
-                                                              "Feature" && (
-                                                              <span className="ms-1">
-                                                                {" "}
-                                                                (
-                                                                {
-                                                                  childitem
-                                                                    .childs
-                                                                    .length
-                                                                }
-                                                                )
-                                                              </span>
-                                                            )}
-                                                          {childitem.childs !=
-                                                            undefined &&
-                                                            childitem.childs
-                                                              .length > 0 &&
-                                                            childitem.Item_x0020_Type !=
-                                                              "Feature" && (
-                                                              <span className="ms-1">
-                                                                {" "}
-                                                                (
-                                                                {
-                                                                  childitem.childsLength
-                                                                }
-                                                                )
-                                                              </span>
-                                                            )}
+                                                                                                                </div>
+                                                                                                            </td>
+                                                                                                            <td style={{ width: "2%" }}>
+
+
+                                                                                                                <div className="accordian-header">
+
+                                                                                                                    <span className='pe-2'><input type="checkbox" checked={childitem.chekBox}
+                                                                                                                        onChange={(e) => onChangeHandler(childitem, item, e)} /></span>
+                                                                                                                </div>
+
+
+                                                                                                            </td>
+                                                                                                            {/* <td style={{ width: "2%" }}></td> */}
+                                                                                                            <td style={{ width: "9%" }}>  <div className="d-flex">
+                                                                                                                <span>
+                                                                                                                    {childitem.SiteIcon != undefined ?
+                                                                                                                        <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                                                                                                            <img className="icon-sites-img me-1 ml20" src={childitem.SiteIcon}></img>
+                                                                                                                        </a>
+                                                                                                                        : <div className='Dyicons '>{childitem.SiteIconTitle}</div>}
+                                                                                                                </span>
+                                                                                                                {search != undefined && search != '' && childitem.childs?.length > 0 ?
+                                                                                                                    <>
+                                                                                                                        {childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => hideAllChildsMinus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png"}></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                        {!childitem?.Isexpend ?
+                                                                                                                            <span>
+                                                                                                                                <a className="hreflink" title="Show All Child" data-toggle="modal" onClick={() => ShowAllChildsPlus(childitem)}>
+                                                                                                                                    <img className="icon-sites-img me-1 ml20" src={ContextValue.siteUrl + "/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png"}></img>
+                                                                                                                                </a>
+                                                                                                                            </span>
+                                                                                                                            : ''}
+                                                                                                                    </> : ''}
+                                                                                                                <span className="ml-2">{childitem.Shareweb_x0020_ID}</span>
+                                                                                                            </div>
+                                                                                                            </td>
+
+                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                                {childitem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
+                                                                                                                </a>}
+                                                                                                                {childitem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                    href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                                ><span dangerouslySetInnerHTML={{ __html: childitem.TitleNew }}></span>
+                                                                                                                </a>}
+                                                                                                                {(childitem.childs != undefined && childitem.childs.length > 0) && childitem.Item_x0020_Type == 'Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childitem.childs.length})</span>
+                                                                                                                }
+                                                                                                                {(childitem.childs != undefined && childitem.childs.length > 0) && childitem.Item_x0020_Type != 'Feature' &&
+                                                                                                                    <span className='ms-1'>  ({childitem.childsLength})</span>
+                                                                                                                }
 
                                                           {childitem.Short_x0020_Description_x0020_On !=
                                                             null && (
@@ -5707,55 +5164,18 @@ function ComponentTable(SelectedProp: any) {
                                                                           </div>
                                                                         </td>
 
-                                                                        <td
-                                                                          style={{
-                                                                            width:
-                                                                              "20%",
-                                                                          }}
-                                                                        >
-                                                                          {childinew.siteType ==
-                                                                            "Master Tasks" && (
-                                                                            <a
-                                                                              data-interception="off"
-                                                                              target="_blank"
-                                                                              className="hreflink serviceColor_Active"
-                                                                              href={
-                                                                                ContextValue.siteUrl +
-                                                                                "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                                childinew.Id
-                                                                              }
-                                                                            >
-                                                                              <span
-                                                                                dangerouslySetInnerHTML={{
-                                                                                  __html:
-                                                                                    childinew.TitleNew,
-                                                                                }}
-                                                                              ></span>
-                                                                            </a>
-                                                                          )}
-                                                                          {childinew.siteType !=
-                                                                            "Master Tasks" && (
-                                                                            <a
-                                                                              data-interception="off"
-                                                                              target="_blank"
-                                                                              className="hreflink serviceColor_Active"
-                                                                              href={
-                                                                                ContextValue.siteUrl +
-                                                                                "/SitePages/Task-Profile.aspx?taskId=" +
-                                                                                childinew.Id +
-                                                                                "&Site=" +
-                                                                                childinew.siteType
-                                                                              }
-                                                                            >
-                                                                              <span
-                                                                                dangerouslySetInnerHTML={{
-                                                                                  __html:
-                                                                                    childinew.TitleNew,
-                                                                                }}
-                                                                              ></span>
-                                                                            </a>
-                                                                          )}
-                                                                          {/* {childinew.childs.length > 0 &&
+                                                                                                                                    <td style={{ width: "20%" }}>
+
+                                                                                                                                        {childinew.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+
+                                                                                                                                            href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
+                                                                                                                                        </a>}
+                                                                                                                                        {childinew.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                            href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                                        ><span dangerouslySetInnerHTML={{ __html: childinew.TitleNew }}></span>
+                                                                                                                                        </a>}
+                                                                                                                                        {/* {childinew.childs.length > 0 &&
                                                                                                                                             <span className='ms-1'>({childinew.childsLength})</span>
                                                                                                                                         } */}
                                                                           {childinew.childs !=
@@ -6183,67 +5603,18 @@ function ComponentTable(SelectedProp: any) {
                                                                                           </div>
                                                                                         </td>
 
-                                                                                        <td
-                                                                                          style={{
-                                                                                            width:
-                                                                                              "20%",
-                                                                                          }}
-                                                                                        >
-                                                                                          {subchilditem.siteType ==
-                                                                                            "Master Tasks" && (
-                                                                                            <a
-                                                                                              data-interception="off"
-                                                                                              target="_blank"
-                                                                                              className="hreflink serviceColor_Active"
-                                                                                              href={
-                                                                                                ContextValue.siteUrl +
-                                                                                                "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                                                                                                childitem.Id
-                                                                                              }
-                                                                                            >
-                                                                                              <span
-                                                                                                dangerouslySetInnerHTML={{
-                                                                                                  __html:
-                                                                                                    subchilditem.TitleNew,
-                                                                                                }}
-                                                                                              ></span>
-                                                                                            </a>
-                                                                                          )}
-                                                                                          {subchilditem.siteType !=
-                                                                                            "Master Tasks" && (
-                                                                                            <a
-                                                                                              data-interception="off"
-                                                                                              target="_blank"
-                                                                                              className="hreflink serviceColor_Active"
-                                                                                              href={
-                                                                                                ContextValue.siteUrl +
-                                                                                                "/SitePages/Task-Profile.aspx?taskId=" +
-                                                                                                subchilditem.Id +
-                                                                                                "&Site=" +
-                                                                                                subchilditem.siteType
-                                                                                              }
-                                                                                            >
-                                                                                              <span
-                                                                                                dangerouslySetInnerHTML={{
-                                                                                                  __html:
-                                                                                                    subchilditem.TitleNew,
-                                                                                                }}
-                                                                                              ></span>
-                                                                                            </a>
-                                                                                          )}
-                                                                                          {subchilditem.childs !=
-                                                                                            undefined &&
-                                                                                            subchilditem
-                                                                                              .childs
-                                                                                              .length >
-                                                                                              0 && (
-                                                                                              <span className="ms-1">
-                                                                                                (
-                                                                                                {
-                                                                                                  subchilditem
-                                                                                                    .childs
-                                                                                                    .length
-                                                                                                }
+                                                                                                                                                            <td style={{ width: "20%" }}>
+                                                                                                                                                                {subchilditem.siteType == "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                                </a>}
+                                                                                                                                                                {subchilditem.siteType != "Master Tasks" && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                                                                                                                                    href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                                ><span dangerouslySetInnerHTML={{ __html: subchilditem.TitleNew }}></span>
+                                                                                                                                                                </a>}
+                                                                                                                                                                {(subchilditem.childs != undefined && subchilditem.childs.length > 0) &&
+                                                                                                                                                                    <span className='ms-1'>({subchilditem.childs.length})</span>
+                                                                                                                                                                }
 
                                                                                                 )
                                                                                               </span>
@@ -6567,277 +5938,161 @@ function ComponentTable(SelectedProp: any) {
                                         </ul>
                                          
                                     } */}
-              {childsData != undefined &&
-              childsData[0]?.SharewebTaskType?.Title == "Workstream" ? (
-                <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Task")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                        />
-                      </span>
-                      Bug
+                            {
+                                (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
+                                    <ul className="quick-actions">
+
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={(e) => CreateMeetingPopups('Task')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png" />
+
+                                                </span>
+                                                Bug
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Task')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png" />
+
+                                                </span>
+                                                Feedback
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Task')}>
+                                                <span className="icon-sites">
+                                                    <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
+                                                </span>
+                                                Improvement
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Task')}>
+                                                <span className="icon-sites">
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
+                                                </span>
+                                                Design
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Task')}>
+                                                <span className="icon-sites">
+                                                </span>
+                                                Task
+                                            </div>
+                                        </li>
+                                    </ul> :
+                                    <ul className="quick-actions">
+
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                </span>
+                                                Implmentation
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Development')}>
+                                                <span className="icon-sites">
+                                                    <img className="icon-sites"
+                                                        src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                </span>
+                                                Development
+                                            </div>
+                                        </li>
+                                        <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                            <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                <span className="icon-sites">
+                                                </span>
+                                                Activity
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                            }
+                        </div>
                     </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                        />
-                      </span>
-                      Feedback
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-                      <span className="icon-sites">
-                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                      </span>
-                      Improvement
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-                      <span className="icon-sites">
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                      </span>
-                      Design
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-                      <span className="icon-sites"></span>
-                      Task
-                    </div>
-                  </li>
-                </ul>
-              ) : (
-                <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Implementation")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                        />
-                      </span>
-                      Implmentation
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Development")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                        />
-                      </span>
-                      Development
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites"></span>
-                      Activity
-                    </div>
-                  </li>
-                </ul>
-              )}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-default btn-default ms-1 pull-right"
-            onClick={closeTaskStatusUpdatePoup2}
-          >
-            Cancel
-          </button>
-        </div>
-      </Panel>
-      <Panel
-        headerText={` Restructuring Tool `}
-        type={PanelType.medium}
-        isOpen={ResturuningOpen}
-        isBlocking={false}
-        onDismiss={RestruringCloseCall}
-      >
-        <div>
-          {ResturuningOpen ? (
-            <div className="bg-ee p-2 restructurebox">
-              <div>
-                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? (
-                  <span>
-                    All below selected items will become child of{" "}
-                    <div className="Dyicons ">
-                      {NewArrayBackup[0].SiteIconTitle}
-                    </div>{" "}
-                    <a
-                      data-interception="off"
-                      target="_blank"
-                      className="hreflink serviceColor_Active"
-                      href={
-                        "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                        NewArrayBackup[0].Id
-                      }
-                    >
-                      <span>{NewArrayBackup[0].Title}</span>
-                    </a>{" "}
-                    please click Submit to continue.
-                  </span>
-                ) : (
-                  ""
-                )}
-              </div>
-              <div>
-                <span> Old: </span>
-                {OldArrayBackup.map(function (obj: any, index) {
-                  return (
-                    <span>
-                      <span className="Dyicons ">{obj.SiteIconTitle}</span>
-                      {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
-                      <a
-                        data-interception="off"
-                        target="_blank"
-                        className="hreflink serviceColor_Active"
-                        href={
-                          "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                          obj.Id
-                        }
-                      >
-                        <span>{obj.Title} </span>
-                      </a>
-                      {OldArrayBackup.length - 1 < index ? ">" : ""}{" "}
-                    </span>
-                  );
-                })}
-              </div>
-              <div>
-                <span> New: </span>{" "}
-                {NewArrayBackup.map(function (newobj: any, indexnew) {
-                  return (
-                    <>
-                      <span>
-                        <div className="Dyicons ">{newobj.SiteIconTitle}</div>
-                        {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
-                        <a
-                          data-interception="off"
-                          target="_blank"
-                          className="hreflink serviceColor_Active"
-                          href={
-                            "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                            newobj.Id
-                          }
-                        >
-                          <span>{newobj.Title} </span>
-                        </a>
-                        {NewArrayBackup.length - 1 < indexnew ? ">" : ""}
-                      </span>
-                    </>
-                  );
-                })}
-                <span>
-                  <div className="Dyicons ">
-                    {RestructureChecked[0].SiteIconTitle}
-                  </div>
-                  {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
-                  <a
-                    data-interception="off"
-                    target="_blank"
-                    className="hreflink serviceColor_Active"
-                    href={
-                      "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" +
-                      RestructureChecked[0].Id
-                    }
-                  >
-                    <span>{RestructureChecked[0].Title} </span>
-                  </a>
-                </span>
-              </div>
-              {console.log(
-                "restructure functio test in div==================================="
-              )}
-              {checkedList != undefined &&
-              checkedList.length > 0 &&
-              checkedList[0].Item_x0020_Type != "Task" ? (
-                <div>
-                  <span>
-                    {" "}
-                    {"Select Component Type :"}
-                    <input
-                      type="radio"
-                      name="fav_language"
-                      value="SubComponent"
-                      checked={
-                        RestructureChecked[0].Item_x0020_Type == "SubComponent"
-                          ? true
-                          : false
-                      }
-                      onChange={(e) =>
-                        setRestructure(RestructureChecked[0], "SubComponent")
-                      }
-                    />
-                    <label className="ms-1"> {"SubComponent"} </label>
-                  </span>
-                  <span>
-                    {" "}
-                    <input
-                      type="radio"
-                      name="fav_language"
-                      value="SubComponent"
-                      checked={
-                        RestructureChecked[0].Item_x0020_Type === "Feature"
-                          ? true
-                          : false
-                      }
-                      onChange={(e) =>
-                        setRestructure(RestructureChecked[0], "Feature")
-                      }
-                    />{" "}
-                    <label className="ms-1"> {"Feature"} </label>{" "}
-                  </span>
+                    <button type="button" className="btn btn-default btn-default ms-1 pull-right" onClick={closeTaskStatusUpdatePoup2}>Cancel</button>
                 </div>
-              ) : (
-                ""
-              )}
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-        <footer className="mt-2 text-end">
-          {checkedList != undefined &&
-          checkedList.length > 0 &&
-          checkedList[0].Item_x0020_Type === "Task" ? (
-            <button
-              type="button"
-              className="btn btn-primary "
-              onClick={(e) => UpdateTaskRestructure()}
-            >
-              Save
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn btn-primary "
-              onClick={(e) => UpdateRestructure()}
-            >
-              Save
-            </button>
-          )}
-          <button
-            type="button"
-            className="btn btn-default btn-default ms-1"
-            onClick={RestruringCloseCall}
-          >
-            Cancel
-          </button>
-        </footer>
-      </Panel>
-    </div>
-  );
+
+
+
+
+            </Panel >
+            <Panel headerText={` Restructuring Tool `} type={PanelType.medium} isOpen={ResturuningOpen} isBlocking={false} onDismiss={RestruringCloseCall}>
+                <div>
+                    {ResturuningOpen ?
+                        <div className='bg-ee p-2 restructurebox'>
+                            <div>
+                                {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                ><span>{NewArrayBackup[0].Title}</span>
+                                </a>  please click Submit to continue.</span> : ''}
+                            </div>
+                            <div>
+                                <span>  Old: </span>
+                                {OldArrayBackup.map(function (obj: any, index) {
+                                    return (
+                                        <span>
+                                            <span className='Dyicons '>{obj.SiteIconTitle}</span>
+                                            {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
+                                            <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                            ><span>{obj.Title}  </span>
+                                            </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
+                                    )
+                                })}
+
+                            </div>
+                            <div>
+                                <span>  New:   </span> {NewArrayBackup.map(function (newobj: any, indexnew) {
+                                    return (
+                                        <>
+                                            <span>
+                                                <div className='Dyicons '>{newobj.SiteIconTitle}</div>
+                                                {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
+                                                <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                ><span>{newobj.Title}  </span>
+                                                </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
+                                    )
+                                })}
+                                <span>
+                                    <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
+                                    {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
+                                    <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                    ><span>{RestructureChecked[0].Title}  </span>
+                                    </a></span>
+                            </div>
+                            {console.log("restructure functio test in div===================================")}
+                            {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type != 'Task' ?
+                                <div>
+                                    <span> {'Select Component Type :'}<input type="radio" name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type == "SubComponent" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'SubComponent')} /><label className="ms-1"> {'SubComponent'} </label></span>
+                                    <span> <input type='radio' name="fav_language" value="SubComponent" checked={RestructureChecked[0].Item_x0020_Type === "Feature" ? true : false} onChange={(e) => setRestructure(RestructureChecked[0], 'Feature')} /> <label className="ms-1"> {'Feature'} </label> </span>
+                                </div>
+                                : ''}
+                        </div>
+                        : ''}
+                </div>
+                <footer className="mt-2 text-end">
+                    {checkedList != undefined && checkedList.length > 0 && checkedList[0].Item_x0020_Type === 'Task' ?
+                        <button type="button" className="btn btn-primary " onClick={(e) => UpdateTaskRestructure()}>Save</button>
+                        : <button type="button" className="btn btn-primary " onClick={(e) => UpdateRestructure()}>Save</button>}
+                    <button type="button" className="btn btn-default btn-default ms-1" onClick={RestruringCloseCall}>Cancel</button>
+
+
+                </footer>
+            </Panel>
+        </div >
+    );
 }
 export default ComponentTable;
