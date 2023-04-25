@@ -275,11 +275,16 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       changespercentage=true;
     }
     let percentageComplete;
+   
+    let taskStatus=""; 
     if(changespercentage==true){
     percentageComplete=0.03;
+    taskStatus="Approved"
+
     }
    if(changespercentage==false){
      percentageComplete=0.02;
+     taskStatus="Follow Up"
       }
    
       const web = new Web( this.props.Result.siteUrl);
@@ -287,12 +292,12 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       // await web.lists.getById(this.props.SiteTaskListID)
       .items.getById(this.props.Result.Id).update({
         PercentComplete: percentageComplete,
-        
+        Status:taskStatus,
       }).then((res:any)=>{
        console.log(res);
       //  this.props.approvalcallbacktask();
        })
-     .catch((err) => {
+     .catch((err:any) => {
        console.log(err.message);
     });
    
