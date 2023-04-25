@@ -3524,13 +3524,13 @@ function ComponentTable(SelectedProp: any) {
                 size: 15,
                 header: ({ table }: any) => (
                     <>
-                        <span className='border-0'
+                        <button className='border-0 bg-Ff'
                             {...{
                                 onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
                         >
                             {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                        </span>{" "}
+                        </button>{" "}
                         <IndeterminateCheckbox {...{
                             checked: table.getIsAllRowsSelected(),
                             indeterminate: table.getIsSomeRowsSelected(),
@@ -4315,7 +4315,7 @@ function ComponentTable(SelectedProp: any) {
                                         <span className='popover__wrapper ms-1' style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                                             <FaInfoCircle style={{ color: "#228b22" }} />
 
-                                            <span className="popover__content mt-3 m-3" style={{ width: "1000px" }}>
+                                            <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                                 <label>
                                                     Showing {ComponentCopy}  of {AllCountItems.AllComponentItems.length} Components
                                                 </label>
@@ -4421,8 +4421,8 @@ function ComponentTable(SelectedProp: any) {
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
-                                            <table className="SortingTable table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                                <thead>
+                                            <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+                                                <thead className='fixed-Header top-0'>
                                                     {table.getHeaderGroups().map((headerGroup) => (
                                                         <tr key={headerGroup.id}>
                                                             {headerGroup.headers.map((header) => {
