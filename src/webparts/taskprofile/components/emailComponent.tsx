@@ -62,7 +62,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
         percentage=3;
         taskStatus="Approved"
       }
-      if(send=="Rejected"|| send=="Maybe"){
+      if(send=="Rejected"|| send=="Maybe"||send=="Reject"){
         settaskpermission("Reject");
         percentageComplete=0.02;
         taskStatus="Follow Up"
@@ -74,7 +74,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
       // await web.lists.getById(props.SiteTaskListID)
         .items.getById(props?.items?.Id).update({
         PercentComplete: percentageComplete,
-        Status:taskStatus?taskStatus:"Follow Up",
+        Status:taskStatus,
         FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
       }).then((res:any)=>{
        console.log(res);
