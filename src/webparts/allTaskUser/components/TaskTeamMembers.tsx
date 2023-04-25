@@ -449,6 +449,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private onSaveTask() {
+        this.onCancelTask();
         if(this.state.selTaskId) {
             this.updateTask();
         }

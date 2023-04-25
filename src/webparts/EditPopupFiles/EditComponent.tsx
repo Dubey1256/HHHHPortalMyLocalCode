@@ -633,10 +633,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
-  // const EditLinkedServices = (items: any, title: any) => {
-  //     setIsComponentPicker(true);
-  //     setSharewebCategory(items);
-  // }
+ 
 
   React.useEffect(() => {
     GetTaskUsers();
@@ -1573,7 +1570,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Component')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1598,7 +1595,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Service")
+                                    EditComponent(EditData, 'Services')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -2901,6 +2898,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
                           listId={RequireData.MasterTask}
+                          siteUrls={RequireData?.siteUrl}
                         />
                       ) : (
                         ""
