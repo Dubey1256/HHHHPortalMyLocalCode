@@ -378,9 +378,6 @@ const TaskDashboard = (props: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
-                                            if (user.AssingedToUserId == task.Author.Id) {
-                                                task.createdImg = user?.Item_x0020_Cover?.Url;
-                                            }
                                             if (user.AssingedToUserId == taskUser.Id) {
                                                 if (user?.Title != undefined) {
                                                     task.TeamMembersSearch =

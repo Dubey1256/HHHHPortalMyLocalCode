@@ -25,9 +25,9 @@ let Isapproval;
 var ContextValue: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
-var AllListId:any={}
-function CreateTaskComponent(props:any) {
-    let base_Url=props?.pageContext?._web?.absoluteUrl;
+var AllListId: any = {}
+function CreateTaskComponent(props: any) {
+    let base_Url = props?.pageContext?._web?.absoluteUrl;
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
         passdata: null
@@ -72,26 +72,26 @@ function CreateTaskComponent(props:any) {
         GetSmartMetadata();
     }, [])
     React.useEffect(() => {
-         try {
-      isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
-      isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : ""
-    } catch (error: any) {
-      console.log(error)
-    }
-    AllListId = {
-      MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
-      TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
-      SmartMetadataListID: props?.SelectedProp?.SmartMetadataListID,
-      //SiteTaskListID:this.props?.props?.SiteTaskListID,
-      TaskTimeSheetListID: props?.SelectedProp?.TaskTimeSheetListID,
-      DocumentsListID: props?.SelectedProp?.DocumentsListID,
-      SmartInformationListID: props?.SelectedProp?.SmartInformationListID,
-      siteUrl: props?.SelectedProp?.siteUrl,
-      AdminConfigrationListID: props?.SelectedProp?.AdminConfigrationListID,
-      isShowTimeEntry: isShowTimeEntry,
-      isShowSiteCompostion: isShowSiteCompostion
-    }
-    base_Url=AllListId?.siteUrl
+        try {
+            isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
+            isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : ""
+        } catch (error: any) {
+            console.log(error)
+        }
+        AllListId = {
+            MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
+            TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
+            SmartMetadataListID: props?.SelectedProp?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.SelectedProp?.TaskTimeSheetListID,
+            DocumentsListID: props?.SelectedProp?.DocumentsListID,
+            SmartInformationListID: props?.SelectedProp?.SmartInformationListID,
+            siteUrl: props?.SelectedProp?.siteUrl,
+            AdminConfigrationListID: props?.SelectedProp?.AdminConfigrationListID,
+            isShowTimeEntry: isShowTimeEntry,
+            isShowSiteCompostion: isShowSiteCompostion
+        }
+        base_Url = AllListId?.siteUrl
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
 
@@ -120,10 +120,10 @@ function CreateTaskComponent(props:any) {
     const Call = (propsItems: any, type: any) => {
         setIsComponent(false);
         setIsServices(false);
-        if (type === "LinkedComponent") {
-            if (propsItems?.linkedComponent?.length > 0) {
-                setSave({ ...save, linkedServices: propsItems.linkedComponent});
-                setSmartComponentData(propsItems.linkedComponent);
+        if (type === "SmartComponent") {
+            if (propsItems?.smartComponent?.length > 0) {
+                setSave({ ...save, linkedServices: propsItems.smartComponent });
+                setSmartComponentData(propsItems.smartComponent);
             }
         }
         if (type === "LinkedServices") {
@@ -229,7 +229,7 @@ function CreateTaskComponent(props:any) {
             if (paramSiteUrl != undefined) {
                 let baseUrl = window.location.href;
                 if (baseUrl.indexOf('CreateTaskSpfx') > -1) {
-                    let QueryString = baseUrl.split(base_Url+"/SitePages/CreateTaskSpfx.aspx")[1]
+                    let QueryString = baseUrl.split(base_Url + "/SitePages/CreateTaskSpfx.aspx")[1]
                     oldTaskIrl = oldTaskIrl + QueryString
                 }
                 PageName = paramSiteUrl?.split('aspx')[0].split("").reverse().join("").split('/')[0].split("").reverse().join("");
@@ -317,20 +317,20 @@ function CreateTaskComponent(props:any) {
                 //     setSave({ ...save, Component: setComponent });
                 //     setSmartComponentData(setComponent);
                 // }
-                if(item?.Id == props?.createComponent?.portfolioData?.Id){
-                     if(props?.createComponent?.portfolioType==='Component'){
+                if (item?.Id == props?.createComponent?.portfolioData?.Id) {
+                    if (props?.createComponent?.portfolioType === 'Component') {
                         selectPortfolioType('Component');
                         setComponent.push(item)
                         setSave({ ...save, portfolioType: 'Component' })
                         setSmartComponentData(setComponent);
-                     }
-                    
-                     if(props?.createComponent?.portfolioType==='Service'){
+                    }
+
+                    if (props?.createComponent?.portfolioType === 'Service') {
                         selectPortfolioType('Service');
                         setComponent.push(item);
                         setSave({ ...save, portfolioType: 'Service' })
                         setLinkedComponentData(setComponent);
-                     }
+                    }
                 }
             })
         }
@@ -466,7 +466,12 @@ function CreateTaskComponent(props:any) {
                 SitesTypes.push(site);
             }
         })
-        setSiteType(SitesTypes)
+        if (SitesTypes?.length == 1) {
+            setActiveTile("siteType", "siteType", SitesTypes[0].Title)
+            setSiteType(SitesTypes)
+        } else {
+            setSiteType(SitesTypes)
+        }
         TaskTypes = getSmartMetadataItemsByTaxType(AllMetadata, 'Categories');
         Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
         Timing = getSmartMetadataItemsByTaxType(AllMetadata, 'Timings');
@@ -826,8 +831,8 @@ function CreateTaskComponent(props:any) {
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
                         taskCreated = true;
-                        createdTask.Id= data?.data?.Id
-                        createdTask.siteType=save.siteType
+                        createdTask.Id = data?.data?.Id
+                        createdTask.siteType = save.siteType
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
                             props?.callBack
@@ -889,25 +894,25 @@ function CreateTaskComponent(props:any) {
                     TestUrl = TestUrl.split('.ch')[1];
                 else if (TestUrl.toLowerCase().indexOf('.de') > -1)
                     TestUrl = TestUrl.split('.de')[1];
-                
+
                 let Isfound = false;
-                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/'+ site.Title.toLowerCase() +'/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))){
+                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
                     item = site.Title;
                     selectedSiteTitle = site.Title;
                     Isfound = true;
                 }
 
-                if(!Isfound){
-                    if (TestUrl !== undefined && site.AlternativeTitle != null){
+                if (!Isfound) {
+                    if (TestUrl !== undefined && site.AlternativeTitle != null) {
                         let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
                         for (let j = 0; j < sitesAlterNatives.length; j++) {
                             let element = sitesAlterNatives[j];
-                            if (TestUrl.toLowerCase().indexOf(element) > -1 ){
+                            if (TestUrl.toLowerCase().indexOf(element) > -1) {
                                 item = site.Title;
                                 selectedSiteTitle = site.Title;
                                 Isfound = true;
                             }
-                            
+
                         }
                     }
                 }
@@ -1026,7 +1031,7 @@ function CreateTaskComponent(props:any) {
             })
             */
         }
-        
+
         saveValue.siteType = selectedSiteTitle;
         setSave(saveValue)
         if (selectedSiteTitle !== undefined) {
@@ -1209,9 +1214,9 @@ function CreateTaskComponent(props:any) {
             passdata: null
         })
         if (taskCreated) {
-            window.open(base_Url+"/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+            window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
         }
-        createdTask={};
+        createdTask = {};
     }, [])
     const EditPopup = React.useCallback((item: any) => {
         setEditTaskPopupData({
@@ -1225,9 +1230,9 @@ function CreateTaskComponent(props:any) {
             <div className='Create-taskpage'>
                 <div className='row'>
                     {props?.projectId == undefined ? <div className='col-sm-12'>
-                    <div className='header-section full-width justify-content-between'>
+                        <div className='header-section full-width justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Create Task
-                            <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
+                                <a data-interception="off" className=' text-end pull-right' target='_blank' href={oldTaskIrl} style={{ cursor: "pointer", fontSize: "14px" }}>Old Create Task</a>
                             </h2>
                         </div>
                     </div> : ''}
@@ -1263,19 +1268,20 @@ function CreateTaskComponent(props:any) {
                                 {smartComponentData?.length > 0 ? smartComponentData?.map((com: any) => {
                                     return (
                                         <>
-                                            <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
+                                            <div className="block p-1" style={{ width: "89%" }}>
                                                 <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                 <a>
-                                                    <img className="mx-2" src={`${base_Url}/_layouts/images/delete.gif`} onClick={() => setSmartComponentData([])} />
+                                                    <span title="Remove Component" onClick={() => setSmartComponentData([])}
+                                                         style={{backgroundColor:'white'}} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                 </a>
                                             </div>
                                         </>
                                     )
                                 }) : null}
 
-                              
+
                                 <span className="input-group-text">
-                                <span onClick={(e) => EditComponent(save, 'Component')} className="svg__iconbox svg__icon--edit"></span>
+                                    <span onClick={(e) => EditComponent(save, 'Component')} style={{backgroundColor:'white'}} className="svg__iconbox svg__icon--edit"></span>
                                     {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
                                 </span>
@@ -1286,18 +1292,18 @@ function CreateTaskComponent(props:any) {
                                 <label className="form-label full-width">
                                     Service Portfolio
                                 </label>
-                                {
+                                {/* {
                                     linkedComponentData?.length > 0 ? <div>
                                         {linkedComponentData?.map((com: any) => {
                                             return (
                                                 <>
                                                     <div className="d-flex Component-container-edit-task" style={{ width: "89%" }}>
-                                                
-                                                            <a className="hreflink " target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                {com.Title}
-                                                            </a>
-                                                            <img src={`${base_Url}/_layouts/images/delete.gif`} onClick={() => setLinkedComponentData([])} />
-                                                
+
+                                                        <a className="hreflink " target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                            {com.Title}
+                                                        </a>
+                                                        <span title="Remove Service" onClick={() => setLinkedComponentData([])}
+                                                        className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                     </div>
                                                 </>
                                             )
@@ -1306,9 +1312,28 @@ function CreateTaskComponent(props:any) {
                                         <input type="text" readOnly
                                             className="form-control"
                                         />
+                                } */}
+                                {linkedComponentData?.length > 0 ? null :
+                                    <>
+                                        <input type="text" readOnly className="form-control"
+                                            id="{{PortfoliosID}}" autoComplete="off" />
+                                    </>
                                 }
+                                {linkedComponentData?.length > 0 ? linkedComponentData?.map((com: any) => {
+                                    return (
+                                        <>
+                                            <div className="block p-1" style={{ width: "89%" }}>
+                                                <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                <a>
+                                                    <span title="Remove Service" style={{ color: "#fff !important" }} onClick={() => setLinkedComponentData([])}
+                                                        className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
+                                                </a>
+                                            </div>
+                                        </>
+                                    )
+                                }) : null}
                                 <span className="input-group-text">
-                                <span onClick={(e) => EditLinkedServices(save, 'Component')} className="svg__iconbox svg__icon--edit"></span>
+                                    <span onClick={(e) => EditLinkedServices(save, 'Component')} className="svg__iconbox svg__icon--edit"></span>
                                     {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditLinkedServices(save, 'Component')} /> */}
                                 </span>
@@ -1378,34 +1403,35 @@ function CreateTaskComponent(props:any) {
 
                 {/*---------------- Sites -------------
             -------------------------------*/}
-                <div className='row mt-2 border'>
-                    <fieldset>
-                        <legend className="border-bottom fs-6 ">Sites</legend>
-                        <ul className="quick-actions ">
-                            {siteType?.map((item: any) => {
-                                return (
-                                    <>
-                                        {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
-                                            <>
-                                                <li
-                                                    className={isActive.siteType && save.siteType === item.Title ? '  mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
-                                                    {/*  */}
-                                                    <a className='text-white text-decoration-none' >
-                                                        <span className="icon-sites">
-                                                            {item.Item_x005F_x0020_Cover != undefined &&
-                                                            <img className="icon-sites"
-                                                                src={item.Item_x005F_x0020_Cover.Url} />
-                                                            }
-                                                        </span>{item.Title}
-                                                    </a>
-                                                </li>
-                                            </>
-                                        }
-                                    </>)
-                            })}
-                        </ul>
-                    </fieldset>
-                </div>
+                {siteType?.length > 1 ?
+                    <div className='row mt-2 border'>
+                        <fieldset>
+                            <legend className="border-bottom fs-6 ">Sites</legend>
+                            <ul className="quick-actions ">
+                                {siteType?.map((item: any) => {
+                                    return (
+                                        <>
+                                            {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
+                                                <>
+                                                    <li
+                                                        className={isActive.siteType && save.siteType === item.Title ? '  mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item.Title)} >
+                                                        {/*  */}
+                                                        <a className='text-white text-decoration-none' >
+                                                            <span className="icon-sites">
+                                                                {item.Item_x005F_x0020_Cover != undefined &&
+                                                                    <img className="icon-sites"
+                                                                        src={item.Item_x005F_x0020_Cover.Url} />
+                                                                }
+                                                            </span>{item.Title}
+                                                        </a>
+                                                    </li>
+                                                </>
+                                            }
+                                        </>)
+                                })}
+                            </ul>
+                        </fieldset>
+                    </div> : ''}
 
                 {props?.projectId == undefined ? <>
                     {/*---- Task Categories ---------
@@ -1471,8 +1497,8 @@ function CreateTaskComponent(props:any) {
 
                                                     <a className='text-white'>
                                                         <span>
-                                                        {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                            <img src={item.Item_x005F_x0020_Cover.Url} />}
+                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                                                <img src={item.Item_x005F_x0020_Cover.Url} />}
                                                         </span>
                                                     </a>
 
@@ -1501,10 +1527,10 @@ function CreateTaskComponent(props:any) {
 
                                                     <a className='text-decoration-none text-white'>
                                                         <span className="icon-sites">
-                                                        {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
-                                                            <img className="icon-sites"
-                                                                                    src={item.Item_x005F_x0020_Cover.Url} />
-                                                        }                                                           
+                                                            {(item.Item_x005F_x0020_Cover !== undefined && item.Item_x005F_x0020_Cover?.Url !== undefined) &&
+                                                                <img className="icon-sites"
+                                                                    src={item.Item_x005F_x0020_Cover.Url} />
+                                                            }
                                                         </span>{item.Title}
                                                     </a>
                                                 </div>
@@ -1544,7 +1570,7 @@ function CreateTaskComponent(props:any) {
                                     <span className='ms-2'>
                                         {(site.Item_x005F_x0020_Cover !== undefined && site.Item_x005F_x0020_Cover?.Url !== undefined) &&
                                             <img className="client-icons" src={site.Item_x005F_x0020_Cover.Url} />
-                                        }                            
+                                        }
                                     </span>
                                 )
                             }
@@ -1554,7 +1580,7 @@ function CreateTaskComponent(props:any) {
                 </div>
                 {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
                 {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup  AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
         </>

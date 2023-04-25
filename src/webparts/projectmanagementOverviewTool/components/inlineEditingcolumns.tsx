@@ -691,7 +691,7 @@ const inlineEditingcolumns = (props: any) => {
                     <>
 
                         <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
-                            {/* {props?.item?.PercentComplete} */}
+                           &nbsp;
                             {
                                 (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
                                     <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
