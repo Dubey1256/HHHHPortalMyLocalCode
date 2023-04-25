@@ -1598,7 +1598,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, "Service")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1734,8 +1734,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                 ? smartComponentData?.map((com: any) => {
                                     return (
                                       <>
+                                       <div className="">
                                         <div
-                                          className="d-flex Component-container-edit-task block"
+                                          className="d-flex Component-container-edit-task block "
                                           style={{ width: "81%" }}
                                         >
                                           <a
@@ -1754,6 +1755,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                               }
                                             />
                                           </a>
+                                        </div>
                                         </div>
                                       </>
                                     );

@@ -698,6 +698,14 @@ const CreateWS = (props: any) => {
             setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
         }
     }
+
+    React.useEffect(()=>{
+        if(myDate?.editDate == undefined || myDate.editDate == null){
+            let dates = new Date();
+            setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
+        }
+    })
+    
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {

@@ -110,20 +110,38 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         }); 
     }
 
-    componentDidMount(): void {
+    public async componentDidMount() {
 
-        const listTasks: any[] = [...this.props.tasks].map(({Title, SortOrder, TaskId})=>({Title, SortOrder, TaskId}));
+        const _tasksRes = await this.props.spService.getTasks(this.props.taskUsersListId);
+        const _tasks = this.getGroupTasks(_tasksRes);
+
+        const listTasks: any[] = [..._tasks].map(({Title, SortOrder, TaskId})=>({Title, SortOrder, TaskId}));
         
         this.setState({
-            tasks: this.props.tasks,
+            tasks: _tasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks)
         });
     }
+
+    private getGroupTasks(allTasks: any[]) {
+        const teamGroupsTasks = allTasks.filter(taskItem=>taskItem.ItemType=="Group").map(taskItem => ({
+            Title: taskItem.Title,
+            Suffix: taskItem.Suffix,
+            SortOrder: taskItem.SortOrder,
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title,
+            TaskId: taskItem.Id.toString()
+        }));
+        return teamGroupsTasks;
+    }
    
     private onSearchTextChange(ev: any, filterText: string) {
         filterText = filterText.toLowerCase();
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         allTasks = allTasks.map(({Title, SortOrder, TaskId})=>({Title, SortOrder, TaskId}))
         let fliteredTasks = [];
         let textExists: boolean;
@@ -170,7 +188,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
     }
 
     private onEditTask() {
-        let allTasks = [...this.props.tasks];
+        let allTasks = [...this.state.tasks];
         let selTask = allTasks.filter(t=>t.TaskId==this.state.selTaskId)[0];
         console.log(selTask);
         let selTaskItem = {...this.state.taskItem};
@@ -222,12 +240,25 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         this.deleteTask();
     }
 
-    private updateGallery() {
-        this.props.loadTasks();
-        const listTasks: any[] = [...this.props.tasks].map(({Title, SortOrder, TaskId})=>({Title, SortOrder, TaskId}));
+    private async updateGallery() {
+
+        const allTasks = await this.props.spService.getTasks(this.props.taskUsersListId);
+        
+        const teamGroupsTasks = allTasks.filter(taskItem=>taskItem.ItemType=="Group").map(taskItem => ({
+            Title: taskItem.Title,
+            Suffix: taskItem.Suffix,
+            SortOrder: taskItem.SortOrder,
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title,
+            TaskId: taskItem.Id.toString()
+        }));
+        const listTasks: any[] = teamGroupsTasks.map(({Title, SortOrder, TaskId})=>({Title, SortOrder, TaskId}));
         
         this.setState({
-            tasks: this.props.tasks,
+            tasks: teamGroupsTasks,
             sortedItems: listTasks,
             columns: this._buildColumns(listTasks)
         });
@@ -281,11 +312,10 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             ItemType: taskItem.itemType
         };
 
-        console.log(newTaskItem);
-
         const newTask = await this.props.spService.createTask(this.props.taskUsersListId, newTaskItem);
+
         if(newTask) {
-            this.updateGallery();
+            this.updateGallery();            
             let taskItem = {...this.state.taskItem};
             taskItem.groupTitle = newTask.Title;
             taskItem.groupSuffix = newTask.Suffix;
@@ -349,7 +379,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             isHeaderVisible={true}
         />);
 
-        elemGroupTaskList = this.state.sortedItems.length>0 && <TaskGroupsTable TaskUsers={this.state.sortedItems} AddTask={this.onAddGroupMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
+        elemGroupTaskList = <TaskGroupsTable TaskUsers={this.state.sortedItems} AddTask={this.onAddGroupMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
         
         const elemControls = (<>
             <div className="ms-Grid-col ms-md8 ms-sm12">
@@ -363,8 +393,8 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         const elemTaskMetadata = (this.state.showEditPanel &&  <div>
             <Label>Created on {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</Label>
             <Label>Updated on {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</Label>
-            <Link href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank">Open out-of-the-box form</Link>
-            <Link href="#" onClick={this.onDeleteTask} style={{display:"block"}}><Icon iconName="Delete"/><Text>Delete this user</Text></Link>
+            <Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank">Open out-of-the-box form</Link>
+            <Link href="#" onClick={this.onDeleteTask} style={{display:"block"}}><Icon iconName="Delete"/><Text>Delete this group</Text></Link>
         </div>);
 
         const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
