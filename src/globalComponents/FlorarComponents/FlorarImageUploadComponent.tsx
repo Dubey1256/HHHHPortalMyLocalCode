@@ -80,7 +80,7 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         let ArrayImage: any = [];
         imgArray?.map((data: any, index: any) => {
             if (imgArray?.length > 8) {
-                if (index == 1) {
+                if (index == 2) {
                     ArrayImage.push(data)
                 }
             }
