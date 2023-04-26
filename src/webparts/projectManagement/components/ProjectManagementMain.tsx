@@ -1453,8 +1453,9 @@ const ProjectManagementMain = (props: any) => {
                     <SmartInformation
                       AllListId={AllListId}
                       listName={"Master Tasks"}
-                      Context={props.Context.pageContext.web}
+                      Context={props.Context}
                       siteurl={props.siteUrl}
+                      spPageContext={props.Context.pageContext.web}
                       Id={QueryId}
                     /> : ""
                   }
