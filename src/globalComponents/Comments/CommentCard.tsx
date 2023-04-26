@@ -202,7 +202,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let taskUsers = [];
     taskUsers = await web.lists
       // .getByTitle('Task Users')TaskUsertListID
-      .getById(this.props.AllListId.TaskUsertListID)
+      .getById(this.props?.AllListId?.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
