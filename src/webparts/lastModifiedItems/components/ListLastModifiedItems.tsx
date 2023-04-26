@@ -184,7 +184,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         
         return (
             <Stack horizontal tokens={stackTokens}>
-                <Stack.Item><div><img style={{width:'25px', height:'25px'}} src={`https://hhhhteams.sharepoint.com/sites/HHHH${taskSiteIcon}`} /></div></Stack.Item>
+                <Stack.Item><div><img style={{width:'25px', height:'25px'}} src={`${taskSiteIcon}`} /></div></Stack.Item>
                 <Stack.Item>{item.Services.length > 0 ? <div style={{fontSize: "12px", fontWeight: 400, color:'green'}}>{taskid}</div> : <div style={{fontSize: "12px", fontWeight: 400}}>{taskid}</div> }</Stack.Item>
             </Stack>
         );

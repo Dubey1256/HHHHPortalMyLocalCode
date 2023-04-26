@@ -98,21 +98,30 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             UserId: taskUser.AssingedToUser.Id,
             ImageUrl: taskUser.Item_x0020_Cover.Url
         }));
-        let configItems = [];
+        let configItems: {
+            SortOrder: string;
+            siteUrl: any;
+            ImageUrl: string;
+            listId: string;Configurations: any; Title: string; 
+}[] = [];
         let navItems: any[] = [];
         let selNavItem = {...this.state.selNavItem};
         if(resSmartMetadata.length) {
-            configItems = resSmartMetadata;
-            navItems = configItems.map( (configItem: { TabName: string; }) => ({
-                text: configItem.TabName,
-                key: configItem.TabName
+         resSmartMetadata.map((items:any)=>{
+            if(items.Title!=='DRR' && items.Title!=="Foundation" && items.Title!=='Small Projects' && items.Title!=='Offshore Tasks' && items.Title!=='Master Tasks' && items.Title!=='SDC Sites')
+            configItems.push(...JSON.parse(items.Configurations));
+            });
+           
+            navItems = configItems.map( (configItem: { Title: string; }) => ({
+                    text: configItem.Title,
+                    key: configItem.Title
             }));
-            let defaultSelNavItem = resSmartMetadata[0];
-            selNavItem.columns = defaultSelNavItem.Columns;
+            let defaultSelNavItem = configItems[0];
+            selNavItem.columns = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,RelevantTasks/Id,RelevantTasks/Title&$expand=RelevantTasks,ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,AttachmentFiles,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$orderby=Modified desc&$top=200";
             selNavItem.displaySiteName = defaultSelNavItem.Title;
-            selNavItem.listId = defaultSelNavItem.ListId;
+            selNavItem.listId = defaultSelNavItem.listId;
             selNavItem.site = defaultSelNavItem.Title;
-            selNavItem.siteIcon = defaultSelNavItem.SiteIcon;
+            selNavItem.siteIcon = defaultSelNavItem.ImageUrl;
             selNavItem.siteUrl = defaultSelNavItem.siteUrl.Url;
             selNavItem.sortOrder = defaultSelNavItem.SortOrder;
             selNavItem.tabName = defaultSelNavItem.Title;
@@ -458,16 +467,16 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     private onNavItemMenuClick(navItem: PivotItem) {
         let selTabName: string = navItem.props.itemKey;
         let selNavItem = {...this.state.selNavItem};
-        let currentNavItem = this.state.configItems.filter(configItem=>configItem.TabName==selTabName)[0];
+        let currentNavItem = this.state.configItems.filter(configItem=>configItem.Title==selTabName)[0];
         
-        selNavItem.columns = currentNavItem.Columns;
-        selNavItem.displaySiteName = currentNavItem.DisplaySiteName;
-        selNavItem.listId = currentNavItem.ListId;
-        selNavItem.site = currentNavItem.Site;
-        selNavItem.siteIcon = currentNavItem.SiteIcon;
-        selNavItem.siteUrl = currentNavItem.SiteUrl;
+        selNavItem.columns = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,RelevantTasks/Id,RelevantTasks/Title&$expand=RelevantTasks,ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,AttachmentFiles,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$orderby=Modified desc&$top=200";
+        selNavItem.displaySiteName = currentNavItem.Title;
+        selNavItem.listId = currentNavItem.listId;
+        selNavItem.site = currentNavItem.Title;
+        selNavItem.siteIcon = currentNavItem.ImageUrl;
+        selNavItem.siteUrl = currentNavItem.siteUrl.Url;
         selNavItem.sortOrder = currentNavItem.SortOrder;
-        selNavItem.tabName = currentNavItem.TabName;
+        selNavItem.tabName = currentNavItem.Title;
         selNavItem.title = currentNavItem.Title;
         this.setState({
             selNavItem: selNavItem
