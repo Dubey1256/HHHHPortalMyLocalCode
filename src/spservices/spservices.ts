@@ -91,7 +91,7 @@ export default class spservices {
 
     public async getSmartMetadata(smartMetadataListId: string, taxTypes: string[]) {
         let resSmartMetadata;
-        const querySelect = "Id,ParentID,TaxType,Title,listId";
+        const querySelect = "Id,ParentID,TaxType,Title,listId,siteUrl,SortOrder";
         const queryFilter = taxTypes.map(t=>`(TaxType eq '${t}')`).join(" or ");
         try {
             resSmartMetadata = (this._sp.web.lists.getById(smartMetadataListId).items.select(querySelect).filter(queryFilter))();

@@ -32,9 +32,9 @@ const iconStyles = {root:{
     margin: '0 25px',
     color: 'deepskyblue'
 }};
-
+let resSmartMetadata :any ;
 export default class LastModifiedItemsApp extends React.Component<ILastModifiedItemsAppProps, ILastModifiedItemsAppState> {
-
+   
     private spService: spservices = null;
     
     constructor(props: ILastModifiedItemsAppProps) {
@@ -74,8 +74,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         this._onFilterItems = this._onFilterItems.bind(this);
 
     }
-
-    componentDidMount(): void {
+   
+    async componentDidMount(): Promise<void> {
+         resSmartMetadata = await this.spService.getSmartMetadata(this.props.SmartMetadataListID, ['Sites']);
+        console.log(resSmartMetadata);
         this.loadConfigurations();
     }
 
@@ -89,7 +91,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         TimeEntry:this.props.TimeEntry,
         SiteCompostion:this.props.SiteCompostion,
      }
-        const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
+       // const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
+        
         const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
         const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser&&taskUser.Item_x0020_Cover).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
@@ -98,21 +101,21 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let configItems = [];
         let navItems: any[] = [];
         let selNavItem = {...this.state.selNavItem};
-        if(configItemsRes.length) {
-            configItems = JSON.parse(configItemsRes[0].Configuration);
+        if(resSmartMetadata.length) {
+            configItems = resSmartMetadata;
             navItems = configItems.map( (configItem: { TabName: string; }) => ({
                 text: configItem.TabName,
                 key: configItem.TabName
             }));
-            let defaultSelNavItem = configItems[0];
+            let defaultSelNavItem = resSmartMetadata[0];
             selNavItem.columns = defaultSelNavItem.Columns;
-            selNavItem.displaySiteName = defaultSelNavItem.DisplaySiteName;
+            selNavItem.displaySiteName = defaultSelNavItem.Title;
             selNavItem.listId = defaultSelNavItem.ListId;
-            selNavItem.site = defaultSelNavItem.Site;
+            selNavItem.site = defaultSelNavItem.Title;
             selNavItem.siteIcon = defaultSelNavItem.SiteIcon;
-            selNavItem.siteUrl = defaultSelNavItem.SiteUrl;
+            selNavItem.siteUrl = defaultSelNavItem.siteUrl.Url;
             selNavItem.sortOrder = defaultSelNavItem.SortOrder;
-            selNavItem.tabName = defaultSelNavItem.TabName;
+            selNavItem.tabName = defaultSelNavItem.Title;
             selNavItem.title = defaultSelNavItem.Title;
         }
         this.setState({
