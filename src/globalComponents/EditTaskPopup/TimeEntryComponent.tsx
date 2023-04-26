@@ -1921,12 +1921,12 @@ function TimeEntryPopup(item: any) {
                                                                                                 </td>
 
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
+                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--Plus mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
 
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>
                                                                                                     <button type="button" className="btn btn-primary me-1 d-flex "  onClick={() => openAddTasktimepopup(childitem)} >
-                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--cross svg__iconbox"></span>
+                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
                                                                                                 
                                                                                                     </button>
                                                                                                 </td>

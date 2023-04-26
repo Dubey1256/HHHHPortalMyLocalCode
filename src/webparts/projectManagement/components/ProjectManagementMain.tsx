@@ -1448,17 +1448,18 @@ const ProjectManagementMain = (props: any) => {
                     />
                   )}
                 </span>
-                <span>
+                {/* <span>
                   {(QueryId != undefined && isSmartInfoAvailable) ?
                     <SmartInformation
                       AllListId={AllListId}
                       listName={"Master Tasks"}
-                      Context={props.Context.pageContext.web}
+                      Context={props.Context}
                       siteurl={props.siteUrl}
+                      spPageContext={props.Context.pageContext._web}
                       Id={QueryId}
                     /> : ""
                   }
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
