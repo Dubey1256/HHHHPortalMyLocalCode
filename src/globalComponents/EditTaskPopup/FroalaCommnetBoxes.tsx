@@ -285,7 +285,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                         <textarea
                                             style={{ width: "100%" }}
                                             className="form-control"
-                                            defaultValue={obj.Title}
+                                            defaultValue={obj.Title.replace(/<[^>]*>/g, ' ')}
                                             name='Title'
                                         ></textarea>
                                     </div>

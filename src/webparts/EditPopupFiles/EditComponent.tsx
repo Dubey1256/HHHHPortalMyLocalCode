@@ -143,6 +143,15 @@ function EditInstitution({item,SelectD,Calls}: any) {
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
+
+    if (type == "LinkedServices") {
+      if (item1?.linkedComponent?.length > 0) {
+        // item.linkedComponent = item1.linkedComponent;
+        // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+        setLinkedComponentData(item1.linkedComponent);
+        console.log("Popup component linkedComponent", item1.linkedComponent);
+      }
+    }
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
@@ -633,10 +642,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
-  // const EditLinkedServices = (items: any, title: any) => {
-  //     setIsComponentPicker(true);
-  //     setSharewebCategory(items);
-  // }
+ 
 
   React.useEffect(() => {
     GetTaskUsers();
@@ -1573,7 +1579,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Component')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1598,7 +1604,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Services')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1734,8 +1740,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                 ? smartComponentData?.map((com: any) => {
                                     return (
                                       <>
+                                       <div className="">
                                         <div
-                                          className="d-flex Component-container-edit-task block"
+                                          className="d-flex Component-container-edit-task block "
                                           style={{ width: "81%" }}
                                         >
                                           <a
@@ -1754,6 +1761,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                               }
                                             />
                                           </a>
+                                        </div>
                                         </div>
                                       </>
                                     );
@@ -2303,6 +2311,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         userDisplayName={EditData?.userDisplayName}
                         listName={EditData?.siteType}
                         itemID={EditData?.Id}
+                        AllListId={RequireData}
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
@@ -2899,6 +2908,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
                           listId={RequireData.MasterTask}
+                          siteUrls={RequireData?.siteUrl}
                         />
                       ) : (
                         ""

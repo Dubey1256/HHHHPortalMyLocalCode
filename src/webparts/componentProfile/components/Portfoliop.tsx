@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as $ from "jquery";
 import Modal from "react-bootstrap/Modal";
-var TypeSite: string;
+let TypeSite: string;
 // if(TypeSite=="Service"){
 //     require('../../cssFolder/sitecolorservice.scss');
 // }
@@ -25,25 +25,25 @@ import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 // import SmartInformation from "../../taskprofile/components/SmartInformation";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
 
-var TeamMembers: any = [];
-var AssigntoMembers: any = [];
-var AllQuestion: any[] = [];
-var AllHelp: any[] = [];
-var AllTeamMember: any = [];
-var Folderdatas: any = [];
-var AssignTeamMember: any = [];
+let TeamMembers: any = [];
+let AssigntoMembers: any = [];
+let AllQuestion: any[] = [];
+let AllHelp: any[] = [];
+let AllTeamMember: any = [];
+let Folderdatas: any = [];
+let AssignTeamMember: any = [];
 let ContextValue: any = {};
 
 
 function getQueryVariable(variable:any)
 {
-        var query = window.location.search.substring(1);
+        let query = window.location.search.substring(1);
         console.log(query)//"app=article&act=news_content&aid=160990"
-        var vars = query.split("&");
+        let vars = query.split("&");
        
         console.log(vars) 
-        for (var i=0;i<vars.length;i++) {
-                    var pair = vars[i].split("=");
+        for (let i=0;i<vars.length;i++) {
+                    let pair = vars[i].split("=");
                     console.log(pair)//[ 'app', 'article' ][ 'act', 'news_content' ][ 'aid', '160990' ] 
         if(pair[0] == variable){ return pair[1];}
          }
@@ -53,6 +53,7 @@ function getQueryVariable(variable:any)
 }
 let ID:any='';
 let web:any=''
+let count=0;
 function Portfolio({SelectedProp}:any) {
   const [data, setTaskData] = React.useState([]);
   const [isActive, setIsActive] = React.useState(false);
@@ -135,12 +136,12 @@ function Portfolio({SelectedProp}:any) {
     setdataHelp((dataHelp) => [...dataHelp]);
   };
   React.useEffect(() => {
-    var folderId: any = "";
+    let folderId: any = "";
     ContextValue = SelectedProp;
     let web = ContextValue.siteUrl;
-    var url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
-    var response: any = [];
-    var responsen: any = []; // this variable is used for storing list items
+    let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
+    let response: any = [];
+    let responsen: any = []; // this variable is used for storing list items
     function GetListItems() {
       $.ajax({
         url: url,
@@ -153,7 +154,7 @@ function Portfolio({SelectedProp}:any) {
           response.map((item: any) => {
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
-              var urln = `${web}/_api/lists/getbyid('${ContextValue.DocumentsListID}')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
+              let urln = `${web}/_api/lists/getbyid('${ContextValue.DocumentsListID}')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -174,14 +175,14 @@ function Portfolio({SelectedProp}:any) {
               });
             }
             if (item.Portfolio_x0020_Type != undefined) {
-              var filter = "";
+              let filter = "";
               if (item.Portfolio_x0020_Type == "Component") {
                 filter += "(Components / Id eq " + ID + ")";
               } else if (item.Portfolio_x0020_Type == "Service") {
                 filter += "(Service / Id eq " + ID + ")";
               }
 
-              var urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
+              let urln = `${web}/_api/lists/getbyid('${ContextValue.SmartHelptListID}')/items?$select=Id,Title,ItemRank,PercentComplete,Categories,AssignedTo/Id,AssignedTo/Title,Body,Components/Id,Components/Title,Components/ItemType,Service/Id,Service/Title,Service/ItemType,DueDate,ItemType,Priority,StartDate,Status&$expand=AssignedTo,Components,Service&$filter=${filter}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -227,12 +228,13 @@ function Portfolio({SelectedProp}:any) {
     GetListItems();
     getTaskUser();
     open();
-  }, []);
+    
+  }, [count]);
 
   // Make Folder data unique
 
   Folderdatas = FolderData.reduce(function (previous: any, current: any) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -268,9 +270,9 @@ function Portfolio({SelectedProp}:any) {
     });
   }
 
-  var myarray2: any = [];
+  let myarray2: any = [];
 
-  var FolderID: any = "";
+  let FolderID: any = "";
   data.map((item) => {
     if (item.Portfolio_x0020_Type != undefined) {
       TypeSite = item.Portfolio_x0020_Type;
@@ -310,18 +312,21 @@ function Portfolio({SelectedProp}:any) {
     item["listName"] = ContextValue.MasterTaskListID;
     setIsComponent(true);
     setSharewebComponent(item);
+    ++count;
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const Call = React.useCallback((item1) => {
     setIsComponent(false);
     setIsTask(false);
+    ++count;
+    
   }, []);
 
   //  Remove duplicate values
   // const UniqueArray = [...TeamMembers, ...AssigntoMembers];
 
   AllTeamMember = TeamMembers.reduce(function (previous: any, current: any) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -335,7 +340,7 @@ function Portfolio({SelectedProp}:any) {
     previous: any,
     current: any
   ) {
-    var alredyExists =
+    let alredyExists =
       previous.filter(function (item: any) {
         return item.Id === current.Id;
       }).length > 0;
@@ -1323,9 +1328,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.ServicePortfolio.Id}
+                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.Services?.results[0]?.Id}
                                 >
-                                  {item.ServicePortfolio.Title}
+                                  {item?.Services?.results[0]?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1341,9 +1346,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item.ComponentPortfolio.Id}`}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.Component?.results[0]?.Id}`}
                                 >
-                                  {item.ComponentPortfolio.Title}
+                                  {item?.Component?.results[0]?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1444,8 +1449,8 @@ function Portfolio({SelectedProp}:any) {
                         siteUrl={
                           web
                         }
+                        AllListId={SelectedProp}
                         userDisplayName={item.userDisplayName}
-                        listName={"Master Tasks"}
                         itemID={item.Id}
                       ></CommentCard>
                     ))}

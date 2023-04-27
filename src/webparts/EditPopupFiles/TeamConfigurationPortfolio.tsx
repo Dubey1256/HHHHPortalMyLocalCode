@@ -22,6 +22,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
+let web:any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -48,7 +49,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private AllUsers: any = [];
     private dragUser: any;
     private async loadTaskUsers() {
-        let web = new Web(this.props.Sitel.siteUrl);
+        web = new Web(this.props.Sitel.siteUrl);
         if (this.props.ItemInfo.siteUrl != undefined) {
             web = new Web(this.props.Sitel.siteUrl);
         } else {
@@ -94,7 +95,12 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         })
     }
     private async GetTaskDetails() {
-        let web = new Web(this.props.ItemInfo.siteUrl);
+        let web = new Web(this.props.Sitel.siteUrl);
+        if (this.props.ItemInfo.siteUrl != undefined) {
+            web = new Web(this.props.Sitel.siteUrl);
+        } else {
+            web = new Web(this.props.Sitel.siteUrl);
+        }
         let taskDetails = [];
         if (this.props.ItemInfo.listId != undefined) {
             taskDetails = await web.lists
@@ -106,7 +112,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .get()
         } else {
             taskDetails = await web.lists
-                .getByTitle(this.props.ItemInfo.listName)
+                .getById(this.props.ItemInfo.listName)
                 .items
                 .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")

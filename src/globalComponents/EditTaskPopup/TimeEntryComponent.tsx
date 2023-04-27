@@ -1926,7 +1926,7 @@ function TimeEntryPopup(item: any) {
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>
                                                                                                     <button type="button" className="btn btn-primary me-1 d-flex "  onClick={() => openAddTasktimepopup(childitem)} >
-                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--cross svg__iconbox"></span>
+                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
                                                                                                 
                                                                                                     </button>
                                                                                                 </td>
