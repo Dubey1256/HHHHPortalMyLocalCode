@@ -226,6 +226,14 @@
         }
       ]
     },
+    "update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/updateTopNavigation/UpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/updateTopNavigation/UpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
     "task-dashboard-hhhh-web-part": {
       "components": [
         {
@@ -283,6 +291,7 @@
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
     "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
-    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
+    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
+    "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js"
   }
 }
