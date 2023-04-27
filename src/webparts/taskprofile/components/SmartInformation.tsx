@@ -65,23 +65,23 @@ const SmartInformation = (props: any) => {
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
     AllTasktagsmartinfo=[];
-    let web = new Web(props.siteurl);
+    let web = new Web(props.AllListId.siteUrl);
     let taskDetails: any = [];
 
     taskDetails = await web.lists
-      .getByTitle(props.listName)
+      .getByTitle(props?.listName)
       // .getById(props.AllListId.SiteTaskListID)
       .items
-      .getById(props.Id)
+      .getById(props?.Id)
       .select("Id", "Title","Component/Id","Component/Title","Services/Id", "Services/Title", "SmartInformation/Id", "SmartInformation/Title")
       .expand("SmartInformation","Component","Services")
       .get()
     console.log(taskDetails);
     if(taskDetails!=undefined){
-      if(taskDetails?.Component!=undefined&&taskDetails?.Component.length>0){
+      if(taskDetails?.Component!=undefined&&taskDetails?.Component?.length>0){
         setallSetValue({...allValue,TagcomponentServices:taskDetails?.Component[0]?.Title})
       }
-      if(taskDetails?.Services!=undefined && taskDetails?.Services.length>0){
+      if(taskDetails?.Services!=undefined && taskDetails?.Services?.length>0){
         setallSetValue({...allValue,TagcomponentServices:taskDetails?.Services[0]?.Title})
       }
     
@@ -96,9 +96,9 @@ const SmartInformation = (props: any) => {
   //============== AllsmartInformation get in smartInformation list ===========================
   const loadAllSmartInformation = async (SmartInformation: any) => {
     var allSmartInformationglobal: any = [];
-    const web = new Web(props.siteurl);
+    const web = new Web(props?.AllListId?.siteUrl);
     // var Data = await web.lists.getByTitle("SmartInformation")
-    var Data = await web.lists.getById(props.AllListId.SmartInformationListID)
+    var Data = await web.lists.getById(props?.AllListId?.SmartInformationListID)
     .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title')
       .expand("InfoType,Author,Editor")
       .get()
@@ -111,7 +111,7 @@ const SmartInformation = (props: any) => {
           Data?.map(async(tagsmartinfo: any) => {
             if (tagsmartinfo?.Id == items?.Id) {
             
-           if(tagsmartinfo.Description!=null&&tagsmartinfo.Description.includes("<p></p>")){
+           if(tagsmartinfo.Description!=null&&tagsmartinfo?.Description.includes("<p></p>")){
             tagsmartinfo.Description=null;
            }
               allSmartInformationglobal.push(tagsmartinfo);
@@ -131,22 +131,22 @@ const SmartInformation = (props: any) => {
     const TagDocument=(allSmartInformationglobal:any)=>{
      var allSmartInformationglobaltagdocuments: any = [];
      console.log(AllTasktagsmartinfo)
-  if(allSmartInformationglobal!=undefined&& allSmartInformationglobal.length>0){
+  if(allSmartInformationglobal!=undefined&& allSmartInformationglobal?.length>0){
   
-    allSmartInformationglobal.map(async(items:any)=>{
+    allSmartInformationglobal?.map(async(items:any)=>{
     
-      const web = new Web(props.siteurl);
-       await web.lists.getById(props.AllListId.DocumentsListID)
+      const web = new Web(props?.AllListId?.siteUrl);
+       await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
-      .expand("Author,Editor").filter(`SmartInformation/ID  eq ${items.Id}`).top(4999)
+      .expand("Author,Editor").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
       .get()
       .then((result: any[]) => {
         items.TagDocument=result
         if(AllTasktagsmartinfo!=undefined&&AllTasktagsmartinfo.length>0){
-          AllTasktagsmartinfo.map((task:any)=>{
-            if(task.SmartInformation!==undefined&&task.SmartInformation.length>0 ){
+          AllTasktagsmartinfo?.map((task:any)=>{
+            if(task?.SmartInformation!==undefined&&task?.SmartInformation?.length>0 ){
               task?.SmartInformation?.map((tagtask:any)=>{
-                if(tagtask.Id==items.Id){
+                if(tagtask?.Id==items?.Id){
                   var tagtaskarray:any=[];
                   tagtaskarray.push(task)
                   items.TagTask=tagtaskarray
@@ -161,7 +161,7 @@ const SmartInformation = (props: any) => {
         console.log(items)
         allSmartInformationglobaltagdocuments.push(items)
        
-        if(allSmartInformationglobal.length==allSmartInformationglobaltagdocuments.length){
+        if(allSmartInformationglobal?.length==allSmartInformationglobaltagdocuments?.length){
           setSmartInformation(allSmartInformationglobaltagdocuments)
         }
        
@@ -203,10 +203,10 @@ const SmartInformation = (props: any) => {
   // ============load SmartMetaData to get the  infoType in popup======================= 
 
   const LoadSmartMetaData = async () => {
-    const web = new Web(props.siteurl);
+    const web = new Web(props?.AllListId?.siteUrl);
     var ListId = "01a34938-8c7e-4ea6-a003-cee649e8c67a"
     // await web.lists.getByTitle('SmartMetadata')
-    await web.lists.getById(props.AllListId.SmartMetadataListID)
+    await web.lists.getById(props?.AllListId?.SmartMetadataListID)
     .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', "TaxType", 'Description', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
       .expand("Author", "Editor", "Parent").filter("ProfileType eq 'Information'").top(4999)
       .get()
@@ -270,14 +270,14 @@ const SmartInformation = (props: any) => {
     }
     if (item == "fileupload") {
       console.log(value.target.files[0])
-      const selectedFile = value.target?.files[0];
+      const selectedFile = value?.target?.files[0];
       const fileReader = new FileReader();
       fileReader.onload = () => {
         setUploaddoc(fileReader.result);
       };
       fileReader.readAsArrayBuffer(selectedFile);
       // setUploaddoc(value.target.files[0])
-      let fileName = value.target.files[0]?.name
+      let fileName = value?.target?.files[0]?.name
       setallSetValue({ ...allValue, fileupload: fileName });
     }
     
@@ -287,11 +287,11 @@ const SmartInformation = (props: any) => {
   //============= save function to save the data inside smartinformation list  ================.
 
   const saveSharewebItem = async () => {
-    var movefolderurl = `${props.spPageContext.serverRelativeUrl}/Lists/SmartInformation`
+    var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
     // '/sites/HHHH/SP/Lists/TasksTimesheet2'
     console.log(movefolderurl);
     console.log(allValue);
-    if (allValue.Title !== null && allValue?.Title !== "") {
+    if (allValue?.Title !== null && allValue?.Title !== "") {
       var metaDataId;
       if (SmartMetaData != undefined) {
         SmartMetaData?.map((item: any) => {
@@ -300,13 +300,13 @@ const SmartInformation = (props: any) => {
           }
         })
       }
-      const web = new Web(props?.siteurl);
+      const web = new Web(props?.AllListId?.siteUrl);
       let postdata = {
-        Title: allValue.Title != null ? allValue?.Title : "",
+        Title: allValue?.Title != null ? allValue?.Title : "",
         Acronym: allValue.Acronym != null ? allValue?.Acronym : "",
         InfoTypeId: metaDataId!=undefined?metaDataId:null,
-        Description: allValue.Description != null ? allValue?.Description : "",
-        SelectedFolder: allValue.SelectedFolder,
+        Description: allValue?.Description != null ? allValue?.Description : "",
+        SelectedFolder: allValue?.SelectedFolder,
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         URL: {
           "__metadata": { type: 'SP.FieldUrlValue' },
@@ -321,7 +321,7 @@ const SmartInformation = (props: any) => {
 
       if (popupEdit) {
         // await web.lists.getByTitle("SmartInformation")
-        await web.lists.getById(props.AllListId.SmartInformationListID)
+        await web.lists.getById(props?.AllListId?.SmartInformationListID)
         .items.getById(editvalue?.Id).update(postdata)
           .then(async(editData: any) => {
             if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") {
@@ -338,20 +338,20 @@ const SmartInformation = (props: any) => {
       }
       else {
         // await web.lists.getByTitle("SmartInformation")
-        await web.lists.getById(props.AllListId.SmartInformationListID)
+        await web.lists.getById(props?.AllListId?.SmartInformationListID)
         .items.add(postdata)
           .then(async (res: any) => {
             console.log(res);
             setPostSmartInfo(res)
             if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") {
               let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${res.data.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${res.data.ID}_.000`);
+                .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${res?.data?.ID}_.000`);
               console.log(movedata);
             }
             hhhsmartinfoId.push(res?.data?.ID)
-            await web.lists.getByTitle(props.listName)
+            await web.lists.getByTitle(props?.listName)
             // await web.lists.getById(props.AllListId.SiteTaskListID)
-             .items.getById(props.Id).update(
+             .items.getById(props?.Id).update(
               {
                 SmartInformationId: {
                   "results": hhhsmartinfoId
@@ -398,9 +398,9 @@ const SmartInformation = (props: any) => {
 
   const deleteSmartinfoData = async (DeletItemId: any) => {
     console.log(DeletItemId);
-    const web = new Web(props.siteurl);
+    const web = new Web(props?.AllListId?.siteUrl);
     // await web.lists.getByTitle("SmartInformation")
-    await web.lists.getById(props.AllListId.SmartInformationListID)
+    await web.lists.getById(props?.AllListId?.SmartInformationListID)
     .items.getById(DeletItemId).recycle()
       .then((res: any) => {
         console.log(res);
@@ -416,9 +416,9 @@ const SmartInformation = (props: any) => {
 
    const deleteDocumentsData = async (DeletItemId: any) => {
     console.log(DeletItemId);
-    const web = new Web(props.siteurl);
+    const web = new Web(props?.AllListId?.siteUrl);
     // await web.lists.getByTitle("SmartInformation")
-    await web.lists.getById(props.AllListId.DocumentsListID)
+    await web.lists.getById(props?.AllListId?.DocumentsListID)
     .items.getById(DeletItemId).recycle()
       .then((res: any) => {
         console.log(res);
@@ -456,15 +456,15 @@ const SmartInformation = (props: any) => {
     setSelectedTilesTitle(items)
   }
 
-  // =============upload document function.....===============
+  // =============upload document function.main ....===============
 
   const onUploadDocumentFunction = async (controlId: any, uploadType: any) => {
     if (allValue.fileupload != null && allValue.fileupload != undefined) {
 
 
-      var folderName = props.taskTitle.substring(5, 34).trim();
-      var folderUrl = props.Context._pageContext._web.serverRelativeUrl.toLowerCase() + '/documents'
-      var SiteUrl = props.siteurl
+      var folderName = props?.taskTitle?.substring(5, 34).trim();
+      var folderUrl = props?.Context?._pageContext?._web.serverRelativeUrl?.toLowerCase() + '/documents'
+      var SiteUrl = props?.AllListId?.siteUrl
       var ListTitle = "Documents"
       console.log(folderName);
       console.log(folderUrl);
@@ -480,7 +480,7 @@ const SmartInformation = (props: any) => {
   const  createFolder=async(folderName:any)=>{
 if(folderName!=""){
   var libraryName = "Documents";
-  var newFolderResult = await sp.web.rootFolder.folders.getByName(libraryName).folders.add(folderName);
+  var newFolderResult = await sp.web?.rootFolder?.folders.getByName(libraryName).folders.add(folderName);
   console.log("Four folders created",newFolderResult);
 }
 uploadDocumentFinal(folderName);
@@ -489,7 +489,7 @@ uploadDocumentFinal(folderName);
   // ================final document and file  upload  link title update inside folder and outside folder=====================
 
   const uploadDocumentFinal = async (folderName: any) => {
-    const web = new Web(props?.siteurl);
+    const web = new Web(props?.AllListId?.siteUrl);
     var folderPath:any;
    if(folderName!=""){
      folderPath = `Documents/${folderName}`;
@@ -532,10 +532,10 @@ uploadDocumentFinal(folderName);
    
       //===== update  the smartinformation in the file========= .
 
-      const web = new Web(props.siteurl );
-      const updatedItem = await web.lists.getById(props.AllListId.DocumentsListID)
+      const web = new Web(props?.AllListId?.siteUrl );
+      const updatedItem = await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(res.Id).update({
-        SmartInformationId:{"results":[(smartDocumentpostData.Id)] },
+        SmartInformationId:{"results":[(smartDocumentpostData?.Id)] },
         Title:fileName.split(".")[0],
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
@@ -557,13 +557,13 @@ uploadDocumentFinal(folderName);
    
   //==========create Task function============
    const creatTask=async()=>{
-    console.log(props.listName)
-    if(allValue.taskTitle!=null){
-      const web = new Web(props.siteurl)
-      await web.lists.getByTitle(props.listName).items.add(
+    console.log(props?.listName)
+    if(allValue?.taskTitle!=null){
+      const web = new Web(props?.AllListId?.siteUrl)
+      await web.lists.getByTitle(props?.listName).items.add(
             {
-             Title:allValue.taskTitle,
-             SmartInformationId:{"results":[(smartDocumentpostData.Id)] }
+             Title:allValue?.taskTitle,
+             SmartInformationId:{"results":[(smartDocumentpostData?.Id)] }
           
               }
       )
@@ -606,8 +606,8 @@ const CallBack=()=>{
    //================all Task load function ===========
    const GetAllTask=(smartinfoData:any)=>{
     smartinfoData.map(async(smartinfoData:any)=>{
-      var  web = new Web(props.siteurl)
-      await web.lists.getByTitle(props.listName).items.select("Id,Title,SmartInformation/Id,SmartInformation/Title").filter(`SmartInformation/Id eq ${smartinfoData.Id}`) .expand("SmartInformation").get()
+      var  web = new Web(props?.AllListId?.siteUrl)
+      await web.lists.getByTitle(props?.listName).items.select("Id,Title,SmartInformation/Id,SmartInformation/Title").filter(`SmartInformation/Id eq ${smartinfoData?.Id}`) .expand("SmartInformation").get()
            .then((Data: any[])=>{
              if(Data!=undefined&&Data.length>0){
                Data.map((items:any)=>{
@@ -677,12 +677,12 @@ const CallBack=()=>{
 
                 <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformation ? 'block' : 'none' }}>
                   <div className="ps-3" dangerouslySetInnerHTML={{ __html: SmartInformation?.Description!=null?SmartInformation?.Description:"No description available"}}></div>
-                  {SmartInformation?.TagDocument!=undefined && SmartInformation?.TagDocument.length>0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
+                  {SmartInformation?.TagDocument!=undefined && SmartInformation?.TagDocument?.length>0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
                         <div className='card-body p-1 bg-ee mt-1'>
                             <ul  className='alignCenter list-none'>
                                 <li>
-                                  <span><a  href={item.EncodedAbsUrl}>
+                                  <span><a  href={item?.EncodedAbsUrl}>
                                     {item?.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
                                     {item?.File_x0020_Type=="docx"&&<span className='svg__iconbox svg__icon--docx'title="docx"></span>} 
                                     {item?.File_x0020_Type=="csv"||item?.File_x0020_Type=="xlsx"&&<span className='svg__iconbox svg__icon--csv'title="csv"></span>}
@@ -708,15 +708,15 @@ const CallBack=()=>{
                         </div>
                     )
                 })}
-                {SmartInformation.TagTask!=undefined && SmartInformation.TagTask.length>0 && SmartInformation.TagTask.map((tagtask:any)=>{
+                {SmartInformation.TagTask!=undefined && SmartInformation?.TagTask?.length>0 && SmartInformation?.TagTask?.map((tagtask:any)=>{
                   return(
           <div className='card-body p-1 bg-ee mt-1'>
           <ul  className='alignCenter list-none'>
            <li>
-          <span><a href= {`${props.siteurl}/SitePages/Task-Profile.aspx?taskId=${tagtask.Id}&Site=${props.listName}`}><span  className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+          <span><a href= {`${props.AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span  className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
            </li>
           <li>
-              <span className='px-2'><a href={`${props.siteurl}/SitePages/Task-Profile.aspx?taskId=${tagtask.Id}&Site=${props.listName}`}>{tagtask.Title}</a></span>
+              <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
          </li>
          <li className='d-end'>
           <span title="Edit" className="svg__iconbox svg__icon--edit hreflink" onClick={(e)=>edittaskpopup(tagtask)}></span>
@@ -787,7 +787,7 @@ const CallBack=()=>{
             </div>}
           </div>
         </div>
-        <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
+        <div className='mt-3'> <HtmlEditorCard editorValue={allValue?.Description != null ? allValue?.Description : ""} HtmlEditorStateChange={HtmlEditorCallBack}> </HtmlEditorCard></div>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">
@@ -798,7 +798,7 @@ const CallBack=()=>{
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-              {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props.spPageContext.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
+              {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
               <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", null)}>Add Link/ Document</a></span>
               <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
                 Save
@@ -865,8 +865,8 @@ const CallBack=()=>{
               iconName="Upload"
             //labelMessage= "My custom upload File"
             >
-              <div className='BorderDas py-5 px-2 text-center'> {allValue.Dragdropdoc == "" && <span>Drag and drop here...</span>}
-                <span>{allValue.Dragdropdoc != "" ? allValue.Dragdropdoc : ""}</span>
+              <div className='BorderDas py-5 px-2 text-center'> {allValue?.Dragdropdoc == "" && <span>Drag and drop here...</span>}
+                <span>{allValue?.Dragdropdoc != "" ? allValue?.Dragdropdoc : ""}</span>
               </div>
 
             </DragDropFiles>
@@ -874,7 +874,7 @@ const CallBack=()=>{
               <div className='col-md-6'>
                 <input type='file' onChange={(e) => changeInputField(e, "fileupload")} className="full-width mt-3"></input>
               </div>
-              <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue.fileupload != "" ? allValue.fileupload : ""}></input></div>
+              <div className='col-md-6'><input type="text" className="full-width mt-3" placeholder='Rename your document' value={allValue?.fileupload != "" ? allValue?.fileupload : ""}></input></div>
             </div>
             <div className='mt-2 text-end' >
               <button className='btn btn-primary mx-3 text-end 'onClick={(e) => onUploadDocumentFunction("uploadFile", "UploadDocument")}>upload</button> 
@@ -891,8 +891,8 @@ const CallBack=()=>{
             iconName="Upload"
             labelMessage="Drag and drop here..."
           >
-            <div className='BorderDas py-5 px-2 text-center'> {allValue.emailDragdrop == "" && <span>Drag and drop here...</span>}
-              <span>{allValue.emailDragdrop != "" ? allValue.emailDragdrop : ""}</span>
+            <div className='BorderDas py-5 px-2 text-center'> {allValue?.emailDragdrop == "" && <span>Drag and drop here...</span>}
+              <span>{allValue?.emailDragdrop != "" ? allValue?.emailDragdrop : ""}</span>
             </div>
            </DragDropFiles>
            <div className='text-lg-end mt-2'><Button className='btn btn-default text-end  btn btn-primary' onClick={() => handleClose()}>Cancel</Button></div>
@@ -901,10 +901,10 @@ const CallBack=()=>{
            <div className="card-header"> 
               Link</div>
               <div className='mx-3 my-2'><label htmlFor="Name">Name</label>
-               <input type='text' id="Name"  className="form-control"placeholder='Name' value={allValue.LinkTitle!=""?allValue.LinkTitle:null} onChange={(e) => setallSetValue({...allValue, LinkTitle:e.target.value})}></input>
+               <input type='text' id="Name"  className="form-control"placeholder='Name' value={allValue?.LinkTitle!=""?allValue?.LinkTitle:null} onChange={(e) => setallSetValue({...allValue, LinkTitle:e.target.value})}></input>
                </div>
                <div className='mx-3 my-2'><label htmlFor="url">Url</label>
-               <input type='text' id="url"  className="form-control"placeholder='Url'value={allValue.LinkUrl!=""?allValue.LinkUrl:null}onChange={(e) => setallSetValue({...allValue,LinkUrl:e.target.value})}></input>
+               <input type='text' id="url"  className="form-control"placeholder='Url'value={allValue.LinkUrl!=""?allValue?.LinkUrl:null}onChange={(e) => setallSetValue({...allValue,LinkUrl:e.target.value})}></input>
                </div>
           
             <div className='text-lg-end mt-2'><Button className='btn btn-default mx-3 my-2 text-end' onClick={()=>uploadDocumentFinal("")}>Create</Button></div>
@@ -957,10 +957,10 @@ const CallBack=()=>{
 
     <div className="input-group">
        <label className="form-label full-width">Item Rank</label>
-       <select className="form-select" defaultValue={allValue.ItemRank} onChange={(e) => setallSetValue({ ...allValue, ItemRank: e.target.value })}>
+       <select className="form-select" defaultValue={allValue?.ItemRank} onChange={(e) => setallSetValue({ ...allValue, ItemRank: e.target.value })}>
            {ItemRank.map(function (h: any, i: any) {
                return (
-             <option key={i} selected={allValue.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
+             <option key={i} selected={allValue?.ItemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
                )
            })}
        </select>
@@ -976,7 +976,7 @@ const CallBack=()=>{
         <span className='ps-3'><input type="radio" className="form-check-input" value="Service"/> Service</span>
       </label>
   
-   <input type="text"  className="form-control" value={allValue.TagcomponentServices}/> 
+   <input type="text"  className="form-control" value={allValue?.TagcomponentServices}/> 
     <span className="input-group-text" title="Linked Component Task Popup">
       <span className="svg__iconbox svg__icon--editBox"></span>
       </span>
@@ -998,12 +998,12 @@ const CallBack=()=>{
             <div className="col-sm-6 text-lg-start">
               {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><a onClick={() => deleteDocumentsData(EditdocumentsData.Id)}><span className="svg__iconbox svg__icon--trash"></span>Delete this item</a></div>
+                <div><a onClick={() => deleteDocumentsData(EditdocumentsData?.Id)}><span className="svg__iconbox svg__icon--trash"></span>Delete this item</a></div>
               </div>}
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
-             <span className='pe-2'><a target="_blank" data-interception="off" href={`${props.spPageContext.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
+             <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
              
               <Button className='btn btn-primary ms-1  mx-2'>
                 Save
@@ -1015,7 +1015,7 @@ const CallBack=()=>{
           </div>
         </footer>
       </Panel>
-      {allValue.EditTaskpopupstatus&&<EditTaskPopup Items={EditTaskdata}context={props.Context} AllListId={props.AllListId} Call={() => {CallBack() }}  />}
+      {allValue.EditTaskpopupstatus&&<EditTaskPopup Items={EditTaskdata}context={props?.AllListId} Call={() => {CallBack() }}  />}
     </div>
 
    
