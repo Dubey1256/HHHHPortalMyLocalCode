@@ -1921,7 +1921,7 @@ function TimeEntryPopup(item: any) {
                                                                                                 </td>
 
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--Plus mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
+                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
 
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>
