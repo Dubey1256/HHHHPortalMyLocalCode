@@ -152,6 +152,7 @@ const EditTaskPopup = (Items: any) => {
     const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
     const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
     const [AllClientCategoryData, setAllClientCategoryData] = React.useState([]);
+    const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -512,13 +513,7 @@ const EditTaskPopup = (Items: any) => {
 
     const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
         let tempString: any;
-        // CategoriesData.split(";")?.map((type: any, index: number) => {
-        //     if (type != TypeCategory) {
-        //         tempString.push(type);
-        //     }
-        // })
-        // setCategoriesData(tempString.join(";"));
-        // tempCategoryData = tempString.join(";");
+
         let tempArray2: any = [];
         tempShareWebTypeData = [];
         ShareWebTypeData?.map((dataType: any) => {
@@ -1042,7 +1037,7 @@ const EditTaskPopup = (Items: any) => {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
-                        
+
                     } else {
                         StatusArray?.map((item: any) => {
                             if (statusValue == item.value) {
@@ -1646,7 +1641,7 @@ const EditTaskPopup = (Items: any) => {
     var SmartServicesId: any = [];
     var ApproverIds: any = [];
 
-// ******************** This is Task All Details Update Function  ***************************
+    // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
@@ -1667,8 +1662,8 @@ const EditTaskPopup = (Items: any) => {
 
             })
         }
-        let PrecentStatus :any = UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : 0;
-       
+        let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : 0;
+
         if (PrecentStatus == 1) {
             let tempArrayApprover: any = [];
             if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
@@ -1862,14 +1857,6 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-        if (sendEmailGlobalCount > 0) {
-            if (sendEmailStatus) {
-                setSendEmailComponentStatus(false)
-            } else {
-                setSendEmailComponentStatus(true)
-            }
-        }
-
         if (selectedClientCategory != undefined && selectedClientCategory.length > 0) {
             selectedClientCategory?.map((itemData: any) => {
                 ClientCategoryIDs.push(itemData.Id)
@@ -1898,7 +1885,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
         }
-       
+
         // else {
         //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
         //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
@@ -1906,44 +1893,49 @@ const EditTaskPopup = (Items: any) => {
         //         })
         //     }
         // }
-
+        let UpdateDataObject: any = {
+            IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
+            workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
+            waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
+            Priority_x0020_Rank: EditData.Priority_x0020_Rank,
+            ItemRank: EditData.ItemRank,
+            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+            Priority: Priority,
+            StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
+            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
+            Categories: CategoriesData ? CategoriesData : null,
+            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
+            SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
+            DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+            CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+            Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
+            Mileage: (EditData.Mileage ? EditData.Mileage : ''),
+            ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
+            component_x0020_link: {
+                "__metadata": { type: "SP.FieldUrlValue" },
+                Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
+                Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
+            },
+            BasicImageInfo: JSON.stringify(UploadImageArray),
+            ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
+            ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
+            ClientTime: JSON.stringify(ClientCategoryData),
+            ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings
+        }
+        let FinalObject:any = {
+            ...UpdateDataObject,
+            ...EditData
+        };
+        setLastUpdateTaskData(FinalObject);
         try {
             let web = new Web(siteUrls);
-            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
-                IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
-                workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
-                waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
-                Priority_x0020_Rank: EditData.Priority_x0020_Rank,
-                ItemRank: EditData.ItemRank,
-                Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-                Priority: Priority,
-                StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-                PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
-                ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
-                Categories: CategoriesData ? CategoriesData : null,
-                // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
-                SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
-                DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-                CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
-                Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
-                Mileage: (EditData.Mileage ? EditData.Mileage : ''),
-                ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
-                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
-                FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
-                component_x0020_link: {
-                    "__metadata": { type: "SP.FieldUrlValue" },
-                    Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
-                    Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
-                },
-                BasicImageInfo: JSON.stringify(UploadImageArray),
-                ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
-                ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-                ClientTime: JSON.stringify(ClientCategoryData),
-                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings
-            }).then((res: any) => {
+            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(UpdateDataObject).then((res: any) => {
                 tempShareWebTypeData = [];
                 AllMetaData = []
                 taskUsers = []
@@ -1959,6 +1951,20 @@ const EditTaskPopup = (Items: any) => {
                 TaskCreatorApproverBackupArray = []
                 TaskApproverBackupArray = []
                 ApproverIds = []
+                if (Items.sendApproverMail != undefined) {
+                    if (Items.sendApproverMail) {
+                        setSendEmailComponentStatus(true)
+                    } else {
+                        setSendEmailComponentStatus(false)
+                    }
+                }
+                if (sendEmailGlobalCount > 0) {
+                    if (sendEmailStatus) {
+                        setSendEmailComponentStatus(false)
+                    } else {
+                        setSendEmailComponentStatus(true)
+                    }
+                }
                 if (typeFunction != "TimeSheetPopup") {
                     Items.Call();
                 }
@@ -2357,14 +2363,14 @@ const EditTaskPopup = (Items: any) => {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).delete();
+                item.attachmentFiles.getByName(imageName).recycle();
                 console.log("Attachment deleted");
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).delete();
+                item.attachmentFiles.getByName(imageName).recycle();
                 console.log("Attachment deleted");
             })().catch(console.log)
         }
@@ -2763,6 +2769,7 @@ const EditTaskPopup = (Items: any) => {
         setApproverSearchKey('');
         setTaskAssignedTo([ApproverData]);
         setTaskTeamMembers([ApproverData]);
+        TaskApproverBackupArray = [ApproverData];
         StatusArray?.map((item: any) => {
             if (item.value == 1) {
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
@@ -2991,7 +2998,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls}/> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
                             </span>
                         </div>
                     </div>
@@ -4048,7 +4055,7 @@ const EditTaskPopup = (Items: any) => {
                     </ComponentPortPolioPopup>}
                     {IsComponentPicker && <Picker props={ShareWebComponent} selectedCategoryData={ShareWebTypeData} usedFor="Task-Popup" siteUrls={siteUrls} AllListId={AllListIdData} CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
                     {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType} Dynamic={AllListIdData}></LinkedComponent>}
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -4213,7 +4220,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                 </span></div>
 
-                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
+                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4224,7 +4231,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
-                                                                >Completed Date</label> 
+                                                                >Completed Date</label>
                                                                 <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
@@ -5073,7 +5080,7 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
                     <div className="modal-body wrapper p-0 mt-2">
                         <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
-                            <thead>
+                            <thead className="fixed-Header">
                                 {headerGroups.map((headerGroup: any) => (
                                     <tr  {...headerGroup.getHeaderGroupProps()}>
                                         {headerGroup.headers.map((column: any) => (

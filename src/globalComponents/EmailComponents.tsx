@@ -14,12 +14,24 @@ const EmailComponent = (props: any) => {
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
     // mention_To.push(props?.items.TaskCreatorData[0].Email.replace('{', '').replace('}', '').trim());
-    mention_To.push(props?.items.TaskCreatorData[0].Email);
+    if (props.CreatedApprovalTask != undefined) {
+      if (props.CreatedApprovalTask == true) {
+        if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
+          props?.items.TaskApprovers.map((ApproverData: any) => {
+            let tempEmail = ApproverData.Name;
+            mention_To.push(tempEmail.substring(18, tempEmail.length))
+          })
+        }
+      } else {
+        mention_To.push(props?.items.TaskCreatorData[0].Email);
+      }
+    }
+
     console.log(mention_To);
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[ " + props.items.siteType +" - " + (props.ApprovalTaskStatus?"Approved":"Rejected") + " ]" + props.items.Title,
+        Subject: "[ " + props.items.siteType + " - " + (props.ApprovalTaskStatus ? "Approved" : "Rejected") + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
