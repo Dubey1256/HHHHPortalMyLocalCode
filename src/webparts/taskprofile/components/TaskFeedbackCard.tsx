@@ -9,8 +9,7 @@ import EmailComponenet from './emailComponent';
 var sunchildcomment: any;
 var countemailbutton:number;
  var changespercentage=false;
-var countApprove=0;
- var countreject=0;
+
 export interface ITaskFeedbackProps {
   fullfeedback: any;
   feedback: any;
@@ -220,6 +219,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     return doc.body;
   }
   private async checkforMail(allfeedback:any,item:any,tempData:any){
+    var countApprove=0;
+    var countreject=0;
     console.log(allfeedback);
     if( allfeedback!=null&& allfeedback!=undefined){
     var  isShowLight=0;
@@ -254,7 +255,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           }
         })
       }
-      await this.changepercentageStatus(item,tempData);
+      await this.changepercentageStatus(item,tempData,countApprove,);
       if(isShowLight>NotisShowLight){
          countemailbutton=1;
       }else{
@@ -262,11 +263,11 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       }
     }
   }
-  private async changepercentageStatus(percentageStatus:any,pervious:any){
+  private async changepercentageStatus(percentageStatus:any,pervious:any,countApprove:any){
     console.log(percentageStatus)
     console.log(pervious)
     console.log(countApprove)
-    console.log(countreject)
+    
     if((countApprove==0&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
       changespercentage=true;
     }

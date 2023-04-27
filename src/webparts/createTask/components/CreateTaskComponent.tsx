@@ -2,6 +2,9 @@ import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Web } from "sp-pnp-js";
 import pnp, { PermissionKind } from "sp-pnp-js";
+import "@pnp/sp/sputilities";
+import { IEmailProperties } from "@pnp/sp/sputilities";
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as moment from 'moment';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
@@ -34,6 +37,7 @@ function CreateTaskComponent(props: any) {
     })
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
     const [siteType, setSiteType] = React.useState([])
+    const [sendApproverMail, setSendApproverMail] = React.useState(false)
     const [TaskTypes, setTaskTypes] = React.useState([])
     const [subCategory, setsubCategory] = React.useState([])
     const [priorityRank, setpriorityRank] = React.useState([])
@@ -122,13 +126,13 @@ function CreateTaskComponent(props: any) {
         setIsServices(false);
         if (type === "SmartComponent") {
             if (propsItems?.smartComponent?.length > 0) {
-                setSave({ ...save, linkedServices: propsItems.smartComponent });
+                setSave({ ...save, Component: propsItems.smartComponent });
                 setSmartComponentData(propsItems.smartComponent);
             }
         }
         if (type === "LinkedServices") {
             if (propsItems?.linkedComponent?.length > 0) {
-                setSave({ ...save, Component: propsItems.linkedComponent });
+                setSave({ ...save, linkedServices: propsItems.linkedComponent });
                 setLinkedComponentData(propsItems.linkedComponent);
             }
         }
@@ -506,37 +510,49 @@ function CreateTaskComponent(props: any) {
 
     let LoadTaskUsers = async () => {
         let AllTaskUsers: any = [];
-        AllTaskUsers = await globalCommon.loadTaskUsers();
-        // let pageContent = await globalCommon.pageContext();
-        // console.log(pageContent)
-        taskUsers = AllTaskUsers;
-        let UserIds;
-        AllTaskUsers?.map((item: any) => {
-            if (props?.pageContext?.user?.loginName == item.Email || props?.pageContext?.user?.loginName == item?.AssingedToUser?.EMail) {
-                loggedInUser = item;
-            }
-        })
-        let CurrentUserId = loggedInUser?.AssingedToUserId;
-        AllTaskUsers?.map((user: any) => {
-            if (user.IsApprovalMail == 0)
-                user.IsApprovalMail = undefined;
-            if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
-                Isapproval = 'decide case by case';
-            }
-            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
-                Isapproval = 'approve all';
-            }
-            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
-                Isapproval = 'approve all but selected items';
-                user.SelectedCategoriesItems = []
-                if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
-                    user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
+        try {
+            let web = new Web(props?.SelectedProp?.siteUrl);
+            AllTaskUsers = await web.lists
+                .getById(props?.SelectedProp?.TaskUsertListID)
+                .items
+                .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,IsTaskNotifications,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                .get();
+
+            // let pageContent = await globalCommon.pageContext();
+            // console.log(pageContent)
+            taskUsers = AllTaskUsers;
+            let UserIds;
+            AllTaskUsers?.map((item: any) => {
+                if (props?.pageContext?.user?.loginName == item.Email || props?.pageContext?.user?.loginName == item?.AssingedToUser?.EMail) {
+                    loggedInUser = item;
                 }
-            }
-            if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
-                Isapproval = 'decide case by case';
-            }
-        })
+            })
+            let CurrentUserId = loggedInUser?.AssingedToUserId;
+            AllTaskUsers?.map((user: any) => {
+                if (user.IsApprovalMail == 0)
+                    user.IsApprovalMail = undefined;
+                if (user.AssingedToUserId == CurrentUserId && (user.IsApprovalMail == undefined || user.IsApprovalMail == null || user.IsApprovalMail == '')) {
+                    Isapproval = 'decide case by case';
+                }
+                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all') {
+                    Isapproval = 'approve all';
+                }
+                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'approve all but selected items') {
+                    Isapproval = 'approve all but selected items';
+                    user.SelectedCategoriesItems = []
+                    if (user.CategoriesItemsJson != undefined && user.CategoriesItemsJson != null && user.CategoriesItemsJson != '') {
+                        user.SelectedCategoriesItems = JSON.parse(user.CategoriesItemsJson);
+                    }
+                }
+                if (user.AssingedToUserId == CurrentUserId && user.IsApprovalMail != undefined && user.IsApprovalMail != '' && user.IsApprovalMail != null && user.IsApprovalMail.toLowerCase() == 'decide case by case') {
+                    Isapproval = 'decide case by case';
+                }
+            })
+            taskUsers = AllTaskUsers;
+        }
+        catch (error) {
+            return Promise.reject(error);
+        }
     }
     var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
         var Items: any = [];
@@ -818,12 +834,15 @@ function CreateTaskComponent(props: any) {
                                 "Site": save.siteType
                             };
                             await createTaskByListId(selectedSite?.siteUrl?.Url, listID, postData, save.siteType)
-                            await globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, undefined, undefined, undefined, undefined).then((response: any) => {
+                            await sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, undefined, 'Immediate', undefined).then((response: any) => {
                                 console.log(response);
                             });;
                         }
+                        if (CategoryTitle?.indexOf('Immediate') < -1 && CategoryTitle?.indexOf("Approval") > -1) {
+                           setSendApproverMail(true);
+                        }
                         if (RecipientMail?.length > 0) {
-                            globalCommon.sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, undefined, RecipientMail, undefined, undefined).then((response: any) => {
+                            sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', undefined).then((response: any) => {
                                 console.log(response);
                             });
                         }
@@ -846,13 +865,80 @@ function CreateTaskComponent(props: any) {
             }
         }
     }
+
+    const makePostDataForApprovalProcess = async (postData: any) => {
+        var TaskUsers: any = taskUsers;
+        if (TaskUsers?.length > 0) {
+            var UserManager: any[] = [];
+            TaskUsers.map((user: any) => {
+                if (user?.Approver?.results?.length > 0) {
+                    user.Approver.results.map((approver: any) => {
+                        UserManager.push(approver?.Id)
+                    })
+                }
+            })
+            var Item = { TaskUsers: '', postData: '' };
+            if ((postData?.Categories?.toLowerCase().indexOf('approval') > -1) && UserManager != undefined && UserManager?.length > 0) {
+                //postData.PercentComplete = 0.01;
+                //postData.Status = "For Approval";
+                var isAvailable = false;
+                if (postData?.Responsible_x0020_TeamId?.results?.length > 0) {
+                    postData.Responsible_x0020_TeamId.results.map((user: any) => {
+                        UserManager.map((ID: any) => {
+                            if (ID == user) {
+                                isAvailable = true;
+                            }
+                        })
+                    })
+                }
+                if (!isAvailable) {
+                    var TeamMembersID: any[] = [];
+                    if (postData?.Team_x0020_MembersId?.results?.length > 0) {
+                        postData.Team_x0020_MembersId.results((user: any) => {
+                            UserManager.map((ID: any) => {
+                                if (ID == user) {
+                                    TeamMembersID.push(user);
+                                }
+                            })
+                        })
+                    }
+                    UserManager.map((ID: any) => {
+                        TeamMembersID.push(ID);
+                    })
+                    postData.Team_x0020_MembersId = { results: TeamMembersID };
+                }
+                if (postData?.AssignedToId?.results?.length > 0 && UserManager?.length > 0) {
+                    UserManager.map((ID: any) => {
+                        postData.AssignedToId.results.push(ID);
+                    })
+                }
+                else {
+                    postData.AssignedToId = { results: UserManager };
+                }
+            }
+            Item.TaskUsers = TaskUsers;
+            Item.postData = postData;
+            Promise.resolve(Item);
+        }
+    }
+    const addData = async (url: any, listId: any, item: any) => {
+        const web = new Web(url);
+        let result;
+        try {
+            result = (await web.lists.getById(listId).items.add(item));
+        }
+        catch (error) {
+            return Promise.reject(error);
+        }
+        return result;
+    }
     var createTaskByListId = async (siteUrl: any, listId: any, postData: any, siteName: any) => {
 
         var currentUserId = loggedInUser?.AssingedToUserId
         if (postData.Categories != undefined && (postData.Categories.toLowerCase().indexOf('approval') > -1)) {
-            globalCommon.makePostDataForApprovalProcess(postData)
+            makePostDataForApprovalProcess(postData)
                 .then(async (Data: any) => {
-                    await globalCommon.addData(siteUrl, listId, Data.postData)
+                    await addData(siteUrl, listId, Data.postData)
                         .then(function (response: any) {
                             response.d['Author'] = { Id: currentUserId };
                             Promise.resolve(response);
@@ -1111,7 +1197,7 @@ function CreateTaskComponent(props: any) {
                     }
                 });
             }
-            if (title.indexOf('Design') > -1) {
+            if (title?.indexOf('Design') > -1) {
                 var flag = true;
                 taskUsers?.map((User: any) => {
                     if (User.Role == 'Developer' && User.Title == 'Design Team') {
@@ -1121,7 +1207,7 @@ function CreateTaskComponent(props: any) {
                     }
                 });
             }
-            if (title.indexOf('Support') > -1) {
+            if (title?.indexOf('Support') > -1) {
                 var flag = true;
                 taskUsers?.map((User: any) => {
                     if (User.Role == 'Developer' && User.Title == 'Support') {
@@ -1225,6 +1311,469 @@ function CreateTaskComponent(props: any) {
         })
     }, [])
 
+    // Approver Category Email 
+    const SendEmailFinal = async (to: any, subject: any, body: any) => {
+        let sp = spfi().using(spSPFx(props?.SelectedProp?.Context));
+        sp.utility.sendEmail({
+            //Body of Email  
+            Body: body,
+            //Subject of Email  
+            Subject: subject,
+            //Array of string for To of Email  
+            To: to,
+            AdditionalHeaders: {
+                "content-type": "text/html"
+            },
+        }).then(() => {
+            console.log("Email Sent!");
+
+        }).catch((err) => {
+            console.log(err.message);
+        });
+    }
+    const getData = async (url: any, listId: any, query: any) => {
+        const web = new Web(url);
+        let result;
+        try {
+            result = (await web.lists.getById(listId).items.select(query).getAll());
+        }
+        catch (error) {
+            return Promise.reject(error);
+        }
+
+        return result;
+
+    }
+    const sendImmediateEmailNotifications = async (itemId: any, siteUrl: any, listId: any, item: any, RecipientMail: any, isLoadNotification: any, rootSite: any) => {
+        await GetImmediateTaskNotificationEmails(item, isLoadNotification, rootSite)
+            .then(async (ToEmails: any) => {
+                try{
+                    if (isLoadNotification == false)
+                    ToEmails = [];
+                if (RecipientMail?.Email != undefined && ToEmails?.length == 0) {
+                    ToEmails.push(RecipientMail.Email)
+                }
+                if (ToEmails.length > 0) {
+                    var query = '';
+                    query += "AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,Component/Id,Component/Title,Component/ItemType,component_x0020_link,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,Services/Id,Services/Title,Events/Id,Events/Title,SharewebTaskType/Id,SharewebTaskType/Title,Shareweb_x0020_ID,CompletedDate,SharewebTaskLevel1No,SharewebTaskLevel2No&$expand=AssignedTo,Component,AttachmentFiles,Author,Editor,SharewebCategories,SharewebTaskType,Services,Events&$filter=Id eq " + itemId;
+                    await getData(siteUrl, listId, query)
+                        .then(async (data: any) => {
+                            data?.map((item: any) => {
+                                item.PercentageCompleted = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
+                                item.PercentComplete = item?.PercentComplete < 1 ? item?.PercentComplete * 100 : item?.PercentComplete;
+                                if (item.PercentageCompleted != undefined) {
+                                    item.PercentageCompleted = parseInt((item?.PercentageCompleted).toFixed(0));
+                                }
+                                if (item.PercentComplete != undefined) {
+                                    item.PercentComplete = parseInt((item?.PercentComplete).toFixed(0));
+                                }
+                                item.taskLeader = 'None';
+                                if (item?.AssignedTo?.length > 0)
+                                    item.taskLeader = globalCommon.getMultiUserValues(item);
+
+                                if (item?.PercentComplete != undefined) {
+                                    item.PercentComplete = item.PercentComplete < 1 ? item.PercentComplete * 100 : item.PercentComplete;
+                                    item.PercentComplete = parseInt((item.PercentComplete).toFixed(0));
+
+                                    item.PercentageCompleted = item.PercentComplete;
+                                }
+                                if (item?.siteType != undefined) {
+                                    item.siteType = item.siteType.replace(/_x0020_/g, ' ');
+                                }
+                            })
+
+                            var UpdateItem = data[0];
+                            var siteType = save.siteType;
+                            UpdateItem.siteType = '';
+                            if (UpdateItem.siteType == '') {
+                                if (siteType != undefined) {
+                                    siteType = siteType.replace(/_x0020_/g, '%20');
+                                }
+                                UpdateItem.siteType = siteType;
+                            }
+                            UpdateItem.Shareweb_x0020_ID = globalCommon.getTaskId(UpdateItem);
+                            if (UpdateItem?.Author != undefined) {
+                                UpdateItem.Author1 = '';
+                                UpdateItem.Author1 = UpdateItem.Author.Title;
+                            } else
+                                UpdateItem.Editor1 = '';
+                            if (UpdateItem?.Editor != undefined) {
+                                UpdateItem.Editor1 = '';
+                                UpdateItem.Editor1 = UpdateItem.Editor.Title;
+                            } else
+                                UpdateItem.Editor1 = '';
+                            if (UpdateItem?.component_x0020_link?.Url != undefined)
+                                UpdateItem.URL = UpdateItem?.component_x0020_link?.Url;
+                            else
+                                UpdateItem.URL = '';
+
+                            if (UpdateItem?.DueDate != undefined)
+                                UpdateItem.DueDate = moment(new Date(UpdateItem.DueDate)).format('DD/MM/YYYY')
+                            else
+                                UpdateItem.DueDate = '';
+                            if (UpdateItem?.StartDate != undefined)
+                                UpdateItem.StartDate =moment(new Date(UpdateItem.StartDate)).format('DD/MM/YYYY')
+                            else
+                                UpdateItem.StartDate = '';
+                            if (UpdateItem?.CompletedDate != undefined)
+                                UpdateItem.CompletedDate = moment(new Date(UpdateItem.CompletedDate)).format('DD/MM/YYYY')
+                            else
+                                UpdateItem.CompletedDate = '';
+
+                            if (UpdateItem?.Created != undefined)
+                                UpdateItem.Created = moment(new Date(UpdateItem.Created)).format('DD/MM/YYYY')
+                            else
+                                UpdateItem.Created = '';
+                            if (UpdateItem?.Modified != undefined)
+                                UpdateItem.Modified =moment(new Date(UpdateItem.Modified)).format('DD/MM/YYYY') 
+                            else
+                                UpdateItem.Modified = '';
+                            if (UpdateItem?.PercentComplete != undefined)
+                                UpdateItem.PercentComplete = UpdateItem.PercentComplete;
+                            else
+                                UpdateItem.PercentComplete = '';
+                            if (UpdateItem?.Priority != undefined)
+                                UpdateItem.Priority = UpdateItem.Priority;
+                            else
+                                UpdateItem.Priority = '';
+                            if (UpdateItem?.Body != undefined)
+                                UpdateItem.Body = $.parseHTML(UpdateItem.Body)[0]?.textContent;
+                            else
+                                UpdateItem.Body = '';
+                            if (UpdateItem?.Title != undefined)
+                                UpdateItem.Title = UpdateItem.Title;
+                            else
+                                UpdateItem.Title = '';
+                            UpdateItem.AssignedToTitle = '';
+                            if (UpdateItem?.AssignedTo != undefined) {
+                                UpdateItem.AssignedTo.map((item: any) => {
+                                    UpdateItem.AssignedToTitle += item.Title + ';';
+                                })
+                            }
+                            UpdateItem.ComponentName = '';
+                            if (UpdateItem?.Component != undefined) {
+                                UpdateItem.Component.map((item: any) => {
+                                    UpdateItem.ComponentName += item.Title + ';';
+                                })
+                            }
+                            UpdateItem.Category = '';
+                            UpdateItem.Categories = '';
+                            if (UpdateItem?.SharewebCategories != undefined) {
+                                UpdateItem.SharewebCategories.map((item: any) => {
+                                    UpdateItem.Categories += item.Title + ';';
+                                    UpdateItem.Category += item.Title + ',';
+                                })
+                            }
+                            var pos = UpdateItem?.Category?.lastIndexOf(',');
+                            UpdateItem.Category = UpdateItem?.Category?.substring(0, pos) + UpdateItem?.Category?.substring(pos + 1);
+                            var Commentdata = [];
+                            UpdateItem.AllComments = '';
+                            if (UpdateItem?.Comments != undefined) {
+                                Commentdata = JSON.parse(UpdateItem.Comments);
+                                Commentdata.map((comment: any) => {
+                                    UpdateItem.AllComments += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                        '<span>' +
+                                        '<div style="margin-bottom:5px;">' +
+                                        comment?.AuthorName +
+                                        ' - ' +
+                                        comment?.Created +
+                                        '</div>' +
+                                        comment?.Title +
+                                        '</span>' +
+                                        '</div>'
+                                })
+                            }
+                            UpdateItem.Description = '';
+                            if (UpdateItem?.Body != undefined && UpdateItem?.Body != '')
+                                UpdateItem.Description = UpdateItem.Body;
+                            if (UpdateItem?.FeedBack != undefined) {
+                                try {
+                                    var Description = JSON.parse(UpdateItem?.FeedBack);
+                                    if (Description?.length > 0) {
+                                        UpdateItem.Description = '';
+                                        Description[0]?.FeedBackDescriptions?.map((description: any, index: any) => {
+                                            var index1 = index + 1;
+                                            var Comment = '';
+                                            if (description?.Comments?.length > 0) {
+                                                description.Comments.map((val: any) => {
+                                                    Comment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                        '<span>' +
+                                                        '<div style="margin-bottom:5px;">' +
+                                                        val?.AuthorName +
+                                                        ' - ' +
+                                                        val?.Created +
+                                                        '</div>' +
+                                                        val?.Title +
+                                                        '</span>' +
+                                                        '</div>'
+
+                                                })
+
+                                            }
+                                            UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '</span>' +
+                                                '</td>' +
+                                                '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                                '<span>' +
+                                                description?.Title +
+                                                '</span>' +
+                                                Comment +
+                                                '</td>' +
+                                                '</tr>';
+                                            if (description?.Subtext?.length > 0) {
+                                                description.Subtext.map((Childdescription: any, Childindex: any) => {
+                                                    var Childindex1 = Childindex + 1;
+                                                    var ChildComment = '';
+                                                    if (Childdescription?.Comments?.length > 0) {
+                                                        description.Comments.map((Childval: any) => {
+                                                            ChildComment += '<div colspan="6" style="padding: 9px;border: 1px solid #ccc;background: #fbfbfb;color: #000;margin-top:5px;">' +
+                                                                '<span>' +
+                                                                '<div style="margin-bottom:5px;">' +
+                                                                Childval?.AuthorName +
+                                                                ' - ' +
+                                                                Childval?.Created +
+                                                                '</div>' +
+                                                                Childval?.Title +
+                                                                '</span>' +
+                                                                '</div>'
+
+                                                        })
+
+                                                    }
+                                                    UpdateItem.Description += '<tr><td colspan="1" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;font-size: 13px;flex-basis: 27px !important;border: 1px solid #ccc;"><span>' + index1 + '.' + Childindex1 + '</span>' +
+                                                        '</td>' +
+                                                        '<td colspan="11" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' +
+                                                        '<span>' +
+                                                        Childdescription?.Title +
+                                                        '</span>' +
+                                                        ChildComment +
+                                                        '</td>' +
+                                                        '</tr>';
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                    //$scope.AdditionalTimeSpent.push(item.AdditionalTime[0]);
+                                } catch (e) {
+                                    console.log(e)
+                                }
+
+                            }
+                            let pageContent = await pageContext()
+                            var siteUrl = pageContent?.SiteFullUrl + '/sp';
+                            var Name = '';
+                            var OtherDetails = '';
+                            let Subject: any = '';
+                            var TaskDescriptionStart = '';
+                            var NoOfApprovalTask = '';
+                            var TaskDescription = '';
+                            var ApprovalRejectionComments = '';
+                            var TaskComments = '';
+                            var TaskDashBoardURl = '';
+                            var ApprovalDashboard = '';
+                            var TaskDashBoardTitle = '';
+                            var ApprovalDashboardTitle = '';
+                            var CC: any[] = [];
+                            if (item == undefined) {
+                                //Subject = "[" + siteType + "-Task] " + UpdateItem.Title + "(" + UpdateItem.Category + ")";
+                                Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
+                            }
+                           
+                            if (Subject == undefined || Subject == '') {
+                                if (UpdateItem?.PercentComplete != undefined && UpdateItem?.PercentComplete != '' && UpdateItem?.PercentComplete != 1 && UpdateItem?.Category != undefined && UpdateItem?.Category != '' && UpdateItem?.Category.toLowerCase('approval') > -1)
+                                    item.CategoriesType = item?.Category?.replace('Approval,', '')
+                                Subject = "[" + siteType + " - " + UpdateItem?.Category + " (" + UpdateItem?.PercentComplete + "%)] " + UpdateItem?.Title + "";
+                            }
+                            if (UpdateItem?.PercentComplete != 1) {
+                                Subject = Subject?.replaceAll('Approval,', '')
+                                Subject = Subject?.replaceAll('Normal Approval,', '')
+                                Subject = Subject?.replaceAll('Normal Approval', '')
+                                Subject = Subject?.replaceAll('Quick Approval,', '')
+                                Subject = Subject?.replaceAll('Quick Approval', '')
+                                Subject = Subject?.replaceAll('Complex Approval,', '')
+                                Subject = Subject?.replaceAll('Complex Approval', '')
+                                Subject = Subject?.replaceAll(',,', ',')
+                            }
+                            if (UpdateItem?.PercentComplete == 1 && UpdateItem?.Category?.toLowerCase()?.indexOf('approval') > -1) {
+                                //Subject = Subject.replaceAll('Approval,', '')
+                                //if (Subject.indexOf('Normal Approval') <= -1 && Subject.indexOf('Quick Approval') <= -1 && Subject.indexOf('Complex Approval') <= -1)
+                                //    Subject = Subject.replaceAll('Approval', '')
+                                //Subject = Subject.replaceAll(',,', ',')
+                                Subject = "[" + siteType + " - " + "Approval" + "] " + UpdateItem?.Title + "";
+                                if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1 && UpdateItem?.Category?.toLowerCase().indexOf('immediate') > -1) {
+                                    Subject = "[" + siteType + " - " + "Approval,Email notification,Immediate" + "] " + UpdateItem?.Title + "";
+                                }
+                                else if (UpdateItem?.Category?.toLowerCase()?.indexOf('email notification') > -1) {
+                                    Subject = "[" + siteType + " - " + "Approval,Email notification" + "] " + UpdateItem?.Title + "";
+                                }
+                                else if (UpdateItem?.Category?.toLowerCase()?.indexOf('immediate') > -1) {
+                                    Subject = "[" + siteType + " - " + "Approval,Immediate" + "] " + UpdateItem?.Title + "";
+                                }
+                            }
+                            var body =
+                                '<div>' +
+                                '</div>' +
+                                '<div style="margin-top:4px">' +
+                                TaskDescriptionStart +
+                                '</div>' +
+                                '<div style="margin-top:6px">' +
+                                TaskDescription +
+                                '</div>'
+                                + '<div style="margin-top:10px">' +
+                                NoOfApprovalTask +
+                                '</div>'
+                                + '<div style="margin-top:10px;">' +
+                                '<a style="padding-right: 17px;" href =' + TaskDashBoardURl + '>' + TaskDashBoardTitle + '</a>' +
+                                '<a href =' + ApprovalDashboard + '>' + ApprovalDashboardTitle + '</a>' +
+                                '</div>'
+                                + '<div style="margin-top:15px">' +
+                                '<a href =' + siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + UpdateItem?.Id + '&Site=' + siteType + '>' +
+                                UpdateItem?.Title + '</a>' +
+                                '</div>' +
+                                '<table style="width:100%">' +
+                                '<tbody>' +
+                                '<td style="width:70%;vertical-align: top;">' +
+                                '<table style="width:99%;">' +
+                                '<tbody>' +
+                                '<tr>'
+                                + '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Task Id:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Shareweb_x0020_ID + '</span></td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Component:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.ComponentName + '</span> </td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Priority:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Priority + '</span> </td>' +
+                                '</tr>' +
+                                '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Start Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.StartDate + '</span></td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Completion Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.CompletedDate + '</span> </td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Due Date:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.DueDate + '</span> </td>' +
+                                '</tr>' +
+                                '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Team Members:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.AssignedToTitle + '</span></td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created By:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Author1 + '</span> </td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Created:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Created + '</span> </td>' +
+                                '</tr>' +
+                                '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Categories:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Categories + '</span></td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">Status:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.Status + '</span> </td>' +
+                                '<td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">% Complete:</b></td><td colspan="2" style="border: 1px solid #ccc;background: #fafafa;"> <span style="font-size: 13px; margin-left:13px" >' +
+                                UpdateItem?.PercentComplete + '%</span> </td>' +
+                                '</tr>' +
+                                '<tr><td style="border: 1px solid #ccc;background: #f4f4f4;"><b style="font-size: 13px;">URL:</b> </td><td colspan="7" style="border: 1px solid #ccc;background: #fafafa;"><span style="font-size: 13px; margin-left:13px">' +
+                                UpdateItem?.URL + '</span> </td>' +
+                                '</tr>' +
+                                ApprovalRejectionComments +
+                                '</tr> ' +
+                                '</tr>' +
+                                '</tr>' +
+                                '<tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '<table style="width:99%;margin-top: 10px;">' +
+                                '<tbody>' +
+                                '<tr>' + UpdateItem?.Description + '</tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '</td>' +
+                                '<td style="width:22%">' +
+                                '<table style="border:1px solid #ddd;border-radius:4px;margin-bottom:25%;width:100%">' +
+                                '<tbody>' +
+                                '<tr>' +
+                                '<td style="color:#333; background-color:#f5f5f5;border-bottom:1px solid #ddd">Comments:' + '</td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                '<td>' + UpdateItem?.AllComments + '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+                            if (CC.length > 1)
+                                CC.splice(1, 1);
+                            //'<tr><td colspan="7" style="background: #f4f4f4;text - align: left;padding: 10px 5px 10px 5px;color: #6F6F6F;font - family: arial;font - size: 14px;font - weight: bold;border - bottom: 2px solid #fff;border - right: 2px solid #fff;background-color: #fbfbfb;flex-basis: 100%;background-color: #fff;font-weight: normal;font-size: 13px;color: #000;margin-left: 2px;border: 1px solid #ccc;">' + UpdateItem.Description + '</td></tr>' +
+                            if (RecipientMail?.length > 0) {
+                                if (ToEmails == undefined) {
+                                    ToEmails = [];
+                                }
+                                RecipientMail.map((mail: any) => {
+                                    ToEmails.push(mail.Email);
+                                })
+
+                            }
+                            var from = '',
+                                to = ToEmails,
+                                cc = CC,
+                                body = body,
+                                subject = Subject,
+                                ReplyTo = "deepak@hochhuth-consulting.de";
+                            // sendEmail(from, to, body, subject, ReplyTo, cc);
+                            SendEmailFinal(to, subject, body)
+                        }, function (error) {
+                            console.log(error);
+                        })
+                }
+                }catch(error){
+                    console.log(error)
+                }
+            },
+
+                function (error) { });
+    }
+    const GetImmediateTaskNotificationEmails = async (item: any, isLoadNotification: any, rootsite: any) => {
+        let pageContent = await pageContext()
+        var isLoadNotification = isLoadNotification;
+        var CurrentItem = item;
+        var Allmail: any[] = [];
+        try {
+            if (taskUsers?.length > 0) {
+                var Allusers = taskUsers
+                if (item != undefined && isLoadNotification != undefined && isLoadNotification != '' && isLoadNotification == 'ApprovalMail') {
+                    Allusers.map((user: any) => {
+                        if (CurrentItem?.AuthorId == user?.AssingedToUserId) {
+                            if (user?.Approver?.length > 0)
+                                user.Approver.map((approver: any) => {
+                                    Allmail.push(approver?.Name?.split('|')[2]);
+                                })
+                        }
+                    })
+                }else if (item != undefined && isLoadNotification != undefined && isLoadNotification != ''&&isLoadNotification == 'Immediate'){
+                    Allusers.map((user: any) => {
+                        if(user?.IsTaskNotifications == true) {
+                            if (user?.AssingedToUser?.EMail!=undefined)
+                                    Allmail.push(user?.AssingedToUser?.EMail);
+                        }
+                    })
+                }
+          
+
+                if (Allmail == undefined || Allmail.length == 0 && isLoadNotification == 'ApprovalMail')
+                    alert("User has no Approver to send an email");
+
+
+            } else {
+
+                if (isLoadNotification == 'ApprovalMail')
+                    alert("User has no Approver to send an email");
+            }
+            return Allmail;
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+    //
+
     return (
         <>  <div className={save.portfolioType == "Service" ? "serviepannelgreena" : ''}>
             <div className='Create-taskpage'>
@@ -1272,7 +1821,7 @@ function CreateTaskComponent(props: any) {
                                                 <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                 <a>
                                                     <span title="Remove Component" onClick={() => setSmartComponentData([])}
-                                                         style={{backgroundColor:'white'}} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
+                                                        style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                 </a>
                                             </div>
                                         </>
@@ -1281,7 +1830,7 @@ function CreateTaskComponent(props: any) {
 
 
                                 <span className="input-group-text">
-                                    <span onClick={(e) => EditComponent(save, 'Component')} style={{backgroundColor:'white'}} className="svg__iconbox svg__icon--edit"></span>
+                                    <span onClick={(e) => EditComponent(save, 'Component')} style={{ backgroundColor: 'white' }} className="svg__iconbox svg__icon--edit"></span>
                                     {/* <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                         onClick={(e) => EditComponent(save, 'Component')} /> */}
                                 </span>
@@ -1325,7 +1874,7 @@ function CreateTaskComponent(props: any) {
                                             <div className="block p-1" style={{ width: "89%" }}>
                                                 <a style={{ color: "#fff !important" }} target="_blank" href={`${base_Url}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                 <a>
-                                                    <span title="Remove Service" style={{ color: "#fff !important" }} onClick={() => setLinkedComponentData([])}
+                                                    <span title="Remove Service"style={{ backgroundColor: 'white',color: "#fff !important"  }} onClick={() => setLinkedComponentData([])}
                                                         className="svg__iconbox svg__icon--cross hreflink mx-2"></span>
                                                 </a>
                                             </div>
@@ -1580,7 +2129,7 @@ function CreateTaskComponent(props: any) {
                 </div>
                 {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListId} AllListId={AllListId} smartComponentData={smartComponentData} ></ComponentPortPolioPopup>}
                 {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} AllListId={AllListId} Dynamic={AllListId} linkedComponentData={linkedComponentData}  ></LinkedComponent>}
-                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
+                {editTaskPopupData.isOpenEditPopup ? <EditTaskPopup sendApproverMail={sendApproverMail} AllListId={AllListId} Items={editTaskPopupData.passdata} Call={CallBack} /> : ''}
             </div>
         </div>
         </>
