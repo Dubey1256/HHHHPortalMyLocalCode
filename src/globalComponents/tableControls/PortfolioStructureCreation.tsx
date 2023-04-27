@@ -863,9 +863,13 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         <div className="card-body">
                                                             <div className='d-flex justify-content-between align-items-center mb-0'>
                                                                 <label className='mb-1'>  <img className="icon-sites-img"
-                                                                    src={item.MasterItemsType == 'SubComponent' ?
-                                                                        item.IconUrl :
-                                                                        item.IconUrl} /> <span className='ms-1'><strong>Title</strong> </span> </label>
+                                                                    src={
+                                                                        (item.MasterItemsType == 'SubComponent') &&
+                                                                        item.IconUrl 
+                                                                        } 
+                                                                    
+                                                                        
+                                                                        /> <span className='ms-1'><strong>Title</strong> </span> </label>
 
                                                                 {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                     <>
