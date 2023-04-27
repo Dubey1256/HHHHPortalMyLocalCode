@@ -431,7 +431,7 @@ const TaskDashboard = (props: any) => {
             })
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team' || childItem?.AssingedToUserId == 182) && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
                     currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }
@@ -1035,6 +1035,9 @@ const TaskDashboard = (props: any) => {
             if (currentUserId == item?.AssingedToUser?.Id) {
                 currentUser = item;
                 setCurrentUserData(item);
+            }
+            if(item?.AssingedToUserId == 182&&item?.Title=="Abhishek"){
+                item.isAdmin = true;
             }
             item.expanded = false;
             getChilds1(item, taskUsers);
