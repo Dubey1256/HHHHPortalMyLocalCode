@@ -2311,6 +2311,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         userDisplayName={EditData?.userDisplayName}
                         listName={EditData?.siteType}
                         itemID={EditData?.Id}
+                        AllListId={RequireData}
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">

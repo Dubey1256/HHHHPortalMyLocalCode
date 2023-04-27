@@ -7,6 +7,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import Froala from "react-froala-wysiwyg";
 
 const defaultContent = "";
+var checkImage: any = false;
 
 export interface ITeamConfigurationProps {
     callBack: (dt: any) => void;
@@ -51,6 +52,7 @@ const froalaEditorConfig = {
                 }
                 if (ImageRawData.length > 0) {
                     this.imageArrayUpdateFunction(ImageRawData);
+                    checkImage = true;
                 }
 
             }
@@ -80,7 +82,10 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         let ArrayImage: any = [];
         imgArray?.map((data: any, index: any) => {
             if (imgArray?.length > 8) {
-                if (index == 2) {
+                if (index == 1 && data.length > 1000) {
+                    ArrayImage.push(data)
+                }
+                if (index == 2 && data.length > 1000) {
                     ArrayImage.push(data)
                 }
             }
@@ -88,7 +93,10 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         })
         let elem = document.createElement("img");
         elem.innerHTML = edData;
-        this.imageArrayUpdateFunction(ArrayImage);
+        if (checkImage == false) {
+            this.imageArrayUpdateFunction(ArrayImage);
+        }
+
     };
 
     private imageArrayUpdateFunction = (ImageData: any) => {
