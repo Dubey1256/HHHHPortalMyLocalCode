@@ -2521,7 +2521,7 @@ function ComponentTable(SelectedProp: any) {
 
     };
     const Call = React.useCallback((childItem: any) => {
-        setRowSelection(false)
+        setRowSelection({})
         MeetingItems?.forEach((val: any): any => {
             val.chekBox = false;
         })
@@ -2855,6 +2855,7 @@ function ComponentTable(SelectedProp: any) {
     }
     let isOpenPopup = false;
     const CloseCall = React.useCallback((item) => {
+        setRowSelection({})
         if (!isOpenPopup && item.CreatedItem != undefined) {
             item.CreatedItem.forEach((obj: any) => {
                 obj.data.childs = [];
@@ -2952,6 +2953,7 @@ function ComponentTable(SelectedProp: any) {
     }, []);
 
     const CreateOpenCall = React.useCallback((item) => {
+        setRowSelection({})
         isOpenPopup = true;
         item.data.childs = [];
         item.data.flag = true;
