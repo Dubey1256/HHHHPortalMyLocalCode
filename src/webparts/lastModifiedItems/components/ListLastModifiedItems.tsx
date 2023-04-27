@@ -94,17 +94,28 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     }
 
     private _onRenderTeamMembers(item: any, index: number, column: IColumn) {
-
+       
+        if( item.TeamUsers == undefined){
+            item.TeamUsers = {ResponsibleTeam : []};
+           
+         }
+         if(item.TeamUsers.ResponsibleTeam == undefined){
+            item.TeamUsers.ResponsibleTeam = [];
+         }
         let respTeam = item.TeamUsers.ResponsibleTeam;
+       
         let teamMembers: any[] = [];
-        let combinedTeamMembers = [...item.TeamUsers.AssignedUsers, ...item.TeamUsers.TeamMembers];
+        if(item.TeamUsers.length > 0){
+            let combinedTeamMembers = [...item.TeamUsers.AssignedUsers, ...item.TeamUsers.TeamMembers];
 
-        combinedTeamMembers.forEach(cTeamMember => {
-            let collUniqueTeamMemberId = teamMembers.map((tMember: { UserId: number; })=>tMember.UserId);
-            if(collUniqueTeamMemberId.indexOf(cTeamMember.UserId)==-1) {
-                teamMembers.push(cTeamMember); 
-            }
-        });
+            combinedTeamMembers.forEach(cTeamMember => {
+                let collUniqueTeamMemberId = teamMembers.map((tMember: { UserId: number; })=>tMember.UserId);
+                if(collUniqueTeamMemberId.indexOf(cTeamMember.UserId)==-1) {
+                    teamMembers.push(cTeamMember); 
+                }
+            });
+        }
+        
 
         if(respTeam.length==0 && teamMembers.length==0) return;
 

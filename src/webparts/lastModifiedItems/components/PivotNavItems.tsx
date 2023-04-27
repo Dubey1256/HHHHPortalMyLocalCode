@@ -17,6 +17,7 @@ const PivotNavItems: React.FunctionComponent<INavPivotProps> = (props) => {
                     props.Items.map( item => <PivotItem headerText={item.text} itemKey={item.key} />)
                 }   
             </Pivot>
+           
         </div>
     );
 };

@@ -1,6 +1,6 @@
 export interface ILastModifiedItemsAppProps {
     taskUsersListId: string;
-    listConfigurationListId: string;
+   // listConfigurationListId: string;
     siteUrl : string;
     MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
     SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
