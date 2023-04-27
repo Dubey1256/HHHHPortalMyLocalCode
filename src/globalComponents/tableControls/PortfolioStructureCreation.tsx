@@ -864,8 +864,9 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                             <div className='d-flex justify-content-between align-items-center mb-0'>
                                                                 <label className='mb-1'>  <img className="icon-sites-img"
                                                                     src={
-                                                                        (item.MasterItemsType == 'SubComponent') &&
-                                                                        item.IconUrl 
+                                                                        (item.MasterItemsType == 'SubComponent')?
+                                                                        item.IconUrl :
+                                                                        (item.MasterItemsType == 'Feature' && this.state.PortfolioType == 'Service')?'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png' 
                                                                         } 
                                                                     
                                                                         
