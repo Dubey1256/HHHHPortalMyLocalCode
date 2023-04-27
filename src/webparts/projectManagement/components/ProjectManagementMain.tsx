@@ -701,7 +701,7 @@ const ProjectManagementMain = (props: any) => {
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
-        style: { width: "40px" },
+        style: { width: "65px" },
         Cell: ({ row }: any) => (
           <span>
             <img

@@ -544,7 +544,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -688,7 +688,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -734,7 +734,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Time",
                 showSortIcon: true,
                 accessor: "TaskTime",
-                style: { width: '60px' },
+                style: { width: '65px' },
             },
             {
                 internalHeader: "Description",

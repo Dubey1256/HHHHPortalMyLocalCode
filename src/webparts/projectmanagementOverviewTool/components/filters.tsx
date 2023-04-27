@@ -18,7 +18,9 @@ export const DefaultColumnFilter :any =  ({
   },
 }:any) => {
   return (
-    <Input
+    <Input type="search"
+    style={{paddingRight:'12px'}}
+    className='on-search-cross'
       value={filterValue || ''}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
