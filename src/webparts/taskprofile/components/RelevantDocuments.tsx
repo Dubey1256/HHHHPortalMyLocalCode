@@ -5,9 +5,9 @@ import moment from 'moment';
 import { useState, useEffect } from 'react';
 const RelevantDocuments = (props: any) => {
     const [documentData, setDocumentData] = useState([]);
-    const [FileName, setFileName] = useState(props.folderName);
+    // const [FileName, setFileName] = useState(props?.folderName);
     const [Fileurl, setFileurl] = useState("");
-    console.log(props.folderName);
+    // console.log(props?.folderName);
 
     useEffect(() => {
         loadAllSitesDocuments();

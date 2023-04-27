@@ -58,17 +58,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     private commandBarItems: ICommandBarItemProps[] = null;
     constructor(props:ITeamMembersProps) {
 
-        super(props);        
-
-        let teamGroups: IDropdownOption[] = [{
-            key: "",
-            text: "Select"
-        }];
-
-        this.props.teamGroups.forEach((teamGroup)=>teamGroups.push({
-            key: teamGroup.TaskId,
-            text: teamGroup.Title
-        }));
+        super(props);           
 
         this.state = {
             tasks: [],
@@ -100,7 +90,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                 itemCover: ""
             },
             timesheetCategories: [],
-            teamGroups: teamGroups,
+            teamGroups: [],
             smartMetadataItems: [],
             hideSmartMetadataMenu: true,
             selImageFolder: "Portraits",
@@ -180,6 +170,17 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         
         const _tasksRes = await this.props.spService.getTasks(this.props.taskUsersListId);
         const _tasks = this.getMemberTasks(_tasksRes);
+        const _groupTasks = this.getGroupTasks(_tasksRes);
+
+        let teamGroups: IDropdownOption[] = [{
+            key: "",
+            text: "Select"
+        }];
+
+        _groupTasks.forEach((teamGroup)=>teamGroups.push({
+            key: teamGroup.TaskId,
+            text: teamGroup.Title
+        }));
 
         let timesheetCategories: IDropdownOption[] = [{
             key: "",
@@ -231,7 +232,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             timesheetCategories: timesheetCategories,
             smartMetadataItems: smartMetadataItems,
             filteredImages: _filteredImages,
-            taskItem: _taskItem
+            taskItem: _taskItem,
+            teamGroups: teamGroups
         });
     }
     
@@ -263,6 +265,21 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             ModifiedBy: taskItem.Editor.Title
         }));
         return teamMembersTasks;
+    }
+
+    private getGroupTasks(allTasks: any[]) {
+        const teamGroupsTasks = allTasks.filter(taskItem=>taskItem.ItemType=="Group").map(taskItem => ({
+            Title: taskItem.Title,
+            Suffix: taskItem.Suffix,
+            SortOrder: taskItem.SortOrder,
+            AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
+            CreatedOn: taskItem.Created.split("T")[0],
+            CreatedBy: taskItem.Author.Title,
+            ModifiedOn: taskItem.Modified.split("T")[0],
+            ModifiedBy: taskItem.Editor.Title,
+            TaskId: taskItem.Id.toString()
+        }));
+        return teamGroupsTasks;
     }
     
     private getSubMenuItems(menuColl: any[], allItems: any[]) {
@@ -432,6 +449,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private onSaveTask() {
+        this.onCancelTask();
         if(this.state.selTaskId) {
             this.updateTask();
         }
@@ -941,6 +959,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                              defaultSelectedKey = {this.state.taskItem.groupId}
                              selectedKey = {this.state.taskItem.groupId}
                              onChange = {this.onGroupChange } 
+                             calloutProps={{ doNotLayer: true }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -962,6 +981,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             defaultSelectedKey = {this.state.taskItem.timeCategory} 
                             selectedKey = {this.state.taskItem.timeCategory}
                             onChange = { this.onManageTimeCategory } 
+                            calloutProps={{ doNotLayer: true }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>

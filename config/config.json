@@ -226,6 +226,22 @@
         }
       ]
     },
+    "big-calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/bigCalendar/BigCalendarWebPart.js",
+          "manifest": "./src/webparts/bigCalendar/BigCalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/updateTopNavigation/UpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/updateTopNavigation/UpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
     "task-dashboard-hhhh-web-part": {
       "components": [
         {

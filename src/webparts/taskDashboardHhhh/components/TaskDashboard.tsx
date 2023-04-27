@@ -67,10 +67,14 @@ const TaskDashboard = (props: any) => {
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
-            setIsTimeEntry(isShowTimeEntry)
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
         } catch (error: any) {
             console.log(error)
+        }
+        if (props?.props?.TaskTimeSheetListID != undefined && props?.props?.TaskTimeSheetListID != '') {
+            setIsTimeEntry(true)
+        } else {
+            setIsTimeEntry(false)
         }
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
         AllListId = {
@@ -100,10 +104,10 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
-        if(AllListId?.isShowTimeEntry==true){
+        if (AllListId?.isShowTimeEntry == true) {
             loadAllTimeEntry()
         }
-       
+
     }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
@@ -304,7 +308,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority","Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -374,9 +378,6 @@ const TaskDashboard = (props: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
-                                            if (user.AssingedToUserId == task.Author.Id) {
-                                                task.createdImg = user?.Item_x0020_Cover?.Url;
-                                            }
                                             if (user.AssingedToUserId == taskUser.Id) {
                                                 if (user?.Title != undefined) {
                                                     task.TeamMembersSearch =
@@ -430,7 +431,7 @@ const TaskDashboard = (props: any) => {
             })
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
                 item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team' || childItem?.AssingedToUserId == 182) && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
+                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
                     currentUser.isAdmin = true;
                     setCurrentUserData(currentUser);
                 }
@@ -533,6 +534,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
+                      
+                       
                     </span>
                 ),
             },
@@ -541,13 +544,11 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <img title={row?.original?.siteType}
-                            className="workmember"
-                            src={row?.original?.siteIcon}
-                        />
+                        {row?.original?.siteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
                     </span>
                 ),
             },
@@ -625,7 +626,10 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                        {row?.original?.createdImg != undefined ?
+                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+
                     </span>
                 ),
             },
@@ -675,6 +679,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
+                        
                     </span>
                 ),
             },
@@ -683,13 +688,11 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <img title={row?.original?.siteType}
-                            className="workmember"
-                            src={row?.original?.siteIcon}
-                        />
+                        {row?.original?.siteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
                     </span>
                 ),
             },
@@ -731,7 +734,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Time",
                 showSortIcon: true,
                 accessor: "TaskTime",
-                style: { width: '60px' },
+                style: { width: '65px' },
             },
             {
                 internalHeader: "Description",
@@ -760,7 +763,9 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                        {row?.original?.createdImg != undefined ?
+                            <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
                     </span>
                 ),
             },
@@ -954,18 +959,23 @@ const TaskDashboard = (props: any) => {
         if (AllListId?.SmartMetadataListID != undefined) {
             let web = new Web(AllListId?.siteUrl);
             let smartmeta = [];
-
+            let select: any = '';
+            if (AllListId?.TaskTimeSheetListID != undefined && AllListId?.TaskTimeSheetListID != '') {
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Description,Configurations,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            } else {
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            }
             let TaxonomyItems = [];
             try {
                 smartmeta = await web.lists
                     .getById(AllListId?.SmartMetadataListID)
-                    .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Description", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
+                    .items.select(select)
                     .top(5000)
                     .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
                     .expand("Parent")
                     .get();
                 siteConfig = smartmeta.filter((data: any) => {
-                    if (data?.IsVisible && data?.TaxType == 'Sites') {
+                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks') {
                         return data;
                     }
                 });
@@ -1026,6 +1036,9 @@ const TaskDashboard = (props: any) => {
                 currentUser = item;
                 setCurrentUserData(item);
             }
+            if(item?.AssingedToUserId == 182&&item?.Title=="Abhishek"){
+                item.isAdmin = true;
+            }
             item.expanded = false;
             getChilds1(item, taskUsers);
             userGroups.push(item);
@@ -1035,23 +1048,23 @@ const TaskDashboard = (props: any) => {
     }
     const loadTaskUsers = async () => {
         let taskUser;
-       if(AllListId?.TaskUsertListID!=undefined){
-        try {
-            let web = new Web(AllListId?.siteUrl);
-            taskUser = await web.lists
-              .getById(AllListId?.TaskUsertListID)
-              .items
-              .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
-              .get();
-          }
-          catch (error) {
-            return Promise.reject(error);
-          }
-          return taskUser;
-       }else{
-        alert('Task User List Id not Available')
-       }
-      }
+        if (AllListId?.TaskUsertListID != undefined) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                taskUser = await web.lists
+                    .getById(AllListId?.TaskUsertListID)
+                    .items
+                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .get();
+            }
+            catch (error) {
+                return Promise.reject(error);
+            }
+            return taskUser;
+        } else {
+            alert('Task User List Id not Available')
+        }
+    }
     const createGroupUsers = () => {
         let Groups: any = [];
         taskUsers?.map((item: any) => {
@@ -1231,7 +1244,7 @@ const TaskDashboard = (props: any) => {
                     + body1
                     + '</tbody>'
                     + '</table>'
-                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + AllListId?.siteUrl+'/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' +  AllListId?.siteUrl+'/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
+                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + AllListId?.siteUrl + '/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' + AllListId?.siteUrl + '/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
 
 
             }
@@ -1397,7 +1410,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsToday()}>
-                                                <thead>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsToday?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1467,7 +1480,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height'  >
                                         {thisWeekTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsWeek()} >
-                                                <thead>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsWeek?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1535,7 +1548,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
-                                                <thead>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1602,7 +1615,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height'  >
                                         {assignedApproverTasks?.length > 0 ?
                                             <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
-                                                <thead>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsApprover?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1672,7 +1685,7 @@ const TaskDashboard = (props: any) => {
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
                                                 <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAll()} >
-                                                    <thead>
+                                                    <thead className="fixed-Header">
                                                         {headerGroupsAll?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
                                                                 {headerGroup.headers.map((column: any) => (
@@ -1778,7 +1791,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 {
-                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true&&isTimeEntry==true) ?
+                                    ((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) && isTimeEntry == true) ?
                                         <>
                                             <div>
                                                 <span className='m-1'>
@@ -1798,7 +1811,7 @@ const TaskDashboard = (props: any) => {
                                                 <div className='AccordionContent mx-height'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
-                                                            <thead>
+                                                            <thead className="fixed-Header">
                                                                 {headerGroupsTimeReport?.map((headerGroup: any) => (
                                                                     <tr {...headerGroup.getHeaderGroupProps()}>
                                                                         {headerGroup.headers.map((column: any) => (
