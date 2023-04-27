@@ -106,9 +106,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .get()
         } else {
             taskDetails = await web.lists
-                .getByTitle(this.props.ItemInfo?.listName)
+                .getById(this.props.ItemInfo.listName)
                 .items
-                .getById(this.props.ItemInfo?.Id)
+                .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
                 .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                 .get()

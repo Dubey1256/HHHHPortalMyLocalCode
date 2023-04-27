@@ -7,10 +7,9 @@ import * as moment from "moment-timezone";
 import EmailComponenet from './emailComponent';
 // import * as moment from "moment-timezone";
 var sunchildcomment: any;
-var countemailbutton=0;
+var countemailbutton:number;
  var changespercentage=false;
-var countApprove=0;
- var countreject=0;
+
 export interface ITaskFeedbackProps {
   fullfeedback: any;
   feedback: any;
@@ -219,7 +218,9 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let doc = parser.parseFromString(str, 'text/html');
     return doc.body;
   }
-  private checkforMail(allfeedback:any){
+  private async checkforMail(allfeedback:any,item:any,tempData:any){
+    var countApprove=0;
+    var countreject=0;
     console.log(allfeedback);
     if( allfeedback!=null&& allfeedback!=undefined){
     var  isShowLight=0;
@@ -254,17 +255,19 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           }
         })
       }
-      
+      await this.changepercentageStatus(item,tempData,countApprove,);
       if(isShowLight>NotisShowLight){
          countemailbutton=1;
+      }else{
+        countemailbutton=0;
       }
     }
   }
-  private async changepercentageStatus(percentageStatus:any,pervious:any){
+  private async changepercentageStatus(percentageStatus:any,pervious:any,countApprove:any){
     console.log(percentageStatus)
     console.log(pervious)
     console.log(countApprove)
-    console.log(countreject)
+    
     if((countApprove==0&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
       changespercentage=true;
     }
@@ -307,22 +310,24 @@ private async changeTrafficLigth  (index:any,item:any){
   console.log(index);
   console.log(item);
   if(  this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id){
-   
     let tempData:any=this.state?.fbData;
+
     if(this.props.fullfeedback!=undefined){
-      this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions);
-    }
-    if(countemailbutton>0){
-       await this.changepercentageStatus(item,tempData);
-    }
-   tempData.isShowLight = item;
+      await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,item,tempData);
+      
+   }
+    //await this.changepercentageStatus(item,tempData);
+   
+    tempData.isShowLight = item;
     console.log(tempData);
+  
     this.setState({
-      fbData: tempData,
+        fbData: tempData,
         index: index,
         emailcomponentopen:true,
         emailComponentstatus:item
     });
+   
     console.log(this.state?.fbData);
     this.props.onPost();
     }
@@ -333,27 +338,24 @@ console.log(parentindex);
 console.log(subchileindex);
 console.log(status);
 if(  this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id){
- 
 let tempData:any=this.state?.fbData;
-if(this.props.fullfeedback!=undefined){
-  this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions);
-}
-if(countemailbutton>0){
-  await this.changepercentageStatus(status,tempData?.Subtext[subchileindex]);
-}
 
- tempData.Subtext[subchileindex].isShowLight = status;
- console.log(tempData);
+
+if(this.props.fullfeedback!=undefined){
+await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,status,tempData?.Subtext[subchileindex]);
+}
+ // await this.changepercentageStatus(status,tempData?.Subtext[subchileindex]);
+
+tempData.Subtext[subchileindex].isShowLight = status;
+console.log(tempData);
 this.setState({
-  fbData: tempData,
-    index: parentindex,
-    emailcomponentopen:true,
-    emailComponentstatus:status
+ fbData: tempData,
+   index: parentindex,
+   emailcomponentopen:true,
+   emailComponentstatus:status
 });
 console.log(this.state.emailcomponentopen)
 this.props.onPost();
-
-
 }
 }
 private approvalcallback(){
@@ -365,7 +367,7 @@ private approvalcallback(){
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (
       <div>
-        { this.state?.emailcomponentopen && countemailbutton==0&&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />}
+        { this.state?.emailcomponentopen && countemailbutton==0 &&<EmailComponenet approvalcallback={() => { this.approvalcallback() }}  Context={this.props?.Context} emailStatus={this.state?.emailComponentstatus}  currentUser={this.props?.CurrentUser} items={this.props?.Result} />}
         <div className="col mb-2">
           <div className='justify-content-between d-flex'>
             <div className="pt-1">
