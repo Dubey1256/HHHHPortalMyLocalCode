@@ -744,6 +744,7 @@ function CreateTaskComponent(props: any) {
                         "Categories": CategoryTitle,
                         "DueDate": save.DueDate,
                         "Mileage": save.Mileage,
+                        Status:'',
                         PercentComplete: 0,
                         ComponentId: { "results": (selectedComponent !== undefined && selectedComponent?.length > 0) ? selectedComponent : [] },
                         ServicesId: { "results": (selectedService !== undefined && selectedService?.length > 0) ? selectedService : [] },
@@ -794,8 +795,11 @@ function CreateTaskComponent(props: any) {
                         item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings;
                         item.ClientTime = Tasks[0]?.Sitestagging;
                     }
-
-
+                    if (CategoryTitle?.indexOf('Immediate') < -1 && CategoryTitle?.indexOf("Approval") > -1) {
+                        setSendApproverMail(true);
+                        item.PercentComplete=1;
+                        item.Status ="For Approval";
+                     }
 
                     //Code End
 
@@ -838,9 +842,7 @@ function CreateTaskComponent(props: any) {
                                 console.log(response);
                             });;
                         }
-                        if (CategoryTitle?.indexOf('Immediate') < -1 && CategoryTitle?.indexOf("Approval") > -1) {
-                           setSendApproverMail(true);
-                        }
+                        
                         if (RecipientMail?.length > 0) {
                             sendImmediateEmailNotifications(data?.data?.Id, selectedSite?.siteUrl?.Url, selectedSite?.listId, data?.data, RecipientMail, 'ApprovalMail', undefined).then((response: any) => {
                                 console.log(response);

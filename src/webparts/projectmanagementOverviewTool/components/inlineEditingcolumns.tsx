@@ -244,6 +244,10 @@ const inlineEditingcolumns = (props: any) => {
         }
         setTaskStatusPopup(true);
     }
+    function isValidDate(dateString: any): boolean {
+        const date = Moment(dateString, 'YYYY-MM-DD', true);
+        return date.isValid();
+      }
     const UpdateTaskStatus = async () => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (props?.item?.PercentComplete ? props?.item?.PercentComplete : null) })
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
@@ -306,7 +310,14 @@ const inlineEditingcolumns = (props: any) => {
         })
 
         setPercentCompleteCheck(false);
-        let newDueDate = new Date(dueDate.editDate);
+        let newDueDate:any = new Date(dueDate.editDate);
+        if (dueDate.editDate==null||dueDate.editDate==''||dueDate.editDate==undefined) {
+            newDueDate=null;
+          }else{
+            if(!isValidDate(newDueDate)){
+                newDueDate=''
+            }
+          }
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
