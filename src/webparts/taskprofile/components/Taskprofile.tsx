@@ -1,15 +1,10 @@
 import * as React from 'react';
-
 import * as moment from 'moment';
-
 import { ITaskprofileProps } from './ITaskprofileProps';
 import TaskFeedbackCard from './TaskFeedbackCard';
-
 import { Web } from "sp-pnp-js";
-
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-
 import * as globalCommon from '../../../globalComponents/globalCommon'
 import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
@@ -250,6 +245,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       DocumentsListID: this.props.DocumentsListID,
       SmartInformationListID: this.props.SmartInformationListID,
       siteUrl: this.props.siteUrl,
+      TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc',
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
     }
@@ -1505,7 +1501,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </section>
         <section>
           <div className="row">
-            {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
+            {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result}AllListId={AllListId}  /> : ''}
           </div>
           <div className='row'>
             {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
