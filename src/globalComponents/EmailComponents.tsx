@@ -46,15 +46,17 @@ const EmailComponent = (props: any) => {
 
   const SendEmailFinal = async (EmailProps: any) => {
     let sp = spfi().using(spSPFx(props.Context));
-    sp.utility.sendEmail({
+    await sp.utility.sendEmail({
       Body: BindHtmlBody(),
       Subject: EmailProps.Subject,
       To: EmailProps.To,
       AdditionalHeaders: {
         "content-type": "text/html"
       },
-    }).then(() => {
+    }).then((data:any) => {
       console.log("Email Sent!");
+      console.log(data);
+      props.callBack();
     }).catch((err) => {
       console.log(err.message);
     });
@@ -71,8 +73,17 @@ const EmailComponent = (props: any) => {
 
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ marginTop: "2pt" }}>Hi,</div>
-        {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>}
-        {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
+        {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
+          <div style={{ marginTop: "2pt" }}>Approval Task Created by {props?.items.TaskCreatorData[0].Title}, team will process it further. Refer Approval Comments.</div>
+        </> :
+          <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
+            <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
+          }
+            {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
+              <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
+          </>
+        }
+
         <div style={{ marginTop: "11.25pt" }}>
           <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props.items.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u></div>
         <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
