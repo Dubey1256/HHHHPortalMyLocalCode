@@ -725,9 +725,7 @@ const inlineEditingcolumns = (props: any) => {
                                                 AllTaskUser?.map((user: any) => {
                                                     if (AssignedUser.Id == user.AssingedToUserId) {
                                                         return (
-                                                                <a
-                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${user.Id}&Name=${user.Title}`}
-                                                                    target="_blank"
+                                                                <a target="_blank"
                                                                     data-interception="off"
                                                                     title={user.Title}
                                                                 >
