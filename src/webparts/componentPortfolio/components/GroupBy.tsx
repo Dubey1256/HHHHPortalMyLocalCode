@@ -46,6 +46,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
 import HighlightableCell from './highlight';
+import Loader from "react-loader";
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
@@ -88,7 +90,7 @@ function Filter({
     const columnFilterValue = column.getFilterValue();
     // style={{ width: placeholder?.size }}
     return (
-        <input style={{width:"100%"}} className="me-1 mb-1 on-search-cross"
+        <input style={{ width: "100%" }} className="me-1 mb-1 on-search-cross"
             // type="text"
             title={placeholder?.placeholder}
             type="search"
@@ -134,6 +136,7 @@ function ComponentTable(SelectedProp: any) {
     const [rowSelection, setRowSelection] = React.useState({});
     const refreshData = () => setData(() => array);
     const rerender = React.useReducer(() => ({}), {})[1]
+    const [loaded, setLoaded] = React.useState(true);
 
 
 
@@ -1132,8 +1135,8 @@ function ComponentTable(SelectedProp: any) {
                         'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID',
                         'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title',
                         'SharewebTaskType/Level', 'Priority_x0020_Rank', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
-                        'Team_x0020_Members/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
-                        'ClientCategory/Id', 'ClientCategory/Title', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'Body',
+                        'Team_x0020_Members/Id', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
+                        'ClientCategory/Id', 'ClientCategory/Title', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'ID', 'PercentComplete', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'Body',
                         'Mileage', 'PercentComplete', 'ClientCategory', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title'
                     )
                     .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
@@ -1244,26 +1247,60 @@ function ComponentTable(SelectedProp: any) {
 
                         AllActivitysData = AllTasks?.filter((elem: any) => elem?.SharewebTaskType?.Title == "Activities");
                         AllWorkStreamData = AllTasks?.filter((elem: any) => elem?.SharewebTaskType?.Title == "Workstream");
+                        // AllActivitysData?.forEach((elem: any) => {
+                        //     elem.childs = [];
+                        //     elem.subRows = [];
+                        //     AllTasks?.forEach((task: any) => {
+                        //         if (elem.Id = task.id) {
+                        //             task.isTagged = false
+                        //         }
+                        //         if (elem?.ID == task?.ParentTask?.Id) {
+                        //             task.isTagged = false
+                        //             elem.childs.push(task);
+                        //             elem.subRows.push(task);
+                        //         }
+                        //     })
+                        // })
+                        // AllActivitysData?.forEach((elem: any) => {
+                        //     elem?.subRows?.forEach((val: any) => {
+                        //         val.childs = val.childs === undefined ? [] : val.childs;
+                        //         val.subRows = val.subRows === undefined ? [] : val.subRows;
+                        //         AllTasks?.forEach((task: any) => {
+                        //             if (val.Id = task.id) {
+                        //                 task.isTagged = false
+                        //             }
+                        //             if (val?.ID == task?.ParentTask?.Id) {
+                        //                 task.isTagged = false
+                        //                 val.childs.push(task);
+                        //                 val.subRows.push(task);
+                        //             }
+                        //         })
+                        //     })
+                        // })
                         AllActivitysData?.forEach((elem: any) => {
                             elem.childs = [];
                             elem.subRows = [];
                             AllTasks?.forEach((task: any) => {
-                                if (elem.Id = task.id) {
+                                if (elem.Id === task.Id) {
                                     task.isTagged = false
                                 }
                                 if (elem?.ID == task?.ParentTask?.Id) {
                                     task.isTagged = false
                                     elem.childs.push(task);
                                     elem.subRows.push(task);
+
                                 }
+
                             })
+
                         })
+
                         AllActivitysData?.forEach((elem: any) => {
                             elem?.subRows?.forEach((val: any) => {
                                 val.childs = val.childs === undefined ? [] : val.childs;
                                 val.subRows = val.subRows === undefined ? [] : val.subRows;
                                 AllTasks?.forEach((task: any) => {
-                                    if (val.Id = task.id) {
+                                    if (val.Id === task.Id) {
                                         task.isTagged = false
                                     }
                                     if (val?.ID == task?.ParentTask?.Id) {
@@ -1272,7 +1309,18 @@ function ComponentTable(SelectedProp: any) {
                                         val.subRows.push(task);
                                     }
                                 })
+
                             })
+
+                        })
+
+                        AllTasks?.forEach((task: any) => {
+                            if (task.isTagged != false) {
+                                task.childs = [];
+                                task.subRows = [];
+                                AllActivitysData.push(task)
+                            }
+
                         })
 
                         console.log("taskssssssssssssss", AllActivitysData)
@@ -1576,10 +1624,12 @@ function ComponentTable(SelectedProp: any) {
     // var SubComponentsData: any = []; var FeatureData: any = [];
     var MetaData: any = []
     var showProgressBar = () => {
+        setLoaded(false)
         $(' #SpfxProgressbar').show();
     }
 
     var showProgressHide = () => {
+        setLoaded(true)
         $(' #SpfxProgressbar').hide();
     }
     var Response: any = []
@@ -2313,6 +2363,8 @@ function ComponentTable(SelectedProp: any) {
             // AllTaskData1 = AllTaskData1.concat(TasksItem);
             setTaggedAllTask(AllTaggedTask)
             $.each(AllTaggedTask, function (index: any, task: any) {
+                if (task.ID === 1473 || task.ID === 2297 || task.ID === 2338 || task.ID === 2392)
+                    var test = 'test';
                 task.Portfolio_x0020_Type = 'Component';
                 if (IsUpdated === 'Service Portfolio') {
                     if (task['Services'] != undefined && task['Services'].length > 0) {
@@ -2522,9 +2574,9 @@ function ComponentTable(SelectedProp: any) {
     };
     const Call = React.useCallback((childItem: any) => {
         setRowSelection({})
-        MeetingItems?.forEach((val: any): any => {
-            val.chekBox = false;
-        })
+        // MeetingItems?.forEach((val: any): any => {
+        //     val.chekBox = false;
+        // })
         closeTaskStatusUpdatePoup2();
         setIsComponent(false);;
         setIsTask(false);
@@ -2648,7 +2700,7 @@ function ComponentTable(SelectedProp: any) {
 
                 setData(array => ([...array]))
                 refreshData();
-                rerender();
+                // rerender();
             }
 
         }
@@ -3620,8 +3672,8 @@ function ComponentTable(SelectedProp: any) {
 
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
-
+                                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
                                 <span className="popover__content">
                                     {row?.original?.Short_x0020_Description_x0020_On}
                                 </span>
@@ -3661,6 +3713,19 @@ function ComponentTable(SelectedProp: any) {
                 header: "",
                 size: 15,
             },
+            // {
+            //     // accessorKey: "PercentComplete",
+            //     accessorFn: (row) => row?.PercentComplete,
+            //     cell: ({ row }) => (
+            //         <span>
+            //             <InlineEditingcolumns  AllListId={SelectedProp?.SelectedProp} key={row?.original?.Id} columnName='PercentComplete' TaskUsers={AllUsers} item={row?.original} />
+            //         </span>
+            //     ),
+            //     id: "PercentComplete",
+            //     placeholder: "Status",
+            //     header: "",
+            //     size: 7,
+            // },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
@@ -3673,6 +3738,18 @@ function ComponentTable(SelectedProp: any) {
                 header: "",
                 size: 7,
             },
+            // {
+            //     accessorFn: (row) => row?.DueDate,
+            //     cell: ({ row }) => (
+            //         <span>
+            //             <InlineEditingcolumns  AllListId={SelectedProp?.SelectedProp} key={row?.original?.Id} columnName='DueDate' TaskUsers={AllUsers} item={row?.original} />
+            //         </span>
+            //     ),
+            //     id: "DueDate",
+            //     placeholder: "Due Date",
+            //     header: "",
+            //     size: 9,
+            // },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
@@ -3711,8 +3788,8 @@ function ComponentTable(SelectedProp: any) {
             {
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup(row?.original)} /></a>}
-                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(row?.original)} /></a>}
+                        {row?.original?.siteType === "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"> <span title="Edit" className="svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)} ></span></a>}
+                        {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"> <span title="Edit" className="svg__iconbox svg__icon--edit" onClick={(e) => EditItemTaskPopup(row?.original)} ></span></a>}
                         {getValue()}
                     </>
                 ),
@@ -3911,6 +3988,7 @@ function ComponentTable(SelectedProp: any) {
             }
         })
     }
+
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
             setExpanded(true);
@@ -4315,7 +4393,7 @@ function ComponentTable(SelectedProp: any) {
 
 
                                         <span className='popover__wrapper ms-1' style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
-                                            <FaInfoCircle style={{ color: "#228b22" }} />
+                                            <FaInfoCircle />
 
                                             <span className="popover__content mt-3 m-3 mx-3" style={{ zIndex: 100 }}>
                                                 <label>
@@ -4420,6 +4498,7 @@ function ComponentTable(SelectedProp: any) {
                                         </a>
                                     </span>
                                 </div>
+
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
@@ -4429,7 +4508,7 @@ function ComponentTable(SelectedProp: any) {
                                                         <tr key={headerGroup.id}>
                                                             {headerGroup.headers.map((header) => {
                                                                 return (
-                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size+"%" }}>
+                                                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
                                                                         {header.isPlaceholder ? null : (
                                                                             <div className='position-relative' style={{ display: "flex" }}>
                                                                                 {flexRender(
@@ -4464,11 +4543,17 @@ function ComponentTable(SelectedProp: any) {
                                                     ))}
                                                 </thead>
                                                 <tbody>
-                                                    {table.getRowModel().rows.map((row:any) => {
+                                                    {/* <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
+                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                    </div> */}
+                                                    <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
+                                                        hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
+
+                                                    {table?.getRowModel()?.rows?.map((row: any) => {
                                                         return (
-                                                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component"  ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg": (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""  ))))} 
-                                                             key={row.id}>
-                                                                {row.getVisibleCells().map((cell:any) => {
+                                                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                                                                key={row.id}>
+                                                                {row.getVisibleCells().map((cell: any) => {
                                                                     return (
                                                                         <td key={cell.id}>
                                                                             {flexRender(
@@ -4481,6 +4566,7 @@ function ComponentTable(SelectedProp: any) {
                                                             </tr>
                                                         );
                                                     })}
+
                                                 </tbody>
                                             </table>
                                         </div>

@@ -24,7 +24,8 @@ import DatePicker from "react-datepicker";
 import { ClickAwayListener } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
+// import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
+import ServiceComponentPortfolioPopup from "../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
@@ -88,6 +89,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const [Completiondate, setCompletiondate] = React.useState(undefined);
   const [AssignUser, setAssignUser] = React.useState(undefined);
   const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
+  const [IsService, setIsService] = React.useState(false);
   const [editorState, setEditorState] = React.useState(
     EditorState.createEmpty()
   );
@@ -136,6 +138,15 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
     }
     if (type == "LinkedComponent") {
+      if (item1?.linkedComponent?.length > 0) {
+        // item.linkedComponent = item1.linkedComponent;
+        // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+        setLinkedComponentData(item1.linkedComponent);
+        console.log("Popup component linkedComponent", item1.linkedComponent);
+      }
+    }
+
+    if (type == "LinkedServices") {
       if (item1?.linkedComponent?.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
@@ -633,10 +644,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
-  // const EditLinkedServices = (items: any, title: any) => {
-  //     setIsComponentPicker(true);
-  //     setSharewebCategory(items);
-  // }
+ 
 
   React.useEffect(() => {
     GetTaskUsers();
@@ -670,10 +678,22 @@ function EditInstitution({item,SelectD,Calls}: any) {
     };
     initLoading();
   }, []);
+  // const EditComponent = (items: any, title: any) => {
+  //   // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
+  //   setIsComponent(true);
+  //   setSharewebComponent(items);
+  //   // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
+  // };
   const EditComponent = (items: any, title: any) => {
     // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-    setIsComponent(true);
-    setSharewebComponent(items);
+    if(title == "Service"){
+      setIsComponent(true);
+      setSharewebComponent(items);
+    }else{
+      setIsService(true);
+      setSharewebComponent(items);
+    }
+    
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
@@ -1573,7 +1593,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Componet")
+                                    EditComponent(EditData, 'Component')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1598,7 +1618,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, "Service")
+                                    EditComponent(EditData, 'Service')
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -2305,6 +2325,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         userDisplayName={EditData?.userDisplayName}
                         listName={EditData?.siteType}
                         itemID={EditData?.Id}
+                        AllListId={RequireData}
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
@@ -2901,6 +2922,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
                           listId={RequireData.MasterTask}
+                          siteUrls={RequireData?.siteUrl}
                         />
                       ) : (
                         ""
@@ -2960,7 +2982,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
               </div>
             </footer>
 
-            {IsComponent && item.Portfolio_x0020_Type == "Component" && (
+            {/* {IsComponent && item.Portfolio_x0020_Type == "Component" && (
               <LinkedComponent
                 props={SharewebComponent}
                 Dynamic={RequireData}
@@ -2973,7 +2995,23 @@ function EditInstitution({item,SelectD,Calls}: any) {
                 Dynamic={RequireData}
                 Call={Call}
               ></ComponentPortPolioPopup>
-            )}
+            )} */}
+            {IsComponent ? 
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType= {"Service"}
+              ></ServiceComponentPortfolioPopup>:null
+            }
+            {IsService ? 
+              <ServiceComponentPortfolioPopup
+                props={SharewebComponent}
+                Dynamic={RequireData}
+                Call={Call}
+                ComponentType= {"Component"}
+              ></ServiceComponentPortfolioPopup>:null
+            }
             {IsComponentPicker && (
               <Picker props={SharewebCategory} Call={Call}  AllListId={RequireData}></Picker>
             )}

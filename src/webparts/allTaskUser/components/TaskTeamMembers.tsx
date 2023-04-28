@@ -449,6 +449,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
     }
 
     private onSaveTask() {
+        this.onCancelTask();
         if(this.state.selTaskId) {
             this.updateTask();
         }
@@ -958,6 +959,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                              defaultSelectedKey = {this.state.taskItem.groupId}
                              selectedKey = {this.state.taskItem.groupId}
                              onChange = {this.onGroupChange } 
+                             calloutProps={{ doNotLayer: true }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -979,6 +981,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             defaultSelectedKey = {this.state.taskItem.timeCategory} 
                             selectedKey = {this.state.taskItem.timeCategory}
                             onChange = { this.onManageTimeCategory } 
+                            calloutProps={{ doNotLayer: true }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>

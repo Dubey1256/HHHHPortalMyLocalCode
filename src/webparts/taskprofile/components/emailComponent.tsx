@@ -1,7 +1,7 @@
 import * as React from 'react';
 import  { useState,useEffect } from 'react';
 import "@pnp/sp/sputilities";
-
+import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
  import { Web } from 'sp-pnp-js';
 
@@ -55,31 +55,38 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
     await updateData("Reject");
   }
   let percentageComplete;
+  let taskStatus="";
       if(send=="Approve"|| send=="Approved"){
         settaskpermission("Approve");
         percentageComplete=0.03;
         percentage=3;
+        taskStatus="Approved"
       }
-      if(send=="Reject"|| send=="Maybe"){
+      if(send=="Rejected"|| send=="Maybe"||send=="Reject"){
         settaskpermission("Reject");
         percentageComplete=0.02;
+        taskStatus="Follow Up"
         percentage=2;
       }
-      const feedback:any=props.items?.FeedBack!=null?props.items?.FeedBack:null;
-         const web = new Web(props?.items?.siteUrl );
-      await web.lists.getByTitle(props.items.listName)
-      // await web.lists.getById(props.SiteTaskListID)
-        .items.getById(props?.items?.Id).update({
-        PercentComplete: percentageComplete,
-        FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
-      }).then((res:any)=>{
-       console.log(res);
-       
-       
-     })
-     .catch((err) => {
-       console.log(err.message);
-    });
+      if(send=="Approved"||send=="Rejected"){
+        const feedback:any=props.items?.FeedBack!=null?props.items?.FeedBack:null;
+        const web = new Web(props?.items?.siteUrl );
+     await web.lists.getByTitle(props.items.listName)
+     // await web.lists.getById(props.SiteTaskListID)
+       .items.getById(props?.items?.Id).update({
+       PercentComplete: percentageComplete,
+       Status:taskStatus,
+       FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
+     }).then((res:any)=>{
+      console.log(res);
+      
+      
+    })
+    .catch((err:any) => {
+      console.log(err.message);
+   });
+   }
+     
   
   console.log(props);
   

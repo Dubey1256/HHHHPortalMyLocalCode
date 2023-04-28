@@ -1449,6 +1449,7 @@ function Portfolio({SelectedProp}:any) {
                         siteUrl={
                           web
                         }
+                        AllListId={SelectedProp}
                         userDisplayName={item.userDisplayName}
                         itemID={item.Id}
                       ></CommentCard>

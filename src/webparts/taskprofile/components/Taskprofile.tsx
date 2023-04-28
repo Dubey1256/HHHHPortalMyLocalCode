@@ -23,9 +23,9 @@ import EmailComponenet from './emailComponent';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
-var AllListId:any;
-var isShowTimeEntry:any;
-var isShowSiteCompostion:any;
+var AllListId: any;
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
 export interface ITaskprofileState {
   Result: any;
   listName: string;
@@ -134,7 +134,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         this.breadcrumb();
         this.count++;
       }
-  
+
       this.setState({
         maincollection: this.maincollection
       })
@@ -168,25 +168,25 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         .filter(query.replace('filter=', ''))
         .orderBy('Modified', false)
         .getAll(4000);
-         this.gAllDataMatches = AllDataMatches;
+      this.gAllDataMatches = AllDataMatches;
 
-      TaskIdCSF = (AllDataMatches[0]?.PortfolioStructureID).replace("-",">");
+      TaskIdCSF = (AllDataMatches[0]?.PortfolioStructureID).replace("-", ">");
       console.log(TaskIdCSF);
 
-     
+
       if (AllDataMatches[0] != undefined && AllDataMatches[0]?.Item_x0020_Type != undefined && AllDataMatches[0]?.Item_x0020_Type == 'Component') {
-        
+
         return AllDataMatches;
       }
-      
+
       else {
         let query = 'filter=';
         AllDataMatches?.forEach(function (item: any) {
-         query += "(Id eq '" + item?.Parent?.Id + "')or";
+          query += "(Id eq '" + item?.Parent?.Id + "')or";
         });
         query = query.slice(0, query?.length - 2);
         await this.loadOtherComponentsData(query, AllDataMatches);
-       }
+      }
     }
   }
 
@@ -221,61 +221,61 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private async GetResult() {
-    try{
-      isShowTimeEntry=this.props.TimeEntry!=""?JSON.parse(this.props.TimeEntry):"";
-      isShowSiteCompostion=this.props.SiteCompostion!=""?JSON.parse(this.props.SiteCompostion):""
-    }catch(error:any){
+    try {
+      isShowTimeEntry = this.props.TimeEntry != "" ? JSON.parse(this.props.TimeEntry) : "";
+      isShowSiteCompostion = this.props.SiteCompostion != "" ? JSON.parse(this.props.SiteCompostion) : ""
+    } catch (error: any) {
       console.log(error)
     }
-  
+
     let web = new Web(this.props.siteUrl);
     let taskDetails: any = [];
     let listInfo = await web.lists.getByTitle(this.state?.listName).get();
     // console.log(listInfo);
- 
+
     taskDetails = await web.lists
-    // .getById(this.props.SiteTaskListID)
-    .getByTitle(this.state?.listName)
+      // .getById(this.props.SiteTaskListID)
+      .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
       .select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
       .expand("Team_x0020_Members", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
-      AllListId={
-        MasterTaskListID:this.props.MasterTaskListID,
-        TaskUsertListID:this.props.TaskUsertListID,
-        SmartMetadataListID:this.props.SmartMetadataListID,
-        //SiteTaskListID:this.props.SiteTaskListID,
-        TaskTimeSheetListID:this.props.TaskTimeSheetListID,
-        DocumentsListID:this.props.DocumentsListID,
-        SmartInformationListID:this.props.SmartInformationListID,
-        siteUrl: this.props.siteUrl,
-        isShowTimeEntry:isShowTimeEntry,
-        isShowSiteCompostion:isShowSiteCompostion
-      }
+    AllListId = {
+      MasterTaskListID: this.props.MasterTaskListID,
+      TaskUsertListID: this.props.TaskUsertListID,
+      SmartMetadataListID: this.props.SmartMetadataListID,
+      //SiteTaskListID:this.props.SiteTaskListID,
+      TaskTimeSheetListID: this.props.TaskTimeSheetListID,
+      DocumentsListID: this.props.DocumentsListID,
+      SmartInformationListID: this.props.SmartInformationListID,
+      siteUrl: this.props.siteUrl,
+      isShowTimeEntry: isShowTimeEntry,
+      isShowSiteCompostion: isShowSiteCompostion
+    }
     taskDetails["listName"] = this.state?.listName;
     taskDetails["siteType"] = this.state?.listName;
     taskDetails["siteUrl"] = this.props?.siteUrl;
-    
+
     taskDetails.TaskId = globalCommon.getTaskId(taskDetails);
     var category = ""
-if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories"].length>0){
-  taskDetails["SharewebCategories"]?.map((item: any, index: any) => {
-    category = category + item?.Title + ";"
-    let ApprovalCheck = category?.search("Approval");
-    if (ApprovalCheck >= 0) {
-      this.setState({
-        ApprovalStatus: true
-      })
-    } else {
-      this.setState({
-        ApprovalStatus: false
-      })
+    if (taskDetails["SharewebCategories"] != undefined && taskDetails["SharewebCategories"].length > 0) {
+      taskDetails["SharewebCategories"]?.map((item: any, index: any) => {
+        category = category + item?.Title + ";"
+        let ApprovalCheck = category?.search("Approval");
+        if (ApprovalCheck >= 0) {
+          this.setState({
+            ApprovalStatus: true
+          })
+        } else {
+          this.setState({
+            ApprovalStatus: false
+          })
+        }
+
+      });
     }
 
-  });
-}
-   
 
     if (taskDetails["AssignedTo"] != undefined) {
       taskDetails["AssignedTo"]?.map((item: any, index: any) => {
@@ -296,13 +296,13 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     var array2: any = taskDetails["AssignedTo"] != undefined ? taskDetails["AssignedTo"] : []
     if (taskDetails["Team_x0020_Members"] != undefined) {
       taskDetails.array = array2.concat(taskDetails["Team_x0020_Members"]?.filter((item: any) => array2?.Id != item?.Id))
-    
+
     }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
       OffshoreComments = JSON.parse(taskDetails["OffshoreComments"])
     }
-   
+
     taskDetails["Categories"] = category;
     this.taskResult = taskDetails;
     await this.GetTaskUsers();
@@ -425,7 +425,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
 
       });
-     
+
       ImagesInfo = ImagesInfo;
 
     }
@@ -497,14 +497,14 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
     if (ClientTimeArray != undefined && ClientTimeArray != null) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
-          if ((item?.Title == items?.SiteName)||(item?.SiteName==items?.SiteName)) {
+          if ((item?.Title == items?.SiteName) || (item?.SiteName == items?.SiteName)) {
             item.ClientCategory = items?.Title;
           }
         })
       })
     }
-}
-    private GetSiteIcon(listName: string) {
+  }
+  private GetSiteIcon(listName: string) {
     console.log(this.state.Result)
     if (listName != undefined) {
       let siteicon = '';
@@ -512,51 +512,51 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_migration.png`;
       }
       if (listName?.toLowerCase() == 'health') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_health.png`;
       }
       if (listName?.toLowerCase() == 'eps') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_eps.png`;
       }
       if (listName?.toLowerCase() == 'ei') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_ei.png`;
       }
       if (listName?.toLowerCase() == 'qa') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_qa.png`;
       }
       if (listName?.toLowerCase() == 'gender') {
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_gender.png`;
       }
       if (listName?.toLowerCase() == 'education') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_education.png`;
       }
       if (listName?.toLowerCase() == 'development-effectiveness' || listName?.toLowerCase() == 'de') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_de.png`;
       }
       if (listName?.toLowerCase() == 'cep') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/icon_cep.png`;
       }
       if (listName?.toLowerCase() == 'alakdigital' || listName?.toLowerCase() == 'da e+e') {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_da.png`;
       }
       if (listName?.toLowerCase() == 'hhhh')
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/icon_hhhh.png`;
 
       if (listName?.toLowerCase() == 'gruene')
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/logo-gruene.png`;
 
       if (listName?.toLowerCase() == 'shareweb')
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/site_shareweb.png`;
 
       if (listName?.toLowerCase() == 'small projects')
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/small_project.png`;
 
       if (listName?.toLowerCase() == 'offshore tasks')
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Shareweb/offshore_Tasks.png`;
 
       if (listName?.toLowerCase() == 'kathabeck')
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
       if (listName?.toLowerCase() == 'tasks' && this.props.Context?._pageContext?._web.title == "SH") {
-        siteicon =  `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
+        siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
       }
       return siteicon;
     }
@@ -581,7 +581,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           'activeimg2': UsersValues[index]?.workingMember ? UsersValues[index]?.workingMember : "",
         })
       }
-   
+
     }
     return userDeatails;
   }
@@ -589,7 +589,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
   private GetUserObject(username: any) {
     //username = username.Title != undefined ? username.Title : username;
     let userDeatails = [];
-    if(username!=undefined){
+    if (username != undefined) {
       let senderObject = this.taskUsers.filter(function (user: any, i: any) {
         if (user?.AssingedToUser != undefined) {
           return user?.AssingedToUser['Title'] == username
@@ -603,18 +603,18 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           'Title': senderObject[0]?.Title,
           'userImage': senderObject[0]?.Item_x0020_Cover != null ? senderObject[0]?.Item_x0020_Cover.Url : ""
         })
-      }   if(senderObject.length==0){
+      } if (senderObject.length == 0) {
         userDeatails.push({
-          'Title':username,
-          'userImage':"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+          'Title': username,
+          'userImage': "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
         })
 
       }
-      return userDeatails; 
+      return userDeatails;
     }
-    
+
   }
-       //open the model
+  //open the model
   private OpenModal(e: any, item: any) {
     if (item.Url != undefined) {
       item.ImageUrl = item?.Url;
@@ -672,8 +672,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
     let web = new Web(this.props.siteUrl);
     const i = await web.lists
-    .getByTitle(this.state?.listName)
-    // .getById(this.props.SiteTaskListID)
+      .getByTitle(this.state?.listName)
+      // .getById(this.props.SiteTaskListID)
       .items
       .getById(this.state?.itemID)
       .update({
@@ -719,38 +719,39 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                     isShowLight = isShowLight + 1;
 
                   }
-                    })
-                  }
-           if (isShowLight == 0) {
+                })
+              }
+              if (isShowLight == 0) {
                 if (feedback?.isShowLight != "" && feedback?.isShowLight != undefined) {
                   // count=1
                   isShowLight = isShowLight + 1;
-           }
+                }
               }
-             }
-              })
+            }
+          })
         }
       })
-     if (isShowLight > NotisShowLight) {
+      if (isShowLight > NotisShowLight) {
         this.countemailbutton = 1;
       }
     }
   }
   private async approvalcallback() {
-        this.setState({
-      sendMail: false,
-      emailStatus: ""
-    })
-    this.GetResult();
-       }
-  private async approvalcallbackfeedback() {
-    this.showhideapproval();
     this.setState({
       sendMail: false,
       emailStatus: ""
     })
- }
- private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
+    this.GetResult();
+  }
+  private async approvalcallbackfeedback() {
+    this.showhideapproval();
+
+    this.setState({
+      sendMail: false,
+      emailStatus: ""
+    })
+  }
+  private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
     if (LocalDateTime != '') {
@@ -783,7 +784,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
       item.isLastNode = false;
       this.allDataOfTask.push(item);
     }
-   }
+  }
 
   private breadcrumb() {
     let breadcrumbitem: any = {};
@@ -981,23 +982,24 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
       breadcrumbitem.ParentTask = this.taskResult;
     }
     if (breadcrumbitem != undefined) {
-      if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.Shareweb_x0020_ID != undefined&&breadcrumbitem?.ChildTask==undefined&&breadcrumbitem?.SubChildTask==undefined) {
+      if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.Shareweb_x0020_ID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
 
-        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID).replace("-",">")
+        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID).replace("-", ">")
       }
-      if (breadcrumbitem.ChildTask != undefined&&breadcrumbitem.SubChildTask==undefined) {
+      if (breadcrumbitem.ChildTask != undefined && breadcrumbitem.SubChildTask == undefined) {
         if (breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined) {
-          if (TaskIdAW != ""||TaskIdAW=="") {
+          if (TaskIdAW != "" || TaskIdAW == "") {
             TaskIdAW = TaskIdAW + ">" + breadcrumbitem?.ChildTask?.Shareweb_x0020_ID;
-          } 
+          }
         }
-         else if (breadcrumbitem?.ChildTask!=undefined&&breadcrumbitem?.ChildTask?.TaskId!=undefined&&breadcrumbitem?.SubChildTask==undefined){
-          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId).replace("-",">")
-        }}
-      else if(breadcrumbitem?.SubChildTask!=undefined&&breadcrumbitem?.SubChildTask?.TaskId!=undefined){
-        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId).replace("-",">")
+        else if (breadcrumbitem?.ChildTask != undefined && breadcrumbitem?.ChildTask?.TaskId != undefined && breadcrumbitem?.SubChildTask == undefined) {
+          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId).replace("-", ">")
+        }
       }
-        }
+      else if (breadcrumbitem?.SubChildTask != undefined && breadcrumbitem?.SubChildTask?.TaskId != undefined) {
+        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId).replace("-", ">")
+      }
+    }
     this.maincollection.push(breadcrumbitem);
     breadcrumbitem = {};
 
@@ -1058,17 +1060,17 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           <div className='row'>
             <div className="col-sm-12 p-0 ng-scope">
               <ul className="spfxbreadcrumb m-0 p-0">
-                 {this.state.maincollection?.map((breadcrumbitem: any) => {
+                {this.state.maincollection?.map((breadcrumbitem: any) => {
                   return <>
-                   {(this.state.Result["Component"]!= null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"]!= null && this.state.Result["Services"].length > 0) ?
+                    {(this.state.Result["Component"] != null && this.state.Result["Component"].length > 0) || (this.state.Result["Services"] != null && this.state.Result["Services"].length > 0) ?
                       <li >
-                        {this.state.Result["Component"]!= null && this.state.Result["Component"].length > 0 &&
+                        {this.state.Result["Component"] != null && this.state.Result["Component"].length > 0 &&
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Component-Portfolio.aspx`}>Component Portfolio</a>
                         }
                         {this.state.Result["Services"] != null && this.state.Result["Services"].length > 0 &&
                           <a target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Service-Portfolio.aspx`}>Service Portfolio</a>
                         }
-                      </li>:null
+                      </li> : null
                     }
                     {breadcrumbitem.Subchild == undefined && breadcrumbitem.Child == undefined && this.state.Result["Services"].length == 0 &&
                       this.state.Result["Component"].length == 0 && breadcrumbitem.ParentTask != undefined &&
@@ -1130,7 +1132,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
               {this.state.Result["SiteIcon"] != "" && <img className="imgWid29 pe-1 " src={this.state.Result["SiteIcon"]} />}
               {this.state.Result["SiteIcon"] === "" && <img className="imgWid29 pe-1 " src="" />}
               {this.state.Result['Title']}
-        
+
               <a className="hreflink ng-scope" onClick={() => this.OpenEditPopUp()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                 {/* <img style={{ width: '16px', height: '16px', borderRadius: '0' }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
@@ -1154,8 +1156,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <dl>
                     <dt className='bg-Fa'>Task Id</dt>
                     <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF.replace("-",">")}{TaskIdAW==""&&this.state.Result["TaskId"]!=undefined&&<span className='text-body'>{">"+this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
-                   
+                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
+
                     </dd>
 
                   </dl>
@@ -1176,10 +1178,10 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                     <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                   </dl>
-                  {isShowTimeEntry&&<dl>
+                  {isShowTimeEntry && <dl>
                     <dt className='bg-Fa'>SmartTime Total</dt>
                     <dd className='bg-Ff'>
-                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ?<SmartTimeTotal  AllListId={AllListId} props={this.state.Result} /> : null}</span>
+                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} /> : null}</span>
                     </dd>
 
                   </dl>}
@@ -1298,7 +1300,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
 
                     </dd>
                   </dl>
-                 {isShowSiteCompostion &&<dl className="Sitecomposition">
+                  {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
                         <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
@@ -1309,7 +1311,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                             {ClientTimeArray?.map((cltime: any, i: any) => {
                               return <li className="Sitelist">
                                 <span>
-                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName)?this.GetSiteIcon(cltime?.SiteName):this.GetSiteIcon(cltime?.Title)} />
+                                  <img style={{ width: "22px" }} src={this.GetSiteIcon(cltime?.SiteName) ? this.GetSiteIcon(cltime?.SiteName) : this.GetSiteIcon(cltime?.Title)} />
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
@@ -1323,7 +1325,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         </div>
                       </div>
                     }
-                   
+
 
                   </dl>}
 
@@ -1391,8 +1393,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                         this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
-                            let userdisplay:any=[];
-                            userdisplay.push({Title:this.props?.userDisplayName})
+                            let userdisplay: any = [];
+                            userdisplay.push({ Title: this.props?.userDisplayName })
                             if (fbData != null && fbData != undefined) {
 
                               try {
@@ -1405,12 +1407,12 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                                 onPost={() => { this.onPost() }}
                                 approvalcallbacktask={() => { this.approvalcallbackfeedback() }}
                                 fullfeedback={this.state.Result["FeedBack"]}
-                                CurrentUser={this.currentUser!=undefined && this.currentUser?.length>0?this.currentUser:userdisplay}
+                                CurrentUser={this.currentUser != undefined && this.currentUser?.length > 0 ? this.currentUser : userdisplay}
                                 ApprovalStatus={this.state.ApprovalStatus}
                                 Approver={this.state.Result["Approver"]}
                                 Result={this.state.Result}
                                 Context={this.props?.Context}
-                               
+
                               >
                               </TaskFeedbackCard>
                             }
@@ -1454,7 +1456,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                                     <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                   }
                                 </span>
-                                   </div>
+                              </div>
                             </div>
 
                           </div>
@@ -1487,15 +1489,15 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   </div>
                 </div> : null}
 
-                </section>
+              </section>
 
             </div>
             <div className="col-3">
               <div>
-              {this.state.Result!=undefined&& AllListId!=undefined&&<CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+                {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
               </div>
-              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId}Context={this.props?.Context} taskTitle={this.state.Result?.Title} siteurl={this.state.Result.siteUrl} listName={this.state.Result.listName} spPageContext={this.props.Context?._pageContext?._web} />}</div>
-              <div> {this.state.Result!=undefined &&<RelevantDocuments siteUrl={this.props.siteUrl}DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
+              <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
+              <div> {this.state.Result != undefined && <RelevantDocuments siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
 
             </div>
 
@@ -1505,7 +1507,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           <div className="row">
             {this.state.Result != undefined && this.state.Result.Id != undefined && this.state.Result.SharewebTaskType != "" && this.state.Result.SharewebTaskType != undefined && this.state.Result.SharewebTaskType != 'Task' ? <TasksTable props={this.state.Result} /> : ''}
           </div>
-           <div className='row'>
+          <div className='row'>
             {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
@@ -1515,8 +1517,8 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
                   <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                 </div>
               </div>
-             }
-           </div>
+            }
+          </div>
         </section>
 
         <div className='imghover' style={{ display: this.state.showPopup }}>
@@ -1528,7 +1530,7 @@ if(taskDetails["SharewebCategories"]!=undefined&&taskDetails["SharewebCategories
           </div>
         </div>
 
-        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result}context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
+        {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
 
       </div>
