@@ -1035,6 +1035,7 @@ function TimeEntryPopup(item: any) {
                                     Datee = Moment().format()
                                 }
                                 var TimeInH: any = TimeInMinutes / 60
+                                 TimeInH = TimeInH.toFixed(2);
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
                                 item.AdditionalTime = []

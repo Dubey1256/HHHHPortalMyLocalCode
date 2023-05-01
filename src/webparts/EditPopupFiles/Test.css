@@ -1,0 +1,8 @@
+[contenteditable] {
+    padding:12px; 
+}
+[data-placeholder]:empty:before {
+     content: attr(data-placeholder);
+     color: #888;
+     font-style: Bold;
+}
