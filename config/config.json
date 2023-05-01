@@ -299,6 +299,8 @@
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
     "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
+    "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
+    "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
   }
 }

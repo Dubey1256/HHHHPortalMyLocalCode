@@ -53,7 +53,7 @@ function getQueryVariable(variable:any)
 }
 let ID:any='';
 let web:any=''
-let count=0;
+
 function Portfolio({SelectedProp}:any) {
   const [data, setTaskData] = React.useState([]);
   const [isActive, setIsActive] = React.useState(false);
@@ -229,7 +229,7 @@ function Portfolio({SelectedProp}:any) {
     getTaskUser();
     open();
     
-  }, [count]);
+  }, []);
 
   // Make Folder data unique
 
@@ -312,13 +312,13 @@ function Portfolio({SelectedProp}:any) {
     item["listName"] = ContextValue.MasterTaskListID;
     setIsComponent(true);
     setSharewebComponent(item);
-    ++count;
+    
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const Call = React.useCallback((item1) => {
     setIsComponent(false);
     setIsTask(false);
-    ++count;
+   
     
   }, []);
 

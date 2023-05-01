@@ -1454,7 +1454,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     aria-controls="concept"
                     aria-selected="false"
                   >
-                    Concept
+                    CONCEPT
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -1468,7 +1468,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     aria-controls="profile"
                     aria-selected="false"
                   >
-                    Architecture & Technologies
+                    ARCHITECTURE & TECHNOLOGIES
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
