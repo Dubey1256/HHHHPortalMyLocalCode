@@ -40,6 +40,7 @@ const SmartInformation = (props: any) => {
   const [smartDocumentpostData, setsmartDocumentpostData] = useState(null);
   const [EditdocumentsData, setEditdocumentsData] = useState(null);
   const [Editdocpanel, setEditdocpanel] = useState(false);
+  const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const handleClose = () => {
     setpopupEdit(false);
     setshowAdddocument(false);
@@ -55,10 +56,11 @@ const SmartInformation = (props: any) => {
   const handleShow = async (item: any, value: any) => {
 
     await LoadSmartMetaData();
-
+   
     if (value == "edit") {
       setpopupEdit(true);
       seteditvalue(item);
+      setEditSmartinfoValue(item)
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
     }
     setShow(true);
@@ -291,7 +293,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     return (
       <>
 
-        <div className={servicespopup?'ps-4 serviepannelgreena':'ps-4'} style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
         <Tooltip ComponentId='993' />
@@ -482,17 +484,18 @@ const LoadMasterTaskList=async(): Promise<any>=>{
   //======== add document when i click to add document in profile page =========.
 
   const addDocument = async (Status: any, items: any) => {
-    console.log(items)
-    setsmartDocumentpostData(items)
+     setsmartDocumentpostData(items)
     if (Status == "AddDocument") {
       setshowAdddocument(true)
     }
     else {
-      await saveSharewebItem();
-      alert('Information saved now items can be attached.');
-      console.log(PostSmartInfo);
+    
+        await saveSharewebItem();
+        alert('Information saved now items can be attached.');
+      }
+     setshowAdddocument(true)
      
-    }
+    
 
 
   }
@@ -596,12 +599,21 @@ const LoadMasterTaskList=async(): Promise<any>=>{
           tagcomponetServicesId = taskInfo.Services[0].Id;
 
         }
+        console.log(PostSmartInfo)
+        console.log(EditSmartinfoValue);
+        var smartinfoData:any;
+        if(PostSmartInfo!=undefined){
+          smartinfoData= PostSmartInfo.data
+        }else{
+          smartinfoData=EditSmartinfoValue
+        }
+       
         const web = new Web(props?.AllListId?.siteUrl);
         const updatedItem = await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.getById(res.Id).update({
-            SmartInformationId: { "results": [(smartDocumentpostData?.Id)] },
+            SmartInformationId: { "results":smartDocumentpostData!=undefined? [smartDocumentpostData?.Id] :[smartinfoData?.Id]},
             Title: fileName.split(".")[0],
-            SharewebTaskId: { "results": [tagcomponetServicesId != undefined ? tagcomponetServicesId : null] },
+            SharewebTaskId: { "results":tagcomponetServicesId != undefined ? [ tagcomponetServicesId]:[] },
 
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
@@ -641,7 +653,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         .then((res: any) => {
           console.log(res);
           alert("task created")
-          //  GetAllTask(712)
+        
           GetResult();
           handleClose();
           setshowAdddocument(false)
@@ -662,13 +674,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     if (editData?.SharewebTask != undefined && editData?.SharewebTask?.length > 0) {
      
       if (editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-      //  setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: editData?.SharewebTask[0] } })
+      
         setallSetValue({...allValue,componentservicesetdataTag: editData?.SharewebTask[0] })
         setservicespopup(false);
         setcomponentpopup(true);
       } else {
         setallSetValue({...allValue,componentservicesetdataTag: editData?.SharewebTask[0] })
-      //  setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent:editData?.SharewebTask[0]}})
+      
         setservicespopup(true);
         setcomponentpopup(false);
       }
@@ -683,13 +695,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
       setservicespopup(false);
       setcomponentpopup(true);
       setallSetValue({...allValue,componentservicesetdataTag: undefined })
-     // setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, linkedComponent: undefined } })
+  
     }
     if (items == "Service") {
       setservicespopup(true);
       setcomponentpopup(false);
       setallSetValue({...allValue,componentservicesetdataTag:undefined })
-      // setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: undefined } })
+    
     }
   }
 
@@ -766,12 +778,6 @@ const LoadMasterTaskList=async(): Promise<any>=>{
 setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0] })
     }
     
-    // if (items.smartComponent != undefined) {
-    //   setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: items?.smartComponent[0] } })
-    // }
-    // if (items.linkedComponent != undefined) {
-    //   setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, linkedComponent: items?.linkedComponent[0] } })
-    // }
     setisopencomonentservicepopup(false);
   }, [])
 
@@ -798,13 +804,13 @@ setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0]
         ItemRank: EditdocumentsData.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-        SharewebTaskId: { "results": [allValue.componentservicesetdataTag != undefined ? allValue.componentservicesetdataTag .Id : null] },
+        SharewebTaskId: { "results":allValue.componentservicesetdataTag != undefined ? [ allValue.componentservicesetdataTag .Id]:[] },
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
           'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
         }
-        // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
+        
       }).then((updatedItem: any) => {
         console.log(updatedItem)
         if (EditdocumentsData?.Url != undefined) {
@@ -959,7 +965,7 @@ setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0]
               <input type="text" className='full-width' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
             </div>
             {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'>
-              <label htmlFor="Acronym" className='full-width'>Acronym &nbsp;*</label>
+              <label htmlFor="Acronym" className='full-width'>Acronym</label>
               <input type="text" className='full-width' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
             </div>}
           </div>
@@ -976,7 +982,7 @@ setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0]
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", null)}>Add Link/ Document</a></span>
+              <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
               <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
                 Save
               </Button>
@@ -1107,12 +1113,12 @@ setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0]
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={!isopencomonentservicepopup}
-     className={servicespopup==true?"serviepannelgreena":""}
+     className={servicespopup==true?"serviepannelgreena":"siteColor"}
      >
 
         <ul className="nav nav-tabs" id="myTab" role="tablist">
           <li className="nav-item" role="presentation">
-            <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
+            <button className={servicespopup?"nav-link active siteColor":"nav-link active"} id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
           </li>
           <li className="nav-item" role="presentation">
             <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="profile" aria-selected="false">IMAGE INFORMATION</button>
