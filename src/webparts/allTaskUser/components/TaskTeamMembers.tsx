@@ -7,8 +7,9 @@ import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/File
 
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
-
+import * as pnp from 'sp-pnp-js';
 import { SPHttpClient } from '@microsoft/sp-http';
+import { getSP } from "../../../spservices/pnpjsConfig"
 import TaskUsersTable from "./TaskUsersTable";
 
 const controlStyles = {
@@ -56,10 +57,13 @@ const stackTokens: IStackTokens = {
 export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamMembersState> {
     private _selection: Selection;
     private commandBarItems: ICommandBarItemProps[] = null;
+    private _sp: any;
+    private _webSerRelURL: any;
     constructor(props:ITeamMembersProps) {
 
         super(props);           
-
+        this._sp = getSP();
+        this.getWebInformation();   
         this.state = {
             tasks: [],
             searchText: "",
@@ -165,6 +169,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             }
         ];
     }
+    private async getWebInformation() {
+        const webInfo = await this._sp.web();
+        this._webSerRelURL = webInfo.ServerRelativeUrl;
+    }
 
     public async componentDidMount() {
         
@@ -212,9 +220,15 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         });
         
         const listTasks: any[] = [..._tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
-
-        let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
-        let _filteredImages = filteredImages.map((filteredImage: any) => ({
+        let filteredImages:any=[]
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
+          filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${this.state.selImageFolder}`).files.get().then((files)=>{
+        console.log(files)
+        }).catch((error)=>{
+            console.log(error)
+        })
+        console.log(filteredImages)
+        let _filteredImages = filteredImages?.map((filteredImage: any) => ({
             Id: filteredImage.Id,
             Name: filteredImage.FileLeafRef,
             URL: filteredImage.EncodedAbsUrl
@@ -514,6 +528,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             }
         };
         console.log(updateTaskItem);
+        taskItem.groupId=null
 
         const updateTask = await this.props.spService.editTask(this.props.taskUsersListId, this.state.selTaskId, updateTaskItem);
 
@@ -521,7 +536,8 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             this.updateGallery();
             this.setState({                
                 selTaskId: undefined,
-                showEditPanel: false
+                showEditPanel: false,
+                enableSave: false
             });
         }
     }
@@ -949,7 +965,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             label="Suffix"
                             value = { this.state.taskItem.userSuffix }
                             defaultValue = { this.state.taskItem.userSuffix }
-                            onChange = { this.onUserSuffixChange } 
+                            onChange = {this.onUserSuffixChange } 
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -980,7 +996,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             options = {this.state.timesheetCategories} 
                             defaultSelectedKey = {this.state.taskItem.timeCategory} 
                             selectedKey = {this.state.taskItem.timeCategory}
-                            onChange = { this.onManageTimeCategory } 
+                            onChange = {this.onManageTimeCategory } 
                             calloutProps={{ doNotLayer: true }}
                         />
                     </div>
@@ -1063,7 +1079,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemImageGallery = (<div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                         
         {
-            this.state.filteredImages.map( imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
+            this.state.filteredImages?.map( imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
                 <DocumentCard style={{border:(imgInfo.Id==this.state.selImageId)?"1px solid red":"" }}>
                 <div
                     //onMouseOver={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}

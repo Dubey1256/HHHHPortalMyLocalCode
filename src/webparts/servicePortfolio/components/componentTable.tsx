@@ -1140,7 +1140,6 @@ function ComponentTable(SelectedProp: any) {
             "Component/Title",
             "Component/ItemType",
             "Team_x0020_Members/Id",
-            "Item_x002d_Image",
             "component_x0020_link",
             "IsTodaysTask",
             "AssignedTo/Title",

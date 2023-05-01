@@ -2432,7 +2432,7 @@ function EditProjectPopup(item: any) {
                       <a
                         target="_blank"
                         data-interception
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}
+                        href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
                         Go to Profile page

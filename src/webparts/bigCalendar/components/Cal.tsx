@@ -18,9 +18,8 @@ import {
   PrimaryButton,
   Dropdown,
 } from "office-ui-fabric-react";
-import { useState } from "react";
 
-import $ from "jquery";
+//import $ from "jquery";
 // import { RichText } from 'office-ui-fabric-react';
 // import { TextEditor } from '@microsoft/monaco-editor-react';
 // import 'froala-editor/css/froala_editor.pkgd.min.css';
@@ -33,7 +32,9 @@ import "react-quill/dist/quill.snow.css";
 //import { TimePicker } from "@fluentui/react";
 
 const localizer = momentLocalizer(moment);
-let createdBY:any,modofiedBy:any,localArray: any = [];
+let createdBY: any,
+  modofiedBy: any,
+  localArr: any = [];
 let startTime: any,
   //   startDateTime: any,
   eventPass: any = {},
@@ -42,7 +43,7 @@ let startTime: any,
 // endDateTime: any;
 //let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
-let recVisible: any = false;
+
 const App = () => {
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
@@ -68,18 +69,6 @@ const App = () => {
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
 
-  //Radio Button
-  const [buttonState, setButtonState] = React.useState<ButtonState>({
-    selectedValue: "",
-  });
-  //to show recaurrance
-  const [isCheckedRecaurance, setIsCheckedRecaurance] = React.useState(false);
-
-  //Last date selection in recaurance
-  const [selectedRadio, setSelectedRadio] = useState<string>("noEndDate");
-  const [inputValueRadio, setInputValueRadio] = useState<string>("");
-  const [dateValueEndRadio, setDateValueEndRadio] = useState<string>("");
-
   const today: Date = new Date();
   const minDate: Date = today;
 
@@ -87,10 +76,6 @@ const App = () => {
     { key: "Event", text: "Event" },
     { key: "Training", text: "Training " },
   ];
-
-  interface ButtonState {
-    selectedValue: string;
-  }
 
   const openm = () => {
     setm(true);
@@ -187,28 +172,28 @@ const App = () => {
 
   let offset: any;
 
-  const getSPCurrentTimeOffset = (): Promise<void> => {
-    return $.ajax({
-      url:
-        "https://hhhhteams.sharepoint.com/sites/HHHH/SP" +
-        "/_api/web/RegionalSettings/TimeZone",
-      method: "GET",
-      headers: { Accept: "application/json; odata=verbose" },
-    }).then((data) => {
-      offset =
-        -(
-          data.d.Information.Bias +
-          data.d.Information.StandardBias +
-          data.d.Information.DaylightBias
-        ) / 60.0;
-      // if (GlobalConstants.SP_SITE_TYPE == 'gmbh' || GlobalConstants.SP_SITE_TYPE == '')
-      offset = offset - 1;
-    });
-  };
+  // const getSPCurrentTimeOffset = (): Promise<void> => {
+  //   return $.ajax({
+  //     url:
+  //       "https://hhhhteams.sharepoint.com/sites/HHHH/SP" +
+  //       "/_api/web/RegionalSettings/TimeZone",
+  //     method: "GET",
+  //     headers: { Accept: "application/json; odata=verbose" },
+  //   }).then((data) => {
+  //     offset =
+  //       -(
+  //         data.d.Information.Bias +
+  //         data.d.Information.StandardBias +
+  //         data.d.Information.DaylightBias
+  //       ) / 60.0;
+  //     // if (GlobalConstants.SP_SITE_TYPE == 'gmbh' || GlobalConstants.SP_SITE_TYPE == '')
+  //     offset = offset - 1;
+  //   });
+  // };
 
-  try {
-    void getSPCurrentTimeOffset();
-  } catch (e) {}
+  // try {
+  //   void getSPCurrentTimeOffset();
+  // } catch (e) {}
 
   const convertDateTimeOffset = (Date: any): string | undefined => {
     let ConvertDateOffset: string | undefined;
@@ -220,23 +205,6 @@ const App = () => {
         .toISOString();
     return ConvertDateOffset;
   };
-
-  // const getAllData =async () =>{
-  //   const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-  //   await web.lists
-  //     .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
-  //     .items.select("Id","fAllDayEvent","Author/Title","Editor/Title").top(4999)
-  //     .orderBy("Created", false).expand("Author","Editor")
-  //     .get()
-  //     .then((allD)=>{
-  //       console.log(allD);
-  //      ccmp=allD;
-  //      console.log(ccmp);
-  //     })
-  //     .catch((error)=>{
-  //       console.log(error);
-  //     })
-  // }
 
   const getData = async () => {
     let localcomp = [];
@@ -253,7 +221,7 @@ const App = () => {
         console.log("datata", dataaa);
         compareData = dataaa;
         // dataaa.EventDate
-        
+        let localArray: any = [];
         //console.log("getdata", dataaa);
         dataaa.map((item: any) => {
           let comp = {
@@ -296,10 +264,10 @@ const App = () => {
             end: enddate,
             location: item.Location,
             desc: item.Description,
-            alldayevent:item.fAllDayEvent,
-            eventType:item.Event_x002d_Type,
-            created:item.Author.Title,
-            modify:item.Editor.Title,
+            alldayevent: item.fAllDayEvent,
+            eventType: item.Event_x002d_Type,
+            created: item.Author.Title,
+            modify: item.Editor.Title,
           };
           // const create ={
           //   id:item.Id,
@@ -309,19 +277,18 @@ const App = () => {
           // createdBY.push(create)
           localArray.push(dataEvent);
         });
+        localArr = localArray;
         setEvents(localArray);
-        console.log("dataevent",localArray)
-
       })
       .catch((error) => {
         console.log(error);
       });
   };
- 
+
   const deleteElement = async () => {
-    console.log("eventPassindelete", eventPass);
-    // console.log("fakeEventindelete", fakeEvent);
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    const confirmed = window.confirm("Are you sure you want to delete this item?");
+    if (confirmed) {
+      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
     await web.lists
       .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
@@ -330,10 +297,11 @@ const App = () => {
 
       .then((i) => {
         console.log(i);
-        getData();
+        void getData();
         closem();
-        getData();
+        void getData();
       });
+    }
   };
 
   const saveEvent = async () => {
@@ -352,11 +320,6 @@ const App = () => {
     //   //ConvertLocalTOServerDate(newEvent.start,'');
     //   const dateObjend = new Date(newEvent.end);
     //   const formattedDateend = dateObjend.toLocaleDateString("en-IN");
-    if(selectedTime==undefined || selectedTimeEnd==undefined || newEvent.loc==undefined){
-      setSelectedTime("10:00");
-      setSelectedTimeEnd("19:00"); 
-      newEvent.loc=("Noida");
-    }
 
     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
 
@@ -371,25 +334,25 @@ const App = () => {
 
         Description: newEvent.reason,
 
-        EndDate:ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
+        EndDate:
+          ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
           " " +
           (selectedTimeEnd + "" + ":00"),
 
-        EventDate: ConvertLocalTOServerDateToSave(startDate, selectedTime) + " " + (selectedTime + "" + ":00"),
+        EventDate:
+          ConvertLocalTOServerDateToSave(startDate, selectedTime) +
+          " " +
+          (selectedTime + "" + ":00"),
 
         fAllDayEvent: allDay,
       })
       .then((res: any) => {
         console.log(res);
-        getData();
+        void getData();
         closem();
-        getData();
         setIsChecked(false);
         setSelectedTime(selectedTime);
         setSelectedTimeEnd(selectedTimeEnd);
-      })
-      .catch((error)=>{
-        console.log(error);
       });
     // setEvents([...events, newEvent]);
     // setEvents([...events, saveE]);
@@ -406,6 +369,15 @@ const App = () => {
       type: type,
       loc: location,
     };
+    if (
+      selectedTime == undefined ||
+      selectedTimeEnd == undefined ||
+      newEvent.loc == undefined
+    ) {
+      setSelectedTime("10:00");
+      setSelectedTimeEnd("19:00");
+      newEvent.loc = "Noida";
+    }
     await web.lists
       .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
       .items.getById(eventPass.iD)
@@ -418,7 +390,8 @@ const App = () => {
 
         Description: newEvent.reason,
 
-        EndDate:ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
+        EndDate:
+          ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
           " " +
           (selectedTimeEnd + "" + ":00"),
 
@@ -431,9 +404,8 @@ const App = () => {
       })
       .then((i) => {
         console.log(i);
-        getData();
+        void getData();
         closem();
-        getData();
         setSelectedTime(startTime);
         setSelectedTimeEnd(endTime);
       });
@@ -441,28 +413,25 @@ const App = () => {
 
   const handleDateClick = (event: any) => {
     openm();
-    localArray.map((item:any)=>{
-      if(item.iD==event.iD){
+    localArr.map((item: any) => {
+      if (item.iD == event.iD) {
         setdisab(true);
-          eventPass = event;
-          setInputValueName(item.title);
-          setStartDate(item.start);
-          setEndDate(item.end);
-          setdisabl(false);
-          setIsChecked(item.alldayevent);
-          if(item.alldayevent==true){
-            setDisableTime(true);
-          }
-          setLocation(item.location);
-          createdBY=item.created;
-          modofiedBy=item.modify;
-          setType(item.eventType);
-          setInputValueReason(item.desc);
+        eventPass = event;
+        setInputValueName(item.title);
+        setStartDate(item.start);
+        setEndDate(item.end);
+        setdisabl(false);
+        setIsChecked(item.alldayevent);
+        if (item.alldayevent == true) {
+          setDisableTime(true);
+        }
+        setLocation(item.location);
+        createdBY = item.created;
+        modofiedBy = item.modify;
+        setType(item.eventType);
+        setInputValueReason(item.desc);
       }
-    })
-    
-
-
+    });
   };
 
   const handleSelectSlot = (slotInfo: any) => {
@@ -486,8 +455,34 @@ const App = () => {
       setSelectedTimeEnd(selectedTimeEnd);
       setIsChecked(false);
       setDisableTime(false);
-      
+      maxD = new Date(8640000000000000);
+      // setSelectedTime(startDateTime);
+      // setSelectedTimeEnd(endDateTime);
+      //  setsaveE(newEvent);
+      // saveEvent(newEvent);
+      // setEvents([...events, newEvent]);
+      // const title = window.prompt("Enter event title:");
+
+      // if (title) {
+
+      //   const newEvent = {
+      //     title,
+      //     start: slotInfo.start,
+      //     end: slotInfo.end,
+      //   };
+      //   setEvents([...events, newEvent]);
+      //   console.log(events);
+      // }
     }
+    // (date.getTime() === today.getTime()) {
+    //   console.log("The date is equal to today's date.");
+    // }
+    // else if (date.getTime() < today.getTime()) {
+    //   console.log("The date is in the past.");
+    // }
+    // else {
+    //   console.log("The date is in the future.");
+    // }
   };
   const handleTimeChange = (time: any) => {
     time = time.target.value;
@@ -539,101 +534,8 @@ const App = () => {
   //     setEndDate(date);
   //   }
   // };
-
-  const inputChangeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValueRadio(event.target.value);
-  };
-
-  const dateChangeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDateValueEndRadio(event.target.value);
-  };
-
-  const getRadio = (selectedRadio: any) => {
-    switch (selectedRadio) {
-      case "noEndDate":
-        return "No end date";
-        break;
-      case "endDateInput":
-        return (
-          <>
-            <label htmlFor="endDateInput">End date:</label>
-            <input
-              type="text"
-              id="endDateInput"
-              value={inputValueRadio}
-              onChange={inputChangeEnd}
-            />
-          </>
-        );
-        break;
-      case "endDatePicker":
-        return (
-          <>
-            <label htmlFor="endDatePicker">End date:</label>
-            <input
-              type="date"
-              id="endDatePicker"
-              value={dateValueEndRadio}
-              onChange={dateChangeEnd}
-            />
-          </>
-        );
-        break;
-      default:
-        return "";
-    }
-  };
-  const radioChangeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedRadio(event.target.value);
-    getRadio(event.target.value);
-  };
-
-  const checkboxRecaurance = (event: any) => {
-    setIsCheckedRecaurance(event.target.checked);
-    if (event.target.checked == true) {
-      recVisible = true;
-    } else {
-      recVisible = false;
-    }
-  };
-
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setButtonState({ selectedValue: event.currentTarget.value });
-  };
-
-  const getDailyLabel = () => {
-    return "Daily Label";
-  };
-
-  const getWeeklyLabel = () => {
-    return "Weekly Label";
-  };
-
-  const getMonthlyLabel = () => {
-    return "Monthly Label";
-  };
-
-  const getYearlyLabel = () => {
-    return "Yearly Label";
-  };
-
-  const getSelectedOption = () => {
-    switch (buttonState.selectedValue) {
-      case "daily":
-        return getDailyLabel();
-      case "weekly":
-        return getWeeklyLabel();
-      case "monthly":
-        return getMonthlyLabel();
-      case "yearly":
-        return getYearlyLabel();
-      default:
-        return "";
-    }
-  };
-
   React.useEffect(() => {
-    void getSPCurrentTimeOffset();
+    //void getSPCurrentTimeOffset();
     void getData();
   }, []);
 
@@ -672,19 +574,15 @@ const App = () => {
               onChange={handleInputChangeName}
             />
           </div>
-          {!recVisible ? (
-            <div className="col-md-6">
-              <DatePicker
-                label="Start Date"
-                styles={{ root: { width: "70%" } }}
-                minDate={minDate}
-                value={startDate}
-                onSelectDate={(date) => setStartDatefunction(date)}
-              />
-            </div>
-          ) : (
-            ""
-          )}
+          <div className="col-md-6">
+            <DatePicker
+              label="Start Date"
+              styles={{ root: { width: "70%" } }}
+              minDate={minDate}
+              value={startDate}
+              onSelectDate={(date) => setStartDatefunction(date)}
+            />
+          </div>
           {!disableTime ? (
             <div className="col-md-6">
               <label htmlFor="1">Start Time:</label>
@@ -699,20 +597,16 @@ const App = () => {
           ) : (
             ""
           )}
-          {!recVisible ? (
-            <div className="col-md-6">
-              <DatePicker
-                label="End Date"
-                styles={{ root: { width: "70%" } }}
-                value={endDate}
-                minDate={startDate}
-                maxDate={maxD}
-                onSelectDate={(date) => setEndDate(date)}
-              />
-            </div>
-          ) : (
-            ""
-          )}
+          <div className="col-md-6">
+            <DatePicker
+              label="End Date"
+              styles={{ root: { width: "70%" } }}
+              value={endDate}
+              minDate={startDate}
+              maxDate={maxD}
+              onSelectDate={(date) => setEndDate(date)}
+            />
+          </div>
           {!disableTime ? (
             <div className="col-md-6">
               <label htmlFor="2">End Time:</label>
@@ -738,128 +632,6 @@ const App = () => {
               All Day Event
             </label>
           </div>
-
-          <label>
-            <input
-              type="checkbox"
-              checked={isCheckedRecaurance}
-              onChange={checkboxRecaurance}
-            />
-            Recurring Event !
-          </label>
-
-          {/* Recaurance event */}
-          {recVisible ? (
-            <div>
-              <div className="col-md-12">
-                <div
-                  className="btn-group"
-                  role="group"
-                  aria-label="Frequency Options"
-                >
-                  <button
-                    type="button"
-                    className={`btn btn-secondary ${
-                      buttonState.selectedValue === "daily" ? "active" : ""
-                    }`}
-                    value="daily"
-                    onClick={handleButtonClick}
-                  >
-                    Daily
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn btn-secondary ${
-                      buttonState.selectedValue === "weekly" ? "active" : ""
-                    }`}
-                    value="weekly"
-                    onClick={handleButtonClick}
-                  >
-                    Weekly
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn btn-secondary ${
-                      buttonState.selectedValue === "monthly" ? "active" : ""
-                    }`}
-                    value="monthly"
-                    onClick={handleButtonClick}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn btn-secondary ${
-                      buttonState.selectedValue === "yearly" ? "active" : ""
-                    }`}
-                    value="yearly"
-                    onClick={handleButtonClick}
-                  >
-                    Yearly
-                  </button>
-                </div>
-                <p>Selected option: {getSelectedOption()}</p>
-              </div>
-              {/* <div>
-                <DatePicker
-                  label="Start Date"
-                  styles={{ root: { width: "70%" } }}
-                  minDate={minDate}
-                  value={startDate}
-                  onSelectDate={(date) => setStartDatefunction(date)}
-                />
-              <div>
-                <DatePicker
-                  label="End Date"
-                  styles={{ root: { width: "70%" } }}
-                  value={endDate}
-                  minDate={startDate}
-                  maxDate={maxD}
-                  onSelectDate={(date) => setEndDate(date)}
-                />
-                </div>
-              </div> */}
-              <div>
-                <div>
-                  <label>
-                    <input
-                      type="radio"
-                      value="noEndDate"
-                      checked={selectedRadio === "noEndDate"}
-                      onChange={radioChangeEnd}
-                    />
-                    No end date
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="radio"
-                      value="endDateInput"
-                      checked={selectedRadio === "endDateInput"}
-                      onChange={radioChangeEnd}
-                    />
-                    End date (input)
-                  </label>
-                </div>
-                <div>
-                  <label>
-                    <input
-                      type="radio"
-                      value="endDatePicker"
-                      checked={selectedRadio === "endDatePicker"}
-                      onChange={radioChangeEnd}
-                    />
-                    End date (date picker)
-                  </label>
-                </div>
-                <div>{getRadio(radioChangeEnd)}</div>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
-
           <div>
             <TextField
               label="Location"
@@ -895,13 +667,11 @@ const App = () => {
         )}
 
         {!disabl ? <PrimaryButton text="Update" onClick={updateElement} /> : ""}
-        {!disabl ?<p>Created By: {createdBY}</p>  : ""}
+        {!disabl ? <p>Created By: {createdBY}</p> : ""}
 
-        {!disabl ?<p>Modified By: {modofiedBy}</p>  : ""}
-
+        {!disabl ? <p>Modified By: {modofiedBy}</p> : ""}
         <br />
         {!disab ? <PrimaryButton text="Submit" onClick={saveEvent} /> : ""}
-        
       </Panel>
     </div>
   );

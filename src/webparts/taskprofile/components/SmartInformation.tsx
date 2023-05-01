@@ -19,7 +19,7 @@ const SmartInformation = (props: any) => {
   const [popupEdit, setpopupEdit] = useState(false);
   const [smartInformation, setsmartInformation] = useState(true);
   const [allValue, setallSetValue] = useState({
-    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata:{smartComponent:undefined,linkedComponent:undefined}, EditTaskpopupstatus: false
+    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata:{smartComponent:undefined,linkedComponent:undefined}, EditTaskpopupstatus: false,DocumentType:"",
   })
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [componentpopup, setcomponentpopup] = useState(false);
@@ -44,7 +44,7 @@ const SmartInformation = (props: any) => {
     setSelectedTilesTitle("")
     setShow(false);
     seteditvalue(null);
-    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata:{smartComponent:undefined,linkedComponent:undefined}, EditTaskpopupstatus: false });
+    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata:{smartComponent:undefined,linkedComponent:undefined}, EditTaskpopupstatus: false ,DocumentType:""});
 
   }
   const handleClosedoc = () => {
@@ -143,7 +143,7 @@ const SmartInformation = (props: any) => {
 
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
-          .items.select("Id,Title,Priority_x0020_Rank,Year,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .items.select("Id,Title,Priority_x0020_Rank,Year,SharewebTask/Id,SharewebTask/Title,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
           .expand("Author,Editor").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
           .get()
           .then((result: any[]) => {
@@ -424,7 +424,9 @@ const SmartInformation = (props: any) => {
     console.log(DeletItemId);
     const web = new Web(props?.AllListId?.siteUrl);
     // await web.lists.getByTitle("SmartInformation")
-    await web.lists.getById(props?.AllListId?.DocumentsListID)
+    var  text:any= "are you sure want to Delete";
+    if (confirm(text) == true) {
+      await web.lists.getById(props?.AllListId?.DocumentsListID)
       .items.getById(DeletItemId).recycle()
       .then((res: any) => {
         console.log(res);
@@ -435,6 +437,9 @@ const SmartInformation = (props: any) => {
       .catch((err) => {
         console.log(err.message);
       });
+    }
+ 
+   
   };
 
   //======== add document when i click to add document in profile page =========.
@@ -542,13 +547,15 @@ const SmartInformation = (props: any) => {
         console.log(res);
         setShow(false);
 
-        //===== update  the smartinformation in the file========= .
+        //========update  the smartinformation in the file inside Documents list ============ .
 
+        console.log(taskInfo);
         const web = new Web(props?.AllListId?.siteUrl);
         const updatedItem = await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.getById(res.Id).update({
             SmartInformationId: { "results": [(smartDocumentpostData?.Id)] },
             Title: fileName.split(".")[0],
+            // SharewebTaskId:
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
               'Description': allValue?.LinkUrl != "" ? allValue?.LinkUrl : "",
@@ -608,17 +615,16 @@ const SmartInformation = (props: any) => {
     if (items == "Component") {
       setservicespopup(false);
       setcomponentpopup(true);
+      setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservicesetdata,linkedComponent:undefined}})
     }
     if (items == "Service") {
       setservicespopup(true);
       setcomponentpopup(false);
+      setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservicesetdata,smartComponent:undefined}}) 
     }
   }
 
-  //=============== open componet and service popup on edit documents=================
-  //  const opencompnentSERVICEPOPUP=()=>{
-  //   setisopencomonentservicepopup(true);
-  //  }
+ 
 
   //=======Edit Task details function .==========
   const edittaskpopup = (editTaskData: any) => {
@@ -679,18 +685,54 @@ const SmartInformation = (props: any) => {
 
     }
   }
+
+  //========service and component call back function =================
+
   const ServiceComponentCallBack = React.useCallback((items: any) => {
-    // setallSetValue({ ...allValue, linkedComponent: items })
-    console.log(items)
+       console.log(items)
     if(items.smartComponent!=undefined){
       setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservicesetdata,smartComponent:items?.smartComponent[0]}}) 
     }
     if(items.linkedComponent!=undefined){
 setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservicesetdata,linkedComponent:items?.linkedComponent[0]}})
     }
-    
     setisopencomonentservicepopup(false);
   }, [])
+
+
+  const updateDocumentsData=async()=>{
+    console.log(EditdocumentsData);
+    console.log(allValue.Title);
+    
+    console.log(allValue.DocumentType);
+    console.log(allValue.componentservicesetdata);
+    console.log(allValue.ItemRank);
+    // await sp.web.getFileByServerRelativeUrl(`${EditdocumentsData.FileDirRef}`).getItem()
+    // .then(async (res: any) => {
+    //   console.log(res);
+    //   setShow(false);
+    
+    const web = new Web(props?.AllListId?.siteUrl);
+    const updatedItem = await web.lists.getById(props?.AllListId?.DocumentsListID)
+      .items.getById(EditdocumentsData.Id).update({
+        Title: EditdocumentsData.Title,
+        ItemRank:EditdocumentsData.ItemRank,
+        Year:EditdocumentsData.Year,
+        ItemType:EditdocumentsData.ItemType,
+        Url: {
+          "__metadata": { type: 'SP.FieldUrlValue' },
+          'Description': EditdocumentsData?.Url != "" ? EditdocumentsData?.Url : "",
+          'Url': EditdocumentsData?.Url ? EditdocumentsData?.Url: "",
+        }
+        // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
+      });
+    console.log(updatedItem)
+    alert("Document(s) update successfully");
+    handleClose();
+    setallSetValue({ ...allValue, EditTaskpopupstatus: false})
+    GetResult();
+  // })
+  }
 
   return (
     <div>
@@ -990,14 +1032,11 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
           <div className="tab-pane fade show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="home-tab">
             <div className='d-flex mt-3'>
               <div className="input-group"><label className="form-label full-width ">Name </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.Title} />.{EditdocumentsData?.File_x0020_Type}
-                {/* <span className="input-group-text" title="Linked Component Task Popup">
-      <span className="svg__iconbox svg__icon--editBox"></span>
-      </span> */}
+                <input type="text" className="form-control" value={EditdocumentsData?.Title}  onChange={(e=>setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))}/>.{EditdocumentsData?.File_x0020_Type}
               </div>
 
               <div className="input-group mx-4"><label className="form-label full-width ">Year </label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e)=>setEditdocumentsData({...EditdocumentsData,Year:e.target.value})}/>
                 <span className="input-group-text" title="Linked Component Task Popup">
                   <span className="svg__iconbox svg__icon--editBox"></span>
                 </span>
@@ -1005,7 +1044,7 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
 
               <div className="input-group">
                 <label className="form-label full-width">Item Rank</label>
-                <select className="form-select" defaultValue={allValue?.ItemRank} onChange={(e) => setallSetValue({ ...allValue, ItemRank: e.target.value })}>
+                <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
                   {ItemRank.map(function (h: any, i: any) {
                     return (
                       <option key={i} selected={allValue?.ItemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
@@ -1016,7 +1055,7 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
             </div>
             <div className='d-flex mt-3'>
               <div className="input-group"><label className="form-label full-width ">Title </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.Title} />
+                <input type="text" className="form-control" value={EditdocumentsData?.Title}  onChange={(e=>setallSetValue({ ...allValue, Title: e.target.value }))} />
               </div>
               <div className="input-group mx-4">
                 <label className="form-label full-width">
@@ -1032,7 +1071,7 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
                 </span>
               </div>
               <div className="input-group"><label className="form-label full-width ">Document Type </label>
-                <input type="text" className="form-control" />
+                <input type="text" className="form-control"value={EditdocumentsData?.ItemType} onChange={(e)=>{setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value })}}/>
                 <span className="input-group-text" title="Linked Component Task Popup">
                   <span className="svg__iconbox svg__icon--editBox"></span>
                 </span>
@@ -1055,7 +1094,7 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
             <div className='col-sm-6 mt-2 p-0'>
               <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Documents/Forms/EditForm.aspx?ID=${EditdocumentsData?.Id != null ? EditdocumentsData?.Id : null}`}>Open out-of-the-box form |</a></span>
 
-              <Button className='btn btn-primary ms-1  mx-2'>
+              <Button className='btn btn-primary ms-1  mx-2' onClick={updateDocumentsData}>
                 Save
               </Button>
               <Button className='btn btn-default' onClick={() => handleClosedoc()}>
@@ -1070,7 +1109,9 @@ setallSetValue({ ...allValue,componentservicesetdata:{...allValue.componentservi
       {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>}
 
     </div>
-   )
+
+
+  )
 }
 export default SmartInformation;
 

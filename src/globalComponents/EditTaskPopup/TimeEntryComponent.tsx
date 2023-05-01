@@ -625,15 +625,15 @@ function TimeEntryPopup(item: any) {
         TaskCate = AllTimeSpentDetails
 
 
-        $.each(AllTimeSpentDetails, function (index: any, items: any) {
+      AllTimeSpentDetails.forEach((items: any)=> {
             if (items.TimesheetTitle.Id === undefined) {
                 items.Expanded = true;
                 items.isAvailableToDelete = false;
-                $.each(AllTimeSpentDetails, function (index: any, val: any) {
+                AllTimeSpentDetails.forEach((val: any)=> {
                     if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
                         val.isShifted = true;
                         val.show = true;
-                        $.each(val.AdditionalTime, function (index: any, value: any) {
+                        val.AdditionalTime.forEach((value: any)=> {
                             value.ParentID = val.Id;
                             value.siteListName = val.__metadata.type;
                             value.MainParentId = items.Id;
@@ -681,6 +681,7 @@ function TimeEntryPopup(item: any) {
         });
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.AdditionalTime.length > 0) {
+                items.AdditionalTime= items.AdditionalTime.reverse()
                 $.each(items.AdditionalTime, function (index: any, val: any) {
                     var NewDate = val.TaskDate;
                     try {
@@ -702,104 +703,105 @@ function TimeEntryPopup(item: any) {
             }
         });
 
-        var AdditionalTimes: any = []
+      
 
-        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
+        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
 
-            if (items.Childs != undefined && items.Childs.length > 0) {
-                $.each(items.Childs, function (index: any, child: any) {
-                    if (child.TimesheetTitle.Id != undefined) {
-                        if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
-                            $.each(child.AdditionalTime, function (index: any, Subchild: any) {
-                                if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
+        //     if (items.Childs != undefined && items.Childs.length > 0) {
+        //         $.each(items.Childs, function (index: any, child: any) {
+        //             if (child.TimesheetTitle.Id != undefined) {
+        //                 if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
+        //                     $.each(child.AdditionalTime, function (index: any, Subchild: any) {
+        //                         if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
 
-                                    AdditionalTimes.push(Subchild)
-                                    //  AdditionalTimes.sort(datecomp);
-                                    console.log(AdditionalTimes)
-
-
-                                }
+        //                             AdditionalTimes.push(Subchild)
+        //                             //  AdditionalTimes.sort(datecomp);
+        //                             console.log(AdditionalTimes)
 
 
-                            })
+        //                         }
 
 
-                        }
-                    }
-
-                })
-
-            }
+        //                     })
 
 
+        //                 }
+        //             }
+
+        //         })
+
+        //     }
 
 
-            //AdditionalTimes= AdditionalTimes.reverse()
-
-        });
-        console.log(AdditionalTimes)
-        setAdditionalTime(AdditionalTimes)
-        var mainArray: any = []
-        var sortedCars: any = []
-        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
-
-            if (temp.Childs != undefined && temp.Childs.length > 0) {
-                $.each(temp.Childs, function (index: any, child: any) {
-                    child.AdditionalTimes = []
-                    if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
-                        $.each(child.AdditionalTime, function (index: any, ch: any) {
-                            mainArray.push(ch)
-                        })
-                        sortedCars = mainArray.sort(datecomp);
-
-                    }
-
-                })
-
-            }
-
-        })
-        const finalData = sortedCars.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
-
-            if (temp.Childs != undefined && temp.Childs.length > 0) {
-
-                $.each(temp.Childs, function (index: any, child: any) {
-                    child.AdditionalTime = []
-                    $.each(finalData, function (index: any, ch: any) {
-                        if (child.Id == ch.MainParentId) {
-                            child.AdditionalTimes.push(ch)
-                        }
-                    })
 
 
-                })
+        //     //AdditionalTimes= AdditionalTimes.reverse()
 
-            }
+        // });
+        console.log(TaskTimeSheetCategoriesGrouping)
+       // setAdditionalTime(AdditionalTimes)
+        setTimeSheet(TaskTimeSheetCategoriesGrouping)
+        // var mainArray: any = []
+        // var sortedCars: any = []
+        // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-        })
-        TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
+        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
+        //         $.each(temp.Childs, function (index: any, child: any) {
+        //             child.AdditionalTimes = []
+        //             if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
+        //                 $.each(child.AdditionalTime, function (index: any, ch: any) {
+        //                     mainArray.push(ch)
+        //                 })
+        //                 sortedCars = mainArray.sort(datecomp);
 
-            if (temp.Childs != undefined && temp.Childs.length > 0) {
+        //             }
 
-                $.each(temp.Childs, function (index: any, child: any) {
-                    $.each(child.AdditionalTimes, function (index: any, ch: any) {
+        //         })
 
-                        child.AdditionalTime.push(ch)
+        //     }
 
-                    })
+        // })
+        // const finalData = sortedCars.filter((val: any, id: any, array: any) => {
+        //     return array.indexOf(val) == id;
+        // })
+        // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
+
+        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
+
+        //         $.each(temp.Childs, function (index: any, child: any) {
+        //             child.AdditionalTime = []
+        //             $.each(finalData, function (index: any, ch: any) {
+        //                 if (child.Id == ch.MainParentId) {
+        //                     child.AdditionalTimes.push(ch)
+        //                 }
+        //             })
 
 
-                })
+        //         })
 
-            }
+        //     }
 
-        })
-        console.log(finalData)
-        console.log(mainArray)
-        setTimeSheet(TaskTimeSheetCategoriesGrouping);
+        // })
+        // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
+
+        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
+
+        //         $.each(temp.Childs, function (index: any, child: any) {
+        //             $.each(child.AdditionalTimes, function (index: any, ch: any) {
+
+        //                 child.AdditionalTime.push(ch)
+
+        //             })
+
+
+        //         })
+
+        //     }
+
+        // })
+        // console.log(finalData)
+        // console.log(mainArray)
+        // setTimeSheet(TaskTimeSheetCategoriesGrouping);
 
         if (TaskStatuspopup == true) {
 
@@ -822,19 +824,19 @@ function TimeEntryPopup(item: any) {
         item.CallBackTimeEntry();
 
     }
-    function datecomp(d1: any, d2: any) {
-        var a1 = d1.TaskDate.split("/");
-        var a2 = d2.TaskDate.split("/");
-        // a1 = a1[2] + a1[0] + a1[1];
-        // a2 = a2[2] + a2[0] + a2[1];
-        a1 = a1[1] + a1[0] + a1[2];
-        a2 = a2[1] + a2[0] + a2[2];
-        //var a1:any= new Date(d1.TaskDate)
-        //var a2:any= new Date(d2.TaskDate)
-        //var b1:any = Moment(a1).format()
-        //var b2:any = Moment(a1).format()
-        return a2 - a1;
-    }
+    // function datecomp(d1: any, d2: any) {
+    //     var a1 = d1.TaskDate.split("/");
+    //     var a2 = d2.TaskDate.split("/");
+    //     // a1 = a1[2] + a1[0] + a1[1];
+    //     // a2 = a2[2] + a2[0] + a2[1];
+    //     a1 = a1[1] + a1[0] + a1[2];
+    //     a2 = a2[1] + a2[0] + a2[2];
+    //     //var a1:any= new Date(d1.TaskDate)
+    //     //var a2:any= new Date(d2.TaskDate)
+    //     //var b1:any = Moment(a1).format()
+    //     //var b2:any = Moment(a1).format()
+    //     return a2 - a1;
+    // }
 
 
     function getDateForTimeEntry(newDate: any, items: any) {
@@ -959,7 +961,7 @@ function TimeEntryPopup(item: any) {
         }
         else {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-                // { 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('11d52f95-4231-4852-afde-884d548c7f1b')/items?$select=" + select + "" }  
+               
             ]
         }
         $.each(allurls, async function (index: any, item: any) {
@@ -1020,7 +1022,7 @@ function TimeEntryPopup(item: any) {
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
                                 var UpdatedData: any = {}
-                                $.each(AllUsers, function (index: any, taskUser: any) {
+                                AllUsers.forEach((taskUser: any)=> {
                                     if (taskUser.AssingedToUserId == CurntUserId) {
                                         UpdatedData['AuthorName'] = taskUser.Title;
                                         UpdatedData['Company'] = taskUser.Company;
@@ -1028,7 +1030,10 @@ function TimeEntryPopup(item: any) {
                                     }
 
                                 });
-                                var Datee = new Date(changeDates)
+                                var Datee:any = new Date(changeDates)
+                                if(Datee == 'Invalid Date'){
+                                    Datee = Moment().format()
+                                }
                                 var TimeInH: any = TimeInMinutes / 60
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
@@ -1503,6 +1508,7 @@ function TimeEntryPopup(item: any) {
                 console.log(res);
 
                 closeAddTaskTimepopup();
+               
                 setupdateData(updateData + 1)
                 //setAdditionalTime({ ...AdditionalTime })
 
@@ -1527,8 +1533,15 @@ function TimeEntryPopup(item: any) {
         await web.lists.getById(ListId).items.getById(val.Id).delete()
             .then(i => {
                 console.log(i);
+
             });
-            setupdateData(updateData + 3)
+             TaskCate.forEach((item:any,index:any)=>{
+                    if(item.Id == val.Id){
+                        TaskCate.splice(index,1) 
+                    }
+                })
+                setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+                setupdateData(updateData + 1)
         
     }
 
