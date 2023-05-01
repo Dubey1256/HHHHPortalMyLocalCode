@@ -196,6 +196,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 DocumentName: resListItem.FileLeafRef,
+                ID: resListItem.Id,
                 DocumentLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
@@ -208,15 +209,16 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="FOLDERS") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 FolderName: resListItem.FileLeafRef,
+                ID: resListItem.Id,
                 FolderLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
@@ -229,9 +231,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -240,6 +242,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 ComponentId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -254,9 +257,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
+                listId: curListId,
                 SiteType: curSiteType,
-                SiteURL: curSiteURL
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="SERVICES") {
@@ -265,6 +268,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 ServiceId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -280,8 +284,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 },
                 Id: resListItem.Id,
                 ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="ALL") {
@@ -310,6 +314,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 if(_resListItems.length) {
                     resListItems = _resListItems.map(resListItem => ({
                         TaskId: `T${resListItem.Id}`,
+                        ID: resListItem.Id,
                         TaskName: resListItem.Title,
                         PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
                             (resListItem.Services && resListItem.Services.length>0 ? "Service" :
@@ -335,9 +340,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         },
                         
                         Id: resListItem.Id,
-                        ListId: curListId,
+                        listId: curListId,
                         SiteType: curSiteType,
-                        SiteURL: curSiteURL,
+                        siteUrl: curSiteURL,
                         SiteIcon : tabItem.ImageUrl
                     }));
                     listLastModifiedItems.push(...resListItems);                    

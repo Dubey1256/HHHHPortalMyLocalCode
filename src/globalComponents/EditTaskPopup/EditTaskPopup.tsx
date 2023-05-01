@@ -169,22 +169,20 @@ const EditTaskPopup = (Items: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
 
-    var siteUrls: any;
-    if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
-        if (Items.Items.siteType != undefined) {
-            siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
-        } else {
-            siteUrls = AllListIdData.siteUrl;
-        }
+  var siteUrls: any;
+  if (
+    Items != undefined &&
+    Items.Items.siteUrl != undefined &&
+    Items.Items.siteUrl.length < 20
+  ) {
+    if (Items.Items.siteType != undefined) {
+      siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`;
     } else {
-        siteUrls = Items.Items.siteUrl
+      siteUrls = AllListIdData.siteUrl;
     }
-<<<<<<< HEAD
   } else {
-    siteUrls = AllListIdData.siteUrl;
+    siteUrls = Items.Items.siteUrl;
   }
-=======
->>>>>>> b2afe14ceed5b14123eee739bfc49a74fc4128c9
 
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
