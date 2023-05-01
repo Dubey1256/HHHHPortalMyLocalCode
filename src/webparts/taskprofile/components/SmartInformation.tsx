@@ -291,7 +291,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     return (
       <>
 
-        <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className={servicespopup?'ps-4 serviepannelgreena':'ps-4'} style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
         <Tooltip ComponentId='993' />
@@ -759,7 +759,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
 
   const ServiceComponentCallBack = React.useCallback((items: any) => {
     console.log(items)
-    setallSetValue({...allValue,componentservicesetdataTag:items?.smartComponent[0] })
+    if(items?.smartComponent!=undefined){
+      setallSetValue({...allValue,componentservicesetdataTag:items?.smartComponent[0] })
+    }
+    if(items?.linkedComponent){
+setallSetValue({...allValue,componentservicesetdataTag:items?.linkedComponent[0] })
+    }
+    
     // if (items.smartComponent != undefined) {
     //   setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: items?.smartComponent[0] } })
     // }
@@ -792,11 +798,11 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         ItemRank: EditdocumentsData.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-        SharewebTaskId: { "results": [componetServicetagData != undefined ? componetServicetagData : null] },
+        SharewebTaskId: { "results": [allValue.componentservicesetdataTag != undefined ? allValue.componentservicesetdataTag .Id : null] },
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Url.Url != "" ? EditdocumentsData?.Url.Url : "",
-          'Url': EditdocumentsData?.Url.Url ? EditdocumentsData?.Url.Url : "",
+          'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+          'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
         }
         // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
       }).then((updatedItem: any) => {
@@ -1101,7 +1107,8 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={!isopencomonentservicepopup}
-      >
+     className={servicespopup==true?"serviepannelgreena":""}
+     >
 
         <ul className="nav nav-tabs" id="myTab" role="tablist">
           <li className="nav-item" role="presentation">
