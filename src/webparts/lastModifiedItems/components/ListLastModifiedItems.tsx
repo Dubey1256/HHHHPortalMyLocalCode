@@ -94,17 +94,30 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     }
 
     private _onRenderTeamMembers(item: any, index: number, column: IColumn) {
-
+       
+        if( item.TeamUsers == undefined){
+            item.TeamUsers = {ResponsibleTeam : [],AssignedUsers : [], TeamMembers : []};
+           
+         }
+         if(item.TeamUsers.ResponsibleTeam == undefined){
+            item.TeamUsers.ResponsibleTeam = [];
+         }
         let respTeam = item.TeamUsers.ResponsibleTeam;
+       
         let teamMembers: any[] = [];
-        let combinedTeamMembers = [...item.TeamUsers.AssignedUsers, ...item.TeamUsers.TeamMembers];
-
-        combinedTeamMembers.forEach(cTeamMember => {
-            let collUniqueTeamMemberId = teamMembers.map((tMember: { UserId: number; })=>tMember.UserId);
-            if(collUniqueTeamMemberId.indexOf(cTeamMember.UserId)==-1) {
-                teamMembers.push(cTeamMember); 
+     
+              let combinedTeamMembers = [...item.TeamUsers.AssignedUsers, ...item.TeamUsers.TeamMembers];
+            if(combinedTeamMembers.length==undefined){
+                combinedTeamMembers = [] ;
             }
-        });
+            combinedTeamMembers.forEach((cTeamMember: { UserId: number; }) => {
+                let collUniqueTeamMemberId = teamMembers.map((tMember: { UserId: number; })=>tMember.UserId);
+                if(collUniqueTeamMemberId.indexOf(cTeamMember.UserId)==-1) {
+                    teamMembers.push(cTeamMember); 
+                }
+            });
+        
+        
 
         if(respTeam.length==0 && teamMembers.length==0) return;
 
@@ -184,13 +197,13 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         
         return (
             <Stack horizontal tokens={stackTokens}>
-                <Stack.Item><div><img style={{width:'25px', height:'25px'}} src={`https://hhhhteams.sharepoint.com/sites/HHHH${taskSiteIcon}`} /></div></Stack.Item>
+                <Stack.Item><div><img style={{width:'25px', height:'25px'}} src={`${taskSiteIcon}`} /></div></Stack.Item>
                 <Stack.Item>{item.Services.length > 0 ? <div style={{fontSize: "12px", fontWeight: 400, color:'green'}}>{taskid}</div> : <div style={{fontSize: "12px", fontWeight: 400}}>{taskid}</div> }</Stack.Item>
             </Stack>
         );
     }
 
-    private _onRenderCreated(item: any, index: number, column: IColumn) {
+    private _onRenderCreated(item: any) {
         const createdInfo = item.Created;
         const createdDate = createdInfo.Date;
         if(item.Services == undefined){
@@ -229,11 +242,11 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
         return (
             <div>
-                <Link href="#"><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} 
-                 onClick={()=>this.editTaskPRofile(item)}   /></Link>
-                <Link href="#"><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} onClick={
+                <Link href="#"> <span className="svg__iconbox svg__icon--edit"
+                 onClick={()=>this.editTaskPRofile(item)}   ></span></Link>
+                <Link href="#"><span className="svg__iconbox svg__icon--trash" onClick={
                     ()=>this.props.OnDelete(item.Id)
-                } /></Link>
+                } ></span></Link>
             </div>
         );
     }
@@ -290,7 +303,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
      }
 
 
-    private _onRenderDocument(item: any, index: number, column: IColumn) {
+    private _onRenderDocument(item: any) {
         const DocumentName = item.DocumentName;
         
         let getExt ='docx' ;
@@ -426,6 +439,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
+              
             }
             else if(this.props.TabName=="FOLDERS") {
                 _columns.push({key: "FolderName", name: "Folder Name", fieldName: "FolderName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,
@@ -747,6 +761,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                         isHeaderVisible = {true}
                         selectionMode = {SelectionMode.none} 
                     />
+                  
                 { elemContextualMenu } 
                {this.state.editpopup && <EditTaskPopup  Items={this.state.Result} context={this.props.context} AllListId={this.props.AllListId} Call={() => { this.CallBack() }} /> }       
             </div>

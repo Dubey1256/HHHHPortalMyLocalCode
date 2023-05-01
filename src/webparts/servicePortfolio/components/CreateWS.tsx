@@ -687,13 +687,13 @@ const CreateWS = (props: any) => {
         if (item == 'Today') {
             setMyDate({ ...myDate, editDate: dates, selectDateName: item });
         }
-        if (item == 'Tomorrow') {
+         if (item == 'Tomorrow') {
             setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
         }
-        if (item == 'This Week') {
+         if (item == 'This Week') {
             setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
-        if (item == 'This Month') {
+         if (item == 'This Month') {
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
             setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
         }
@@ -705,7 +705,7 @@ const CreateWS = (props: any) => {
             setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
         }
     })
-    
+
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
@@ -857,7 +857,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={(AllItems?.Portfolio_x0020_Type == 'Service')||(AllItems.Services!=undefined&& AllItems.Services.length>0) ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
@@ -1032,7 +1032,7 @@ const CreateWS = (props: any) => {
                                 // value={myDate != null ? Moment(new Date(myDate)).format('YYYY-MM-DD') : ''}
                                 // onChange={(e) => setMyDate(`${e.target.value}`)}
                                 // dateFormat="dd/MM/yyyy"
-                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ''}
+                                value={myDate.editDate != null ? Moment(new Date(myDate.editDate)).format('YYYY-MM-DD') : ""}
                                 onChange={(e: any) => setMyDate({ ...myDate, editDate: e.target.value })} />
 
                             <div className="">
