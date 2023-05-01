@@ -137,6 +137,7 @@ function ComponentTable(SelectedProp: any) {
     const refreshData = () => setData(() => array);
     const rerender = React.useReducer(() => ({}), {})[1]
     const [loaded, setLoaded] = React.useState(true);
+    const [color, setColor] = React.useState(false);
 
 
 
@@ -3997,6 +3998,9 @@ function ComponentTable(SelectedProp: any) {
         }
     }, [table.getState().columnFilters]);
 
+   const ChangeColor = ()=>{
+    // setColor(true)
+   }
 
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
