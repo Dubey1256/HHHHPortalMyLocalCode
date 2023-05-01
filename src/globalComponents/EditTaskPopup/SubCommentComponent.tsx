@@ -234,7 +234,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         <textarea
                                             style={{ width: "100%" }}
                                             className="form-control SubTestLeftBorder "
-                                            defaultValue={obj.Title.replace(/<[^>]*>/g, ' ')}
+                                            defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                             name='Title'
                                         ></textarea>
                                     </div>

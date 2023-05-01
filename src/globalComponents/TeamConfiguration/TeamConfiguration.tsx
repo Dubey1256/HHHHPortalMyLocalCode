@@ -51,13 +51,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         if (this.props.ItemInfo.siteUrl != undefined) {
             web = new Web(this.props.ItemInfo.siteUrl);
         } else {
-            web = new Web(this.props.AllListId.siteUrl);
+            web = new Web(this.props.AllListId?.siteUrl);
         }
         let results: any = [];
 
         let taskUsers: any = [];
         results = await web.lists
-            .getById(this.props.AllListId.TaskUsertListID)
+            .getById(this.props.AllListId?.TaskUsertListID)
             .items
             .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
             .filter('IsActive eq 1')
@@ -415,19 +415,21 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 <label className="BdrBtm">
                                                     {user.Title}
                                                 </label>
-                                                <div className='d-flex'>
+                                                <div className='d-flex User'>
                                                     {user.childs.map((item: any, i: number) => {
                                                         return <div className="marginR41 ng-scope">
-                                                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+
+                                                            {item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null  ?
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
                                                                         style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
-                                                                        title={item.AssingedToUser.Title}
+                                                                        title={item.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
                                                                         onDragOver={(e) => e.preventDefault()} />
-                                                                </span>
+                                                                </span>:
+                                                               <span  title={item.Title} className="svg__iconbox svg__icon--defaultUser"></span>
                                                             }
                                                         </div>
                                                     })}
@@ -512,7 +514,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src={this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service'?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"}  />
+                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service')||(this.props?.ItemInfo?.Services!=undefined&&this.props?.ItemInfo?.Services.length>0)?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"}  />
                                         </div>
                                     </div>
                                 </div>

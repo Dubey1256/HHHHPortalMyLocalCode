@@ -1940,12 +1940,12 @@ function TasksTable(props: any) {
                     </footer>
                 </Panel>
             }
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}AllListId={props.AllListId}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}AllListId={props.AllListId}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard   CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
             }
         </div>
