@@ -12,14 +12,14 @@ function escapeRegExp(string: string): string {
 
 export default function HighlightableCell({ value, searchTerm }:any) {
   if (!searchTerm) {
-    return <div>{value}</div>;
+    return <span>{value}</span>;
   }
 
   const searchRegex = new RegExp(`(${escapeRegExp(searchTerm)})`, "ig");
-  const highlightedText = value.replace(
+  const highlightedText = value?.replace(
     searchRegex,
     '<span class="cell-search-highlight" style="background:yellow;">$1</span>'
   );
 
-  return <div dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+  return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
 }
