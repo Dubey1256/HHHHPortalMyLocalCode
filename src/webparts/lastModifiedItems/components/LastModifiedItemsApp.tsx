@@ -32,9 +32,9 @@ const iconStyles = {root:{
     margin: '0 25px',
     color: 'deepskyblue'
 }};
-
+let resSmartMetadata :any ;
 export default class LastModifiedItemsApp extends React.Component<ILastModifiedItemsAppProps, ILastModifiedItemsAppState> {
-
+   
     private spService: spservices = null;
     
     constructor(props: ILastModifiedItemsAppProps) {
@@ -74,45 +74,100 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         this._onFilterItems = this._onFilterItems.bind(this);
 
     }
-
-    componentDidMount(): void {
+   
+    async componentDidMount(): Promise<void> {
+         resSmartMetadata = await this.spService.getSmartMetadata(this.props.SmartMetadataListID, ['Sites']);
+        console.log(resSmartMetadata);
         this.loadConfigurations();
     }
 
     private async loadConfigurations() {
+      
      AllListId={
         TaskUsertListID:this.props.taskUsersListId,
         SmartMetadataListID: this.props.SmartMetadataListID,
         SmartInformationListID:this.props.SmartInformationListID,
         DocumentsListID:this.props.DocumentsListID,
+        MasterTaskListID:this.props.MasterTaskListID,
         TaskTimeSheetListID:this.props.TaskTimeSheetListID,
-        TimeEntry:this.props.TimeEntry,
-        SiteCompostion:this.props.SiteCompostion,
+        isShowTimeEntry:this.props.TimeEntry == "true"?true:false,
+        isShowSiteCompostion:this.props.SiteCompostion == "true"?true:false,
+        siteUrl:this.props.siteUrl,
      }
-        const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
+       // const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
+        
         const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
         const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser&&taskUser.Item_x0020_Cover).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
             ImageUrl: taskUser.Item_x0020_Cover.Url
         }));
-        let configItems = [];
+        let configItems: {
+            SortOrder: string;
+            siteUrl: any;
+            ImageUrl: string;
+            listId: string;Configurations: any; Title: string; 
+}[] = [];
         let navItems: any[] = [];
         let selNavItem = {...this.state.selNavItem};
-        if(configItemsRes.length) {
-            configItems = JSON.parse(configItemsRes[0].Configuration);
-            navItems = configItems.map( (configItem: { TabName: string; }) => ({
-                text: configItem.TabName,
-                key: configItem.TabName
+        if(resSmartMetadata.length) {
+         resSmartMetadata.map((items:any)=>{
+            if(items.Title!=='DRR' && items.Title!=="Foundation" && items.Title!=='Small Projects' && items.Title!=='Offshore Tasks' && items.Title!=='Master Tasks' && items.Title!=='SDC Sites')
+            configItems.push(...JSON.parse(items.Configurations));
+            });
+            configItems.push(
+                {
+                Title: 'DOCUMENTS',
+                SortOrder: "",
+                siteUrl:  {Url:this.props.siteUrl},
+                ImageUrl: "",
+                listId: this.props.DocumentsListID,
+                Configurations: undefined
+            },
+            {
+                Title: 'FOLDERS',
+                SortOrder: "",
+                siteUrl: {Url:this.props.siteUrl},
+                ImageUrl: "",
+                listId: this.props.DocumentsListID,
+                Configurations: undefined
+            },
+            {
+                Title: 'COMPONENTS',
+                SortOrder: "",
+                siteUrl: {Url:this.props.siteUrl},
+                ImageUrl: "",
+                listId: this.props.MasterTaskListID,
+                Configurations: undefined
+            },
+            {
+                Title: 'SERVICES',
+                SortOrder: "",
+                siteUrl:  {Url:this.props.siteUrl},
+                ImageUrl: "",
+                listId: this.props.MasterTaskListID,
+                Configurations: undefined
+            },
+            {
+                Title: 'ALL',
+                SortOrder: "",
+                siteUrl: {Url:this.props.siteUrl},
+                ImageUrl: "",
+                listId: this.props.MasterTaskListID,
+                Configurations: undefined
+            },)
+            navItems = configItems.map( (configItem: { Title: string; }) => ({
+                    text: configItem.Title,
+                    key: configItem.Title
             }));
             let defaultSelNavItem = configItems[0];
-            selNavItem.columns = defaultSelNavItem.Columns;
-            selNavItem.displaySiteName = defaultSelNavItem.DisplaySiteName;
-            selNavItem.listId = defaultSelNavItem.ListId;
-            selNavItem.site = defaultSelNavItem.Site;
-            selNavItem.siteIcon = defaultSelNavItem.SiteIcon;
-            selNavItem.siteUrl = defaultSelNavItem.SiteUrl;
+            selNavItem.columns = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,RelevantTasks/Id,RelevantTasks/Title&$expand=RelevantTasks,ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,AttachmentFiles,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$orderby=Modified desc&$top=200";
+            selNavItem.displaySiteName = defaultSelNavItem.Title;
+            selNavItem.listId = defaultSelNavItem.listId;
+            selNavItem.site = defaultSelNavItem.Title;
+            selNavItem.siteIcon = defaultSelNavItem.Title == "Migration" ?   "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png"    : defaultSelNavItem.ImageUrl;
+            selNavItem.siteUrl = defaultSelNavItem.siteUrl.Url;
             selNavItem.sortOrder = defaultSelNavItem.SortOrder;
-            selNavItem.tabName = defaultSelNavItem.TabName;
+            selNavItem.tabName = defaultSelNavItem.Title;
             selNavItem.title = defaultSelNavItem.Title;
         }
         this.setState({
@@ -141,6 +196,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 DocumentName: resListItem.FileLeafRef,
+                ID: resListItem.Id,
                 DocumentLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
@@ -153,15 +209,16 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="FOLDERS") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 FolderName: resListItem.FileLeafRef,
+                ID: resListItem.Id,
                 FolderLink: resListItem.EncodedAbsUrl,
                 Modified: {
                     Date: this.formatDate(resListItem.Modified),
@@ -174,9 +231,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="COMPONENTS") {
@@ -185,6 +242,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 ComponentId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -199,9 +257,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
+                listId: curListId,
                 SiteType: curSiteType,
-                SiteURL: curSiteURL
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="SERVICES") {
@@ -210,6 +268,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 ServiceId: resListItem.PortfolioStructureID,
                 Title: resListItem.Title,
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 DueDate: resListItem.DueDate,
                 PercentComplete: resListItem.PercentComplete ? parseFloat(resListItem.PercentComplete)*100 : 0,
                 Priority: resListItem.Priority_x0020_Rank ? parseInt(resListItem.Priority_x0020_Rank) : 0,
@@ -225,8 +284,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 },
                 Id: resListItem.Id,
                 ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL
+                siteType: curSiteType,
+                siteUrl: curSiteURL
             }));
         }
         else if(selTabName=="ALL") {
@@ -236,16 +295,26 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             let _resListItems = [];
             let allTabItems = navItems.filter(navItem=>(excludedTabItems.indexOf(navItem.Title)==-1));
             allTabItems.forEach(async (tabItem, tabIndex) =>{
-                curListId = tabItem.ListId;
-                curSiteType = tabItem.Site;
-                curSiteURL = tabItem.SiteUrl
-                queryStrings = (tabItem.Columns && tabItem.Columns.split("&$")) || [];
+                curListId = tabItem.listId;
+                curSiteType = tabItem.siteName;
+                curSiteURL = tabItem.siteUrl
+                if(tabItem.Title==='SERVICES'){
+                    curNavItem.columns = "PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Portfolio_x0020_Type eq 'Service'&$orderby=Modified desc&$top=200"
+                }
+                else if(tabItem.Title==='COMPONENTS'){
+                    curNavItem.columns = "PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Portfolio_x0020_Type eq 'Component'&$orderby=Modified desc&$top=200"
+                }
+                else{
+                    curNavItem.columns = "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,RelevantTasks/Id,RelevantTasks/Title&$expand=RelevantTasks,ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,AttachmentFiles,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$orderby=Modified desc&$top=200"
+                }
+                queryStrings = (curNavItem.columns && curNavItem.columns.split("&$")) || [];
                 let qStrings = this.getQueryStrings(queryStrings);
                 qStrings.Top = 100;
                 _resListItems = await this.getListItems(curListId, qStrings);
                 if(_resListItems.length) {
                     resListItems = _resListItems.map(resListItem => ({
                         TaskId: `T${resListItem.Id}`,
+                        ID: resListItem.Id,
                         TaskName: resListItem.Title,
                         PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
                             (resListItem.Services && resListItem.Services.length>0 ? "Service" :
@@ -271,10 +340,10 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                         },
                         
                         Id: resListItem.Id,
-                        ListId: curListId,
+                        listId: curListId,
                         SiteType: curSiteType,
-                        SiteURL: curSiteURL,
-                        SiteIcon : tabItem.SiteIcon
+                        siteUrl: curSiteURL,
+                        SiteIcon : tabItem.ImageUrl
                     }));
                     listLastModifiedItems.push(...resListItems);                    
                 }
@@ -290,6 +359,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 TaskName: resListItem.Title,
                 PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
                     (resListItem.Services && resListItem.Services.length>0 ? "Service" :
@@ -314,9 +384,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL,
                 SiteIcon : curSiteIcon
             }));
         }        
@@ -455,16 +525,16 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     private onNavItemMenuClick(navItem: PivotItem) {
         let selTabName: string = navItem.props.itemKey;
         let selNavItem = {...this.state.selNavItem};
-        let currentNavItem = this.state.configItems.filter(configItem=>configItem.TabName==selTabName)[0];
+        let currentNavItem = this.state.configItems.filter(configItem=>configItem.Title==selTabName)[0];
         
-        selNavItem.columns = currentNavItem.Columns;
-        selNavItem.displaySiteName = currentNavItem.DisplaySiteName;
-        selNavItem.listId = currentNavItem.ListId;
-        selNavItem.site = currentNavItem.Site;
-        selNavItem.siteIcon = currentNavItem.SiteIcon;
-        selNavItem.siteUrl = currentNavItem.SiteUrl;
+        selNavItem.displaySiteName = currentNavItem.Title;
+        selNavItem.columns = currentNavItem.Title === 'DOCUMENTS'  ? 'Id,Title,FileLeafRef,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=Author,Editor&$filter=FSObjType eq 0&$orderby=Modified desc&$top=200'    : (currentNavItem.Title === 'FOLDERS' ? "Id,Title,FileLeafRef,File_x0020_Type,Modified,Created,EncodedAbsUrl,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=Author,Editor&$filter=FSObjType eq 1&$orderby=Modified desc&$top=200" : (currentNavItem.Title === 'COMPONENTS' ? "PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Portfolio_x0020_Type eq 'Component'&$orderby=Modified desc&$top=200"  : (currentNavItem.Title === 'SERVICES' ? "PortfolioStructureID,ComponentCategory/Id,ComponentCategory/Title,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=SharewebTaskType,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebComponent,SharewebCategories,Parent&$filter=Portfolio_x0020_Type eq 'Service'&$orderby=Modified desc&$top=200" : "ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,SiteCompositionSettings,SharewebTaskLevel1No,SharewebTaskLevel2No,TimeSpent,BasicImageInfo,OffshoreComments,OffshoreImageUrl,CompletedDate,Shareweb_x0020_ID,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,RelevantTasks/Id,RelevantTasks/Title&$expand=RelevantTasks,ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,AttachmentFiles,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$orderby=Modified desc&$top=200")))
+        selNavItem.listId = currentNavItem.listId;
+        selNavItem.site = currentNavItem.Title;
+        selNavItem.siteIcon = currentNavItem.Title == "Migration" ?   "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png"    : currentNavItem.ImageUrl;
+        selNavItem.siteUrl = currentNavItem.siteUrl.Url;
         selNavItem.sortOrder = currentNavItem.SortOrder;
-        selNavItem.tabName = currentNavItem.TabName;
+        selNavItem.tabName = currentNavItem.Title;
         selNavItem.title = currentNavItem.Title;
         this.setState({
             selNavItem: selNavItem
@@ -569,7 +639,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         const elemClearFilter = this.state.showResetFilters && <Icon iconName="ClearFilter" role="button" onClick={this._onResetFiltersClicked} styles={iconStyles} />
         
         const elemFilter = (
-            <div>
+            <div className="mt-3">
                 <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                     <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>
                 </div>
@@ -577,12 +647,12 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
                 </div>
                 {this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
-                 "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                 "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2 mt-2">
                  <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
              </div>         }
                 {
                     this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
-                  "":  <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                  "":  <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2 mt-2">
                     <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
                 </div>                       
                 }
@@ -593,7 +663,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             </div>
         );
 
-        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId}TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
+        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId} TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
         
         const elemDeleteRecord = (<Dialog
             hidden = {this.state.hideDeleteDialog}
