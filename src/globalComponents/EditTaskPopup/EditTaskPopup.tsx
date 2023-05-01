@@ -181,7 +181,7 @@ const EditTaskPopup = (Items: any) => {
       siteUrls = AllListIdData.siteUrl;
     }
   } else {
-    siteUrls = Items.Items.siteUrl;
+    siteUrls = AllListIdData.siteUrl;
   }
 
     // const setModalIsOpenToTrue = () => {
