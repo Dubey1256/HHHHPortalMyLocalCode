@@ -39,8 +39,8 @@ export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILas
         SmartInformationListID:this.properties.SmartInformationListID,
         DocumentsListID:this.properties.DocumentsListID,
         TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
-        TimeEntry:true,
-        SiteCompostion:true,
+        TimeEntry:this.properties.TimeEntry,
+        SiteCompostion:this.properties.SiteCompostion,
         Context: this.context,
 
       }

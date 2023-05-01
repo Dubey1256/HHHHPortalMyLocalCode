@@ -82,14 +82,17 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
     }
 
     private async loadConfigurations() {
+      
      AllListId={
         TaskUsertListID:this.props.taskUsersListId,
         SmartMetadataListID: this.props.SmartMetadataListID,
         SmartInformationListID:this.props.SmartInformationListID,
         DocumentsListID:this.props.DocumentsListID,
+        MasterTaskListID:this.props.MasterTaskListID,
         TaskTimeSheetListID:this.props.TaskTimeSheetListID,
-        TimeEntry:this.props.TimeEntry,
-        SiteCompostion:this.props.SiteCompostion,
+        isShowTimeEntry:this.props.TimeEntry == "true"?true:false,
+        isShowSiteCompostion:this.props.SiteCompostion == "true"?true:false,
+        siteUrl:this.props.siteUrl,
      }
        // const configItemsRes = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
         
@@ -351,6 +354,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
                 TaskId: `T${resListItem.Id}`,
+                ID: resListItem.Id,
                 TaskName: resListItem.Title,
                 PortfolioType: (resListItem.Component && resListItem.Component.length>0 ? "Component" :
                     (resListItem.Services && resListItem.Services.length>0 ? "Service" :
@@ -375,9 +379,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     ...this.getUserInfo(resListItem.Author.Id)
                 },
                 Id: resListItem.Id,
-                ListId: curListId,
-                SiteType: curSiteType,
-                SiteURL: curSiteURL,
+                listId: curListId,
+                siteType: curSiteType,
+                siteUrl: curSiteURL,
                 SiteIcon : curSiteIcon
             }));
         }        
@@ -630,7 +634,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         const elemClearFilter = this.state.showResetFilters && <Icon iconName="ClearFilter" role="button" onClick={this._onResetFiltersClicked} styles={iconStyles} />
         
         const elemFilter = (
-            <div>
+            <div className="mt-3">
                 <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
                     <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>
                 </div>
@@ -638,12 +642,12 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
                 </div>
                 {this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
-                 "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                 "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2 mt-2">
                  <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
              </div>         }
                 {
                     this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
-                  "":  <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
+                  "":  <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2 mt-2">
                     <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
                 </div>                       
                 }
@@ -654,7 +658,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             </div>
         );
 
-        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId}TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
+        const elemListLMI = (this.state.filteredItems.length>0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId} TabName={this.state.selNavItem.tabName} Site={this.state.selNavItem.site} ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
         
         const elemDeleteRecord = (<Dialog
             hidden = {this.state.hideDeleteDialog}
