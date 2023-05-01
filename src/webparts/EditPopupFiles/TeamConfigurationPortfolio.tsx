@@ -167,7 +167,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             }
             self.NewTeamConfigurations.push({ Title: 'Task Leader', childs: self.ResponsibleTeam });
         }
-        console.log('Task Leader');
+        console.log('Team Leader');
         console.log(this.NewTeamConfigurations);
 
         if (Item.Team_x0020_Members != undefined) {

@@ -497,7 +497,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
         item.DueDate = moment(item.DueDate).format("DD/MM/YYYY");
-        setDate(item.DueDate);
+        // setDate(item.DueDate);
       }
       if (item.SharewebCategories != null) {
         setCategoriesData(item.SharewebCategories);
@@ -520,10 +520,10 @@ function EditInstitution({item,SelectD,Calls}: any) {
         Rr.push(item.ServicePortfolio);
         setLinkedComponentData(Rr);
       }
-      if (item.StartDate != undefined) {
-        item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
-        // setStartdate(item.StartDate);
-      }
+      // if (item.StartDate != undefined) {
+      //   item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
+      //   //setStartdate(item.StartDate);
+      // }
       if (item.component_x0020_link != null) {
         item.component_x0020_link = item.component_x0020_link.Url;
         //setStartdate(item.StartDate);
@@ -1786,107 +1786,47 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         </div>
                       </div>
                       <div className="mx-0 row mt-2">
-                        <div className="col-6 ps-0 mt-2">
-                        <div className="input-group ">
-                          {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
-                          {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
-                                                        ...EditData, StartDate: date
-                                                    })} /> */}
-                          <label className="form-label full-width">
-                            Start Date
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            max="9999-12-31"
-                            min={
-                              EditData.Created
-                                ? moment(EditData.Created).format("YYYY-MM-DD")
-                                : ""
-                            }
-                            defaultValue={
-                              EditData.StartDate
-                                ? moment(EditData.StartDate).format(
-                                    "YYYY-MM-DD"
-                                  )
-                                : ""
-                            }
-                            onChange={(e) =>
-                              setEditData({
-                                ...EditData,
-                                StartDate: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="col-6 ps-0 pe-0 mt-2">
-                        <div className="input-group ">
-                          <div className="form-label full-width">
-                            Due Date
-                            <span title="Re-occurring Due Date">
-                              <input
-                                type="checkbox"
-                                className="form-check-input rounded-0 ms-2"
-                              />
-                            </span>
+                        <div className="col-sm-4 ps-0 ">
+                          <div className="input-group">
+                            <label className="form-label  full-width">
+                              Start Date
+                            </label>
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-DD-MM")}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, StartDate: e.target.value
+                                                        })}
+                                                    />
+                          
                           </div>
-
-                          <input
-                            type="date"
-                            className="form-control"
-                            placeholder="Enter Due Date"
-                            max="9999-12-31"
-                            min={
-                              EditData.Created
-                                ? moment(EditData.Created).format("YYYY-MM-DD")
-                                : ""
-                            }
-                            defaultValue={
-                              EditData.DueDate
-                                ? moment(EditData.DueDate).format("YYYY-MM-DD")
-                                : ""
-                            }
-                            onChange={(e) =>
-                              setEditData({
-                                ...EditData,
-                                DueDate: e.target.value,
-                              })
-                            }
-                          />
                         </div>
-                      </div>
-                      <div className="col-6 ps-0 mt-2">
-                        <div className="input-group ">
-                          <label className="form-label full-width">
-                            {" "}
-                            Completed Date{" "}
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            max="9999-12-31"
-                            min={
-                              EditData.Created
-                                ? moment(EditData.Created).format("YYYY-MM-DD")
-                                : ""
-                            }
-                            defaultValue={
-                              EditData.CompletedDate
-                                ? moment(EditData.CompletedDate).format(
-                                    "YYYY-MM-DD"
-                                  )
-                                : ""
-                            }
-                            onChange={(e) =>
-                              setEditData({
-                                ...EditData,
-                                CompletedDate: e.target.value,
-                              })
-                            }
-                          />
+                        <div className="col-sm-4 ">
+                          <div className="input-group">
+                            <label className="form-label  full-width">
+                              Due Date
+                            </label>
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-DD-MM") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, DueDate: e.target.value
+                                                        })}
+                                                    />
+                          </div>
                         </div>
-                      </div>
+                        <div className="col-sm-4 pe-0">
+                          <div className="input-group">
+                            <label className="form-label  full-width">
+                              {" "}
+                              Completion Date{" "}
+                            </label>
+                            <input type="date" className="form-control" max="9999-12-31"
+                                                        defaultValue={EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("YYYY-MM-DD") : ''}
+                                                        onChange={(e) => setEditData({
+                                                            ...EditData, CompletedDate: e.target.value
+                                                        })}
+                                                    />
+                          </div>
+                        </div>
                       </div>
                       <div className="mx-0 row mt-2 ">
                         <div className="col-sm-4 ps-0 ">
