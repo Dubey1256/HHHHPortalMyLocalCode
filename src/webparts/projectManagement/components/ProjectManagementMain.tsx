@@ -343,7 +343,7 @@ const ProjectManagementMain = (props: any) => {
 
   }
 
-  const CallBack = React.useCallback(() => {
+  const CallBack = React.useCallback((item:any) => {
     setisOpenEditPopup(false);
   }, []);
 
@@ -437,15 +437,16 @@ const ProjectManagementMain = (props: any) => {
     LoadAllSiteTasks();
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    const tasks = backupAllTasks;
-    tasks?.map((task: any, index: any) => {
-      if (task.Id == item.Id && task.siteType == item.siteType) {
-        backupAllTasks[index] = { ...task, ...item };
-      }
-    })
-    backupAllTasks = tasks;
-    setAllTasks(backupAllTasks);
-    setData(backupAllTasks);
+    LoadAllSiteTasks();
+    // const tasks = backupAllTasks;
+    // tasks?.map((task: any, index: any) => {
+    //   if (task.Id == item.Id && task.siteType == item.siteType) {
+    //     backupAllTasks[index] = { ...task, ...item };
+    //   }
+    // })
+    // backupAllTasks = tasks;
+    // setAllTasks(backupAllTasks);
+    // setData(backupAllTasks);
   }, []);
   const LoadAllSiteTasks = function () {
     loadAdminConfigurations();
@@ -701,7 +702,7 @@ const ProjectManagementMain = (props: any) => {
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
-        style: { width: "40px" },
+        style: { width: "65px" },
         Cell: ({ row }: any) => (
           <span>
             <img
@@ -1417,7 +1418,7 @@ const ProjectManagementMain = (props: any) => {
                       />
                     </div>
                     {isOpenEditPopup ? (
-                      <EditTaskPopup AllListId={AllListId} Items={passdata} Call={CallBack} />
+                      <EditTaskPopup AllListId={AllListId} Items={passdata}  pageName="ProjectProfile" Call={CallBack} />
                     ) : (
                       ""
                     )}

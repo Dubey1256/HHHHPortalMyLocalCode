@@ -32,15 +32,15 @@ export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILas
       LastModifiedItemsApp,
       {
         taskUsersListId: this.properties.TaskUsertListID,
-        listConfigurationListId: this.properties.ListConfigurationListID,
+        //listConfigurationListId: this.properties.ListConfigurationListID,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID:this.properties.MasterTaskListID,
         SmartMetadataListID:this.properties.SmartMetadataListID,
         SmartInformationListID:this.properties.SmartInformationListID,
         DocumentsListID:this.properties.DocumentsListID,
         TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
-        TimeEntry:true,
-        SiteCompostion:true,
+        TimeEntry:this.properties.TimeEntry,
+        SiteCompostion:this.properties.SiteCompostion,
         Context: this.context,
 
       }
@@ -76,9 +76,7 @@ export default class LastModifiedItemsWebPart extends BaseClientSideWebPart<ILas
                 PropertyPaneTextField("TaskUsertListID", {
                   label: "Task User List"
                 }),
-                PropertyPaneTextField("ListConfigurationListID", {
-                  label: "List Configuration List"
-                }), PropertyPaneTextField('MasterTaskListID', {
+                PropertyPaneTextField('MasterTaskListID', {
                   label: "MasterTaskListID"
                 }),
   

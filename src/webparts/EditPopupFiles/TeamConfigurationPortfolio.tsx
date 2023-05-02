@@ -2,7 +2,7 @@ import React from 'react';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { Web } from "sp-pnp-js";
 import Tooltip from '../../globalComponents/Tooltip';
-
+import './Test.css';
 export interface ITeamConfigurationProps {
     parentCallback: (dt: any) => void;
     ItemInfo: any;
@@ -167,7 +167,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             }
             self.NewTeamConfigurations.push({ Title: 'Task Leader', childs: self.ResponsibleTeam });
         }
-        console.log('Task Leader');
+        console.log('Team Leader');
         console.log(this.NewTeamConfigurations);
 
         if (Item.Team_x0020_Members != undefined) {
@@ -462,9 +462,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers,'Assigned User')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className=" p-1" >
-                                                    <div className='d-flex flex-wrap' style={{minHeight:"30px", height:"auto"}} >
+                                                    <div className='d-flex flex-wrap'  contentEditable 
+                                                             data-placeholder="Task Leaders" style={{minHeight:"30px", height:"auto"}} >
                                                         {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                             return <div
+                                                           
                                                                 className="ProirityAssignedUserPhoto"
                                                                 style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
                                                                 title={image.Title}
@@ -484,9 +486,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                             onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers,'TeamMemberUsers')}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <div className="p-1">
-                                                <div className='d-flex flex-wrap'>
+                                                <div className='d-flex flex-wrap' contentEditable 
+                                                        data-placeholder="Responsible Team">
                                                     {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                         return <div
+                                                        
                                                             className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
                                                             title={image.Title}
                                                             draggable

@@ -1,118 +1,118 @@
 import * as React from 'react';
-import  { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
- import { Web } from 'sp-pnp-js';
+import { Web } from 'sp-pnp-js';
 
- let percentage=1;
- const EmailComponenet=( props:any)=>{
- 
-   const [taskpermission,settaskpermission]=useState(null);
+let percentage = 1;
+const EmailComponenet = (props: any) => {
 
-   useEffect(()=>{
+  const [taskpermission, settaskpermission] = useState(null);
+
+  useEffect(() => {
     sendEmail(props.emailStatus);
-   },[])
-    console.log(props);
- 
+  }, [])
+  console.log(props);
 
-  const updateData=async( permission:any)=>{
-   const feedback:any=props?.items?.FeedBack!=null?props.items?.FeedBack:null;
-      feedback?.map((items:any)=>{
-       if( items?.FeedBackDescriptions!=undefined&&items?.FeedBackDescriptions?.length>0){
-        items?.FeedBackDescriptions?.map((feedback:any)=>{
-          if(feedback?.Subtext!=undefined){
-            feedback?.Subtext?.map((subtext:any)=>{
-              if(subtext?.isShowLight===""){
-            
-                subtext.isShowLight=permission
-              }else{
-               
-                subtext.isShowLight=permission
+
+  const updateData = async (permission: any) => {
+    const feedback: any = props?.items?.FeedBack != null ? props.items?.FeedBack : null;
+    feedback?.map((items: any) => {
+      if (items?.FeedBackDescriptions != undefined && items?.FeedBackDescriptions?.length > 0) {
+        items?.FeedBackDescriptions?.map((feedback: any) => {
+          if (feedback?.Subtext != undefined) {
+            feedback?.Subtext?.map((subtext: any) => {
+              if (subtext?.isShowLight === "") {
+
+                subtext.isShowLight = permission
+              } else {
+
+                subtext.isShowLight = permission
               }
             })
           }
-          if(feedback.isShowLight===""){
-            
-            feedback.isShowLight=permission
-          }else{
-           
-            feedback.isShowLight=permission
+          if (feedback.isShowLight === "") {
+
+            feedback.isShowLight = permission
+          } else {
+
+            feedback.isShowLight = permission
           }
-         })
-       }
-      })
-      console.log(feedback);
-  
-   };
-  
- const sendEmail=async(send:any)=>{
- 
-  if(send=="Approved"){
-   await updateData("Approve");
-  }
-  else if(send=="Rejected"){
-    await updateData("Reject");
-  }
-  let percentageComplete;
-  let taskStatus="";
-      if(send=="Approve"|| send=="Approved"){
-        settaskpermission("Approve");
-        percentageComplete=0.03;
-        percentage=3;
-        taskStatus="Approved"
+        })
       }
-      if(send=="Rejected"|| send=="Maybe"||send=="Reject"){
-        settaskpermission("Reject");
-        percentageComplete=0.02;
-        taskStatus="Follow Up"
-        percentage=2;
-      }
-      if(send=="Approved"||send=="Rejected"){
-        const feedback:any=props.items?.FeedBack!=null?props.items?.FeedBack:null;
-        const web = new Web(props?.items?.siteUrl );
-     await web.lists.getByTitle(props.items.listName)
-     // await web.lists.getById(props.SiteTaskListID)
-       .items.getById(props?.items?.Id).update({
-       PercentComplete: percentageComplete,
-       Status:taskStatus,
-       FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
-     }).then((res:any)=>{
-      console.log(res);
-      
-      
     })
-    .catch((err:any) => {
-      console.log(err.message);
-   });
-   }
-     
-  
-  console.log(props);
-  
+    console.log(feedback);
+
+  };
+
+  const sendEmail = async (send: any) => {
+
+    if (send == "Approved") {
+      await updateData("Approve");
+    }
+    else if (send == "Rejected") {
+      await updateData("Reject");
+    }
+    let percentageComplete;
+    let taskStatus = "";
+    if (send == "Approve" || send == "Approved") {
+      settaskpermission("Approve");
+      percentageComplete = 0.03;
+      percentage = 3;
+      taskStatus = "Approved"
+    }
+    if (send == "Rejected" || send == "Maybe" || send == "Reject") {
+      settaskpermission("Reject");
+      percentageComplete = 0.02;
+      taskStatus = "Follow Up"
+      percentage = 2;
+    }
+    if (send == "Approved" || send == "Rejected") {
+      const feedback: any = props.items?.FeedBack != null ? props.items?.FeedBack : null;
+      const web = new Web(props?.items?.siteUrl);
+      await web.lists.getByTitle(props.items.listName)
+        // await web.lists.getById(props.SiteTaskListID)
+        .items.getById(props?.items?.Id).update({
+          PercentComplete: percentageComplete,
+          Status: taskStatus,
+          FeedBack: feedback?.length > 0 ? JSON.stringify(feedback) : null
+        }).then((res: any) => {
+          console.log(res);
+
+
+        })
+        .catch((err: any) => {
+          console.log(err.message);
+        });
+    }
+
+
+    console.log(props);
+
     let mention_To: any = [];
     mention_To.push(props?.items?.Author[0]?.Name?.replace('{', '').replace('}', '').trim());
     console.log(mention_To);
     if (mention_To.length > 0) {
       let emailprops = {
         To: mention_To,
-        Subject: "["+props?.items?.siteType+"-"+send+"]"+props?.items?.Title,
+        Subject: "[" + props?.items?.siteType + "-" + send + "]" + props?.items?.Title,
         Body: props.items.Title
       }
       console.log(emailprops);
-  
-     await SendEmailFinal(emailprops);
-      }
-   }
-   const BindHtmlBody=()=> {
+
+      await SendEmailFinal(emailprops);
+    }
+  }
+  const BindHtmlBody = () => {
     let body = document.getElementById('htmlMailBodyemail')
     console.log(body.innerHTML);
     return "<style>p>br {display: none;}</style>" + body.innerHTML;
   }
-  
-  const SendEmailFinal=async(emailprops: any)=> {
- let sp= spfi().using(spSPFx(props.Context));
-     sp.utility.sendEmail({
+
+  const SendEmailFinal = async (emailprops: any) => {
+    let sp = spfi().using(spSPFx(props.Context));
+    sp.utility.sendEmail({
       //Body of Email  
       Body: BindHtmlBody(),
       //Subject of Email  
@@ -125,30 +125,30 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
     }).then(() => {
       console.log("Email Sent!");
       props?.approvalcallback();
-    
-    }) .catch((err) => {
+
+    }).catch((err) => {
       console.log(err.message);
-  });
+    });
   }
-  const  joinObjectValues=(arr: any)=> {
+  const joinObjectValues = (arr: any) => {
     let val = '';
     arr.forEach((element: any) => {
       val += element.Title + ';'
     });
     return val;
   }
-   return(
-      <>
-     
-   
-   {props.items != null  &&props?.items?.Approver!=undefined&&
+  return (
+    <>
+
+
+      {props.items != null && props?.items?.Approver != undefined &&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
-          <div style={{marginTop:"2pt"}}>Hi,</div>
-        {taskpermission!=null&&taskpermission=="Approve"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
-        {taskpermission!=null&&taskpermission=="Reject"&&<div style={{marginTop:"2pt"}}>Your task has been {taskpermission} by {props?.items?.Approver?.Title}. Refer {taskpermission} Comments.</div>}
-         
+          <div style={{ marginTop: "2pt" }}>Hi,</div>
+          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
+          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been {taskpermission} by {props?.items?.Approver?.Title}. Refer {taskpermission} Comments.</div>}
+
           <div style={{ marginTop: "11.25pt" }}>
-            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank"  data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
+            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
           <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
             <tbody>
               <tr>
@@ -286,7 +286,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                       </tr>
                     </tbody>
                   </table>
-                  <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                  <table cellPadding="0" width="99%" style={{ width: "99.0%", border: "1px solid #ccc" }}>
                     <tbody>
                       <tr>
                         <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
@@ -294,11 +294,11 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
 
                       {props.items["FeedBack"] != null &&
-                       props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
-                       props.items["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
-                       props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
+                        props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
+                        props.items["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
+                        props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                           return <>
-                            <tr>
+                            <tr style={{ background: "#ccc" }}>
                               <td>
                                 <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                               </td>
@@ -316,7 +316,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                             </tr>
                             {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                               return <>
-                                <tr>
+                                <tr style={{ background: "#ccc" }}>
                                   <td>
                                     <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                   </td>
@@ -352,9 +352,9 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                         </td>
                       </tr>
                       <tr>
-                      
+
                         <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
-                        {props?.items["Comments"]!=undefined && props?.items["Comments"]?.length>0&&props.items["Comments"]?.map((cmtData: any, i: any) => {
+                          {props?.items["Comments"] != undefined && props?.items["Comments"]?.length > 0 && props.items["Comments"]?.map((cmtData: any, i: any) => {
                             return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                               <div style={{ marginBottom: "3.75pt" }}>
                                 <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
@@ -365,7 +365,7 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
                             </div>
                           })}
                         </td>
-                        
+
                       </tr>
                     </tbody>
                   </table>
@@ -376,8 +376,8 @@ import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 
         </div>
       }
-   </>
-   )
+    </>
+  )
 }
 export default EmailComponenet;
 //(this.approvalcallback() }}  Context={this.props.Context}  currentUser={this.currentUser} items={this.state.Result})

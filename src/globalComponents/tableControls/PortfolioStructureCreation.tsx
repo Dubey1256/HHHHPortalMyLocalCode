@@ -862,15 +862,16 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         </div>
                                                         <div className="card-body">
                                                             <div className='d-flex justify-content-between align-items-center mb-0'>
-                                                                <label className='mb-1'>  <img className="icon-sites-img"
-                                                                    src={
-                                                                        (item.MasterItemsType == 'SubComponent')?
-                                                                        item.IconUrl :
-                                                                        (item.MasterItemsType == 'Feature' && this.state.PortfolioType == 'Service')?'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png' 
-                                                                        } 
-                                                                    
-                                                                        
-                                                                        /> <span className='ms-1'><strong>Title</strong> </span> </label>
+                                                                <label className='mb-1'>
+                                                                    {
+                                                                        (item.MasterItemsType == 'SubComponent')?  
+                                                                <span className="Dyicons ">S</span>
+                                                                :
+                                                                <span className="Dyicons ">F</span>
+                                                               
+                                                                
+                                                                    }
+                                                                <span className='ms-1'><strong>Title</strong> </span> </label>
 
                                                                 {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                     <>

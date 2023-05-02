@@ -268,15 +268,29 @@ const TaskDashboard = (props: any) => {
                     const timeFillDate = new Date(+year, +month - 1, +day)
                     // let timeFillDate = new Date(filledTime?.TaskDate);
                     // if (filledTime?.AuthorId == currentUserId && timeFillDate > startDate && timeEntry?.taskDetails != '' && timeEntry?.taskDetails != undefined) {
-                    if (filledTime?.AuthorId == currentUserId && timeFillDate >= startDate) {
-                        let data = { ...timeEntry?.taskDetails[0] };
-                        if (data == '' || data == undefined)
-                            data = {};
-                        data.TaskTime = filledTime?.TaskTime;
-                        data.timeDate = filledTime?.TaskDate;
-                        data.Description = filledTime?.Description
-                        data.timeFillDate = timeFillDate;
-                        weekTimeEntries.push(data);
+                    if(start=='Today'||start=='Yesterday'){
+                        if (filledTime?.AuthorId == currentUserId && timeFillDate == startDate) {
+                            let data = { ...timeEntry?.taskDetails[0] };
+                            if (data == '' || data == undefined)
+                                data = {};
+                            data.TaskTime = filledTime?.TaskTime;
+                            data.timeDate = filledTime?.TaskDate;
+                            data.Description = filledTime?.Description
+                            data.timeFillDate = timeFillDate;
+                            weekTimeEntries.push(data);
+                        }
+
+                    }else{
+                        if (filledTime?.AuthorId == currentUserId && timeFillDate >= startDate) {
+                            let data = { ...timeEntry?.taskDetails[0] };
+                            if (data == '' || data == undefined)
+                                data = {};
+                            data.TaskTime = filledTime?.TaskTime;
+                            data.timeDate = filledTime?.TaskDate;
+                            data.Description = filledTime?.Description
+                            data.timeFillDate = timeFillDate;
+                            weekTimeEntries.push(data);
+                        }
                     }
                 })
             }
@@ -440,8 +454,9 @@ const TaskDashboard = (props: any) => {
     }
 
     //Edit CallBack
-    const editTaskCallBack = React.useCallback(() => {
+    const editTaskCallBack = React.useCallback((item:any) => {
         setisOpenEditPopup(false);
+        inlineCallBack(item)
     }, []);
     const inlineCallBack = React.useCallback((item: any) => {
         AllTasks?.map((task: any, index: any) => {
@@ -482,13 +497,13 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
                     workingTodayTask.push(task)
                     alreadyPushed = true;
-                } else if (task?.workingThisWeek && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } else if (task?.workingThisWeek && (isCurrentUserAssigned )) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } else if (isBottleneckTask && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } else if (isBottleneckTask && (isCurrentUserAssigned)) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
-                } else if (!alreadyPushed && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } else if (!alreadyPushed && (isCurrentUserAssigned )) {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
@@ -544,7 +559,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -560,7 +575,7 @@ const TaskDashboard = (props: any) => {
                     <span>
                         <a className='hreflink' data-interception="off"
                             target="blank"
-                            href={`${AllListId?.siteUrl}/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                         >
                             {row?.original?.portfolio?.Title}
                         </a>
@@ -688,7 +703,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '40px' },
+                style: { width: '65px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -734,7 +749,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Time",
                 showSortIcon: true,
                 accessor: "TaskTime",
-                style: { width: '60px' },
+                style: { width: '65px' },
             },
             {
                 internalHeader: "Description",
@@ -1252,6 +1267,9 @@ const TaskDashboard = (props: any) => {
         }
 
         if (body1.length > 0 && body1 != undefined) {
+            if(currentUserData?.Email!=undefined){
+                to.push(currentUserData?.Email)
+            }
             SendEmailFinal(to, subject, body);
         } else {
             alert("No entries available");
@@ -1265,7 +1283,7 @@ const TaskDashboard = (props: any) => {
             //Subject of Email  
             Subject: subject,
             //Array of string for To of Email  
-            To: to,
+            To:to,
             AdditionalHeaders: {
                 "content-type": "text/html"
             },
@@ -1879,7 +1897,7 @@ const TaskDashboard = (props: any) => {
                     </div>
                     <div>
                         {isOpenEditPopup ? (
-                            <EditTaskPopup AllListId={AllListId} Items={passdata} Call={editTaskCallBack} />
+                            <EditTaskPopup AllListId={AllListId} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
                         ) : (
                             ""
                         )}
