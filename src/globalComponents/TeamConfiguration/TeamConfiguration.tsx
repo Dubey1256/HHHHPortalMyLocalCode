@@ -21,7 +21,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
-let web:any;
+let web: any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -418,18 +418,22 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 <div className='d-flex User'>
                                                     {user.childs.map((item: any, i: number) => {
                                                         return <div className="marginR41 ng-scope">
-
-                                                            {item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null  ?
+                                                            {item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null ?
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('" + `${item.Item_x0020_Cover.Url}` + "')", backgroundSize: "36px 36px" }}
                                                                         title={item.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
                                                                         onDragOver={(e) => e.preventDefault()} />
-                                                                </span>:
-                                                               <span  title={item.Title} className="svg__iconbox svg__icon--defaultUser"></span>
+                                                                </span> :
+                                                                <span title={item.Title}
+                                                                    draggable
+                                                                    onDragStart={(e) => this.dragStart(e, i, item, 'All')}
+                                                                    onDragOver={(e) => e.preventDefault()} className="svg__iconbox svg__icon--defaultUser"
+                                                                >
+                                                                </span>
                                                             }
                                                         </div>
                                                     })}
@@ -514,7 +518,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service')||(this.props?.ItemInfo?.Services!=undefined&&this.props?.ItemInfo?.Services.length>0)?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"}  />
+                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service') || (this.props?.ItemInfo?.Services != undefined && this.props?.ItemInfo?.Services.length > 0) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"} />
                                         </div>
                                     </div>
                                 </div>
