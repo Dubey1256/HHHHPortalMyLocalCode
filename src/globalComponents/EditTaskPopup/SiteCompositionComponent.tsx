@@ -516,7 +516,7 @@ const SiteCompositionComponent = (Props: any) => {
                     name="SiteCompositions"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
                     title="add Proportional Time"
-                    className="mx-1"
+                    className="me-1"
                 />
                 <label>Proportional</label>
                 <input
