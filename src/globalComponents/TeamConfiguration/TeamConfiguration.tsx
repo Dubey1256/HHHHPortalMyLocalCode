@@ -267,7 +267,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                             self.AllUsers[i].Item_x0020_Cover = {}
                             self.AllUsers[i].Item_x0020_Cover.Url = null
                         }
-                        item.userImage = self.AllUsers[i].Item_x0020_Cover.Url
+                        item.userImage = self.AllUsers[i].Item_x0020_Cover?.Url
                         item.Title = self.AllUsers[i].Title;
                         item.Suffix = self.AllUsers[i].Suffix;
                         item.UserGroupId = self.AllUsers[i].UserGroupId;
@@ -422,7 +422,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + `${item.Item_x0020_Cover.Url}` + "')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('" + `${item.Item_x0020_Cover?.Url}` + "')", backgroundSize: "36px 36px" }}
                                                                         title={item.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
@@ -457,7 +457,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     <div className='d-flex flex-wrap' style={{ height: "30px" }}>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <div
-                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "36px 36px" }}
                                                                 title={image.Title} draggable
                                                                 onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
                                                                 onDragOver={(e) => e.preventDefault()} />
@@ -475,7 +475,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     <div className='d-flex flex-wrap' style={{ height: "30px" }}>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <div
-                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "36px 36px" }}
                                                                 title={image.Title}
                                                                 draggable
                                                                 onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
@@ -499,7 +499,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <div
                                                         className="ProirityAssignedUserPhoto"
-                                                        style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                        style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "36px 36px" }}
                                                         title={image.Title}
                                                         draggable
                                                         onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}

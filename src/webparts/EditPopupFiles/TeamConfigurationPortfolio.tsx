@@ -435,15 +435,17 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover?.Url + "')", backgroundSize: "36px 36px" }}
                                                                         title={item.AssingedToUser.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
                                                                         onDragOver={(e) => e.preventDefault()} />
                                                                 </span>:<span title={item.Title}
                                                                     draggable
+                                                                    style={{ backgroundImage: "url('" + "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg" + "')", backgroundSize: "36px 36px" }}
+                                                                       
                                                                     onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                                                    onDragOver={(e) => e.preventDefault()} className="svg__iconbox svg__icon--defaultUser"
+                                                                    onDragOver={(e) => e.preventDefault()} 
                                                                 >
                                                                 </span>
                                                             }
@@ -474,7 +476,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             return <div
                                                            
                                                                 className="ProirityAssignedUserPhoto"
-                                                                style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                                style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg") + "')", backgroundSize: "36px 36px" }}
                                                                 title={image.Title}
                                                                 draggable
                                                                 onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
@@ -497,7 +499,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                         return <div
                                                         
-                                                            className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
+                                                            className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : "https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg") + "')", backgroundSize: "36px 36px" }}
                                                             title={image.Title}
                                                             draggable
                                                             onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}

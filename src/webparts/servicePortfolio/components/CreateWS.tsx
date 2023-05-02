@@ -709,6 +709,7 @@ const CreateWS = (props: any) => {
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
+            Title:'',
             ItemRank: '',
             Priority: '',
             DueDate: '',
