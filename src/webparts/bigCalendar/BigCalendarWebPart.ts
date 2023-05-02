@@ -14,6 +14,8 @@ import { IBigCalendarProps } from './components/IBigCalendarProps';
 
 export interface IBigCalendarWebPartProps {
   description: string;
+  siteUrl:string;
+  SmalsusLeaveCalendar:string
 }
 
 export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalendarWebPartProps> {
@@ -29,7 +31,9 @@ export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalend
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        SmalsusLeaveCalendar: this.properties.SmalsusLeaveCalendar,
       }
     );
 
@@ -109,7 +113,13 @@ export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalend
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+
+                }),
+                PropertyPaneTextField('SmalsusLeaveCalendar', {
+                  label: "SmalsusLeaveCalendar"
+
                 })
+
               ]
             }
           ]
