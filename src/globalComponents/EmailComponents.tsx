@@ -33,7 +33,7 @@ const EmailComponent = (props: any) => {
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "For Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
+        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -76,7 +76,12 @@ const EmailComponent = (props: any) => {
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ marginTop: "2pt" }}>Hi,</div>
         {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
-          <div style={{ marginTop: "2pt" }}>Approval Task Created by {props?.items.TaskCreatorData[0].Title}, team will process it further. Refer Approval Comments.</div>
+          <div style={{ marginTop: "2pt" }}>
+          {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
+            Please note that you still have 1 tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.
+            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+            <a style={{marginRight:"20px"}} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+          </div>
         </> :
           <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
             <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
