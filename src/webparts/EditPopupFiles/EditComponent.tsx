@@ -678,14 +678,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     };
     initLoading();
   }, []);
-  // const EditComponent = (items: any, title: any) => {
-  //   // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-  //   setIsComponent(true);
-  //   setSharewebComponent(items);
-  //   // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
-  // };
+  
   const EditComponent = (items: any, title: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     if(title == "Service"){
       setIsComponent(true);
       setSharewebComponent(items);
@@ -1637,12 +1631,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
-                                <div>
+                                <div className="serviepannelgreena">
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div className="">
+                                          <div >
                                             <a
                                               className="hreflink service"
                                               target="_blank"
@@ -1678,7 +1672,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div className="serviepannelgreena">
+                                          <div >
                                             <a
                                               className="hreflink service "
                                               target="_blank"
