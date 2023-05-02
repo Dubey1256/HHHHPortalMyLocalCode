@@ -33,7 +33,7 @@ const EmailComponent = (props: any) => {
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "For Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
+        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -76,7 +76,12 @@ const EmailComponent = (props: any) => {
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
         <div style={{ marginTop: "2pt" }}>Hi,</div>
         {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
-          <div style={{ marginTop: "2pt" }}>Approval Task Created by {props?.items.TaskCreatorData[0].Title}, team will process it further. Refer Approval Comments.</div>
+          <div style={{ marginTop: "2pt" }}>
+            {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
+            Please note that you still have 1 tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.
+            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+            <a style={{ marginRight: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+          </div>
         </> :
           <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
             <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
@@ -128,19 +133,19 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["StartDate"]).format("DD-MMMM-YYYY")}</span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"] != null && props.items["StartDate"] != undefined ? Moment(props.items["StartDate"]).format("DD-MMMM-YYYY") : ""}</span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["CompletedDate"] != null && props.items["CompletedDate"] != undefined ? Moment(props.items["CompletedDate"]).format("DD-MMMM-YYYY") : ""}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{Moment(props.items["DueDate"]).format("DD-MMMM-YYYY")}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                        <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["DueDate"] != null && props.items["DueDate"] != undefined ? Moment(props.items["DueDate"]).format("DD-MMMM-YYYY") : ''}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                       </td>
                     </tr>
                     <tr>

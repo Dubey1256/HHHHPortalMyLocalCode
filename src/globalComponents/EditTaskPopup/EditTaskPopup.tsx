@@ -169,20 +169,16 @@ const EditTaskPopup = (Items: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
 
-  var siteUrls: any;
-  if (
-    Items != undefined &&
-    Items.Items.siteUrl != undefined &&
-    Items.Items.siteUrl.length < 20
-  ) {
-    if (Items.Items.siteType != undefined) {
-      siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`;
+    var siteUrls: any;
+    if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
+        if (Items.Items.siteType != undefined) {
+            siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+        } else {
+            siteUrls = AllListIdData.siteUrl;
+        }
     } else {
-      siteUrls = AllListIdData.siteUrl;
+        siteUrls = Items.Items.siteUrl
     }
-  } else {
-    siteUrls = AllListIdData.siteUrl;
-  }
 
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
@@ -2356,7 +2352,8 @@ const EditTaskPopup = (Items: any) => {
             let updateIndex: any = addUpdateIndex[0]
             let updateImage: any = imageList[updateIndex];
             if (updateIndex + 1 >= imageList.length) {
-                UploadImageFunction(lastindexArray, fileName);
+                UploadImageFunction(lastindexArray, fileName, tempArray);
+
             }
             else {
                 if (updateIndex < imageList.length) {
@@ -2365,7 +2362,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
-    const UploadImageFunction = (Data: any, imageName: any) => {
+    const UploadImageFunction = (Data: any, imageName: any, DataJson: any) => {
         let listId = Items.Items.listId;
         let listName = Items.Items.listName;
         let Id = Items.Items.Id
@@ -2384,6 +2381,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                UpdateBasicImageInfoJSON(DataJson);
                 setUploadBtnStatus(false);
             })().catch(console.log)
         } else {
@@ -2392,13 +2390,45 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                UpdateBasicImageInfoJSON(DataJson);
                 setUploadBtnStatus(false);
             })().catch(console.log)
         }
     }
+
+
+    const UpdateBasicImageInfoJSON = async (JsonData: any) => {
+        var UploadImageArray: any = []
+        if (JsonData != undefined && JsonData.length > 0) {
+            JsonData?.map((imgItem: any) => {
+                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                    let tempObject: any = {
+                        ImageName: imgItem.ImageName,
+                        ImageUrl: imgItem.imageDataUrl,
+                        UploadeDate: imgItem.UploadeDate,
+                        UserName: imgItem.UserName,
+                        UserImage: imgItem.UserImage
+                    }
+                    UploadImageArray.push(tempObject)
+                } else {
+                    UploadImageArray.push(imgItem);
+                }
+            })
+        }
+        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+            try {
+                let web = new Web(siteUrls);
+                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+            } catch (error) {
+                console.log("Error Message :", error);
+            }
+        }
+    }
+
+
     const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
+        let tempArray: any = [];
         if (FunctionType == "Remove") {
-            let tempArray: any = [];
             TaskImages?.map((imageData: any, index: number) => {
                 if (index != imageIndex) {
                     tempArray.push(imageData)
@@ -2411,14 +2441,18 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         }
     }
@@ -3289,7 +3323,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -3303,7 +3337,7 @@ const EditTaskPopup = (Items: any) => {
                                                         smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                             return (
                                                                 <>
-                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
                                                                             <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -4331,7 +4365,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
 
@@ -4350,7 +4384,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
