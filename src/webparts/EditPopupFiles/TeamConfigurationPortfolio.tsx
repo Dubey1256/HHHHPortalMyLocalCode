@@ -431,7 +431,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 <div className='d-flex'>
                                                     {user.childs.map((item: any, i: number) => {
                                                         return <div className="marginR41 ng-scope">
-                                                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
+                                                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined ?
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
@@ -440,8 +440,14 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
                                                                         onDragOver={(e) => e.preventDefault()} />
+                                                                </span>:<span title={item.Title}
+                                                                    draggable
+                                                                    onDragStart={(e) => this.dragStart(e, i, item, 'All')}
+                                                                    onDragOver={(e) => e.preventDefault()} className="svg__iconbox svg__icon--defaultUser"
+                                                                >
                                                                 </span>
                                                             }
+                                                            
                                                         </div>
                                                     })}
                                                 </div>
@@ -462,7 +468,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers,'Assigned User')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className=" p-1" >
-                                                    <div className='d-flex flex-wrap'  contentEditable 
+                                                    <div className='d-flex flex-wrap'  
                                                              data-placeholder="Task Leaders" style={{minHeight:"30px", height:"auto"}} >
                                                         {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                             return <div
@@ -486,7 +492,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                             onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers,'TeamMemberUsers')}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <div className="p-1">
-                                                <div className='d-flex flex-wrap' contentEditable 
+                                                <div className='d-flex flex-wrap'
                                                         data-placeholder="Responsible Team">
                                                     {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                         return <div

@@ -162,14 +162,14 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   return (
     <div className="p-2">
       <div style={{display:"flex"}}>
-        <div style={{display:"inline",width:"50%"}}>
+        {/* <div style={{display:"inline",width:"50%"}}>
           <DebouncedInput
             value={globalFilter ?? ''}
             onChange={value => setGlobalFilter(String(value))}
             className="p-2 font-lg shadow border border-block"
             placeholder="Search all columns..."
           />
-        </div>
+        </div> */}
         <div style={{display:"inline",width:"50%"}}>
           <PrimaryButton text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
         </div>        

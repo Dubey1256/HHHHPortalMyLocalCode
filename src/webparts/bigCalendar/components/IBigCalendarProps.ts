@@ -4,4 +4,6 @@ export interface IBigCalendarProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  siteUrl : string;
+  SmalsusLeaveCalendar:string;
 }
