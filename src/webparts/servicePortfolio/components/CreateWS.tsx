@@ -1083,6 +1083,13 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
+                                      
+                                      <div className="col-sm-8 pad0">
+                            <label className="full-width"></label>
+                            <input className="full-width" type="text"
+                                placeholder="Enter Child Item Title"  onChange={(e: any) => AllItems.Title = e.target.value}
+                            />
+                        </div>
                                     <div className="row my-3" key={index}>
                                         <div className="col-sm-4">
                                             <fieldset>

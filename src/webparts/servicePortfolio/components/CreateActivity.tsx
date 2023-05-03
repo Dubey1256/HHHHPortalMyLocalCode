@@ -323,6 +323,18 @@ const CreateActivity = (props: any) => {
         // }
         setSave({ ...save, recentClick: isActiveItem })
     };
+
+    // 
+
+    // Remove duplicate 
+
+    function removeDuplicates<T>(array: T[]): T[] {
+        return array.filter((value, index, self) => self.indexOf(value) === index);
+      }
+      
+
+
+
     const Call = React.useCallback((item1: any, type: any) => {
         if (type == "SmartComponent") {
             var ComponentData: any = []
@@ -361,7 +373,7 @@ const CreateActivity = (props: any) => {
                 var title: any = {};
                 title.Title = item1.Clientcategories;
                 item1.Clientcategories.map((itenn: any) => {
-                    if (!isItemExists(ClientCategoriesData, itenn.Id)) {
+                    if (removeDuplicates(ClientCategoriesData)) {
                         Data.push(itenn);
                     }
 
