@@ -1219,12 +1219,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               <div>
                                 {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
 
-                                  return <div className="team_Members_Item" style={{ padding: '2px' }}>
+                                  return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
                                     <a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
                                       {rcData?.userImage != null && <img className={`imgAuthor ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                                      {rcData?.userImage == null && <span className={`imgAuthor ${rcData?.activeimg2}bg-fxdark`}>{rcData?.Suffix}</span>}
-
+                                      {rcData?.userImage == null && <span className={`imgAuthor ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
+                                     
                                       <span className='mx-2'>{rcData?.Title}</span>
                                     </a>
                                   </div>
