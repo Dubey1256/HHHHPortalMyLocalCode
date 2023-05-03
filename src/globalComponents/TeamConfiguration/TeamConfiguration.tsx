@@ -278,9 +278,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             if (self.AllUsers[i]) {
                 items.forEach(function (item: any) {
                     if (self.AllUsers[i] != undefined && self.AllUsers[i].AssingedToUserId != undefined && self.AllUsers[i].AssingedToUserId == item.Id) {
-                        if (self.AllUsers[i].Item_x0020_Cover == undefined) {
+                        if (self.AllUsers[i].Item_x0020_Cover == undefined || self.AllUsers[i].Item_x0020_Cover == null) {
                             self.AllUsers[i].Item_x0020_Cover = {}
-                            self.AllUsers[i].Item_x0020_Cover.Url = null
+                            self.AllUsers[i].Item_x0020_Cover.Url = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
                         }
                         item.userImage = self.AllUsers[i].Item_x0020_Cover.Url
                         item.Title = self.AllUsers[i].Title;
