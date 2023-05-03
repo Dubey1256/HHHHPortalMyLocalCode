@@ -3746,8 +3746,10 @@ function ComponentTable(SelectedProp: any) {
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
-                                <span className="popover__content">
-                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                <span className="popover__content"  dangerouslySetInnerHTML={{
+                                            __html: row?.original?.Short_x0020_Description_x0020_On
+                                          }}>
+                                    
                                 </span>
                             </span>}
                     </>
