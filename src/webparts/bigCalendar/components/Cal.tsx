@@ -44,7 +44,8 @@ let startTime: any,
 //let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
 
-const App = () => {
+const App = (props:any) => {
+
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];
@@ -124,7 +125,7 @@ const App = () => {
       const dateString = date;
       const dateObj = moment(dateString, "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
       const formattedDater = dateObj.format("ddd MMM DD YYYY");
-      console.log(formattedDater);
+      //console.log(formattedDater);
       //if (Time != undefined && Time != '')
       // date.setHours(parseInt(Time.split(':')[0]), parseInt(Time.split(':')[1]), parseInt(Time.split(':')[2]))
       return formattedDater;
@@ -209,16 +210,16 @@ const App = () => {
   const getData = async () => {
     let localcomp = [];
     let startdate: any, enddate: any;
-    const web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    const web = new Web(props.props.siteUrl);
     await web.lists
-      .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
+      .getById(props.props.SmalsusLeaveCalendar)
       .items.select("*", "fAllDayEvent", "Author/Title", "Editor/Title")
       .top(4999)
       .orderBy("Created", false)
       .expand("Author", "Editor")
       .get()
       .then((dataaa) => {
-        console.log("datata", dataaa);
+        //console.log("datata", dataaa);
         compareData = dataaa;
         // dataaa.EventDate
         let localArray: any = [];
@@ -232,8 +233,8 @@ const App = () => {
           };
           let a = new Date(comp.start);
           let b = new Date(comp.end);
-          console.log("start", a, comp.iD);
-          console.log("end", b, comp.iD);
+         console.log("start", a, comp.iD);
+         console.log("end", b, comp.iD);
           localcomp.push(comp);
         });
 
@@ -246,8 +247,8 @@ const App = () => {
             enddate = new Date(item.EndDate);
             enddate.setHours(enddate.getHours() - 12);
             enddate.setMinutes(enddate.getMinutes() - 30);
-            console.log("start", startdate, item.ID);
-            console.log("end", enddate, item.iD);
+            //console.log("start", startdate, item.ID);
+            //console.log("end", enddate, item.iD);
           } else if (item.fAllDayEvent == true) {
             startdate = new Date(item.EventDate);
             startdate.setHours(startdate.getHours() - 5);
@@ -281,22 +282,22 @@ const App = () => {
         setEvents(localArray);
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
       });
   };
 
   const deleteElement = async () => {
     const confirmed = window.confirm("Are you sure you want to delete this item?");
     if (confirmed) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(props.props.siteUrl);
 
     await web.lists
-      .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
+      .getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.iD)
       .delete()
 
       .then((i) => {
-        console.log(i);
+        //console.log(i);
         void getData();
         closem();
         void getData();
@@ -313,7 +314,7 @@ const App = () => {
       type: type,
       loc: location,
     };
-    console.log("postEvent", allDay);
+    //console.log("postEvent", allDay);
 
     //  // const dateObjstart = new Date(newEvent.start);
     //   //const formattedDatestart = dateObjstart.toLocaleDateString("en-IN");
@@ -321,10 +322,10 @@ const App = () => {
     //   const dateObjend = new Date(newEvent.end);
     //   const formattedDateend = dateObjend.toLocaleDateString("en-IN");
 
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(props.props.siteUrl);
 
     await web.lists
-      .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
+      .getById(props.props.SmalsusLeaveCalendar)
       .items.add({
         Title: newEvent.title,
 
@@ -347,7 +348,7 @@ const App = () => {
         fAllDayEvent: allDay,
       })
       .then((res: any) => {
-        console.log(res);
+        //console.log(res);
         void getData();
         closem();
         setIsChecked(false);
@@ -356,11 +357,11 @@ const App = () => {
       });
     // setEvents([...events, newEvent]);
     // setEvents([...events, saveE]);
-    console.log(newEvent);
+   // console.log(newEvent);
   };
 
   const updateElement = async () => {
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(props.props.siteUrl);
     const newEvent = {
       title: inputValueName,
       start: startDate,
@@ -379,7 +380,7 @@ const App = () => {
       newEvent.loc = "Noida";
     }
     await web.lists
-      .getById("72ABA576-5272-4E30-B332-25D7E594AAA4")
+      .getById(props.props.SmalsusLeaveCalendar)
       .items.getById(eventPass.iD)
       .update({
         Title: newEvent.title,
@@ -403,7 +404,7 @@ const App = () => {
         fAllDayEvent: allDay,
       })
       .then((i) => {
-        console.log(i);
+        //console.log(i);
         void getData();
         closem();
         setSelectedTime(startTime);
@@ -488,17 +489,17 @@ const App = () => {
     time = time.target.value;
     startTime = time;
     setSelectedTime(time);
-    console.log("time", time);
+   // console.log("time", time);
   };
   const handleTimeChangeEnd = (time: any) => {
     time = time.target.value;
     endTime = time;
     setSelectedTimeEnd(time);
-    console.log("time", time);
+   // console.log("time", time);
   };
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
-    console.log("check", isChecked);
+   // console.log("check", isChecked);
     if (isChecked == false) {
       startTime = "10:00";
       endTime = "19:00";
@@ -506,10 +507,10 @@ const App = () => {
       setSelectedTime("10:00");
       setEndDate(startDate);
       maxD = startDate;
-      console.log(maxD);
+      //console.log(maxD);
       setDisableTime(true);
       allDay = true;
-      console.log("allDay", allDay);
+      //console.log("allDay", allDay);
     } else {
       maxD = new Date(8640000000000000);
       setDisableTime(false);
