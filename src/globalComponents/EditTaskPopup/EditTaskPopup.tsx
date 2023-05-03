@@ -177,7 +177,7 @@ const EditTaskPopup = (Items: any) => {
             siteUrls = AllListIdData.siteUrl;
         }
     } else {
-        siteUrls = Items.Items.siteUrl
+        siteUrls = AllListIdData.siteUrl
     }
 
     // const setModalIsOpenToTrue = () => {
@@ -1097,12 +1097,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                     if ((statusValue <= 2) && ApprovalStatusGlobal) {
+                        let tempArray: any = [];
                         if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 TaskApproverBackupArray.map((itemData: any) => {
                                     if (itemData.Id == userData1?.AssingedToUserId) {
                                         AssignedUsers.push(userData1);
                                         TeamMemberTemp.push(userData1);
+                                        tempArray.push(userData1);
                                     }
                                 })
                             })
@@ -1113,8 +1115,21 @@ const EditTaskPopup = (Items: any) => {
                                         if (itemData.Id == userData1?.AssingedToUserId) {
                                             AssignedUsers.push(userData1);
                                             TeamMemberTemp.push(userData1);
+                                            tempArray.push(userData1);
                                         }
                                     })
+                                })
+                            }
+                        } 
+                        if(tempArray != undefined && tempArray.length >0){
+                            setApproverData(tempArray);
+                            if((statusValue <= 1) && ApprovalStatusGlobal){
+                                StatusArray?.map((item: any) => {
+                                    if (1 == item.value) {
+                                        setPercentCompleteStatus(item.status);
+                                        setTaskStatus(item.taskStatusComment);
+                                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `1` })
+                                    }
                                 })
                             }
                         }
