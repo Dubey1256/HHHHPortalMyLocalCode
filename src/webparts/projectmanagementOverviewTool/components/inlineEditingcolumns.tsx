@@ -36,6 +36,7 @@ const inlineEditingcolumns = (props: any) => {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
+    const [remark, setRemark]:any = useState(false);
     const [impTaskCategoryType, setImpTaskCategoryType] = React.useState([]);
     const [taskCategoryType, setTaskCategoryType] = React.useState([])
     const [taskStatus, setTaskStatus] = React.useState('');
@@ -43,6 +44,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
     const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
+    const [feedback, setFeedback] = useState("");
     const StatusArray = [
         { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
@@ -647,6 +649,24 @@ const inlineEditingcolumns = (props: any) => {
     //     }
 
 
+    const postFeedbackRemark = async () => {
+        let web = new Web(props?.item?.siteUrl);
+        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
+           Remark:feedback
+        }).then((data:any)=>{
+            setRemark(false);
+            props?.callBack();
+        })
+    };
+    
+   
+
+    const remarkTrue=()=>{
+        setRemark(true);
+        setFeedback(props.item.Remark);
+    }
+
+
 
     return (
         <>
@@ -697,6 +717,18 @@ const inlineEditingcolumns = (props: any) => {
                     </>
                     : ''
             }
+            {props?.columnName == 'Remark' && !remark ? 
+            <div>
+                   <div onClick={remarkTrue}>{props.item.Remark} &nbsp;
+                   </div> 
+                    </div>
+            : ("") 
+             }
+             {
+                props?.columnName == 'Remark' && remark  ? <span><textarea value={feedback} onChange={(e:any)=>setFeedback(e.target.value)}  /> <button onClick={postFeedbackRemark}>submit</button></span> : ''
+          
+             }
+            
             {
                 props?.columnName == 'PercentComplete' ?
                     <>

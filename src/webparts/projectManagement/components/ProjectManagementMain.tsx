@@ -464,7 +464,7 @@ const ProjectManagementMain = (props: any) => {
             smartmeta = await web.lists
               .getById(config.listId)
               .items.select(
-                "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
+                "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Remark"
               )
               .top(4999)
               .filter("ProjectId eq " + QueryId)
@@ -801,6 +801,24 @@ const ProjectManagementMain = (props: any) => {
       },
 
       {
+        internalHeader: "Remarks",
+        accessor: 'Remark',
+        showSortIcon: true,
+        style: { width: "125px" },
+        Cell: ({ row }: any) => (
+          <span>
+            <InlineEditingcolumns
+              AllListId={AllListId}
+              type="Task"
+              callBack={inlineCallBack}
+              columnName="Remark"
+              item={row?.original}
+              TaskUsers={AllUser}
+            />
+          </span>
+        ),
+      },
+      {
         internalHeader: "Created",
         accessor: "DisplayCreateDate",
         showSortIcon: true,
@@ -813,6 +831,7 @@ const ProjectManagementMain = (props: any) => {
           </span>
         ),
       },
+
 
       {
         internalHeader: "",

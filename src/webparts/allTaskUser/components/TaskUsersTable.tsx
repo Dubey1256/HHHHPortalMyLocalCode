@@ -1,3 +1,4 @@
+
 import * as React from 'react'
 
 import './index.css'
@@ -12,7 +13,6 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFacetedMinMaxValues,
-  getPaginationRowModel,
   sortingFns,
   getSortedRowModel,
   FilterFn,
@@ -100,10 +100,10 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
 
   const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
   const refreshData = () => setData(props.TaskUsers);
-  React.useEffect(()=>refreshData(), [props.TaskUsers]);
+  React.useEffect(() => refreshData(), [props.TaskUsers]);
 
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
-    () => [      
+    () => [
       {
         accessorKey: 'Title',
         header: "",
@@ -141,9 +141,9 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         id: "TaskId",
         accessorKey: "TaskId",
         header: null,
-        cell: (info)=>(<div style={{width:"60px"}}>
-          <Link href="#" onClick={()=>props.EditTask(info.getValue())}><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} /></Link>
-          <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} /></Link>
+        cell: (info) => (<div style={{ width: "60px" }}>
+          <Link href="#" onClick={() => props.EditTask(info.getValue())}><Icon iconName="Edit" style={{ color: "blue", paddingLeft: "10px" }} /></Link>
+          <Link href="#" onClick={() => props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{ color: "red", paddingLeft: "10px" }} /></Link>
         </div>),
         enableColumnFilter: false,
         enableSorting: false,
@@ -153,7 +153,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
     [data]
   )
 
- 
+
 
   const table = useReactTable({
     data,
@@ -164,14 +164,13 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
     state: {
       columnFilters,
       globalFilter,
-    },    
+    },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
@@ -190,89 +189,88 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
 
   return (
     <div className="p-2">
-      <div style={{display:"flex"}}>
-        <div style={{display:"inline",width:"50%"}}>
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            className="p-2 font-lg shadow border border-block"
-            placeholder="Search all columns..."
-          />
-        </div>
-        <div style={{display:"inline",width:"50%"}}>
-          <PrimaryButton text="Add Team Member" onClick={()=>props.AddTask()} style={{float:"right"}} />
-        </div>        
+      <div style={{ display: "inline", width: "50%" }}>
+        <PrimaryButton text="Add Team Member" onClick={() => props.AddTask()} style={{ float: "right" }} />
       </div>
       <br />
       <div className="h-2"></div>
-      <BTable striped bordered hover responsive size="lg">
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                return (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder ? null : (
-                      <div style={{ display: "flex" }}>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {header.column.getCanFilter() ? (
-                        <div>
-                          <Filter
-                            column={header.column}
-                            table={table}
-                            placeholder={header.column.columnDef}
-                          />
-                        </div>
-                      ) : null}
-                      {
-                        header.column.id=="TaskId" ? null :
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
-                              : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                        {header.column.getIsSorted()
-                            ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                                header.column.getIsSorted() as string
-                              ] ?? null
-                            : <FaSort />}
-                        </div>
-                    }
-                    </div>
-                    )}
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => {
+      <div className="Alltable mt-10">
+        <div className="col-sm-12 p-0 smart">
+          <div className="wrapper">
+            <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+              <thead className='fixed-Header top-0'>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => {
+                      return (
+                        <th key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder ? null : (
+                            <div style={{ display: "flex" }}>
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.getCanFilter() ? (
+                                <div>
+                                  <Filter
+                                    column={header.column}
+                                    table={table}
+                                    placeholder={header.column.columnDef}
+                                  />
+                                </div>
+                              ) : null}
+                              {
+                                header.column.id == "TaskId" ? null :
+                                  <div
+                                    {...{
+                                      className: header.column.getCanSort()
+                                        ? "cursor-pointer select-none"
+                                        : "",
+                                      onClick: header.column.getToggleSortingHandler(),
+                                    }}
+                                  >
+                                    {header.column.getIsSorted()
+                                      ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                      header.column.getIsSorted() as string
+                                      ] ?? null
+                                      : <FaSort />}
+                                  </div>
+                              }
+                            </div>
+                          )}
+                        </th>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+
+                {table?.getRowModel()?.rows?.map((row: any) => {
                   return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  )
+                    <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                      key={row.id}>
+                      {row.getVisibleCells().map((cell: any) => {
+                        return (
+                          <td key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
                 })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </BTable>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div className="h-2" />
-      {data.length>10 && <div className="flex items-center gap-2">
+      {/* {data.length>10 && <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"
           onClick={() => table.setPageIndex(0)}
@@ -333,15 +331,27 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
           ))}
         </select>
       </div>
-      }
-      <div>{table.getPrePaginationRowModel().rows.length} Rows</div>
-      {false && <><div>
+      } */}
+      {/* <div>{table.getPrePaginationRowModel().rows.length} Rows</div> */}
+      {/* {false && <><div>
         <button onClick={() => rerender()}>Force Rerender</button>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <button onClick={() => refreshData()}>Refresh Data</button>
-      </div>
-      <pre>{JSON.stringify(table.getState(), null, 2)}</pre></>}
+      </div> */}
+      {/* <pre>{JSON.stringify(table.getState(), null, 2)}</pre></>} */}
+      {/* <select
+          value={table.getState().pagination.pageSize}
+          onChange={e => {
+            table.setPageSize(Number(e.target.value))
+          }}
+        >
+          {[ 40, 50].map(pageSize => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select> */}
     </div>
   )
 }
@@ -358,12 +368,12 @@ function Filter({
   const columnFilterValue = column.getFilterValue();
 
   return (
-      <input
-          type="search"
-          value={(columnFilterValue ?? "") as string}
-          onChange={(e) => column.setFilterValue(e.target.value)}
-          placeholder={`${placeholder?.placeholder}`}
-      />
+    <input
+      type="search"
+      value={(columnFilterValue ?? "") as string}
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      placeholder={`${placeholder?.placeholder}`}
+    />
   );
 }
 
@@ -398,3 +408,10 @@ function DebouncedInput({
 }
 
 export default TableTaskUsers;
+
+
+
+
+
+
+
