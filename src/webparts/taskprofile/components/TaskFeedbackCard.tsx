@@ -457,7 +457,7 @@ private approvalcallback(){
             </div>
 
             <div className="col-sm-1 ps-1 mt-2 text-end " style={{ display: this.state.showcomment }}>
-              <button type="button" className="post btn btn-primary " onClick={() => this.PostButtonClick()}>Post</button>
+              <button type="button" className="postbtn btn-primary" onClick={() => this.PostButtonClick()}>Post</button>
             </div>
           </div>
 
@@ -550,7 +550,7 @@ private approvalcallback(){
               </div>
 
               <div className="col-sm-1 mt-2 ps-1 text-end  " style={{ display: this.state.showcomment_subtext }}>
-                <button type="button" className="post btn btn-primary" onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
+                <button type="button" className="postbtn btn-primary" onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
               </div>
             </div> : null}
 
