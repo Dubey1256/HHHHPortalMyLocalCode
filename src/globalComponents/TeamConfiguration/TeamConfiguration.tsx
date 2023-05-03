@@ -87,6 +87,21 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 taskUsers.push(item);
             }
         });
+        if (taskUsers != undefined && taskUsers.length > 0) {
+            taskUsers?.map((Alluser: any) => {
+                if (Alluser.childs != undefined && Alluser.childs.length > 0) {
+                    Alluser.childs.map((ChildUser: any) => {
+                        if (ChildUser.Item_x0020_Cover == null || ChildUser.Item_x0020_Cover == undefined) {
+                            let tempObject: any = {
+                                Description: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg',
+                                Url: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
+                            }
+                            ChildUser.Item_x0020_Cover = tempObject;
+                        }
+                    })
+                }
+            })
+        }
         console.log(taskUsers);
         this.setState({
             taskUsers
@@ -426,13 +441,17 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                         title={item.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                                                        onDragOver={(e) => e.preventDefault()} />
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                    />
                                                                 </span> :
-                                                                <span title={item.Title}
-                                                                    draggable
-                                                                    onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                                                    onDragOver={(e) => e.preventDefault()} className="svg__iconbox svg__icon--defaultUser"
-                                                                >
+                                                                <span>
+                                                                    <div title={item.Title}
+                                                                        draggable
+                                                                        style={{ backgroundImage: "url('https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg')", backgroundSize: "36px 36px" }}
+                                                                        onDragStart={(e) => this.dragStart(e, i, item, 'All')}
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                        className="ProirityAssignedUserPhoto"
+                                                                    />
                                                                 </span>
                                                             }
                                                         </div>
