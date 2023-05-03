@@ -597,14 +597,14 @@ function Portfolio({SelectedProp}:any) {
                                             {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
                                         <>
                                                 <a  target='_blank' data-interception="off" href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover?.Url} title={item.Title} />
                                                 </a>
                                             
                                                 </>
                                         ):""}
                                         <div className='px-1'>|</div>
                                                 {AllTeamMember != null && AllTeamMember.length > 0 &&
-                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover?.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                     }
                     {AllTeamMember != null && AllTeamMember.length > 1 &&
                     <div className="position-relative user_Member_img_suffix2 multimember fs13" style={{paddingTop: '2px'}} onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
@@ -615,7 +615,7 @@ function Portfolio({SelectedProp}:any) {
                                 
                                 return  <div className="team_Members_Item p-1">
                                 <div><a href={SelectedProp.siteUrl+"/SitePages/TeamLeader-Dashboard.aspx?UserId="+rcData.Id+"&Name="+rcData.Title} target="_blank" data-interception="off">
-                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
+                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover?.Url}></img></a></div>
                                 <div className='m-1'>{rcData.Title}</div>
                                 </div>
                                                         
@@ -630,7 +630,7 @@ function Portfolio({SelectedProp}:any) {
                                                 {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
                                                 <>
                                                         <a  target='_blank' data-interception="off" href={web+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
-                                                        <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
+                                                        <img className='AssignUserPhoto' src={member.Item_x0020_Cover?.Url} title={member.Title} />
                                                     </a>
                                                 </>
                                                 ):""} */}
