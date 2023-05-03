@@ -195,8 +195,6 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       <br />
       <div className="h-2"></div>
       <div className="Alltable mt-10">
-        <div className="tbl-headings p-2 bg-white">
-        </div>
         <div className="col-sm-12 p-0 smart">
           <div className="wrapper">
             <table className="SortingTable table table-hover" style={{ width: "100%" }}>
