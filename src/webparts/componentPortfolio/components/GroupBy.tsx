@@ -2633,6 +2633,8 @@ function ComponentTable(SelectedProp: any) {
                         comp.childs.push(childItem.data)
                         comp.subRows.push(childItem.data)
                     }
+
+
                     if (comp.subRows != undefined && comp.subRows.length > 0) {
                         comp?.subRows?.map((subComp: any) => {
                             subComp.flag = true;
@@ -2641,6 +2643,8 @@ function ComponentTable(SelectedProp: any) {
                                 subComp.childs.push(childItem.data)
                                 subComp.subRows.push(childItem.data)
                             }
+
+
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
                                     if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
@@ -2656,6 +2660,8 @@ function ComponentTable(SelectedProp: any) {
                                         Feat.childs.push(childItem.data)
                                         Feat.subRows.push(childItem.data)
                                     }
+
+
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
                                             if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
@@ -2670,7 +2676,13 @@ function ComponentTable(SelectedProp: any) {
                                                 Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
                                                 Activity.childs.push(childItem.data)
                                                 Activity.subRows.push(childItem.data)
+                                                // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
+                                                //     return array.indexOf(val) == id;
+                                                // })
+                                                Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                             }
+
+
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
                                                     if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
@@ -2685,6 +2697,8 @@ function ComponentTable(SelectedProp: any) {
                                                         workst.subRows = workst.subRows == undefined ? [] : workst.subRows
                                                         workst.childs.push(childItem.data)
                                                         workst.subRows.push(childItem.data)
+
+                                                        workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                                     }
 
                                                 })
@@ -2698,6 +2712,9 @@ function ComponentTable(SelectedProp: any) {
 
                     }
                 })
+
+
+
 
                 setData(array => ([...array]))
                 refreshData();
@@ -3897,35 +3914,35 @@ function ComponentTable(SelectedProp: any) {
         if (table?.getSelectedRowModel()?.flatRows.length > 0) {
             table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                 if (elem?.getParentRows() != undefined) {
-                    // parentData = elem?.parentRow;
-                    // parentDataCopy = elem?.parentRow?.original
-                    parentDataCopy = elem?.getParentRows()[0]?.original
-                    // if (parentData != undefined && parentData?.parentRow != undefined) {
+                // parentData = elem?.parentRow;
+                // parentDataCopy = elem?.parentRow?.original
+                parentDataCopy = elem?.getParentRows()[0]?.original
+                // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //     parentData = elem?.parentRow?.parentRow
-                    //     parentDataCopy = elem?.parentRow?.parentRow?.original
+                //     parentData = elem?.parentRow?.parentRow
+                //     parentDataCopy = elem?.parentRow?.parentRow?.original
 
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    //     if (parentData != undefined && parentData?.parentRow != undefined) {
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                //     if (parentData != undefined && parentData?.parentRow != undefined) {
 
-                    //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-                    //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-                    //     }
-                    // }
+                //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+                //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+                //     }
+                // }
                 }
 
                 elem.original.Id = elem.original.ID
