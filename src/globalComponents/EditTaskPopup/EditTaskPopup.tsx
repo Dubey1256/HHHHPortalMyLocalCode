@@ -1122,6 +1122,9 @@ const EditTaskPopup = (Items: any) => {
                             }
                         } 
                         if(tempArray != undefined && tempArray.length >0){
+                            tempArray.map((itemData:any)=>{
+                                itemData.Id = itemData.AssingedToUserId
+                            })
                             setApproverData(tempArray);
                             if((statusValue <= 1) && ApprovalStatusGlobal){
                                 StatusArray?.map((item: any) => {
