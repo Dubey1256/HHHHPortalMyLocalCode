@@ -2135,7 +2135,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                       target="_blank"
                                       href={
                                         userDtl.Item_x0020_Cover
-                                          ? userDtl.Item_x0020_Cover.Url
+                                          ? userDtl.Item_x0020_Cover?.Url
                                           : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                       }
                                     >
@@ -2156,8 +2156,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                           borderRadius: "50px",
                                         }}
                                         src={
-                                          userDtl.Item_x0020_Cover.Url
-                                            ? userDtl.Item_x0020_Cover.Url
+                                          userDtl.Item_x0020_Cover?.Url
+                                            ? userDtl.Item_x0020_Cover?.Url
                                             : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                         }
                                       />
