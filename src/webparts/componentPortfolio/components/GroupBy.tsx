@@ -46,7 +46,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
-import HighlightableCell from './highlight';
+import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
@@ -1311,11 +1311,11 @@ function ComponentTable(SelectedProp: any) {
 
                         })
 
-                        AllTasks?.forEach((task: any) => {
-                            if (task.isTagged != false) {
-                                task.childs = [];
-                                task.subRows = [];
-                                AllActivitysData.push(task)
+                        AllTasks?.forEach((value: any) => {
+                            if (value.isTagged != false) {
+                                value.childs = [];
+                                value.subRows = [];
+                                AllActivitysData.push(value)
                             }
 
                         })
@@ -1756,8 +1756,9 @@ function ComponentTable(SelectedProp: any) {
         // setfilterItems(filterItems)
         ShowSelectedfiltersItems();
         setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
-        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; Id: any; }, items: any) {
+        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[];  Id: any; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.UserGroup != undefined && childItem.UserGroup.Id != undefined && childItem.UserGroup.Id == item.Id) {
                     childItem.value = childItem.Id;
@@ -1766,12 +1767,14 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedonId(childItem, items);
                 }
             });
         }
-        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; ID: number; }, items: any) {
+        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[]; ID: number; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
                     childItem.value = childItem.Id;
@@ -1779,6 +1782,7 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedOn(childItem, items);
                 }
             });
@@ -1997,9 +2001,10 @@ function ComponentTable(SelectedProp: any) {
                             task.isService = true;
                             task.Portfolio_x0020_Type = 'Service';
                         }
-                        if (ComponetsData['allComponets'][i]['childs'] === undefined)
+                        if (ComponetsData['allComponets'][i]['childs'] === undefined){
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        ComponetsData['allComponets'][i]['subRows'] = [];
+                            ComponetsData['allComponets'][i]['subRows'] = [];
+                        }
                         if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
                             ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
@@ -2825,7 +2830,7 @@ function ComponentTable(SelectedProp: any) {
             // itrm.chekBox = true;
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
-                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['siteUrl'] = ContextValue?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
@@ -2834,8 +2839,8 @@ function ComponentTable(SelectedProp: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm?.SharewebTaskType?.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
-                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    itrm['listName'] = 'Master Tasks';
+                    itrm['siteUrl'] = ContextValue?.siteUrl;
+                    // itrm['listName'] = 'Master Tasks';
                     Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
                     childsData.push(itrm)
@@ -4819,7 +4824,7 @@ function ComponentTable(SelectedProp: any) {
                         <div className='bg-ee p-2 restructurebox'>
                             <div>
                                 {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
                             </div>
@@ -4831,7 +4836,7 @@ function ComponentTable(SelectedProp: any) {
                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
                                             {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
                                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
                                             ><span>{obj.Title}  </span>
                                             </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                     )
@@ -4846,7 +4851,7 @@ function ComponentTable(SelectedProp: any) {
                                                 <div className='Dyicons '>{newobj.SiteIconTitle}</div>
                                                 {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
                                                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
@@ -4855,7 +4860,7 @@ function ComponentTable(SelectedProp: any) {
                                     <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
                                     {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
                                     <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                             </div>
