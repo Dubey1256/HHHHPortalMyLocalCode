@@ -485,7 +485,7 @@ const EditTaskPopup = (Items: any) => {
     }
     return previous;
   },
-  []);
+    []);
 
   // **************** this is for Smart Category Call Back functions ******************
 
@@ -858,7 +858,7 @@ const EditTaskPopup = (Items: any) => {
             GetEditData();
           }
         },
-        function (data) {}
+        function (data) { }
       );
     // try {
     //     taskUsers = await globalCommon.loadTaskUsers;
@@ -2159,8 +2159,8 @@ const EditTaskPopup = (Items: any) => {
       PercentComplete: UpdateTaskInfo.PercentCompleteStatus
         ? Number(UpdateTaskInfo.PercentCompleteStatus) / 100
         : EditData.PercentComplete
-        ? EditData.PercentComplete / 100
-        : null,
+          ? EditData.PercentComplete / 100
+          : null,
       ComponentId: {
         results:
           smartComponentsIds != undefined && smartComponentsIds.length > 0
@@ -2184,8 +2184,8 @@ const EditTaskPopup = (Items: any) => {
       Status: taskStatus
         ? taskStatus
         : EditData.Status
-        ? EditData.Status
-        : null,
+          ? EditData.Status
+          : null,
       Mileage: EditData.Mileage ? EditData.Mileage : "",
       ServicesId: {
         results:
@@ -3890,8 +3890,8 @@ const EditTaskPopup = (Items: any) => {
                             defaultValue={
                               EditData.StartDate
                                 ? Moment(EditData.StartDate).format(
-                                    "YYYY-MM-DD"
-                                  )
+                                  "YYYY-MM-DD"
+                                )
                                 : ""
                             }
                             onChange={(e) =>
@@ -3957,8 +3957,8 @@ const EditTaskPopup = (Items: any) => {
                             defaultValue={
                               EditData.CompletedDate
                                 ? Moment(EditData.CompletedDate).format(
-                                    "YYYY-MM-DD"
-                                  )
+                                  "YYYY-MM-DD"
+                                )
                                 : ""
                             }
                             onChange={(e) =>
@@ -4040,8 +4040,8 @@ const EditTaskPopup = (Items: any) => {
                           </label>
                           {(smartComponentData?.length > 0 &&
                             ComponentTaskCheck) ||
-                          (smartServicesData?.length > 0 &&
-                            ServicesTaskCheck) ? null : (
+                            (smartServicesData?.length > 0 &&
+                              ServicesTaskCheck) ? null : (
                             <>
                               <input
                                 type="text"
@@ -4053,63 +4053,63 @@ const EditTaskPopup = (Items: any) => {
                           )}
                           {smartComponentData.length > 0 && ComponentTaskCheck
                             ? smartComponentData?.map((com: any) => {
-                                return (
-                                  <>
-                                    <div
-                                      className="d-flex justify-content-between block px-2 py-1"
-                                      style={{ width: "85%" }}
+                              return (
+                                <>
+                                  <div
+                                    className="d-flex justify-content-between block px-2 py-1"
+                                    style={{ width: "85%" }}
+                                  >
+                                    <a
+                                      style={{ color: "#fff !important" }}
+                                      target="_blank"
+                                      data-interception="off"
+                                      href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                     >
-                                      <a
-                                        style={{ color: "#fff !important" }}
-                                        target="_blank"
-                                        data-interception="off"
-                                        href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                      >
-                                        {com.Title}
-                                      </a>
-                                      <a>
-                                        <span
-                                          onClick={() =>
-                                            setSmartComponentData([])
-                                          }
-                                          className="bg-light svg__icon--cross svg__iconbox"
-                                        ></span>
-                                        {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
-                                      </a>
-                                    </div>
-                                  </>
-                                );
-                              })
+                                      {com.Title}
+                                    </a>
+                                    <a>
+                                      <span
+                                        onClick={() =>
+                                          setSmartComponentData([])
+                                        }
+                                        className="bg-light svg__icon--cross svg__iconbox"
+                                      ></span>
+                                      {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                    </a>
+                                  </div>
+                                </>
+                              );
+                            })
                             : null}
                           {smartServicesData?.length > 0 && ServicesTaskCheck
                             ? smartServicesData?.map((com: any) => {
-                                return (
-                                  <>
-                                    <div
-                                      className="d-flex justify-content-between block px-2 py-1"
-                                      style={{ width: "85%" }}
+                              return (
+                                <>
+                                  <div
+                                    className="d-flex justify-content-between block px-2 py-1"
+                                    style={{ width: "85%" }}
+                                  >
+                                    <a
+                                      style={{ color: "#fff !important" }}
+                                      target="_blank"
+                                      data-interception="off"
+                                      href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                     >
-                                      <a
-                                        style={{ color: "#fff !important" }}
-                                        target="_blank"
-                                        data-interception="off"
-                                        href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                      >
-                                        {com.Title}
-                                      </a>
-                                      <a>
-                                        <span
-                                          onClick={() =>
-                                            setSmartServicesData([])
-                                          }
-                                          className="bg-light svg__icon--cross svg__iconbox"
-                                        ></span>
-                                        {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
-                                      </a>
-                                    </div>
-                                  </>
-                                );
-                              })
+                                      {com.Title}
+                                    </a>
+                                    <a>
+                                      <span
+                                        onClick={() =>
+                                          setSmartServicesData([])
+                                        }
+                                        className="bg-light svg__icon--cross svg__iconbox"
+                                      ></span>
+                                      {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                    </a>
+                                  </div>
+                                </>
+                              );
+                            })
                             : null}
 
                           <span className="input-group-text">
@@ -4122,7 +4122,7 @@ const EditTaskPopup = (Items: any) => {
                                 className="svg__iconbox svg__icon--editBox"
                               ></span>
                             ) : // <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                            null}
+                              null}
 
                             {ServicesTaskCheck ? (
                               <span
@@ -4133,9 +4133,9 @@ const EditTaskPopup = (Items: any) => {
                                 className="svg__iconbox svg__icon--editBox"
                               ></span>
                             ) : // <svg onClick={(e) => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                            null}
+                              null}
                             {ComponentTaskCheck == false &&
-                            ServicesTaskCheck == false ? (
+                              ServicesTaskCheck == false ? (
                               <span
                                 title="Component/Service Popup"
                                 onClick={(e) =>
@@ -4146,7 +4146,7 @@ const EditTaskPopup = (Items: any) => {
                                 className="svg__iconbox svg__icon--editBox"
                               ></span>
                             ) : // <svg onClick={(e) => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                            null}
+                              null}
                           </span>
                         </div>
                         <div className="input-group mb-2">
@@ -4242,7 +4242,7 @@ const EditTaskPopup = (Items: any) => {
                               <label>Immediate</label>
                             </div>
                             {ShareWebTypeData != undefined &&
-                            ShareWebTypeData?.length > 0 ? (
+                              ShareWebTypeData?.length > 0 ? (
                               <div>
                                 {ShareWebTypeData?.map(
                                   (type: any, index: number) => {
@@ -4370,7 +4370,7 @@ const EditTaskPopup = (Items: any) => {
                               ) : null}
 
                               {ApproverData != undefined &&
-                              ApproverData.length > 0 ? (
+                                ApproverData.length > 0 ? (
                                 <div>
                                   {ApproverData.map(
                                     (Approver: any, index: number) => {
@@ -4657,7 +4657,7 @@ const EditTaskPopup = (Items: any) => {
                               onChange={(e) => autoSuggestionsForProject(e)}
                             />
                             {ComponentTaskCheck == false &&
-                            ServicesTaskCheck == false ? (
+                              ServicesTaskCheck == false ? (
                               <span
                                 className="input-group-text"
                                 title="Project Popup"
@@ -4704,7 +4704,7 @@ const EditTaskPopup = (Items: any) => {
                             </div>
                           ) : null}
                           {selectedProject != undefined &&
-                          selectedProject.length > 0 ? (
+                            selectedProject.length > 0 ? (
                             <div>
                               {selectedProject.map((ProjectData: any) => {
                                 return (
@@ -4800,8 +4800,8 @@ const EditTaskPopup = (Items: any) => {
 
                   <div className="col-md-3">
                     {EditData.siteCompositionData != undefined &&
-                    EditData.siteCompositionData.length > 0 &&
-                    AllListIdData.isShowSiteCompostion ? (
+                      EditData.siteCompositionData.length > 0 &&
+                      AllListIdData.isShowSiteCompostion ? (
                       <div className="Sitecomposition">
                         <div className="dropdown">
                           <a
@@ -4824,7 +4824,7 @@ const EditTaskPopup = (Items: any) => {
                             <div className="mt-1 spxdropdown-menu">
                               <ul>
                                 {EditData.siteCompositionData != undefined &&
-                                EditData.siteCompositionData.length > 0 ? (
+                                  EditData.siteCompositionData.length > 0 ? (
                                   <>
                                     {EditData.siteCompositionData?.map(
                                       (SiteDtls: any, i: any) => {
@@ -4839,13 +4839,13 @@ const EditTaskPopup = (Items: any) => {
 
                                             {SiteDtls.ClienTimeDescription !=
                                               undefined && (
-                                              <span className="mx-2">
-                                                {SiteDtls.ClienTimeDescription}%
-                                              </span>
-                                            )}
+                                                <span className="mx-2">
+                                                  {SiteDtls.ClienTimeDescription}%
+                                                </span>
+                                              )}
                                             {SiteDtls.ClientCategory !=
                                               undefined &&
-                                            SiteDtls.ClientCategory.length >
+                                              SiteDtls.ClientCategory.length >
                                               0 ? (
                                               <>
                                                 {SiteDtls.ClientCategory?.map(
@@ -4899,8 +4899,8 @@ const EditTaskPopup = (Items: any) => {
                                 ? EditData.PercentComplete
                                 : null
                               : UpdateTaskInfo.PercentCompleteStatus
-                              ? UpdateTaskInfo.PercentCompleteStatus
-                              : null
+                                ? UpdateTaskInfo.PercentCompleteStatus
+                                : null
                           }
                           onChange={(e) => StatusAutoSuggestion(e)}
                         />
@@ -4959,7 +4959,7 @@ const EditTaskPopup = (Items: any) => {
                                 className="form-check-input"
                                 checked={
                                   EditData.Mileage <= 15 &&
-                                  EditData.Mileage >= 0
+                                    EditData.Mileage >= 0
                                     ? true
                                     : false
                                 }
@@ -4983,7 +4983,7 @@ const EditTaskPopup = (Items: any) => {
                                 className="form-check-input"
                                 checked={
                                   EditData.Mileage <= 60 &&
-                                  EditData.Mileage >= 15
+                                    EditData.Mileage >= 15
                                     ? true
                                     : false
                                 }
@@ -4993,7 +4993,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                                 defaultChecked={
                                   EditData.Mileage <= 60 &&
-                                  EditData.Mileage > 15
+                                    EditData.Mileage > 15
                                     ? true
                                     : false
                                 }
@@ -5006,7 +5006,7 @@ const EditTaskPopup = (Items: any) => {
                                 className="form-check-input"
                                 checked={
                                   EditData.Mileage <= 240 &&
-                                  EditData.Mileage >= 60
+                                    EditData.Mileage >= 60
                                     ? true
                                     : false
                                 }
@@ -5016,7 +5016,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                                 defaultChecked={
                                   EditData.Mileage <= 240 &&
-                                  EditData.Mileage > 60
+                                    EditData.Mileage > 60
                                     ? true
                                     : false
                                 }
@@ -5034,7 +5034,7 @@ const EditTaskPopup = (Items: any) => {
                                 }
                                 defaultChecked={
                                   EditData.Mileage <= 480 &&
-                                  EditData.Mileage > 240
+                                    EditData.Mileage > 240
                                     ? true
                                     : false
                                 }
@@ -5392,7 +5392,7 @@ const EditTaskPopup = (Items: any) => {
                   </div>
                   <div className="col-sm-5">
                     {EditData.Title != null &&
-                    AllListIdData.isShowSiteCompostion ? (
+                      AllListIdData.isShowSiteCompostion ? (
                       <SiteCompositionComponent
                         AllListId={AllListIdData}
                         siteUrls={siteUrls}
@@ -5820,8 +5820,8 @@ const EditTaskPopup = (Items: any) => {
                                   defaultValue={
                                     EditData.StartDate
                                       ? Moment(EditData.StartDate).format(
-                                          "YYYY-MM-DD"
-                                        )
+                                        "YYYY-MM-DD"
+                                      )
                                       : ""
                                   }
                                   onChange={(e) =>
@@ -5852,15 +5852,15 @@ const EditTaskPopup = (Items: any) => {
                                   min={
                                     EditData.Created
                                       ? Moment(EditData.Created).format(
-                                          "YYYY-MM-DD"
-                                        )
+                                        "YYYY-MM-DD"
+                                      )
                                       : ""
                                   }
                                   defaultValue={
                                     EditData.DueDate
                                       ? Moment(EditData.DueDate).format(
-                                          "YYYY-MM-DD"
-                                        )
+                                        "YYYY-MM-DD"
+                                      )
                                       : ""
                                   }
                                   onChange={(e) =>
@@ -5884,15 +5884,15 @@ const EditTaskPopup = (Items: any) => {
                                   min={
                                     EditData.StartDate
                                       ? Moment(EditData.StartDate).format(
-                                          "YYYY-MM-DD"
-                                        )
+                                        "YYYY-MM-DD"
+                                      )
                                       : ""
                                   }
                                   defaultValue={
                                     EditData.CompletedDate
                                       ? Moment(EditData.CompletedDate).format(
-                                          "YYYY-MM-DD"
-                                        )
+                                        "YYYY-MM-DD"
+                                      )
                                       : ""
                                   }
                                   onChange={(e) =>
@@ -5962,7 +5962,7 @@ const EditTaskPopup = (Items: any) => {
                                   </span>
                                 </label>
                                 {smartComponentData?.length > 0 ||
-                                smartServicesData?.length > 0 ? null : (
+                                  smartServicesData?.length > 0 ? null : (
                                   <>
                                     <input
                                       type="text"
@@ -5973,7 +5973,7 @@ const EditTaskPopup = (Items: any) => {
                                   </>
                                 )}
                                 {smartComponentData.length > 0 &&
-                                ComponentTaskCheck ? (
+                                  ComponentTaskCheck ? (
                                   smartComponentData?.map((com: any) => {
                                     return (
                                       <>
@@ -6023,7 +6023,7 @@ const EditTaskPopup = (Items: any) => {
                                   </>
                                 )}
                                 {smartServicesData?.length > 0 &&
-                                ServicesTaskCheck ? (
+                                  ServicesTaskCheck ? (
                                   smartServicesData?.map((com: any) => {
                                     return (
                                       <>
@@ -6112,7 +6112,7 @@ const EditTaskPopup = (Items: any) => {
                                     </svg>
                                   ) : null}
                                   {ComponentTaskCheck == false &&
-                                  ServicesTaskCheck == false ? (
+                                    ServicesTaskCheck == false ? (
                                     <svg
                                       onClick={() =>
                                         alert(
@@ -6253,14 +6253,14 @@ const EditTaskPopup = (Items: any) => {
                                     <label>Immediate</label>
                                   </div>
                                   {ShareWebTypeData != undefined &&
-                                  ShareWebTypeData?.length > 0 ? (
+                                    ShareWebTypeData?.length > 0 ? (
                                     <div>
                                       {ShareWebTypeData?.map(
                                         (type: any, index: number) => {
                                           if (
                                             type.Title != "Phone" &&
                                             type.Title !=
-                                              "Email Notification" &&
+                                            "Email Notification" &&
                                             type.Title != "Immediate" &&
                                             type.Title != "Approval" &&
                                             type.Title != "Email" &&
@@ -6834,7 +6834,7 @@ const EditTaskPopup = (Items: any) => {
                                     }
                                   />
                                   {ComponentTaskCheck == false &&
-                                  ServicesTaskCheck == false ? (
+                                    ServicesTaskCheck == false ? (
                                     <span
                                       className="input-group-text"
                                       onClick={(e) =>
@@ -6906,7 +6906,7 @@ const EditTaskPopup = (Items: any) => {
                                   </div>
                                 ) : null}
                                 {selectedProject != undefined &&
-                                selectedProject.length > 0 ? (
+                                  selectedProject.length > 0 ? (
                                   <div>
                                     {selectedProject.map((ProjectData: any) => {
                                       return (
@@ -7027,7 +7027,7 @@ const EditTaskPopup = (Items: any) => {
                                     <ul>
                                       {EditData.siteCompositionData !=
                                         undefined &&
-                                      EditData.siteCompositionData.length >
+                                        EditData.siteCompositionData.length >
                                         0 ? (
                                         <>
                                           {EditData.siteCompositionData?.map(
@@ -7043,13 +7043,13 @@ const EditTaskPopup = (Items: any) => {
 
                                                   {SiteDtls.ClienTimeDescription !=
                                                     undefined && (
-                                                    <span className="mx-2">
-                                                      {
-                                                        SiteDtls.ClienTimeDescription
-                                                      }
-                                                      %
-                                                    </span>
-                                                  )}
+                                                      <span className="mx-2">
+                                                        {
+                                                          SiteDtls.ClienTimeDescription
+                                                        }
+                                                        %
+                                                      </span>
+                                                    )}
                                                 </li>
                                               );
                                             }
@@ -7091,8 +7091,8 @@ const EditTaskPopup = (Items: any) => {
                                       ? EditData.PercentComplete
                                       : null
                                     : UpdateTaskInfo.PercentCompleteStatus
-                                    ? UpdateTaskInfo.PercentCompleteStatus
-                                    : null
+                                      ? UpdateTaskInfo.PercentCompleteStatus
+                                      : null
                                 }
                                 onChange={(e) => StatusAutoSuggestion(e)}
                               />
@@ -7555,11 +7555,10 @@ const EditTaskPopup = (Items: any) => {
                         return (
                           <li
                             key={siteData.Id}
-                            className={`mx-1 p-2 position-relative  text-center  mb-2 ${
-                              siteData.BtnStatus
-                                ? "selectedSite"
-                                : "bg-siteColor"
-                            }`}
+                            className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus
+                              ? "selectedSite"
+                              : "bg-siteColor"
+                              }`}
                           >
                             <a
                               className="text-white text-decoration-none"
