@@ -14,15 +14,17 @@ import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedCompo
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
-let mastertaskdetails:any;
+let mastertaskdetails: any;
+let checkboxTitle: any;
 const SmartInformation = (props: any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
-  const [smartInformation, setsmartInformation] = useState(true);
+  const [smartInformationArrow, setsmartInformationArrow] = useState(true);
   const [allValue, setallSetValue] = useState({
-    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined },componentservicesetdataTag:undefined, EditTaskpopupstatus: false, DocumentType: "",masterTaskdetails:[],
+    Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
-  const[masterTaskdetails,setMasterTaskdetails]=useState([]);
+  const [filterSmartinfo, setFiltersmartinfo] = useState([]);
+  const [masterTaskdetails, setMasterTaskdetails] = useState([]);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
   const [componentpopup, setcomponentpopup] = useState(false);
   const [servicespopup, setservicespopup] = useState(false);
@@ -40,17 +42,20 @@ const SmartInformation = (props: any) => {
   const [smartDocumentpostData, setsmartDocumentpostData] = useState(null);
   const [EditdocumentsData, setEditdocumentsData] = useState(null);
   const [Editdocpanel, setEditdocpanel] = useState(false);
+  const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
+  const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
   const handleClose = () => {
     setpopupEdit(false);
     setshowAdddocument(false);
     setSelectedTilesTitle("")
     setShow(false);
     seteditvalue(null);
-    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined },componentservicesetdataTag:undefined, EditTaskpopupstatus: false, DocumentType: "",masterTaskdetails:[] });
+    setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
 
   }
   const handleClosedoc = () => {
     setEditdocpanel(false)
+    handleClose();
   }
   const handleShow = async (item: any, value: any) => {
 
@@ -59,14 +64,20 @@ const SmartInformation = (props: any) => {
     if (value == "edit") {
       setpopupEdit(true);
       seteditvalue(item);
+      setEditSmartinfoValue(item)
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
+      setShow(true);
+    }else{
+      setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
+
+      setShow(true);
     }
-    setShow(true);
+    
   }
 
   useEffect(() => {
     GetResult();
-
+    LoadMasterTaskList();
   }, [show])
 
   // ===============get smartInformationId tag in task========================
@@ -85,43 +96,43 @@ const SmartInformation = (props: any) => {
       .get()
     console.log(taskDetails);
     if (taskDetails != undefined) {
-     settaskinfo(taskDetails);
+      settaskinfo(taskDetails);
+
       if (taskDetails?.SmartInformation !== undefined && taskDetails?.SmartInformation.length > 0) {
-       var mastertasklistDetails:any;
-       mastertasklistDetails= await LoadMasterTaskList();
+        
         await GetAllTask(taskDetails?.SmartInformation);
-       await loadAllSmartInformation(taskDetails?.SmartInformation,mastertasklistDetails);
+        await loadAllSmartInformation(taskDetails?.SmartInformation);
       }
     }
 
   }
-// ============master task list  to find the serice or component tag in the documents  ============
-const LoadMasterTaskList=async(): Promise<any>=>{
-  let web = new Web(props.AllListId.siteUrl);
-       await web.lists
-         .getById(props?.AllListId.MasterTaskListID).items
-         .select(
-           "Id",
-           "Title",
-           "Mileage",
-           "TaskListId",
-           "TaskListName",
-           "Portfolio_x0020_Type"
-         ).top(4999).get()
-         .then((dataserviccomponent: any) => {
-           console.log(dataserviccomponent)
-           mastertaskdetails=dataserviccomponent;
-           setMasterTaskdetails(dataserviccomponent);
-           setallSetValue({...allValue,masterTaskdetails:dataserviccomponent})
-           return dataserviccomponent
-         }).catch((error: any) => {
-           console.log(error)
-         })
+  // ============master task list  to find the serice or component tag in the documents  ============
+  const LoadMasterTaskList = async (): Promise<any> => {
+    let web = new Web(props.AllListId.siteUrl);
+    await web.lists
+      .getById(props?.AllListId.MasterTaskListID).items
+      .select(
+        "Id",
+        "Title",
+        "Mileage",
+        "TaskListId",
+        "TaskListName",
+        "Portfolio_x0020_Type"
+      ).top(4999).get()
+      .then((dataserviccomponent: any) => {
+        console.log(dataserviccomponent)
+        mastertaskdetails = dataserviccomponent;
+        setMasterTaskdetails(dataserviccomponent);
+        setallSetValue({ ...allValue, masterTaskdetails: dataserviccomponent })
+        return dataserviccomponent
+      }).catch((error: any) => {
+        console.log(error)
+      })
 
-     }
+  }
 
   //============== AllsmartInformation get in smartInformation list ===========================
-  const loadAllSmartInformation = async (SmartInformation: any,mastertasklistDetails:any) => {
+  const loadAllSmartInformation = async (SmartInformation: any) => {
     var allSmartInformationglobal: any = [];
     const web = new Web(props?.AllListId?.siteUrl);
     // var Data = await web.lists.getByTitle("SmartInformation")
@@ -169,19 +180,19 @@ const LoadMasterTaskList=async(): Promise<any>=>{
           .items.select("Id,Title,Priority_x0020_Rank,Year,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
           .expand("Author,Editor,SharewebTask").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
           .get()
-          .then(async(result: any[]) => {
+          .then(async (result: any[]) => {
             console.log(result);
-         result?.map((servicecomponent:any)=>{
-          if(servicecomponent.SharewebTask!=undefined&&servicecomponent.SharewebTask.length>0){
-            mastertaskdetails.map((mastertask:any)=>{
-             if(mastertask.Id==servicecomponent.SharewebTask[0].Id){
-              servicecomponent.SharewebTask[0]=mastertask
-             } 
-            })     
-          }
-         })
-         
-          console.log(result);
+            result?.map((servicecomponent: any) => {
+              if (servicecomponent.SharewebTask != undefined && servicecomponent.SharewebTask.length > 0) {
+                mastertaskdetails.map((mastertask: any) => {
+                  if (mastertask.Id == servicecomponent.SharewebTask[0].Id) {
+                    servicecomponent.SharewebTask[0] = mastertask
+                  }
+                })
+              }
+            })
+
+            console.log(result);
             items.TagDocument = result
             if (AllTasktagsmartinfo != undefined && AllTasktagsmartinfo.length > 0) {
               AllTasktagsmartinfo?.map((task: any) => {
@@ -220,9 +231,9 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     }
     console.log(allSmartInformationglobaltagdocuments)
   }
- 
 
-  
+
+
 
   //===============move folder to get the forlderName in the choice column ==================
 
@@ -291,7 +302,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     return (
       <>
 
-        <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+        <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
         <Tooltip ComponentId='993' />
@@ -303,8 +314,22 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     console.log(value);
     console.log(item);
     if (item == "Title") {
-      setallSetValue({ ...allValue, Title: value })
-    }
+      var filterdata: any;
+      if (value != "") {
+        setallSetValue({ ...allValue, Title: value })
+        filterdata = taskInfo?.SmartInformation?.filter((items: any) => {
+          if (items?.Title != null && items?.Title != undefined) {
+            if (items.Title.toLowerCase().includes(value.toLowerCase())) {
+              return items;
+            }
+            }
+           })
+        setFiltersmartinfo(filterdata)
+      } else {
+        setallSetValue({ ...allValue, Title: value })
+        setFiltersmartinfo(filterdata)
+      }
+      }
     if (item == "url") {
       setallSetValue({ ...allValue, URL: value })
     }
@@ -367,9 +392,14 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
-            if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") {
+            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") && editvalue.SelectedFolder == "Public") {
               let movedata = await web
                 .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
+              console.log(movedata);
+            }
+            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") && (editvalue.SelectedFolder == "Memberarea" || editvalue.SelectedFolder == "EDA Only")) {
+              let movedata = await web
+                .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue.SelectedFolder}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
               console.log(movedata);
             }
             GetResult();
@@ -426,13 +456,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
 
   //===========show hide smartInformation===========
 
-  const showhideComposition = () => {
-    if (smartInformation) {
+  const showhideComposition = (showhideComposition: any) => {
+    if (smartInformationArrow) {
 
-      setsmartInformation(false)
+      setsmartInformationArrow(false)
 
     } else {
-      setsmartInformation(true)
+      setsmartInformationArrow(true)
     }
 
   }
@@ -482,17 +512,18 @@ const LoadMasterTaskList=async(): Promise<any>=>{
   //======== add document when i click to add document in profile page =========.
 
   const addDocument = async (Status: any, items: any) => {
-    console.log(items)
     setsmartDocumentpostData(items)
     if (Status == "AddDocument") {
       setshowAdddocument(true)
     }
     else {
+
       await saveSharewebItem();
       alert('Information saved now items can be attached.');
-      console.log(PostSmartInfo);
-     
     }
+    setshowAdddocument(true)
+
+
 
 
   }
@@ -596,12 +627,21 @@ const LoadMasterTaskList=async(): Promise<any>=>{
           tagcomponetServicesId = taskInfo.Services[0].Id;
 
         }
+        console.log(PostSmartInfo)
+        console.log(EditSmartinfoValue);
+        var smartinfoData: any;
+        if (PostSmartInfo != undefined) {
+          smartinfoData = PostSmartInfo.data
+        } else {
+          smartinfoData = EditSmartinfoValue
+        }
+
         const web = new Web(props?.AllListId?.siteUrl);
         const updatedItem = await web.lists.getById(props?.AllListId?.DocumentsListID)
           .items.getById(res.Id).update({
-            SmartInformationId: { "results": [(smartDocumentpostData?.Id)] },
+            SmartInformationId: { "results": smartDocumentpostData != undefined ? [smartDocumentpostData?.Id] : [smartinfoData?.Id] },
             Title: fileName.split(".")[0],
-            SharewebTaskId: { "results": [tagcomponetServicesId != undefined ? tagcomponetServicesId : null] },
+            SharewebTaskId: { "results": tagcomponetServicesId != undefined ? [tagcomponetServicesId] : [] },
 
             Url: {
               "__metadata": { type: 'SP.FieldUrlValue' },
@@ -641,7 +681,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         .then((res: any) => {
           console.log(res);
           alert("task created")
-          //  GetAllTask(712)
+
           GetResult();
           handleClose();
           setshowAdddocument(false)
@@ -660,15 +700,15 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     setEditdocpanel(true);
     console.log(editData)
     if (editData?.SharewebTask != undefined && editData?.SharewebTask?.length > 0) {
-     
+
       if (editData?.SharewebTask[0]?.Portfolio_x0020_Type == "Component") {
-      //  setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: editData?.SharewebTask[0] } })
-        setallSetValue({...allValue,componentservicesetdataTag: editData?.SharewebTask[0] })
+
+        setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
         setservicespopup(false);
         setcomponentpopup(true);
       } else {
-        setallSetValue({...allValue,componentservicesetdataTag: editData?.SharewebTask[0] })
-      //  setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent:editData?.SharewebTask[0]}})
+        setallSetValue({ ...allValue, componentservicesetdataTag: editData?.SharewebTask[0] })
+
         setservicespopup(true);
         setcomponentpopup(false);
       }
@@ -682,14 +722,14 @@ const LoadMasterTaskList=async(): Promise<any>=>{
     if (items == "Component") {
       setservicespopup(false);
       setcomponentpopup(true);
-      setallSetValue({...allValue,componentservicesetdataTag: undefined })
-     // setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, linkedComponent: undefined } })
+      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+
     }
     if (items == "Service") {
       setservicespopup(true);
       setcomponentpopup(false);
-      setallSetValue({...allValue,componentservicesetdataTag:undefined })
-      // setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: undefined } })
+      setallSetValue({ ...allValue, componentservicesetdataTag: undefined })
+
     }
   }
 
@@ -759,13 +799,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
 
   const ServiceComponentCallBack = React.useCallback((items: any) => {
     console.log(items)
-    setallSetValue({...allValue,componentservicesetdataTag:items?.smartComponent[0] })
-    // if (items.smartComponent != undefined) {
-    //   setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, smartComponent: items?.smartComponent[0] } })
-    // }
-    // if (items.linkedComponent != undefined) {
-    //   setallSetValue({ ...allValue, componentservicesetdata: { ...allValue.componentservicesetdata, linkedComponent: items?.linkedComponent[0] } })
-    // }
+    if (items?.smartComponent != undefined) {
+      setallSetValue({ ...allValue, componentservicesetdataTag: items?.smartComponent[0] })
+    }
+    if (items?.linkedComponent) {
+      setallSetValue({ ...allValue, componentservicesetdataTag: items?.linkedComponent[0] })
+    }
+
     setisopencomonentservicepopup(false);
   }, [])
 
@@ -792,13 +832,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         ItemRank: EditdocumentsData.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-        SharewebTaskId: { "results": [componetServicetagData != undefined ? componetServicetagData : null] },
+        SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
-          'Description': EditdocumentsData?.Url.Url != "" ? EditdocumentsData?.Url.Url : "",
-          'Url': EditdocumentsData?.Url.Url ? EditdocumentsData?.Url.Url : "",
+          'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+          'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",
         }
-        // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
+
       }).then((updatedItem: any) => {
         console.log(updatedItem)
         if (EditdocumentsData?.Url != undefined) {
@@ -815,7 +855,22 @@ const LoadMasterTaskList=async(): Promise<any>=>{
       })
 
     // })
+
   }
+  const checkboxFunction = (e: any) => {
+    console.log(e);
+    if (e.currentTarget.checked) {
+      setallSetValue({ ...allValue, Title: `Quick-${taskInfo?.Title}-${Today}` })
+    } else {
+      setallSetValue({ ...allValue, Title: "" })
+    }
+
+  }
+  const onclickfilteritems=(items:any)=>{
+    setallSetValue({ ...allValue, Title:items })
+    setFiltersmartinfo([])
+  }
+
 
   return (
     <div>
@@ -831,8 +886,8 @@ const LoadMasterTaskList=async(): Promise<any>=>{
               <div className='border dropdown mt-2 shadow'>
                 <div className='bg-ee d-flex py-1 '>
                   <span className='full-width'>
-                    <a onClick={showhideComposition}>
-                      <span >{smartInformation ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span >
+                    <a onClick={() => showhideComposition(SmartInformation)}>
+                      <span >{smartInformationArrow ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span >
                       <span className="pe-3">{SmartInformation?.Title != undefined ? SmartInformation?.Title : ""}</span>
                     </a>
 
@@ -845,7 +900,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
                   </span>
                 </div>
 
-                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformation ? 'block' : 'none' }}>
+                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none' }}>
                   <div className="ps-3" dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                   {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
@@ -933,8 +988,18 @@ const LoadMasterTaskList=async(): Promise<any>=>{
           </div>
           <div className='row'>
             <div className='col-md-6'>
-              <label htmlFor="Title" className='full-width'>Title &nbsp;*</label>
+              <label htmlFor="Title" className='full-width'>Title &nbsp;*
+                {popupEdit != true && <span><input type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
               <input type="text" className='full-width' value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
+              {filterSmartinfo!= undefined&&filterSmartinfo.length>0&& <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
+                return (
+                  < >
+                   <li onClick={()=>onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
+                  </>
+                )
+              })}
+              </ul>
+              </div>}
             </div>
             <div className='col-sm-6'>
               <label className='full-width' htmlFor="InfoType">InfoType</label>
@@ -953,7 +1018,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
               <input type="text" className='full-width' id="URL" value={allValue?.URL} onChange={(e) => changeInputField(e.target.value, "url")} />
             </div>
             {allValue.InfoType != null && allValue.InfoType == "Glossary" && <div className='col-md-6'>
-              <label htmlFor="Acronym" className='full-width'>Acronym &nbsp;*</label>
+              <label htmlFor="Acronym" className='full-width'>Acronym</label>
               <input type="text" className='full-width' id="Acronym" value={allValue?.Acronym} onChange={(e) => changeInputField(e.target.value, "Acronym")} />
             </div>}
           </div>
@@ -964,13 +1029,13 @@ const LoadMasterTaskList=async(): Promise<any>=>{
             <div className="col-sm-6 text-lg-start">
               {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
-                <div><a onClick={() => deleteSmartinfoData(editvalue.Id)}><img className='pe-1' src='https://hhhhteams.sharepoint.com/_layouts/images/delete.gif' />Delete this item</a></div>
+                <div><span className="svg__iconbox svg__icon--trash"onClick={() => deleteSmartinfoData(editvalue.Id)}> </span>Delete this item</div>
               </div>}
             </div>
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", null)}>Add Link/ Document</a></span>
+              <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
               <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
                 Save
               </Button>
@@ -1101,11 +1166,12 @@ const LoadMasterTaskList=async(): Promise<any>=>{
         customWidth="1091px"
         onDismiss={handleClosedoc}
         isBlocking={!isopencomonentservicepopup}
+        className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
 
         <ul className="nav nav-tabs" id="myTab" role="tablist">
           <li className="nav-item" role="presentation">
-            <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
+            <button className={servicespopup ? "nav-link active siteColor" : "nav-link active"} id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
           </li>
           <li className="nav-item" role="presentation">
             <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="profile" aria-selected="false">IMAGE INFORMATION</button>
@@ -1120,11 +1186,11 @@ const LoadMasterTaskList=async(): Promise<any>=>{
             </div>}
 
             <div className='d-flex mt-3'>
-              <div className="input-group"><label className="form-label full-width ">Name </label>
+              <div className="input-group"><label className=" full-width ">Name </label>
                 <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
               </div>
 
-              <div className="input-group mx-4"><label className="form-label full-width ">Year </label>
+              <div className="input-group mx-4"><label className="full-width ">Year </label>
                 <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
                 <span className="input-group-text" title="Linked Component Task Popup">
                   <span className="svg__iconbox svg__icon--editBox"></span>
@@ -1132,7 +1198,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
               </div>
 
               <div className="input-group">
-                <label className="form-label full-width">Item Rank</label>
+                <label className="full-width">Item Rank</label>
                 <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
                   {ItemRank.map(function (h: any, i: any) {
                     return (
@@ -1143,7 +1209,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
               </div>
             </div>
             <div className='d-flex mt-3'>
-              <div className="input-group"><label className="form-label full-width ">Title </label>
+              <div className="input-group"><label className="full-width ">Title </label>
                 <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))} />
               </div>
               <div className="input-group mx-4">
@@ -1152,28 +1218,19 @@ const LoadMasterTaskList=async(): Promise<any>=>{
                   <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
                 </label>
 
-                {/* {allValue?.componentservicesetdata?.smartComponent != undefined &&
-                  <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                    <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdata?.smartComponent.Title}</a>
-                    <a>
-                      <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                    </a></div>} */}
-
-
                 {allValue?.componentservicesetdataTag != undefined &&
                   <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
                     <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
                     <a>
                       <span className="bg-light svg__icon--cross svg__iconbox"></span>
                     </a></div>}
-                {/* <input type="text" className="form-control" value={allValue?.componentservicesetdata?.linkedComponent.Title} readOnly/>} */}
-                {/* {allValue?.componentservicesetdata?.smartComponent!=undefined&&<input type="text" className="form-control" value={allValue?.componentservicesetdata?.smartComponent.Title} readOnly />} */}
-                {allValue?.componentservicesetdataTag == undefined &&  <input type="text" className="form-control" readOnly />}
+
+                {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
                 <span className="input-group-text" title="Linked Component Task Popup">
                   <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
                 </span>
               </div>
-              <div className="input-group"><label className="form-label full-width ">Document Type </label>
+              <div className="input-group"><label className="full-width ">Document Type </label>
                 <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
                 <span className="input-group-text" title="Linked Component Task Popup">
                   <span className="svg__iconbox svg__icon--editBox"></span>
@@ -1190,7 +1247,7 @@ const LoadMasterTaskList=async(): Promise<any>=>{
             <div className="col-sm-6 text-lg-start">
               {Editdocpanel && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{EditdocumentsData?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{EditdocumentsData?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{EditdocumentsData?.Editor?.Title}</a></span></div>
-                <div><a onClick={() => deleteDocumentsData(EditdocumentsData?.Id)}><span className="svg__iconbox svg__icon--trash"></span>Delete this item</a></div>
+                <div><span onClick={() => deleteDocumentsData(EditdocumentsData?.Id)} className="svg__iconbox svg__icon--trash"></span>Delete this item</div>
               </div>}
             </div>
 

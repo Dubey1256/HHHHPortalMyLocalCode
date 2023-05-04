@@ -5,7 +5,7 @@ import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaMinus, FaPlus } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
@@ -41,6 +41,7 @@ import {
     flexRender,
     getSortedRowModel,
     SortingState,
+    ColumnFiltersState,
 } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
@@ -74,6 +75,7 @@ let AllActivitysData: any = [];
 let AllActivitysDatacopy: any = [];
 let AllWorkStreamData: any = [];
 let RemoveDuplicateTime: any = []
+let forceExpanded: any = [];
 
 
 
@@ -138,7 +140,7 @@ function ComponentTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1]
     const [loaded, setLoaded] = React.useState(true);
     const [color, setColor] = React.useState(false);
-
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -541,7 +543,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...PriorityItems]);
             }
-
             if (isItemRankSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, ItemRankItems);
@@ -558,7 +559,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...ItemRankItems]);
             }
-
             if (isSitesSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, SitesItems);
@@ -1289,13 +1289,9 @@ function ComponentTable(SelectedProp: any) {
                                     task.isTagged = false
                                     elem.childs.push(task);
                                     elem.subRows.push(task);
-
                                 }
-
                             })
-
                         })
-
                         AllActivitysData?.forEach((elem: any) => {
                             elem?.subRows?.forEach((val: any) => {
                                 val.childs = val.childs === undefined ? [] : val.childs;
@@ -2565,6 +2561,10 @@ function ComponentTable(SelectedProp: any) {
     }
 
     const EditData = (e: any, item: any) => {
+        // setIsTimeEntry(true);
+        setSharewebTimeComponent(item);
+    }
+    const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
         setSharewebTimeComponent(item);
     }
@@ -2633,6 +2633,8 @@ function ComponentTable(SelectedProp: any) {
                         comp.childs.push(childItem.data)
                         comp.subRows.push(childItem.data)
                     }
+
+
                     if (comp.subRows != undefined && comp.subRows.length > 0) {
                         comp?.subRows?.map((subComp: any) => {
                             subComp.flag = true;
@@ -2641,6 +2643,8 @@ function ComponentTable(SelectedProp: any) {
                                 subComp.childs.push(childItem.data)
                                 subComp.subRows.push(childItem.data)
                             }
+
+
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
                                     if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
@@ -2656,6 +2660,8 @@ function ComponentTable(SelectedProp: any) {
                                         Feat.childs.push(childItem.data)
                                         Feat.subRows.push(childItem.data)
                                     }
+
+
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
                                             if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
@@ -2670,7 +2676,13 @@ function ComponentTable(SelectedProp: any) {
                                                 Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
                                                 Activity.childs.push(childItem.data)
                                                 Activity.subRows.push(childItem.data)
+                                                // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
+                                                //     return array.indexOf(val) == id;
+                                                // })
+                                                Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                             }
+
+
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
                                                     if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
@@ -2685,6 +2697,8 @@ function ComponentTable(SelectedProp: any) {
                                                         workst.subRows = workst.subRows == undefined ? [] : workst.subRows
                                                         workst.childs.push(childItem.data)
                                                         workst.subRows.push(childItem.data)
+
+                                                        workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                                     }
 
                                                 })
@@ -2698,6 +2712,9 @@ function ComponentTable(SelectedProp: any) {
 
                     }
                 })
+
+
+
 
                 setData(array => ([...array]))
                 refreshData();
@@ -3602,8 +3619,8 @@ function ComponentTable(SelectedProp: any) {
                         }}
                     >
                         <>
-                            {row.getCanExpand() ? (
-                                <span className=' border-0'
+                            {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
+                                <span className='border-0'
                                     {...{
                                         onClick: row.getToggleExpandedHandler(),
                                         style: { cursor: "pointer" },
@@ -3611,14 +3628,12 @@ function ComponentTable(SelectedProp: any) {
                                 >
                                     {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                                 </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
+                            ) : ""}{" "}
+                            {row?.original?.Title != 'Others' ? <IndeterminateCheckbox
                                 {...{
                                     checked: row.getIsSelected(),
                                     indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
+                                    onChange: row.getToggleSelectedHandler()
 
                                 }}
                             /> : ""}{" "}
@@ -3627,16 +3642,39 @@ function ComponentTable(SelectedProp: any) {
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
                             }
-                            {/* <a
-                                className="hreflink"
-                                title="Show All Child"
-                                data-toggle="modal"
-                            >
-                                <img
-                                    className="icon-sites-img ml20 me-1"
-                                    src={row?.original?.SiteIconTitle}
-                                ></img>
-                            </a> */}
+
+
+
+                            {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
+                                row.original.subRows?.length ? (
+                                <span className='mx-1'
+                                    {...{
+                                        onClick: () => {
+                                            if (!forceExpanded.includes(row.id)) {
+                                                const coreIds = table.getCoreRowModel().rowsById;
+                                                row.subRows = coreIds[row.id].subRows;
+                                                const temp = Object.keys(coreIds).filter((item: any) =>
+                                                    item.startsWith(row.id)
+                                                );
+                                                forceExpanded = [...forceExpanded, ...temp];
+                                                setExpanded((prev: any) => ({
+                                                    ...prev,
+                                                    [row.id]: true,
+                                                }));
+                                            } else {
+                                                row.getToggleExpandedHandler()();
+                                            }
+                                        },
+                                        style: { cursor: "pointer" }
+                                    }}
+                                >
+                                    {!row.getCanExpand()
+                                        ? <FaPlus />
+                                        : row.getIsExpanded()
+                                            ? <FaMinus />
+                                            : <FaPlus />}
+                                </span>
+                            ) : ""}{" "}
                             {getValue()}
                         </>
                     </div>
@@ -3653,18 +3691,51 @@ function ComponentTable(SelectedProp: any) {
             //     placeholder: "Title",
             //     header: ""
             // },
+            // {
+            //     accessorFn: (row) => row?.Title,
+            //     cell: ({ row, column, getValue }) => (
+            //         <>
+            //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+            //                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+            //             >
+            //                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //             </a>}
+            //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
+            //                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
+            //                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+            //                 >
+            //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //                 </a>}
+            //             {row?.original.Title === 'Others' ?
+            //                 <span>{row?.original.Title}</span> : ""}
+
+            //             {row?.original?.Short_x0020_Description_x0020_On != null &&
+            //                 <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+            //                     <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+            //                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+            //                     <span className="popover__content">
+            //                         {row?.original?.Short_x0020_Description_x0020_On}
+            //                     </span>
+            //                 </span>}
+            //         </>
+            //     ),
+            //     id: "Title",
+            //     placeholder: "Title",
+            //     header: "",
+            //     size: 27,
+            // },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+                            href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>}
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
-                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+                                href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a>}
@@ -3675,8 +3746,10 @@ function ComponentTable(SelectedProp: any) {
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
-                                <span className="popover__content">
-                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                <span className="popover__content"  dangerouslySetInnerHTML={{
+                                            __html: row?.original?.Short_x0020_Description_x0020_On
+                                          }}>
+                                    
                                 </span>
                             </span>}
                     </>
@@ -3760,8 +3833,7 @@ function ComponentTable(SelectedProp: any) {
             {
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
-
+                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
                         {getValue()}
                     </>
                 ),
@@ -3808,10 +3880,12 @@ function ComponentTable(SelectedProp: any) {
         data,
         columns,
         state: {
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         getSubRows: (row) => row.subRows,
@@ -3990,17 +4064,31 @@ function ComponentTable(SelectedProp: any) {
         })
     }
 
+    // React.useEffect(() => {
+    //     if (table.getState().columnFilters.length) {
+    //         setExpanded(true);
+    //     } else {
+    //         setExpanded({});
+    //     }
+    // }, [table.getState().columnFilters]);
+
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
-            setExpanded(true);
+            const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+                (acc: any, cur: any) => {
+                    acc[cur] = true;
+                    return acc;
+                },
+                {}
+            );
+            setExpanded(allKeys);
         } else {
             setExpanded({});
         }
+        forceExpanded = [];
     }, [table.getState().columnFilters]);
 
-   const ChangeColor = ()=>{
-    // setColor(true)
-   }
+
 
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>

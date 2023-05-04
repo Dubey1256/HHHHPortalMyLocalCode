@@ -170,7 +170,7 @@ const TopNavigation = (dynamicData: any) => {
                         return (
                             <>
                                 <li className='parent '>
-                                    <span> <a href="">{item.Title}</a></span>
+                                    <span> <a href={item.href?.Url}>{item.Title}</a></span>
                                     <span className='float-end'>
                                         <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(item)}></span>
                                         <span className='svg__iconbox svg__icon--Switcher'></span>
@@ -182,7 +182,7 @@ const TopNavigation = (dynamicData: any) => {
                                             return (
                                                 <>
                                                     <li className="pre">
-                                                        <span><a>{child.Title}</a></span>
+                                                        <span><a href={child.href?.Url}>{child.Title}</a></span>
                                                         <span className='float-end'>
                                                             <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(child)}></span>
                                                             <span className='svg__iconbox svg__icon--Switcher'></span>
@@ -194,7 +194,7 @@ const TopNavigation = (dynamicData: any) => {
                                                                 return (
                                                                     <>
                                                                         <li className="pre">
-                                                                            <span><a>{subchild.Title}</a></span>
+                                                                            <span><a href={subchild.href?.Url}>{subchild.Title}</a></span>
                                                                             <span className='float-end'>
                                                                                 <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(subchild)}></span>
                                                                                 <span className='svg__iconbox svg__icon--Switcher'></span>
