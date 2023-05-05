@@ -21,7 +21,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
-let web:any;
+let web: any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -87,6 +87,21 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 taskUsers.push(item);
             }
         });
+        if (taskUsers != undefined && taskUsers.length > 0) {
+            taskUsers?.map((Alluser: any) => {
+                if (Alluser.childs != undefined && Alluser.childs.length > 0) {
+                    Alluser.childs.map((ChildUser: any) => {
+                        if (ChildUser.Item_x0020_Cover == null || ChildUser.Item_x0020_Cover == undefined) {
+                            let tempObject: any = {
+                                Description: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg',
+                                Url: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
+                            }
+                            ChildUser.Item_x0020_Cover = tempObject;
+                        }
+                    })
+                }
+            })
+        }
         console.log(taskUsers);
         this.setState({
             taskUsers
@@ -263,9 +278,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             if (self.AllUsers[i]) {
                 items.forEach(function (item: any) {
                     if (self.AllUsers[i] != undefined && self.AllUsers[i].AssingedToUserId != undefined && self.AllUsers[i].AssingedToUserId == item.Id) {
-                        if (self.AllUsers[i].Item_x0020_Cover == undefined) {
+                        if (self.AllUsers[i].Item_x0020_Cover == undefined || self.AllUsers[i].Item_x0020_Cover == null) {
                             self.AllUsers[i].Item_x0020_Cover = {}
-                            self.AllUsers[i].Item_x0020_Cover.Url = null
+                            self.AllUsers[i].Item_x0020_Cover.Url = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
                         }
                         item.userImage = self.AllUsers[i].Item_x0020_Cover.Url
                         item.Title = self.AllUsers[i].Title;
@@ -418,18 +433,26 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 <div className='d-flex User'>
                                                     {user.childs.map((item: any, i: number) => {
                                                         return <div className="marginR41 ng-scope">
-
-                                                            {item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null  ?
+                                                            {item.Item_x0020_Cover != undefined && item.Item_x0020_Cover != null ?
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('" + `${item.Item_x0020_Cover.Url}` + "')", backgroundSize: "36px 36px" }}
                                                                         title={item.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                                                        onDragOver={(e) => e.preventDefault()} />
-                                                                </span>:
-                                                               <span  title={item.Title} className="svg__iconbox svg__icon--defaultUser"></span>
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                    />
+                                                                </span> :
+                                                                <span>
+                                                                    <div title={item.Title}
+                                                                        draggable
+                                                                        style={{ backgroundImage: "url('https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg')", backgroundSize: "36px 36px" }}
+                                                                        onDragStart={(e) => this.dragStart(e, i, item, 'All')}
+                                                                        onDragOver={(e) => e.preventDefault()}
+                                                                        className="ProirityAssignedUserPhoto"
+                                                                    />
+                                                                </span>
                                                             }
                                                         </div>
                                                     })}
@@ -514,7 +537,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service')||(this.props?.ItemInfo?.Services!=undefined&&this.props?.ItemInfo?.Services.length>0)?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"}  />
+                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service') || (this.props?.ItemInfo?.Services != undefined && this.props?.ItemInfo?.Services.length > 0) ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"} />
                                         </div>
                                     </div>
                                 </div>

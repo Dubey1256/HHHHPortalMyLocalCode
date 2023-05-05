@@ -1953,8 +1953,8 @@ function TimeEntryPopup(item: any) {
                                                                                 {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
                                                                                     <>
                                                                                         {childitem.AdditionalTime.map(function (childinew: any) {
-                                                                                            if ((search == "" || childinew.AuthorName.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description.toLowerCase().includes(search.toLowerCase()))
-                                                                                                || (search == "" || childinew.TaskDate.includes(search)) || (search == "" || childinew.TaskTime.includes(search))) {
+                                                                                            if ((search == "" || childinew.AuthorName?.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description?.toLowerCase().includes(search.toLowerCase()))
+                                                                                                || (search == "" || childinew.TaskDate?.includes(search))) {
                                                                                                 return (
                                                                                                     <>
                                                                                                         <tr >

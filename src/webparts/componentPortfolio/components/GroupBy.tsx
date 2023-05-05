@@ -5,7 +5,7 @@ import * as Moment from 'moment';
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
 //import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaMinus, FaPlus } from 'react-icons/fa';
 import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
@@ -41,11 +41,12 @@ import {
     flexRender,
     getSortedRowModel,
     SortingState,
+    ColumnFiltersState,
 } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
-import HighlightableCell from './highlight';
+import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
@@ -74,6 +75,7 @@ let AllActivitysData: any = [];
 let AllActivitysDatacopy: any = [];
 let AllWorkStreamData: any = [];
 let RemoveDuplicateTime: any = []
+let forceExpanded: any = [];
 
 
 
@@ -138,7 +140,7 @@ function ComponentTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1]
     const [loaded, setLoaded] = React.useState(true);
     const [color, setColor] = React.useState(false);
-
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -541,7 +543,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...PriorityItems]);
             }
-
             if (isItemRankSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, ItemRankItems);
@@ -558,7 +559,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...ItemRankItems]);
             }
-
             if (isSitesSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, SitesItems);
@@ -1289,13 +1289,9 @@ function ComponentTable(SelectedProp: any) {
                                     task.isTagged = false
                                     elem.childs.push(task);
                                     elem.subRows.push(task);
-
                                 }
-
                             })
-
                         })
-
                         AllActivitysData?.forEach((elem: any) => {
                             elem?.subRows?.forEach((val: any) => {
                                 val.childs = val.childs === undefined ? [] : val.childs;
@@ -1315,11 +1311,11 @@ function ComponentTable(SelectedProp: any) {
 
                         })
 
-                        AllTasks?.forEach((task: any) => {
-                            if (task.isTagged != false) {
-                                task.childs = [];
-                                task.subRows = [];
-                                AllActivitysData.push(task)
+                        AllTasks?.forEach((value: any) => {
+                            if (value.isTagged != false) {
+                                value.childs = [];
+                                value.subRows = [];
+                                AllActivitysData.push(value)
                             }
 
                         })
@@ -1760,8 +1756,9 @@ function ComponentTable(SelectedProp: any) {
         // setfilterItems(filterItems)
         ShowSelectedfiltersItems();
         setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
-        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; Id: any; }, items: any) {
+        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[];  Id: any; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.UserGroup != undefined && childItem.UserGroup.Id != undefined && childItem.UserGroup.Id == item.Id) {
                     childItem.value = childItem.Id;
@@ -1770,12 +1767,14 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedonId(childItem, items);
                 }
             });
         }
-        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; ID: number; }, items: any) {
+        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[]; ID: number; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
                     childItem.value = childItem.Id;
@@ -1783,6 +1782,7 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedOn(childItem, items);
                 }
             });
@@ -2001,9 +2001,10 @@ function ComponentTable(SelectedProp: any) {
                             task.isService = true;
                             task.Portfolio_x0020_Type = 'Service';
                         }
-                        if (ComponetsData['allComponets'][i]['childs'] === undefined)
+                        if (ComponetsData['allComponets'][i]['childs'] === undefined){
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        ComponetsData['allComponets'][i]['subRows'] = [];
+                            ComponetsData['allComponets'][i]['subRows'] = [];
+                        }
                         if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
                             ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
@@ -2565,6 +2566,10 @@ function ComponentTable(SelectedProp: any) {
     }
 
     const EditData = (e: any, item: any) => {
+        // setIsTimeEntry(true);
+        setSharewebTimeComponent(item);
+    }
+    const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
         setSharewebTimeComponent(item);
     }
@@ -2633,6 +2638,8 @@ function ComponentTable(SelectedProp: any) {
                         comp.childs.push(childItem.data)
                         comp.subRows.push(childItem.data)
                     }
+
+
                     if (comp.subRows != undefined && comp.subRows.length > 0) {
                         comp?.subRows?.map((subComp: any) => {
                             subComp.flag = true;
@@ -2641,6 +2648,8 @@ function ComponentTable(SelectedProp: any) {
                                 subComp.childs.push(childItem.data)
                                 subComp.subRows.push(childItem.data)
                             }
+
+
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
                                     if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
@@ -2656,6 +2665,8 @@ function ComponentTable(SelectedProp: any) {
                                         Feat.childs.push(childItem.data)
                                         Feat.subRows.push(childItem.data)
                                     }
+
+
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
                                             if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
@@ -2670,7 +2681,13 @@ function ComponentTable(SelectedProp: any) {
                                                 Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
                                                 Activity.childs.push(childItem.data)
                                                 Activity.subRows.push(childItem.data)
+                                                // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
+                                                //     return array.indexOf(val) == id;
+                                                // })
+                                                Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                             }
+
+
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
                                                     if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
@@ -2685,6 +2702,8 @@ function ComponentTable(SelectedProp: any) {
                                                         workst.subRows = workst.subRows == undefined ? [] : workst.subRows
                                                         workst.childs.push(childItem.data)
                                                         workst.subRows.push(childItem.data)
+
+                                                        workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                                     }
 
                                                 })
@@ -2698,6 +2717,9 @@ function ComponentTable(SelectedProp: any) {
 
                     }
                 })
+
+
+
 
                 setData(array => ([...array]))
                 refreshData();
@@ -2808,7 +2830,7 @@ function ComponentTable(SelectedProp: any) {
             // itrm.chekBox = true;
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
-                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['siteUrl'] = ContextValue?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
@@ -2817,8 +2839,8 @@ function ComponentTable(SelectedProp: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm?.SharewebTaskType?.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
-                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    itrm['listName'] = 'Master Tasks';
+                    itrm['siteUrl'] = ContextValue?.siteUrl;
+                    // itrm['listName'] = 'Master Tasks';
                     Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
                     childsData.push(itrm)
@@ -3602,8 +3624,8 @@ function ComponentTable(SelectedProp: any) {
                         }}
                     >
                         <>
-                            {row.getCanExpand() ? (
-                                <span className=' border-0'
+                            {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
+                                <span className='border-0'
                                     {...{
                                         onClick: row.getToggleExpandedHandler(),
                                         style: { cursor: "pointer" },
@@ -3611,14 +3633,12 @@ function ComponentTable(SelectedProp: any) {
                                 >
                                     {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                                 </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
+                            ) : ""}{" "}
+                            {row?.original?.Title != 'Others' ? <IndeterminateCheckbox
                                 {...{
                                     checked: row.getIsSelected(),
                                     indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
+                                    onChange: row.getToggleSelectedHandler()
 
                                 }}
                             /> : ""}{" "}
@@ -3627,16 +3647,39 @@ function ComponentTable(SelectedProp: any) {
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
                             }
-                            {/* <a
-                                className="hreflink"
-                                title="Show All Child"
-                                data-toggle="modal"
-                            >
-                                <img
-                                    className="icon-sites-img ml20 me-1"
-                                    src={row?.original?.SiteIconTitle}
-                                ></img>
-                            </a> */}
+
+
+
+                            {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
+                                row.original.subRows?.length ? (
+                                <span className='mx-1'
+                                    {...{
+                                        onClick: () => {
+                                            if (!forceExpanded.includes(row.id)) {
+                                                const coreIds = table.getCoreRowModel().rowsById;
+                                                row.subRows = coreIds[row.id].subRows;
+                                                const temp = Object.keys(coreIds).filter((item: any) =>
+                                                    item.startsWith(row.id)
+                                                );
+                                                forceExpanded = [...forceExpanded, ...temp];
+                                                setExpanded((prev: any) => ({
+                                                    ...prev,
+                                                    [row.id]: true,
+                                                }));
+                                            } else {
+                                                row.getToggleExpandedHandler()();
+                                            }
+                                        },
+                                        style: { cursor: "pointer" }
+                                    }}
+                                >
+                                    {!row.getCanExpand()
+                                        ? <FaPlus />
+                                        : row.getIsExpanded()
+                                            ? <FaMinus />
+                                            : <FaPlus />}
+                                </span>
+                            ) : ""}{" "}
                             {getValue()}
                         </>
                     </div>
@@ -3653,18 +3696,51 @@ function ComponentTable(SelectedProp: any) {
             //     placeholder: "Title",
             //     header: ""
             // },
+            // {
+            //     accessorFn: (row) => row?.Title,
+            //     cell: ({ row, column, getValue }) => (
+            //         <>
+            //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+            //                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+            //             >
+            //                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //             </a>}
+            //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
+            //                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
+            //                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+            //                 >
+            //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //                 </a>}
+            //             {row?.original.Title === 'Others' ?
+            //                 <span>{row?.original.Title}</span> : ""}
+
+            //             {row?.original?.Short_x0020_Description_x0020_On != null &&
+            //                 <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+            //                     <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+            //                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+            //                     <span className="popover__content">
+            //                         {row?.original?.Short_x0020_Description_x0020_On}
+            //                     </span>
+            //                 </span>}
+            //         </>
+            //     ),
+            //     id: "Title",
+            //     placeholder: "Title",
+            //     header: "",
+            //     size: 27,
+            // },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+                            href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>}
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
-                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+                                href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a>}
@@ -3675,8 +3751,10 @@ function ComponentTable(SelectedProp: any) {
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
-                                <span className="popover__content">
-                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                <span className="popover__content"  dangerouslySetInnerHTML={{
+                                            __html: row?.original?.Short_x0020_Description_x0020_On
+                                          }}>
+                                    
                                 </span>
                             </span>}
                     </>
@@ -3760,8 +3838,7 @@ function ComponentTable(SelectedProp: any) {
             {
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
-
+                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
                         {getValue()}
                     </>
                 ),
@@ -3808,10 +3885,12 @@ function ComponentTable(SelectedProp: any) {
         data,
         columns,
         state: {
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         getSubRows: (row) => row.subRows,
@@ -3990,17 +4069,31 @@ function ComponentTable(SelectedProp: any) {
         })
     }
 
+    // React.useEffect(() => {
+    //     if (table.getState().columnFilters.length) {
+    //         setExpanded(true);
+    //     } else {
+    //         setExpanded({});
+    //     }
+    // }, [table.getState().columnFilters]);
+
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
-            setExpanded(true);
+            const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+                (acc: any, cur: any) => {
+                    acc[cur] = true;
+                    return acc;
+                },
+                {}
+            );
+            setExpanded(allKeys);
         } else {
             setExpanded({});
         }
+        forceExpanded = [];
     }, [table.getState().columnFilters]);
 
-   const ChangeColor = ()=>{
-    // setColor(true)
-   }
+
 
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
@@ -4731,7 +4824,7 @@ function ComponentTable(SelectedProp: any) {
                         <div className='bg-ee p-2 restructurebox'>
                             <div>
                                 {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
                             </div>
@@ -4743,7 +4836,7 @@ function ComponentTable(SelectedProp: any) {
                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
                                             {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
                                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
                                             ><span>{obj.Title}  </span>
                                             </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                     )
@@ -4758,7 +4851,7 @@ function ComponentTable(SelectedProp: any) {
                                                 <div className='Dyicons '>{newobj.SiteIconTitle}</div>
                                                 {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
                                                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
@@ -4767,7 +4860,7 @@ function ComponentTable(SelectedProp: any) {
                                     <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
                                     {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
                                     <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                             </div>

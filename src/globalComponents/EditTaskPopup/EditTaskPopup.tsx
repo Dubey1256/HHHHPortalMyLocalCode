@@ -153,7 +153,9 @@ const EditTaskPopup = (Items: any) => {
     const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
     const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
     const [AllClientCategoryData, setAllClientCategoryData] = React.useState([]);
+    const [ApproverHistoryData, setApproverHistoryData] = React.useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
+
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
         { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
@@ -169,20 +171,16 @@ const EditTaskPopup = (Items: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
 
-  var siteUrls: any;
-  if (
-    Items != undefined &&
-    Items.Items.siteUrl != undefined &&
-    Items.Items.siteUrl.length < 20
-  ) {
-    if (Items.Items.siteType != undefined) {
-      siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`;
+    var siteUrls: any;
+    if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
+        if (Items.Items.siteType != undefined) {
+            siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+        } else {
+            siteUrls = AllListIdData.siteUrl;
+        }
     } else {
-      siteUrls = AllListIdData.siteUrl;
+        siteUrls = AllListIdData.siteUrl
     }
-  } else {
-    siteUrls = AllListIdData.siteUrl;
-  }
 
     // const setModalIsOpenToTrue = () => {
     //     setModalIsOpen(true)
@@ -810,7 +808,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title")
+                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -819,8 +817,10 @@ const EditTaskPopup = (Items: any) => {
                     console.log("Extra Lookup Data =======", extraLookupColumnData);
                     let Data: any;
                     let ApproverData: any;
+                    let ApproverHistoryData: any;
                     let ClientCategory: any;
                     Data = extraLookupColumnData[0]?.Project;
+                    ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
@@ -837,6 +837,13 @@ const EditTaskPopup = (Items: any) => {
                         // })
                         setSelectedProject([Data]);
                     }
+                    if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
+                        let tempArray = JSON.parse(ApproverHistoryData);
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            setApproverHistoryData(tempArray);
+                        }
+                    }
+
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
@@ -863,7 +870,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Title")
+                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -872,7 +879,9 @@ const EditTaskPopup = (Items: any) => {
                     let Data: any;
                     let ClientCategory: any;
                     let ApproverData: any;
+                    let ApproverHistoryData: any;
                     Data = extraLookupColumnData[0]?.Project;
+                    ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
@@ -889,6 +898,13 @@ const EditTaskPopup = (Items: any) => {
                         // })
                         // SetAllProjectData(Data);
                         setSelectedProject([Data])
+                    }
+                    if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
+                        let tempArray = JSON.parse(ApproverHistoryData);
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            setApproverHistoryData(tempArray);
+                        }
+
                     }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
@@ -1101,12 +1117,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                     if ((statusValue <= 2) && ApprovalStatusGlobal) {
+                        let tempArray: any = [];
                         if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 TaskApproverBackupArray.map((itemData: any) => {
                                     if (itemData.Id == userData1?.AssingedToUserId) {
                                         AssignedUsers.push(userData1);
                                         TeamMemberTemp.push(userData1);
+                                        tempArray.push(userData1);
                                     }
                                 })
                             })
@@ -1117,8 +1135,24 @@ const EditTaskPopup = (Items: any) => {
                                         if (itemData.Id == userData1?.AssingedToUserId) {
                                             AssignedUsers.push(userData1);
                                             TeamMemberTemp.push(userData1);
+                                            tempArray.push(userData1);
                                         }
                                     })
+                                })
+                            }
+                        }
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            tempArray.map((itemData: any) => {
+                                itemData.Id = itemData.AssingedToUserId
+                            })
+                            setApproverData(tempArray);
+                            if ((statusValue <= 1) && ApprovalStatusGlobal) {
+                                StatusArray?.map((item: any) => {
+                                    if (1 == item.value) {
+                                        setPercentCompleteStatus(item.status);
+                                        setTaskStatus(item.taskStatusComment);
+                                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `1` })
+                                    }
                                 })
                             }
                         }
@@ -1935,7 +1969,8 @@ const EditTaskPopup = (Items: any) => {
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             ClientTime: JSON.stringify(ClientCategoryData),
             ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings
+            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
+            ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null
         }
 
 
@@ -2356,7 +2391,8 @@ const EditTaskPopup = (Items: any) => {
             let updateIndex: any = addUpdateIndex[0]
             let updateImage: any = imageList[updateIndex];
             if (updateIndex + 1 >= imageList.length) {
-                UploadImageFunction(lastindexArray, fileName);
+                UploadImageFunction(lastindexArray, fileName, tempArray);
+
             }
             else {
                 if (updateIndex < imageList.length) {
@@ -2365,7 +2401,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
-    const UploadImageFunction = (Data: any, imageName: any) => {
+    const UploadImageFunction = (Data: any, imageName: any, DataJson: any) => {
         let listId = Items.Items.listId;
         let listName = Items.Items.listName;
         let Id = Items.Items.Id
@@ -2384,6 +2420,7 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getById(listId).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                UpdateBasicImageInfoJSON(DataJson);
                 setUploadBtnStatus(false);
             })().catch(console.log)
         } else {
@@ -2392,13 +2429,45 @@ const EditTaskPopup = (Items: any) => {
                 let item = web.lists.getByTitle(listName).items.getById(Id);
                 item.attachmentFiles.add(imageName, data);
                 console.log("Attachment added");
+                UpdateBasicImageInfoJSON(DataJson);
                 setUploadBtnStatus(false);
             })().catch(console.log)
         }
     }
+
+
+    const UpdateBasicImageInfoJSON = async (JsonData: any) => {
+        var UploadImageArray: any = []
+        if (JsonData != undefined && JsonData.length > 0) {
+            JsonData?.map((imgItem: any) => {
+                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                    let tempObject: any = {
+                        ImageName: imgItem.ImageName,
+                        ImageUrl: imgItem.imageDataUrl,
+                        UploadeDate: imgItem.UploadeDate,
+                        UserName: imgItem.UserName,
+                        UserImage: imgItem.UserImage
+                    }
+                    UploadImageArray.push(tempObject)
+                } else {
+                    UploadImageArray.push(imgItem);
+                }
+            })
+        }
+        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+            try {
+                let web = new Web(siteUrls);
+                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+            } catch (error) {
+                console.log("Error Message :", error);
+            }
+        }
+    }
+
+
     const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
+        let tempArray: any = [];
         if (FunctionType == "Remove") {
-            let tempArray: any = [];
             TaskImages?.map((imageData: any, index: number) => {
                 if (index != imageIndex) {
                     tempArray.push(imageData)
@@ -2411,14 +2480,18 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
                 item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         }
     }
@@ -2824,6 +2897,15 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(item.taskStatusComment);
             }
         })
+        let ApproverHistoryObject: any = {
+            ApproverName: ApproverData.Title,
+            ApprovedDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            ApproverId: ApproverData.AssingedToUserId,
+            ApproverImage: (ApproverData.Item_x0020_Cover != undefined || ApproverData.Item_x0020_Cover != null ? ApproverData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
+            ApproverSuffix: ApproverData.Suffix,
+            ApproverEmail: ApproverData.Email
+        }
+        ApproverHistoryData.push(ApproverHistoryObject);
     }
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
@@ -3289,7 +3371,7 @@ const EditTaskPopup = (Items: any) => {
                                                     {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
                                                                         <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -3303,7 +3385,7 @@ const EditTaskPopup = (Items: any) => {
                                                         smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                             return (
                                                                 <>
-                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
                                                                             <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -3456,53 +3538,79 @@ const EditTaskPopup = (Items: any) => {
                                                         </ul>
                                                     </div>
                                                     {ApprovalStatus ?
-                                                        <div className="col-12">
-                                                            <div className="input-group">
-                                                                <input type="text"
-                                                                    className="form-control"
-                                                                    placeholder="Search Approver's Name Here"
-                                                                    value={ApproverSearchKey}
-                                                                    onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
-                                                                />
-                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
+                                                        <div>
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <input type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Search Approver's Name Here"
+                                                                        value={ApproverSearchKey}
+                                                                        onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                    />
+                                                                    <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
+                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
 
-                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
 
-                                                                </span>
-                                                            </div>
-                                                            {ApproverSearchedData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {ApproverSearchedData.map((item: any) => {
+                                                                    </span>
+                                                                </div>
+                                                                {ApproverSearchedData?.length > 0 ? (
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="list-group">
+                                                                            {ApproverSearchedData.map((item: any) => {
+                                                                                return (
+                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                                                        <a>{item.NewLabel}</a>
+                                                                                    </li>
+                                                                                )
+                                                                            }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>) : null}
+
+                                                                {ApproverData != undefined && ApproverData.length > 0 ?
+                                                                    <div>
+                                                                        {ApproverData.map((Approver: any, index: number) => {
                                                                             return (
-                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
-                                                                                    <a>{item.NewLabel}</a>
-                                                                                </li>
-                                                                            )
-                                                                        }
-                                                                        )}
-                                                                    </ul>
-                                                                </div>) : null}
-
-                                                            {ApproverData != undefined && ApproverData.length > 0 ?
-                                                                <div>
-                                                                    {ApproverData.map((Approver: any, index: number) => {
-                                                                        return (
-                                                                            <div className="block mt-1 px-2 py-2">
-                                                                                <div className="d-flex justify-content-between">
-                                                                                    <a className="hreflink " target="_blank" data-interception="off" >
-                                                                                        {Approver.Title}
-                                                                                    </a>
-                                                                                    <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                    {/* <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
+                                                                                <div className="block mt-1 px-2 py-2">
+                                                                                    <div className="d-flex justify-content-between">
+                                                                                        <a className="hreflink " target="_blank" data-interception="off" >
+                                                                                            {Approver.Title}
+                                                                                        </a>
+                                                                                        <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                        {/* <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
                                                                                     </svg> */}
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        )
-                                                                    })}
-                                                                </div> : null}
-                                                        </div> : null}
+                                                                            )
+                                                                        })}
+                                                                    </div> : null}
+                                                            </div>
+                                                            <div className="Approval-History-section my-2">
+                                                                {ApproverHistoryData != undefined && ApproverHistoryData.length > 1 ?
+                                                                    <div>
+                                                                        {ApproverHistoryData.map((HistoryData: any, index: any) => {
+                                                                            if (index < ApproverHistoryData.length - 1) {
+                                                                                return (
+                                                                                    <div className="d-flex full-width justify-content-between">
+                                                                                        <div className="d-flex">
+                                                                                            Approved by-
+                                                                                            <span className="siteColor mx-1">{HistoryData.ApproverName}</span>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <span>{HistoryData.ApprovedDate}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            }
+                                                                        })}
+                                                                    </div>
+                                                                    : null
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        : null
+                                                    }
 
                                                     {/* {ApprovalStatus ?
                                                         <div className="input-group-text p-0">
@@ -4331,7 +4439,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
 
@@ -4350,7 +4458,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />

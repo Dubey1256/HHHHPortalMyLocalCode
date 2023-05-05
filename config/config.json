@@ -249,6 +249,14 @@
           "manifest": "./src/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.manifest.json"
         }
       ]
+    },
+    "created-by-tables-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/createdByTables/CreatedByTablesWebPart.js",
+          "manifest": "./src/webparts/createdByTables/CreatedByTablesWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -304,6 +312,7 @@
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
-    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
+    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
+    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js"
   }
 }

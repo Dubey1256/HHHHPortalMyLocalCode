@@ -2,18 +2,27 @@ import * as React from 'react';
 import { Component } from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
+//import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+//import "bootstrap/dist/css/bootstrap.min.css";
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaMinus, FaPlus } from 'react-icons/fa';
+import { RxDotsVertical } from 'react-icons/rx';
 import { MdAdd } from 'react-icons/Md';
 import { CSVLink } from "react-csv";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
+//import SmartFilter from './SmartFilter';
+//import '../../cssFolder/foundation.scss';
 import { map } from 'jquery';
+import { concat } from 'lodash';
 import EditInstituton from '../../EditPopupFiles/EditComponent';
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
+import { any, number } from 'prop-types';
+import CheckboxTree from 'react-checkbox-tree';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import ExpndTable from '../../../globalComponents/ExpandTable/Expandtable';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
+import { typography } from '@mui/system';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import { PortfolioStructureCreationCard } from '../../../globalComponents/tableControls/PortfolioStructureCreation';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
@@ -32,11 +41,17 @@ import {
     flexRender,
     getSortedRowModel,
     SortingState,
+    ColumnFiltersState,
 } from "@tanstack/react-table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Button, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import { HTMLProps } from 'react';
-import HighlightableCell from '../../componentPortfolio/components/highlight';
+import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+// import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
+// import { Tooltip as ReactTooltip } from "react-tooltip";
+// import "react-tooltip/dist/react-tooltip.css";
 
 
 
@@ -60,6 +75,7 @@ let AllActivitysData: any = [];
 let AllActivitysDatacopy: any = [];
 let AllWorkStreamData: any = [];
 let RemoveDuplicateTime: any = []
+let forceExpanded: any = [];
 
 
 
@@ -124,7 +140,7 @@ function ComponentTable(SelectedProp: any) {
     const rerender = React.useReducer(() => ({}), {})[1]
     const [loaded, setLoaded] = React.useState(true);
     const [color, setColor] = React.useState(false);
-
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
 
     const [maidataBackup, setmaidataBackup] = React.useState([])
@@ -178,53 +194,6 @@ function ComponentTable(SelectedProp: any) {
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
     const [ChengedItemTitl, setChengedItemTitle] = React.useState('');
 
-
-
-    // Header for portfolio structure
-    
-  const onRenderCustomHeader = () => {
-    return (
-      <div
-        className={
-          IsUpdated == "Service Portfolio"
-            ? "d-flex full-width pb-1 serviepannelgreena"
-            : "d-flex full-width pb-1"
-        }
-      >
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            marginLeft: "20px",
-          }}
-        >
-          <span>
-            {checkedList[0] == undefined ? (
-              <>
-                <span className="Dyicons ">C</span>
-                <span>Create Component</span>
-              </>
-            ) : (
-              <a
-                href={
-                  SelectedProp.SelectedProp.siteUrl +
-                  "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                  checkedList[0]?.Id
-                }
-              >
-                <span className="Dyicons ">
-                  {checkedList[0]?.SiteIconTitle}
-                </span>
-                {checkedList[0]?.Title} - Create Child Item
-              </a>
-            )}
-          </span>
-        </div>
-        <Tooltip ComponentId={1271} />
-      </div>
-    );
-  };
     //--------------SmartFiltrt--------------------------------------------------------------------------------------------------------------------------------------------------
 
     var IsExitSmartfilter = function (array: any, Item: any) {
@@ -494,6 +463,15 @@ function ComponentTable(SelectedProp: any) {
                                 }
                                 isItemRankSelected = true;
                                 break;
+                            // case 'Sites':
+                            //     if (item.ItemRank != undefined) {
+                            //         if (item.siteType != undefined && item.siteType == filterItem.Title && !isItemExistsNew(SitesItems, item)) {
+                            //             SitesItems.push(item);
+                            //             return false;
+                            //         }
+                            //     }
+                            //     isSitesSelected = true;
+                            //     break;
                             case 'PercentComplete':
                                 if (item.PercentComplete != undefined) {
                                     if (item.PercentComplete != undefined && item.PercentComplete == filterItem.Title && !isItemExistsNew(PercentCompleteItems, item)) {
@@ -565,7 +543,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...PriorityItems]);
             }
-
             if (isItemRankSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, ItemRankItems);
@@ -582,7 +559,6 @@ function ComponentTable(SelectedProp: any) {
                 } else
                     commonItems = ([...ItemRankItems]);
             }
-
             if (isSitesSelected) {
                 if (commonItems != undefined && commonItems.length > 0) {
                     commonItems = getCommonItems(commonItems, SitesItems);
@@ -1313,13 +1289,9 @@ function ComponentTable(SelectedProp: any) {
                                     task.isTagged = false
                                     elem.childs.push(task);
                                     elem.subRows.push(task);
-
                                 }
-
                             })
-
                         })
-
                         AllActivitysData?.forEach((elem: any) => {
                             elem?.subRows?.forEach((val: any) => {
                                 val.childs = val.childs === undefined ? [] : val.childs;
@@ -1339,11 +1311,11 @@ function ComponentTable(SelectedProp: any) {
 
                         })
 
-                        AllTasks?.forEach((task: any) => {
-                            if (task.isTagged != false) {
-                                task.childs = [];
-                                task.subRows = [];
-                                AllActivitysData.push(task)
+                        AllTasks?.forEach((value: any) => {
+                            if (value.isTagged != false) {
+                                value.childs = [];
+                                value.subRows = [];
+                                AllActivitysData.push(value)
                             }
 
                         })
@@ -1613,9 +1585,32 @@ function ComponentTable(SelectedProp: any) {
 
             })
         }
+
+        // if (AllDataTaskk != undefined) {
+        //     AllDataTaskk.forEach((newval: any) => {
+        //         if (newval.Title == 'Others' && newval.childs != undefined) {
+        //             newval.forEach((valllA: any) => {
+        //                 finalOthersData.push(valllA)
+        //             })
+        //         }
+
+        //     })
+        // }
+
+        //     setTotalTask(finalOthersData)
+        //     setSubComponentsData(SData);
+        //     setFeatureData(FData);
+        //     setComponentsData(CData);
+        // } 
         else {
+            //  ungetFilterLength();
+            // setData(data => ([...maidataBackup]));
             setData(maidataBackup);
+            //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
         }
+        // setData(data => ([...maidataBackup]));
+        // console.log($scope.ComponetsData['allComponentItemWithStructure']);
+
     };
 
     // var TaxonomyItems: any = [];
@@ -1761,8 +1756,9 @@ function ComponentTable(SelectedProp: any) {
         // setfilterItems(filterItems)
         ShowSelectedfiltersItems();
         setShowSelectdSmartfilter(ShowSelectdSmartfilter => ([...ArrayItem]));
-        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; Id: any; }, items: any) {
+        function getChildsBasedonId(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[];  Id: any; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.UserGroup != undefined && childItem.UserGroup.Id != undefined && childItem.UserGroup.Id == item.Id) {
                     childItem.value = childItem.Id;
@@ -1771,12 +1767,14 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedonId(childItem, items);
                 }
             });
         }
-        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; ID: number; }, items: any) {
+        function getChildsBasedOn(item: { RightArrowIcon: string; downArrowIcon: string; childs: any[]; subRows:any[]; ID: number; }, items: any) {
             item.childs = [];
+            item.subRows = [];
             map(metadatItem, (childItem) => {
                 if (childItem.Parent != undefined && childItem.Parent.Id != undefined && parseInt(childItem.Parent.Id) == item.ID) {
                     childItem.value = childItem.Id;
@@ -1784,6 +1782,7 @@ function ComponentTable(SelectedProp: any) {
                     item.downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                     item.RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
                     item.childs.push(childItem);
+                    item.subRows.push(childItem);
                     getChildsBasedOn(childItem, items);
                 }
             });
@@ -2002,9 +2001,10 @@ function ComponentTable(SelectedProp: any) {
                             task.isService = true;
                             task.Portfolio_x0020_Type = 'Service';
                         }
-                        if (ComponetsData['allComponets'][i]['childs'] === undefined)
+                        if (ComponetsData['allComponets'][i]['childs'] === undefined){
                             ComponetsData['allComponets'][i]['childs'] = [];
-                        ComponetsData['allComponets'][i]['subRows'] = [];
+                            ComponetsData['allComponets'][i]['subRows'] = [];
+                        }
                         if (!isItemExistsNew(ComponetsData['allComponets'][i]['childs'], task)) {
                             ComponetsData['allComponets'][i].downArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png';
                             ComponetsData['allComponets'][i].RightArrowIcon = IsUpdated != undefined && IsUpdated == 'Service Portfolio' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png';
@@ -2566,6 +2566,10 @@ function ComponentTable(SelectedProp: any) {
     }
 
     const EditData = (e: any, item: any) => {
+        // setIsTimeEntry(true);
+        setSharewebTimeComponent(item);
+    }
+    const EditDataTimeEntryData = (e: any, item: any) => {
         setIsTimeEntry(true);
         setSharewebTimeComponent(item);
     }
@@ -2634,6 +2638,8 @@ function ComponentTable(SelectedProp: any) {
                         comp.childs.push(childItem.data)
                         comp.subRows.push(childItem.data)
                     }
+
+
                     if (comp.subRows != undefined && comp.subRows.length > 0) {
                         comp?.subRows?.map((subComp: any) => {
                             subComp.flag = true;
@@ -2642,6 +2648,8 @@ function ComponentTable(SelectedProp: any) {
                                 subComp.childs.push(childItem.data)
                                 subComp.subRows.push(childItem.data)
                             }
+
+
                             if (subComp.subRows != undefined && subComp.subRows.length > 0) {
                                 subComp?.subRows?.map((Feat: any) => {
                                     if (Feat?.DueDate?.length > 0 && Feat?.DueDate != "Invalid date") {
@@ -2657,6 +2665,8 @@ function ComponentTable(SelectedProp: any) {
                                         Feat.childs.push(childItem.data)
                                         Feat.subRows.push(childItem.data)
                                     }
+
+
                                     if (Feat.subRows != undefined && Feat.subRows.length > 0) {
                                         Feat?.subRows?.map((Activity: any) => {
                                             if (Activity?.DueDate?.length > 0 && Activity?.DueDate != "Invalid date") {
@@ -2671,7 +2681,13 @@ function ComponentTable(SelectedProp: any) {
                                                 Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
                                                 Activity.childs.push(childItem.data)
                                                 Activity.subRows.push(childItem.data)
+                                                // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
+                                                //     return array.indexOf(val) == id;
+                                                // })
+                                                Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                             }
+
+
                                             if (Activity.subRows != undefined && Activity.subRows.length > 0) {
                                                 Activity?.subRows?.map((workst: any) => {
                                                     if (workst?.DueDate?.length > 0 && workst?.DueDate != "Invalid date") {
@@ -2686,6 +2702,8 @@ function ComponentTable(SelectedProp: any) {
                                                         workst.subRows = workst.subRows == undefined ? [] : workst.subRows
                                                         workst.childs.push(childItem.data)
                                                         workst.subRows.push(childItem.data)
+
+                                                        workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                                                     }
 
                                                 })
@@ -2699,6 +2717,9 @@ function ComponentTable(SelectedProp: any) {
 
                     }
                 })
+
+
+
 
                 setData(array => ([...array]))
                 refreshData();
@@ -2809,7 +2830,7 @@ function ComponentTable(SelectedProp: any) {
             // itrm.chekBox = true;
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
-                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['siteUrl'] = ContextValue?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
@@ -2818,8 +2839,8 @@ function ComponentTable(SelectedProp: any) {
             if (itrm.SharewebTaskType != undefined) {
                 if (itrm?.SharewebTaskType?.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
                     setActivityDisable(false)
-                    itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                    itrm['listName'] = 'Master Tasks';
+                    itrm['siteUrl'] = ContextValue?.siteUrl;
+                    // itrm['listName'] = 'Master Tasks';
                     Arrays.push(itrm)
                     itrm['PortfolioId'] = child.Id;
                     childsData.push(itrm)
@@ -3531,23 +3552,42 @@ function ComponentTable(SelectedProp: any) {
         // setResturuningOpen(true)
     }
     var PortfolioLevelNum: any = 0;
+    // const getPortfolioItemID = async function () {
+    //     // var defer = $q.defer();
+    //     var filter = ""
+    //     if (RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Id != undefined) {
+    //         filter = "Id eq '" + RestructureChecked[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'" //" and Parent/Id eq " + RestructureChecked[0].Id;
+    //     }
+    //     if (ChengedItemTitle === 'SubComponent')
+    //         filter = "Id eq '" + NewArrayBackup[0].Parent.Id + "' and Item_x0020_Type eq '" + (ChengedItemTitle != '' ? ChengedItemTitle : changetoTaxType) + "'"// " and Parent/Id eq " + NewArrayBackup[0].Id;
+    //  let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    //     let results = await web.lists
+    //         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+    //         .items
+    //         .select("Id", "Title", "PortfolioLevel", "PortfolioStructureID", "Parent/Id")
+    //         .expand("Parent")
+    //         .filter(filter)
+    //         .orderBy("PortfolioLevel", false)
+    //         .top(1)
+    //         .get()
+    //     if (results.length > 0) {
+    //         PortfolioLevelNum = results[0].PortfolioLevel + 1;
+    //     } else { 
+    //         PortfolioLevelNum = 1;
+    //     }
+    // }
     const onRenderCustomHeaderMain = () => {
         return (
-          <div className="d-flex full-width pb-1">
-            <div
-              style={{
-                marginRight: "auto",
-                fontSize: "20px",
-                fontWeight: "600",
-                marginLeft: "20px",
-              }}
-            >
-              <span>{`Create Activity ${MeetingItems[0]?.Title}`} ``</span>
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Create Activity ${MeetingItems[0]?.Title}`}  ``
+                    </span>
+                </div>
+                <Tooltip ComponentId={MeetingItems[0]?.Id} />
             </div>
-            <Tooltip ComponentId={MeetingItems[0]?.Id} />
-          </div>
         );
-      };
+    };
 
 
 
@@ -3584,8 +3624,8 @@ function ComponentTable(SelectedProp: any) {
                         }}
                     >
                         <>
-                            {row.getCanExpand() ? (
-                                <span className=' border-0'
+                            {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
+                                <span className='border-0'
                                     {...{
                                         onClick: row.getToggleExpandedHandler(),
                                         style: { cursor: "pointer" },
@@ -3593,14 +3633,12 @@ function ComponentTable(SelectedProp: any) {
                                 >
                                     {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                                 </span>
-                            ) : (
-                                ""
-                            )}{" "}
-                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
+                            ) : ""}{" "}
+                            {row?.original?.Title != 'Others' ? <IndeterminateCheckbox
                                 {...{
                                     checked: row.getIsSelected(),
                                     indeterminate: row.getIsSomeSelected(),
-                                    onChange: row.getToggleSelectedHandler(),
+                                    onChange: row.getToggleSelectedHandler()
 
                                 }}
                             /> : ""}{" "}
@@ -3609,23 +3647,100 @@ function ComponentTable(SelectedProp: any) {
                                     <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
                             }
+
+
+
+                            {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
+                                row.original.subRows?.length ? (
+                                <span className='mx-1'
+                                    {...{
+                                        onClick: () => {
+                                            if (!forceExpanded.includes(row.id)) {
+                                                const coreIds = table.getCoreRowModel().rowsById;
+                                                row.subRows = coreIds[row.id].subRows;
+                                                const temp = Object.keys(coreIds).filter((item: any) =>
+                                                    item.startsWith(row.id)
+                                                );
+                                                forceExpanded = [...forceExpanded, ...temp];
+                                                setExpanded((prev: any) => ({
+                                                    ...prev,
+                                                    [row.id]: true,
+                                                }));
+                                            } else {
+                                                row.getToggleExpandedHandler()();
+                                            }
+                                        },
+                                        style: { cursor: "pointer" }
+                                    }}
+                                >
+                                    {!row.getCanExpand()
+                                        ? <FaPlus />
+                                        : row.getIsExpanded()
+                                            ? <FaMinus />
+                                            : <FaPlus />}
+                                </span>
+                            ) : ""}{" "}
                             {getValue()}
                         </>
                     </div>
                 ),
             },
+            // {
+            //     accessorKey: "Title",
+            //     cell: ({ column, getValue }) => (
+            //         <HighlightableCell
+            //             value={getValue()}
+            //             searchTerm={column.getFilterValue()}
+            //         />
+            //     ),
+            //     placeholder: "Title",
+            //     header: ""
+            // },
+            // {
+            //     accessorFn: (row) => row?.Title,
+            //     cell: ({ row, column, getValue }) => (
+            //         <>
+            //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+            //                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+            //             >
+            //                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //             </a>}
+            //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
+            //                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
+            //                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+            //                 >
+            //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+            //                 </a>}
+            //             {row?.original.Title === 'Others' ?
+            //                 <span>{row?.original.Title}</span> : ""}
+
+            //             {row?.original?.Short_x0020_Description_x0020_On != null &&
+            //                 <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+            //                     <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+            //                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+            //                     <span className="popover__content">
+            //                         {row?.original?.Short_x0020_Description_x0020_On}
+            //                     </span>
+            //                 </span>}
+            //         </>
+            //     ),
+            //     id: "Title",
+            //     placeholder: "Title",
+            //     header: "",
+            //     size: 27,
+            // },
             {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
                         {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+                            href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>}
                         {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
-                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
+                                href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
                             >
                                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                             </a>}
@@ -3635,8 +3750,11 @@ function ComponentTable(SelectedProp: any) {
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-                                <span className="popover__content">
-                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
+                                <span className="popover__content" dangerouslySetInnerHTML={{
+                                            __html: row?.original?.Short_x0020_Description_x0020_On
+                                          }}>
+                                    
                                 </span>
                             </span>}
                     </>
@@ -3674,6 +3792,19 @@ function ComponentTable(SelectedProp: any) {
                 header: "",
                 size: 15,
             },
+            // {
+            //     // accessorKey: "PercentComplete",
+            //     accessorFn: (row) => row?.PercentComplete,
+            //     cell: ({ row }) => (
+            //         <span>
+            //             <InlineEditingcolumns  AllListId={SelectedProp?.SelectedProp} key={row?.original?.Id} columnName='PercentComplete' TaskUsers={AllUsers} item={row?.original} />
+            //         </span>
+            //     ),
+            //     id: "PercentComplete",
+            //     placeholder: "Status",
+            //     header: "",
+            //     size: 7,
+            // },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
@@ -3686,6 +3817,18 @@ function ComponentTable(SelectedProp: any) {
                 header: "",
                 size: 7,
             },
+            // {
+            //     accessorFn: (row) => row?.DueDate,
+            //     cell: ({ row }) => (
+            //         <span>
+            //             <InlineEditingcolumns  AllListId={SelectedProp?.SelectedProp} key={row?.original?.Id} columnName='DueDate' TaskUsers={AllUsers} item={row?.original} />
+            //         </span>
+            //     ),
+            //     id: "DueDate",
+            //     placeholder: "Due Date",
+            //     header: "",
+            //     size: 9,
+            // },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
@@ -3695,8 +3838,7 @@ function ComponentTable(SelectedProp: any) {
             {
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
-
+                        {row?.original?.siteType != "Master Tasks" && <a onClick={(e) => EditDataTimeEntryData(e, row.original)} data-bs-toggle="tooltip" data-bs-placement="auto" title="Click To Edit Timesheet"><span className="svg__iconbox svg__icon--clock" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Click To Edit Timesheet"></span></a>}
                         {getValue()}
                     </>
                 ),
@@ -3743,10 +3885,12 @@ function ComponentTable(SelectedProp: any) {
         data,
         columns,
         state: {
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         getSubRows: (row) => row.subRows,
@@ -3925,20 +4069,169 @@ function ComponentTable(SelectedProp: any) {
         })
     }
 
+    // React.useEffect(() => {
+    //     if (table.getState().columnFilters.length) {
+    //         setExpanded(true);
+    //     } else {
+    //         setExpanded({});
+    //     }
+    // }, [table.getState().columnFilters]);
+
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
-            setExpanded(true);
+            const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+                (acc: any, cur: any) => {
+                    acc[cur] = true;
+                    return acc;
+                },
+                {}
+            );
+            setExpanded(allKeys);
         } else {
             setExpanded({});
         }
+        forceExpanded = [];
     }, [table.getState().columnFilters]);
 
-    const ChangeColor = () => {
-        // setColor(true)
-    }
+
 
     return (
         <div id="ExandTableIds" className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+
+            {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
+            {/* <Modal
+                isOpen={modalIsOpen}
+                onDismiss={setModalIsOpenToFalse}
+                isBlocking={false} >
+                <div className='modal-dialog modal-lg'>
+                    <form>
+                        <div className='modal-content'>
+                            <div className='modal-header'>
+                                <h5 className='modal-title'><span>Add Item</span></h5>
+                                <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
+                            </div>
+                            <div className='modal-body clearfix bg-f5f5'>
+                                <div className="col-sm-12 tab-content">
+                                    <div className="col-md-5">
+                                        <div className="row">
+                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
+                                                <label>Title</label>
+                                                <input type="text" className="form-control" placeholder="Task Name"
+                                                    value={Title} onChange={handleTitle} />
+                                            </div>
+                                            <div className="col-sm-4 mb-10 Doc-align padR0">
+                                                <label className="full_width">ItemRank
+                                                </label>
+                                                <select className="form-control" value="2">
+                                                    <option value="">Select Item Rank</option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                </select>
+                                            </div>
+                                            <div className="col-4 mb-10">
+                                                <label>Item Type</label>
+                                                <select value={itemType} onChange={(e: any) => setitemType(e.target.value)}>
+                                                    <option>Component</option>
+                                                    <option>Feature</option>
+                                                    <option>SubComponent</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-sm-6 p-0">
+                                                <div ng-show="Item.Portfolio_x0020_Type=='Service'"
+                                                    className="col-sm-12 mb-10 Doc-align padL-0">
+                                                    <div className="col-sm-11 PadR0 Doc-align">
+                                                        <label>
+                                                            Service Portfolio
+                                                            <span data-toggle="popover" data-placement="right"
+                                                                data-trigger="hover"
+                                                                data-content="Click to activate auto suggest for components/services"
+                                                                data-original-title="Click to activate auto suggest for components/services"
+                                                                title="Click to activate auto suggest for components/services">
+                                                            </span>
+                                                        </label>
+                                                        <input type="text" className="form-control ui-autocomplete-input"
+                                                            id="txtSharewebComponent" ng-model="SearchComponent"
+                                                        /><span role="status" aria-live="polite"
+                                                            className="ui-helper-hidden-accessible"></span>
+                                                    </div>
+                                                    <div className="col-sm-1 no-padding">
+                                                        <label className="full_width">&nbsp;</label>
+                                                        <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
+                                                            ng-click="EditComponent('Components',item)" />
+                                                    </div>
+                                                </div>
+                                                <div ng-show="Item.Portfolio_x0020_Type=='Component'"
+                                                    className="col-sm-12 padL-0">
+                                                    <div className="col-sm-11 p-0 Doc-align">
+                                                        <label>
+                                                            Service Portfolio
+                                                            <span data-toggle="popover" data-placement="right"
+                                                                data-trigger="hover"
+                                                                data-content="Click to activate auto suggest for components/services"
+                                                                data-original-title="Click to activate auto suggest for components/services"
+                                                                title="Click to activate auto suggest for components/services">
+                                                            </span>
+                                                        </label>
+                                                        <input type="text" className="form-control ui-autocomplete-input"
+                                                            id="txtServiceSharewebComponent" ng-model="SearchService"
+                                                        /><span role="status" aria-live="polite"
+                                                            className="ui-helper-hidden-accessible"></span>
+                                                    </div>
+                                                    <div className="col-sm-1 no-padding">
+                                                        <label className="full_width">&nbsp;</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 padR0">
+                                                <label>Deliverable-Synonyms </label>
+                                                <input type="text" className="form-control ui-autocomplete-input"
+                                                    id="txtDeliverable_x002d_Synonyms"
+                                                    ng-model="Item.Deliverable_x002d_Synonyms" /><span
+                                                        role="status" aria-live="polite"
+                                                        className="ui-helper-hidden-accessible"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div className='modal-footer mt-3'>
+                    <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
+                    <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
+                </div>
+            </Modal> */}
+            {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
+
+            {/* <Modal
+                isOpen={addModalOpen}
+                onDismiss={closeModal}
+                isBlocking={false}>
+                <div className='modal-dialog modal-lg'>
+                    <div className='modal-header'>
+                        <h5 className='modal-title'><span>Add Component</span></h5>
+                        <button type="button" className='btn btn-danger pull-right' onClick={closeModal}>Cancel</button>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-6 mb-10" title="Task Name">
+                            <label>Title</label>
+                            <input type="text" className="form-control" placeholder="Task Name"
+                                ng-required="true" />
+                        </div>
+                    </div>
+                </div>
+                <div className='modal-footer mt-3'>
+                    <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
+                    <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
+                </div>
+            </Modal> */}
+            {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
+
+
             <section className="ContentSection">
                 <div className="col-sm-12 clearfix">
                     <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
@@ -3954,6 +4247,11 @@ function ComponentTable(SelectedProp: any) {
                     <div className="togglebox">
                         <label className="toggler full_width mb-10">
                             <span className=" siteColor" onClick={() => setIsSmartfilter(IsSmartfilter === true ? false : true)}>
+                                {/* <img className="hreflink wid22"
+                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" /> */}
+                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="currentColor">
+                                    <path d="M36 11H11V15.0625L20.6774 23.1875V32.9375L27.129 37V23.1875L36 15.0625V11Z" stroke="#333333" stroke-width="0" />
+                                </svg> */}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) && <img className="hreflink wid22"
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Filter-12-WF.png" />}
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('event') > -1) && <img className="hreflink wid22"
@@ -3964,6 +4262,7 @@ function ComponentTable(SelectedProp: any) {
                             </span>
                             <span className="ml-20 siteColor">
                                 {ShowSelectdSmartfilter != undefined && ShowSelectdSmartfilter.length > 0 &&
+
                                     <>
                                         {ShowSelectdSmartfilter.map(function (obj, index) {
                                             return (
@@ -3977,6 +4276,7 @@ function ComponentTable(SelectedProp: any) {
                                         }
                                     </>
                                 }
+
                             </span>
                             <span className="pull-right bg-color">
                                 {(IsUpdated != undefined && IsUpdated.toLowerCase().indexOf('service') > -1) &&
@@ -4016,6 +4316,7 @@ function ComponentTable(SelectedProp: any) {
                                         {filterGroups.map(function (item) {
                                             return (
                                                 <>
+
                                                     <td valign="top">
                                                         <fieldset>
                                                             {item != 'teamSites' && <legend><span className="mparent">{item}</span></legend>}
@@ -4023,10 +4324,12 @@ function ComponentTable(SelectedProp: any) {
                                                         </fieldset>
                                                         {filterItems.map(function (ItemType, index) {
                                                             return (
+
                                                                 <>
                                                                     {ItemType.Group == item &&
                                                                         <div style={{ display: "block" }}>
                                                                             <>
+
                                                                                 {ItemType.TaxType != 'Status' &&
 
                                                                                     <div className="align-items-center d-flex">
@@ -4090,6 +4393,8 @@ function ComponentTable(SelectedProp: any) {
                                                                                                                     })}
                                                                                                                 </ul>
                                                                                                             </div>
+
+
                                                                                                         </>
                                                                                                     )
 
@@ -4098,13 +4403,19 @@ function ComponentTable(SelectedProp: any) {
                                                                                         )}
                                                                                     </span>
                                                                                 </ul>
+
                                                                             </>
+
+
                                                                         </div>
                                                                     }
                                                                 </>
+
                                                             )
                                                         })}
+
                                                     </td>
+
                                                 </>
                                             )
                                         })}
@@ -4127,6 +4438,7 @@ function ComponentTable(SelectedProp: any) {
                     </div>
                 </div>
             </section>
+
             <section className="TableContentSection taskprofilepagegreen" id={tablecontiner}>
                 <div className="container-fluid">
                     <section className="TableSection">
@@ -4151,6 +4463,32 @@ function ComponentTable(SelectedProp: any) {
                                             <label>
                                                 {AllCountItems.AllFeaturesItems.length}  of {AllCountItems.AllFeaturesItems.length} Features
                                             </label>}
+
+                                        {/* <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {activityCopy}  of {activity} Activities
+                                        </label> :
+                                            <label>
+                                                {activity}  of {activity} Activities
+                                            </label>}
+                                        <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {workstrimCopy}  of {workstrim} Workstreams
+                                        </label> :
+                                            <label>
+                                                {workstrim}  of {workstrim} Workstreams
+                                            </label>}
+                                        <label className="ms-1 me-1"> | </label>
+                                        {FilterShowhideShwingData === true ? <label>
+                                            {taskCopy}  of {task} Tasks
+                                        </label> :
+                                            <label>
+                                                {task}  of {task} Tasks
+                                            </label>} */}
+
+
+
+
                                         <span className='popover__wrapper ms-1' style={{ position: "unset" }} data-bs-toggle="tooltip" data-bs-placement="auto">
                                             <FaInfoCircle />
 
@@ -4197,6 +4535,20 @@ function ComponentTable(SelectedProp: any) {
                                             </span>
                                         </span>
                                     </span>
+                                    {/* <span id="showing-all-tool">
+                                        <FaInfoCircle style={{ color: "#228b22" }} /> 
+                                    </span>
+                                    <ReactTooltip
+                                        anchorId="showing-all-tool"
+                                        place="bottom"
+                                        variant="info"
+                                        content={"Showing " + ComponentCopy + " of " + `${AllCountItems?.AllComponentItems?.length}` + " Components " + " | " +
+                                         FilterShowhideShwingData === "true" ? SubComponentCopy + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " : AllCountItems.AllSubComponentItems.length + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " + 
+                                         FilterShowhideShwingData === "true" ? FeatureCopy + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | " : AllCountItems.AllFeaturesItems.length + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | "  +
+                                         FilterShowhideShwingData === "true" ? activityCopy + " of " + activity + " Activities " + " | " : activity + " of " + activity + " Activities " + " | " +  
+                                         FilterShowhideShwingData === "true" ? workstrimCopy + " of " + workstrim + " Workstreams " + " | " : workstrim + " of " + workstrim + " Workstreams " + " | " + 
+                                         FilterShowhideShwingData === "true" ? taskCopy + " of " + task + " Tasks " + " | " : task + " of " + task + " Tasks "}
+                                    /> */}
                                     <span className="toolbox mx-auto">
                                         {checkedList != undefined && checkedList.length > 0 && checkedList[0]?.Item_x0020_Type === 'Feature' ?
                                             <button type="button" disabled={true} className="btn btn-primary" onClick={addModal} title=" Add Structure">
@@ -4205,20 +4557,45 @@ function ComponentTable(SelectedProp: any) {
                                             : <button type="button" disabled={checkedList.length >= 2} className="btn btn-primary" onClick={addModal} title=" Add Structure">
                                                 Add Structure
                                             </button>}
+
                                         <button type="button"
                                             className="btn btn-primary"
                                             onClick={() => openActivity()}
                                             disabled={ActivityDisable}>
+
                                             <MdAdd />
                                             Add Activity-Task
                                         </button>
-                                        <button type="button" className="btn btn-primary" onClick={buttonRestructuring} > <MdAdd />  Restructure </button>
-                                        <a className="brush" onClick={clearSearch}> <FaPaintBrush />  </a>
-                                        <a onClick={Prints} className='Prints'> <FaPrint /></a>
-                                        <CSVLink className="excal" data={getCsvData()} > <FaFileExcel /> </CSVLink>
-                                        <a className='expand'> <ExpndTable prop={expndpopup} prop1={tablecontiner} /> </a>
+
+                                        <button type="button"
+                                            className="btn btn-primary"
+                                            onClick={buttonRestructuring}
+                                        >
+
+                                            <MdAdd />
+                                            Restructure
+                                        </button>
+
+
+
+
+                                        <a className="brush" onClick={clearSearch}>
+                                            <FaPaintBrush />
+                                        </a>
+
+                                        <a onClick={Prints} className='Prints'>
+                                            <FaPrint />
+                                        </a>
+
+                                        <CSVLink className="excal" data={getCsvData()} >
+                                            <FaFileExcel />
+                                        </CSVLink>
+                                        <a className='expand'>
+                                            <ExpndTable prop={expndpopup} prop1={tablecontiner} />
+                                        </a>
                                     </span>
                                 </div>
+
                                 <div className="col-sm-12 p-0 smart">
                                     <div className="">
                                         <div className="wrapper">
@@ -4263,8 +4640,12 @@ function ComponentTable(SelectedProp: any) {
                                                     ))}
                                                 </thead>
                                                 <tbody>
+                                                    {/* <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
+                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
+                                                    </div> */}
                                                     <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
                                                         hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
+
                                                     {table?.getRowModel()?.rows?.map((row: any) => {
                                                         return (
                                                             <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
@@ -4297,13 +4678,7 @@ function ComponentTable(SelectedProp: any) {
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={SelectedProp}></CreateWS>}
-            <Panel
-        onRenderHeader={onRenderCustomHeader}
-        type={PanelType.large}
-        isOpen={addModalOpen}
-        isBlocking={false}
-        onDismiss={CloseCall}
-      >
+            <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={ContextValue} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
 
@@ -4318,6 +4693,42 @@ function ComponentTable(SelectedProp: any) {
                 <div className="modal-body bg-f5f5 clearfix">
                     <div className={IsUpdated == 'Events Portfolio' ? 'app component clearfix eventpannelorange' : (IsUpdated == 'Service Portfolio' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div id="portfolio" className="section-event pt-0">
+
+                            {/* {
+                                    
+                                    MeetingItems.SharewebTaskType == undefined  &&
+                                        <ul className="quick-actions">
+
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={(e) => CreateMeetingPopups('Implementation')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
+
+                                                    </span>
+                                                    Implmentation
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Development')}>
+                                                    <span className="icon-sites">
+                                                        <img className="icon-sites"
+                                                            src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
+
+                                                    </span>
+                                                    Development
+                                                </div>
+                                            </li>
+                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                                                <div onClick={() => CreateMeetingPopups('Activities')}>
+                                                    <span className="icon-sites">
+                                                    </span>
+                                                    Activity
+                                                </div>
+                                            </li>
+                                        </ul>
+                                         
+                                    } */}
                             {
                                 (childsData != undefined && childsData[0]?.SharewebTaskType?.Title == 'Workstream') ?
                                     <ul className="quick-actions">
@@ -4413,7 +4824,7 @@ function ComponentTable(SelectedProp: any) {
                         <div className='bg-ee p-2 restructurebox'>
                             <div>
                                 {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <div className='Dyicons '>{NewArrayBackup[0].SiteIconTitle}</div>  <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
                                 ><span>{NewArrayBackup[0].Title}</span>
                                 </a>  please click Submit to continue.</span> : ''}
                             </div>
@@ -4425,7 +4836,7 @@ function ComponentTable(SelectedProp: any) {
                                             <span className='Dyicons '>{obj.SiteIconTitle}</span>
                                             {/* <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img> */}
                                             <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
                                             ><span>{obj.Title}  </span>
                                             </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                     )
@@ -4440,7 +4851,7 @@ function ComponentTable(SelectedProp: any) {
                                                 <div className='Dyicons '>{newobj.SiteIconTitle}</div>
                                                 {/* <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img> */}
                                                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                     )
@@ -4449,7 +4860,7 @@ function ComponentTable(SelectedProp: any) {
                                     <div className='Dyicons '>{RestructureChecked[0].SiteIconTitle}</div>
                                     {/* <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img> */}
                                     <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                             </div>

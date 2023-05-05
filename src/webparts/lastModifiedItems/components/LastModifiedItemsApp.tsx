@@ -191,7 +191,6 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         let selTabName: string = this.state.selNavItem.tabName;
         let resListItems: any[] = [];
         let listLastModifiedItems: any[] = [];
-
         if(selTabName=="DOCUMENTS") {
             resListItems = await this.getListItems(curListId, qStrings);
             listLastModifiedItems = resListItems.map( resListItem => ({
@@ -640,13 +639,12 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
         
         const elemFilter = (
             <div className="mt-3">
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>
-                </div>
-                <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">
-                    <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
-                </div>
-                {this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
+<div className="tbl-headings">
+    <span className="leftsec">
+    <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>  <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
+    </span>
+    <span className="toolbox mx-auto">
+    {this.state.selNavItem?.tabName=="DOCUMENTS" ||  this.state.selNavItem?.tabName=="FOLDERS" || this.state.selNavItem?.tabName=="COMPONENTS" || this.state.selNavItem?.tabName=="SERVICES"  ?
                  "":<div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2 mt-2">
                  <Checkbox checked={this.state.componentsChecked} onChange={this.onComponentsChecked} label="Components" styles={controlStyles} />
              </div>         }
@@ -656,10 +654,9 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                     <Checkbox checked={this.state.serviceChecked} onChange={this.onServiceChecked} label="Service" styles={controlStyles} />
                 </div>                       
                 }
-                
-                <div className="ms-Grid-col ms-sm2 ms-md2 ms-lg2">
-                    {elemClearFilter}
-                </div>
+                <div>      {elemClearFilter}</div>
+    </span>
+</div>
             </div>
         );
 

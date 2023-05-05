@@ -724,9 +724,10 @@ function CreateTaskComponent(props: any) {
 
                     if (smartComponentData[0]?.Id != undefined) {
 
-                        var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
-                        const web = new Web(PageContent?.SiteFullUrl + '/sp');
-                        await web.lists.getById(ContextValue.MasterTaskListID).items.select(query).get().then((data: any) => {
+                        //var query = "SiteCompositionSettings,Sitestagging&$top=1&$filter=Id eq " + smartComponentData[0]?.Id;
+                        //const web = new Web(PageContent?.SiteFullUrl + '/sp');
+                        const web = new Web(PageContent?.WebFullUrl);
+                        await web.lists.getById(ContextValue.MasterTaskListID).items.select("SiteCompositionSettings,Sitestagging").filter(`Id eq ${smartComponentData[0]?.Id}`).top(1).get().then((data: any) => {
                             Tasks = data[0];
                         });
                     }

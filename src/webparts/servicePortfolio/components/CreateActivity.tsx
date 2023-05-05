@@ -70,6 +70,7 @@ const CreateActivity = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [IsClientPopup, setIsClientPopup] = React.useState(false);
     const [site, setSite] = React.useState('');
+    const [count, setCount] = React.useState(0);
     var [isActive, setIsActive] = React.useState({ siteType: false, });
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
     const [post, setPost] = React.useState({ Title: ''})
@@ -423,12 +424,12 @@ const CreateActivity = (props: any) => {
 
     }
     const deleteClientCategories = (id: any) => {
-        CategoriesData.map((catId, index) => {
+        ClientCategoriesData.map((catId, index) => {
             if (id == catId.Id) {
-                CategoriesData.splice(index, 1)
+                ClientCategoriesData.splice(index, 1)
             }
         })
-        setCategoriesData(CategoriesData => ([...CategoriesData]));
+        setClientCategoriesData(ClientCategoriesData => ([...ClientCategoriesData]));
 
     }
     var isItemExists = function (arr: any, Id: any) {
@@ -685,12 +686,12 @@ const CreateActivity = (props: any) => {
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                     }).then((res: any) => {
-                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
-                        res.data['listId'] = value.listId
+                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                        res.data['listId'] = value?.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                         res.data['siteType'] = value.siteName
-                        res.data['Shareweb_x0020_ID'] = value.SharewebID
+                        res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
 
                         console.log(res);
@@ -795,11 +796,11 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
+                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
-                            res.data['siteType'] = value.siteName
+                            res.data['siteType'] = value?.siteName
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
@@ -910,6 +911,7 @@ const CreateActivity = (props: any) => {
             value.selectSiteName = true;
         })
         setSite('Site Name')
+        setCount(count+1)
     }
     return (
         <>
@@ -943,7 +945,7 @@ const CreateActivity = (props: any) => {
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
                                                                         <img className="icon-sites"
-                                                                            src={item.Item_x005F_x0020_Cover.Url} />
+                                                                            src={item.Item_x005F_x0020_Cover?.Url} />
                                                                     </span>{item.Title}
                                                                 </a>
                                                             </li>
@@ -959,11 +961,11 @@ const CreateActivity = (props: any) => {
                             <div className='col-sm-10'>
                                 <div className="row">
                                     <div className="col-sm-10 mb-10 mt-2">
-                                        <label className="full_width">
-                                            Task Name <a id='siteName'
-                                                onClick={SelectSiteType}>Site Name</a>
+                                        <label className="full_width"><span style={{color:"black"}}>
+                                            Task Name </span> <a id='siteName' 
+                                                onClick={SelectSiteType}> Site Name</a>
                                         </label>
-                                        <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
+                                        <input className="form-control" type="text"  placeholder="Enter Task Name"
                                             defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                     </div>
@@ -1074,7 +1076,7 @@ const CreateActivity = (props: any) => {
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
                                                         <>
-                                                            <div className="d-flex block full-width p-2">
+                                                            <div className="d-flex block full-width p-2 mb-1">
                                                                 <div>
                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
@@ -1190,10 +1192,10 @@ const CreateActivity = (props: any) => {
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
                                                         <div className="d-flex block full-width p-2">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type.Id)} className="p-1" />
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" />
                                                         </div>
                                                     }
                                                 </>
@@ -1229,10 +1231,10 @@ const CreateActivity = (props: any) => {
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
                                                         <div className="d-flex block full-width p-2 mb-1">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type?.Id)} className="p-1" />
                                                         </div>
                                                     }
                                                 </>

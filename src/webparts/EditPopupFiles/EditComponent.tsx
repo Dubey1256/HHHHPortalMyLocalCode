@@ -678,14 +678,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     };
     initLoading();
   }, []);
-  // const EditComponent = (items: any, title: any) => {
-  //   // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
-  //   setIsComponent(true);
-  //   setSharewebComponent(items);
-  //   // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
-  // };
+  
   const EditComponent = (items: any, title: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     if(title == "Service"){
       setIsComponent(true);
       setSharewebComponent(items);
@@ -1637,12 +1631,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           {EditData?.Portfolio_x0020_Type == "Component" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
-                                <div>
+                                <div className="serviepannelgreena">
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div className="">
+                                          <div >
                                             <a
                                               className="hreflink service"
                                               target="_blank"
@@ -1678,7 +1672,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div className="serviepannelgreena">
+                                          <div >
                                             <a
                                               className="hreflink service "
                                               target="_blank"
@@ -2141,7 +2135,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                       target="_blank"
                                       href={
                                         userDtl.Item_x0020_Cover
-                                          ? userDtl.Item_x0020_Cover.Url
+                                          ? userDtl.Item_x0020_Cover?.Url
                                           : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                       }
                                     >
@@ -2162,8 +2156,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                           borderRadius: "50px",
                                         }}
                                         src={
-                                          userDtl.Item_x0020_Cover.Url
-                                            ? userDtl.Item_x0020_Cover.Url
+                                          userDtl.Item_x0020_Cover?.Url
+                                            ? userDtl.Item_x0020_Cover?.Url
                                             : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                         }
                                       />
@@ -2921,7 +2915,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                       {EditData?.ID ? (
                         <VersionHistoryPopup
                           taskId={EditData?.ID}
-                          listId={RequireData.MasterTask}
+                          listId={RequireData.MasterTaskListID}
                           siteUrls={RequireData?.siteUrl}
                         />
                       ) : (

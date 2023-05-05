@@ -168,9 +168,9 @@ const SiteCompositionComponent = (Props: any) => {
         setSiteTypes(TempArray);
     }
     const ChangeSiteCompositionSettings = (Type: any) => {
-        if (!isPortfolioConncted) {
-            alert("There are No Tagged Component/Services")
-        } else {
+        // if (!isPortfolioConncted) {
+        //     alert("There are No Tagged Component/Services")
+        // } else {
             if (Type == "Proportional") {
                 const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
                 SiteCompositionSettings[0] = object;
@@ -183,14 +183,14 @@ const SiteCompositionComponent = (Props: any) => {
                 SiteCompositionObject.ClientTime = tempData;
                 callBack(SiteCompositionObject);
                 setIsPortfolioComposition(false);
-                // setCheckBoxStatus(false);
+                setCheckBoxStatus(false);
             }
             if (Type == "Manual") {
                 const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
                 SiteCompositionSettings[0] = object;
                 setProportionalStatus(false);
                 setIsPortfolioComposition(false);
-                // setCheckBoxStatus(false);
+                setCheckBoxStatus(false);
             }
             if (Type == "Portfolio") {
                 const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
@@ -202,7 +202,7 @@ const SiteCompositionComponent = (Props: any) => {
             }
             SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
             callBack(SiteCompositionObject);
-        }
+        // }
 
     }
 
@@ -516,7 +516,7 @@ const SiteCompositionComponent = (Props: any) => {
                     name="SiteCompositions"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
                     title="add Proportional Time"
-                    className="mx-1"
+                    className="me-1"
                 />
                 <label>Proportional</label>
                 <input

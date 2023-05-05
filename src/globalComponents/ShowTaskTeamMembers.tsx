@@ -3,7 +3,10 @@ import { Web } from "sp-pnp-js";
 import * as globalCommon from "../globalComponents/globalCommon";
 import { GlobalConstants } from "../globalComponents/LocalCommon";
 // import teamsImg from '../Assets/ICON/Teams-Logo.png'; 
+var siteUrl =''
 function ShowTaskTeamMembers(item: any) {
+  //siteUrl= item.SelectedProp?.SelectedProp?.siteUrl
+  siteUrl= item.props?.siteUrl
   const [Display, setDisplay] = React.useState("none");
   const [ItemNew, setItemMember] = React.useState<any>({});
   let TaskUsers: any = [];
@@ -114,12 +117,12 @@ function ShowTaskTeamMembers(item: any) {
                 <>
                   <span className="user_Member_img">
                     <a
-                      href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                      href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
                       target="_blank"
                       data-interception="off"
                       title={rcData.Title}
                     >
-                      <img className="workmember" src={rcData.ItemCover}></img>
+                      <img className="imgAuthor" src={rcData.ItemCover}></img>
                     </a>
                   </span>
                 </>
@@ -134,13 +137,13 @@ function ShowTaskTeamMembers(item: any) {
             ItemNew["AllTeamMembers"].length > 0 ? (
             <div className="  ">
               <a
-                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
+                href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
                 target="_blank"
                 data-interception="off"
                 title={ItemNew["AllTeamMembers"][0].Title}
               >
                 <img
-                  className="workmember activeimg"
+                  className="imgAuthor activeimg"
                   src={ItemNew["AllTeamMembers"][0].ItemCover}
                 ></img>
               </a>
@@ -172,12 +175,12 @@ function ShowTaskTeamMembers(item: any) {
                           >
                             <span>
                               <a
-                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                                href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
                                 target="_blank"
                                 data-interception="off"
                               >
                                 <img
-                                  className={`workmember ${rcData.activeimg2}`}
+                                  className={` imgAuthor ${rcData.activeimg2}`}
                                   src={rcData.ItemCover}
                                 ></img>
                               </a>
@@ -200,7 +203,11 @@ function ShowTaskTeamMembers(item: any) {
                   href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
                   target="_blank"
                 >
-                  <span title="Edit Task" className="bg-primary hreflink svg__icon--team svg__iconbox"></span>
+                  <img alt="m-teams"
+                    width="25px"
+                    height="25px"
+                    src={require('../Assets/ICON/Teams-Logo.png')}
+                  />
                 </a>
               </span>
             ) : (
