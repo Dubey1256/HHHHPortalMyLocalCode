@@ -1906,7 +1906,7 @@ const TaskDashboard = (props: any) => {
 
                 </div>
             </div>
-            {pageLoaderActive ? <PageLoader /> : ''}
+            
         </>
     )
 }
