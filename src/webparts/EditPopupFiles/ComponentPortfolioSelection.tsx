@@ -62,7 +62,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
   };
   var Response: [] = [];
   const GetTaskUsers = async () => {
-    let web = new Web(Dynamic.siteUrl);
+    let web = new Web(Dynamic?.siteUrl);
     let taskUsers = [];
     taskUsers = await web.lists.getById(Dynamic.TaskUsertListID).items.get();
     Response = taskUsers;
@@ -74,7 +74,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
     var SubComponentsData: any[] = [];
     var FeatureData: any[] = [];
 
-    let web = new Web(Dynamic.siteUrl);
+    let web = new Web(Dynamic?.siteUrl);
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
@@ -759,7 +759,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
       <footer className="d-flex justify-content-end me-4 mt-2">
         <button type="button" className="btn btn-primary">
           <a target="_blank" className="text-light" data-interception="off"
-            href={`${Dynamic.siteUrl}/SitePages/Component-Portfolio.aspx`}>
+            href={`${Dynamic?.siteUrl}/SitePages/Component-Portfolio.aspx`}>
             Create New One
           </a>
         </button>
@@ -1128,7 +1128,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
                                           target="_blank"
                                           className="hreflink serviceColor_Active"
                                           href={
-                                            Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                            Dynamic?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                             item?.Id
                                           }
                                         >
@@ -1324,7 +1324,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
                                                     className="hreflink serviceColor_Active"
                                                     target="_blank"
                                                     href={
-                                                      Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                      Dynamic?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                       childitem.Id
                                                     }
                                                   >
@@ -1515,7 +1515,7 @@ const ComponentPortPolioPopup = ({ props, Dynamic, Call }: any) => {
                                                             className="hreflink serviceColor_Active"
                                                             target="_blank"
                                                             href={
-                                                              Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
+                                                              Dynamic?.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
                                                               childinew.Id
                                                             }
                                                           >

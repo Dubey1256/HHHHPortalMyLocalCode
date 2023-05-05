@@ -120,6 +120,18 @@
     width: 100%;
 }
 
-.ms-Label, .ms-SearchBox, .ms-Checkbox {
-    margin: 0px;
-}
+.tblHeadings  {
+    .leftsec{
+
+    .ms-Label{
+        margin: 0px;
+    }
+    .ms-SearchBox{
+        margin: 0px;
+    }
+    .Checkbox{
+        margin: 0px;
+    }
+    }
+
+} 
