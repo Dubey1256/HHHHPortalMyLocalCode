@@ -642,7 +642,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
 
         const elemFilter = (
 
-            <div className="mt-3">
+            <div className="mt-0">
 
                 <div className="justify-content-between tbl-headings">
 
@@ -700,12 +700,13 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
             <div className="ms-Grid-row">
                 {elemPivotNav}
             </div>
-            <div className="ms-Grid-row">
+            <div className="ms-Grid-row border">
                 {elemFilter}
-            </div>
-            <div className={css("ms-Grid-row", styles.content)}>
+                <div className={css("mt-0",styles.content)}>
                 {elemListLMI}
             </div>
+            </div>
+         
             {elemDeleteRecord}
         </div>);
     }
