@@ -644,15 +644,15 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
 
             <div className="mt-3">
 
-                <div className="tbl-headings toolbox mx-auto">
+                <div className="justify-content-between tbl-headings">
 
                     <span className="leftsec">
 
-                        <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>  <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
+                        <Label styles={controlStyles}>Showing {this.state.filteredItems.length} items</Label>  <SearchBox value={this.state.searchText} onChange={this.onSearchTextChange} styles={controlStyles} />
 
                     </span>
 
-                    <span className="toolbox mx-auto">
+                    <span className="toolbox">
 
                         {this.state.selNavItem?.tabName == "DOCUMENTS" || this.state.selNavItem?.tabName == "FOLDERS" || this.state.selNavItem?.tabName == "COMPONENTS" || this.state.selNavItem?.tabName == "SERVICES" ?
 
