@@ -8,8 +8,7 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import * as Moment from 'moment';
-import * as moment from "moment-timezone";
+import * as Moment from 'moment'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
 
