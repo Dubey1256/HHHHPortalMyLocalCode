@@ -46,7 +46,7 @@ export interface ITaskprofileState {
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
   private taskUsers: any = [];
-  private smartMetaData: any = [];
+  private smartMetaDataIcon: any;
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
@@ -214,8 +214,25 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       return AllDataMatches;
     }
   }
+  private getsmartmetadataIcon=async()=>{
+    let web = new Web(this.props?.siteUrl);
+    await web.lists
+    // .getByTitle('SmartMetadata')
+    .getById(this.props.SmartMetadataListID)
+    .items
+    .select('Id', 'Title', 'Item_x0020_Cover', 'TaxType',  'siteName', 'siteUrl', 'Item_x005F_x0020_Cover')
+
+    .filter("TaxType eq 'Sites'").top(4000)
+    .get().then((data:any)=>{
+     this. smartMetaDataIcon=data;
+
+    }).catch((error:any)=>{
+
+    });
+  }
 
   private async GetResult() {
+  await this.getsmartmetadataIcon();
     try {
       isShowTimeEntry = this.props.TimeEntry != "" ? JSON.parse(this.props.TimeEntry) : "";
       isShowSiteCompostion = this.props.SiteCompostion != "" ? JSON.parse(this.props.SiteCompostion) : ""
@@ -468,10 +485,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ClientTimeArray = JSON.parse(ClientTime);
       //  console.log(ClientTimeArray);
     }
-
-
-
-
     let web = new Web(this.props?.siteUrl);
     var smartMetaData = await web.lists
       // .getByTitle('SmartMetadata')
@@ -553,6 +566,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png`;
       if (listName?.toLowerCase() == 'tasks' && this.props.Context?._pageContext?._web.title == "SH") {
         siteicon = `${this.props.Context?._pageContext?._site?.absoluteUrl}/SH/SiteCollectionImages/ICONS/Foundation/SH_icon.png`;
+      }
+      else{
+       this.smartMetaDataIcon?.map((icondata:any)=>{
+          if(icondata.Title!=undefined){
+            if(icondata.Title.toLowerCase()==listName?.toLowerCase()&&icondata.Item_x0020_Cover!=undefined){
+              siteicon=icondata.Item_x0020_Cover.Url
+            }
+            if(icondata.Title.toLowerCase()==listName?.toLowerCase()&&icondata.Item_x005F_x0020_Cover!=undefined){
+              siteicon=icondata.Item_x005F_x0020_Cover.Url
+            }
+          }
+        })
       }
       return siteicon;
     }
@@ -1202,14 +1227,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
                           <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
                             {this.state.Result["TeamMembers"][0].userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
-                            {this.state.Result["TeamMembers"][0].userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
+                            {this.state.Result["TeamMembers"][0].userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
                           </a>
                           </div>
                         }
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
                           {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
-                          {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
+                          {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
                         </a>
                         </div>
                         }
