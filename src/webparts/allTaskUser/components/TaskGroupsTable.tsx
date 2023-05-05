@@ -161,7 +161,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
 
   return (
     <div className="p-2">
-      <div style={{display:"flex"}}>
+  
         {/* <div style={{display:"inline",width:"50%"}}>
           <DebouncedInput
             value={globalFilter ?? ''}
@@ -171,9 +171,9 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
           />
         </div> */}
         <div style={{display:"inline",width:"50%"}}>
-          <PrimaryButton text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
+          <PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
         </div>        
-      </div>
+     
       <br />
       <div className="h-2"></div>
       <BTable striped bordered hover responsive size="lg">
@@ -184,14 +184,15 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
                 return (
                   <th key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder ? null : (
-                      <div style={{ display: "flex" }}>
+                      <div className='position-relative' style={{ display: "flex" }}>
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
                       {header.column.getCanFilter() ? (
-                        <div>
+                        <div className='full-width'> 
                           <Filter
+                          
                             column={header.column}
                             table={table}
                             placeholder={header.column.columnDef}
@@ -203,7 +204,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
                         <div
                           {...{
                             className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
+                              ? "cursor-pointer select-none shorticon"
                               : "",
                             onClick: header.column.getToggleSortingHandler(),
                           }}
@@ -333,7 +334,7 @@ function Filter({
   return (
       <input
           // type="text"
-          type="search"
+          type="search" className='full-width'
           value={(columnFilterValue ?? "") as string}
           onChange={(e) => column.setFilterValue(e.target.value)}
           placeholder={`${placeholder?.placeholder}`}
