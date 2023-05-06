@@ -1324,41 +1324,41 @@ const TaskDashboard = (props: any) => {
                         let body1: any = [];
                         let tasksCopy: any = [];
                         tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
-                        if(tasksCopy?.length>0){
-                        tasksCopy?.map((item: any) => {
-                            let teamUsers: any = [];
-                            item?.Team_x0020_Members?.map((item1: any) => {
-                                teamUsers.push(item1?.Title)
-                            });
-                            if (item.DueDate != undefined) {
-                                item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
-                            }
-                            if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
-                                item.TaskDueDatenew = '';
-                            if (item.Categories == undefined || item.Categories == '')
-                                item.Categories = '';
-                            if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
-                                item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
-                                item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
-                            }
-                            if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
-                                item.EstimatedTime = ''
-                            }
+                        if (tasksCopy?.length > 0) {
+                            tasksCopy?.map((item: any) => {
+                                let teamUsers: any = [];
+                                item?.Team_x0020_Members?.map((item1: any) => {
+                                    teamUsers.push(item1?.Title)
+                                });
+                                if (item.DueDate != undefined) {
+                                    item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                                }
+                                if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                    item.TaskDueDatenew = '';
+                                if (item.Categories == undefined || item.Categories == '')
+                                    item.Categories = '';
+                                if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                                    item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                                    item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+                                }
+                                if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                    item.EstimatedTime = ''
+                                }
 
 
-                            text =
-                                '<tr>' +
-                                '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
-                                + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
-                            body1.push(text);
-                        })
+                                text =
+                                    '<tr>' +
+                                    '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                                body1.push(text);
+                            })
                             body =
                                 '<h3>'
                                 + teamMember?.Title
@@ -1381,37 +1381,37 @@ const TaskDashboard = (props: any) => {
                                 + body1
                                 + '</tbody>'
                                 + '</table>'
-                                body = body.replaceAll('>,<', '><')
+                            body = body.replaceAll('>,<', '><')
                         } else {
                             body = '<h3>'
                                 + teamMember?.Title
                                 + '</h3>'
-                                +'<h4>'
+                                + '<h4>'
                                 + 'No Working Today Tasks Available '
                                 + '</h4>'
-                            
+
 
                         }
 
 
-                       
+
                         teamsTaskBody.push(body);
                     })
                     let TeamTitle = '<h2>'
-                        + userGroup.Title + '- Today Working Tasks'
+                        + userGroup.Title 
                         + '</h2>'
                         + teamsTaskBody
                     finalBody.push(TeamTitle)
                 }
             })
             let sendAllTasks =
-                '<p>'
-                + 'Please Find the Working Today Task of all the Team members mentioned Below.'
-                + '</p>'
+                '<h3>'
+                + 'Please Find the Working Today Tasks of all the Team members mentioned Below.'
+                + '</h3>'
                 + finalBody
-                + '<p>'
+                + '<h3>'
                 + 'Thanks And regards'
-                + '</p>'
+                + '</h3>'
             SendEmailFinal(to, subject, sendAllTasks);
 
         }
@@ -1509,7 +1509,7 @@ const TaskDashboard = (props: any) => {
                                         </> : ""
                                 }
                                 <ul className="nav__list">
-                                    {currentUserData?.Title == "Ranu Trivedi" ?
+                                    {currentUserData?.Title == "Ranu Trivedi"||currentUserData?.Title == "Abhishek" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
