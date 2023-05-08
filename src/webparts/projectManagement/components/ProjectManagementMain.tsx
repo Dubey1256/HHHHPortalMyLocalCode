@@ -804,7 +804,7 @@ const ProjectManagementMain = (props: any) => {
         internalHeader: "Remarks",
         accessor: 'Remark',
         showSortIcon: true,
-        style: { width: "125px" },
+        style: { width: "70px" },
         Cell: ({ row }: any) => (
           <span>
             <InlineEditingcolumns
