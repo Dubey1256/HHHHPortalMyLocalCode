@@ -11,6 +11,7 @@ var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var ClientTime = Props.ClientTime;
+    var SitesTaggingData: any = Props.SitesTaggingData
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
@@ -18,7 +19,7 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
+    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Portfolio: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
@@ -41,6 +42,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EIClientCategory, setEIClientCategory] = useState([]);
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
+    // const [SitesTaggingData, setSitesTaggingData] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
 
@@ -115,6 +117,10 @@ const SiteCompositionComponent = (Props: any) => {
                 setCheckBoxStatus(true)
             }
         }
+
+        // if (Props.SitesTaggingData != undefined && Props.SitesTaggingData.length > 0) {
+        //     setSitesTaggingData(Props.SitesTaggingData);
+        // }
     }, [])
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -171,38 +177,73 @@ const SiteCompositionComponent = (Props: any) => {
         // if (!isPortfolioConncted) {
         //     alert("There are No Tagged Component/Services")
         // } else {
-            if (Type == "Proportional") {
-                const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
-                SiteCompositionSettings[0] = object;
-                setProportionalStatus(true);
-                let tempData: any = [];
-                ClientTime?.map((TimeData: any) => {
-                    TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
-                    tempData.push(TimeData);
-                })
-                SiteCompositionObject.ClientTime = tempData;
-                callBack(SiteCompositionObject);
-                setIsPortfolioComposition(false);
-                setCheckBoxStatus(false);
-            }
-            if (Type == "Manual") {
-                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
-                SiteCompositionSettings[0] = object;
-                setProportionalStatus(false);
-                setIsPortfolioComposition(false);
-                setCheckBoxStatus(false);
-            }
-            if (Type == "Portfolio") {
-                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-                SiteCompositionSettings[0] = object;
+        if (Type == "Proportional") {
+            const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
+            SiteCompositionSettings[0] = object;
+            setProportionalStatus(true);
+            let tempData: any = [];
+            ClientTime?.map((TimeData: any) => {
+                TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
+                tempData.push(TimeData);
+            })
+            SiteCompositionObject.ClientTime = tempData;
+            callBack(SiteCompositionObject);
+            setIsPortfolioComposition(false);
+            setCheckBoxStatus(false);
+        }
+        if (Type == "Manual") {
+            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
+            SiteCompositionSettings[0] = object;
+            setProportionalStatus(false);
+            setIsPortfolioComposition(false);
+            setCheckBoxStatus(false);
+        }
+        if (Type == "Portfolio") {
+            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
+            SiteCompositionSettings[0] = object;
+            if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
+                setClientTimeData(SitesTaggingData != SitesTaggingData ? SitesTaggingData : ClientTime);
                 setIsPortfolioComposition(true);
                 setProportionalStatus(true);
                 setCheckBoxStatus(true);
-                // setCheckBoxStatus(true);
+                onChangeCompositionSetting()
+            } else {
+                setIsPortfolioComposition(false);
+                setCheckBoxStatus(false);
+                setClientTimeData([])
             }
-            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-            callBack(SiteCompositionObject);
+            // if (ClientTime != undefined && ClientTime.length > 0) {
+            //     setIsPortfolioComposition(true);
+            //     setProportionalStatus(true);
+            //     setCheckBoxStatus(true);
+            // } else {
+            //     setIsPortfolioComposition(false);
+            //     setCheckBoxStatus(false);
+            // }
+
+            // setCheckBoxStatus(true);
+        }
+        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+        callBack(SiteCompositionObject);
         // }
+
+    }
+
+    const onChangeCompositionSetting = () => {
+        let TempArray: any = [];
+        if (BackupSiteTypeData != undefined && BackupSiteTypeData.length > 0) {
+            BackupSiteTypeData?.map((data: any) => {
+                ClientTime?.map((ClientItem: any) => {
+                    if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
+                        "DA E+E" && data.Title == "ALAKDigital")) {
+                        data.ClienTimeDescription = ClientItem.ClienTimeDescription;
+                        data.BtnStatus = true
+                    }
+                })
+                TempArray.push(data);
+            })
+            setSiteTypes(TempArray)
+        }
 
     }
 
@@ -633,7 +674,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                                     </a>
                                                                     : null
-                                                            }     
+                                                            }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">

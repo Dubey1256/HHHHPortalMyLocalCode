@@ -155,6 +155,7 @@ const EditTaskPopup = (Items: any) => {
     const [AllClientCategoryData, setAllClientCategoryData] = React.useState([]);
     const [ApproverHistoryData, setApproverHistoryData] = React.useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
+    const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -206,6 +207,24 @@ const EditTaskPopup = (Items: any) => {
         if (type == "SmartComponent") {
             if (PopupItemData?.smartComponent?.length > 0) {
                 Items.Items.smartComponent = PopupItemData.smartComponent;
+                // if (PopupItemData.smartComponent[0].Sitestagging != null || PopupItemData.smartComponent[0].Sitestagging != undefined) {
+                //     let ClientData = JSON.parse(PopupItemData.smartComponent[0].Sitestagging ? PopupItemData.smartComponent[0].Sitestagging : [{}]);
+                //     let TempSiteCompositionArray: any = [];
+                //     if (ClientData != undefined && ClientData.length > 0) {
+                //         ClientData.map((SiteData: any) => {
+                //             let TempObject: any = {
+                //                 SiteName: SiteData.Title,
+                //                 ClienTimeDescription: SiteData.ClienTimeDescription,
+                //                 localSiteComposition: true
+                //             }
+                //             TempSiteCompositionArray.push(TempObject);
+                //         })
+                //         if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                //             setClientTimeData(TempSiteCompositionArray);
+                //             setSitesTaggingData(TempSiteCompositionArray);
+                //         }
+                //     }
+                // }
                 setSmartComponentData(PopupItemData.smartComponent);
                 setSmartServicesData([])
                 console.log("Popup component smartComponent ", PopupItemData.smartComponent)
@@ -1293,12 +1312,48 @@ const EditTaskPopup = (Items: any) => {
                     setServicesTaskCheck(false)
                 }
                 setEditData(item)
+                if (item.Component != undefined && item.Component.length > 0) {
+                    let PortfolioId: any = item.Component[0].Id;
+                    GetPortfolioSiteComposition(PortfolioId)
+                }
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details form backend  ==================", item)
             })
         } catch (error) {
             console.log("Error :", error.message);
+        }
+    }
+
+    const GetPortfolioSiteComposition = async (ProtfolioId: any) => {
+        let DataFromCall: any;
+        let web = new Web(siteUrls);
+
+        try {
+            DataFromCall = await web.lists
+                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title, Id").top(5000).filter(`Id eq ${ProtfolioId}`).get();
+            if (DataFromCall != undefined) {
+                let TempSiteCompositionArray: any = [];
+                console.log("Portfolio Site Composition data =====================", DataFromCall)
+                if (DataFromCall[0].Sitestagging != undefined) {
+                    let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
+                    if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
+                        tempSiteComposition.map((SiteData: any) => {
+                            let TempObject: any = {
+                                SiteName: SiteData.Title,
+                                ClienTimeDescription: SiteData.ClienTimeDescription,
+                                localSiteComposition: true
+                            }
+                            TempSiteCompositionArray.push(TempObject);
+                        })
+                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                            setSitesTaggingData(TempSiteCompositionArray);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log("Error :", error)
         }
     }
 
@@ -2481,8 +2536,6 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     }
-
-
     const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
         let tempArray: any = [];
         if (FunctionType == "Remove") {
@@ -2679,7 +2732,6 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // ************** this is for Project Management Section Functions ************
-    
     const closeProjectManagementPopup = () => {
         let TempArray: any = [];
         setProjectManagementPopup(false);
@@ -2833,7 +2885,6 @@ const EditTaskPopup = (Items: any) => {
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section ************** 
-
     const OpenApproverPopupFunction = () => {
         setApproverPopupStatus(true);
     }
@@ -4214,6 +4265,7 @@ const EditTaskPopup = (Items: any) => {
                                             isServiceTask={ServicesTaskCheck}
                                             SelectedClientCategory={selectedClientCategory}
                                             isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
+                                            SitesTaggingData={SitesTaggingData}
                                         /> : null}
 
                                     </div>
