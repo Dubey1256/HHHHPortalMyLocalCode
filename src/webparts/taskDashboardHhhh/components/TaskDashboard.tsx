@@ -66,6 +66,11 @@ const TaskDashboard = (props: any) => {
         origin: ''
     });
     React.useEffect(() => {
+        pnp.sp.web.currentUser.get().then(result => {
+            currentUserId = result.Id;
+            console.log(currentUserId)
+    
+        });
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
@@ -1044,23 +1049,8 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-        // await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
-        //     headers: {
-        //         "Accept": "application/json;odata=verbose"
-        //     }
-        // })
-        //     .then(response => {
-        //         currentUserId = response?.data?.d?.Id;
-        //         console.log(`Current user ID: ${currentUserId}`);
-        //     })
-        //     .catch(error => {
-        //         console.log(error);
-        //     });
-        pnp.sp.web.currentUser.get().then(result => {
-            currentUserId = result.Id;
-            console.log(currentUserId)
-    
-        });
+      
+       
 
         taskUsers = await loadTaskUsers();
         taskUsers?.map((item: any) => {
