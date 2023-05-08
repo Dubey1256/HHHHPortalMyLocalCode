@@ -2679,6 +2679,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     // ************** this is for Project Management Section Functions ************
+    
     const closeProjectManagementPopup = () => {
         let TempArray: any = [];
         setProjectManagementPopup(false);
@@ -2832,6 +2833,7 @@ const EditTaskPopup = (Items: any) => {
     };
 
     // ************ this is for Approver Popup Function And Approver Related All Functions section ************** 
+
     const OpenApproverPopupFunction = () => {
         setApproverPopupStatus(true);
     }
