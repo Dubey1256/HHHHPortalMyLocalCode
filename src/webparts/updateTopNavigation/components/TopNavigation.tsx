@@ -2,19 +2,24 @@ import * as React from 'react'
 import { Web } from "sp-pnp-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 const TopNavigation = (dynamicData: any) => {
+    var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
     const [EditPopup, setEditPopup] = React.useState(false);
+    const [sortedArray, setSortedArray] = React.useState([]);
     const [AddPopup, setAddPopup] = React.useState(false);
+    const [sorting, setSorting] = React.useState(false);
     const [changeroot, setChangeroot] = React.useState(false);
-    const [postData, setPostData] = React.useState({ Title: '', Url: '', Description: '', TaskTime: '',Id:'' ,ParentId:''})
+    const [postData, setPostData] = React.useState({ Title: '', Url: '', Description: '', TaskTime: '', Id: '', ParentId: '' })
     const [popupData, setPopupData] = React.useState([]);
+    const [sortOrder, setSortOrder] = React.useState<any>()
+    const [sortId,setSortId] = React.useState()
     const [value, setValue] = React.useState("")
     const [child, setChild] = React.useState("")
     const [subchild, setSubChild] = React.useState("")
     const [isVisible, setisVisible] = React.useState(false);
-    const[owner,setOwner] = React.useState(false)
+    const [owner, setOwner] = React.useState(false)
 
 
     React.useEffect(() => {
@@ -37,8 +42,9 @@ const TopNavigation = (dynamicData: any) => {
         var TaskTypeItems: any = []
         var Nodes: any = []
         let web = new Web(dynamicData.dynamicData.siteUrl);
+
         TaskTypeItems = await web.lists
-            .getById('7ee58156-c976-46b6-9b08-b700bf8e724b')
+            .getById(ListId)
             .items
             .select('ID', 'Id', 'Title', 'href', 'ParentID', 'Order0', 'SortOrder', 'ownersonly', 'IsVisible', 'Modified', 'Created')
             .top(4999)
@@ -83,17 +89,17 @@ const TopNavigation = (dynamicData: any) => {
         setAddPopup(false)
         setPostData(undefined)
     }
-    const ChangeParentItem=()=>{
-     if(value != undefined && value != ''){
-        root?.forEach((item:any)=>{
-            if(item.Title == value){
-                postData.Title = value;
-                postData.Id =item.Id;
-                postData.ParentId=item.ParentId;
-            }
-        })
-        setChangeroot(false)
-     }
+    const ChangeParentItem = () => {
+        if (value != undefined && value != '') {
+            root?.forEach((item: any) => {
+                if (item.Title == value) {
+                    postData.Title = value;
+                    postData.Id = item.Id;
+                    postData.ParentId = item.ParentId;
+                }
+            })
+            setChangeroot(false)
+        }
     }
     const onRenderCustomHeaderMain = () => {
         return (
@@ -108,16 +114,16 @@ const TopNavigation = (dynamicData: any) => {
     };
     const UpdateData = async (item: any) => {
         let web = new Web(dynamicData.dynamicData.siteUrl);
-        await web.lists.getById("7ee58156-c976-46b6-9b08-b700bf8e724b").items.getById(item.Id).update({
+        await web.lists.getById(ListId).items.getById(item.Id).update({
             Title: postData?.Title != undefined && postData?.Title != '' ? postData?.Title : item?.Title,
-            ParentID: postData?.ParentId != undefined && postData?.ParentId != ''?postData?.ParentId:item?.ParentID,
+            ParentID: postData?.ParentId != undefined && postData?.ParentId != '' ? postData?.ParentId : item?.ParentID,
             href: {
                 "__metadata": { type: "SP.FieldUrlValue" },
                 Description: postData.Url != undefined && postData.Url != '' ? postData.Url : item?.href.Url,
                 Url: postData.Url != undefined && postData.Url != '' ? postData.Url : item?.href.Url,
             },
             IsVisible: isVisible,
-            ownersonly:owner
+            ownersonly: owner
         }).then(i => {
             console.log(i);
             ClosePopup();
@@ -129,7 +135,7 @@ const TopNavigation = (dynamicData: any) => {
     }
     const deleteDataFunction = async (item: any) => {
         let web = new Web(dynamicData.dynamicData.siteUrl);
-        await web.lists.getById('7ee58156-c976-46b6-9b08-b700bf8e724b').items.getById(item.Id).delete()
+        await web.lists.getById(ListId).items.getById(item.Id).delete()
             .then(i => {
                 console.log(i);
                 loadTopNavigation();
@@ -139,16 +145,16 @@ const TopNavigation = (dynamicData: any) => {
 
     const Additem = async () => {
         let web = new Web(dynamicData.dynamicData.siteUrl);
-        await web.lists.getById('7ee58156-c976-46b6-9b08-b700bf8e724b').items.add({
+        await web.lists.getById(ListId).items.add({
             Title: postData.Title,
-            ParentID: postData.Id != undefined && postData.Id != ''?postData.Id:popupData[0]?.ID,
+            ParentID: postData.Id != undefined && postData.Id != '' ? postData.Id : popupData[0]?.ID,
             href: {
                 "__metadata": { type: "SP.FieldUrlValue" },
                 Description: postData.Url != undefined && postData.Url != '' ? postData.Url : popupData[0]?.href.Url,
                 Url: postData.Url != undefined && postData.Url != '' ? postData.Url : popupData[0]?.href.Url,
             },
             IsVisible: isVisible,
-            ownersonly:owner
+            ownersonly: owner
         }).then((res: any) => {
             console.log(res);
             CloseAddPopup();
@@ -161,6 +167,59 @@ const TopNavigation = (dynamicData: any) => {
     const ClosechangePopup = () => {
         setChangeroot(false)
     }
+    const sortItem = (item:any) => {
+        var neeArray:any=[]
+        neeArray.push(item)
+        setSortedArray(item)
+        setSorting(true)
+    }
+    const ClosesortItem = () => {
+        setSorting(false)
+    }
+    const sortBy = (type:any) => {
+
+        const copy = root
+        if(type == 'Title'){
+            copy.sort((a:any, b:any) => (a.Title > b.Title) ? 1 : -1);
+        }
+        if(type == 'SortOrder'){
+            copy.sort((a:any, b:any) => (a.SortOrder > b.SortOrder) ? 1 : -1);
+        }
+        setRoot(copy)
+        setRoot((copy)=>[...copy])
+
+    }
+    const sortByDng = (type:any) => {
+
+        const copy = root
+        if(type == 'Title'){
+            copy.sort((a:any, b:any) => (a.Title > b.Title) ? -1 : 1);
+        }
+        if(type == 'SortOrder'){
+            copy.sort((a:any, b:any) => (a.SortOrder > b.SortOrder) ? -1 : 1);
+        }
+        setRoot(copy)
+        setRoot((copy)=>[...copy])
+
+    }
+const updateSortOrder=async ()=>{
+    console.log(sortId)
+    console.log(sortOrder)
+    let web = new Web(dynamicData.dynamicData.siteUrl);
+
+    await web.lists.getById(ListId).items.getById(sortId).update({
+
+
+        SortOrder:sortOrder,
+
+    }).then((res: any) => {
+
+        console.log(res);
+        ClosesortItem();
+
+
+    })
+}
     return (
         <>
             <h2>Top Navigation</h2>
@@ -173,7 +232,7 @@ const TopNavigation = (dynamicData: any) => {
                                     <span> <a href={item.href?.Url}>{item.Title}</a></span>
                                     <span className='float-end'>
                                         <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(item)}></span>
-                                        <span className='svg__iconbox svg__icon--Switcher'></span>
+                                        <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(root)}></span>
                                         <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(item)}></span>
                                     </span>
                                     <ul className='sub-menu'>
@@ -185,7 +244,7 @@ const TopNavigation = (dynamicData: any) => {
                                                         <span><a href={child.href?.Url}>{child.Title}</a></span>
                                                         <span className='float-end'>
                                                             <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(child)}></span>
-                                                            <span className='svg__iconbox svg__icon--Switcher'></span>
+                                                            <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(item.childs)}></span>
                                                             <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(child)}></span>
                                                         </span>
                                                         <ul className='sub-menu'>
@@ -197,7 +256,7 @@ const TopNavigation = (dynamicData: any) => {
                                                                             <span><a href={subchild.href?.Url}>{subchild.Title}</a></span>
                                                                             <span className='float-end'>
                                                                                 <span className='svg__iconbox svg__icon--editBox' onClick={() => editPopup(subchild)}></span>
-                                                                                <span className='svg__iconbox svg__icon--Switcher'></span>
+                                                                                <span className='svg__iconbox svg__icon--Switcher' onClick={() => sortItem(child.childs)}></span>
                                                                                 <span className='svg__iconbox svg__icon--trash' onClick={() => deleteDataFunction(subchild)}></span>
                                                                             </span>
                                                                         </li>
@@ -228,7 +287,7 @@ const TopNavigation = (dynamicData: any) => {
                 onDismiss={ClosePopup}
                 isBlocking={false}
             >
-                <div className="modal-body border  p-3  ">
+                <div className="modal-body border" style={{ padding: "10px" }}>
                     <div className='row mt-2'>
                         <div className='col-sm-2'>
                             <div className='form-group'>
@@ -237,7 +296,7 @@ const TopNavigation = (dynamicData: any) => {
                         </div>
                         <div className='col-sm-5'>
                             <div className='form-group'>
-                                <label>{postData?.Title != undefined && postData?.Title != ""?postData?.Title:"Root" }</label>
+                                <label>{postData?.Title != undefined && postData?.Title != "" ? postData?.Title : "Root"}</label>
                             </div>
                         </div>
                         <div className='col-sm-5'>
@@ -257,19 +316,19 @@ const TopNavigation = (dynamicData: any) => {
                         <div className='col-sm-5'>
                             <span className="col-sm-2 padL-0 ">
                                 <label>
-                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(true)}/>Visible (All)
+                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(true)} />Visible (All)
                                 </label>
                             </span>
                             <span className="col-sm-2" >
                                 <label>
-                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(false)}/>No Show
+                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(false)} />No Show
                                 </label>
                             </span>
                         </div>
                         <div className='col-sm-5'>
                             <div className='form-group'>
                                 <label>
-                                    <input type="Checkbox" className="me-1" onChange={()=>setOwner(true)}/>Facilitators Only
+                                    <input type="Checkbox" className="me-1" onChange={() => setOwner(true)} />Facilitators Only
                                 </label>
 
                             </div>
@@ -339,7 +398,7 @@ const TopNavigation = (dynamicData: any) => {
                 onDismiss={CloseAddPopup}
                 isBlocking={false}
             >
-                <div className="modal-body border  p-3  ">
+                <div className="modal-body border" style={{ padding: "10px" }}>
                     <div className='row mt-2'>
                         <div className='col-sm-2'>
                             <div className='form-group'>
@@ -354,6 +413,7 @@ const TopNavigation = (dynamicData: any) => {
                         <div className='col-sm-5'>
                             <div className='form-group'>
                                 <label>Change Parent</label>
+                                <span className='svg__iconbox svg__icon--editBox' onClick={() => changeParent()}></span>
                             </div>
                         </div>
 
@@ -367,12 +427,12 @@ const TopNavigation = (dynamicData: any) => {
                         <div className='col-sm-5'>
                             <span className="col-sm-2 padL-0 ">
                                 <label>
-                                    <input type="radio" className="me-1" />Visible (All)
+                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(true)} />Visible (All)
                                 </label>
                             </span>
                             <span className="col-sm-2" >
                                 <label>
-                                    <input type="radio" className="me-1" />No Show
+                                    <input type="radio" className="mx-1" name='radio' onChange={(e) => setisVisible(false)} />No Show
                                 </label>
                             </span>
                         </div>
@@ -449,7 +509,7 @@ const TopNavigation = (dynamicData: any) => {
                 onDismiss={ClosechangePopup}
                 isBlocking={false}
             >
-                <div className="modal-body border  p-3  ">
+                <div className="modal-body border" style={{ padding: "10px" }}>
                     <div className='row mt-2'>
                         <div className='col-sm-2'>
                             <label><b>Top Level</b></label>
@@ -498,7 +558,7 @@ const TopNavigation = (dynamicData: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                    <div className='col-sm-2'>
+                        <div className='col-sm-2'>
                             <label><b>Third Level</b></label>
                         </div>
                         <div className='col-sm-10'>
@@ -509,15 +569,15 @@ const TopNavigation = (dynamicData: any) => {
                                             <>
                                                 {item.childs?.map((child: any) => {
                                                     return (
-                                                    <>
-                                                        {child.childs?.map((subchild:any) => {
-                                                            return(
-                                                                <>
-                                                                <option value={child.Title}>{child.Title}</option>
-                                                                </>
-                                                            )
-                                                        })}
-                                                      </>
+                                                        <>
+                                                            {child.childs?.map((subchild: any) => {
+                                                                return (
+                                                                    <>
+                                                                        <option value={child.Title}>{child.Title}</option>
+                                                                    </>
+                                                                )
+                                                            })}
+                                                        </>
                                                     )
                                                 })}
                                             </>
@@ -562,6 +622,98 @@ const TopNavigation = (dynamicData: any) => {
 
                 </div>
             </Panel>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                headerText="Edit Category"
+                type={PanelType.custom}
+                customWidth="600px"
+                isOpen={sorting}
+                onDismiss={ClosesortItem}
+                isBlocking={false}
+            >
+                <div className="modal-body border" style={{ padding: "10px" }}>
+                    <div className='Alltable'>
+                        <div className="section-event">
+                            <div className="wrapper">
+                                <table className="table table-hover" style={{ width: "100%" }}>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: "80%" }}>
+                                                <div style={{ width: "64%" }} className="smart-relative">
+                                                    <input type="search" placeholder="Title" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon"/>
+
+                                                    <span className="sorticon">
+                                                        <span className="up" onClick={()=>sortBy("Title")}>< FaAngleUp /></span>
+                                                        <span className="down"onClick={()=>sortByDng("Title")} >< FaAngleDown /></span>
+                                                    </span>
+
+
+                                                </div>
+                                            </th>
+                                            <th style={{ width: "20%" }}>
+                                                <div style={{ width: "34%" }} className="smart-relative">
+                                                    <input type="search" placeholder="SortOrder" className="full_width searchbox_height" aria-label="Search" aria-describedby="search-addon"/>
+
+                                                    <span className="sorticon">
+                                                        <span className="up"  onClick={()=>sortBy("SortOrder")}>< FaAngleUp /></span>
+                                                        <span className="down" onClick={()=>sortByDng("SortOrder")}>< FaAngleDown /></span>
+                                                    </span>
+
+
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {sortedArray?.map((item)=>{
+                                            return(
+                                                <>
+                                                <tr>
+                                                    <td>{item.Title}</td>
+                                                    <td><input type="text" defaultValue={item?.SortOrder} onClick={()=>setSortId(item.Id)} onChange={(e)=>setSortOrder(e.target.value)}></input></td>
+                                                </tr> 
+                                                </>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            <div className="footer mt-2">
+                <div className='row'>
+                    <div className="col-sm-6 ">
+                        <div className="text-left">
+                            Created
+                            <span>12/12/2022</span>
+                            by <span
+                                className="siteColor">Santosh</span>
+                        </div>
+                        <div className="text-left">
+                            Last modified
+                            <span>12/04/2023</span>
+                            by <span
+                                className="siteColor">Santosh</span>
+                        </div>
+                    </div>
+                    <div className="col-sm-6 text-end">
+                        <a target="_blank"
+                            ng-if="AdditionalTaskTime.siteListName === 'SP.Data.TasksTimesheet2ListItem'"
+                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/Lists/TaskTimeSheetListNew/EditForm.aspx?ID=112`}>
+                            Open out-of-the-box
+                            form
+                        </a>
+                        <button type="button" className="btn btn-primary ms-2"
+                            onClick={() => updateSortOrder()} >
+                            Save
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </Panel>
         </>
     )
 }
