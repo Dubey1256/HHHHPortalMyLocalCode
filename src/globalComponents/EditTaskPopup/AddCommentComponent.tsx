@@ -120,9 +120,16 @@ const AddCommentComponent = (FbData: any) => {
         FbData.callBack(true, FeedBackArray, 0);
     }
     const SmartLightUpdateSubComment = (index: any, value: any) => {
+        let temObject: any = {
+            Title: currentUserData.Title,
+            Id: currentUserData.Id,
+            ImageUrl: currentUserData.ImageUrl,
+            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            isShowLight: value
+        }
         currentUserData.isShowLight = value;
         FeedBackArray[index].isShowLight = value;
-        FeedBackArray[index].ApproverData?.push(currentUserData);
+        FeedBackArray[index].ApproverData?.push(temObject);
         FbData.callBack(true, FeedBackArray, 0);
         let ApproverDataTemp: any = FeedBackArray[index].ApproverData;
         const copy = [...FeedBackArray];

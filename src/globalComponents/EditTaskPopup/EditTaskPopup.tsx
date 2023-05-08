@@ -847,6 +847,24 @@ const EditTaskPopup = (Items: any) => {
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
+                        let TempApproverHistory: any = [];
+                        if (ApproverHistoryData == undefined || ApproverHistoryData == null) {
+                            ApproverData.map((itemData: any) => {
+                                let tempObject: any = {
+                                    ApproverName: itemData.Title,
+                                    ApprovedDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+                                    ApproverId: itemData.AssingedToUserId,
+                                    ApproverImage: (itemData.Item_x0020_Cover != undefined || itemData.Item_x0020_Cover != null ? itemData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
+                                    ApproverSuffix: itemData.Suffix,
+                                    ApproverEmail: itemData.Email
+                                }
+                                TempApproverHistory.push(tempObject);
+                            })
+                        }
+                        if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
+                            setApproverHistoryData(TempApproverHistory);
+                        }
+
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
                         let TempArray: any = [];
