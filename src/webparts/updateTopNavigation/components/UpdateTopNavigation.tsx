@@ -11,6 +11,7 @@ export default class UpdateTopNavigation extends React.Component<IUpdateTopNavig
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
+      TopNavigationListID,
       userDisplayName
     } = this.props;
 

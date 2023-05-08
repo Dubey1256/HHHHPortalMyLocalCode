@@ -15,6 +15,7 @@ import { IUpdateTopNavigationProps } from './components/IUpdateTopNavigationProp
 
 export interface IUpdateTopNavigationWebPartProps {
   description: string;
+  TopNavigationListID:"7ee58156-c976-46b6-9b08-b700bf8e724b"
 }
 
 export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IUpdateTopNavigationWebPartProps> {
@@ -30,6 +31,7 @@ export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IU
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         siteUrl: this.context.pageContext.web.absoluteUrl,
+        TopNavigationListID: this.properties.TopNavigationListID,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName
       }
@@ -95,7 +97,10 @@ export default class UpdateTopNavigationWebPart extends BaseClientSideWebPart<IU
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField('TopNavigationListID', {
+                  label: 'TopNavigation List'
+                }),
               ]
             },
           ]
