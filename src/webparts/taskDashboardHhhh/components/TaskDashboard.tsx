@@ -87,7 +87,6 @@ const TaskDashboard = (props: any) => {
             MasterTaskListID: props?.props?.MasterTaskListID,
             TaskUsertListID: props?.props?.TaskUsertListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
-            //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
