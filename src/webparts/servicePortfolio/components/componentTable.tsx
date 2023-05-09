@@ -148,15 +148,20 @@ function IndeterminateCheckbox({
 // ReactTable Part end/////
 
 function ComponentTable(SelectedProp: any) {
-  if (SelectedProp != undefined) {
-    SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
-      SelectedProp?.SelectedProp?.TimeEntry
-    );
-
-    SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
-      SelectedProp?.SelectedProp?.SiteCompostion
-    );
-  }
+    try{
+        if (SelectedProp.SelectedProp != undefined) {
+            SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
+              SelectedProp.SelectedProp?.TimeEntry
+            );
+        
+            SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
+              SelectedProp.SelectedProp?.SiteCompostion
+            );
+          }
+    }catch(e){
+        console.log(e);
+    }
+    
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -5834,6 +5839,7 @@ function ComponentTable(SelectedProp: any) {
           Items={SharewebTask}
           Call={Call}
           AllListId={SelectedProp.SelectedProp}
+          context={SelectedProp.SelectedProp.context}
         ></EditTaskPopup>
       )}
       {IsComponent && (
