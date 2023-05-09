@@ -9,14 +9,13 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters"
+import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { getStartDateOfWeek } from '@fluentui/react';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -66,11 +65,6 @@ const TaskDashboard = (props: any) => {
         origin: ''
     });
     React.useEffect(() => {
-        pnp.sp.web.currentUser.get().then(result => {
-            currentUserId = result.Id;
-            console.log(currentUserId)
-    
-        });
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
             isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
@@ -87,6 +81,7 @@ const TaskDashboard = (props: any) => {
             MasterTaskListID: props?.props?.MasterTaskListID,
             TaskUsertListID: props?.props?.TaskUsertListID,
             SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
@@ -1048,8 +1043,18 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-      
-       
+        await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
+            headers: {
+                "Accept": "application/json;odata=verbose"
+            }
+        })
+            .then(response => {
+                currentUserId = response?.data?.d?.Id;
+                console.log(`Current user ID: ${currentUserId}`);
+            })
+            .catch(error => {
+                console.log(error);
+            });
 
         taskUsers = await loadTaskUsers();
         taskUsers?.map((item: any) => {

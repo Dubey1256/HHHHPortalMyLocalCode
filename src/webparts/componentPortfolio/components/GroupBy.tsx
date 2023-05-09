@@ -133,6 +133,15 @@ function IndeterminateCheckbox(
 
 
 function ComponentTable(SelectedProp: any) {
+    if (SelectedProp != undefined) {
+        SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
+          SelectedProp?.SelectedProp?.TimeEntry
+        );
+    
+        SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
+          SelectedProp?.SelectedProp?.SiteCompostion
+        );
+      }
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
