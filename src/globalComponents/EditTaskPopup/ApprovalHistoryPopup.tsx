@@ -28,7 +28,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     return (
         <div>
             <Panel
-                headerText={`Approval History For Point - 0${ApprovalPointCurrentIndex + 1}`}
+                headerText={`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : null} 0${ApprovalPointCurrentIndex + 1}`}
                 isOpen={ApprovalPointHistoryStatus}
                 onDismiss={ApprovalPointPopupClose}
                 isBlocking={ApprovalPointHistoryStatus}
@@ -49,10 +49,10 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
                                                                 <span className="circlelight green br_green mx-1 mt-1"></span> Approved by-
-                                                                <h6 className="siteColor">{UserData.Title}</h6>
+                                                                <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
-                                                                <span>{UserData.ApprovalDate}</span>
+                                                                <span>{UserData.ApprovalDate != undefined ? UserData.ApprovalDate : ""}</span>
                                                                 <span className="mx-1" style={{ fontSize: "15px", color: 'grey' }}><TiMessage style={{ color: 'grey' }} /></span>
                                                             </div>
                                                         </div>
@@ -62,10 +62,10 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
                                                                 <span className="circlelight yellow br_yellow mx-1 mt-1"></span> Set to Maybe by-
-                                                                <h6 className="siteColor">{UserData.Title}</h6>
+                                                                <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
-                                                                <span>{UserData.ApprovalDate}</span>
+                                                                <span>{UserData.ApprovalDate != undefined ? UserData.ApprovalDate : ""}</span>
                                                                 <span className="mx-1" style={{ fontSize: "15px", color: 'grey' }}><TiMessage style={{ color: 'grey' }} /></span>
                                                             </div>
                                                         </div>
@@ -75,10 +75,10 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                         <div className="d-flex full-width justify-content-between">
                                                             <div className="d-flex">
                                                                 <span className="circlelight red br_red mx-1 mt-1"></span> Rejected by-
-                                                                <h6 className="siteColor">{UserData.Title}</h6>
+                                                                <h6 className="siteColor">{UserData.Title != undefined ? UserData.Title : ""}</h6>
                                                             </div>
                                                             <div>
-                                                                <span>{UserData.ApprovalDate}</span>
+                                                                <span>{UserData.ApprovalDate != undefined ? UserData.ApprovalDate : ""}</span>
                                                                 <span className="mx-1" style={{ fontSize: "15px", color: 'grey' }}><TiMessage style={{ color: 'grey' }} /></span>
                                                             </div>
                                                         </div>

@@ -223,6 +223,7 @@ const SiteCompositionComponent = (Props: any) => {
             // setCheckBoxStatus(true);
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+        SiteCompositionObject.ClientTime = ClientTimeData;
         callBack(SiteCompositionObject);
         // }
 
