@@ -207,24 +207,24 @@ const EditTaskPopup = (Items: any) => {
         if (type == "SmartComponent") {
             if (PopupItemData?.smartComponent?.length > 0) {
                 Items.Items.smartComponent = PopupItemData.smartComponent;
-                // if (PopupItemData.smartComponent[0].Sitestagging != null || PopupItemData.smartComponent[0].Sitestagging != undefined) {
-                //     let ClientData = JSON.parse(PopupItemData.smartComponent[0].Sitestagging ? PopupItemData.smartComponent[0].Sitestagging : [{}]);
-                //     let TempSiteCompositionArray: any = [];
-                //     if (ClientData != undefined && ClientData.length > 0) {
-                //         ClientData.map((SiteData: any) => {
-                //             let TempObject: any = {
-                //                 SiteName: SiteData.Title,
-                //                 ClienTimeDescription: SiteData.ClienTimeDescription,
-                //                 localSiteComposition: true
-                //             }
-                //             TempSiteCompositionArray.push(TempObject);
-                //         })
-                //         if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
-                //             setClientTimeData(TempSiteCompositionArray);
-                //             setSitesTaggingData(TempSiteCompositionArray);
-                //         }
-                //     }
-                // }
+                if (PopupItemData.smartComponent[0].Sitestagging != null || PopupItemData.smartComponent[0].Sitestagging != undefined) {
+                    let ClientData = JSON.parse(PopupItemData.smartComponent[0].Sitestagging ? PopupItemData.smartComponent[0].Sitestagging : [{}]);
+                    let TempSiteCompositionArray: any = [];
+                    if (ClientData != undefined && ClientData.length > 0) {
+                        ClientData.map((SiteData: any) => {
+                            let TempObject: any = {
+                                SiteName: SiteData.Title,
+                                ClienTimeDescription: SiteData.ClienTimeDescription,
+                                localSiteComposition: true
+                            }
+                            TempSiteCompositionArray.push(TempObject);
+                        })
+                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                            // setClientTimeData(TempSiteCompositionArray);
+                            setSitesTaggingData(TempSiteCompositionArray);
+                        }
+                    }
+                }
                 setSmartComponentData(PopupItemData.smartComponent);
                 setSmartServicesData([])
                 console.log("Popup component smartComponent ", PopupItemData.smartComponent)
