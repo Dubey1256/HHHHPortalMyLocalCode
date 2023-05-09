@@ -2588,375 +2588,6 @@ export default function ComponentTable({ props,NextProp }: any) {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* End Create task activity popup  */}
-      {/* Smart Time Popup */}
-      {/* <Modal
-            isOpen={SmartmodalIsOpen}
-            onDismiss={setModalSmartIsOpenToFalse}
-            isBlocking={true}
-            isModeless={true}
-        >
-            <span >
-                <div id="myDropdown1" className="col-sm-12 pad0 dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Smart Time <span title="Close popup" className="pull-right hreflink"
-                            onClick={setModalSmartIsOpenToFalse}>
-                            <i className="fa fa-times-circle"  ><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select className="form-control"
-                      >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                        </select>
-                    </div>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <input type="text" placeholder="Effort"  className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" />
-                    </div>
-                    <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                           >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Smart Time popup end here */}
-      {/* Created Date Popup */}
-      {/* <Modal
-            isOpen={CreatedmodalIsOpen}
-            onDismiss={setModalSmartIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true} >
-            <div >
-                <div id="myDropdown4" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Created Date <span title="Close popup" className="pull-right hreflink"
-                         onClick={setCreatedmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select id="selectCreatedValue" className="form-control"
-                        >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                            <option value="In Between">In Between</option>
-                            <option value="Presets">Presets</option>
-                        </select>
-                    </div>
-                    <div
-                        className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                        <input type="date" placeholder="dd/mm/yyyy"
-                            className="form-control date-picker" id="txtDate4"
-                        />
-                        <i className="fa fa-calendar form-control-feedback mt-10"
-                            style={{ marginRight: "10px" }}></i>
-                    </div>
-                    <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                            >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Modal> */}
-      {/* Created Date popup end here */}
-      {/* Due Date Popup */}
-      {/* <Modal
-            isOpen={DuemodalIsOpen}
-            onDismiss={setDuemodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}
-        >
-            <div >
-                <div id="myDropdown4" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Due Date <span title="Close popup" className="pull-right hreflink"
-                           onClick={setDuemodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select id="selectCreatedValue" className="form-control"
-                         >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                            <option value="In Between">In Between</option>
-                            <option value="Presets">Presets</option>
-                        </select>
-                    </div>
-                    <div
-                        className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                        <input type="date" placeholder="dd/mm/yyyy"
-                            className="form-control date-picker" id="txtDate4"
-                          />
-                        <i className="fa fa-calendar form-control-feedback mt-10"
-                            style={{ marginRight: "10px" }}></i>
-                    </div>
-                    <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                        <button type="button"
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Modal> */}
-      {/* Due Date popup end here */}
-      {/* Team Member Popup */}
-      {/* <Modal
-            isOpen={TeamMembermodalIsOpen}
-            onDismiss={setTeamMembermodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true} >
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Team Members <span title="Close popup" className="pull-right hreflink"
-                           onClick={setTeamMembermodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5">
-                        <div className="checkbox mb0 ml15">
-                            <input  type="checkbox"
-                                name="Responsibility1"
-                                /><span className=" f-500">
-                                Select All
-                            </span>
-                        </div>
-                    </div>
-                    <div className="col-sm-12 PadR0 ml5">
-                        {filterGroups.map(function (item) {
-                            return (
-                                <>
-                                    {item == 'Team Members' &&
-                                        <td valign="top">
-                                            <fieldset>
-                                                <legend>{item == 'Team Members' && <span>{item}</span>}</legend>
-                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
-                                            </fieldset>
-                                            {filterItems.map(function (ItemType, index) {
-                                                return (
-                                                    <>
-                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
-                                                            <>
-                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                    {ItemType.childs.length > 0 &&
-                                                                        <a className='hreflink'
-                                                                            title="Tap to expand the childs">
-                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                        </a>}
-                                                                </span>
-                                                                {ItemType.TaxType != 'Status' &&
-                                                                    <span className="ml-1">
-                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                        <span className="ml-2">
-                                                                            {ItemType.Title}
-                                                                        </span>
-                                                                    </span>
-                                                                }
-                                                                {ItemType.TaxType == 'Status' &&
-                                                                    <span className="ml-2">
-                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                        <span className="ml-2">
-                                                                            {ItemType.Title}
-                                                                        </span>
-                                                                    </span>
-                                                                }
-                                                                <ul id="id_{ItemType.Id}"
-                                                                    className="subfilter width-85">
-                                                                    <span>
-                                                                        {ItemType.show && (
-                                                                            <>
-                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div style={{ display: "block" }}>
-                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                    <span className="plus-icon hreflink"
-                                                                                                     >
-                                                                                                        <img
-                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                    </span>
-                                                                                                }
-                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                    <span className="plus-icon hreflink"
-                                                                                                     >
-                                                                                                        <img
-                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                    </span>
-                                                                                                }
-                                                                                                <input type="checkbox" className="icon-input mr0" 
-                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
-                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                >
-                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                        <li>
-                                                                                                            <input type="checkbox"
-                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                        </li>
-                                                                                                    })}
-                                                                                                </ul>
-                                                                                            </div>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        )}
-                                                                    </span>
-                                                                </ul>
-                                                            </>
-                                                        }
-                                                        </div>
-                                                    </>
-                                                )
-                                            })}
-                                        </td>
-                                    }
-                                </>
-                            )
-                        })}
-                    </div>
-                    <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                      >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Team Member popup end here */}
-      {/* Item Rank Popup */}
-      {/* <Modal
-            isOpen={ItemRankmodalIsOpen}
-            onDismiss={setItemRankmodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}>
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Item Rank <span title="Close popup" className="pull-right hreflink"
-                            onClick={setItemRankmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5" >
-                        <div className="checkbox mb0 ml15">
-                            <input  type="checkbox" name="ItemRank1"
-                               /><span className="f-500">Select All</span>
-                        </div>
-                    </div>
-                    {AllItemRank.map(item => {
-                        return (
-                            <div className="col-sm-12 PadR0 ml5">
-                                <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                              >
-                                    <input type="checkbox"
-                                        name="ItemRank" /><span className="">
-                                        {item.Title}
-                                    </span>
-                                </div>
-                            </div>
-                        )
-                    })}
-                    <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Item Rank popup end here */}
-      {/* Status Popup */}
-      {/* <Modal
-            isOpen={StatusmodalIsOpen}
-            onDismiss={setStatusmodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}
-        >
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Status <span title="Close popup" className="pull-right hreflink"
-                            onClick={setStatusmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5">
-                        <div className="checkbox mb0 ml15 f-500">
-                            <span className="">
-                                <input  type="checkbox"
-                                    name="PercentComplete1"
-                                />
-                                Select All
-                            </span>
-                        </div>
-                    </div>
-                    <div className="col-sm-12 PadR0 ml5">
-                        {AllItems.map(items => {
-                            return (
-                                <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                              >
-                                    <input type="checkbox"
-                                        name="PercentComplete" /><span className="">
-                                        {items.Title}%
-                                    </span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                       >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Status popup end here */}
       <div className="Alltable mt-10">
         <div className="tbl-headings">
           <span className="leftsec">
@@ -3200,12 +2831,7 @@ export default function ComponentTable({ props,NextProp }: any) {
               </button>
             )}
 
-            {/* {(selectedCategory != undefined && selectedCategory.length > 0) ?
-                        <button type="button" onClick={() => setLgShow(true)}
-                            disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
-                            Add Activity-Task
-                        </button>
-                        :*/}
+       
             <button
               type="button"
               onClick={() => openActivity()}
@@ -3325,7 +2951,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Client Category"
                           title="Client Category"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "ClientCategory")}
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -3355,22 +2980,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setStatusmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
-                                                                </span></span> */}
+                      
                       </div>
                     </th>
                     <th style={{ width: "7%" }}>
@@ -3391,23 +3001,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setItemRankmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                     
                       </div>
                     </th>
                     <th style={{ width: "10%" }}>
@@ -3428,23 +3022,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setTeamMembermodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                    
                       </div>
                     </th>
                     <th style={{ width: "9%" }}>
@@ -3465,23 +3043,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setDuemodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                   
                       </div>
                     </th>
                     <th style={{ width: "11%" }}>
@@ -3492,7 +3054,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Created Date"
                           title="Created Date"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "Created")}
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -3502,24 +3063,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    //  href="#myDropdown1"
-                                                                    onClick={setCreatedmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                       
                       </div>
                     </th>
                     <th style={{ width: "7%" }}>
@@ -3530,7 +3074,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Smart Time"
                           title="Smart Time"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "Due")}
+                      
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -3540,24 +3084,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    //  href="#myDropdown1"
-                                                                    onClick={setModalSmartIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                       
                       </div>
                     </th>
                     <th style={{ width: "2%" }}>
@@ -3715,15 +3242,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                             )}
                                           {item.Short_x0020_Description_x0020_On !=
                                             null && (
-                                            // <span className="project-tool"><img
-                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                            //         <span className="tooltiptext">
-                                            //             <div className="tooltip_Desc">
-                                            //                 <span>{item.Short_x0020_Description_x0020_On}</span>
-                                            //             </div>
-                                            //         </span>
-                                            //     </span>
-                                            // </span>
+                                         
                                             <div
                                               className="popover__wrapper ms-1"
                                               data-bs-toggle="tooltip"
@@ -3815,11 +3334,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                         </td>
 
                                         <td style={{ width: "7%" }}>
-                                          {/* {item.Item_x0020_Type == 'Task' && item.TimeSpent != null &&
-                                                                        <>
-                                                                        {item.TimeSpent.toFixed(1)}
-                                                                      </>
-                                                                      } */}
+                                      
                                         </td>
 
                                         <td style={{ width: "2%" }}>
@@ -3890,9 +3405,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                               )}
                                           </a>
                                         </td>
-                                        {/* <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
-                                                                    {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td> */}
                                       </tr>
                                     </table>
                                   </td>
@@ -4026,15 +3538,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                         )}
                                                       {childitem.Short_x0020_Description_x0020_On !=
                                                         null && (
-                                                        // <span className="project-tool"><img
-                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                        //         <span className="tooltiptext">
-                                                        //             <div className="tooltip_Desc">
-                                                        //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                        //             </div>
-                                                        //         </span>
-                                                        //     </span>
-                                                        // </span>
+                                                        
                                                         <div
                                                           className="popover__wrapper ms-1"
                                                           data-bs-toggle="tooltip"
@@ -4134,13 +3638,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                       )}
                                                     </td>
                                                     <td style={{ width: "7%" }}>
-                                                      {/* {childitem.Item_x0020_Type == 'Task' &&
-                                                                                            <>
-                                                                                              {smartTime.toFixed(1)}
-                                                                                            </>
-                                                                                            }
-                                                                                             {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                    </td>
+                                              </td>
 
                                                     <td style={{ width: "2%" }}>
                                                       {childitem.Item_x0020_Type ==
@@ -4218,9 +3716,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                           )}
                                                       </a>
                                                     </td>
-                                                    {/* <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                                        <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childitem)} />}
-                                                                                            {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td> */}
                                                   </tr>
                                                 </table>
                                               </td>
@@ -4410,15 +3905,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                         )}
                                                                       {childinew.Short_x0020_Description_x0020_On !=
                                                                         null && (
-                                                                        // <span className="project-tool"><img
-                                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                        //         <span className="tooltiptext">
-                                                                        //             <div className="tooltip_Desc">
-                                                                        //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                        //             </div>
-                                                                        //         </span>
-                                                                        //     </span>
-                                                                        // </span>
+                                                                       
                                                                         <div
                                                                           className="popover__wrapper ms-1"
                                                                           data-bs-toggle="tooltip"
@@ -4509,14 +3996,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                             AllUsers
                                                                           }
                                                                         ></ShowTaskTeamMembers>
-                                                                        {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                    return (
-                                                                                                                        <span className="AssignUserPhoto"
-                                                                                                                            title={client1.Title}>
-                                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                        </span>
-                                                                                                                    )
-                                                                                                                })} */}
+                                                                    
                                                                       </div>
                                                                     </td>
                                                                     <td
@@ -5030,13 +4510,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                         "7%",
                                                                                     }}
                                                                                   >
-                                                                                    {/* {subchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                        <>
-                                                                                                                                             {smartTime.toFixed(1)}
-                                                                                                                                             </>
-                                                                                                                                             }
-                                                                                                                                              {SmartTimes? <SmartTimeTotal props={subchilditem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                                                  </td>
+                                                                                    </td>
 
                                                                                   <td
                                                                                     style={{
@@ -5137,10 +4611,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                         )}
                                                                                     </a>
                                                                                   </td>
-                                                                                  {/* <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(subchilditem)} />}
-                                                                                                                                        {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td> */}
-                                                                                </tr>
+                                                                                   </tr>
                                                                               </table>
                                                                             </td>
                                                                           </tr>
@@ -5490,9 +4961,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                                       "7%",
                                                                                                   }}
                                                                                                 >
-                                                                                                  {/* {nextsubchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                                                <div>{nextsubchilditem.Mileage}</div>
-                                                                                                                                                            } */}
                                                                                                 </td>
 
                                                                                                 <td
@@ -5604,10 +5072,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                                       )}
                                                                                                   </a>
                                                                                                 </td>
-                                                                                                {/* <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                        <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
-                                                                                                                                                            {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td> */}
-                                                                                              </tr>
+                                                                                            </tr>
                                                                                             </table>
                                                                                           </td>
                                                                                         </tr>
@@ -5701,10 +5166,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         onDismiss={closeTaskStatusUpdatePoup2}
         isBlocking={false}
       >
-        {/* <div className="modal-header  mt-1 px-3">
-                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
-                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div> */}
+      
 
         <div className="modal-body bg-f5f5 clearfix">
           <div
@@ -5717,41 +5179,7 @@ export default function ComponentTable({ props,NextProp }: any) {
             }
           >
             <div id="portfolio" className="section-event pt-0">
-              {/* {
-                                    
-                                    MeetingItems.SharewebTaskType == undefined  &&
-                                        <ul className="quick-actions">
-
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={(e) => CreateMeetingPopups('Implementation')}>
-                                                    <span className="icon-sites">
-                                                        <img className="icon-sites"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
-
-                                                    </span>
-                                                    Implmentation
-                                                </div>
-                                            </li>
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={() => CreateMeetingPopups('Development')}>
-                                                    <span className="icon-sites">
-                                                        <img className="icon-sites"
-                                                            src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
-
-                                                    </span>
-                                                    Development
-                                                </div>
-                                            </li>
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={() => CreateMeetingPopups('Activities')}>
-                                                    <span className="icon-sites">
-                                                    </span>
-                                                    Activity
-                                                </div>
-                                            </li>
-                                        </ul>
-                                         
-                                    } */}
+             
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">

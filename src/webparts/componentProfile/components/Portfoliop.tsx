@@ -1417,14 +1417,17 @@ function Portfolio({SelectedProp}:any) {
                 <div className="mb-3 card">
                   <>
                     {data.map((item) => (
-                      <CommentCard
-                        siteUrl={
-                          web
-                        }
-                        AllListId={SelectedProp}
-                        userDisplayName={item.userDisplayName}
-                        itemID={item.Id}
-                      ></CommentCard>
+                     <CommentCard
+                     siteUrl={
+                       SelectedProp.siteUrl
+                     }
+                     AllListId={SelectedProp}
+                     userDisplayName={item.userDisplayName}
+                     itemID={item.Id}
+                     listName={"Master Tasks"}
+                     Context={SelectedProp.Context}
+                   ></CommentCard>
+                      
                     ))}
                   </>
                 </div>

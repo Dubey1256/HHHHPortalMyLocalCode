@@ -36,7 +36,7 @@ const inlineEditingcolumns = (props: any) => {
             Title: '', PercentCompleteStatus: '', ComponentLink: ''
         }
     )
-    const [remark, setRemark]:any = useState(false);
+    const [remark, setRemark]: any = useState(false);
     const [impTaskCategoryType, setImpTaskCategoryType] = React.useState([]);
     const [taskCategoryType, setTaskCategoryType] = React.useState([])
     const [taskStatus, setTaskStatus] = React.useState('');
@@ -76,6 +76,7 @@ const inlineEditingcolumns = (props: any) => {
         setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
+        setFeedback(props.item.Remark);
         if (props?.item?.PercentComplete != undefined) {
             props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
         }
@@ -102,8 +103,9 @@ const inlineEditingcolumns = (props: any) => {
             impSharewebCategories = JSON.parse(localStorage.getItem("impTaskCategoryType"));
             SharewebtaskCategories = JSON.parse(localStorage.getItem("taskCategoryType"));
             Priority = JSON.parse(localStorage.getItem("Priority"));
+            let site = JSON.parse(localStorage.getItem("siteUrl"));
             let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
-            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null) && !DataLoaded) {
+            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null || site == null || site != props?.AllListId?.siteUrl) && !DataLoaded) {
                 impSharewebCategories = [];
                 SharewebtaskCategories = [];
                 Priority = [];
@@ -121,10 +123,8 @@ const inlineEditingcolumns = (props: any) => {
                     .get();
                 AllMetadata = MetaData;
                 AllMetadata?.map((metadata: any) => {
-                    if (metadata.TaxType == 'Categories' && metadata.ParentID == 145 && metadata.ProfileType == "Feature Type1") {
-                        impSharewebCategories.push(metadata);
-                    }
-                    if (metadata.Title == 'Immediate') {
+
+                    if (metadata.Title == 'Immediate' || metadata.Title == 'Bottleneck' || metadata.Title == 'Favorite') {
                         impSharewebCategories.push(metadata);
                     }
                     if (metadata.TaxType == 'Categories') {
@@ -135,6 +135,7 @@ const inlineEditingcolumns = (props: any) => {
                 localStorage.setItem("taskCategoryType", JSON.stringify(SharewebtaskCategories));
                 localStorage.setItem("Priority", JSON.stringify(getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank')));
                 localStorage.setItem("impTaskCategoryType", JSON.stringify(impSharewebCategories));
+                localStorage.setItem("siteUrl", JSON.stringify(props?.AllListId?.siteUrl));
                 Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
                 setTaskCategoryType(SharewebtaskCategories);
                 setImpTaskCategoryType(impSharewebCategories);
@@ -249,7 +250,7 @@ const inlineEditingcolumns = (props: any) => {
     function isValidDate(dateString: any): boolean {
         const date = Moment(dateString, 'YYYY-MM-DD', true);
         return date.isValid();
-      }
+    }
     const UpdateTaskStatus = async () => {
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (props?.item?.PercentComplete ? props?.item?.PercentComplete : null) })
         if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
@@ -312,14 +313,14 @@ const inlineEditingcolumns = (props: any) => {
         })
 
         setPercentCompleteCheck(false);
-        let newDueDate:any = new Date(dueDate.editDate);
-        if (dueDate.editDate==null||dueDate.editDate==''||dueDate.editDate==undefined) {
-            newDueDate=null;
-          }else{
-            if(!isValidDate(newDueDate)){
-                newDueDate=''
+        let newDueDate: any = new Date(dueDate.editDate);
+        if (dueDate.editDate == null || dueDate.editDate == '' || dueDate.editDate == undefined) {
+            newDueDate = null;
+        } else {
+            if (!isValidDate(newDueDate)) {
+                newDueDate = ''
             }
-          }
+        }
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
             PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
@@ -331,7 +332,8 @@ const inlineEditingcolumns = (props: any) => {
             "Categories": CategoryTitle,
             "Priority_x0020_Rank": priorityRank,
             SharewebCategoriesId: { "results": selectedCatId },
-            DueDate: newDueDate
+            DueDate: newDueDate,
+            Remark: feedback
         })
             .then((res: any) => {
                 web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
@@ -389,6 +391,7 @@ const inlineEditingcolumns = (props: any) => {
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
+                setRemark(false)
                 setDueDate({ ...dueDate, editPopup: false });
             })
 
@@ -649,22 +652,9 @@ const inlineEditingcolumns = (props: any) => {
     //     }
 
 
-    const postFeedbackRemark = async () => {
-        let web = new Web(props?.item?.siteUrl);
-        await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-           Remark:feedback
-        }).then((data:any)=>{
-            setRemark(false);
-            props?.callBack();
-        })
-    };
-    
-   
 
-    const remarkTrue=()=>{
-        setRemark(true);
-        setFeedback(props.item.Remark);
-    }
+
+
 
 
 
@@ -717,24 +707,18 @@ const inlineEditingcolumns = (props: any) => {
                     </>
                     : ''
             }
-            {props?.columnName == 'Remark' && !remark ? 
-            <div>
-                   <div onClick={remarkTrue}>{props.item.Remark} &nbsp;
-                   </div> 
-                    </div>
-            : ("") 
-             }
-             {
-                props?.columnName == 'Remark' && remark  ? <span><textarea value={feedback} onChange={(e:any)=>setFeedback(e.target.value)}  /> <button onClick={postFeedbackRemark}>submit</button></span> : ''
-          
-             }
-            
+            {props?.columnName == 'Remark' ?
+                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
+                    &nbsp;{props.item.Remark}</span></>
+                : ""
+            }
+
             {
                 props?.columnName == 'PercentComplete' ?
                     <>
 
                         <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
-                           &nbsp;
+                            &nbsp;
                             {
                                 (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
                                     <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
@@ -743,9 +727,9 @@ const inlineEditingcolumns = (props: any) => {
                                         </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
                                             <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
                                             </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
-                                                <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}> 
+                                                <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
                                                 </a> : (props.item.PercentComplete > 90) ?
-                                                    <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>                              
+                                                    <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
                                                     </a> : ''
 
                             }
@@ -757,15 +741,15 @@ const inlineEditingcolumns = (props: any) => {
                                                 AllTaskUser?.map((user: any) => {
                                                     if (AssignedUser.Id == user.AssingedToUserId) {
                                                         return (
-                                                                <a target="_blank"
-                                                                    data-interception="off"
-                                                                    title={user.Title}
-                                                                >
-                                                                    {user?.Item_x0020_Cover?.Url!=undefined?
-                                                                    <img className="workmember" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img>:
+                                                            <a target="_blank"
+                                                                data-interception="off"
+                                                                title={user.Title}
+                                                            >
+                                                                {user?.Item_x0020_Cover?.Url != undefined ?
+                                                                    <img className="workmember" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
                                                                     <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
-                                                                    
-                                                                </a>
+
+                                                            </a>
                                                         )
                                                     }
 
@@ -820,7 +804,7 @@ const inlineEditingcolumns = (props: any) => {
                     </div>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={UpdateTaskStatus}>
-                            OK
+                            Save
                         </button>
                     </footer>
                 </div>
@@ -858,7 +842,7 @@ const inlineEditingcolumns = (props: any) => {
                     </div>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
-                            OK
+                            Save
                         </button>
                     </footer>
                 </div>
@@ -909,7 +893,7 @@ const inlineEditingcolumns = (props: any) => {
                     ))}
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
-                            OK
+                            Save
                         </button>
                     </footer>
                 </div>
@@ -926,7 +910,22 @@ const inlineEditingcolumns = (props: any) => {
                         ItemInfo={props?.item} parentCallback={DDComponentCallBack} ></TeamConfigurationCard>
                     <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
-                            OK
+                            Save
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
+            <Panel
+                headerText={`Update Remarks`}
+                isOpen={remark}
+                onDismiss={() => setRemark(false)}
+                isBlocking={TaskStatusPopup}
+            >
+                <div>
+                    <textarea value={feedback} className='full-width' onChange={(e: any) => setFeedback(e.target.value)} />
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => UpdateTaskStatus()}>
+                            Save
                         </button>
                     </footer>
                 </div>

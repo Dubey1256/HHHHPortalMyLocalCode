@@ -170,9 +170,16 @@ export default function subCommentComponent(SubTextItemsArray: any) {
         callBack(UpdatedFeedBackChildArray, currentArrayIndex);
     }, [])
     const SmartLightUpdateSubChildComment = (index: any, value: any) => {
-        currentUserData.isShowLight = value;
+        let temObject: any = {
+            Title: currentUserData.Title,
+            Id: currentUserData.Id,
+            ImageUrl: currentUserData.ImageUrl,
+            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            isShowLight: value
+        }
+        // currentUserData.isShowLight = value;
         UpdatedFeedBackChildArray[index].isShowLight = value;
-        UpdatedFeedBackChildArray[index].ApproverData.push(currentUserData);
+        UpdatedFeedBackChildArray[index].ApproverData.push(temObject);
         let tempApproverData: any = UpdatedFeedBackChildArray[index].ApproverData
         callBack(UpdatedFeedBackChildArray, currentArrayIndex);
         const copy = [...subCommentsData];
@@ -318,6 +325,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             CancelCallback={postBtnHandleCallBackCancel}
                                             Context={Context}
                                             ApprovalStatus={ApprovalStatus}
+                                            isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>
                                 </div>

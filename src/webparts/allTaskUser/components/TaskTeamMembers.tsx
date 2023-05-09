@@ -973,7 +973,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ));             
 
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
-            <div className="ms-Grid">
+            <div className="ms-Grid p-0">
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         <TextField
