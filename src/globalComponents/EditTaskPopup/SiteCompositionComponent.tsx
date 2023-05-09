@@ -24,7 +24,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
-    const [ClientTimeData, setClientTimeData] = useState([]);
+    let [ClientTimeData, setClientTimeData] = useState<any>([]);
     const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
@@ -202,7 +202,7 @@ const SiteCompositionComponent = (Props: any) => {
             const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
             SiteCompositionSettings[0] = object;
             if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
-                setClientTimeData(SitesTaggingData != SitesTaggingData ? SitesTaggingData : ClientTime);
+                ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
                 setIsPortfolioComposition(true);
                 setProportionalStatus(true);
                 setCheckBoxStatus(true);
@@ -220,7 +220,6 @@ const SiteCompositionComponent = (Props: any) => {
             //     setIsPortfolioComposition(false);
             //     setCheckBoxStatus(false);
             // }
-
             // setCheckBoxStatus(true);
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
@@ -233,7 +232,7 @@ const SiteCompositionComponent = (Props: any) => {
         let TempArray: any = [];
         if (BackupSiteTypeData != undefined && BackupSiteTypeData.length > 0) {
             BackupSiteTypeData?.map((data: any) => {
-                ClientTime?.map((ClientItem: any) => {
+                ClientTimeData?.map((ClientItem: any) => {
                     if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
                         "DA E+E" && data.Title == "ALAKDigital")) {
                         data.ClienTimeDescription = ClientItem.ClienTimeDescription;
@@ -243,13 +242,12 @@ const SiteCompositionComponent = (Props: any) => {
                 TempArray.push(data);
             })
             setSiteTypes(TempArray)
+            setSelectedSiteCount(ClientTimeData?.length)
         }
-
     }
 
     //    ************** this is for Client Category Popup Functions **************
-
-    // ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
+    //    ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
     var SmartTaxonomyName = "Client Category";
     const loadAllCategoryData = function () {
         var AllTaskUsers = []
@@ -600,14 +598,20 @@ const SiteCompositionComponent = (Props: any) => {
                                     return (
                                         <tr>
                                             <th scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
-                                                <input
+                                                {checkBoxStatus ? <input
                                                     className="form-check-input rounded-0" type="checkbox"
-                                                    defaultChecked={siteData.BtnStatus}
+                                                    checked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
                                                     disabled={checkBoxStatus ? true : false}
                                                     style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
-                                                />
+                                                /> : <input
+                                                    className="form-check-input rounded-0" type="checkbox"
+                                                    checked={siteData.BtnStatus}
+                                                    value={siteData.BtnStatus}
+                                                    onChange={(e) => selectSiteCompositionFunction(e, index)}
+                                                />}
+
                                             </th>
                                             <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                 <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
@@ -617,7 +621,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
                                                         type="number" min="1"
-                                                        defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                        value={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
                                                         className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                         onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                     /> : <input type="number" min="1"
@@ -643,7 +647,6 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
-
                                                 {siteData.Title == "EI" && (currentListName.toLowerCase() == "ei" || currentListName.toLowerCase() == "shareweb") ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
