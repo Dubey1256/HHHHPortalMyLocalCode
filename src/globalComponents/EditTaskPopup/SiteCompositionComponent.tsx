@@ -230,9 +230,7 @@ const SiteCompositionComponent = (Props: any) => {
                 object = { ...SiteCompositionSettings[0],localSiteComposition: true }
             }
             SiteCompositionSettings[0] = object;
-            setProportionalStatus(false);
-            setIsPortfolioComposition(false);
-            setCheckBoxStatus(false);
+           
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
