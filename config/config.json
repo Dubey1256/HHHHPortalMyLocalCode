@@ -257,6 +257,14 @@
           "manifest": "./src/webparts/createdByTables/CreatedByTablesWebPart.manifest.json"
         }
       ]
+    },
+    "contactdatabase-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contactdatabase/ContactdatabaseWebPart.js",
+          "manifest": "./src/webparts/contactdatabase/ContactdatabaseWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -310,6 +318,7 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
-    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js"
+    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
+    "ContactdatabaseWebPartStrings": "lib/webparts/contactdatabase/loc/{locale}.js"
   }
 }
