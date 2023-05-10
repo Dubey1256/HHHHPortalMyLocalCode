@@ -594,7 +594,7 @@ const SiteCompositionComponent = (Props: any) => {
                 <label>
                     Portfolio
                 </label>
-                <img className="mt-0 siteColor mx-1" onClick={()=>alert("We Are Working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                <img className="mt-0 siteColor mx-1" onClick={()=>alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
                 <span className="pull-right">
                     <input
                         type="checkbox"
