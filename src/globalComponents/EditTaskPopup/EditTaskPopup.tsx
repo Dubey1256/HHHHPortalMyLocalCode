@@ -2995,7 +2995,7 @@ const EditTaskPopup = (Items: any) => {
         if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
             let tempArray: any = [];
             Data.ClientTime?.map((ClientTimeItems: any) => {
-                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons.Url.length > 0) {
+                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
                     let newObject: any = {
                         SiteName: ClientTimeItems.SiteName,
                         ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
