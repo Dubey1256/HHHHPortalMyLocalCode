@@ -1763,17 +1763,19 @@ const EditTaskPopup = (Items: any) => {
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        UserName: imgItem.UserName,
-                        UserImage: imgItem.UserImage
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
                     }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
                 }
 
             })
@@ -2037,7 +2039,7 @@ const EditTaskPopup = (Items: any) => {
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
             },
-            BasicImageInfo: JSON.stringify(UploadImageArray),
+            BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             ClientTime: JSON.stringify(ClientCategoryData),
@@ -2513,17 +2515,19 @@ const EditTaskPopup = (Items: any) => {
         var UploadImageArray: any = []
         if (JsonData != undefined && JsonData.length > 0) {
             JsonData?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        UserName: imgItem.UserName,
-                        UserImage: imgItem.UserImage
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
                     }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
                 }
             })
         }
