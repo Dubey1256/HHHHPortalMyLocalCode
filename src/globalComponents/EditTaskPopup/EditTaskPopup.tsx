@@ -3929,7 +3929,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                 {SiteDtls.ClienTimeDescription != undefined &&
                                                                                     <span className="mx-2">
-                                                                                        {SiteDtls.ClienTimeDescription}%
+                                                                                        {Number(SiteDtls.ClienTimeDescription).toFixed(2)}%
                                                                                     </span>
                                                                                 }
                                                                                 {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ?
@@ -4986,7 +4986,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                             {SiteDtls.ClienTimeDescription != undefined &&
                                                                                                 <span className="mx-2">
-                                                                                                    {SiteDtls.ClienTimeDescription}%
+                                                                                                    {Number(SiteDtls.ClienTimeDescription).toFixed(2)}%
                                                                                                 </span>
                                                                                             }
                                                                                         </li>)
