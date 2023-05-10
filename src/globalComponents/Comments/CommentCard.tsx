@@ -941,7 +941,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </tr>
                       </tbody>
                     </table>
-                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <table cellPadding="0" width="99%" style={{ width: "99.0%", border: "1px solid #ccc"  }}>
                       <tbody>
                         <tr>
                           <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
@@ -953,7 +953,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
-                              <tr>
+                              <tr style={{ background: "#ccc" }}>
                                 <td>
                                   <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                                 </td>
@@ -971,7 +971,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </tr>
                               {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
-                                  <tr>
+                                  <tr style={{ background: "#ccc" }}>
                                     <td>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                     </td>

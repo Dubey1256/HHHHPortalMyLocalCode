@@ -51,7 +51,7 @@ export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalend
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
+        .then((context:any) => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office

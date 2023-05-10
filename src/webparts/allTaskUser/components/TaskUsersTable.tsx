@@ -142,8 +142,8 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         accessorKey: "TaskId",
         header: null,
         cell: (info) => (<div style={{ width: "60px" }}>
-          <Link href="#" onClick={() => props.EditTask(info.getValue())}><Icon iconName="Edit" style={{ color: "blue", paddingLeft: "10px" }} /></Link>
-          <Link href="#" onClick={() => props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{ color: "red", paddingLeft: "10px" }} /></Link>
+          <Link href="#" onClick={() => props.EditTask(info.getValue())}><span className='svg__iconbox svg__icon--edit' title='Edit'></span></Link>
+          <Link href="#" onClick={() => props.DeleteTask(info.getValue())}><span className='svg__iconbox svg__icon--trash' title='Trash'></span></Link>
         </div>),
         enableColumnFilter: false,
         enableSorting: false,
@@ -190,13 +190,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   return (
     <div className="p-2">
       <div style={{ display: "inline", width: "50%" }}>
-        <PrimaryButton text="Add Team Member" onClick={() => props.AddTask()} style={{ float: "right" }} />
+        <PrimaryButton className='mb-1' text="Add Team Member" onClick={() => props.AddTask()} style={{ float: "right" }} />
       </div>
       <br />
       <div className="h-2"></div>
       <div className="Alltable mt-10">
-        <div className="tbl-headings p-2 bg-white">
-        </div>
         <div className="col-sm-12 p-0 smart">
           <div className="wrapper">
             <table className="SortingTable table table-hover" style={{ width: "100%" }}>
@@ -207,7 +205,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
                       return (
                         <th key={header.id} colSpan={header.colSpan}>
                           {header.isPlaceholder ? null : (
-                            <div style={{ display: "flex" }}>
+                            <div className='position-relative mx-1 my-1' style={{ display: "flex"}}>
                               {flexRender(
                                 header.column.columnDef.header,
                                 header.getContext()
@@ -226,7 +224,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
                                   <div
                                     {...{
                                       className: header.column.getCanSort()
-                                        ? "cursor-pointer select-none"
+                                        ? "cursor-pointer select-none shorticon"
                                         : "",
                                       onClick: header.column.getToggleSortingHandler(),
                                     }}
@@ -410,7 +408,6 @@ function DebouncedInput({
 }
 
 export default TableTaskUsers;
-
 
 
 

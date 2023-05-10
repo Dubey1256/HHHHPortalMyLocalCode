@@ -8,8 +8,7 @@ import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/T
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import * as Moment from 'moment';
-import * as moment from "moment-timezone";
+import * as Moment from 'moment'
 import Tooltip from '../../../globalComponents/Tooltip';
 import { data } from 'jquery';
 
@@ -218,7 +217,7 @@ const CreateWS = (props: any) => {
             .items
             .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
             .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-            .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
+            .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
             .orderBy("Created", false)
             .top(4999)
             .get()
@@ -709,6 +708,7 @@ const CreateWS = (props: any) => {
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
+            Title:'',
             ItemRank: '',
             Priority: '',
             DueDate: '',
@@ -1082,6 +1082,13 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
+                                      
+                                      <div className="col-sm-8 pad0">
+                            <label className="full-width"></label>
+                            <input className="full-width" type="text"
+                                placeholder="Enter Child Item Title"  onChange={(e: any) => AllItems.Title = e.target.value}
+                            />
+                        </div>
                                     <div className="row my-3" key={index}>
                                         <div className="col-sm-4">
                                             <fieldset>

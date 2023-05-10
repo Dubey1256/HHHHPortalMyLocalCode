@@ -4,7 +4,6 @@ import * as React from "react";
 import { Component } from "react";
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
-
 import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamMembersState } from "./ITeamMembersState";
 import * as pnp from 'sp-pnp-js';
@@ -173,9 +172,10 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const webInfo = await this._sp.web();
         this._webSerRelURL = webInfo.ServerRelativeUrl;
     }
-
+   
     public async componentDidMount() {
-        
+       //let IChoiceGroupOptions = 'PORTRAITS'
+       // this.onImageFolderChanged('ev', IChoiceGroupOptions:IChoiceGroupOption)
         const _tasksRes = await this.props.spService.getTasks(this.props.taskUsersListId);
         const _tasks = this.getMemberTasks(_tasksRes);
         const _groupTasks = this.getGroupTasks(_tasksRes);
@@ -221,18 +221,23 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         
         const listTasks: any[] = [..._tasks].map(({Title, Group, Category, Role, Company, Approver, TaskId})=>({Title, Group, Category, Role, Company, Approver, TaskId}));
         let filteredImages:any=[]
+        let _filteredImages:any=[]
         //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
           filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${this.state.selImageFolder}`).files.get().then((files)=>{
-        console.log(files)
-        }).catch((error)=>{
-            console.log(error)
-        })
-        console.log(filteredImages)
-        let _filteredImages = filteredImages?.map((filteredImage: any) => ({
-            Id: filteredImage.Id,
-            Name: filteredImage.FileLeafRef,
-            URL: filteredImage.EncodedAbsUrl
-        }));
+             _filteredImages = files?.map((filteredImage: any) => ({
+                //Id: filteredImage.Id,
+                Name: filteredImage.Name,
+                URL: filteredImage.ServerRelativeUrl
+            }));
+            }).catch((error)=>{
+                console.log(error)
+            })
+        console.log(_filteredImages)
+        // let _filteredImages = filteredImages?.map((filteredImage: any) => ({
+        //     Id: filteredImage.Id,
+        //     Name: filteredImage.FileLeafRef,
+        //     URL: filteredImage.EncodedAbsUrl
+        // }));
 
         const _approverId: number = (await this.getUserInfo(this.props.defaultApproverEMail)).Id;
         const _taskItem = {...this.state.taskItem};
@@ -782,16 +787,34 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
     private async onImageFolderChanged(ev:any, optImageFolder: IChoiceGroupOption) {
         let selFolderName: string = optImageFolder.key;
-        let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, selFolderName);
-        let _filteredImages = filteredImages.map((filteredImage: any) => ({
-            Id: filteredImage.Id,
-            Name: filteredImage.FileLeafRef,
-            URL: filteredImage.EncodedAbsUrl
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, selFolderName);
+        
+       var filteredImages:any=[]
+        //let filteredImages = await this.props.spService.getImages(this.props.imagesLibraryId, this.state.selImageFolder);
+          filteredImages = await pnp.sp.web.getFolderByServerRelativeUrl(`${this._webSerRelURL}/PublishingImages/${selFolderName}`).files.get().then((files)=>{
+        console.log(files)
+        let _filteredImages = files?.map((filteredImage: any) => ({
+            //Id: filteredImage.Id,
+            Name: filteredImage.Name,
+            URL: filteredImage.ServerRelativeUrl
         }));
         this.setState({
             selImageFolder: selFolderName,
             filteredImages: _filteredImages
         });
+        }).catch((error)=>{
+            console.log(error)
+        })
+        console.log(filteredImages)
+        // let _filteredImages = filteredImages?.map((filteredImage: any) => ({
+        //     Id: filteredImage.Id,
+        //     Name: filteredImage.FileLeafRef,
+        //     URL: filteredImage.EncodedAbsUrl
+        // }));
+        // this.setState({
+        //     selImageFolder: selFolderName,
+        //     filteredImages: _filteredImages
+        // });
     }
 
     private onImageSelected(ev:any, imgInfo: any) {
@@ -950,7 +973,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ));             
 
         const elemEditTaskBasicInfo: JSX.Element = (<div className="ms-SPLegacyFabricBlock">
-            <div className="ms-Grid">
+            <div className="ms-Grid p-0">
                 <div className="ms-Grid-row">
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
                         <TextField
@@ -1081,7 +1104,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         {
             this.state.filteredImages?.map( imgInfo => (<div style={{ width: '205px', display: 'inline-block', verticalAlign: 'top', margin: '2px' }}>
                 <DocumentCard style={{border:(imgInfo.Id==this.state.selImageId)?"1px solid red":"" }}>
-                <div
+                <div 
                     //onMouseOver={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}
                     //onMouseOut={(ev)=>{ev.preventDefault();this.setState({onImageHover:!this.state.onImageHover})}}
                     onClick={(ev)=>this.onImageSelected(ev, imgInfo)}
@@ -1107,6 +1130,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         const elemImagePivotSection = (<Pivot linkFormat={PivotLinkFormat.tabs} linkSize={PivotLinkSize.normal}>
             <PivotItem headerText="CHOOSE FROM EXISTING">                        
                 <br />
+               
                 { elemImageGallery }
             </PivotItem>
             <PivotItem headerText="UPLOAD">

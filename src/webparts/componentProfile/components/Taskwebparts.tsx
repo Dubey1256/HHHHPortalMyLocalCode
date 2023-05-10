@@ -4,18 +4,10 @@ import Modal from "react-bootstrap/Modal";
 import * as Moment from "moment";
 import Button from "react-bootstrap/Button";
 import { map } from "jquery";
-// import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   FaAngleDown,
   FaAngleUp,
-  FaPrint,
-  FaFileExcel,
-  FaPaintBrush,
-  FaEdit,
-  FaSearch,
-  FaFilter,
-  FaRegTimesCircle,
 } from "react-icons/fa";
 import { MdAdd } from "react-icons/Md";
 import Tooltip from "../../../globalComponents/Tooltip";
@@ -23,28 +15,22 @@ import Dropdown from "react-bootstrap/Dropdown";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import { create } from "lodash";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
-// import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import PortfolioStructureCreationCard from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-// import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
-import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
-import { Item } from "@pnp/sp/items";
+import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 var filt: any = "";
 var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
-var MainMeetingItems: any = [];
 var childsData: any = [];
-var array: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
 let IsShowRestru: any = false;
@@ -90,9 +76,6 @@ export default function ComponentTable({ props,NextProp }: any) {
   const [ResturuningOpen, setResturuningOpen] = React.useState(false);
   const [RestructureChecked, setRestructureChecked] = React.useState([]);
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
-
-
-
 
 
   // CustomHeader of the Add Structure
@@ -159,52 +142,11 @@ export default function ComponentTable({ props,NextProp }: any) {
     );
   };
 
-  var IsExitSmartfilter = function (array: any, Item: any) {
-    var isExists = false;
-    var count = 0;
-    Item.MultipleTitle = "";
-    map(array, (item) => {
-      if (
-        item.TaxType != undefined &&
-        Item.Title != undefined &&
-        item.TaxType == Item.Title
-      ) {
-        isExists = true;
-        count++;
-        Item.MultipleTitle += item.Title + ", ";
-        return false;
-      }
-    });
-    if (Item.MultipleTitle != "")
-      Item.MultipleTitle = Item.MultipleTitle.substring(
-        0,
-        Item.MultipleTitle.length - 2
-      );
-    Item.count = count;
-    return isExists;
-  };
-
-  var issmartExists = function (array: any, title: any) {
-    var isExists = false;
-    map(array, (item) => {
-      if (item.Title == title.Title) {
-        isExists = true;
-        return false;
-      }
-    });
-    return isExists;
-  };
-
-  const Clearitem = () => {
-    // setData(maini...[maidataBackup])
-    setData(maidataBackup);
-    // const { checked } = e.target;
-  };
+  
 
   const groupbyTasks = function (TaskArray: any, item: any) {
     item.childs = item.childs != undefined ? item.childs : [];
-    // TaskArray.forEach((activ: any) => {
-    //  if (activ.ParentTask?.Id != undefined) {
+   
     let Allworkstream = $.grep(AllTasks, function (type: any) {
       return type.ParentTask?.Id == item.Id;
     });
@@ -272,7 +214,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           try {
             let AllTasksMatches = [];
             var select =
-              "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
+              "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
               filter +
               "";
             AllTasksMatches = await globalCommon.getData(
@@ -280,9 +222,7 @@ export default function ComponentTable({ props,NextProp }: any) {
               config.listId,
               select
             );
-            console.log(AllTasksMatches);
             Counter++;
-            console.log(AllTasksMatches.length);
             if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
               $.each(AllTasksMatches, function (index: any, item: any) {
                 item.isDrafted = false;
@@ -291,8 +231,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                 item.childs = [];
                 item.TitleNew = item.Title;
                 item.listId = config.listId;
-                // item.Item_x0020_Type = 'Task';
-                item.siteUrl = GlobalConstants.SP_SITE_URL;
+                item.siteUrl = NextProp.siteUrl;
                 if (item.SharewebCategories != undefined) {
                   if (item.SharewebCategories.length > 0) {
                     $.each(
@@ -319,10 +258,8 @@ export default function ComponentTable({ props,NextProp }: any) {
                 : siteConfig.length * filterarray.length)
             ) {
               map(AllTasks, (result: any) => {
-                //   result.TeamLeader = []
                 result.CreatedDateImg = [];
                 result.TeamLeaderUserTitle = "";
-                //  result.AllTeamMembers = []
                 result.Display = "none";
                 result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
@@ -344,46 +281,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                     );
                 }
 
-                // if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                //     map(result.AssignedTo, (Assig: any) => {
-                //         if (Assig.Id != undefined) {
-                //             map(TaskUsers, (users: any) => {
-
-                //                 if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id === users.AssingedToUser.Id) {
-                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-                //                     result.AllTeamMembers.push(users);
-                //                 }
-
-                //             })
-                //         }
-                //     })
-                // }
-                // if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                //     map(result.Team_x0020_Members, (obj: any) => {
-                //         if (obj.Id != undefined) {
-                //             map(TaskUsers, (users: any) => {
-                //                 if (obj.Id != undefined && users.AssingedToUser != undefined && obj.Id == users.AssingedToUser.Id) {
-                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-                //                     result.AllTeamMembers.push(users);
-                //                 }
-
-                //             })
-                //         }
-                //     })
-                // }
-                // if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                //     map(result.Responsible_x0020_Team, (resp: any) => {
-                //         if (resp.Id != undefined) {
-                //             map(TaskUsers, (users: any) => {
-                //                 if (resp.Id != undefined && users.AssingedToUser != undefined && resp.Id == users.AssingedToUser.Id) {
-                //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-                //                     result.TeamLeader.push(users);
-                //                 }
-
-                //             })
-                //         }
-                //     })
-                // }
                 if (result.Author != undefined) {
                   if (result.Author.Id != undefined) {
                     $.each(TaskUsers, function (index: any, users: any) {
@@ -442,7 +339,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                 return type.tagged != true;
               });
               TasksItem = AllTasks;
-              console.log(Response);
+            
               map(TasksItem, (task: any) => {
                 if (!isItemExistsNew(CopyTaskData, task)) {
                   CopyTaskData.push(task);
@@ -487,9 +384,7 @@ export default function ComponentTable({ props,NextProp }: any) {
   const addModal = () => {
     setAddModalOpen(true);
   };
-  const setModalIsOpenToTrue = () => {
-    setModalIsOpen(true);
-  };
+ 
 
   const sortBy = () => {
     const copy = data;
@@ -615,7 +510,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                     subchild.childs,
                     function (childindex: any, subchilds: any) {
                       subchilds.flag = false;
-                      // subchilds.Title = subchilds.newTitle;
                       subchilds.flag = getSearchTermAvialable1(
                         searchTerms,
                         subchilds,
@@ -640,22 +534,16 @@ export default function ComponentTable({ props,NextProp }: any) {
           });
         }
       });
-      //   getFilterLength();
     } else {
-      //  ungetFilterLength();
-      // setData(data => ([...maidataBackup]));
       setData(maidataBackup);
-      //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
+   
     }
-    // console.log($scope.ComponetsData['allComponentItemWithStructure']);
+    
   };
 
-  // var TaxonomyItems: any = [];
   var AllComponetsData: any = [];
   var TaskUsers: any = [];
-  // var RootComponentsData: any = [];
-  // var ComponentsData: any = [];
-  // var SubComponentsData: any = []; var FeatureData: any = [];
+ 
   var MetaData: any = [];
   var showProgressBar = () => {
     $(" #SpfxProgressbar").show();
@@ -668,7 +556,7 @@ export default function ComponentTable({ props,NextProp }: any) {
   const getTaskUsers = async () => {
     let taskUsers = (Response = TaskUsers = await globalCommon.loadTaskUsers());
     setTaskUser(Response);
-    console.log(Response);
+  
   };
   const GetSmartmetadata = async () => {
     var metadatItem: any = [];
@@ -680,13 +568,9 @@ export default function ComponentTable({ props,NextProp }: any) {
       NextProp.SmartMetadataListID,
       select
     );
-    console.log(smartmetaDetails);
-    // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
-      // if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
-      //     TaxonomyItems.push(newtest);
-      // }
+     
       if (
         newtest.TaxType == "Sites" &&
         newtest.Title != "Master Tasks" &&
@@ -755,7 +639,6 @@ export default function ComponentTable({ props,NextProp }: any) {
       NextProp.MasterTaskListID,
       select
     );
-    console.log(componentDetails);
     var array: any = [];
     if (
       props.Item_x0020_Type != undefined &&
@@ -837,65 +720,30 @@ export default function ComponentTable({ props,NextProp }: any) {
 
         Itmes.push(filter);
       }
-      // do whatever
+     
     }
 
     LoadAllSiteTasks(Itmes);
   };
 
-  //const [IsUpdated, setIsUpdated] = React.useState(SelectedProp.SelectedProp);
   React.useEffect(() => {
-    //MainMeetingItems.push(props)
     showProgressBar();
     getTaskUsers();
     GetSmartmetadata();
-    //LoadAllSiteTasks();
     GetComponents();
   }, []);
+
   // common services
 
-  var parseJSON = function (jsonItem: any) {
-    var json = [];
-    try {
-      json = JSON.parse(jsonItem);
-    } catch (err) {
-      console.log(err);
-    }
-    return json;
-  };
+ 
 
-  var ArrayCopy = function (array: any) {
-    let MainArray = [];
-    if (array != undefined && array.length != undefined) {
-      MainArray = parseJSON(JSON.stringify(array));
-    }
-    return MainArray;
-  };
-  var stringToArray1 = function (input: any) {
-    if (input) {
-      return input.split(">");
-    } else {
-      return [];
-    }
-  };
+  
   var getRegexPattern = function (keywordArray: any) {
     var pattern = "(^|\\b)(" + keywordArray.join("|") + ")";
     return new RegExp(pattern, "gi");
   };
 
-  const getTeamLeadersName = function (Items: any, Item: any) {
-    if (Items != undefined) {
-      map(Items.results, (index: any, user: any) => {
-        $.each(AllUsers, function (index: any, item: any) {
-          $.each(AllUsers, function (index: any, item: any) {
-            if (user.Id === item.AssingedToUser?.Id) {
-              Item.AllTeamName = Item.AllTeamName + item.Title + " ";
-            }
-          });
-        });
-      });
-    }
-  };
+  
   var AllTasks: any = [];
   var CopyTaskData: any = [];
   var isItemExistsNew = function (array: any, items: any) {
@@ -1011,11 +859,9 @@ export default function ComponentTable({ props,NextProp }: any) {
       });
     }
   };
-  //var pageType = 'Service-Portfolio';
 
   const DynamicSort = function (items: any, column: any) {
     items.sort(function (a: any, b: any) {
-      // return   a[column] - b[column];
       var aID = a[column];
       var bID = b[column];
       return aID == bID ? 0 : aID > bID ? 1 : -1;
@@ -1030,8 +876,6 @@ export default function ComponentTable({ props,NextProp }: any) {
     var FeatureData: any = [];
 
     $.each(ComponetsData["allComponets"], function (index: any, result: any) {
-      // result.AllTeamMembers = result.AllTeamMembers != undefined ? result.AllTeamMembers : [];
-      // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
       result.CreatedDateImg = [];
       result.childsLength = 0;
       result.TitleNew = result.Title;
@@ -1052,47 +896,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         GlobalConstants.MAIN_SITE_URL + "/SP",
         undefined
       );
-      // if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-      //     $.each(result.AssignedTo, function (index: any, Assig: any) {
-      //         if (Assig.Id != undefined) {
-      //             $.each(Response, function (index: any, users: any) {
-
-      //                 if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-      //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-      //                     result.AllTeamMembers.push(users);
-      //                 }
-
-      //             })
-      //         }
-      //     })
-      // }
-      // if (result.Team_x0020_Members != undefined && result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-      //     $.each(result.Team_x0020_Members, function (index: any, Assig2: any) {
-      //         if (Assig2.Id != undefined) {
-      //             $.each(TaskUsers, function (index: any, users: any) {
-      //                 if (Assig2.Id != undefined && users.AssingedToUser != undefined && Assig2.Id == users.AssingedToUser.Id) {
-      //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-      //                     result.AllTeamMembers.push(users);
-      //                 }
-
-      //             })
-      //         }
-      //     })
-      // }
-
-      // if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-      //     map(result.Responsible_x0020_Team, (Assig1: any) => {
-      //         if (Assig1.Id != undefined) {
-      //             map(TaskUsers, (users: any) => {
-      //                 if (Assig1.Id != undefined && users.AssingedToUser != undefined && Assig1.Id == users.AssingedToUser.Id) {
-      //                     users.ItemCover = users.Item_x0020_Cover?.Url;
-      //                     result.TeamLeader.push(users);
-      //                 }
-
-      //             })
-      //         }
-      //     })
-      // }
+      
       if (result.Author != undefined) {
         if (result.Author.Id != undefined) {
           $.each(TaskUsers, function (index: any, users: any) {
@@ -1193,10 +997,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         }
         FeatureData.push(result);
       }
-      // if (result.Title == 'Others') {
-      //     //result['childs'] = result['childs'] != undefined ? result['childs'] : [];
-      //     ComponentsData.push(result);
-      // }
+     
     });
 
     $.each(SubComponentsData, function (index: any, subcomp: any) {
@@ -1250,13 +1051,7 @@ export default function ComponentTable({ props,NextProp }: any) {
     });
     if (ComponentsData != undefined && ComponentsData.length > 0) {
       $.each(ComponentsData, function (index: any, subcomp: any) {
-        // if (subcomp['childs'] != undefined && subcomp['childs'].length > 0) {
-        //     let Tasks = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Task'));
-        //     let Features = subcomp['childs'].filter((sub: { Item_x0020_Type: string; }) => (sub.Item_x0020_Type === 'Feature'));
-        //     subcomp['childs'] = [];
-        //     DynamicSort(Tasks, 'Shareweb_x0020_ID');
-        //     subcomp['childs'] = Features.concat(Tasks);
-        // }
+        
         if (subcomp.Title != undefined) {
           $.each(SubComponentsData, function (index: any, featurecomp: any) {
             if (
@@ -1333,7 +1128,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         array.push(comp);
 
         if (Subcomponnet != undefined && Subcomponnet.length > 0) {
-          //  if (comp.childs != undefined && comp.childs.length > 0) {
+        
           map(Subcomponnet, (subcomp, index) => {
             if (subcomp.childs != undefined && subcomp.childs.length > 0) {
               var Subchildcomponnet = subcomp.childs.filter(
@@ -1345,76 +1140,18 @@ export default function ComponentTable({ props,NextProp }: any) {
               );
               Subchildcomponnet = Subchildcomponnet.concat(SubchildTasks);
               subcomp["childs"] = Subchildcomponnet;
-              // var SubchildTasks = subcomp.childs.filter((sub: any) => (sub.ItemType === 'SubComponnet'));
+        
             }
           });
         }
       } else array.push(comp);
     });
     ComponentsData = array;
-    // var id = props.Id;
-    // var arrys: any = [];
-    // if (props.Item_x0020_Type == "Component") {
-    //     $.each(ComponentsData, function (index: any, subcomp: any) {
-    //         if (subcomp.Id == id)
-    //             arrys.push(subcomp.childs)
-    //         if (subcomp.childs != undefined && subcomp.childs.length > 0) {
-    //             $.each(subcomp.childs, function (index: any, Nextcomp: any) {
-    //                 if (Nextcomp.childs.Id == id)
-    //                     arrys.push(Nextcomp.childs)
-    //                 if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
-    //                     $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
-    //                         if (Nextnextcomp.Id == id)
-    //                             arrys.push(Nextnextcomp.childs);
-    //                     })
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
-    // if (props.Item_x0020_Type == "SubComponent") {
-    //     $.each(SubComponentsData, function (index: any, subcomp: any) {
-    //         if (subcomp.Id == id)
-    //             arrys.push(subcomp.childs)
-    //         if (subcomp.childs != undefined && subcomp.childs.length > 0) {
-    //             $.each(subcomp.childs, function (index: any, Nextcomp: any) {
-    //                 if (Nextcomp.childs.Id == id)
-    //                     arrys.push(Nextcomp.childs)
-    //                 if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
-    //                     $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
-    //                         if (Nextnextcomp.Id == id)
-    //                             arrys.push(Nextnextcomp.childs);
-    //                     })
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
-    // if (props.Item_x0020_Type == "Feature") {
-    //     $.each(FeatureData, function (index: any, subcomp: any) {
-    //         if (subcomp.Id == id)
-    //             arrys.push(subcomp.childs)
-    //         if (subcomp.childs != undefined && subcomp.childs.length > 0) {
-    //             $.each(subcomp.childs, function (index: any, Nextcomp: any) {
-    //                 if (Nextcomp.childs.Id == id)
-    //                     arrys.push(Nextcomp.childs)
-    //                 if (Nextcomp.childs != undefined && Nextcomp.childs.length > 0) {
-    //                     $.each(Nextcomp.childs, function (index: any, Nextnextcomp: any) {
-    //                         if (Nextnextcomp.Id == id)
-    //                             arrys.push(Nextnextcomp.childs);
-    //                     })
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
-
-    //maidataBackup.push(ComponentsData)
+  
     var temp: any = {};
     temp.TitleNew = "Tasks";
     temp.childs = [];
-    //  temp.AllTeamMembers = [];
-    //  temp.AllTeamMembers = [];
+   
     temp.TeamLeader = [];
     temp.flag = true;
     temp.downArrowIcon =
@@ -1463,7 +1200,7 @@ export default function ComponentTable({ props,NextProp }: any) {
     ComponetsData["allUntaggedTasks"] = [];
     AllTaskData1 = AllTaskData1.concat(TasksItem);
     $.each(AllTaskData1, function (index: any, task: any) {
-      if (task.Id === 3559 || task.Id === 3677) console.log(task);
+      if (task.Id === 3559 || task.Id === 3677) 
       task.Portfolio_x0020_Type = "Component";
       if (IsUpdated === "Service") {
         if (task["Services"] != undefined && task["Services"].length > 0) {
@@ -1491,42 +1228,10 @@ export default function ComponentTable({ props,NextProp }: any) {
     ComponetsData["allComponets"].push(temp);
     bindData();
   };
-  // const filterDataBasedOnList = function () {
-  //     var AllTaskData1: any = [];
-  //     AllTaskData1 = AllTaskData1.concat(CopyTaskData);
-  //     makeFinalgrouping();
-  // }
+ 
   var TasksItem: any = [];
 
-  function Buttonclick(e: any) {
-    e.preventDefault();
-    this.setState({ callchildcomponent: true });
-  }
-  const setModalIsOpenToFalse = () => {
-    setModalIsOpen(false);
-  };
-
-  const closeModal = () => {
-    setAddModalOpen(false);
-  };
-
-  const Prints = () => {
-    window.print();
-  };
-  // ---------------------Export to Excel-------------------------------------------------------------------------------------
-
-  const getCsvData = () => {
-    const csvData = [["Title"]];
-    let i;
-    for (i = 0; i < data.length; i += 1) {
-      csvData.push([`${data[i].Title}`]);
-    }
-    return csvData;
-  };
-  const clearSearch = () => {
-    setSearch("");
-  };
-
+ 
   // Expand Table
   const expndpopup = (e: any) => {
     settablecontiner(e);
@@ -1534,23 +1239,7 @@ export default function ComponentTable({ props,NextProp }: any) {
 
   //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
-  // const  Handler = (itrm: any) => {
-  // const  Handler = (itrm: any) => {
-  //     const list = [...checkedList];
-  //     var flag = true;
-  //     list.forEach((obj: any, index: any) => {
-  //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-  //             flag = false;
-  //             list.splice(index, 1);
-  //         }
-  //     })
-  //     if (flag)
-  //         list.push(itrm);
-
-  //     console.log(list);
-  //     setCheckedList(checkedList => ([...list]));
-  // };
-
+  
   const onChangeHandler = (itrm: any, child: any, e: any) => {
     var Arrays: any = [];
 
@@ -1565,10 +1254,10 @@ export default function ComponentTable({ props,NextProp }: any) {
 
       if (itrm.SharewebTaskType == undefined) {
         setActivityDisable(false);
-        itrm["siteUrl"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+        itrm["siteUrl"] = `${NextProp.siteUrl}`;
         itrm["listName"] = "Master Tasks";
         MeetingItems.push(itrm);
-        //setMeetingItems(itrm);
+        
       }
       if (itrm.SharewebTaskType != undefined) {
         if (
@@ -1576,8 +1265,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           itrm.SharewebTaskType.Title == "Workstream"
         ) {
           setActivityDisable(false);
-          // itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-          // itrm['listName'] = 'Master Tasks';
+         
           Arrays.push(itrm);
           itrm["PortfolioId"] = child.Id;
           childsData.push(itrm);
@@ -1639,8 +1327,6 @@ export default function ComponentTable({ props,NextProp }: any) {
     setCheckedList((checkedList) => [...list]);
   };
   var TaskTimeSheetCategoriesGrouping: any = [];
-  var TaskTimeSheetCategories: any = [];
-  var AllTimeSpentDetails: any = [];
   const isItemExists = function (arr: any, Id: any) {
     var isExists = false;
     $.each(arr, function (index: any, item: any) {
@@ -1651,46 +1337,24 @@ export default function ComponentTable({ props,NextProp }: any) {
     });
     return isExists;
   };
-  const checkCategory = function (item: any, category: any) {
-    $.each(
-      TaskTimeSheetCategoriesGrouping,
-      function (index: any, categoryTitle: any) {
-        if (categoryTitle.Id == category) {
-          // item.isShow = true;
-          if (categoryTitle.Childs.length == 0) {
-            categoryTitle.Childs = [];
-          }
-          if (!isItemExists(categoryTitle.Childs, item.Id)) {
-            item.show = true;
-            categoryTitle.Childs.push(item);
-          }
-        }
-      }
-    );
-  };
+ 
 
   const EditData = (e: any, item: any) => {
     setIsTimeEntry(true);
     setSharewebTimeComponent(item);
   };
 
-  const handleTitle = (e: any) => {
-    setTitle(e.target.value);
-  };
+
 
   const EditComponentPopup = (item: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsComponent(true);
     setSharewebComponent(item);
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const EditItemTaskPopup = (item: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsTask(true);
     setSharewebTask(item);
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  function AddItem() {}
+ 
 
   const Call = React.useCallback((childItem: any) => {
     MeetingItems?.forEach((val: any): any => {
@@ -1780,8 +1444,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         obj.data.childs = [];
         obj.data.flag = true;
         obj.data.TitleNew = obj.data.Title;
-        // obj.data.Team_x0020_Members=item.TeamMembersIds;
-        // obj.AssignedTo =item.AssignedIds;
+       
         obj.data.siteType = "Master Tasks";
         obj.data["Shareweb_x0020_ID"] = obj.data.PortfolioStructureID;
         if (item.props != undefined && item.props.SelectedItem != undefined) {
@@ -1876,25 +1539,15 @@ export default function ComponentTable({ props,NextProp }: any) {
         );
         myarray1.push(items);
       }
-      // console.log(myarray1);
-      // if (items.ClienTimeDescription != undefined) {
-      //     items.ClienTimeDescription = parseFloat(item.ClienTimeDescription);
-      //     myarray1.push(items)
-      // }
+   
     });
     if (props.ClientCategory.results.length != 0) {
       props.ClientCategory.results.map((terms: any) => {
-        //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
-        //                ""
-        //     }else{
-        //    myarray2.push(terms);
-        // }
+       
         myarray2.push(terms);
       });
     }
-    //    const letters = new Set([myarray2]);
-    // console.log(myarray2)
-    // myarray.push();
+  
   }
   const [lgShow, setLgShow] = React.useState(false);
   function handleClose() {
@@ -1906,25 +1559,16 @@ export default function ComponentTable({ props,NextProp }: any) {
   const [CreateacShow, setCreateacShow] = React.useState(false);
   const handleCreateac = () => setCreateacShow(false);
 
-  const handleSuffixHover = (item: any) => {
-    item.Display = "block";
-    setData((data) => [...data]);
-  };
-
-  const handleuffixLeave = (item: any) => {
-    item.Display = "none";
-    setData((data) => [...data]);
-  };
+  
   // Add activity popup array
   const closeTaskStatusUpdatePoup2 = () => {
     MeetingItems?.forEach((val: any): any => {
       val.chekBox = false;
     });
     setActivityPopup(false);
-    // childsData =[]
+   
     MeetingItems = [];
     childsData = [];
-    // setMeetingItems([])
   };
   const CreateMeetingPopups = (item: any) => {
     setMeetingPopup(true);
@@ -1958,10 +1602,6 @@ export default function ComponentTable({ props,NextProp }: any) {
         ) {
           setActivityPopup(true);
         }
-        // if(MeetingItems[0].Portfolio_x0020_Type == 'Service'&& MeetingItems[0].SharewebTaskType == undefined && childsData[0] == undefined){
-        //     MeetingItems[0]['NoteCall'] = 'Activities';
-        //     setMeetingPopup(true)
-        // }
         if (
           MeetingItems[0].SharewebTaskType == undefined &&
           childsData[0] == undefined
@@ -1978,13 +1618,11 @@ export default function ComponentTable({ props,NextProp }: any) {
       if (childsData[0].SharewebTaskType.Title == "Activities") {
         setWSPopup(true);
         MeetingItems.push(childsData[0]);
-        //setMeetingItems(childsData)
       }
       if (
         childsData[0] != undefined &&
         childsData[0].SharewebTaskType.Title == "Workstream"
       ) {
-        //setActivityPopup(true)
         childsData[0].NoteCall = "Task";
         setMeetingPopup(true);
         MeetingItems.push(childsData[0]);
@@ -1993,7 +1631,6 @@ export default function ComponentTable({ props,NextProp }: any) {
   };
   const buttonRestructuring = () => {
     var ArrayTest: any = [];
-    //  if (checkedList != undefined && checkedList.length === 1) {
     if (
       checkedList.length > 0 &&
       checkedList[0].childs != undefined &&
@@ -2015,7 +1652,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           obj.childs.forEach((sub: any) => {
             if (sub.Item_x0020_Type === "SubComponent") {
               sub.isRestructureActive = true;
-              // ArrayTest.push(sub)
+             
             }
           });
         }
@@ -2026,7 +1663,6 @@ export default function ComponentTable({ props,NextProp }: any) {
       checkedList[0].Item_x0020_Type === "SubComponent"
     ) {
       maidataBackup.forEach((obj) => {
-        //  obj.isRestructureActive = true;
         if (obj.Id === checkedList[0].Id) {
           obj.isRestructureActive = false;
           ArrayTest.push(...[obj]);
@@ -2037,7 +1673,6 @@ export default function ComponentTable({ props,NextProp }: any) {
               obj.isRestructureActive = false;
               ArrayTest.push(...[obj]);
               ArrayTest.push(...[sub]);
-              // ArrayTest.push(sub)
             }
           });
         }
@@ -2106,7 +1741,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                   ArrayTest.push(...[obj]);
                   ArrayTest.push(...[sub]);
                   ArrayTest.push(...[subchild]);
-                  // ArrayTest.push(sub)
+                
                 }
                 if (
                   subchild.childs != undefined &&
@@ -2158,8 +1793,7 @@ export default function ComponentTable({ props,NextProp }: any) {
     setOldArrayBackup(ArrayTest);
     setData((data) => [...maidataBackup]);
 
-    //  }
-    // setAddModalOpen(true)
+   
   };
 
   const RestruringCloseCall = () => {
@@ -2174,7 +1808,6 @@ export default function ComponentTable({ props,NextProp }: any) {
         obj.childs.forEach((sub: any) => {
           sub.isRestructureActive = true;
           if (sub.Id === item.Id) {
-            //TestArray.push(obj)
             TestArray.push(...[obj]);
             TestArray.push(...[sub]);
           }
@@ -2204,8 +1837,6 @@ export default function ComponentTable({ props,NextProp }: any) {
       OldArrayBackup.unshift(props);
       TestArray.push(props);
     }
-    //     setNewArrayBackup(NewArrayBackup => ([...props]));
-    //    else
     setNewArrayBackup((NewArrayBackup) => [...TestArray]);
   };
   var PortfolioLevelNum: any = 0;
@@ -2249,9 +1880,8 @@ export default function ComponentTable({ props,NextProp }: any) {
         });
       }
     });
-    // setRestructureChecked(item);
   };
-  let changetoTaxType: any = "";
+  
   const UpdateTaskRestructure = async function () {
     var Ids: any = [];
     if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
@@ -2260,13 +1890,11 @@ export default function ComponentTable({ props,NextProp }: any) {
       });
     }
 
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(NextProp.siteUrl);
     await web.lists
       .getById(checkedList[0].listId)
       .items.getById(checkedList[0].Id)
       .update({
-        // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
-        //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
         ComponentId:
           checkedList[0].Portfolio_x0020_Type === "Component"
             ? { results: Ids }
@@ -2390,9 +2018,7 @@ export default function ComponentTable({ props,NextProp }: any) {
     var Item: any = "";
     let flag: any = false;
     let ChengedItemTitle: any = "";
-    // if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Component') {
-    //     ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
-    // }
+   
     if (
       RestructureChecked != undefined &&
       RestructureChecked.length > 0 &&
@@ -2406,14 +2032,7 @@ export default function ComponentTable({ props,NextProp }: any) {
     ) {
       ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
     }
-    // else if (ChengedItemTitl !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Feature') {
-    //     ChengedItemTitle = 'SubComponent';
-    //     flag = true;
-    // }
-    // else if (ChengedItemTitle !== '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'SubComponent') {
-    //     ChengedItemTitle = 'Component';
-    //     flag = true;
-    // }
+   
     let count: any = 0;
     let newItem: any = "";
     if (NewArrayBackup.length === 1) newItem = NewArrayBackup[0];
@@ -2424,13 +2043,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           newItem = newe;
         else if (newe.Item_x0020_Type === ChengedItemTitle) newItem = newe;
       });
-      // }
-      // if (!flag) {
-      //     NewArrayBackup.forEach((newe1: any) => {
-      //         if (newe1.Item_x0020_Type !== ChengedItemTitle)
-      //             newItem = newe1;
-      //     })
-      // }
+      
     }
     maidataBackup.forEach((obj) => {
       if (obj.Id === newItem.Id) {
@@ -2480,17 +2093,15 @@ export default function ComponentTable({ props,NextProp }: any) {
         "-" +
         ChengedItemTitle.slice(0, 1) +
         PortfolioLevelNum;
-      // if (Item != undefined)
-      //     PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
-    }
+   }
 
     var UploadImage: any = [];
 
     var item: any = {};
     if (ChengedItemTitl === undefined) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(NextProp.siteUrl);
       await web.lists
-        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+        .getById(NextProp.MasterTaskListID)
         .items.getById(checkedList[0].Id)
         .update({
           ParentId: Item.Id,
@@ -2512,13 +2123,13 @@ export default function ComponentTable({ props,NextProp }: any) {
           console.log(res);
           setData((data) => [...maidataBackup]);
           RestruringCloseCall();
-          //setModalIsOpenToFalse();
+         
         });
     }
     if (ChengedItemTitl != undefined && ChengedItemTitl != "") {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(NextProp.siteUrl);
       await web.lists
-        .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
+        .getById(NextProp.MasterTaskListID)
         .items.getById(checkedList[0].Id)
         .update({
           ParentId: Item.Id,
@@ -2531,7 +2142,7 @@ export default function ComponentTable({ props,NextProp }: any) {
           maidataBackup.forEach((obj, index) => {
             obj.isRestructureActive = false;
             if (obj.Id === checkedList[0].Id) {
-              //  maidataBackup[index].childs.splice(index, 1)
+           
               checkedList[0].downArrowIcon = obj.downArrowIcon;
               checkedList[0].RightArrowIcon = obj.RightArrowIcon;
             }
@@ -2578,9 +2189,7 @@ export default function ComponentTable({ props,NextProp }: any) {
             Item.show = true;
             Item.downArrowIcon = checkedList[0].downArrowIcon;
             Item.RightArrowIcon = checkedList[0].RightArrowIcon;
-            // Item.show = Item.show == undefined ? false : Item.show
-            // Item.downArrowIcon = item.props.SelectedItem.downArrowIcon;
-            // Item.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
+          
             Item.childs.push(checkedList[0]);
           }
           setCheckedList((checkedList) => [...[]]);
@@ -2588,9 +2197,9 @@ export default function ComponentTable({ props,NextProp }: any) {
           RestruringCloseCall();
         });
     }
-    // setResturuningOpen(true)
   };
 
+ 
   var SomeMetaData1 = [
     {
       __metadata: {
@@ -2847,264 +2456,6 @@ export default function ComponentTable({ props,NextProp }: any) {
     SmartSuggestions: any;
     SmartFilters: any;
   }[];
-  console.log(siteConfig);
-  var SomeMetaData1 = [
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 15,
-      Title: "MileStone",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: [],
-      },
-      SortOrder: 2,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: null,
-      ID: 15,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)",
-        etag: '"4"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 105,
-      Title: "Development",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png",
-      },
-      SmartFilters: null,
-      SortOrder: 3,
-      TaxType: "Category",
-      Selectable: true,
-      ParentID: 0,
-      SmartSuggestions: null,
-      ID: 105,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)",
-        etag: '"1"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 282,
-      Title: "Implementation",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1:
-        "This should be tagged if a task is for applying an already developed component/subcomponent/feature.",
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description: "/SiteCollectionImages/ICONS/Shareweb/Implementation.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png",
-      },
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: false,
-      ID: 282,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 11,
-      Title: "Bug",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png",
-      },
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: ["MetaSearch", "Dashboard"],
-      },
-      SortOrder: 2,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: null,
-      ID: 11,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)",
-        etag: '"5"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 96,
-      Title: "Feedback",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png",
-      },
-      SmartFilters: null,
-      SortOrder: 2,
-      TaxType: null,
-      Selectable: true,
-      ParentID: 0,
-      SmartSuggestions: false,
-      ID: 96,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)",
-        etag: '"3"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 191,
-      Title: "Improvement",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1:
-        "Use this task category for any improvements of EXISTING features",
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png",
-      },
-      SmartFilters: null,
-      SortOrder: 12,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: false,
-      ID: 191,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 12,
-      Title: "Design",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png",
-      },
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: ["MetaSearch", "Dashboard"],
-      },
-      SortOrder: 4,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 165,
-      SmartSuggestions: null,
-      ID: 12,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 100,
-      Title: "Activity",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: null,
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: null,
-      Selectable: true,
-      ParentID: null,
-      SmartSuggestions: null,
-      ID: 100,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 281,
-      Title: "Task",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: null,
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: null,
-      Selectable: true,
-      ParentID: null,
-      SmartSuggestions: null,
-      ID: 281,
-    },
-  ] as unknown as {
-    siteName: any;
-    siteUrl: any;
-    listId: any;
-    Description1: any;
-    results: any[];
-    SmartSuggestions: any;
-    SmartFilters: any;
-  }[];
-  console.log(siteConfig);
 
   const findUserByName = (name: any) => {
     const user = AllUsers.filter((user: any) => user.Title === name);
@@ -3237,375 +2588,6 @@ export default function ComponentTable({ props,NextProp }: any) {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* End Create task activity popup  */}
-      {/* Smart Time Popup */}
-      {/* <Modal
-            isOpen={SmartmodalIsOpen}
-            onDismiss={setModalSmartIsOpenToFalse}
-            isBlocking={true}
-            isModeless={true}
-        >
-            <span >
-                <div id="myDropdown1" className="col-sm-12 pad0 dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Smart Time <span title="Close popup" className="pull-right hreflink"
-                            onClick={setModalSmartIsOpenToFalse}>
-                            <i className="fa fa-times-circle"  ><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select className="form-control"
-                      >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                        </select>
-                    </div>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <input type="text" placeholder="Effort"  className="form-control full-width ng-pristine ng-untouched ng-valid ng-empty" id="txtSmartTime" />
-                    </div>
-                    <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                           >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Smart Time popup end here */}
-      {/* Created Date Popup */}
-      {/* <Modal
-            isOpen={CreatedmodalIsOpen}
-            onDismiss={setModalSmartIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true} >
-            <div >
-                <div id="myDropdown4" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Created Date <span title="Close popup" className="pull-right hreflink"
-                         onClick={setCreatedmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select id="selectCreatedValue" className="form-control"
-                        >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                            <option value="In Between">In Between</option>
-                            <option value="Presets">Presets</option>
-                        </select>
-                    </div>
-                    <div
-                        className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                        <input type="date" placeholder="dd/mm/yyyy"
-                            className="form-control date-picker" id="txtDate4"
-                        />
-                        <i className="fa fa-calendar form-control-feedback mt-10"
-                            style={{ marginRight: "10px" }}></i>
-                    </div>
-                    <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                            >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Modal> */}
-      {/* Created Date popup end here */}
-      {/* Due Date Popup */}
-      {/* <Modal
-            isOpen={DuemodalIsOpen}
-            onDismiss={setDuemodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}
-        >
-            <div >
-                <div id="myDropdown4" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Due Date <span title="Close popup" className="pull-right hreflink"
-                           onClick={setDuemodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-md-12 mb-10 mt-10">
-                        <select id="selectCreatedValue" className="form-control"
-                         >
-                            <option value="">Select</option>
-                            <option value="Equal to">Equal to</option>
-                            <option value="Greater than">Greater than</option>
-                            <option value="Less than">Less than</option>
-                            <option value="Not equal to">Not equal to</option>
-                            <option value="In Between">In Between</option>
-                            <option value="Presets">Presets</option>
-                        </select>
-                    </div>
-                    <div
-                        className="col-md-12 mb-10 mt-10 has-feedback has-feedback">
-                        <input type="date" placeholder="dd/mm/yyyy"
-                            className="form-control date-picker" id="txtDate4"
-                          />
-                        <i className="fa fa-calendar form-control-feedback mt-10"
-                            style={{ marginRight: "10px" }}></i>
-                    </div>
-                    <div className="col-md-12 text-center PadR0 mb-10 mt-10">
-                        <button type="button"
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Modal> */}
-      {/* Due Date popup end here */}
-      {/* Team Member Popup */}
-      {/* <Modal
-            isOpen={TeamMembermodalIsOpen}
-            onDismiss={setTeamMembermodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true} >
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Team Members <span title="Close popup" className="pull-right hreflink"
-                           onClick={setTeamMembermodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5">
-                        <div className="checkbox mb0 ml15">
-                            <input  type="checkbox"
-                                name="Responsibility1"
-                                /><span className=" f-500">
-                                Select All
-                            </span>
-                        </div>
-                    </div>
-                    <div className="col-sm-12 PadR0 ml5">
-                        {filterGroups.map(function (item) {
-                            return (
-                                <>
-                                    {item == 'Team Members' &&
-                                        <td valign="top">
-                                            <fieldset>
-                                                <legend>{item == 'Team Members' && <span>{item}</span>}</legend>
-                                                <legend>{item == 'teamSites' && <span>Sites</span>}</legend>
-                                            </fieldset>
-                                            {filterItems.map(function (ItemType, index) {
-                                                return (
-                                                    <>
-                                                        <div style={{ display: "block" }}> {ItemType.Group == item &&
-                                                            <>
-                                                                <span className="plus-icon hreflink" onClick={() => handleOpen2(ItemType)}>
-                                                                    {ItemType.childs.length > 0 &&
-                                                                        <a className='hreflink'
-                                                                            title="Tap to expand the childs">
-                                                                            {ItemType.showItem ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                        </a>}
-                                                                </span>
-                                                                {ItemType.TaxType != 'Status' &&
-                                                                    <span className="ml-1">
-                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                        <span className="ml-2">
-                                                                            {ItemType.Title}
-                                                                        </span>
-                                                                    </span>
-                                                                }
-                                                                {ItemType.TaxType == 'Status' &&
-                                                                    <span className="ml-2">
-                                                                        <input type="checkbox" className="mr0 icon-input" value={ItemType.Title} onChange={(e) => SingleLookDatatest(e, ItemType, index)} />
-                                                                        <span className="ml-2">
-                                                                            {ItemType.Title}
-                                                                        </span>
-                                                                    </span>
-                                                                }
-                                                                <ul id="id_{ItemType.Id}"
-                                                                    className="subfilter width-85">
-                                                                    <span>
-                                                                        {ItemType.show && (
-                                                                            <>
-                                                                                {ItemType.childs.map(function (child1: any, index: any) {
-                                                                                    return (
-                                                                                        <>
-                                                                                            <div style={{ display: "block" }}>
-                                                                                                {child1.childs.length > 0 && !child1.expanded &&
-                                                                                                    <span className="plus-icon hreflink"
-                                                                                                     >
-                                                                                                        <img
-                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />
-                                                                                                    </span>
-                                                                                                }
-                                                                                                {child1.childs.length > 0 && child1.expanded &&
-                                                                                                    <span className="plus-icon hreflink"
-                                                                                                     >
-                                                                                                        <img
-                                                                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                    </span>
-                                                                                                }
-                                                                                                <input type="checkbox" className="icon-input mr0" 
-                                                                                                    onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child1.Title}
-                                                                                                <ul id="id_{{child1.Id}}" style={{ display: "none" }} className="subfilter"
-                                                                                                >
-                                                                                                    {child1.childs.map(function (child2: any) {
-                                                                                                        <li>
-                                                                                                            <input type="checkbox"
-                                                                                                                onChange={(e) => SingleLookDatatest(e, child1, index)} /> {child2.Title}
-                                                                                                        </li>
-                                                                                                    })}
-                                                                                                </ul>
-                                                                                            </div>
-                                                                                        </>
-                                                                                    )
-                                                                                })}
-                                                                            </>
-                                                                        )}
-                                                                    </span>
-                                                                </ul>
-                                                            </>
-                                                        }
-                                                        </div>
-                                                    </>
-                                                )
-                                            })}
-                                        </td>
-                                    }
-                                </>
-                            )
-                        })}
-                    </div>
-                    <div className="col-md-12 text-center padL-0 PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                      >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Team Member popup end here */}
-      {/* Item Rank Popup */}
-      {/* <Modal
-            isOpen={ItemRankmodalIsOpen}
-            onDismiss={setItemRankmodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}>
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Item Rank <span title="Close popup" className="pull-right hreflink"
-                            onClick={setItemRankmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5" >
-                        <div className="checkbox mb0 ml15">
-                            <input  type="checkbox" name="ItemRank1"
-                               /><span className="f-500">Select All</span>
-                        </div>
-                    </div>
-                    {AllItemRank.map(item => {
-                        return (
-                            <div className="col-sm-12 PadR0 ml5">
-                                <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                              >
-                                    <input type="checkbox"
-                                        name="ItemRank" /><span className="">
-                                        {item.Title}
-                                    </span>
-                                </div>
-                            </div>
-                        )
-                    })}
-                    <div className="col-md-12 padL-0 text-center PadR0 mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                        >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Item Rank popup end here */}
-      {/* Status Popup */}
-      {/* <Modal
-            isOpen={StatusmodalIsOpen}
-            onDismiss={setStatusmodalIsOpenToFalse}
-            isBlocking={false}
-            isModeless={true}
-        >
-            <span >
-                <div id="myDropdown1" className="dropdown-content">
-                    <h4 className="col-sm-12 siteColor quickheader">
-                        Status <span title="Close popup" className="pull-right hreflink"
-                            onClick={setStatusmodalIsOpenToFalse}>
-                            <i className="fa fa-times-circle" aria-hidden="true"><FaRegTimesCircle /></i>
-                        </span>
-                    </h4>
-                    <div className="col-sm-12 padL-0 ml5">
-                        <div className="checkbox mb0 ml15 f-500">
-                            <span className="">
-                                <input  type="checkbox"
-                                    name="PercentComplete1"
-                                />
-                                Select All
-                            </span>
-                        </div>
-                    </div>
-                    <div className="col-sm-12 PadR0 ml5">
-                        {AllItems.map(items => {
-                            return (
-                                <div className="col-sm-12 padL-0 PadR0 checkbox mb0 ml15"
-                              >
-                                    <input type="checkbox"
-                                        name="PercentComplete" /><span className="">
-                                        {items.Title}%
-                                    </span>
-                                </div>
-                            )
-                        })}
-                    </div>
-                    <div className="col-md-12 padL-0 PadR0 text-center mb-10 mt-10">
-                        <button type="button" 
-                            className="btn btn-primary">
-                            Apply
-                        </button>
-                        <button type="button" className="btn btn-default blocks"
-                       >
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </span>
-        </Modal> */}
-      {/* Status popup end here */}
       <div className="Alltable mt-10">
         <div className="tbl-headings">
           <span className="leftsec">
@@ -3849,12 +2831,7 @@ export default function ComponentTable({ props,NextProp }: any) {
               </button>
             )}
 
-            {/* {(selectedCategory != undefined && selectedCategory.length > 0) ?
-                        <button type="button" onClick={() => setLgShow(true)}
-                            disabled={ActivityDisable} className="btn btn-primary" title=" Add Activity-Task">
-                            Add Activity-Task
-                        </button>
-                        :*/}
+       
             <button
               type="button"
               onClick={() => openActivity()}
@@ -3974,7 +2951,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Client Category"
                           title="Client Category"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "ClientCategory")}
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -4004,22 +2980,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setStatusmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setStatusmodalIsOpenToTrue} /></i>
-                                                                </span></span> */}
+                      
                       </div>
                     </th>
                     <th style={{ width: "7%" }}>
@@ -4040,23 +3001,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setItemRankmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setItemRankmodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                     
                       </div>
                     </th>
                     <th style={{ width: "10%" }}>
@@ -4077,23 +3022,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setTeamMembermodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setTeamMembermodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                    
                       </div>
                     </th>
                     <th style={{ width: "9%" }}>
@@ -4114,23 +3043,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    onClick={setDuemodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setDuemodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                   
                       </div>
                     </th>
                     <th style={{ width: "11%" }}>
@@ -4141,7 +3054,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Created Date"
                           title="Created Date"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "Created")}
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -4151,24 +3063,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    //  href="#myDropdown1"
-                                                                    onClick={setCreatedmodalIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setCreatedmodalIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                       
                       </div>
                     </th>
                     <th style={{ width: "7%" }}>
@@ -4179,7 +3074,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                           placeholder="Smart Time"
                           title="Smart Time"
                           className="full_width searchbox_height"
-                          // onChange={(e) => handleChange1(e, "Due")}
+                      
                         />
                         <span className="sorticon">
                           <span className="up" onClick={sortBy}>
@@ -4189,24 +3084,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                             <FaAngleDown />
                           </span>
                         </span>
-                        {/* <Dropdown className='dropdown-fliter'>
-                                                <Dropdown.Toggle className='iconsbutton' variant="success" id="dropdown-basic">
-                                                    <FaFilter />
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                                                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                                                </Dropdown.Menu>
-                                            </Dropdown> */}
-                        {/* <span className="dropdown filer-icons">
-                                                                <span className="filter-iconfil"
-                                                                    //  href="#myDropdown1"
-                                                                    onClick={setModalSmartIsOpenToTrue}
-                                                                >
-                                                                    <i ><FaFilter onClick={setModalSmartIsOpenToTrue} /></i>
-                                                                </span>
-                                                            </span> */}
+                       
                       </div>
                     </th>
                     <th style={{ width: "2%" }}>
@@ -4364,15 +3242,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                             )}
                                           {item.Short_x0020_Description_x0020_On !=
                                             null && (
-                                            // <span className="project-tool"><img
-                                            //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                            //         <span className="tooltiptext">
-                                            //             <div className="tooltip_Desc">
-                                            //                 <span>{item.Short_x0020_Description_x0020_On}</span>
-                                            //             </div>
-                                            //         </span>
-                                            //     </span>
-                                            // </span>
+                                         
                                             <div
                                               className="popover__wrapper ms-1"
                                               data-bs-toggle="tooltip"
@@ -4464,11 +3334,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                         </td>
 
                                         <td style={{ width: "7%" }}>
-                                          {/* {item.Item_x0020_Type == 'Task' && item.TimeSpent != null &&
-                                                                        <>
-                                                                        {item.TimeSpent.toFixed(1)}
-                                                                      </>
-                                                                      } */}
+                                      
                                         </td>
 
                                         <td style={{ width: "2%" }}>
@@ -4539,9 +3405,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                               )}
                                           </a>
                                         </td>
-                                        {/* <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                <td style={{ width: "3%" }}><a>{item.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(item)} />}
-                                                                    {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(item)} />}</a></td> */}
                                       </tr>
                                     </table>
                                   </td>
@@ -4675,15 +3538,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                         )}
                                                       {childitem.Short_x0020_Description_x0020_On !=
                                                         null && (
-                                                        // <span className="project-tool"><img
-                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                        //         <span className="tooltiptext">
-                                                        //             <div className="tooltip_Desc">
-                                                        //                 <span>{childitem.Short_x0020_Description_x0020_On}</span>
-                                                        //             </div>
-                                                        //         </span>
-                                                        //     </span>
-                                                        // </span>
+                                                        
                                                         <div
                                                           className="popover__wrapper ms-1"
                                                           data-bs-toggle="tooltip"
@@ -4783,13 +3638,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                       )}
                                                     </td>
                                                     <td style={{ width: "7%" }}>
-                                                      {/* {childitem.Item_x0020_Type == 'Task' &&
-                                                                                            <>
-                                                                                              {smartTime.toFixed(1)}
-                                                                                            </>
-                                                                                            }
-                                                                                             {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                    </td>
+                                              </td>
 
                                                     <td style={{ width: "2%" }}>
                                                       {childitem.Item_x0020_Type ==
@@ -4867,9 +3716,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                           )}
                                                       </a>
                                                     </td>
-                                                    {/* <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
-                                                                                        <td style={{ width: "3%" }}><a>{childitem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(childitem)} />}
-                                                                                            {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td> */}
                                                   </tr>
                                                 </table>
                                               </td>
@@ -5059,15 +3905,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                         )}
                                                                       {childinew.Short_x0020_Description_x0020_On !=
                                                                         null && (
-                                                                        // <span className="project-tool"><img
-                                                                        //     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                                                        //         <span className="tooltiptext">
-                                                                        //             <div className="tooltip_Desc">
-                                                                        //                 <span>{childinew.Short_x0020_Description_x0020_On}</span>
-                                                                        //             </div>
-                                                                        //         </span>
-                                                                        //     </span>
-                                                                        // </span>
+                                                                       
                                                                         <div
                                                                           className="popover__wrapper ms-1"
                                                                           data-bs-toggle="tooltip"
@@ -5158,14 +3996,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                             AllUsers
                                                                           }
                                                                         ></ShowTaskTeamMembers>
-                                                                        {/* {childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser != undefined && childinew.TeamLeaderUser.map(function (client1: { Title: string; }) {
-                                                                                                                    return (
-                                                                                                                        <span className="AssignUserPhoto"
-                                                                                                                            title={client1.Title}>
-                                                                                                                            <a>{client1.Title.slice(0, 2).toUpperCase()}</a>
-                                                                                                                        </span>
-                                                                                                                    )
-                                                                                                                })} */}
+                                                                    
                                                                       </div>
                                                                     </td>
                                                                     <td
@@ -5679,13 +4510,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                         "7%",
                                                                                     }}
                                                                                   >
-                                                                                    {/* {subchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                        <>
-                                                                                                                                             {smartTime.toFixed(1)}
-                                                                                                                                             </>
-                                                                                                                                             }
-                                                                                                                                              {SmartTimes? <SmartTimeTotal props={subchilditem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
-                                                                                  </td>
+                                                                                    </td>
 
                                                                                   <td
                                                                                     style={{
@@ -5786,10 +4611,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                         )}
                                                                                     </a>
                                                                                   </td>
-                                                                                  {/* <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                    <td style={{ width: "3%" }}><a>{subchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(subchilditem)} />}
-                                                                                                                                        {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td> */}
-                                                                                </tr>
+                                                                                   </tr>
                                                                               </table>
                                                                             </td>
                                                                           </tr>
@@ -6139,9 +4961,6 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                                       "7%",
                                                                                                   }}
                                                                                                 >
-                                                                                                  {/* {nextsubchilditem.Item_x0020_Type == 'Task' &&
-                                                                                                                                                                <div>{nextsubchilditem.Mileage}</div>
-                                                                                                                                                            } */}
                                                                                                 </td>
 
                                                                                                 <td
@@ -6253,10 +5072,7 @@ export default function ComponentTable({ props,NextProp }: any) {
                                                                                                       )}
                                                                                                   </a>
                                                                                                 </td>
-                                                                                                {/* <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
-                                                                                                                                                        <td style={{ width: "3%" }}><a>{nextsubchilditem.siteType == "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditComponentPopup(nextsubchilditem)} />}
-                                                                                                                                                            {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img width="30" height="25" src={require('../../../Assets/ICON/edit_page.svg')} onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td> */}
-                                                                                              </tr>
+                                                                                            </tr>
                                                                                             </table>
                                                                                           </td>
                                                                                         </tr>
@@ -6350,10 +5166,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         onDismiss={closeTaskStatusUpdatePoup2}
         isBlocking={false}
       >
-        {/* <div className="modal-header  mt-1 px-3">
-                            <h5 className="modal-title" id="exampleModalLabel"> Select Client Category</h5>
-                            <button onClick={closeTaskStatusUpdatePoup2} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div> */}
+      
 
         <div className="modal-body bg-f5f5 clearfix">
           <div
@@ -6366,41 +5179,7 @@ export default function ComponentTable({ props,NextProp }: any) {
             }
           >
             <div id="portfolio" className="section-event pt-0">
-              {/* {
-                                    
-                                    MeetingItems.SharewebTaskType == undefined  &&
-                                        <ul className="quick-actions">
-
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={(e) => CreateMeetingPopups('Implementation')}>
-                                                    <span className="icon-sites">
-                                                        <img className="icon-sites"
-                                                            src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png" />
-
-                                                    </span>
-                                                    Implmentation
-                                                </div>
-                                            </li>
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={() => CreateMeetingPopups('Development')}>
-                                                    <span className="icon-sites">
-                                                        <img className="icon-sites"
-                                                            src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png" />
-
-                                                    </span>
-                                                    Development
-                                                </div>
-                                            </li>
-                                            <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                                                <div onClick={() => CreateMeetingPopups('Activities')}>
-                                                    <span className="icon-sites">
-                                                    </span>
-                                                    Activity
-                                                </div>
-                                            </li>
-                                        </ul>
-                                         
-                                    } */}
+             
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">

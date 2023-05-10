@@ -135,13 +135,17 @@ const ClientCategoryPupup=(props:any)=>{
         props.Call(callBack.props, type);
     }
     const saveCategories = () => {
-      
+    
         props.props.Clientcategories = [];
         props.props.smartClientCategories = [];
             var title: any = {}
             // title.Title = select;
             props.props.smartClientCategories.push(title);
-            props.props.Clientcategories = NewArray;
+            props.props.Clientcategories = NewArray.filter((val: any, id: any, array: any) => {
+
+                return array.indexOf(val) == id;
+                   })
+           // props.props.Clientcategories = NewArray;
             Example(props, 'ClientCategory');
         }
 
@@ -171,6 +175,7 @@ const ClientCategoryPupup=(props:any)=>{
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={false}
                 onRenderFooter={customFooter}
+                className={props?.props?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">

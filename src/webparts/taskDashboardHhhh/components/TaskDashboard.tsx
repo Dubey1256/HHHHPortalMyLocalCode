@@ -9,13 +9,14 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
+import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters"
 import PageLoader from '../../../globalComponents/pageLoader';
 import { getStartDateOfWeek } from '@fluentui/react';
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -268,7 +269,7 @@ const TaskDashboard = (props: any) => {
                     const timeFillDate = new Date(+year, +month - 1, +day)
                     // let timeFillDate = new Date(filledTime?.TaskDate);
                     // if (filledTime?.AuthorId == currentUserId && timeFillDate > startDate && timeEntry?.taskDetails != '' && timeEntry?.taskDetails != undefined) {
-                    if(start=='Today'||start=='Yesterday'){
+                    if (start == 'Today' || start == 'Yesterday') {
                         if (filledTime?.AuthorId == currentUserId && timeFillDate == startDate) {
                             let data = { ...timeEntry?.taskDetails[0] };
                             if (data == '' || data == undefined)
@@ -280,7 +281,7 @@ const TaskDashboard = (props: any) => {
                             weekTimeEntries.push(data);
                         }
 
-                    }else{
+                    } else {
                         if (filledTime?.AuthorId == currentUserId && timeFillDate >= startDate) {
                             let data = { ...timeEntry?.taskDetails[0] };
                             if (data == '' || data == undefined)
@@ -322,7 +323,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority","Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -454,13 +455,13 @@ const TaskDashboard = (props: any) => {
     }
 
     //Edit CallBack
-    const editTaskCallBack = React.useCallback((item:any) => {
+    const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
         inlineCallBack(item)
     }, []);
     const inlineCallBack = React.useCallback((item: any) => {
         AllTasks?.map((task: any, index: any) => {
-            if (task.Id == item.Id && task.siteType == item.siteType) {
+            if (task?.Id == item?.Id && task?.siteType == item?.siteType) {
                 AllTasks[index] = { ...task, ...item };
             }
         })
@@ -497,13 +498,13 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
                     workingTodayTask.push(task)
                     alreadyPushed = true;
-                } else if (task?.workingThisWeek && (isCurrentUserAssigned )) {
+                } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
                 } else if (isBottleneckTask && (isCurrentUserAssigned)) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
-                } else if (!alreadyPushed && (isCurrentUserAssigned )) {
+                } else if (!alreadyPushed && (isCurrentUserAssigned)) {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
@@ -519,6 +520,18 @@ const TaskDashboard = (props: any) => {
         setThisWeekTasks(workingThisWeekTask)
         setBottleneckTasks(bottleneckTask)
         setAssignedApproverTasks(approverTask)
+    }
+    const filterCurrentUserWorkingTodayTask = (UserId: any) => {
+        let workingTodayTask: any = [];
+        if (AllTasks?.length > 0) {
+            AllTasks?.map((task: any) => {
+                const isCurrentUserAssigned = task?.AssignedToIds?.includes(UserId);
+                if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                    workingTodayTask.push(task)
+                }
+            })
+        }
+        return workingTodayTask;
     }
     //End
     const columns = React.useMemo(
@@ -549,8 +562,8 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                      
-                       
+
+
                     </span>
                 ),
             },
@@ -694,7 +707,7 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
-                        
+
                     </span>
                 ),
             },
@@ -1031,18 +1044,23 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-        await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
-            headers: {
-                "Accept": "application/json;odata=verbose"
-            }
-        })
-            .then(response => {
-                currentUserId = response?.data?.d?.Id;
-                console.log(`Current user ID: ${currentUserId}`);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        // await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
+        //     headers: {
+        //         "Accept": "application/json;odata=verbose"
+        //     }
+        // })
+        //     .then(response => {
+        //         currentUserId = response?.data?.d?.Id;
+        //         console.log(`Current user ID: ${currentUserId}`);
+        //     })
+        //     .catch(error => {
+        //         console.log(error);
+        //     });
+        pnp.sp.web.currentUser.get().then(result => {
+            currentUserId = result.Id;
+            console.log(currentUserId)
+    
+        });
 
         taskUsers = await loadTaskUsers();
         taskUsers?.map((item: any) => {
@@ -1051,7 +1069,7 @@ const TaskDashboard = (props: any) => {
                 currentUser = item;
                 setCurrentUserData(item);
             }
-            if(item?.AssingedToUserId == 182&&item?.Title=="Abhishek"){
+            if (item?.AssingedToUserId == 182 && item?.Title == "Abhishek") {
                 item.isAdmin = true;
             }
             item.expanded = false;
@@ -1233,7 +1251,6 @@ const TaskDashboard = (props: any) => {
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
                         + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
-                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.shortDescription + '</td>'
                     body1.push(text);
                 });
                 body =
@@ -1252,7 +1269,6 @@ const TaskDashboard = (props: any) => {
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
                     + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time' + '</th>'
-                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Short Description' + '</th>'
                     + '</tr>'
                     + '</thead>'
                     + '<tbody>'
@@ -1267,7 +1283,7 @@ const TaskDashboard = (props: any) => {
         }
 
         if (body1.length > 0 && body1 != undefined) {
-            if(currentUserData?.Email!=undefined){
+            if (currentUserData?.Email != undefined) {
                 to.push(currentUserData?.Email)
             }
             SendEmailFinal(to, subject, body);
@@ -1283,7 +1299,7 @@ const TaskDashboard = (props: any) => {
             //Subject of Email  
             Subject: subject,
             //Array of string for To of Email  
-            To:to,
+            To: to,
             AdditionalHeaders: {
                 "content-type": "text/html"
             },
@@ -1294,6 +1310,121 @@ const TaskDashboard = (props: any) => {
             console.log(err.message);
         });
     }
+    const sendAllWorkingTodayTasks = () => {
+
+
+        let text = '';
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de"];
+        let finalBody: any = [];
+        let userApprover = '';
+
+        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
+        if (confirmation) {
+            var subject = "Today's Working Tasks of All Team";
+            groupedUsers?.map((userGroup: any) => {
+                let teamsTaskBody: any = [];
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team") {
+
+                    userGroup?.childs?.map((teamMember: any) => {
+                        let body: any = '';
+                        let body1: any = [];
+                        let tasksCopy: any = [];
+                        tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
+                        if (tasksCopy?.length > 0) {
+                            tasksCopy?.map((item: any) => {
+                                let teamUsers: any = [];
+                                item?.Team_x0020_Members?.map((item1: any) => {
+                                    teamUsers.push(item1?.Title)
+                                });
+                                if (item.DueDate != undefined) {
+                                    item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                                }
+                                if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                    item.TaskDueDatenew = '';
+                                if (item.Categories == undefined || item.Categories == '')
+                                    item.Categories = '';
+                                if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                                    item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                                    item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+                                }
+                                if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                    item.EstimatedTime = ''
+                                }
+
+
+                                text =
+                                    '<tr>' +
+                                    '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                                body1.push(text);
+                            })
+                            body =
+                                '<h3>'
+                                + teamMember?.Title
+                                + '</h3>'
+                                + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                                + '<thead>'
+                                + '<tr>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time' + '</th>'
+                                + '</tr>'
+                                + '</thead>'
+                                + '<tbody>'
+                                + body1
+                                + '</tbody>'
+                                + '</table>'
+                            body = body.replaceAll('>,<', '><')
+                        } else {
+                            body = '<h3>'
+                                + teamMember?.Title
+                                + '</h3>'
+                                + '<h4>'
+                                + 'No Working Today Tasks Available '
+                                + '</h4>'
+
+
+                        }
+
+
+
+                        teamsTaskBody.push(body);
+                    })
+                    let TeamTitle = '<h2>'
+                        + userGroup.Title 
+                        + '</h2>'
+                        + teamsTaskBody
+                    finalBody.push(TeamTitle)
+                }
+            })
+            let sendAllTasks =
+                '<h3>'
+                + 'Please Find the Working Today Tasks of all the Team members mentioned Below.'
+                + '</h3>'
+                + finalBody
+                + '<h3>'
+                + 'Thanks And regards'
+                + '</h3>'
+            SendEmailFinal(to, subject, sendAllTasks);
+
+        }
+
+
+    }
+
     //end
 
     //Toggle Team 
@@ -1373,11 +1504,22 @@ const TaskDashboard = (props: any) => {
                             <nav className="nav__item">
                                 {
                                     (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
-                                        <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
-                                            Drop here to Un-Assign
-                                        </div> : ""
+                                        <>
+                                            <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
+                                                Drop here to Un-Assign
+                                            </div>
+                                            {/* <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                                                Share Everyone Today's Task
+                                            </a> */}
+                                            <></>
+                                        </> : ""
                                 }
                                 <ul className="nav__list">
+                                    {currentUserData?.Title == "Ranu Trivedi"||currentUserData?.Title == "Abhishek" ?
+                                        <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                                            Share Everyone's Today's Task
+                                        </a> : ''}
+
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
                                             return (
@@ -1897,7 +2039,7 @@ const TaskDashboard = (props: any) => {
                     </div>
                     <div>
                         {isOpenEditPopup ? (
-                            <EditTaskPopup AllListId={AllListId} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
+                            <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
                         ) : (
                             ""
                         )}

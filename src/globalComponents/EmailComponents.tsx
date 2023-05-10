@@ -78,9 +78,11 @@ const EmailComponent = (props: any) => {
         {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
           <div style={{ marginTop: "2pt" }}>
             {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
-            Please note that you still have 1 tasks left to approve.You can find all pending approval tasks on your task dashboard or the approval page.
-            <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
-            <a style={{ marginRight: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+            Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+            <p>
+              <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+              <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+            </p>
           </div>
         </> :
           <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
