@@ -4253,20 +4253,27 @@ const EditTaskPopup = (Items: any) => {
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {EditData.Title != null && AllListIdData.isShowSiteCompostion ? <SiteCompositionComponent
-                                            AllListId={AllListIdData}
-                                            siteUrls={siteUrls}
-                                            SiteTypes={SiteTypes}
-                                            ClientTime={EditData.siteCompositionData}
-                                            SiteCompositionSettings={EditData.SiteCompositionSettings}
-                                            SmartTotalTimeData={SmartTotalTimeData}
-                                            currentListName={EditData.siteType}
-                                            callBack={SiteCompositionCallBack}
-                                            isServiceTask={ServicesTaskCheck}
-                                            SelectedClientCategory={selectedClientCategory}
-                                            isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
-                                            SitesTaggingData={SitesTaggingData}
-                                        /> : null}
+                                        {EditData.Title != null && AllListIdData.isShowSiteCompostion ?
+                                            <>
+                                                {SiteTypes != undefined && SiteTypes.length > 0 ?
+                                                    <SiteCompositionComponent
+                                                        AllListId={AllListIdData}
+                                                        siteUrls={siteUrls}
+                                                        SiteTypes={SiteTypes}
+                                                        ClientTime={EditData.siteCompositionData}
+                                                        SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                                        SmartTotalTimeData={SmartTotalTimeData}
+                                                        currentListName={EditData.siteType}
+                                                        callBack={SiteCompositionCallBack}
+                                                        isServiceTask={ServicesTaskCheck}
+                                                        SelectedClientCategory={selectedClientCategory}
+                                                        isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
+                                                        SitesTaggingData={SitesTaggingData}
+                                                    /> : null
+                                                }
+                                            </>
+                                            : null
+                                        }
 
                                     </div>
                                 </div>

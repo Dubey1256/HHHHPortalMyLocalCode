@@ -19,7 +19,7 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Portfolio: false }]);
+    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Portfolio: false, localSiteComposition: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
@@ -222,6 +222,16 @@ const SiteCompositionComponent = (Props: any) => {
             // }
             // setCheckBoxStatus(true);
         }
+        if (Type == "Overridden") {
+            let object:any;
+            if(SiteCompositionSettings[0].localSiteComposition == true){
+                object = { ...SiteCompositionSettings[0],localSiteComposition: false }
+            }else{
+                object = { ...SiteCompositionSettings[0],localSiteComposition: true }
+            }
+            SiteCompositionSettings[0] = object;
+           
+        }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
         callBack(SiteCompositionObject);
@@ -248,6 +258,8 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     //    ************** this is for Client Category Popup Functions **************
+
+
     //    ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
     var SmartTaxonomyName = "Client Category";
     const loadAllCategoryData = function () {
@@ -582,9 +594,14 @@ const SiteCompositionComponent = (Props: any) => {
                 <label>
                     Portfolio
                 </label>
-                <img className="mt-0 siteColor mx-1" title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                <img className="mt-0 siteColor mx-1" onClick={()=>alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
                 <span className="pull-right">
-                    <input type="checkbox" className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0" />
+                    <input
+                        type="checkbox"
+                        className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].localSiteComposition : false}
+                        onChange={() => ChangeSiteCompositionSettings("Overridden")}
+                    />
                     <label>
                         Overridden
                     </label>

@@ -708,7 +708,7 @@ const inlineEditingcolumns = (props: any) => {
                     : ''
             }
             {props?.columnName == 'Remark' ?
-                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
+                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
                     &nbsp;{props.item.Remark}</span></>
                 : ""
             }
