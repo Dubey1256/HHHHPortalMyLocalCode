@@ -639,7 +639,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
                                                         type="number" min="1"
-                                                        value={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                        value={siteData.ClienTimeDescription ?  Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                         className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                         onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                     /> : <input type="number" min="1"
@@ -651,7 +651,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : <> {siteData.BtnStatus ?
                                                         <input
                                                             type="number" min="1"
-                                                            defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                            defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                             className="form-control p-1"
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                         /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }}
