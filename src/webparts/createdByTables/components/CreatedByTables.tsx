@@ -3,6 +3,7 @@ import styles from './CreatedByTables.module.scss';
 import { ICreatedByTablesProps } from './ICreatedByTablesProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import Table from './Table';
+import Tabless from './Tabless';
 
 export default class CreatedByTables extends React.Component<ICreatedByTablesProps, {}> {
   public render(): React.ReactElement<ICreatedByTablesProps> {
@@ -40,7 +41,9 @@ export default class CreatedByTables extends React.Component<ICreatedByTablesPro
       //   </div>
       // </section>
       <section className={`${styles}`}>
-            <Table Items={this.props}  />
+            {/* <Table Items={this.props}  /> */}
+            <Tabless Items={this.props}  />
+           
       </section>
     
     );

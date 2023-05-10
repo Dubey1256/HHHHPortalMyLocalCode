@@ -11,4 +11,6 @@ export interface IServicePortfolioProps {
   TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
   Context: any;
   dropdownvalue:any;
+  TimeEntry: any;
+  SiteCompostion: any;
 }
