@@ -1342,7 +1342,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
-                                    {cltime?.ClienTimeDescription}%
+                                    {Number(cltime?.ClienTimeDescription).toFixed(2)}%
                                   </span>
                                 }
                                 {cltime.ClientCategory != undefined || cltime.ClientCategory != null ? <span>{cltime.ClientCategory}</span> : null}
