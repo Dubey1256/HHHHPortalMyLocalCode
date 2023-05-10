@@ -809,7 +809,6 @@ const ProjectManagementMain = (props: any) => {
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
-              type="Task"
               callBack={inlineCallBack}
               columnName="Remark"
               item={row?.original}
