@@ -7,6 +7,7 @@ import {
     useTable,
     useSortBy,
     useFilters,
+    useGlobalFilter,
     useExpanded,
     usePagination,
     HeaderGroup,
@@ -19,23 +20,42 @@ import { Web } from "sp-pnp-js";
 // import * as Moment from 'moment';
 import moment from 'moment';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 
 const Tabless = (props: any) => {
     let count: any = 0;
-    let AllListId: any = [];
+    let AllListId: any  = {
+        MasterTaskListID: props?.Items?.MasterTaskListID,
+        TaskUsertListID: props?.Items?.TaskUsertListID,
+        SmartMetadataListID: props?.Items?.SmartMetadataListID,
+        //SiteTaskListID:this.props?.props?.SiteTaskListID,
+        TaskTimeSheetListID: props?.Items?.TaskTimeSheetListID,
+        DocumentsListID: props?.Items?.DocumentsListID,
+        SmartInformationListID: props?.Items?.SmartInformationListID,
+        siteUrl: props?.Items?.siteUrl,
+        AdminConfigrationListID: props?.Items?.AdminConfigrationListID,
+        isShowTimeEntry: props?.Items?.isShowTimeEntry,
+        isShowSiteCompostion: props?.Items?.isShowSiteCompostion
+    }
     let allData: any = [];
     let userlists: any = [];
     let QueryId: any=36;
     let dataLength: any = [];
+    const [result, setResult]: any = React.useState(false);
+    const [editPopup, setEditPopup]: any = React.useState(false);
     const [queryId, setQueryId]: any = React.useState([]);
     const [data, setData]: any = React.useState([]);
     const [taskUser, setTaskUser]: any = React.useState([]);
     const [catogries, setCatogries]: any = React.useState([]);
+    const [filterCatogries, setFilterCatogries]: any = React.useState([]);
     const [allLists, setAllLists]: any = React.useState([]);
-    const [checkPercentage, setCheckPercentage] : any = React.useState([0,5,10,70,80,90,93,96,99,100]);
-    const [checkPriority, setCheckPriority] : any = React.useState([1,2,3,4,5,6,7,8,9,10])
+    const checkPercentage:any=[0,5,10,70,80,90,93,96,99,100]
+    const checkPriority:any=[1,2,3,4,5,6,7,8,9,10];
+    const [checkPercentages, setCheckPercentage] : any = React.useState([]);
+    const [checkPrioritys, setCheckPriority] : any = React.useState([])
     const [checkedValues, setCheckedValues] = React.useState([]);
-    var filterString:any = `Author/Id eq ${QueryId} and PercentComplete le 0.96 and Priority_x0020_Rank eq 4 and Categories eq 'Content'`;
+    const [copyData, setCopyData] :any= React.useState([]);
+    
     
 
     const columns = React.useMemo(
@@ -130,8 +150,10 @@ const Tabless = (props: any) => {
                 style: { width: '80px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" ></span>
-                        <span title="Edit Task" className="svg__iconbox svg__icon--trash hreflink" ></span>
+                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" onClick={()=>editPopFunc(row.original)} >
+
+                        </span>
+                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" ></span>
                     </span>
                 )
             },
@@ -140,7 +162,10 @@ const Tabless = (props: any) => {
     );
 
 
-
+const editPopFunc=(item:any)=>{
+      setEditPopup(true);
+      setResult(item)
+}
 
     const {
         getTableProps,
@@ -150,7 +175,9 @@ const Tabless = (props: any) => {
         prepareRow,
         gotoPage,
         setPageSize,
-        state: { pageIndex, pageSize },
+        filter,
+        setGlobalFilter,
+        state,
     }: any = useTable(
         {
             columns,
@@ -159,48 +186,45 @@ const Tabless = (props: any) => {
             initialState: { pageIndex: 0, pageSize: 150000 },
         },
         useFilters,
+        useGlobalFilter,
         useSortBy,
         useExpanded,
-        usePagination
+        usePagination,
+        
     );
 
-
+   const {globalFilter} = state;
     const getSelectedSite = (e: any,column:any) => {
        const {value, checked}=e.target;
         console.log(value, checked);
-       if(checked && column == 'idType'){
-           setCheckedValues([...checkedValues,value])
-       }
-       else{
-        setCheckedValues(checkedValues.filter((val) => val !== value));
-       }
+            
+        if(checked && column== 'idType'){
+            setCheckedValues([...checkedValues,value])
+        }
+        else{
+         setCheckedValues(checkedValues.filter((val) => val !== value));
+        }
 
-      if(checked && column== 'Categories'){
-        setCatogries([...checkedValues,value])
-      } else{
-        setCatogries(checkedValues.filter((val) => val !== value));
-       }
-
-
-       if(checked && column== 'percentage'){
-        setCheckPercentage([...checkedValues,value])
-      } else{
-        setCheckPercentage(checkedValues.filter((val) => val !== value));
-       }
+        if(checked && column== 'Categories'){
+            setFilterCatogries([...filterCatogries,value])
+          } else{
+            setFilterCatogries(filterCatogries.filter((val: any) => val !== value));
+           }
 
        if(checked && column== 'percentage'){
-        setCheckPercentage([...checkedValues,value])
+        setCheckPercentage([...checkPercentages,value+'%'])
       } else{
-        setCheckPercentage(checkedValues.filter((val) => val !== value));
+        setCheckPercentage(checkPercentages.filter((val: any) => val !== value));
        }
+
 
        if(checked && column== 'priority'){
-        setCheckPriority([...checkedValues,value])
+        setCheckPriority([...checkPrioritys,value])
       } else{
-        setCheckPriority(checkedValues.filter((val) => val !== value));
+        setCheckPriority(checkPrioritys.filter((val: any) => val !== value));
        }
       
-       console.log("checkedValues" ,checkedValues);
+       console.log("checkedValues" ,checkedValues,filterCatogries, checkPercentages,checkPrioritys);
     }
 
 
@@ -222,6 +246,41 @@ const Tabless = (props: any) => {
         })
     }
 
+    const listFilters1=()=>{
+        let localArray:any=[];
+       
+            if(filterCatogries.length >= 1){
+                data.map((alldataitem:any)=>{
+                filterCatogries.map((item:any)=>{
+                 if(alldataitem.Categories==item){
+                    localArray.push(alldataitem)
+                 }
+                })
+            })
+            }
+
+            if(checkPercentages.length >= 1){
+                data.map((alldataitem:any)=>{
+                checkPercentages.map((item:any)=>{
+                    if(alldataitem.percentage==item || alldataitem.priority==item){
+                       localArray.push(alldataitem)
+                    }
+                   })
+                })
+            }
+
+            if(checkPrioritys.length >= 1){
+                data.map((alldataitem:any)=>{
+                checkPrioritys.map((item:any)=>{
+                    if(alldataitem.priority==item){
+                       localArray.push(alldataitem)
+                    }
+                   })
+                })
+            }
+       setData(localArray);
+    }
+
 
     const clearFilter=()=>{
         setCheckedValues(['1']);
@@ -236,6 +295,7 @@ const Tabless = (props: any) => {
 
 
     const getTaskUserData = async () => {
+      
         const web = new Web(props.Items.siteUrl);
         await web.lists
             .getById(props.Items.TaskUsertListID)
@@ -297,6 +357,11 @@ const Tabless = (props: any) => {
                 console.log(err);
             });
     };
+
+    function CallBack() {
+       setEditPopup(false);
+    }
+
     const getQueryVariable = () => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("CreatedBy");
@@ -339,7 +404,7 @@ const Tabless = (props: any) => {
                 "Responsible_x0020_Team",
                 "AssignedTo"
             )
-            .filter(filterString)
+            .filter(`Author/Id eq ${QueryId} and PercentComplete le 0.96`).top(5000)
             .getAll()
             .then((data: any) => {
                 data.map((dataItem: any) => {
@@ -421,6 +486,7 @@ const Tabless = (props: any) => {
                         siteIcon: items.ImageUrl,
                         siteUrl: items.siteUrl,
                         Id: dataItem.Id,
+                        ID: dataItem.Id,
                         priority:dataItem.Priority_x0020_Rank,
                         Author: dataItem.Author,
                         Team_x0020_Members: dataItem.Team_x0020_Members,
@@ -429,6 +495,8 @@ const Tabless = (props: any) => {
                         created: dataItem.Created,
                         modified: dataItem.Modified,
                         dueDate: dataItem.DueDate,
+                        listId:items.listId,
+                        site:items.siteName,
                     });
 
                 });
@@ -436,6 +504,8 @@ const Tabless = (props: any) => {
 
                 if (count == dataLength.length) {
                     setData(allData);
+                    setCopyData(allData);
+
                 }
             })
             .catch((err: any) => {
@@ -447,22 +517,15 @@ const Tabless = (props: any) => {
 
     React.useEffect(() => {
         getTaskUserData();
-        AllListId = {
-            MasterTaskListID: props?.props?.MasterTaskListID,
-            TaskUsertListID: props?.props?.TaskUsertListID,
-            SmartMetadataListID: props?.props?.SmartMetadataListID,
-            //SiteTaskListID:this.props?.props?.SiteTaskListID,
-            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
-            DocumentsListID: props?.props?.DocumentsListID,
-            SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl: props?.props?.siteUrl,
-            AdminConfigrationListID: props?.props?.AdminConfigrationListID,
-            isShowTimeEntry: props?.props?.isShowTimeEntry,
-            isShowSiteCompostion: props?.props?.isShowSiteCompostion
-        }
+       
     }, []);
+   
+
     return (
-        <div>Tabless
+        <div>
+            <span>
+                <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)}  />
+            </span>
             <Table className="SortingTable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups.map((headerGroup: any) => (
@@ -476,7 +539,7 @@ const Tabless = (props: any) => {
 
                                     </span>
                                     <Filter column={column} />
-                                   { console.log(column)}
+                                  
                                     {    
                                         column?.id !=='Title' && column.id !== 'ID' ?
                                         <div className="dropdown">
@@ -500,7 +563,7 @@ const Tabless = (props: any) => {
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPercentage.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}
                                           </ul>
-                                          <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                          <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                           </div>}
 
 
@@ -510,7 +573,7 @@ const Tabless = (props: any) => {
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {catogries.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                             </div>}
 
 
@@ -520,7 +583,7 @@ const Tabless = (props: any) => {
                                           <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPriority.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                             </div>}
 
 
@@ -535,7 +598,7 @@ const Tabless = (props: any) => {
                                             </li>
                                             </div>
                                             <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
 
 
@@ -550,7 +613,7 @@ const Tabless = (props: any) => {
                                             </li>
                                             </div>
                                             <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
 
                                             {column?.id == 'newCreated' && 
@@ -564,7 +627,7 @@ const Tabless = (props: any) => {
                                             </li>
                                             </div>
                                             <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
                                     </div> : ''
                                     }
@@ -589,12 +652,13 @@ const Tabless = (props: any) => {
                     })}
                 </tbody>
             </Table>
+            <span>
+            {editPopup && <EditTaskPopup  Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => {CallBack() }} /> }       
+          
+            </span>
         </div>
     )
 }
 
-export default Tabless
+export default Tabless;
 
-function setTaskUser(data: any[]) {
-    throw new Error('Function not implemented.');
-}
