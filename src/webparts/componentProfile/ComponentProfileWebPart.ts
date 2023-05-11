@@ -21,6 +21,8 @@ export interface IComponentProfileWebPartProps {
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
   SmartHelptListID:'9cf872fc-afcd-42a5-87c0-aab0c80c5457';
   TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
+  TimeEntry:any;
+  SiteCompostion:any;
   dropdownvalue:string,
 }
 
@@ -32,6 +34,7 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
   public render(): void {
     const element: React.ReactElement<IComponentProfileProps> = React.createElement(
       ComponentProfile,
+      
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -46,6 +49,8 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
         SmartHelptListID:this.properties.SmartHelptListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         Context: this.context,
+        TimeEntry:this.properties.TimeEntry,
+        SiteCompostion:this.properties.SiteCompostion,
         dropdownvalue:this.properties.dropdownvalue,
       }
     );
@@ -123,6 +128,12 @@ export default class ComponentProfileWebPart extends BaseClientSideWebPart<IComp
                 }),
                 PropertyPaneTextField('TaskTypeID', {
                   label: 'Task Type List',
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 }),
               ]
             }
