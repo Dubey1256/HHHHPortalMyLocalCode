@@ -97,10 +97,11 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                                             <div className="d-flex full-width justify-content-between">
                                                                 <div className="d-flex">
                                                                     <span className="circlelight green br_green mx-1 mt-1"></span> Approved by-
-                                                                    <h6 className="siteColor">{CommentData.ApproverData[CommentData.ApproverData.length - 1].Title}</h6>
+                                                                    <h6 className="siteColor">
+                                                                        {CommentData.ApproverData != undefined  && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].Title : ""}</h6>
                                                                 </div>
                                                                 <div>
-                                                                    <span>{CommentData.ApproverData[CommentData.ApproverData.length - 1].ApprovalDate}</span>
+                                                                    <span>{CommentData.ApproverData != undefined  && CommentData.ApproverData.length > 0 ? CommentData.ApproverData[CommentData.ApproverData.length - 1].ApproverData : ""}</span>
                                                                     <span className="mx-1" style={{ fontSize: "15px" }}><TiMessage /></span>
                                                                 </div>
                                                             </div>

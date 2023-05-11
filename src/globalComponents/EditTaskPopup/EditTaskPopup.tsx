@@ -1570,6 +1570,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const PercentCompleted = (StatusData: any) => {
+        setTaskStatusPopup(false);
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
@@ -3289,11 +3290,11 @@ const EditTaskPopup = (Items: any) => {
                             </tbody>
                         </table>
                     </div>
-                    <footer className="float-end">
+                    {/* <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
                             OK
                         </button>
-                    </footer>
+                    </footer> */}
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
