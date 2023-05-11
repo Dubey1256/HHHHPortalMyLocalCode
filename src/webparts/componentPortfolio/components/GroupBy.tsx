@@ -4687,7 +4687,7 @@ function ComponentTable(SelectedProp: any) {
                         </div></section>
                 </div></section>
 
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}   context={SelectedProp.SelectedProp.context}></EditTaskPopup>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}  context={SelectedProp.SelectedProp.context}></EditTaskPopup>}
             {IsComponent && <EditInstituton item={SharewebComponent} Calls={Call} showProgressBar={showProgressBar} SelectD={SelectedProp}> </EditInstituton>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}  Context={SelectedProp.SelectedProp.context}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
