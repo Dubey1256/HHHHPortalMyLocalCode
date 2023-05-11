@@ -70,17 +70,17 @@ let AllAvailableTitle: any = [];
 
                 success: function (data) {
                     count++;
-                    var duplicateArray:any=[];
+                    // var duplicateArray:any=[];
                     if (data?.d?.results != undefined && data?.d?.results?.length > 0) {
-                        data?.d?.results?.map((items:any)=>{
-                            if(items.AdditionalTimeEntry!=null){
-                             items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
-                             duplicateArray.push(items);
-                           }
-                         })
-                          if(duplicateArray!=undefined&& duplicateArray.length>0){
-                            AllTimeSpentDetails = AllTimeSpentDetails.concat(duplicateArray);
-                          }
+                        // data?.d?.results?.map((items:any)=>{
+                        //     if(items.AdditionalTimeEntry!=null){
+                        //      items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
+                        //      duplicateArray.push(items);
+                        //    }
+                        //  })
+                        //   if(duplicateArray!=undefined&& duplicateArray.length>0){
+                            AllTimeSpentDetails = AllTimeSpentDetails.concat(data?.d?.results);
+                        //   }
                     
                          if(AllTimeSpentDetails!=undefined&&AllTimeSpentDetails.length>0){
                             getStructureData();
@@ -98,16 +98,29 @@ let AllAvailableTitle: any = [];
   
         // Smart total time code   get code
         var TotalTime = 0.0;
+        if(AllTimeSpentDetails!=undefined && AllTimeSpentDetails.length>0){
+            AllTimeSpentDetails.map((items:any)=>{
+                if(items.AdditionalTimeEntry!=null){
+                 items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)  
+                }
+            })
+            
+               
+        }
 
         console.log(timeEntry);
+        console.log(AllTimeSpentDetails)
         let newArray: any = [];
         let hoversmartArray: any = [];
         AllTimeSpentDetails.map((items: any) => {
-            items.AdditionalTime.map((item: any) => {
-                item.additionaltime2 = [];
-                item.additionaltime2.push(item);
-                hoversmartArray.push(item)
-            })
+            if(items.AdditionalTime!=null){
+                items.AdditionalTime.map((item: any) => {
+                    item.additionaltime2 = [];
+                    item.additionaltime2.push(item);
+                    hoversmartArray.push(item)
+                })
+            }
+           
                })
         console.log(hoversmartArray);
 
