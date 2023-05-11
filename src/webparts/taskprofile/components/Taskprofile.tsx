@@ -1271,7 +1271,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Status</dt>
                     <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
-                    {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>0?
+                    {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>1 && this.state.Result["Categories"].includes("Approval")?
                     <span style={{fontSize:"smaller"}}>Pre-Approved by
                     <img className="imgAuthor" src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverSuffix}></img></span>
                     // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}

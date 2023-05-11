@@ -1044,12 +1044,12 @@ const TaskDashboard = (props: any) => {
     // Current User deatils
     const getCurrentUserDetails = async () => {
    try {
-    await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id});
+    // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+    currentUserId= props?.pageContext?.legacyPageContext?.userId
     taskUsers = await loadTaskUsers();
     taskUsers?.map((item: any) => {
         item.isAdmin = false;
         if (currentUserId == item?.AssingedToUser?.Id) {
-            // currentUserId= item?.AssingedToUser?.Id
             currentUser = item;
             setCurrentUserData(item);
         }
