@@ -1043,35 +1043,26 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-        await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
-            headers: {
-                "Accept": "application/json;odata=verbose"
-            }
-        })
-            .then(response => {
-                currentUserId = response?.data?.d?.Id;
-                console.log(`Current user ID: ${currentUserId}`);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-
-        taskUsers = await loadTaskUsers();
-        taskUsers?.map((item: any) => {
-            item.isAdmin = false;
-            if (currentUserId == item?.AssingedToUser?.Id) {
-                currentUser = item;
-                setCurrentUserData(item);
-            }
-            if (item?.AssingedToUserId == 182 && item?.Title == "Abhishek") {
-                item.isAdmin = true;
-            }
-            item.expanded = false;
-            getChilds1(item, taskUsers);
-            userGroups.push(item);
-        })
-        setGroupedUsers(userGroups);
-        GetMetaData();
+   try {
+    await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id});
+    taskUsers = await loadTaskUsers();
+    taskUsers?.map((item: any) => {
+        item.isAdmin = false;
+        if (currentUserId == item?.AssingedToUser?.Id) {
+            // currentUserId= item?.AssingedToUser?.Id
+            currentUser = item;
+            setCurrentUserData(item);
+        }
+        item.expanded = false;
+        getChilds1(item, taskUsers);
+        userGroups.push(item);
+    })
+    setGroupedUsers(userGroups);
+    GetMetaData();
+   } catch (error) {
+    console.log(error)
+   }
+      
     }
     const loadTaskUsers = async () => {
         let taskUser;
