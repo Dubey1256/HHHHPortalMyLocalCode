@@ -9,14 +9,13 @@ import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup
 import * as Moment from "moment";
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-import inlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
+import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
 import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
-import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters"
+import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
 import { getStartDateOfWeek } from '@fluentui/react';
-import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -1044,40 +1043,26 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-        // await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
-        //     headers: {
-        //         "Accept": "application/json;odata=verbose"
-        //     }
-        // })
-        //     .then(response => {
-        //         currentUserId = response?.data?.d?.Id;
-        //         console.log(`Current user ID: ${currentUserId}`);
-        //     })
-        //     .catch(error => {
-        //         console.log(error);
-        //     });
-        pnp.sp.web.currentUser.get().then(result => {
-            currentUserId = result.Id;
-            console.log(currentUserId)
-    
-        });
-
-        taskUsers = await loadTaskUsers();
-        taskUsers?.map((item: any) => {
-            item.isAdmin = false;
-            if (currentUserId == item?.AssingedToUser?.Id) {
-                currentUser = item;
-                setCurrentUserData(item);
-            }
-            if (item?.AssingedToUserId == 182 && item?.Title == "Abhishek") {
-                item.isAdmin = true;
-            }
-            item.expanded = false;
-            getChilds1(item, taskUsers);
-            userGroups.push(item);
-        })
-        setGroupedUsers(userGroups);
-        GetMetaData();
+   try {
+    // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+    currentUserId= props?.pageContext?.legacyPageContext?.userId
+    taskUsers = await loadTaskUsers();
+    taskUsers?.map((item: any) => {
+        item.isAdmin = false;
+        if (currentUserId == item?.AssingedToUser?.Id) {
+            currentUser = item;
+            setCurrentUserData(item);
+        }
+        item.expanded = false;
+        getChilds1(item, taskUsers);
+        userGroups.push(item);
+    })
+    setGroupedUsers(userGroups);
+    GetMetaData();
+   } catch (error) {
+    console.log(error)
+   }
+      
     }
     const loadTaskUsers = async () => {
         let taskUser;

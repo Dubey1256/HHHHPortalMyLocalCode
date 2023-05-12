@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
+//import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TaskTypeItems: any = [];
