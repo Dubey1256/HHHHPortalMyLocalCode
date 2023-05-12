@@ -7,18 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import * as moment from "moment";
 import {
-    Column,
-    Table,
-    ExpandedState,
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getExpandedRowModel,
     ColumnDef,
-    flexRender,
-    getSortedRowModel,
-    SortingState,
 } from "@tanstack/react-table";
+
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GlobalCommanTable";  
 import HighlightableCell from "../../webparts/componentPortfolio/components/highlight";
