@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import pnp, { Web } from "sp-pnp-js";
-
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
@@ -11,19 +10,16 @@ import {
 } from "@tanstack/react-table";
 
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from "../GlobalCommanTable";  
-import HighlightableCell from "../../webparts/componentPortfolio/components/highlight";
+import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
+import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 var LinkedServicesBackupArray: any = [];
 const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
-    // const [table, setTable] = React.useState(data);
     const [selectedComponent, setSelectedComponent] = React.useState('');
     const [AllUsers, setTaskUser] = React.useState([]);
-
-
     const PopupType: any = props?.PopupType;
     React.useEffect(() => {
         if (props.smartComponent != undefined && props.smartComponent.length > 0)
@@ -31,12 +27,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
         GetComponents();
     },
         []);
-    function Example(callBack: any, type: any) {
-        Call(callBack, type);
+    function Example(callBack: any, type: any, functionType: any) {
+        Call(callBack, type, functionType);
     }
     const setModalIsOpenToFalse = () => {
-        Example(props, "LinkedServices");
-        setModalIsOpen(false)
+        Example([{}], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -45,8 +40,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             props.linkedComponent = [];
             props.linkedComponent = CheckBoxData;
         }
-        Example(props, "LinkedServices");
         setModalIsOpen(false);
+        Example(CheckBoxData, ComponentType, "Save");
     }
     const handleOpen = (item: any) => {
         item.show = item.show = item?.show == true ? false : true;
@@ -75,7 +70,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
         componentDetails = await web.lists
             .getById(Dynamic.MasterTaskListID)
             .items
-            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
+                "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get()
@@ -152,28 +148,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
 
             }
         });
-        // $.each(SubComponentsData, function (subcomp: any) {
-        //     if (subcomp.Title != undefined) {
-        //         $.each(FeatureData, function (featurecomp: any) {
-        //             if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-        //                 subcomp['Child'].push(featurecomp);
-        //                 subcomp['subRows'].push(featurecomp);
-        //             }
-        //         })
-        //     }
-        // })
-        // $.each(ComponentsData, function (index: any, subcomp: any) {
-        //     if (subcomp.Title != undefined) {
-        //         $.each(SubComponentsData, function (index: any, featurecomp: any) {
-        //             if (featurecomp != undefined) {
-        //                 if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-        //                     subcomp['Child'].push(featurecomp);
-        //                     subcomp['subRows'].push(featurecomp);
-        //                 }
-        //             }
-        //         })
-        //     }
-        // })
         $.each(SubComponentsData, function (index: any, subcomp: any) {
             if (subcomp.Title != undefined) {
                 $.each(FeatureData, function (index: any, featurecomp: any) {
@@ -201,8 +175,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
                 });
             }
         });
-        //maidataBackup.push(ComponentsData)
-        // setmaidataBackup(ComponentsData)
         setData(ComponentsData);
         setModalIsOpen(true);
         LinkedServicesBackupArray = ComponentsData;
@@ -220,37 +192,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             </div>
         );
     };
-    // const sortBy = () => {
-    //     const copy = data
-    //     copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
-    //     setTable(copy)
-    // }
-    // const sortByDng = () => {
-    //     const copy = data
-    //     copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
-    //     setTable(copy)
-    // }
 
-    // const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
-    //     let searchKey = e.target.value.toLoserCase();
-    //     let tempArray: any = [];
-    //     if (columnName == "Title") {
-    //         data?.map((dataItem: any) => {
-    //             if (dataItem.Title.toLowerCase() == searchKey) {
-    //                 tempArray.push(dataItem);
-    //             }
-    //         })
-    //         setData(tempArray);
-    //     }
-    //     if (columnName == "Client-Category") { }
-    //     if (columnName == "Team-Member") { }
-    //     if (columnName == "Status") { }
-    //     if (columnName == "Item-Rank") { }
-    //     if (columnName == "Due-Date") { }
-    //     if (searchKey.length == 0) {
-    //         setData(LinkedServicesBackupArray);
-    //     }
-    // }
     const CustomFooter = () => {
         return (
             <div className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
@@ -265,10 +207,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             </div>
         )
     }
-
-
-
-
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -329,12 +267,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
                         </>
                     </div>
                 ),
-                // id: "row?.original.Id",
-                // canSort: false,
-                // placeholder: "",
-                // size: 10,
-
-
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -345,17 +277,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
-                        {/* {row?.original?.Short_x0020_Description_x0020_On != null &&
-                                <span className="project-tool"><img
-                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
-                                        <span className="tooltiptext">
-                                            <span className="tooltip_Desc">
-                                                <span>{row?.original?.Short_x0020_Description_x0020_On}</span>
-                                            </span>
-                                        </span>
-                                    </span>
-                                </span>
-                            } */}
+
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
@@ -454,35 +376,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             })
         })
     })
-    // const [AfterSearch, setAfterSearch]=React.useState([])
-
-    // const showingDataFunction =()=>{
-    //     if (AfterSearch != undefined && AfterSearch.length > 0) {
-    //         AfterSearch?.map((Comp: any) => {
-    //             if (Comp.columnFilters.Title == true || Comp.columnFilters.PortfolioStructureID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
-    //                 FilterShowhideShwingData = true;
-    //             }
-    //             if (Comp.original != undefined) {
-    //                 if (Comp?.original?.Item_x0020_Type == "Component") {
-    //                     ComponentCopy = ComponentCopy + 1
-    //                 }
-    //                 if (Comp?.original?.Item_x0020_Type == "SubComponent") {
-    //                     SubComponentCopy = SubComponentCopy + 1;
-    //                 }
-    //                 if (Comp?.original?.Item_x0020_Type == "Feature") {
-    //                     FeatureCopy = FeatureCopy + 1;
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }
-    // React.useEffect(()=>{
-    //     showingDataFunction();
-    // },[AfterSearch])
     const [ShowingAllData, setShowingData] = React.useState([])
-    console.log("ShowingAllData", ShowingAllData)
-    // const refreshData = () => setShowingData(() => ShowingAllData);
-
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
         if (elem != undefined) {
             setCheckBoxData([elem])
@@ -491,14 +385,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             console.log("elem", elem);
         }
         if (ShowingData != undefined) {
-            // setShowingData((ShowingData) => ShowingData);
             setShowingData([ShowingData])
-            // refreshData()
         }
     }, []);
 
     return (
-        <Panel  type={PanelType.custom} customWidth="1100px"  isOpen={modalIsOpen}   onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
+        <Panel type={PanelType.custom} customWidth="1100px" isOpen={modalIsOpen} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
             onRenderFooter={CustomFooter}
         >
