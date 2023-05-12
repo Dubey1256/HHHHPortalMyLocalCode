@@ -360,7 +360,14 @@ const ProjectManagementMain = (props: any) => {
           .filter("TaxType eq 'Sites'")
           .expand("Parent")
           .get();
-        siteConfig = smartmeta;
+          if(smartmeta.length>0){
+            smartmeta?.map((site:any)=>{
+              if(site?.Title!="Master Tasks"&&site?.Title!="SDC Sites"){
+                siteConfig.push(site)
+              }
+            })
+          }else{
+        siteConfig = smartmeta;}
         LoadAllSiteTasks();
       } catch (error) {
         console.log(error)
@@ -459,7 +466,7 @@ const ProjectManagementMain = (props: any) => {
         let web = new Web(props?.siteUrl);
         var arraycount = 0;
         siteConfig.map(async (config: any) => {
-          if (config.Title != "SDC Sites") {
+
             let smartmeta = [];
             smartmeta = await web.lists
               .getById(config.listId)
@@ -549,16 +556,13 @@ const ProjectManagementMain = (props: any) => {
               });
               AllTask.push(items);
             });
-            let setCount = siteConfig?.length - 1
+            let setCount = siteConfig?.length
             if (arraycount === setCount) {
               setAllTasks(AllTask);
               setData(AllTask);
               backupAllTasks = AllTask;
-              console.log("this is main tabke data ", AllTask);
             }
-          } else {
-            arraycount++;
-          }
+        
         });
       } catch (error) {
         console.log(error)
@@ -1472,7 +1476,7 @@ const ProjectManagementMain = (props: any) => {
                       />
                     </div>
                     {isOpenEditPopup ? (
-                      <EditTaskPopup AllListId={AllListId} Items={passdata}  pageName="ProjectProfile" Call={CallBack} />
+                      <EditTaskPopup AllListId={AllListId} Items={passdata}  context={props?.props?.Context} pageName="ProjectProfile" Call={CallBack} />
                     ) : (
                       ""
                     )}

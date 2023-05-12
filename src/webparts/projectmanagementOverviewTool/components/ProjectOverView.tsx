@@ -37,7 +37,7 @@ export default function ProjectOverview(props: any) {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl:props?.props?.siteUrl
+            siteUrl: props?.props?.siteUrl
         }
         TaskUser()
         GetMasterData();
@@ -124,11 +124,13 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: true,
                 accessor: 'DisplayDueDate',
                 style: { width: '100px' },
-                Cell: ({ row }: any) => (
-                    <span>
-                     {row?.original?.DisplayDueDate}
-                    </span>
-                ),
+                Cell: ({ row }: any) => <InlineEditingcolumns
+                    AllListId={AllListId}
+                    callBack={CallBack}
+                    columnName="DueDate"
+                    item={row?.original}
+                    TaskUsers={AllTaskUser}
+                />,
             },
             {
                 internalHeader: '',
@@ -188,14 +190,14 @@ export default function ProjectOverview(props: any) {
         // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
     }
     const GetMasterData = async () => {
-        if(AllListId?.MasterTaskListID!=undefined){
+        if (AllListId?.MasterTaskListID != undefined) {
             let web = new Web(`${AllListId?.siteUrl}`);
             let taskUsers: any = [];
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
                 .select("Deliverables,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title").expand("ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).filter("Item_x0020_Type eq 'Project'").getAll();
-    
+
             // if(taskUsers.ItemType=="Project"){
             // taskUsers.map((item: any) => {
             //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
@@ -203,7 +205,7 @@ export default function ProjectOverview(props: any) {
             //     }
             Alltask.map((items: any) => {
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                items.siteUrl =AllListId?.siteUrl;
+                items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
                 items.AssignedUser = []
                 items.TeamMembersSearch = '';
@@ -223,10 +225,10 @@ export default function ProjectOverview(props: any) {
             // })
             setAllTasks(Alltask);
             setData(Alltask);
-        }else{
+        } else {
             alert('Master Task List Id Not Available')
         }
-        
+
     }
     //    Save data in master task list
     const [title, settitle] = React.useState('')
@@ -252,7 +254,7 @@ export default function ProjectOverview(props: any) {
                         <div className='header-section justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
                             <div className="text-end">
-                                <AddProject CallBack={CallBack} AllListId={AllListId}/>
+                                <AddProject CallBack={CallBack} AllListId={AllListId} />
                             </div>
                         </div>
                         <div>
