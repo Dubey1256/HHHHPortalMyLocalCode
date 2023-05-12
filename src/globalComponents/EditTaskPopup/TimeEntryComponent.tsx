@@ -26,6 +26,7 @@ var AllUsers: any = [];
 var isShowCate: any = ''
 var change: any = new Date()
 function TimeEntryPopup(item: any) {
+    CurntUserId = item.Context.pageContext._legacyPageContext.userId
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [date, setDate] = React.useState(undefined);
     const [showCat, setshowCat] = React.useState('')
@@ -84,11 +85,11 @@ function TimeEntryPopup(item: any) {
         //console.log(this.taskUsers);
 
     }
-    pnp.sp.web.currentUser.get().then(result => {
-        CurntUserId = result.Id;
-        console.log(CurntUserId)
+    // pnp.sp.web.currentUser.get().then(result => {
+    //     CurntUserId = result.Id;
+    //     console.log(CurntUserId)
 
-    });
+    // });
 
     const changeDate = (val: any, Type: any) => {
 

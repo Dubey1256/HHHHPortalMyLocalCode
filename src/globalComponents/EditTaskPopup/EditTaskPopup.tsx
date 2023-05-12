@@ -75,7 +75,8 @@ var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 
 const EditTaskPopup = (Items: any) => {
-    const Context = Items.context;
+    const Context = Items.context != undefined && Items.context != null?Items.context:Items.Context ;
+     
     const AllListIdData = Items.AllListId;
     Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -3302,7 +3303,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
-                    <TimeEntryPopup props={Items.Items} />
+                    <TimeEntryPopup props={Items.Items} Context={Items.Context} />
                 </div>
             </Panel>
             {/* ***************** this is Main Panel *********** */}
@@ -4249,7 +4250,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
                                         <NewTameSheetComponent props={Items} AllListId={AllListIdData}
-                                            TeamConfigDataCallBack={getTeamConfigData}
+                                             Context={Context} TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
                                     <div className="col-sm-5">

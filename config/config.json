@@ -310,5 +310,6 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
-    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js"}
+    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js"
+  }
 }

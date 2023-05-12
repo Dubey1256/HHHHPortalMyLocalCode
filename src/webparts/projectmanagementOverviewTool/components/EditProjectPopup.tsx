@@ -2491,7 +2491,7 @@ function EditProjectPopup(item: any) {
               ></PortfolioTagging>
             )}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}></Picker>
+            <Picker props={SharewebCategory} AllListId={AllListId} Call={Call}></Picker>
             )}
           </div>
         )}

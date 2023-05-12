@@ -12,6 +12,7 @@ export interface IListLastModifiedItemsProps {
     ResetItems: boolean;
     AllListId:any;
     context:any;
+    callBack:()=>any;
     OnDelete: (delItemId: number)=>void;
     OnFilter: (showFilter: boolean)=>void;
 }
@@ -53,8 +54,8 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
         _columns.push({key: "TaskName", name: "Task Name", fieldName: "TaskName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
             return (
                 <div>
-                     {item.Services.length > 0 ? <Link className="text-success" href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link> :
-                <Link href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>}   
+                     {item.Services.length > 0 ? <Link className="text-success" href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.site}`} target="_blank">{item.TaskName}</Link> :
+                <Link href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.site}`} target="_blank">{item.TaskName}</Link>}   
                 </div>
                )  
         } });
@@ -234,9 +235,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     }
     private CallBack() {
         this.setState({
-            editpopup: false
+            editpopup: false,
         })
-
+        this.props.callBack();
       }
 
     private _onRenderActionButtons(item: any, index: number, column: IColumn) {
@@ -435,7 +436,12 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             const _columns: IColumn[] = [];
             if(this.props.TabName=="DOCUMENTS") {
                 _columns.push({key: "DocumentName", name: "Document Name", fieldName: "DocumentName", minWidth: 100,  onColumnClick: this._onColumnClick, onRender: this._onRenderDocument, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
-                _columns.push({key: "DocumentLink", name: "Document Link", fieldName: "DocumentLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "DocumentLink", name: "Document Link", fieldName: "DocumentLink", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String,
+                onRender:(item, index, column) => {
+                    if(item.FolderName == undefined) return "";
+                    return  (<div className="d-flex"><a href={`${item.DocumentLink}`} target="_blank">{item.DocumentLink}</a></div>)
+                } 
+            });
                 _columns.push({key: "Created", name: "Created", fieldName: "Created", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderCreated, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Modified", name: "Modified", fieldName: "Modified", minWidth: 100, onColumnClick: this._onColumnClick, onRender: this._onRenderModified, columnActionsMode:ColumnActionsMode.hasDropdown, data: Date });
                 _columns.push({key: "Id", name: "", fieldName: "Id", minWidth: 100, onRender: this._onRenderActionButtons});
@@ -458,7 +464,11 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             }
             else if(this.props.TabName=="COMPONENTS") {
                 _columns.push({key: "ComponentId", name: "ID", fieldName: "ComponentId", minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderComponents, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
-                _columns.push({key: "Title", name: "Component Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String });
+                _columns.push({key: "Title", name: "Component Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String,
+                onRender:(item, index, column) => {
+                    if(item.Title == undefined) return "";
+                    return  <div><a href={`${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`} style={{textDecoration:'none'}} target="_blank" >{item.Title}</a></div>
+                }  });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String});
                 _columns.push({key: "PercentComplete", name: "%", fieldName: "PercentComplete", minWidth: 50, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: Number, onRender:(item, index, column) => {
                     if(item.PercentComplete == 0) return "";
@@ -476,7 +486,7 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "ServiceId", name: "ID",  fieldName: "ServiceId" , minWidth: 50, onColumnClick: this._onColumnClick, onRender: this._onRenderServices, columnActionsMode:ColumnActionsMode.hasDropdown, data: String  });
                 _columns.push({key: "Title", name: "Service Name", fieldName: "Title", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String ,  onRender:(item, index, column) => {
                     if(item.Title == undefined) return "";
-                    return  <div style={{color:'green'}}>{item.Title}</div>
+                    return  <div><a href={`${this.props.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`} style={{textDecoration:'none'}} className="text-success" target="_blank" >{item.Title}</a></div>
                 } });
                 _columns.push({key: "DueDate", name: "Due Date", fieldName: "DueDate", minWidth: 75, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String , onRender:(item, index, column) => {
                     if(item.PercentComplete == undefined) return "";
@@ -499,8 +509,8 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                 _columns.push({key: "TaskName", name: "Task Name", fieldName: "TaskName", minWidth: 100, onColumnClick: this._onColumnClick, columnActionsMode:ColumnActionsMode.hasDropdown, data: String, onRender:(item, index, column) => {
                     return (
                         <div>
-                             {item.Services.length > 0 ? <Link className="text-success" href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link> :
-                        <Link href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${this.props.Site}`} target="_blank">{item.TaskName}</Link>}   
+                             {item.Services.length > 0 ? <Link className="text-success" href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.site}`} target="_blank">{item.TaskName}</Link> :
+                        <Link href={`${this.props.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.site}`} target="_blank">{item.TaskName}</Link>}   
                         </div>
                        )  
                 } });

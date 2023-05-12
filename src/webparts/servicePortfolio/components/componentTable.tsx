@@ -1862,7 +1862,6 @@ function ComponentTable(SelectedProp: any) {
       newtest.Id = newtest.ID;
       if (
         newtest.Title == "SDC Sites" ||
-        newtest.Title == "Tasks" ||
         newtest.Title == "DRR" ||
         newtest.Title == "Small Projects" ||
         newtest.Title == "Offshore Tasks" ||
@@ -5839,7 +5838,7 @@ function ComponentTable(SelectedProp: any) {
           Items={SharewebTask}
           Call={Call}
           AllListId={SelectedProp.SelectedProp}
-          context={SelectedProp.SelectedProp.context}
+          context={SelectedProp.SelectedProp.Context}
         ></EditTaskPopup>
       )}
       {IsComponent && (
@@ -5856,6 +5855,7 @@ function ComponentTable(SelectedProp: any) {
         <TimeEntryPopup
           props={SharewebTimeComponent}
           CallBackTimeEntry={TimeEntryCallBack}
+          Context={SelectedProp.SelectedProp.Context}
         ></TimeEntryPopup>
       )}
       {MeetingPopup && (

@@ -1203,7 +1203,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowTimeEntry && <dl>
                     <dt className='bg-Fa'>SmartTime Total</dt>
                     <dd className='bg-Ff'>
-                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} /> : null}</span>
+                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} Context={this.props.Context} /> : null}</span>
                     </dd>
 
                   </dl>}
@@ -1271,7 +1271,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Status</dt>
                     <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
-                    {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>0?
+                    {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>1 && this.state.Result["Categories"].includes("Approval")?
                     <span style={{fontSize:"smaller"}}>Pre-Approved by
                     <img className="imgAuthor" src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverSuffix}></img></span>
                     // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
@@ -1342,7 +1342,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 </span>
                                 {cltime?.ClienTimeDescription != undefined &&
                                   <span>
-                                    {cltime?.ClienTimeDescription}%
+                                    {Number(cltime?.ClienTimeDescription).toFixed(2)}%
                                   </span>
                                 }
                                 {cltime.ClientCategory != undefined || cltime.ClientCategory != null ? <span>{cltime.ClientCategory}</span> : null}
