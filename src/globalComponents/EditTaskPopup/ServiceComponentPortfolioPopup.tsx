@@ -9,11 +9,11 @@ import {
     ColumnDef,
 } from "@tanstack/react-table";
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";  
+import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
 import ShowTaskTeamMembers from "../ShowTaskTeamMembers";
 var LinkedServicesBackupArray: any = [];
-const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: any) => {
+const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
@@ -26,11 +26,11 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
         GetComponents();
     },
         []);
-    function Example(callBack: any, type: any) {
-        Call(callBack, type);
+    function Example(callBack: any, type: any, functionType: any) {
+        Call(callBack, type, functionType);
     }
     const setModalIsOpenToFalse = () => {
-        setModalIsOpen(false)
+        Example([{}], ComponentType, "Close");
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -40,7 +40,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
             props.linkedComponent = CheckBoxData;
         }
         setModalIsOpen(false);
-        Example(CheckBoxData, ComponentType);
+        Example(CheckBoxData, ComponentType, "Save");
     }
     const handleOpen = (item: any) => {
         item.show = item.show = item?.show == true ? false : true;
@@ -69,8 +69,8 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
         componentDetails = await web.lists
             .getById(Dynamic.MasterTaskListID)
             .items
-            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type","Sitestagging",
-            "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
+                "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get()
@@ -191,7 +191,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
             </div>
         );
     };
-   
+
     const CustomFooter = () => {
         return (
             <div className={ComponentType == "Service" ? "me-3 p-2 serviepannelgreena text-end" : "me-3 p-2 text-end"}>
@@ -276,7 +276,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
                         >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
-                       
+
                         {row?.original?.Short_x0020_Description_x0020_On != null &&
                             <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
@@ -389,7 +389,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType}: 
     }, []);
 
     return (
-        <Panel  type={PanelType.custom} customWidth="1100px"  isOpen={modalIsOpen}   onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
+        <Panel type={PanelType.custom} customWidth="1100px" isOpen={modalIsOpen} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
             isBlocking={false}
             onRenderFooter={CustomFooter}
         >
