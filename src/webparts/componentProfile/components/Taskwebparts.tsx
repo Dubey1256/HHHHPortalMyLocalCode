@@ -36,6 +36,7 @@ var AllItems: any = [];
 let IsShowRestru: any = false;
 let ChengedTitle: any = "";
 export default function ComponentTable({ props,NextProp }: any) {
+  
   const [maidataBackup, setmaidataBackup] = React.useState([]);
   const [search, setSearch]: [string, (search: string) => void] =
     React.useState("");
@@ -5114,7 +5115,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}  Context={NextProp.Context}></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
@@ -5122,6 +5123,7 @@ export default function ComponentTable({ props,NextProp }: any) {
       {IsTimeEntry && (
         <TimeEntryPopup
           props={SharewebTimeComponent}
+          Context={NextProp.Context}
           CallBackTimeEntry={TimeEntryCallBack}
         ></TimeEntryPopup>
       )}
