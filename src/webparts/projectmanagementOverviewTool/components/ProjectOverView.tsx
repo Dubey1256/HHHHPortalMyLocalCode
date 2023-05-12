@@ -103,6 +103,7 @@ export default function ProjectOverview(props: any) {
                 Cell: ({ row }: any) => (
                     <span>
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
+              
                     </span>
                 ),
             },
