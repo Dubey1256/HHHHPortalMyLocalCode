@@ -73,7 +73,7 @@ const CommentBoxComponent = (commentData: any) => {
                             Title: userData.Title,
                             Id: userData.AssingedToUserId,
                             ImageUrl: userData.Item_x0020_Cover?.Url,
-                            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm')
+                            ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')
                         }
                         setCurrentUserData(TempObject);
                     }
@@ -117,7 +117,7 @@ const CommentBoxComponent = (commentData: any) => {
             Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
             Id: currentUserData.Id,
             ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
         // currentUserData.isShowLight = value;
