@@ -13,7 +13,6 @@ import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup
 import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import ImageTabComponenet from './ImageTabComponent'
-
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
@@ -87,7 +86,7 @@ const SmartInformation = (props: any) => {
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
     AllTasktagsmartinfo = [];
-    let web = new Web(props.AllListId.siteUrl);
+    let web = new Web(props.AllListId?.siteUrl);
     let taskDetails: any = [];
 
     taskDetails = await web.lists
@@ -112,7 +111,7 @@ const SmartInformation = (props: any) => {
   }
   // ============master task list  to find the serice or component tag in the documents  ============
   const LoadMasterTaskList = async (): Promise<any> => {
-    let web = new Web(props.AllListId.siteUrl);
+    let web = new Web(props.AllListId?.siteUrl);
     await web.lists
       .getById(props?.AllListId.MasterTaskListID).items
       .select(
@@ -658,10 +657,11 @@ const SmartInformation = (props: any) => {
             // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
           });
         console.log(updatedItem)
-        if (allValue.SelectedFolder != "") {
-          alert("Document(s) upload successfully");
-        } else {
+        if (allValue?.LinkUrl != "") {
           alert("Link upload successfully");
+         
+        } else {
+          alert("Document(s) upload successfully");
         }
 
         handleClose();
@@ -945,7 +945,7 @@ const SmartInformation = (props: any) => {
                       <div className='card-body p-1 bg-ee mt-1'>
                         <ul className='alignCenter list-none'>
                           <li>
-                            <span><a href={`${props.AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                            <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
                           </li>
                           <li>
                             <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
@@ -1246,7 +1246,8 @@ const SmartInformation = (props: any) => {
           </Tab>
           <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
             <div className='border border-top-0 p-2'>
-              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} />
+
+              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context}/>
             </div>
           </Tab>
         </Tabs>

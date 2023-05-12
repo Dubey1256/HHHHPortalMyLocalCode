@@ -133,11 +133,29 @@ export default class CreatedByTablesWebPart extends BaseClientSideWebPart<ICreat
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: "TaskUsertListID"
-                }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 }),
                 
               ]
