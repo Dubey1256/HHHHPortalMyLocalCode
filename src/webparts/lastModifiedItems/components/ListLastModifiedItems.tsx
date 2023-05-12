@@ -4,6 +4,7 @@ import * as React from "react";
 import { Utils }  from "./../../../common/Utils";
 import styles from "./CommonControl.module.scss";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import EditInstitution from "../../EditPopupFiles/EditComponent";
 export interface IListLastModifiedItemsProps {
     Items: any[];
     TabName: string;
@@ -12,6 +13,7 @@ export interface IListLastModifiedItemsProps {
     ResetItems: boolean;
     AllListId:any;
     context:any;
+    propItem:any
     callBack:()=>any;
     OnDelete: (delItemId: number)=>void;
     OnFilter: (showFilter: boolean)=>void;
@@ -21,7 +23,10 @@ export interface IListLastModifiedItemsState {
     columns: IColumn[];
     sortedItems: any[];
     editpopup:boolean;
+    editpopup1:boolean;
+    site:any;
     Result:any;
+    documentItem:any;
     contextualMenuProps: IContextualMenuProps;    
 
 }
@@ -90,6 +95,9 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
             contextualMenuProps: null,
             editpopup:false,
             Result:[],
+            site:[],
+            editpopup1:false,
+            documentItem:[],
         }         
         
     }
@@ -224,18 +232,35 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
     }
 
     private editTaskPRofile( items:any) {
-      
-    this.setState(
-       {
-        editpopup:true,
-        Result:items,
-       } 
-    )
-        
-    }
+      if(items.site=="COMPONENTS" || items.site=="SERVICES"){
+        this.setState(
+            {
+             editpopup1:true,
+             Result:items,
+             site:items.site,
+            } 
+         )
+      }
+      else{
+        this.setState(
+            {
+             editpopup:true,
+             Result:items,
+             site:items.site,
+            } 
+         )
+      }
+ }
     private CallBack() {
         this.setState({
             editpopup: false,
+        })
+        this.props.callBack();
+      }
+
+      private CallBack1() {
+        this.setState({
+            editpopup1: false,
         })
         this.props.callBack();
       }
@@ -773,7 +798,13 @@ class ListLastModifiedItems extends React.Component<IListLastModifiedItemsProps,
                     />
                   
                 { elemContextualMenu } 
-               {this.state.editpopup && <EditTaskPopup  Items={this.state.Result} context={this.props.context} AllListId={this.props.AllListId} Call={() => { this.CallBack() }} /> }       
+                {
+                    this.state.editpopup && (this.state.site !=="SERVICES" || this.state.site !=="COMPONENTS" ) ?  <EditTaskPopup  Items={this.state.Result} context={this.props.context} AllListId={this.props.AllListId} Call={() => { this.CallBack() }} /> : ""
+                }
+                {
+                  this.state.editpopup1 && (this.state.site =="SERVICES" || this.state.site =="COMPONENTS" ) ? <EditInstitution item={this.state.documentItem} Calls={this.CallBack1} SelectD={this?.props?.propItem} /> : ""
+                }
+              
             </div>
         );
     }

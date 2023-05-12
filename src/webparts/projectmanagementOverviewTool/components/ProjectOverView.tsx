@@ -80,7 +80,7 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                         <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -91,7 +91,7 @@ export default function ProjectOverview(props: any) {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
                     </span>
                 ),
             },
@@ -102,7 +102,7 @@ export default function ProjectOverview(props: any) {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
               
                     </span>
                 ),
@@ -114,7 +114,7 @@ export default function ProjectOverview(props: any) {
                 style: { width: '150px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
                         {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
                     </span>
                 )
@@ -124,6 +124,11 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: true,
                 accessor: 'DisplayDueDate',
                 style: { width: '100px' },
+                Cell: ({ row }: any) => (
+                    <span>
+                     {row?.original?.DisplayDueDate}
+                    </span>
+                ),
             },
             {
                 internalHeader: '',

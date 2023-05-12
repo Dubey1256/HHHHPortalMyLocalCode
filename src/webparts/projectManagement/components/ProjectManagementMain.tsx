@@ -475,8 +475,10 @@ const ProjectManagementMain = (props: any) => {
               .get();
             arraycount++;
             smartmeta.map((items: any) => {
+
               items.AllTeamMember = [];
               items.siteType = config.Title;
+              items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
               items.listId = config.listId;
               items.siteUrl = config.siteUrl.Url;
               items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
@@ -664,7 +666,8 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: false,
         Cell: ({ row }: any) => (
           <span>
-            {row?.original?.Shareweb_x0020_ID}
+            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
+          
           </span>
         ),
       },
@@ -673,26 +676,42 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Title",
         showSortIcon: true,
         Cell: ({ row }: any) => (
+          
           <span>
-            <a className='hreflink'
+  {row.original.Services.length >= 1 ? <a className='hreflink text-success'
               href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
               target="_blank"
             >
               {row?.values?.Title}
-            </a>
-            <span className="me-1">
-              <div className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+            </a> : 
+             <a className='hreflink'
+             href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+             data-interception="off"
+             target="_blank"
+           >
+             {row?.values?.Title}
+           </a>
+            }
+          
+           
+           
+           
+            {
+              row?.original?.Body !== null &&  <span className="me-1">
+              <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span className="svg__iconbox svg__icon--info " ></span>
                 <div className="popover__content">
                   <span>
                     <p
-                      dangerouslySetInnerHTML={{ __html: row?.original?.Body }}
+                      dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
                     ></p>
                   </span>
                 </div>
               </div>
             </span>
+            }
+             
           </span>
         ),
       },
@@ -718,13 +737,22 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span>
-            <a className='hreflink'
+            {
+              row.original.Services.length >= 1 ?  <a className='hreflink text-success'
+              data-interception="off"
+              target="blank"
+              href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+            >
+              {row?.original?.portfolio?.Title}
+            </a> :  <a className='hreflink'
               data-interception="off"
               target="blank"
               href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
             >
               {row?.original?.portfolio?.Title}
             </a>
+            }
+           
           </span>
         ),
       },
@@ -744,6 +772,7 @@ const ProjectManagementMain = (props: any) => {
               columnName="Priority"
               item={row?.original}
               TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
             />
           </span>
         ),
@@ -761,6 +790,7 @@ const ProjectManagementMain = (props: any) => {
             columnName="DueDate"
             item={row?.original}
             TaskUsers={AllUser}
+            pageName={'ProjectManagment'}
           />
         ),
       },
@@ -778,6 +808,7 @@ const ProjectManagementMain = (props: any) => {
               columnName="PercentComplete"
               item={row?.original}
               TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
             />
           </span>
         ),
@@ -795,6 +826,7 @@ const ProjectManagementMain = (props: any) => {
               columnName="Team"
               item={row?.original}
               TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
             />
           </span>
         ),
@@ -813,6 +845,7 @@ const ProjectManagementMain = (props: any) => {
               columnName="Remark"
               item={row?.original}
               TaskUsers={AllUser}
+              pageName={'ProjectManagment'}
             />
           </span>
         ),
@@ -824,7 +857,10 @@ const ProjectManagementMain = (props: any) => {
         style: { width: "125px" },
         Cell: ({ row }: any) => (
           <span>
-            <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+            {
+              row.original.Services.length >= 1 ?  <span className="ms-1 text-success">{row?.original?.DisplayCreateDate}</span> :  <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+            }
+           
             {row?.original?.createdImg != undefined ? <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} /> : <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
 
           </span>
@@ -1186,7 +1222,7 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           <div>
                             <div className="d-flex">
-                              {projectId && (
+                              {/* {projectId && (
                                 <CreateTaskFromProject
                                   projectItem={Masterdata}
                                   SelectedProp={props?.props}
@@ -1195,7 +1231,7 @@ const ProjectManagementMain = (props: any) => {
                                   callBack={tagAndCreateCallBack}
                                   createComponent={createTaskId}
                                 />
-                              )}
+                              )} */}
                               {/* {projectId && (
                             <TagTaskToProjectPopup
                               projectItem={Masterdata}

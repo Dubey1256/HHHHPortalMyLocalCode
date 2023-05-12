@@ -39,7 +39,7 @@ const Tabless = (props: any) => {
     }
     let allData: any = [];
     let userlists: any = [];
-    let QueryId: any=36;
+    let QueryId: any;
     let dataLength: any = [];
     const [result, setResult]: any = React.useState(false);
     const [editPopup, setEditPopup]: any = React.useState(false);
@@ -153,13 +153,39 @@ const Tabless = (props: any) => {
                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" onClick={()=>editPopFunc(row.original)} >
 
                         </span>
-                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" ></span>
+                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
                     </span>
                 )
             },
         ],
         [data]
     );
+
+
+    const deleteItemFunction = async (item: any) => {
+        let confirmation = confirm(
+            "Are you sure you want to delete this task ?"
+          );
+          if(confirmation){
+            try {
+                if (item.listId != undefined) {
+                  let web = new Web(props.Items.siteUrl);
+        
+                  await web.lists
+                    .getById(item.listId)
+                    .items.getById(item.ID)
+                    .recycle();
+                } 
+        
+                getTaskUserData();
+        
+                console.log("Your post has been deleted successfully");
+              } catch (error) {
+                console.log("Error:", error.message);
+              }
+          }
+      
+    };
 
 
 const editPopFunc=(item:any)=>{
@@ -250,7 +276,7 @@ const editPopFunc=(item:any)=>{
         let localArray:any=[];
        
             if(filterCatogries.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
                 filterCatogries.map((item:any)=>{
                  if(alldataitem.Categories==item){
                     localArray.push(alldataitem)
@@ -260,7 +286,7 @@ const editPopFunc=(item:any)=>{
             }
 
             if(checkPercentages.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
                 checkPercentages.map((item:any)=>{
                     if(alldataitem.percentage==item || alldataitem.priority==item){
                        localArray.push(alldataitem)
@@ -270,7 +296,7 @@ const editPopFunc=(item:any)=>{
             }
 
             if(checkPrioritys.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
                 checkPrioritys.map((item:any)=>{
                     if(alldataitem.priority==item){
                        localArray.push(alldataitem)
@@ -360,13 +386,13 @@ const editPopFunc=(item:any)=>{
 
     function CallBack() {
        setEditPopup(false);
+       getTaskUserData();
     }
 
     const getQueryVariable = () => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("CreatedBy");
         QueryId = query;
-        setQueryId(query);
         console.log(query); //"app=article&act=news_content&aid=160990"
     };
     const getAllData = async (items: any) => {
@@ -483,7 +509,7 @@ const editPopFunc=(item:any)=>{
                         newCreated: dataItem.newCreated,
                         editorImg: dataItem.EditorImg,
                         authorImg: dataItem.AuthorImg,
-                        siteIcon: items.ImageUrl,
+                        siteIcon:   items.Title=="Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
                         siteUrl: items.siteUrl,
                         Id: dataItem.Id,
                         ID: dataItem.Id,
