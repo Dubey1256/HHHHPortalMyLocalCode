@@ -207,9 +207,16 @@ export default function FroalaCommnetBoxes(textItems: any) {
     }, [])
 
     const SmartLightUpdateSubComment = (index: any, value: any) => {
-        currentUserData.isShowLight = value;
+        let temObject: any = {
+            Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
+            Id: currentUserData.Id,
+            ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            isShowLight: value
+        }
+        // currentUserData.isShowLight = value;
         UpdatedFeedBackParentArray[index].isShowLight = value;
-        UpdatedFeedBackParentArray[index].ApproverData.push(currentUserData);
+        UpdatedFeedBackParentArray[index].ApproverData.push(temObject);
         let tempApproverData: any = UpdatedFeedBackParentArray[index].ApproverData
         callBack(UpdatedFeedBackParentArray);
         const copy = [...State];
@@ -387,6 +394,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             ApprovalStatus={ApprovalStatus}
                                             SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
+                                            isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}
                                         />
                                     </div>

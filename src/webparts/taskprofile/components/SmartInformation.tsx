@@ -2,7 +2,8 @@ import * as React from 'react';
 import Tooltip from '../../../globalComponents/Tooltip';
 import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
-import { Button } from 'react-bootstrap';
+import { Button, Tabs, Tab, Col, Nav, Row } from 'react-bootstrap';
+
 import HtmlEditorCard from '../../../globalComponents/./HtmlEditor/HtmlEditor'
 import pnp, { sp, Web } from "sp-pnp-js";
 import * as moment from "moment-timezone";
@@ -11,6 +12,7 @@ import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
+import ImageTabComponenet from './ImageTabComponent'
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
@@ -23,6 +25,7 @@ const SmartInformation = (props: any) => {
   const [allValue, setallSetValue] = useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
+  const [imageTabOpen, setImageTabOpen] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
   const [masterTaskdetails, setMasterTaskdetails] = useState([]);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
@@ -67,12 +70,12 @@ const SmartInformation = (props: any) => {
       setEditSmartinfoValue(item)
       setallSetValue({ ...allValue, Title: item.Title, URL: item?.URL?.Url, Description: item?.Description, InfoType: item?.InfoType?.Title, Acronym: item?.Acronym, SelectedFolder: item.SelectedFolder });
       setShow(true);
-    }else{
+    } else {
       setallSetValue({ ...allValue, Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [] });
 
       setShow(true);
     }
-    
+
   }
 
   useEffect(() => {
@@ -83,7 +86,7 @@ const SmartInformation = (props: any) => {
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
     AllTasktagsmartinfo = [];
-    let web = new Web(props.AllListId.siteUrl);
+    let web = new Web(props.AllListId?.siteUrl);
     let taskDetails: any = [];
 
     taskDetails = await web.lists
@@ -99,7 +102,7 @@ const SmartInformation = (props: any) => {
       settaskinfo(taskDetails);
 
       if (taskDetails?.SmartInformation !== undefined && taskDetails?.SmartInformation.length > 0) {
-        
+
         await GetAllTask(taskDetails?.SmartInformation);
         await loadAllSmartInformation(taskDetails?.SmartInformation);
       }
@@ -108,7 +111,7 @@ const SmartInformation = (props: any) => {
   }
   // ============master task list  to find the serice or component tag in the documents  ============
   const LoadMasterTaskList = async (): Promise<any> => {
-    let web = new Web(props.AllListId.siteUrl);
+    let web = new Web(props.AllListId?.siteUrl);
     await web.lists
       .getById(props?.AllListId.MasterTaskListID).items
       .select(
@@ -232,7 +235,10 @@ const SmartInformation = (props: any) => {
     console.log(allSmartInformationglobaltagdocuments)
   }
 
-
+  const OnChnageTab = () => {
+    console.log("sdf hfdsgbsd fbgregre==================");
+    setImageTabOpen(true);
+  }
 
 
   //===============move folder to get the forlderName in the choice column ==================
@@ -258,8 +264,8 @@ const SmartInformation = (props: any) => {
 
   const LoadSmartMetaData = async () => {
     const web = new Web(props?.AllListId?.siteUrl);
-    var ListId = "01a34938-8c7e-4ea6-a003-cee649e8c67a"
-    // await web.lists.getByTitle('SmartMetadata')
+
+
     await web.lists.getById(props?.AllListId?.SmartMetadataListID)
       .items.select('ID,Title,ProfileType', 'Parent/Id', 'Parent/Title', "TaxType", 'Description', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Title', 'Editor/Id')
       .expand("Author", "Editor", "Parent").filter("ProfileType eq 'Information'").top(4999)
@@ -322,14 +328,14 @@ const SmartInformation = (props: any) => {
             if (items.Title.toLowerCase().includes(value.toLowerCase())) {
               return items;
             }
-            }
-           })
+          }
+        })
         setFiltersmartinfo(filterdata)
       } else {
         setallSetValue({ ...allValue, Title: value })
         setFiltersmartinfo(filterdata)
       }
-      }
+    }
     if (item == "url") {
       setallSetValue({ ...allValue, URL: value })
     }
@@ -356,7 +362,7 @@ const SmartInformation = (props: any) => {
 
   const saveSharewebItem = async () => {
     var movefolderurl = `${props?.Context?._pageContext?._web.serverRelativeUrl}/Lists/SmartInformation`
-    // '/sites/HHHH/SP/Lists/TasksTimesheet2'
+
     console.log(movefolderurl);
     console.log(allValue);
     if (allValue?.Title !== null && allValue?.Title !== "") {
@@ -608,7 +614,7 @@ const SmartInformation = (props: any) => {
     if (allValue?.Dragdropdoc != "") {
       fileName = allValue?.Dragdropdoc;
     }
-    await sp.web.getFileByServerRelativeUrl(`/sites/HHHH/SP/${folderPath}/${fileName}`).getItem()
+    await sp.web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._web?.serverRelativeUrl}/${folderPath}/${fileName}`).getItem()
       .then(async (res: any) => {
         console.log(res);
         setShow(false);
@@ -651,10 +657,11 @@ const SmartInformation = (props: any) => {
             // Url:allValue?.LinkUrl!=""?allValue?.LinkUrl:""
           });
         console.log(updatedItem)
-        if (allValue.SelectedFolder != "") {
-          alert("Document(s) upload successfully");
-        } else {
+        if (allValue?.LinkUrl != "") {
           alert("Link upload successfully");
+         
+        } else {
+          alert("Document(s) upload successfully");
         }
 
         handleClose();
@@ -866,8 +873,8 @@ const SmartInformation = (props: any) => {
     }
 
   }
-  const onclickfilteritems=(items:any)=>{
-    setallSetValue({ ...allValue, Title:items })
+  const onclickfilteritems = (items: any) => {
+    setallSetValue({ ...allValue, Title: items })
     setFiltersmartinfo([])
   }
 
@@ -938,7 +945,7 @@ const SmartInformation = (props: any) => {
                       <div className='card-body p-1 bg-ee mt-1'>
                         <ul className='alignCenter list-none'>
                           <li>
-                            <span><a href={`${props.AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                            <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
                           </li>
                           <li>
                             <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>
@@ -991,10 +998,10 @@ const SmartInformation = (props: any) => {
               <label htmlFor="Title" className='full-width'>Title &nbsp;*
                 {popupEdit != true && <span><input type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
               <input type="text" className='full-width' value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
-              {filterSmartinfo!= undefined&&filterSmartinfo.length>0&& <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
+              {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
                 return (
                   < >
-                   <li onClick={()=>onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
+                    <li onClick={() => onclickfilteritems(smartinfofilter.Title)}> {smartinfofilter.Title}</li>
                   </>
                 )
               })}
@@ -1029,7 +1036,7 @@ const SmartInformation = (props: any) => {
             <div className="col-sm-6 text-lg-start">
               {popupEdit && <div><div><span className='pe-2'>Created</span><span className='pe-2'>{editvalue?.Created !== null ? moment(editvalue?.Created).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Author?.Title}</a></span></div>
                 <div><span className='pe-2'>Last modified</span><span className='pe-2'>{editvalue?.Modified !== null ? moment(editvalue?.Modified).format("DD/MM/YYYY HH:mm") : ""}&nbsp;By</span><span><a>{editvalue?.Editor?.Title}</a></span></div>
-                <div><span className="svg__iconbox svg__icon--trash"onClick={() => deleteSmartinfoData(editvalue.Id)}> </span>Delete this item</div>
+                <div><span className="svg__iconbox svg__icon--trash" onClick={() => deleteSmartinfoData(editvalue.Id)}> </span>Delete this item</div>
               </div>}
             </div>
 
@@ -1168,80 +1175,82 @@ const SmartInformation = (props: any) => {
         isBlocking={!isopencomonentservicepopup}
         className={servicespopup == true ? "serviepannelgreena" : "siteColor"}
       >
+        <Tabs
+          defaultActiveKey="BASICINFORMATION"
+          transition={false}
+          id="noanim-tab-example"
+          className=""
+        >
+          <Tab eventKey="BASICINFORMATION" title="BASICINFORMATION">
+            <div className='border border-top-0 p-2'>
+              {EditdocumentsData?.Url?.Url && <div className='d-flex'>
+                <div className='input-group'><label className='form-label full-width'>URL</label>
+                  <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
+                </div>
+              </div>}
 
-        <ul className="nav nav-tabs" id="myTab" role="tablist">
-          <li className="nav-item" role="presentation">
-            <button className={servicespopup ? "nav-link active siteColor" : "nav-link active"} id="home-tab" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="home" aria-selected="true">BASIC INFORMATION</button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="profile" aria-selected="false">IMAGE INFORMATION</button>
-          </li>
-        </ul>
-        <div className="border border-top-0 clearfix p-3 tab-content bg-f4 " id="myTabContent">
-          <div className="tab-pane fade show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="home-tab">
-            {EditdocumentsData?.Url?.Url && <div className='d-flex mt-3'>
-              <div className='input-group'><label className='form-label full-width'>URL</label>
-                <input type='text' className="from-control w-75" value={EditdocumentsData?.Url?.Url} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Url: { ...EditdocumentsData.Url, Url: e.target.value } }))}></input>
-              </div>
-            </div>}
+              <div className='d-flex'>
+                <div className="input-group"><label className=" full-width ">Name </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
+                </div>
 
-            <div className='d-flex mt-3'>
-              <div className="input-group"><label className=" full-width ">Name </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setEditdocumentsData({ ...EditdocumentsData, Title: e.target.value }))} />.{EditdocumentsData?.File_x0020_Type}
+                <div className="input-group mx-4"><label className="full-width ">Year </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox"></span>
+                  </span>
+                </div>
+
+                <div className="input-group">
+                  <label className="full-width">Item Rank</label>
+                  <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
+                    {ItemRank.map(function (h: any, i: any) {
+                      return (
+                        <option key={i} selected={allValue?.ItemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
+                      )
+                    })}
+                  </select>
+                </div>
+              </div>
+              <div className='d-flex mt-3'>
+                <div className="input-group"><label className="full-width ">Title </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))} />
+                </div>
+                <div className="input-group mx-4">
+                  <label className="form-label full-width">
+                    <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
+                    <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
+                  </label>
+
+                  {allValue?.componentservicesetdataTag != undefined &&
+                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
+                      <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
+                      <a>
+                        <span className="bg-light svg__icon--cross svg__iconbox"></span>
+                      </a></div>}
+
+                  {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
+                  </span>
+                </div>
+                <div className="input-group"><label className="full-width ">Document Type </label>
+                  <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
+                  <span className="input-group-text" title="Linked Component Task Popup">
+                    <span className="svg__iconbox svg__icon--editBox"></span>
+                  </span>
+                </div>
               </div>
 
-              <div className="input-group mx-4"><label className="full-width ">Year </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.Year} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, Year: e.target.value })} />
-                <span className="input-group-text" title="Linked Component Task Popup">
-                  <span className="svg__iconbox svg__icon--editBox"></span>
-                </span>
-              </div>
-
-              <div className="input-group">
-                <label className="full-width">Item Rank</label>
-                <select className="form-select" defaultValue={EditdocumentsData?.ItemRank} onChange={(e) => setEditdocumentsData({ ...EditdocumentsData, ItemRank: e.target.value })}>
-                  {ItemRank.map(function (h: any, i: any) {
-                    return (
-                      <option key={i} selected={allValue?.ItemRank == h?.rank} value={h?.rank} >{h?.rankTitle}</option>
-                    )
-                  })}
-                </select>
-              </div>
             </div>
-            <div className='d-flex mt-3'>
-              <div className="input-group"><label className="full-width ">Title </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.Title} onChange={(e => setallSetValue({ ...allValue, Title: e.target.value }))} />
-              </div>
-              <div className="input-group mx-4">
-                <label className="form-label full-width">
-                  <span><input type="radio" name="radio" className="form-check-input" value="Component" checked={componentpopup} onClick={(e) => checkradiobutton(e, "Component")} /> Component</span>
-                  <span className='ps-3'><input type="radio" name="radio" className="form-check-input" value="Service" checked={servicespopup} onClick={(e) => checkradiobutton(e, "Service")} /> Service</span>
-                </label>
+          </Tab>
+          <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
+            <div className='border border-top-0 p-2'>
 
-                {allValue?.componentservicesetdataTag != undefined &&
-                  <div className="d-flex justify-content-between block px-2 py-1" style={{ width: '85%' }}>
-                    <a target="_blank" data-interception="off" href="HHHH/SitePages/Portfolio-Profile.aspx?taskId=undefined">{allValue?.componentservicesetdataTag.Title}</a>
-                    <a>
-                      <span className="bg-light svg__icon--cross svg__iconbox"></span>
-                    </a></div>}
-
-                {allValue?.componentservicesetdataTag == undefined && <input type="text" className="form-control" readOnly />}
-                <span className="input-group-text" title="Linked Component Task Popup">
-                  <span className="svg__iconbox svg__icon--editBox" onClick={(e) => setisopencomonentservicepopup(true)}></span>
-                </span>
-              </div>
-              <div className="input-group"><label className="full-width ">Document Type </label>
-                <input type="text" className="form-control" value={EditdocumentsData?.ItemType} onChange={(e) => { setEditdocumentsData({ ...EditdocumentsData, ItemType: e.target.value }) }} />
-                <span className="input-group-text" title="Linked Component Task Popup">
-                  <span className="svg__iconbox svg__icon--editBox"></span>
-                </span>
-              </div>
+              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context}/>
             </div>
-
-          </div>
-          <div className="tab-pane fade" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="profile-tab">.....</div>
-
-        </div>
+          </Tab>
+        </Tabs>
         <footer className='text-end mt-2'>
           <div className='col-sm-12 row m-0'>
             <div className="col-sm-6 text-lg-start">

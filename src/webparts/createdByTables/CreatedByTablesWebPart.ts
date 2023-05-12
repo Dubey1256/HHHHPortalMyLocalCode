@@ -70,7 +70,7 @@ export default class CreatedByTablesWebPart extends BaseClientSideWebPart<ICreat
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
+        .then((context:any) => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -133,11 +133,29 @@ export default class CreatedByTablesWebPart extends BaseClientSideWebPart<ICreat
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
                 }),
-                PropertyPaneTextField('TaskUsertListID', {
-                  label: "TaskUsertListID"
-                }),
                 PropertyPaneTextField('SmartMetadataListID', {
                   label: "SmartMetadataListID"
+                }),
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List"
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: "MasterTaskListID"
+                }),
+                PropertyPaneTextField('SmartInformationListID', {
+                  label: 'SmartInformationListID'
+                }),
+                PropertyPaneTextField('DocumentsListID', {
+                  label: "DocumentsListID"
+                }),
+                PropertyPaneTextField('TaskTimeSheetListID', {
+                  label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
                 }),
                 
               ]

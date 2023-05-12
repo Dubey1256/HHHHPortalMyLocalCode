@@ -113,9 +113,16 @@ const CommentBoxComponent = (commentData: any) => {
     }, [])
 
     const SmartLightUpdate = (index: any, value: any) => {
-        currentUserData.isShowLight = value;
+        let temObject: any = {
+            Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
+            Id: currentUserData.Id,
+            ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            isShowLight: value
+        }
+        // currentUserData.isShowLight = value;
         FirstFeedBackArray[index].isShowLight = value;
-        FirstFeedBackArray[index].ApproverData.push(currentUserData);
+        FirstFeedBackArray[index].ApproverData.push(temObject);
         let tempApproverData: any = FirstFeedBackArray[index].ApproverData;
         CallBack(FirstFeedBackArray);
         const copy = [...commentArray];
@@ -292,6 +299,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             SmartLightStatus={SmartLightStatus}
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
+                                            isCurrentUserApprover={isCurrentUserApprover}
                                         />
                                     </div>
                                 </div>

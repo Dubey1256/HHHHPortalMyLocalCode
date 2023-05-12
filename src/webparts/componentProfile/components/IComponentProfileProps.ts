@@ -12,5 +12,7 @@ export interface IComponentProfileProps {
   DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
   Context: any;
+  TimeEntry:any;
+  SiteCompostion:any;
   dropdownvalue:any;
 }

@@ -1,29 +1,18 @@
 import * as React from "react";
 import * as $ from "jquery";
-import Modal from "react-bootstrap/Modal";
 let TypeSite: string;
-// if(TypeSite=="Service"){
-//     require('../../cssFolder/sitecolorservice.scss');
-// }
-// if(TypeSite=="Component"){
-//     require('../../cssFolder/site_color.scss');
-// }
+
 import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
-// import Groupby from './TaskWebpart';
 import Tooltip from "../../../globalComponents/Tooltip";
 
 import { FaHome } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
-import { SPComponentLoader } from "@microsoft/sp-loader";
-// import { NavItem } from 'react-bootstrap';
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
-import Smartinfo from "./NextSmart";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
 import ComponentTable from "./Taskwebparts";
-import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-// import SmartInformation from "../../taskprofile/components/SmartInformation";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
+import SmartInformation from "../../taskprofile/components/SmartInformation";
 
 let TeamMembers: any = [];
 let AssigntoMembers: any = [];
@@ -137,6 +126,21 @@ function Portfolio({SelectedProp}:any) {
   };
   React.useEffect(() => {
     let folderId: any = "";
+     try {
+
+   var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
+      
+     var  isShowSiteCompostion = SelectedProp.SiteCompostion != "" ? JSON.parse(SelectedProp.SiteCompostion) : ""
+      
+      } catch (error: any) {
+      
+       console.log(error)
+      
+      }
+    if(SelectedProp != undefined){
+      SelectedProp.isShowSiteCompostion = isShowSiteCompostion
+      SelectedProp.isShowTimeEntry = isShowTimeEntry
+    }
     ContextValue = SelectedProp;
     let web = ContextValue.siteUrl;
     let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
@@ -201,16 +205,13 @@ function Portfolio({SelectedProp}:any) {
                   if (data.d.__next) {
                     urln = data.d.__next;
                   } else setquestionandhelp(responsen);
-                  // console.log("Data of question help"+responsen);
                 },
                 error: function (error) {
                   console.log(error);
-                  // error handler code goes here
                 },
               });
             }
 
-            // console.log(folderId)
           });
           if (data.d.__next) {
             url = data.d.__next;
@@ -220,7 +221,6 @@ function Portfolio({SelectedProp}:any) {
         },
         error: function (error) {
           console.log(error);
-          // error handler code goes here
         },
       });
     }
@@ -270,9 +270,7 @@ function Portfolio({SelectedProp}:any) {
     });
   }
 
-  let myarray2: any = [];
-
-  let FolderID: any = "";
+ 
   data.map((item) => {
     if (item.Portfolio_x0020_Type != undefined) {
       TypeSite = item.Portfolio_x0020_Type;
@@ -289,7 +287,7 @@ function Portfolio({SelectedProp}:any) {
           }
         });
       });
-      // console.log(TeamMembers);
+      
     }
     if (item.AssignedTo.results != undefined) {
       AllTaskuser.map((users) => {
@@ -299,12 +297,11 @@ function Portfolio({SelectedProp}:any) {
           }
         });
       });
-      // console.log(AssigntoMembers);
+      
     }
   });
   //    Get Folder data
-  const [lgShow, setLgShow] = React.useState(false);
-  const handleClose = () => setLgShow(false);
+
 
   const EditComponentPopup = (item: any) => {
    
@@ -313,7 +310,6 @@ function Portfolio({SelectedProp}:any) {
     setIsComponent(true);
     setSharewebComponent(item);
     
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const Call = React.useCallback((item1) => {
     setIsComponent(false);
@@ -323,7 +319,6 @@ function Portfolio({SelectedProp}:any) {
   }, []);
 
   //  Remove duplicate values
-  // const UniqueArray = [...TeamMembers, ...AssigntoMembers];
 
   AllTeamMember = TeamMembers.reduce(function (previous: any, current: any) {
     let alredyExists =
@@ -559,7 +554,7 @@ function Portfolio({SelectedProp}:any) {
                         <dt className="bg-fxdark">Due Date</dt>
                         <dd className="bg-light">
                           <span>
-                            {/* <i> 02/12/2019</i> */}
+                         
                             {data.map((item) => (
                               <a>
                                 {item.DueDate != null
@@ -567,7 +562,7 @@ function Portfolio({SelectedProp}:any) {
                                   : ""}
                               </a>
                             ))}
-                            {/* {data.map(item =>  <i>{item.DueDate}</i>)} */}
+                        
                           </span>
                         </dd>
                       </dl>
@@ -597,14 +592,14 @@ function Portfolio({SelectedProp}:any) {
                                             {AssignTeamMember.length!=0?AssignTeamMember.map((item:any)=>
                                         <>
                                                 <a  target='_blank' data-interception="off" href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${item.AssingedToUserId}&Name=${item.Title}`}>
-                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover.Url} title={item.Title} />
+                                                <img className='AssignUserPhoto' src={item.Item_x0020_Cover?.Url} title={item.Title} />
                                                 </a>
                                             
                                                 </>
                                         ):""}
                                         <div className='px-1'>|</div>
                                                 {AllTeamMember != null && AllTeamMember.length > 0 &&
-                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover.Url} title={AllTeamMember[0].Title}></img></a></div>                        
+                    <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover?.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                     }
                     {AllTeamMember != null && AllTeamMember.length > 1 &&
                     <div className="position-relative user_Member_img_suffix2 multimember fs13" style={{paddingTop: '2px'}} onMouseOver={(e) =>handleSuffixHover()} onMouseLeave={(e) =>handleuffixLeave()}>+{AllTeamMember.length - 1}
@@ -615,7 +610,7 @@ function Portfolio({SelectedProp}:any) {
                                 
                                 return  <div className="team_Members_Item p-1">
                                 <div><a href={SelectedProp.siteUrl+"/SitePages/TeamLeader-Dashboard.aspx?UserId="+rcData.Id+"&Name="+rcData.Title} target="_blank" data-interception="off">
-                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover.Url}></img></a></div>
+                                    <img className="imgAuthor" src={rcData.Item_x0020_Cover?.Url}></img></a></div>
                                 <div className='m-1'>{rcData.Title}</div>
                                 </div>
                                                         
@@ -627,15 +622,7 @@ function Portfolio({SelectedProp}:any) {
                         }
                     </div>                        
                     }   
-                                                {/* {AllTeamMember.length!=0?AllTeamMember.map((member:any)=>
-                                                <>
-                                                        <a  target='_blank' data-interception="off" href={web+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${member.AssingedToUserId}&Name=${member.Title}`}>
-                                                        <img className='AssignUserPhoto' src={member.Item_x0020_Cover.Url} title={member.Title} />
-                                                    </a>
-                                                </>
-                                                ):""} */}
-
-                                    </dd>
+                                   </dd>
                       </dl>
                       <dl>
                         <dt className="bg-fxdark">Item Rank</dt>
@@ -742,7 +729,7 @@ function Portfolio({SelectedProp}:any) {
                   </div>
                   <section className="row  accordionbox">
                     <div className="accordion  pe-1 overflow-hidden">
-                      {/* description */}
+                   
                       {data.map((item) => (
                         <>
                           {item.Body !== null && (
@@ -777,7 +764,7 @@ function Portfolio({SelectedProp}:any) {
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
-                                      {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                             
                                       {data.map((item) => (
                                         <p
                                           className="m-0"
@@ -785,7 +772,7 @@ function Portfolio({SelectedProp}:any) {
                                             __html: item.Body,
                                           }}
                                         >
-                                          {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                        
                                         </p>
                                       ))}
                                     </div>
@@ -832,7 +819,7 @@ function Portfolio({SelectedProp}:any) {
                                       className="accordion-body pt-1"
                                       id="testDiv1"
                                     >
-                                      {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                    
                                       {data.map((item) => (
                                         <p
                                           className="m-0"
@@ -841,7 +828,7 @@ function Portfolio({SelectedProp}:any) {
                                               item.Short_x0020_Description_x0020_On,
                                           }}
                                         >
-                                          {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                          
                                         </p>
                                       ))}
                                     </div>
@@ -911,7 +898,7 @@ function Portfolio({SelectedProp}:any) {
                                               className="accordion-body pt-1"
                                               id="testDiv1"
                                             >
-                                              {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                 
 
                                               <p
                                                 className="m-0"
@@ -919,7 +906,7 @@ function Portfolio({SelectedProp}:any) {
                                                   __html: item.Body,
                                                 }}
                                               >
-                                                {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                
                                               </p>
                                             </div>
                                           )}
@@ -990,7 +977,7 @@ function Portfolio({SelectedProp}:any) {
                                               className="accordion-body pt-1"
                                               id="testDiv1"
                                             >
-                                              {/* dangerouslySetInnerHTML={{__html: item.Short_x0020_Description_x0020_On}} */}
+                                             
 
                                               <p
                                                 className="m-0"
@@ -998,7 +985,7 @@ function Portfolio({SelectedProp}:any) {
                                                   __html: item.Body,
                                                 }}
                                               >
-                                                {/* {data.map(item => <a>{item.Short_x0020_Description_x0020_On}</a>)}  */}
+                                                
                                               </p>
                                             </div>
                                           )}
@@ -1328,9 +1315,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.Services?.results[0]?.Id}
+                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ServicePortfolio.Id}
                                 >
-                                  {item?.Services?.results[0]?.Title}
+                                  {item?.ServicePortfolio?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1346,9 +1333,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.Component?.results[0]?.Id}`}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ComponentPortfolio?.Id}`}
                                 >
-                                  {item?.Component?.results[0]?.Title}
+                                  {item?.ComponentPortfolio?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1383,15 +1370,15 @@ function Portfolio({SelectedProp}:any) {
                 <div className="mb-3 card">
                   {data.map((item) => {
                     return (
-                      // <SmartInformation
-                      //   Id={item.Id}
-                      //   siteurl={
-                      //     "${web}"
-                      //   }
-                      //   listName={"HHHH"}
-                      //   spPageContext={"/sites/HHHH/SP"}
-                      // />
-                      <></>
+                       <SmartInformation
+                         Id={item.Id}
+                         siteurl={
+                          "${web}"
+                        }
+                       listName={"HHHH"}
+                         spPageContext={"/sites/HHHH/SP"}
+                      />
+                    
                     );
                   })}
                 </div>
@@ -1445,14 +1432,17 @@ function Portfolio({SelectedProp}:any) {
                 <div className="mb-3 card">
                   <>
                     {data.map((item) => (
-                      <CommentCard
-                        siteUrl={
-                          web
-                        }
-                        AllListId={SelectedProp}
-                        userDisplayName={item.userDisplayName}
-                        itemID={item.Id}
-                      ></CommentCard>
+                     <CommentCard
+                     siteUrl={
+                       SelectedProp.siteUrl
+                     }
+                     AllListId={SelectedProp}
+                     userDisplayName={item.userDisplayName}
+                     itemID={item.Id}
+                     listName={"Master Tasks"}
+                     Context={SelectedProp.Context}
+                   ></CommentCard>
+                      
                     ))}
                   </>
                 </div>
@@ -1465,12 +1455,7 @@ function Portfolio({SelectedProp}:any) {
       <section className="TableContentSection taskprofilepagegreen">
         <div className="container-fluid">
           <section className="TableSection">
-            {/* {data.map(item => (
-                                        <Groupbyt  title={item.Title} level={item.PortfolioLevel}/>))} */}
-            {/* <Groupby/> */}
-            {/* {data.map(item => (
-                                        <Groupby Id={item.Id} level={item.PortfolioLevel}/>
-                                        ))} */}
+           
             {data.map((item) => (
               <ComponentTable props={item} NextProp={ContextValue} />
             ))}
@@ -1493,7 +1478,7 @@ function Portfolio({SelectedProp}:any) {
                 Last modified{" "}
                 <span>{Moment(item.Modified).format("DD/MM/YYYY hh:mm")}</span>{" "}
                 by <span className="footerUsercolor">{item.Editor.Title}</span>
-                {/* {{ModifiedDate}} {{Editor}}*/}
+               
               </div>
             </div>
           );

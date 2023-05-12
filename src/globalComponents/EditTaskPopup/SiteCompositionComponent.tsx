@@ -11,6 +11,7 @@ var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var ClientTime = Props.ClientTime;
+    var SitesTaggingData: any = Props.SitesTaggingData
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
     const siteUrls = Props.siteUrls;
@@ -18,12 +19,12 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = JSON.parse(Props.SiteCompositionSettings);
+    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Portfolio: false, localSiteComposition: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
-    const [ClientTimeData, setClientTimeData] = useState([]);
+    let [ClientTimeData, setClientTimeData] = useState<any>([]);
     const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
@@ -41,6 +42,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EIClientCategory, setEIClientCategory] = useState([]);
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
+    // const [SitesTaggingData, setSitesTaggingData] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
     const [checkBoxStatus, setCheckBoxStatus] = useState(false)
 
@@ -115,6 +117,10 @@ const SiteCompositionComponent = (Props: any) => {
                 setCheckBoxStatus(true)
             }
         }
+
+        // if (Props.SitesTaggingData != undefined && Props.SitesTaggingData.length > 0) {
+        //     setSitesTaggingData(Props.SitesTaggingData);
+        // }
     }, [])
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -171,44 +177,90 @@ const SiteCompositionComponent = (Props: any) => {
         // if (!isPortfolioConncted) {
         //     alert("There are No Tagged Component/Services")
         // } else {
-            if (Type == "Proportional") {
-                const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
-                SiteCompositionSettings[0] = object;
-                setProportionalStatus(true);
-                let tempData: any = [];
-                ClientTime?.map((TimeData: any) => {
-                    TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
-                    tempData.push(TimeData);
-                })
-                SiteCompositionObject.ClientTime = tempData;
-                callBack(SiteCompositionObject);
-                setIsPortfolioComposition(false);
-                setCheckBoxStatus(false);
-            }
-            if (Type == "Manual") {
-                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
-                SiteCompositionSettings[0] = object;
-                setProportionalStatus(false);
-                setIsPortfolioComposition(false);
-                setCheckBoxStatus(false);
-            }
-            if (Type == "Portfolio") {
-                const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
-                SiteCompositionSettings[0] = object;
+        if (Type == "Proportional") {
+            const object = { ...SiteCompositionSettings[0], Proportional: true, Manual: false, Portfolio: false }
+            SiteCompositionSettings[0] = object;
+            setProportionalStatus(true);
+            let tempData: any = [];
+            ClientTime?.map((TimeData: any) => {
+                TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
+                tempData.push(TimeData);
+            })
+            SiteCompositionObject.ClientTime = tempData;
+            callBack(SiteCompositionObject);
+            setIsPortfolioComposition(false);
+            setCheckBoxStatus(false);
+        }
+        if (Type == "Manual") {
+            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: true, Portfolio: false }
+            SiteCompositionSettings[0] = object;
+            setProportionalStatus(false);
+            setIsPortfolioComposition(false);
+            setCheckBoxStatus(false);
+        }
+        if (Type == "Portfolio") {
+            const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Portfolio: true }
+            SiteCompositionSettings[0] = object;
+            if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
+                ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
                 setIsPortfolioComposition(true);
                 setProportionalStatus(true);
                 setCheckBoxStatus(true);
-                // setCheckBoxStatus(true);
+                onChangeCompositionSetting()
+            } else {
+                setIsPortfolioComposition(false);
+                setCheckBoxStatus(false);
+                setClientTimeData([])
             }
-            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
-            callBack(SiteCompositionObject);
+            // if (ClientTime != undefined && ClientTime.length > 0) {
+            //     setIsPortfolioComposition(true);
+            //     setProportionalStatus(true);
+            //     setCheckBoxStatus(true);
+            // } else {
+            //     setIsPortfolioComposition(false);
+            //     setCheckBoxStatus(false);
+            // }
+            // setCheckBoxStatus(true);
+        }
+        if (Type == "Overridden") {
+            let object:any;
+            if(SiteCompositionSettings[0].localSiteComposition == true){
+                object = { ...SiteCompositionSettings[0],localSiteComposition: false }
+            }else{
+                object = { ...SiteCompositionSettings[0],localSiteComposition: true }
+            }
+            SiteCompositionSettings[0] = object;
+           
+        }
+        SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
+        SiteCompositionObject.ClientTime = ClientTimeData;
+        callBack(SiteCompositionObject);
         // }
 
     }
 
+    const onChangeCompositionSetting = () => {
+        let TempArray: any = [];
+        if (BackupSiteTypeData != undefined && BackupSiteTypeData.length > 0) {
+            BackupSiteTypeData?.map((data: any) => {
+                ClientTimeData?.map((ClientItem: any) => {
+                    if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
+                        "DA E+E" && data.Title == "ALAKDigital")) {
+                        data.ClienTimeDescription = ClientItem.ClienTimeDescription;
+                        data.BtnStatus = true
+                    }
+                })
+                TempArray.push(data);
+            })
+            setSiteTypes(TempArray)
+            setSelectedSiteCount(ClientTimeData?.length)
+        }
+    }
+
     //    ************** this is for Client Category Popup Functions **************
 
-    // ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
+
+    //    ********** this is for Client Category Related all function and callBack function for Picker Component Popup ********
     var SmartTaxonomyName = "Client Category";
     const loadAllCategoryData = function () {
         var AllTaskUsers = []
@@ -542,9 +594,14 @@ const SiteCompositionComponent = (Props: any) => {
                 <label>
                     Portfolio
                 </label>
-                <img className="mt-0 siteColor mx-1" title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                <img className="mt-0 siteColor mx-1" onClick={()=>alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
                 <span className="pull-right">
-                    <input type="checkbox" className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0" />
+                    <input
+                        type="checkbox"
+                        className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].localSiteComposition : false}
+                        onChange={() => ChangeSiteCompositionSettings("Overridden")}
+                    />
                     <label>
                         Overridden
                     </label>
@@ -559,14 +616,20 @@ const SiteCompositionComponent = (Props: any) => {
                                     return (
                                         <tr>
                                             <th scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
-                                                <input
+                                                {checkBoxStatus ? <input
                                                     className="form-check-input rounded-0" type="checkbox"
-                                                    defaultChecked={siteData.BtnStatus}
+                                                    checked={siteData.BtnStatus}
                                                     value={siteData.BtnStatus}
                                                     disabled={checkBoxStatus ? true : false}
                                                     style={checkBoxStatus ? { cursor: "not-allowed" } : {}}
                                                     onChange={(e) => selectSiteCompositionFunction(e, index)}
-                                                />
+                                                /> : <input
+                                                    className="form-check-input rounded-0" type="checkbox"
+                                                    checked={siteData.BtnStatus}
+                                                    value={siteData.BtnStatus}
+                                                    onChange={(e) => selectSiteCompositionFunction(e, index)}
+                                                />}
+
                                             </th>
                                             <td className="m-0 p-0 align-middle" style={{ width: "30%" }}>
                                                 <img src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} style={{ width: '25px' }} className="mx-2" />
@@ -576,7 +639,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
                                                         type="number" min="1"
-                                                        defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                        value={siteData.ClienTimeDescription ?  Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                         className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                         onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                     /> : <input type="number" min="1"
@@ -588,7 +651,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : <> {siteData.BtnStatus ?
                                                         <input
                                                             type="number" min="1"
-                                                            defaultValue={siteData.ClienTimeDescription ? siteData.ClienTimeDescription : null}
+                                                            defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                             className="form-control p-1"
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                         /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }}
@@ -602,8 +665,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
-
-                                                {siteData.Title == "EI" && (currentListName.toLowerCase() == "ei" || currentListName.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "EI" && (currentListName?.toLowerCase() == "ei" || currentListName?.toLowerCase() == "shareweb") ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
@@ -633,7 +695,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                                                     </a>
                                                                     : null
-                                                            }     
+                                                            }
                                                         </div>
                                                         {SearchedClientCategoryDataForInput?.length > 0 && ClientCategoryPopupSiteName == "EI" ? (
                                                             <div className="SearchTableClientCategoryComponent">
@@ -650,7 +712,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "EPS" && (currentListName.toLowerCase() == "eps" || currentListName.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "EPS" && (currentListName?.toLowerCase() == "eps" || currentListName?.toLowerCase() == "shareweb") ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
@@ -697,7 +759,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "Education" && (currentListName.toLowerCase() == "education" || currentListName.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "Education" && (currentListName?.toLowerCase() == "education" || currentListName?.toLowerCase() == "shareweb") ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
@@ -745,7 +807,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "Migration" && (currentListName.toLowerCase() == "migration" || currentListName.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "Migration" && (currentListName?.toLowerCase() == "migration" || currentListName?.toLowerCase() == "shareweb") ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?

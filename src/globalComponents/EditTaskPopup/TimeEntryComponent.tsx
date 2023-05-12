@@ -26,6 +26,7 @@ var AllUsers: any = [];
 var isShowCate: any = ''
 var change: any = new Date()
 function TimeEntryPopup(item: any) {
+    CurntUserId = item.Context.pageContext._legacyPageContext.userId
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [date, setDate] = React.useState(undefined);
     const [showCat, setshowCat] = React.useState('')
@@ -84,11 +85,11 @@ function TimeEntryPopup(item: any) {
         //console.log(this.taskUsers);
 
     }
-    pnp.sp.web.currentUser.get().then(result => {
-        CurntUserId = result.Id;
-        console.log(CurntUserId)
+    // pnp.sp.web.currentUser.get().then(result => {
+    //     CurntUserId = result.Id;
+    //     console.log(CurntUserId)
 
-    });
+    // });
 
     const changeDate = (val: any, Type: any) => {
 
@@ -625,15 +626,15 @@ function TimeEntryPopup(item: any) {
         TaskCate = AllTimeSpentDetails
 
 
-      AllTimeSpentDetails.forEach((items: any)=> {
+        AllTimeSpentDetails.forEach((items: any) => {
             if (items.TimesheetTitle.Id === undefined) {
                 items.Expanded = true;
                 items.isAvailableToDelete = false;
-                AllTimeSpentDetails.forEach((val: any)=> {
+                AllTimeSpentDetails.forEach((val: any) => {
                     if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
                         val.isShifted = true;
                         val.show = true;
-                        val.AdditionalTime.forEach((value: any)=> {
+                        val.AdditionalTime.forEach((value: any) => {
                             value.ParentID = val.Id;
                             value.siteListName = val.__metadata.type;
                             value.MainParentId = items.Id;
@@ -681,7 +682,7 @@ function TimeEntryPopup(item: any) {
         });
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.AdditionalTime.length > 0) {
-                items.AdditionalTime= items.AdditionalTime.reverse()
+                items.AdditionalTime = items.AdditionalTime.reverse()
                 $.each(items.AdditionalTime, function (index: any, val: any) {
                     var NewDate = val.TaskDate;
                     try {
@@ -703,7 +704,7 @@ function TimeEntryPopup(item: any) {
             }
         });
 
-      
+
 
         // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
 
@@ -739,7 +740,7 @@ function TimeEntryPopup(item: any) {
 
         // });
         console.log(TaskTimeSheetCategoriesGrouping)
-       // setAdditionalTime(AdditionalTimes)
+        // setAdditionalTime(AdditionalTimes)
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
         // var mainArray: any = []
         // var sortedCars: any = []
@@ -961,7 +962,7 @@ function TimeEntryPopup(item: any) {
         }
         else {
             var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
-               
+
             ]
         }
         $.each(allurls, async function (index: any, item: any) {
@@ -1022,7 +1023,7 @@ function TimeEntryPopup(item: any) {
                             item.siteUrl = null;
                             if (NewParentId == item.Id) {
                                 var UpdatedData: any = {}
-                                AllUsers.forEach((taskUser: any)=> {
+                                AllUsers.forEach((taskUser: any) => {
                                     if (taskUser.AssingedToUserId == CurntUserId) {
                                         UpdatedData['AuthorName'] = taskUser.Title;
                                         UpdatedData['Company'] = taskUser.Company;
@@ -1030,12 +1031,12 @@ function TimeEntryPopup(item: any) {
                                     }
 
                                 });
-                                var Datee:any = new Date(changeDates)
-                                if(Datee == 'Invalid Date'){
+                                var Datee: any = new Date(changeDates)
+                                if (Datee == 'Invalid Date') {
                                     Datee = Moment().format()
                                 }
                                 var TimeInH: any = TimeInMinutes / 60
-                                 TimeInH = TimeInH.toFixed(2);
+                                TimeInH = TimeInH.toFixed(2);
                                 item.TimesheetTitle.Title = NewParentTitle;
                                 item.TimesheetTitle.Id = mainParentId;
                                 item.AdditionalTime = []
@@ -1210,31 +1211,35 @@ function TimeEntryPopup(item: any) {
                 }
 
             })
-        }
 
 
-        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
+                var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+
+            }
+            else {
+                var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            }
+            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+            await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childinew.ParentID).update({
+
+
+                AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+            }).then((res: any) => {
+
+                console.log(res);
+
+
+            })
+            setupdateData(updateData + 5)
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            console.log("Select Item")
         }
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-        await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childinew.ParentID).update({
-
-
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
-
-        }).then((res: any) => {
-
-            console.log(res);
-
-
-        })
-        setupdateData(updateData + 5)
 
     }
 
@@ -1356,7 +1361,7 @@ function TimeEntryPopup(item: any) {
             var listName = 'TaskTimeSheetListNew'
         }
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined && newData.Title != ''? newData.Title : checkCategories,
+            'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1401,7 +1406,7 @@ function TimeEntryPopup(item: any) {
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
         // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
-            'Title': newData != undefined && newData.Title != undefined && newData.Title != ''? newData.Title : checkCategories,
+            'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
         };
@@ -1509,7 +1514,7 @@ function TimeEntryPopup(item: any) {
                 console.log(res);
 
                 closeAddTaskTimepopup();
-               
+
                 setupdateData(updateData + 1)
                 //setAdditionalTime({ ...AdditionalTime })
 
@@ -1536,14 +1541,14 @@ function TimeEntryPopup(item: any) {
                 console.log(i);
 
             });
-             TaskCate.forEach((item:any,index:any)=>{
-                    if(item.Id == val.Id){
-                        TaskCate.splice(index,1) 
-                    }
-                })
-                setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
-                setupdateData(updateData + 1)
-        
+        TaskCate.forEach((item: any, index: any) => {
+            if (item.Id == val.Id) {
+                TaskCate.splice(index, 1)
+            }
+        })
+        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+        setupdateData(updateData + 1)
+
     }
 
 
@@ -1753,18 +1758,18 @@ function TimeEntryPopup(item: any) {
         }
         if (Popup == 'Add') {
             if (type == 'firstdate') {
-               
+
                 var newStartDate: any = Moment(date).format("DD/MM/YYYY")
                 var a1 = newStartDate.split("/");
                 a1[0] = '01'
                 a1 = a1[2] + a1[1] + a1[0];
-               var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
+                var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
                 setchangeDates(finalDate)
                 setediteddata(finalDate)
             }
             if (type == '15thdate') {
-                
+
                 var newStartDate: any = Moment(date).format("DD/MM/YYYY")
                 var a1 = newStartDate.split("/");
                 a1[0] = '15'
@@ -1775,7 +1780,7 @@ function TimeEntryPopup(item: any) {
                 setediteddata(finalDate)
             }
             if (type == '1Jandate') {
-               
+
                 var newStartDate: any = Moment(date).format("DD/MM/YYYY")
                 var a1 = newStartDate.split("/");
                 a1[1] = '01'
@@ -1935,13 +1940,13 @@ function TimeEntryPopup(item: any) {
                                                                                                 </td>
 
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1"  onClick={() => deleteCategory(childitem)}></span></span>
+                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1" onClick={() => deleteCategory(childitem)}></span></span>
 
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>
-                                                                                                    <button type="button" className="btn btn-primary me-1 d-flex "  onClick={() => openAddTasktimepopup(childitem)} >
+                                                                                                    <button type="button" className="btn btn-primary me-1 d-flex " onClick={() => openAddTasktimepopup(childitem)} >
                                                                                                         Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
-                                                                                                
+
                                                                                                     </button>
                                                                                                 </td>
 
@@ -1953,8 +1958,8 @@ function TimeEntryPopup(item: any) {
                                                                                 {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
                                                                                     <>
                                                                                         {childitem.AdditionalTime.map(function (childinew: any) {
-                                                                                            if ((search == "" || childinew.AuthorName.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description.toLowerCase().includes(search.toLowerCase()))
-                                                                                                || (search == "" || childinew.TaskDate.includes(search)) || (search == "" || childinew.TaskTime.includes(search))) {
+                                                                                            if ((search == "" || childinew.AuthorName?.toLowerCase().includes(search.toLowerCase())) || (search == "" || childinew.Description?.toLowerCase().includes(search.toLowerCase()))
+                                                                                                || (search == "" || childinew.TaskDate?.includes(search))) {
                                                                                                 return (
                                                                                                     <>
                                                                                                         <tr >
@@ -1989,11 +1994,11 @@ function TimeEntryPopup(item: any) {
                                                                                                                         <td style={{ width: "2%" }}>  <a className="hreflink"
                                                                                                                         >
                                                                                                                             <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></span>
-                                                                                                                       
+
                                                                                                                         </a></td>
                                                                                                                         <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
-                                                                                                                        <span className="mt-1 svg__icon--trash  svg__iconbox"  onClick={() => deleteTaskTime(childinew)}></span>
-                                                                                                                            
+                                                                                                                            <span className="mt-1 svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(childinew)}></span>
+
                                                                                                                         </a></td>
                                                                                                                     </tr>
                                                                                                                 </table>
@@ -2038,13 +2043,13 @@ function TimeEntryPopup(item: any) {
                                                                                                                                             <td style={{ width: "2%" }}>
                                                                                                                                                 <a className="hreflink"
                                                                                                                                                 >
-                                                                                                                                                    
+
                                                                                                                                                     <span className="svg__iconbox svg__icon--edit"></span>
                                                                                                                                                 </a></td>
                                                                                                                                             <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
                                                                                                                                             >
-                                                                                                                                                           <span className="mt-1 svg__icon--trash  svg__iconbox"></span>
-                                                                                                                                             
+                                                                                                                                                <span className="mt-1 svg__icon--trash  svg__iconbox"></span>
+
                                                                                                                                             </a></td>
                                                                                                                                         </tr>
                                                                                                                                     </table>
@@ -2420,12 +2425,12 @@ function TimeEntryPopup(item: any) {
                                                                     ng-model="AdditionalnewDate"
                                                                     value={editeddata}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
-                                                                     <DatePicker className="form-control"
-                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
-                                                    onChange={handleDatedue}
-                                                    dateFormat="dd/MM/yyyy"
+                                                                <DatePicker className="form-control"
+                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="dd/MM/yyyy"
 
-                                                />
+                                                                />
 
                                                             </div>
                                                         </div>
@@ -2677,10 +2682,10 @@ function TimeEntryPopup(item: any) {
                                                                     ng-model="AdditionalnewDate"
                                                                     value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
-                                                                     <DatePicker className="form-control"
-                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
-                                                    onChange={handleDatedue}
-                                                    dateFormat="dd/MM/yyyy"/>
+                                                                <DatePicker className="form-control"
+                                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="dd/MM/yyyy" />
 
                                                             </div>
                                                         </div>
@@ -2920,10 +2925,10 @@ function TimeEntryPopup(item: any) {
 
                                             value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                             onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} /> */}
-                                             <DatePicker className="form-control"
-                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
-                                                    onChange={handleDatedue}
-                                                    dateFormat="dd/MM/yyyy"/>
+                                        <DatePicker className="form-control"
+                                            value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                            onChange={handleDatedue}
+                                            dateFormat="dd/MM/yyyy" />
 
                                     </div>
                                 </div>

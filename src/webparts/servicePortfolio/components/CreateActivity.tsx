@@ -30,7 +30,8 @@ var NewArray: any = [];
 var feedbackArray: any = [];
 var dynamicList:any={}
 var SiteTypeBackupArray: any = [];
-
+var counts=0
+var TaskImagess:any=[]
 const CreateActivity = (props: any) => {
     if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
@@ -47,6 +48,7 @@ const CreateActivity = (props: any) => {
 
         console.log(props)
     }
+    const [TaskImages,setTaskImages] = React.useState([])
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
     const [date, setDate] = React.useState(undefined);
     const [siteTypess, setSiteType] = React.useState([]);
@@ -70,6 +72,7 @@ const CreateActivity = (props: any) => {
     const [IsComponentPicker, setIsComponentPicker] = React.useState(false);
     const [IsClientPopup, setIsClientPopup] = React.useState(false);
     const [site, setSite] = React.useState('');
+    const [count, setCount] = React.useState(0);
     var [isActive, setIsActive] = React.useState({ siteType: false, });
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
     const [post, setPost] = React.useState({ Title: ''})
@@ -182,39 +185,12 @@ const CreateActivity = (props: any) => {
             getTasktype();
         }
         }
-        // if (AllItems.NoteCall == 'Task' && AllItems.Item_x0020_Type == 'Component' || AllItems.Item_x0020_Type == 'SubComponent' || AllItems.Item_x0020_Type == 'Feature') {
-        //     SitesTypes?.forEach((type: any) => {
-        //          if(type.listId != null){
-        //         if (type.listId.toLowerCase() == AllItems.listId.toLowerCase()) {
-        //             type.IscreateTask = true;
-        //         } 
-        //     }
-        //     })
-
-        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        //     let componentDetails = [];
-        //     componentDetails = await web.lists
-        //         .getById(AllItems.listId)
-        //         .items
-        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
-        //         .orderBy("Created", false)
-        //         .top(4999)
-        //         .get()
-        //     console.log(componentDetails)
-        //     if (componentDetails.length == 0) {
-        //         WorstreamLatestId = 1;
-        //     } else {
-        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
-        //     }
-        //     getTasktype();
-        // }
+      
 
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
 
-        //setModalIsOpenToTrue();
+       
     }
     const getTasktype = async () => {
         if (AllItems?.NoteCall == 'Task') {
@@ -251,13 +227,6 @@ const CreateActivity = (props: any) => {
         AllItems['SiteListItem'] = value.Title
         let saveItem = save;
 
-        // if(value.isSiteSelect == true){
-        //     value.isSiteSelect=false;
-        // }else{
-        //     value.isSiteSelect = true;
-        //     var isActiveData = isActive;
-        // }
-
         let tempArray: any = [];
         SiteTypeBackupArray.forEach((val: any) => {
             if (val.Id == value.Id) {
@@ -278,56 +247,11 @@ const CreateActivity = (props: any) => {
             }
         })
         setSiteType(tempArray);
-        // if (value.isSiteSelect == true) {
-        //     value.IscreateTask = true
-        // }
+      
         getActivitiesDetails(value)
-        // if(AllItems.NoteCall == 'Task'){
-        //     let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        //     let componentDetails = [];
-        //     componentDetails = await web.lists
-        //         .getById(AllItems.listId)
-        //         .items
-        //         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-        //         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-        //         .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems.Id + "'"))
-        //         .orderBy("Created", false)
-        //         .top(4999)
-        //         .get()
-        //     console.log(componentDetails)
-        //     if (componentDetails.length == 0) {
-        //         WorstreamLatestId = 1;
-        //     } else {
-        //         WorstreamLatestId = componentDetails[0].SharewebTaskLevel2No + 1;
-        //     }
-        // }
-        // save[item]=''
-        // if (save[item] !== value.Title) {
-        //     saveItem[item] = value.Title;
-        //     setSave(saveItem);
-        //     if (isActive[isActiveItem] !== true) {
-        //         isActiveData[isActiveItem] = true;
-        //         setIsActive(isActiveData);
-        //     }
-        // } else if (save[item] === value.Title) {
-        //     saveItem[item] = '';
-        //     setSave(saveItem);
-        //     isActiveData[isActiveItem] = false;
-        //     setIsActive(isActiveData);
-        // }
-        // if (item === "dueDate") {
-        //     DueDate(title)
-        // }
-        // if (item === "Time") {
-        //     setTaskTime(title)
-        // }
+      
         setSave({ ...save, recentClick: isActiveItem })
     };
-
-    // 
-
-    // Remove duplicate 
-
     const Call = React.useCallback((item1: any, type: any) => {
         if (type == "SmartComponent") {
             var ComponentData: any = []
@@ -415,8 +339,27 @@ const CreateActivity = (props: any) => {
         setSharewebCategory(item);
 
     }
-    const FlorarImageUploadComponentCallBack = () => {
-        console.log('Worrking')
+    // React.useMemo(()=>{
+    //     copyImage((e:any)=>e)
+    // },[])
+
+    
+    const copyImage=(dt:any)=>{
+        if(counts == 0){
+            counts = counts+1
+            let DataObject = {
+                data_url: dt,
+                file: "Image/jpg"
+            }
+            let arrayIndex: any = TaskImages?.length
+            TaskImagess.push(DataObject)
+            setTaskImages(TaskImagess)
+        }
+       
+    }
+   
+    const FlorarImageUploadComponentCallBack = (dt:any) => {
+        copyImage(dt)
     }
     const deleteCategories = (id: any) => {
         CategoriesData.map((catId, index) => {
@@ -428,12 +371,12 @@ const CreateActivity = (props: any) => {
 
     }
     const deleteClientCategories = (id: any) => {
-        CategoriesData.map((catId, index) => {
+        ClientCategoriesData.map((catId, index) => {
             if (id == catId.Id) {
-                CategoriesData.splice(index, 1)
+                ClientCategoriesData.splice(index, 1)
             }
         })
-        setCategoriesData(CategoriesData => ([...CategoriesData]));
+        setClientCategoriesData(ClientCategoriesData => ([...ClientCategoriesData]));
 
     }
     var isItemExists = function (arr: any, Id: any) {
@@ -690,14 +633,65 @@ const CreateActivity = (props: any) => {
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                     }).then((res: any) => {
-                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover.Url
-                        res.data['listId'] = value.listId
+                        res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                        res.data['listId'] = value?.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                         res.data['siteType'] = value.siteName
-                        res.data['Shareweb_x0020_ID'] = value.SharewebID
+                        res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
 
+
+                        let fileName: any = '';
+                        let tempArray: any = [];
+                        // let SiteUrl = SiteUrl;
+                        if(TaskImages != undefined && TaskImages.length>0){
+                            TaskImages?.map(async (imgItem: any, index: number) => {
+                                if (imgItem.data_url != undefined && imgItem.file != undefined) {
+                                    let date = new Date()
+                                    let timeStamp = date.getTime();
+                                    fileName = 'Image' + "-" + res.data.Title + " " + res.data.Title + timeStamp + ".jpg"
+                                    let ImgArray = {
+                                        ImageName: fileName,
+                                        UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                        imageDataUrl:dynamicList?.siteUrl + '/Lists/' + res.data.siteType + '/Attachments/' + res?.data.Id + '/' + fileName,
+                                        ImageUrl: imgItem.data_url,
+                                        //UserImage: res.AuthotImage != null ? res.data.AuthotImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                       // UserName: res.AuthotName != null ? res.AuthotName : res.AuthotName,
+                                        // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
+                                        // UserName: "Test Dev",
+                                    };
+                                    tempArray.push(ImgArray);
+                                }
+                                })
+                                tempArray?.map((tempItem: any) => {
+                                    tempItem.Checked = false
+                                })
+                                var src = TaskImages[0].data_url?.split(",")[1];
+                                var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+                                    return c.charCodeAt(0);
+                                }));
+                                const data: any = byteArray
+                                var fileData = '';
+                                for (var i = 0; i < byteArray.byteLength; i++) {
+                                    fileData += String.fromCharCode(byteArray[i]);
+                                }
+                                if (res.data.listId != undefined) {(async () => {
+                                        let web = new Web(dynamicList?.siteUrl);
+                                        let item = await web.lists.getById(res.data.listId).items.getById(res.data.Id);
+                                        item.attachmentFiles.add(fileName, data);
+                                        console.log("Attachment added");
+                                        UpdateBasicImageInfoJSON(tempArray,res.data);
+                                       
+                                     
+                                    })
+                                    ().catch(console.log)
+                                }
+                        }
+                      
+                        
+                        console.log(res);
+                        closeTaskStatusUpdatePoup(res);
                         console.log(res);
                         closeTaskStatusUpdatePoup(res);
 
@@ -736,46 +730,7 @@ const CreateActivity = (props: any) => {
                         if(AllItems.SharewebTaskLevel1No == undefined){
                             WorstreamLatestId  = AllItems?.SharewebTaskLevel1No;
                         }
-                        // var Component: any = []
-                        // smartComponentData.forEach((com: any) => {
-                        //     if (com != undefined) {
-                        //         Component.push(com.Id)
-                        //     }
-
-                        // })
-                        // var categoriesItem = '';
-                        // CategoriesData.map((category) => {
-                        //     if (category.Title != undefined) {
-                        //         categoriesItem = categoriesItem == "" ? category.Title : categoriesItem + ';' + category.Title;
-                        //     }
-                        // })
-                        // var CategoryID: any = []
-                        // CategoriesData.map((category) => {
-                        //     if (category.Id != undefined) {
-                        //         CategoryID.push(category.Id)
-                        //     }
-                        // })
-                        // if (isDropItemRes == true) {
-                        //     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-                        //         TaskAssignedTo.map((taskInfo) => {
-                        //             AssignedToIds.push(taskInfo.Id);
-                        //         })
-                        //     }
-                        // }
-                        // if (isDropItem == true) {
-                        //     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-                        //         TaskTeamMembers.map((taskInfo) => {
-                        //             TeamMemberIds.push(taskInfo.Id);
-                        //         })
-                        //     }
-                        // }
-                        // if (isDropItem == true) {
-                        //     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-                        //         TaskResponsibleTeam.map((taskInfo) => {
-                        //             ResponsibleTeamIds.push(taskInfo.Id);
-                        //         })
-                        //     }
-                        // }
+                       
                         let web = new Web(dynamicList.siteUrl);
                         await web.lists.getById(value.listId).items.add({
                             Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
@@ -800,11 +755,58 @@ const CreateActivity = (props: any) => {
 
                         }).then((res: any) => {
                             res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value?.Item_x005F_x0020_Cover?.Url
+                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
                             res.data['Shareweb_x0020_ID'] = SharewebID
-                            res.data['siteType'] = value.siteName
+                            res.data['siteType'] = value?.siteName
+
+                            let fileName: any = '';
+                            let tempArray: any = [];
+                            // let SiteUrl = SiteUrl;
+                            if(TaskImages != undefined && TaskImages.length>0){
+                                TaskImages?.map(async (imgItem: any, index: number) => {
+                                    if (imgItem.data_url != undefined && imgItem.file != undefined) {
+                                        let date = new Date()
+                                        let timeStamp = date.getTime();
+                                        fileName = 'Image' + "-" + res.data.Title + " " + res.data.Title + timeStamp + ".jpg"
+                                        let ImgArray = {
+                                            ImageName: fileName,
+                                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
+                                            imageDataUrl:dynamicList?.siteUrl + '/Lists/' + res.data.siteType + '/Attachments/' + res?.data.Id + '/' + fileName,
+                                            ImageUrl: imgItem.data_url,
+                                            //UserImage: res.AuthotImage != null ? res.data.AuthotImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                                           // UserName: res.AuthotName != null ? res.AuthotName : res.AuthotName,
+                                            // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
+                                            // UserName: "Test Dev",
+                                        };
+                                        tempArray.push(ImgArray);
+                                    }
+                                    })
+                                    tempArray?.map((tempItem: any) => {
+                                        tempItem.Checked = false
+                                    })
+                                    var src = TaskImages[0].data_url?.split(",")[1];
+                                    var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+                                        return c.charCodeAt(0);
+                                    }));
+                                    const data: any = byteArray
+                                    var fileData = '';
+                                    for (var i = 0; i < byteArray.byteLength; i++) {
+                                        fileData += String.fromCharCode(byteArray[i]);
+                                    }
+                                    if (res.data.listId != undefined) {(async () => {
+                                            let web = new Web(dynamicList?.siteUrl);
+                                            let item = await web.lists.getById(res.data.listId).items.getById(res.data.Id);
+                                            item.attachmentFiles.add(fileName, data);
+                                            console.log("Attachment added");
+                                            UpdateBasicImageInfoJSON(tempArray,res.data);
+                                           
+                                         
+                                        })
+                                        ().catch(console.log)
+                                    }
+                            }
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
@@ -818,6 +820,33 @@ const CreateActivity = (props: any) => {
 
 
     }
+  const UpdateBasicImageInfoJSON=async (tempArray:any,item:any)=>{
+    var UploadImageArray: any = []
+    if (tempArray != undefined && tempArray.length > 0) {
+        tempArray?.map((imgItem: any) => {
+            if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                let tempObject: any = {
+                    ImageName: imgItem.ImageName,
+                    ImageUrl: imgItem.imageDataUrl,
+                    UploadeDate: imgItem.UploadeDate,
+                   // UserName: imgItem.UserName,
+                   // UserImage: imgItem.UserImage
+                }
+                UploadImageArray.push(tempObject)
+            } else {
+                UploadImageArray.push(imgItem);
+            }
+        })
+    }
+    if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+        try {
+            let web = new Web(dynamicList?.siteUrl);
+            await web.lists.getById(item.listId).items.getById(item.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+        } catch (error) {
+            console.log("Error Message :", error);
+        }
+    }
+  }
     const DDComponentCallBack = (dt: any) => {
         // setTeamConfig(dt)
         setisDropItem(dt.isDrop)
@@ -915,6 +944,7 @@ const CreateActivity = (props: any) => {
             value.selectSiteName = true;
         })
         setSite('Site Name')
+        setCount(count+1)
     }
     return (
         <>
@@ -948,7 +978,7 @@ const CreateActivity = (props: any) => {
                                                                 <a className='text-white text-decoration-none' >
                                                                     <span className="icon-sites">
                                                                         <img className="icon-sites"
-                                                                            src={item?.Item_x005F_x0020_Cover?.Url} />
+                                                                            src={item.Item_x005F_x0020_Cover?.Url} />
                                                                     </span>{item.Title}
                                                                 </a>
                                                             </li>
@@ -964,11 +994,11 @@ const CreateActivity = (props: any) => {
                             <div className='col-sm-10'>
                                 <div className="row">
                                     <div className="col-sm-10 mb-10 mt-2">
-                                        <label className="full_width">
-                                            Task Name <a id='siteName'
-                                                onClick={SelectSiteType}>Site Name</a>
+                                        <label className="full_width"><span style={{color:"black"}}>
+                                            Task Name </span> <a id='siteName' 
+                                                onClick={SelectSiteType}> Site Name</a>
                                         </label>
-                                        <input className="form-control" type="text" ng-required="true" placeholder="Enter Task Name"
+                                        <input className="form-control" type="text"  placeholder="Enter Task Name"
                                             defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                     </div>
@@ -990,7 +1020,8 @@ const CreateActivity = (props: any) => {
                                 </div>
                                 <div className='row'>
                                     <div className='col-sm-5'>
-                                        <FroalaImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
+                                    
+                                        <FroalaImageUploadComponent callBack={copyImage} />
                                     </div>
                                     <div className='col-sm-7'>
                                         <FroalaCommentBox
@@ -1079,7 +1110,7 @@ const CreateActivity = (props: any) => {
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
                                                         <>
-                                                            <div className="d-flex block full-width p-2">
+                                                            <div className="d-flex block full-width p-2 mb-1">
                                                                 <div>
                                                                     <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
@@ -1194,8 +1225,8 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                        <div className="d-flex block full-width p-2">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                        <div className="d-flex block full-width p-2 mb-1">
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
                                                             <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" />
@@ -1234,10 +1265,10 @@ const CreateActivity = (props: any) => {
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
                                                         <div className="d-flex block full-width p-2 mb-1">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList?.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems.Id}`}>
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type?.Id)} className="p-1" />
+                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
                                                         </div>
                                                     }
                                                 </>
