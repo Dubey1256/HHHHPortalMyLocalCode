@@ -968,168 +968,59 @@ function CreateTaskComponent(props: any) {
     };
 
     const UrlPasteTitle = (e: any) => {
-        let selectedSiteTitle = ''
-        var testarray = e.target.value.split('&');
-        let TestUrl = e.target.value;
-        let saveValue = save;
-        saveValue.taskUrl = TestUrl;
-        // TestUrl = $scope.component_x0020_link;
-        var item = '';
-        if (TestUrl !== undefined) {
-            for (let index = 0; index < SitesTypes.length; index++) {
-                let site = SitesTypes[index];
-                if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                    TestUrl = TestUrl.split('.com')[1];
-                else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                    TestUrl = TestUrl.split('.ch')[1];
-                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                    TestUrl = TestUrl.split('.de')[1];
-
-                let Isfound = false;
-                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
-                    item = site.Title;
-                    selectedSiteTitle = site.Title;
-                    Isfound = true;
-                }
-
-                if (!Isfound) {
-                    if (TestUrl !== undefined && site.AlternativeTitle != null) {
-                        let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
-                        for (let j = 0; j < sitesAlterNatives.length; j++) {
-                            let element = sitesAlterNatives[j];
-                            if (TestUrl.toLowerCase().indexOf(element) > -1) {
-                                item = site.Title;
-                                selectedSiteTitle = site.Title;
-                                Isfound = true;
+        if(siteType?.length > 1){
+            let selectedSiteTitle = ''
+            var testarray = e.target.value.split('&');
+            let TestUrl = e.target.value;
+            let saveValue = save;
+            saveValue.taskUrl = TestUrl;
+            // TestUrl = $scope.component_x0020_link;
+            var item = '';
+            if (TestUrl !== undefined) {
+                for (let index = 0; index < SitesTypes.length; index++) {
+                    let site = SitesTypes[index];
+                    if (TestUrl.toLowerCase().indexOf('.com') > -1)
+                        TestUrl = TestUrl.split('.com')[1];
+                    else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
+                        TestUrl = TestUrl.split('.ch')[1];
+                    else if (TestUrl.toLowerCase().indexOf('.de') > -1)
+                        TestUrl = TestUrl.split('.de')[1];
+    
+                    let Isfound = false;
+                    if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/' + site.Title.toLowerCase() + '/')) > -1 || (site.AlternativeTitle != null && (TestUrl.toLowerCase().indexOf(site.AlternativeTitle.toLowerCase())) > -1))) {
+                        item = site.Title;
+                        selectedSiteTitle = site.Title;
+                        Isfound = true;
+                    }
+    
+                    if (!Isfound) {
+                        if (TestUrl !== undefined && site.AlternativeTitle != null) {
+                            let sitesAlterNatives = site.AlternativeTitle.toLowerCase().split(';');
+                            for (let j = 0; j < sitesAlterNatives.length; j++) {
+                                let element = sitesAlterNatives[j];
+                                if (TestUrl.toLowerCase().indexOf(element) > -1) {
+                                    item = site.Title;
+                                    selectedSiteTitle = site.Title;
+                                    Isfound = true;
+                                }
+    
                             }
-
                         }
                     }
                 }
+               
             }
-            /*
-            SitesTypes?.map((site: any) => {
-                if (TestUrl.toLowerCase().indexOf('.com') > -1)
-                    TestUrl = TestUrl.split('.com')[1];
-                else if (TestUrl.toLowerCase().indexOf('.ch') > -1)
-                    TestUrl = TestUrl.split('.ch')[1];
-                else if (TestUrl.toLowerCase().indexOf('.de') > -1)
-                    TestUrl = TestUrl.split('.de')[1];
-                if (TestUrl !== undefined && ((TestUrl.toLowerCase().indexOf('/eps/')) > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() === 'eps') {
-                        item = site.Title === 'EPS' ? item = 'EPS' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/ei/') > -1 || TestUrl.toLowerCase().indexOf('/ee/') > -1) && TestUrl.toLowerCase().indexOf('/digitaladministration/') <= -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() === 'ei') {
-                        item = site.Title === 'EI' ? item = 'EI' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/digitaladministration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() === 'alakdigital') {
-                        item = site.Title === 'ALAKDigital' ? item = 'ALAKDigital' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/migration/') > -1) && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() === 'migration') {
-                        item = site.Title === 'Migration' ? item = 'MIGRATION' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/education/') > -1)) {
-                    if (site.Title.toLowerCase() === 'education') {
-                        item = site.Title === 'Education' ? item = 'Education' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/gender/') > -1)) {
-                    if (site.Title.toLowerCase() === 'gender') {
-                        item = site.Title === 'Gender' ? item = 'Gender' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/drr/') > -1)) {
-                    if (site.Title.toLowerCase() === 'drr') {
-                        item = site.Title === 'DRR' ? item = 'DRR' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/health') > -1)) {
-                    if (site.Title.toLowerCase() === 'health') {
-                        item = site.Title === 'Health' ? item = 'Health' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/development-effectiveness/')) > -1 && TestUrl.toLowerCase().indexOf('smartconnect-shareweb') <= -1) {
-                    if (site.Title.toLowerCase() === 'de') {
-                        item = site.Title === 'DE' ? item = 'DE' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/qa/') > -1)) {
-                    if (site.Title.toLowerCase() === 'qa') {
-                        item = site.Title === 'QA' ? item = 'QA' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/shareweb') > -1)) {
-                    if (site.Title.toLowerCase() === 'shareweb') {
-                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/joint') > -1)) {
-                    if (site.Title.toLowerCase() === 'shareweb') {
-                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('www.gruene-washington.de') > -1)) {
-                    if (site.Title.toLowerCase() === 'gruene') {
-                        item = site.Title === 'Gruene' ? item = 'Gruene' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('kathabeck.sharepoint.com') > -1)) {
-                    if (site.Title.toLowerCase() === 'kathabeck') {
-                        item = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1) || (TestUrl.toLowerCase().indexOf('hhhh') > -1)) {
-                    if (site.Title.toLowerCase() === 'hhhh') {
-                        item = site.Title === 'HHHH' ? item = 'HHHH' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('hhhhteams.sharepoint.com') > -1)) {
-                    if (site.Title.toLowerCase() === 'Offshore Tasks') {
-                        item = site.Title === 'Offshore Tasks' ? item = 'Offshore Tasks' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-                if (TestUrl !== undefined && (TestUrl.toLowerCase().indexOf('/sco-belgrade-online-monitoring-tool') > -1)) {
-                    if (site.Title.toLowerCase() === 'shareweb') {
-                        item = site.Title === 'Shareweb' ? item = 'Shareweb' : site = site.Title;
-                        selectedSiteTitle = site.Title
-                    }
-                }
-            })
-            */
+    
+            saveValue.siteType = selectedSiteTitle;
+            setSave(saveValue)
+            if (selectedSiteTitle !== undefined) {
+                setIsActive({ ...isActive, siteType: true });
+            }
+            else {
+                setIsActive({ ...isActive, siteType: false });
+            }
         }
-
-        saveValue.siteType = selectedSiteTitle;
-        setSave(saveValue)
-        if (selectedSiteTitle !== undefined) {
-            setIsActive({ ...isActive, siteType: true });
-        }
-        else {
-            setIsActive({ ...isActive, siteType: false });
-        }
+       
     }
 
     const setActiveTile = (item: keyof typeof save, isActiveItem: keyof typeof isActive, title: any) => {
