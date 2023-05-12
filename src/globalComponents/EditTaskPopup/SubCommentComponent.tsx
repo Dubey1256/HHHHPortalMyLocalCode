@@ -73,6 +73,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             Completed: "",
             Title: "",
             text: "",
+            
             Phone: "",
             LowImportance: "",
             HighImportance: "",
