@@ -21,8 +21,6 @@ export interface IComponentPortfolioWebPartProps {
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
   TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
   dropdownvalue: string,
-  TimeEntry: any;
-  SiteCompostion: any;
 }
 
 export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<IComponentPortfolioWebPartProps> {
@@ -57,8 +55,7 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
          TaskTypeID: this.properties.TaskTypeID,
         Context: this.context,
         dropdownvalue: this.properties.dropdownvalue,
-        TimeEntry: this.properties.TimeEntry,
-        SiteCompostion: this.properties.SiteCompostion,
+
       }
     );
 
@@ -131,13 +128,6 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
                 }),
                 PropertyPaneTextField('TaskTypeID', {
                   label: 'Task Type List',
-                }),
-                PropertyPaneTextField("TimeEntry", {
-                  label: "TimeEntry",
-                }),
-
-                PropertyPaneTextField("SiteCompostion", {
-                  label: "SiteCompostion",
                 }),
               ]
             }

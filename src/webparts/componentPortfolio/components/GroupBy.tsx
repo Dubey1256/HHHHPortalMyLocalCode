@@ -133,20 +133,6 @@ function IndeterminateCheckbox(
 
 
 function ComponentTable(SelectedProp: any) {
-    try{
-        if (SelectedProp.SelectedProp != undefined) {
-            SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
-              SelectedProp.SelectedProp?.TimeEntry
-            );
-        
-            SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
-              SelectedProp.SelectedProp?.SiteCompostion
-            );
-          }
-    }catch(e){
-        console.log(e);
-    }
-    
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -4687,9 +4673,9 @@ function ComponentTable(SelectedProp: any) {
                         </div></section>
                 </div></section>
 
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}  context={SelectedProp.SelectedProp.context}></EditTaskPopup>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={SelectedProp.SelectedProp}></EditTaskPopup>}
             {IsComponent && <EditInstituton item={SharewebComponent} Calls={Call} showProgressBar={showProgressBar} SelectD={SelectedProp}> </EditInstituton>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}  Context={SelectedProp.SelectedProp.context}></TimeEntryPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={SelectedProp}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={SelectedProp}></CreateWS>}
             <Panel headerText={` Create Component `} type={PanelType.large} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>

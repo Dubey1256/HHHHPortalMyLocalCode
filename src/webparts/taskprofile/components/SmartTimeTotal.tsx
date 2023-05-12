@@ -243,7 +243,7 @@ let AllAvailableTitle: any = [];
                         </table>
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item?.props} isopen={isTimeEntry} Context={item.Context} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
         </>
     )
 }

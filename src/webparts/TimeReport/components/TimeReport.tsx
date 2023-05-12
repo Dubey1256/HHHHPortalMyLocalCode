@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { Web } from "sp-pnp-js";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-// import { useExpanded, useFilters, usePagination, useSortBy, useTable } from 'react-table'
 import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
 
 import Tooltip from '../../../globalComponents/Tooltip';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 
-//import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 import {
     Column,
     Table,
@@ -17,9 +15,6 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getFacetedRowModel,
-    //getFacetedUniqueValues,
-    //getFacetedMinMaxValues,
-    // getPaginationRowModel,
     sortingFns,
     getSortedRowModel,
     FilterFn,
@@ -385,53 +380,56 @@ const TimeReport = () => {
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-               
+
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.Id + '&Site=' +  row?.original?.siteType}
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.Id + '&Site=' + row?.original?.siteType}
                         >
-                             {getValue()}
+                            {getValue()}
                         </a>
-                       
+
                     </>
                 ),
-                id:'Title',
+
+                id: 'Title',
                 header: '',
                 placeholder: "Title",
-                
-
+                size: 20,
 
             },
             {
                 header: '',
                 accessorKey: 'Components',
                 placeholder: "Components",
-                
+                size: 15,
+
+
 
             },
             {
                 header: '',
+
                 accessorKey: 'SubComponents',
                 placeholder: "SubComponents",
+                size: 10,
                 Cell: ({ row }: any) => (
                     <span>
-                      <a
-                        style={{
-                          textDecoration: "none",
-                          color: `${
-                            row?.original?.Component?.length > 0
-                              ? "#000066"
-                              : "serviepannelgreena"
-                          }`,
-                        }}
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                        data-interception="off"
-                        target="_blank"
-                      >
+                        <a
+                            style={{
+                                textDecoration: "none",
+                                color: `${row?.original?.Component?.length > 0
+                                    ? "#000066"
+                                    : "serviepannelgreena"
+                                    }`,
+                            }}
+                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            data-interception="off"
+                            target="_blank"
+                        >
                         </a>
-                        </span>
+                    </span>
                 ),
 
             },
@@ -439,19 +437,24 @@ const TimeReport = () => {
                 header: '',
                 accessorKey: 'Features',
                 placeholder: "Features",
+                size: 10,
+
 
             },
             {
                 header: '',
                 accessorKey: 'TimeSpent',
                 placeholder: "Effort",
-               
+                size: 6,
+
 
             },
             {
                 header: '',
                 accessorKey: 'siteType',
                 placeholder: "Sites",
+                size: 6,
+
 
 
             },
@@ -459,24 +462,34 @@ const TimeReport = () => {
                 header: '',
                 accessorKey: 'PercentComplete',
                 placeholder: "PercentComplete",
+                size: 6,
+
 
             },
             {
                 header: '',
                 accessorKey: 'Status',
                 placeholder: "Status",
+                size: 8,
+
 
             },
             {
                 header: '',
                 accessorKey: 'userName',
                 placeholder: "TimeEntryUser",
+                size: 8,
+
 
             },
             {
                 header: '',
                 accessorKey: 'AllTeamName',
                 placeholder: "Designation",
+                size: 8,
+
+                
+
 
             },
 
@@ -578,7 +591,7 @@ const TimeReport = () => {
         return (
             <input
                 // type="text"
-                type="search"
+                type="search" className='w-100'
                 value={(columnFilterValue ?? "") as string}
                 onChange={(e) => column.setFilterValue(e.target.value)}
                 placeholder={`${placeholder?.placeholder}`}
@@ -609,9 +622,9 @@ const TimeReport = () => {
             <div className='row'>
                 <div className='col-sm-3 text-primary'>
                     <h3><b>Time Report</b>
-                    <span>
-                        <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
-                        </h3>
+                        <span>
+                            <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
+                    </h3>
                 </div>
             </div>
             <div className='row'>
@@ -659,36 +672,43 @@ const TimeReport = () => {
                     </table>
                 </div>
             </div>
+            <div className='Alltable mt-2'>
+            <div className='justify-content-between tbl-headings'>
+                <span className='leftsec'>
+                    <DebouncedInput
+                        value={globalFilter ?? ''}
+                        onChange={(value: any) => setGlobalFilter(String(value))}
+                        className="p-2 font-lg shadow border border-block"
+                        placeholder="Search all columns..."
+                    />
+                </span>
+                <span className='toolbox'></span>
+            </div>
 
-            <DebouncedInput
-                value={globalFilter ?? ''}
-                onChange={(value: any) => setGlobalFilter(String(value))}
-                className="p-2 font-lg shadow border border-block"
-                placeholder="Search all columns..."
-            />
-            <div className="h-2" />
-            <table className='table table-striped table-hover'>
-            <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
+            {/* <div className="h-2" /> */}
+            <div className='wrapper'>
+            <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+                <thead className='fixed-Header top-0'>
+                    {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => {
+                            {headerGroup.headers.map((header) => {
                                 return (
-                                    <th key={header.id} colSpan={header.colSpan}>
+                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
                                         {header.isPlaceholder ? null : (
-                                            <div style={{ display: "flex" }}>
+                                            <div className='position-relative' style={{ display: "flex" }}>
                                                 {flexRender(
                                                     header.column.columnDef.header,
                                                     header.getContext()
                                                 )}
                                                 {header.column.getCanFilter() ? (
-                                                    <div>
-                                                        <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                    </div>
+                                                    // <span>
+                                                    <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
+                                                    // </span>
                                                 ) : null}
-                                                <div
+                                                {header.column.getCanSort() ? <div
                                                     {...{
                                                         className: header.column.getCanSort()
-                                                            ? "cursor-pointer select-none"
+                                                            ? "cursor-pointer select-none shorticon"
                                                             : "",
                                                         onClick: header.column.getToggleSortingHandler(),
                                                     }}
@@ -698,20 +718,20 @@ const TimeReport = () => {
                                                         header.column.getIsSorted() as string
                                                         ] ?? null
                                                         : <FaSort />}
-                                                </div>
+                                                </div> : ""}
                                             </div>
                                         )}
                                     </th>
-                                )
+                                );
                             })}
                         </tr>
                     ))}
                 </thead>
                 <tbody>
-                    {table.getRowModel().rows.map(row => {
+                    {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
                             <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => {
+                                {row.getVisibleCells().map((cell: any) => {
                                     return (
                                         <td key={cell.id}>
                                             {flexRender(
@@ -719,13 +739,16 @@ const TimeReport = () => {
                                                 cell.getContext()
                                             )}
                                         </td>
-                                    )
+                                    );
                                 })}
                             </tr>
-                        )
+                        );
                     })}
+
                 </tbody>
             </table>
+            </div>
+            </div>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
@@ -822,7 +845,7 @@ const TimeReport = () => {
                                 form
                             </a>
                             <button type="button" className="btn btn-primary ms-2"
-                                >
+                            >
                                 Save
                             </button>
                         </div>

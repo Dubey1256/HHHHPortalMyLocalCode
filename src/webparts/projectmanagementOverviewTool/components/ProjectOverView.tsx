@@ -103,7 +103,6 @@ export default function ProjectOverview(props: any) {
                 Cell: ({ row }: any) => (
                     <span>
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} />
-              
                     </span>
                 ),
             },
@@ -198,7 +197,7 @@ export default function ProjectOverview(props: any) {
             //     }
             Alltask.map((items: any) => {
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
-                items.siteUrl =AllListId?.siteUrl;
+                items.siteUrl = props?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
                 items.AssignedUser = []
                 items.TeamMembersSearch = '';

@@ -1203,7 +1203,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowTimeEntry && <dl>
                     <dt className='bg-Fa'>SmartTime Total</dt>
                     <dd className='bg-Ff'>
-                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} Context={this.props.Context} /> : null}</span>
+                      <span className="me-1 alignCenter  pull-left"> {this.state.smarttimefunction ? <SmartTimeTotal AllListId={AllListId} props={this.state.Result} /> : null}</span>
                     </dd>
 
                   </dl>}

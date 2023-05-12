@@ -86,7 +86,7 @@ const SmartInformation = (props: any) => {
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
     AllTasktagsmartinfo = [];
-    let web = new Web(props.AllListId?.siteUrl);
+    let web = new Web(props.AllListId.siteUrl);
     let taskDetails: any = [];
 
     taskDetails = await web.lists
@@ -111,7 +111,7 @@ const SmartInformation = (props: any) => {
   }
   // ============master task list  to find the serice or component tag in the documents  ============
   const LoadMasterTaskList = async (): Promise<any> => {
-    let web = new Web(props.AllListId?.siteUrl);
+    let web = new Web(props.AllListId.siteUrl);
     await web.lists
       .getById(props?.AllListId.MasterTaskListID).items
       .select(
@@ -945,7 +945,7 @@ const SmartInformation = (props: any) => {
                       <div className='card-body p-1 bg-ee mt-1'>
                         <ul className='alignCenter list-none'>
                           <li>
-                            <span><a href={`${props.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
+                            <span><a href={`${props.AllListId.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}><span className='bg-secondary svg__iconbox svg__icon--Task'></span></a></span>
                           </li>
                           <li>
                             <span className='px-2'><a href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${tagtask?.Id}&Site=${props?.listName}`}>{tagtask?.Title}</a></span>

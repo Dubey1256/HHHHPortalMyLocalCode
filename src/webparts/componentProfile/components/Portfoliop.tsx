@@ -126,21 +126,21 @@ function Portfolio({SelectedProp}:any) {
   };
   React.useEffect(() => {
     let folderId: any = "";
-     try {
+    try {
 
-   var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
-      
-     var  isShowSiteCompostion = SelectedProp.SiteCompostion != "" ? JSON.parse(SelectedProp.SiteCompostion) : ""
-      
-      } catch (error: any) {
-      
-       console.log(error)
-      
-      }
-    if(SelectedProp != undefined){
-      SelectedProp.isShowSiteCompostion = isShowSiteCompostion
-      SelectedProp.isShowTimeEntry = isShowTimeEntry
-    }
+      var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
+   
+        var  isShowSiteCompostion = SelectedProp.SiteCompostion != "" ? JSON.parse(SelectedProp.SiteCompostion) : ""
+   
+         } catch (error: any) {
+   
+          console.log(error)
+   
+         }
+       if(SelectedProp != undefined){
+         SelectedProp.isShowSiteCompostion = isShowSiteCompostion
+         SelectedProp.isShowTimeEntry = isShowTimeEntry
+       }
     ContextValue = SelectedProp;
     let web = ContextValue.siteUrl;
     let url = `${web}/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=ItemRank,Item_x0020_Type,Portfolio_x0020_Type,Site,FolderID,PortfolioLevel,PortfolioStructureID,ValueAdded,Idea,TaskListName,TaskListId,WorkspaceType,CompletedDate,ClientActivityJson,ClientSite,Item_x002d_Image,Sitestagging,SiteCompositionSettings,TechnicalExplanations,Deliverables,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,Author/Id,Author/Title,Editor/Id,Editor/Title,ServicePortfolio/Title,Package,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,BasicImageInfo,Item_x0020_Type,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,Component/Id,Component/Title,Component/ItemType,Component/ItemType,Categories,FeedBack,component_x0020_link,FileLeafRef,Title,Id,Comments,StartDate,DueDate,Status,Body,Company,Mileage,PercentComplete,FeedBack,Attachments,Priority,Created,Modified,PermissionGroup/Id,PermissionGroup/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Services/Id,Services/Title,Services/ItemType,Parent/Id,Parent/Title,Parent/ItemType,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title&$expand=Author,Editor,ClientCategory,ComponentPortfolio,ServicePortfolio,Parent,AssignedTo,Services,Team_x0020_Members,Component,PermissionGroup,SharewebCategories&$filter=Id eq ${ID}&$top=4999`;
