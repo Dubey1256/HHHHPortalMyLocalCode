@@ -55,6 +55,7 @@ const Tabless = (props: any) => {
     const [checkPrioritys, setCheckPriority] : any = React.useState([])
     const [checkedValues, setCheckedValues] = React.useState([]);
     const [copyData, setCopyData] :any= React.useState([]);
+    const [date, setDate] :any= React.useState({due:'',modify:'',created:''});
     
     
 
@@ -238,7 +239,7 @@ const editPopFunc=(item:any)=>{
            }
 
        if(checked && column== 'percentage'){
-        setCheckPercentage([...checkPercentages,value+'%'])
+        setCheckPercentage([...checkPercentages,value])
       } else{
         setCheckPercentage(checkPercentages.filter((val: any) => val !== value));
        }
@@ -249,6 +250,7 @@ const editPopFunc=(item:any)=>{
       } else{
         setCheckPriority(checkPrioritys.filter((val: any) => val !== value));
        }
+
       
        console.log("checkedValues" ,checkedValues,filterCatogries, checkPercentages,checkPrioritys);
     }
@@ -287,8 +289,9 @@ const editPopFunc=(item:any)=>{
 
             if(checkPercentages.length >= 1){
                 copyData.map((alldataitem:any)=>{
+                    let percent = parseInt(alldataitem.percentage);
                 checkPercentages.map((item:any)=>{
-                    if(alldataitem.percentage==item || alldataitem.priority==item){
+                    if(percent==item || alldataitem.priority==item){
                        localArray.push(alldataitem)
                     }
                    })
@@ -309,7 +312,11 @@ const editPopFunc=(item:any)=>{
 
 
     const clearFilter=()=>{
-        setCheckedValues(['1']);
+        setCheckedValues(['']);
+          setFilterCatogries(['']);
+             setCheckPercentage(['']);
+       
+              setCheckPriority(['']);
         getTaskUserData();
     }
 
@@ -393,6 +400,7 @@ const editPopFunc=(item:any)=>{
         const params = new URLSearchParams(window.location.search);
         let query = params.get("CreatedBy");
         QueryId = query;
+        setQueryId(query)
         console.log(query); //"app=article&act=news_content&aid=160990"
     };
     const getAllData = async (items: any) => {
@@ -549,9 +557,16 @@ const editPopFunc=(item:any)=>{
 
     return (
         <div>
+            <span>Created By {QueryId}</span>
+            <span>
+                <span>
+                Showing {data.length} of {copyData.length} Tasks
+                </span>
             <span>
                 <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)}  />
             </span>
+            </span>
+            
             <Table className="SortingTable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups.map((headerGroup: any) => (
@@ -589,6 +604,14 @@ const editPopFunc=(item:any)=>{
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPercentage.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}
                                           </ul>
+                                          <div>
+                                            <li>
+                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                            </li>
+                                            </div>
                                           <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                           </div>}
 
@@ -609,6 +632,14 @@ const editPopFunc=(item:any)=>{
                                           <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPriority.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
+                                            <div>
+                                            <li>
+                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                            </li>
+                                            </div>
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                             </div>}
 
