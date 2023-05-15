@@ -101,6 +101,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
+       
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -423,7 +424,24 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
-                            filterCurrentUserTask();
+                            const params = new URLSearchParams(window.location.search);
+                            let query = params.get("UserId");
+                            let userFound=false;
+                            if(query!=undefined&&query!=null&&query!=''){
+                                taskUsers.map((user:any)=>{
+                                    if(user?.AssingedToUserId==query){
+                                        userFound=true;
+                                        changeSelectedUser(user)
+                                    }
+                                })
+                                if(userFound==false){
+                                    if(confirm("User Not Found , Do you want to continue to your Dashboard?")){
+                                        filterCurrentUserTask()
+                                    }
+                                }
+                            }else{
+                                filterCurrentUserTask();
+                            }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
                         }
@@ -1070,7 +1088,6 @@ const TaskDashboard = (props: any) => {
     // Current User deatils
     const getCurrentUserDetails = async () => {
         try {
-            // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
             currentUserId = props?.pageContext?.legacyPageContext?.userId
             taskUsers = await loadTaskUsers();
             taskUsers?.map((item: any) => {
@@ -1083,6 +1100,7 @@ const TaskDashboard = (props: any) => {
                 getChilds1(item, taskUsers);
                 userGroups.push(item);
             })
+            userGroups?.sort((a:any, b:any) => a.SortOrder - b.SortOrder)
             setGroupedUsers(userGroups);
             GetMetaData();
         } catch (error) {
