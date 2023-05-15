@@ -25,13 +25,17 @@ import AddProject from './AddProject'
 import EditProjectPopup from './EditProjectPopup';
 import InlineEditingcolumns from './inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 var siteConfig: any = []
 var DataSiteIcon: any = [];
 var AllTaskUsers: any = []
 var Idd: number;
 var allSitesTasks: any = [];
 var AllListId: any = {};
+var isShowTimeEntry: any = "";
+var isShowSiteCompostion: any = "";
 export default function ProjectOverview(props: any) {
+    const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
     const [listIsVisible, setListIsVisible] = React.useState(false);
     const [GroupedDisplayTable, setDisplayGroupedTable] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -40,9 +44,16 @@ export default function ProjectOverview(props: any) {
     const [searchedNameData, setSearchedDataName] = React.useState([]);
     const [data, setData] = React.useState([]);
     const [AllTasks, setAllTasks]: any = React.useState([]);
+    const [passdata, setpassdata] = React.useState("");
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     React.useEffect(() => {
+        try {
+            isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+            isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+        } catch (error: any) {
+            console.log(error)
+        }
         AllListId = {
             MasterTaskListID: props?.props?.MasterTaskListID,
             TaskUsertListID: props?.props?.TaskUsertListID,
@@ -51,13 +62,17 @@ export default function ProjectOverview(props: any) {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl: props?.props?.siteUrl
+            AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+            siteUrl: props?.props?.siteUrl,
+            isShowTimeEntry: isShowTimeEntry,
+            isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
         TaskUser()
         GetMetaData()
 
     }, [])
+
     const Call = React.useCallback((item1) => {
         GetMasterData();
         setIsComponent(false);
@@ -88,6 +103,9 @@ export default function ProjectOverview(props: any) {
         }
         // console.log("all task user =====", taskUser)
     }
+    const editTaskCallBack = React.useCallback((item: any) => {
+        setisOpenEditPopup(false);
+    }, []);
 
     const GetMetaData = async () => {
         if (AllListId?.SmartMetadataListID != undefined) {
@@ -126,7 +144,6 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Title",
                 placeholder: "Title",
-                size: 15,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -160,10 +177,19 @@ export default function ProjectOverview(props: any) {
                             ) : (
                                 ""
                             )}{" "}
+                            {row?.original?.siteType === "Master Tasks" ? <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> : ''}
+                            {row?.original?.siteType !== "Master Tasks" ? <span>
+                                <a className='hreflink'
+                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                    data-interception="off"
+                                    target="_blank"
+                                >
+                                    {row?.original?.Title}
+                                </a>
 
-                            <span>
-                                <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a>
-                            </span>
+
+                            </span> : ''}
+
                         </>
                     </div>
                 ),
@@ -179,61 +205,63 @@ export default function ProjectOverview(props: any) {
                 id: "PercentComplete",
                 placeholder: "% Complete",
                 header: "",
-                size: 27,
+                size: 4,
             },
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
                     <span>
-                    <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
 
-                </span>
+                    </span>
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
                 header: "",
-                size: 15,
+                size: 4,
             },
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
                     <span>
-                    <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
-                    {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
-                </span>
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
+                        {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
+                    </span>
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",
                 header: "",
-                size: 15,
+                size: 11,
             },
             {
                 accessorFn: (row) => row?.DisplayDueDate,
                 cell: ({ row }) => (
                     <InlineEditingcolumns
-                    AllListId={AllListId}
-                    callBack={CallBack}
-                    columnName="DueDate"
-                    item={row?.original}
-                    TaskUsers={AllTaskUser}
-                />
+                        AllListId={AllListId}
+                        callBack={CallBack}
+                        columnName="DueDate"
+                        item={row?.original}
+                        TaskUsers={AllTaskUser}
+                    />
                 ),
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
-                size: 7,
+                size: 8,
             },
             {
                 accessorFn: (row) => row?.Id,
                 cell: ({ row }) => (
-                  <>
-                    {row?.original?.siteType === "Master Tasks"? <span title="Edit Task" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>:''} 
-                  </>
+                    <>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType !== "Master Tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                    </>
                 ),
                 id: 'Id',
+                canSort: false,
                 placeholder: "",
                 header: "",
-                size: 7,
+                size: 3,
             }
         ],
         [data]
@@ -305,9 +333,9 @@ export default function ProjectOverview(props: any) {
                 showSortIcon: false,
                 style: { width: '30px' },
                 Cell: ({ row }: any) => (
-                <>
-                 {row?.original?.siteType === "Master Tasks"? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>:''}  
-                </>
+                    <>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                    </>
                 ),
             },
         ],
@@ -345,11 +373,16 @@ export default function ProjectOverview(props: any) {
             }
         })
     }
+    const EditPopup = React.useCallback((item: any) => {
+        setisOpenEditPopup(true);
+        setpassdata(item);
+    }, []);
     const generateSortingIndicator = (column: any) => {
         return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : (column.showSortIcon ? <FaSort /> : '');
     };
 
     const EditComponentPopup = (item: any) => {
+        item['siteUrl'] = `${props?.props?.siteUrl}`;
         item['siteUrl'] = `${AllListId?.siteUrl}`;
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
@@ -376,7 +409,7 @@ export default function ProjectOverview(props: any) {
                 items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
                 items.AssignedUser = []
-                items.siteType="Master Tasks"
+                items.siteType = "Master Tasks"
                 items.TeamMembersSearch = '';
                 if (items.AssignedTo != undefined) {
                     items.AssignedTo.map((taskUser: any) => {
@@ -419,7 +452,7 @@ export default function ProjectOverview(props: any) {
     // const page = React.useMemo(() => data, [data]);
     const [ShowingAllData, setShowingData] = React.useState([])
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
-      
+
         if (ShowingData != undefined) {
             setShowingData([ShowingData])
         }
@@ -467,9 +500,6 @@ export default function ProjectOverview(props: any) {
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
-                var query =
-                    "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
-                var Counter = 0;
                 let web = new Web(AllListId?.siteUrl);
                 var arraycount = 0;
                 siteConfig.map(async (config: any) => {
@@ -479,7 +509,7 @@ export default function ProjectOverview(props: any) {
                         .getById(config.listId)
                         .items.select(
                             "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Remark"
-                        )
+                        ).filter("IsTodaysTask eq 1")
                         .top(4999)
                         .orderBy("Priority_x0020_Rank", false)
                         .expand(
@@ -516,11 +546,12 @@ export default function ProjectOverview(props: any) {
                         }
                         if (DataSiteIcon != undefined) {
                             DataSiteIcon.map((site: any) => {
-                                if (site.Site == items.siteType) {
+                                if (site.Site?.toLowerCase() == items.siteType?.toLowerCase()) {
                                     items["siteIcon"] = site.SiteIcon;
                                 }
                             });
                         }
+                       
 
                         items.TeamMembersSearch = "";
                         if (items.AssignedTo != undefined) {
@@ -580,6 +611,7 @@ export default function ProjectOverview(props: any) {
     };
     console.log(AllTasks);
     return (
+        <>
         <div>
             <div className="col-sm-12 pad0 smart">
                 <div className="section-event">
@@ -587,16 +619,19 @@ export default function ProjectOverview(props: any) {
                         <div className='header-section justify-content-between'>
                             <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
                             <div className="text-end">
-                             {GroupedDisplayTable? <a className="hreflink" onClick={()=>{setDisplayGroupedTable(false)}}>Hide Working Today's Task</a>: <a className="hreflink" onClick={()=>{setDisplayGroupedTable(true)}}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
+                                {GroupedDisplayTable ? <a className="hreflink" onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
                             </div>
                         </div>
-                        <div className="AllTable">
-                            {GroupedDisplayTable? <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
-                            :""}
-                           
-                        </div>
+
+                        {GroupedDisplayTable ?
+                            <div className="Alltable p-2">
+                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
+                            </div>
+                            : ""}
+
+
                         <div>
-                           {!GroupedDisplayTable? <Table className="SortingTable" bordered hover {...getTableProps()}>
+                            {!GroupedDisplayTable ? <Table className="SortingTable" bordered hover {...getTableProps()}>
                                 <thead className="fixed-Header">
                                     {headerGroups.map((headerGroup: any) => (
                                         <tr  {...headerGroup.getHeaderGroupProps()}>
@@ -626,13 +661,21 @@ export default function ProjectOverview(props: any) {
 
                                     })}
                                 </tbody>
-                            </Table>:''}
+                            </Table> : ''}
                         </div>
                     </div>
                 </div>
             </div>
+            {isOpenEditPopup ? (
+                <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
+            ) : (
+                ""
+            )}
+            {pageLoaderActive ? <PageLoader /> : ''}
             {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
 
         </div>
+      
+        </>
     )
 }

@@ -12,6 +12,12 @@ import DatePicker from "react-datepicker";
 import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
 import Tooltip from '../../../globalComponents/Tooltip';
 import "react-datepicker/dist/react-datepicker.css";
+import "froala-editor/js/plugins.pkgd.min.js";
+import "froala-editor/js/froala_editor.pkgd.min.js";
+import "froala-editor/css/froala_style.min.css";
+import "froala-editor/css/froala_editor.pkgd.min.css";
+
+import Froala from "react-froala-wysiwyg";
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -31,7 +37,10 @@ var feedbackArray: any = [];
 var dynamicList:any={}
 var SiteTypeBackupArray: any = [];
 var counts=0
+var isModelChange= false
 var TaskImagess:any=[]
+const defaultContent = "";
+let defaultfile =[];
 const CreateActivity = (props: any) => {
     if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
@@ -342,11 +351,106 @@ const CreateActivity = (props: any) => {
     // React.useMemo(()=>{
     //     copyImage((e:any)=>e)
     // },[])
-
+    const froalaEditorConfig = {
+        heightMin: 230,
+        heightMax: 500,
+        // width:250,
+        pastePlain: true,
+        wordPasteModal: false,
+        listAdvancedTypes: false,
+        paragraphDefaultSelection: 'Normal',
+        attribution: false,
+        quickInsertEnabled: false,
+        imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
+        placeholderText: "Copy & Paste Image Here!",
+        key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
     
+        events: {
+            "image.beforeUpload": function (files: any, arg1: any, arg2: any) {
+                defaultfile = files;
+                var editor = this;
+                if (files.length) {
+                    // Create a File Reader.
+                    var reader = new FileReader();
+                    // Set the reader to insert images when they are loaded.
+                    reader.onload = (e) => {
+                        var result = e.target.result;
+                        editor.image.insert(result, null, null, editor.image.get());
+                    };
+                    // Read image as base64.
+                    reader.readAsDataURL(files[0]);
+                    let data = files[0]
+                    var reader = new FileReader();
+                    reader.readAsDataURL(data);
+                    let ImageRawData: any = ''
+                    reader.onloadend = function () {
+                        var base64String: any = reader.result;
+                        console.log('Base64 String - ', base64String);
+                        ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
+    
+                    }
+                    if (ImageRawData.length > 0) {
+                      imageArrayUpdateFunction(ImageRawData);
+                    }
+    
+                }
+                editor.popups.hideAll();
+                return false;
+            }
+        }
+    };
+
+    // const froalaEditorConfig1 = {
+    //     heightMin: 230,
+    //     heightMax: 500,
+    //     // width:250,
+    //     pastePlain: true,
+    //     wordPasteModal: false,
+    //     listAdvancedTypes: false,
+    //     paragraphDefaultSelection: 'Normal',
+    //     attribution: false,
+    //     quickInsertEnabled: false,
+    //     imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
+    //     placeholderText: "Copy & Paste Image Here!",
+    //     key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
+    
+    //     events: {
+    //         "image.beforeUpload": function (defaultfile: any, arg1: any, arg2: any) {
+    //             // defaultfile = files;
+    //             let files = defaultfile
+    //             var editor = this;
+    //             if (files.length) {
+    //                 // Create a File Reader.
+    //                 var reader = new FileReader();
+    //                 // Set the reader to insert images when they are loaded.
+    //                 reader.onload = (e) => {
+    //                     var result = e.target.result;
+    //                     editor.image.insert(result, null, null, editor.image.get());
+    //                 };
+    //                 // Read image as base64.
+    //                 reader.readAsDataURL(files[0]);
+    //                 let data = files[0]
+    //                 var reader = new FileReader();
+    //                 reader.readAsDataURL(data);
+    //                 let ImageRawData: any = ''
+    //                 reader.onloadend = function () {
+    //                     var base64String: any = reader.result;
+    //                     console.log('Base64 String - ', base64String);
+    //                     ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
+    
+    //                 }
+    //                 if (ImageRawData.length > 0) {
+    //                   imageArrayUpdateFunction(ImageRawData);
+    //                 }
+    
+    //             }
+    //             editor.popups.hideAll();
+    //             return false;
+    //         }
+    //     }
+    // };
     const copyImage=(dt:any)=>{
-        if(counts == 0){
-            counts = counts+1
+       
             let DataObject = {
                 data_url: dt,
                 file: "Image/jpg"
@@ -354,10 +458,14 @@ const CreateActivity = (props: any) => {
             let arrayIndex: any = TaskImages?.length
             TaskImagess.push(DataObject)
             setTaskImages(TaskImagess)
-        }
+        
        
     }
-   
+   const  imageArrayUpdateFunction = (ImageData: any) => {
+    let tempArray = ImageData.toString();
+    let data1 = tempArray.split('"')
+    copyImage(data1[1]);
+}
     const FlorarImageUploadComponentCallBack = (dt:any) => {
         copyImage(dt)
     }
@@ -761,52 +869,7 @@ const CreateActivity = (props: any) => {
                             res.data['Shareweb_x0020_ID'] = SharewebID
                             res.data['siteType'] = value?.siteName
 
-                            let fileName: any = '';
-                            let tempArray: any = [];
-                            // let SiteUrl = SiteUrl;
-                            if(TaskImages != undefined && TaskImages.length>0){
-                                TaskImages?.map(async (imgItem: any, index: number) => {
-                                    if (imgItem.data_url != undefined && imgItem.file != undefined) {
-                                        let date = new Date()
-                                        let timeStamp = date.getTime();
-                                        fileName = 'Image' + "-" + res.data.Title + " " + res.data.Title + timeStamp + ".jpg"
-                                        let ImgArray = {
-                                            ImageName: fileName,
-                                            UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                                            imageDataUrl:dynamicList?.siteUrl + '/Lists/' + res.data.siteType + '/Attachments/' + res?.data.Id + '/' + fileName,
-                                            ImageUrl: imgItem.data_url,
-                                            //UserImage: res.AuthotImage != null ? res.data.AuthotImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                                           // UserName: res.AuthotName != null ? res.AuthotName : res.AuthotName,
-                                            // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
-                                            // UserName: "Test Dev",
-                                        };
-                                        tempArray.push(ImgArray);
-                                    }
-                                    })
-                                    tempArray?.map((tempItem: any) => {
-                                        tempItem.Checked = false
-                                    })
-                                    var src = TaskImages[0].data_url?.split(",")[1];
-                                    var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
-                                        return c.charCodeAt(0);
-                                    }));
-                                    const data: any = byteArray
-                                    var fileData = '';
-                                    for (var i = 0; i < byteArray.byteLength; i++) {
-                                        fileData += String.fromCharCode(byteArray[i]);
-                                    }
-                                    if (res.data.listId != undefined) {(async () => {
-                                            let web = new Web(dynamicList?.siteUrl);
-                                            let item = await web.lists.getById(res.data.listId).items.getById(res.data.Id);
-                                            item.attachmentFiles.add(fileName, data);
-                                            console.log("Attachment added");
-                                            UpdateBasicImageInfoJSON(tempArray,res.data);
-                                           
-                                         
-                                        })
-                                        ().catch(console.log)
-                                    }
-                            }
+                            
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
@@ -946,6 +1009,24 @@ const CreateActivity = (props: any) => {
         setSite('Site Name')
         setCount(count+1)
     }
+    let ArrayImage: any[]=[]
+    const onModelChange = (model: any) => {
+        isModelChange=true;
+        let edData = model;
+        let imgArray = model.split("=")
+       
+        imgArray?.map((data: any, index: any) => {
+            if (imgArray?.length > 8) {
+                if (index == 1) {
+                    ArrayImage.push(data)
+                }
+            }
+
+        })
+        let elem = document.createElement("img");
+        elem.innerHTML = edData;
+        imageArrayUpdateFunction(ArrayImage);
+    };
     return (
         <>
             <Panel
@@ -1020,8 +1101,19 @@ const CreateActivity = (props: any) => {
                                 </div>
                                 <div className='row'>
                                     <div className='col-sm-5'>
+                                   
+                                        {/* <FroalaImageUploadComponent 
+                                         callBack={copyImage} /> */}
+                                          <div className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">
+                <Froala
+                    model={defaultContent}
+                    onModelChange={isModelChange==false?onModelChange:undefined}
+                    tag="textarea"
+                    config={isModelChange==false?froalaEditorConfig:undefined}
+                ></Froala>
+               
+            </div>
                                     
-                                        <FroalaImageUploadComponent callBack={copyImage} />
                                     </div>
                                     <div className='col-sm-7'>
                                         <FroalaCommentBox

@@ -681,7 +681,7 @@ const ProjectManagementMain = (props: any) => {
         showSortIcon: true,
         Cell: ({ row }: any) => (
           
-          <span>
+          <span className="d-flex">
   {row.original.Services.length >= 1 ? <a className='hreflink text-success'
               href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
               data-interception="off"
