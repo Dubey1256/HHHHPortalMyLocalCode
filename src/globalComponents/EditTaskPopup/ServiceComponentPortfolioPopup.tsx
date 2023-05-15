@@ -8,6 +8,7 @@ import * as moment from "moment";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
+
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";

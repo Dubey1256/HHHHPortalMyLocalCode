@@ -672,9 +672,9 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span className={ServicesTaskCheck ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
+                        <span className={ServicesTaskCheck && props?.pageName !=='ProjectOverView'  ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
-                            {props?.item?.Priority_x0020_Rank}
+                           { props?.item?.Priority_x0020_Rank}
                             {
                                 props?.item?.SharewebCategories?.map((category: any) => {
                                     if (category?.Title == 'Immediate') {
@@ -708,7 +708,7 @@ const inlineEditingcolumns = (props: any) => {
                     : ''
             }
             {props?.columnName == 'Remark' ?
-                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
+                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !=='ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
                     &nbsp;{props.item.Remark}</span></>
                 : ""
             }
@@ -809,7 +809,7 @@ const inlineEditingcolumns = (props: any) => {
                     </footer>
                 </div>
             </Panel>
-            {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() => setDueDate({ ...dueDate, editPopup: true })}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
+            {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck && props.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() => setDueDate({ ...dueDate, editPopup: true })}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
 
 
             {/* Pannel To select Status */}
