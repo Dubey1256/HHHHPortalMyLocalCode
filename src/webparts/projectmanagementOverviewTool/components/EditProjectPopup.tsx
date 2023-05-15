@@ -143,22 +143,22 @@ function EditProjectPopup(item: any) {
     }
 
     if (type == "Category") {
-      if (item != undefined && item.Categories != "") {
+      if (item != undefined && item?.Categories != "") {
         var title: any = {};
-        title.Title = item.categories;
-        item.categories.map((itenn: any) => {
+        title.Title = item?.categories;
+        item?.categories?.map((itenn: any) => {
           if (!isItemExists(CategoriesData, itenn.Id)) {
             CategoriesData.push(itenn);
           }
         });
-        item.SharewebCategories.map((itenn: any) => {
+        item?.SharewebCategories.map((itenn: any) => {
           CategoriesData.push(itenn);
         });
 
         //  Backupdata = CategoriesData
         setCategoriesData(CategoriesData);
-        //item.props.smartCategories = item1.smartCategories;
-        //  item.props.smartCategories.push(title);
+        //item.smartCategories = item1.smartCategories;
+        //  item.smartCategories.push(title);
       }
     }
     if (type == "LinkedComponent") {
@@ -1835,46 +1835,43 @@ function EditProjectPopup(item: any) {
                                     );
                                   })}
 
-                                  {CategoriesData != undefined ? (
-                                    <div>
-                                      {CategoriesData?.map(
-                                        (type: any, index: number) => {
-                                          return (
-                                            <>
-                                              {type.Title != "Phone" &&
-                                                type.Title !=
-                                                  "Email Notification" &&
-                                                type.Title != "Approval" &&
-                                                type.Title != "Immediate" && (
-                                                  <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                    <a
-                                                      style={{
-                                                        color:
-                                                          "#fff !important",
-                                                      }}
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
-                                                    >
-                                                      {type.Title}
-                                                    </a>
-                                                    <img
-                                                      src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
-                                                      onClick={() =>
-                                                        deleteCategories(
-                                                          type.Id
-                                                        )
-                                                      }
-                                                      className="p-1"
-                                                    />
-                                                  </div>
-                                                )}
-                                            </>
-                                          );
-                                        }
-                                      )}
-                                    </div>
-                                  ) : null}
+{CategoriesData != undefined ? (
+                                <div>
+                                  {CategoriesData?.map(
+                                    (type: any, index: number) => {
+                                      return (
+                                        <>
+                                          {type.Title != "Phone" &&
+                                            type.Title !=
+                                              "Email Notification" &&
+                                            type.Title != "Approval" &&
+                                            type.Title != "Immediate" && (
+                                              <div className="block d-flex justify-content-between my-1 p-1">
+                                                <a
+                                                  style={{
+                                                    color: "#fff !important",
+                                                  }}
+                                                  target="_blank"
+                                                  data-interception="off"
+                                                  href={`${TeamConfigInfo.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                >
+                                                  {type.Title}
+                                                </a>
+                                                <img
+                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                  onClick={() =>
+                                                    deleteCategories(type.Id)
+                                                  }
+                                                  className="p-1"
+                                                />
+                                              </div>
+                                            )}
+                                        </>
+                                      );
+                                    }
+                                  )}
+                                </div>
+                              ) : null}
                                 </div>
                               </div>
                             </div>
@@ -2017,7 +2014,7 @@ function EditProjectPopup(item: any) {
                             <div className="input-group">
                             <div className="TaskUsers">
                                     <label className="form-label full-width  mx-2">
-                                      Task Users
+                                      Working Member
                                     </label>
                                     {EditData.AssignedUsers?.map(
                               (userDtl: any, index: any) => {
@@ -2067,6 +2064,7 @@ function EditProjectPopup(item: any) {
                           userDisplayName={EditData.userDisplayName}
                           listName={EditData.siteType}
                           itemID={EditData.Id}
+                          AllListId={TeamConfigInfo.AllListId}
                         ></CommentCard>
                       </div>
                       <div className="col-sm-8">

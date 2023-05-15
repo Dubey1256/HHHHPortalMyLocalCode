@@ -3954,7 +3954,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">Task Users</label>
+                                                    <label className="form-label full-width  mx-2">Working Member</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>

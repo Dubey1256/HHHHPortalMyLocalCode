@@ -145,19 +145,19 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
   } else {
     if (type == "Component") {
-      if (item1?.linkedComponent?.length > 0) {
+      if (item1 != undefined && item1.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1.linkedComponent);
+        setLinkedComponentData(item1);
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
 
     if (type == "Service") {
-      if (item1?.linkedComponent?.length > 0) {
+      if (item1 != undefined && item1.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1.linkedComponent);
+        setLinkedComponentData(item1);
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
@@ -2134,7 +2134,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           
                                   <div className="TaskUsers">
                                     <label className="form-label full-width  mx-2">
-                                      Task Users
+                                      Working Member
                                     </label>
                                     {EditData?.AssignedUsers?.map(
                               (userDtl: any, index: any) => {
@@ -2346,7 +2346,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" href={EditData.component_x0020_link}>Open</a></span>
+                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}>Open</a></span>
                       </div>
                     </div>
                   </div>
