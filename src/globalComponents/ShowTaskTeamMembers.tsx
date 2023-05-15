@@ -117,7 +117,7 @@ function ShowTaskTeamMembers(item: any) {
                 <>
                   <span className="user_Member_img">
                     <a
-                      href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                      href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUser?.Id}`}
                       target="_blank"
                       data-interception="off"
                       title={rcData.Title}
@@ -137,7 +137,7 @@ function ShowTaskTeamMembers(item: any) {
             ItemNew["AllTeamMembers"].length > 0 ? (
             <div className="  ">
               <a
-                href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
+                href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0]?.AssingedToUser?.Id}`}
                 target="_blank"
                 data-interception="off"
                 title={ItemNew["AllTeamMembers"][0].Title}
@@ -175,7 +175,7 @@ function ShowTaskTeamMembers(item: any) {
                           >
                             <span>
                               <a
-                                href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                                href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUser?.Id}`}
                                 target="_blank"
                                 data-interception="off"
                               >
@@ -222,10 +222,10 @@ function ShowTaskTeamMembers(item: any) {
                     <div className="d-flex align-items-center">
                         {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 ?
                             Item["TeamLeader"].map((rcData: any, i: any) => {
-                                return (<><span className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.ItemCover}></img></a></span></>)
+                                return (<><span className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.ItemCover}></img></a></span></>)
                             }) : ''}
                         {Item["AllTeamMembers"] != null && Item["AllTeamMembers"].length > 0 ?
-                            <div className=" activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Item["AllTeamMembers"][0].Id}&Name=${Item["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={Item["AllTeamMembers"][0].Title}><img className="imgAuthor" src={Item["AllTeamMembers"][0].ItemCover}></img></a></div> : ''
+                            <div className=" activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${Item["AllTeamMembers"][0].Id}&Name=${Item["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={Item["AllTeamMembers"][0].Title}><img className="imgAuthor" src={Item["AllTeamMembers"][0].ItemCover}></img></a></div> : ''
                         }
                         {Item["AllTeamMembers"] != null && Item["AllTeamMembers"].length > 1 ?
                             <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => handleSuffixHover(Item)} onMouseLeave={(e) => handleuffixLeave(Item)}>+{Item["AllTeamMembers"].length - 1}
@@ -234,7 +234,7 @@ function ShowTaskTeamMembers(item: any) {
                                         {Item["AllTeamMembers"].slice(1).map((rcData: any, i: any) => {
 
                                             return (<><span className="team_Members_Item" style={{ padding: '2px' }}>
-                                                <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                                <span><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
                                                     <img className={`imgAuthor ${rcData.activeimg2}`} src={rcData.ItemCover}></img></a></span>
                                                 <div className='mx-2'>{rcData.Title}</div>
                                             </span></>)
@@ -255,14 +255,14 @@ function ShowTaskTeamMembers(item: any) {
             <dd className='bg-light'>
                 <div className="d-flex align-items-center">
                     {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 && Item["TeamLeader"].map((rcData: any, i: any) => {
-                        return <> <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.ItemCover}></img></a></div></>
+                        return <> <div className="user_Member_img"><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off" title={rcData.Title}><img className="imgAuthor" src={rcData.ItemCover}></img></a></div></>
                     })}
                     {Item["TeamLeader"] != null && Item["TeamLeader"].length > 0 &&
                         <div></div>
                     }
 
                     {Item["AllTeamMembers"] != null && Item["AllTeamMembers"].length > 0 &&
-                        <div className=" activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Item["AllTeamMembers"][0].Id}&Name=${Item["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={Item["AllTeamMembers"][0].Title}><img className="imgAuthor" src={Item["AllTeamMembers"][0].ItemCover}></img></a></div>
+                        <div className=" activeimg "><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${Item["AllTeamMembers"][0].Id}&Name=${Item["AllTeamMembers"][0].Title}`} target="_blank" data-interception="off" title={Item["AllTeamMembers"][0].Title}><img className="imgAuthor" src={Item["AllTeamMembers"][0].ItemCover}></img></a></div>
                     }
                     {Item["AllTeamMembers"] != null && Item["AllTeamMembers"].length > 1 &&
                         <div className="position-relative user_Member_img_suffix2" onMouseOver={(e) => handleSuffixHover(Item)} onMouseLeave={(e) => handleuffixLeave(Item)}>+{Item["AllTeamMembers"].length - 1}
@@ -271,7 +271,7 @@ function ShowTaskTeamMembers(item: any) {
                                     {Item["AllTeamMembers"].slice(1).map((rcData: any, i: any) => {
 
                                         return <><div className="team_Members_Item" style={{ padding: '2px' }}>
-                                            <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
+                                            <div><a href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskDashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`} target="_blank" data-interception="off">
                                                 <img className={`imgAuthor ${rcData.activeimg2}`} src={rcData.ItemCover}></img></a></div>
                                             <div className='mx-2'>{rcData.Title}</div>
                                         </div></>
