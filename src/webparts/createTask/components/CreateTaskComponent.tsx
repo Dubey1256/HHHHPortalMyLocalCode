@@ -95,6 +95,7 @@ function CreateTaskComponent(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion
         }
+        oldTaskIrl=`${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
         base_Url = AllListId?.siteUrl
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
@@ -968,12 +969,12 @@ function CreateTaskComponent(props: any) {
     };
 
     const UrlPasteTitle = (e: any) => {
+        let TestUrl = e.target.value;
+        let saveValue = save;
+        saveValue.taskUrl = TestUrl;
         if(siteType?.length > 1){
             let selectedSiteTitle = ''
             var testarray = e.target.value.split('&');
-            let TestUrl = e.target.value;
-            let saveValue = save;
-            saveValue.taskUrl = TestUrl;
             // TestUrl = $scope.component_x0020_link;
             var item = '';
             if (TestUrl !== undefined) {
@@ -1020,7 +1021,6 @@ function CreateTaskComponent(props: any) {
                 setIsActive({ ...isActive, siteType: false });
             }
         }
-       
     }
 
     const setActiveTile = (item: keyof typeof save, isActiveItem: keyof typeof isActive, title: any) => {

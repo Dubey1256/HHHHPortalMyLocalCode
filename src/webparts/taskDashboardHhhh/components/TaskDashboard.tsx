@@ -42,7 +42,9 @@ var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [currentView, setCurrentView] = React.useState('Home');
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const [AllSitesTask, setAllSitesTask] = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
@@ -52,6 +54,7 @@ const TaskDashboard = (props: any) => {
     const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
+    const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
@@ -101,7 +104,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
-       
+
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -320,6 +323,7 @@ const TaskDashboard = (props: any) => {
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         let AllSiteTasks: any = [];
+        let AllBottleNeckTasks: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
@@ -399,6 +403,8 @@ const TaskDashboard = (props: any) => {
                                             task.createdImg = user?.Item_x0020_Cover?.Url;
                                         }
                                     })
+
+                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
@@ -417,6 +423,9 @@ const TaskDashboard = (props: any) => {
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
+                                    if (isBottleneckTask) {
+                                        AllBottleNeckTasks.push(task)
+                                    }
                                     AllSiteTasks.push(task)
                                 });
                                 arraycount++;
@@ -424,22 +433,24 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
+                            setAllSitesTask(AllSiteTasks)
+                            setAllBottleNeck(AllBottleNeckTasks)
                             const params = new URLSearchParams(window.location.search);
                             let query = params.get("UserId");
-                            let userFound=false;
-                            if(query!=undefined&&query!=null&&query!=''){
-                                taskUsers.map((user:any)=>{
-                                    if(user?.AssingedToUserId==query){
-                                        userFound=true;
+                            let userFound = false;
+                            if (query != undefined && query != null && query != '') {
+                                taskUsers.map((user: any) => {
+                                    if (user?.AssingedToUserId == query) {
+                                        userFound = true;
                                         changeSelectedUser(user)
                                     }
                                 })
-                                if(userFound==false){
-                                    if(confirm("User Not Found , Do you want to continue to your Dashboard?")){
+                                if (userFound == false) {
+                                    if (confirm("User Not Found , Do you want to continue to your Dashboard?")) {
                                         filterCurrentUserTask()
                                     }
                                 }
-                            }else{
+                            } else {
                                 filterCurrentUserTask();
                             }
                             backupTaskArray.allTasks = AllSiteTasks;
@@ -528,13 +539,14 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } else if (isBottleneckTask && (isCurrentUserAssigned)) {
+                } if (isBottleneckTask && (isCurrentUserAssigned)) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
-                } else if (!alreadyPushed && (isCurrentUserAssigned)) {
+                } if (!alreadyPushed && (isCurrentUserAssigned)) {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
+
             })
         }
         backupTaskArray.AllAssignedTasks = AllAssignedTask;
@@ -995,6 +1007,34 @@ const TaskDashboard = (props: any) => {
         usePagination
     );
 
+    const {
+        getTableProps: getTablePropsAllSite,
+        getTableBodyProps: getTableBodyPropsAllSite,
+        headerGroups: headerGroupsAllSite,
+        page: pageAllSite,
+        prepareRow: prepareRowAllSite,
+        gotoPage: gotoPageAllSite,
+        setPageSize: setPageSizeAllSite,
+        canPreviousPage: canPreviousPageAllSite,
+        canNextPage: canNextPageAllSite,
+        pageOptions: pageOptionsAllSite,
+        pageCount: pageCountAllSite,
+        nextPage: nextPageAllSite,
+        previousPage: previousPageAllSite,
+        state: { pageIndex: pageIndexAllSite, pageSize: pageSizeAllSite },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllSitesTask,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
     const generateSortingIndicator = (column: any) => {
         return column.isSorted ? (
             column.isSortedDesc ? (
@@ -1100,7 +1140,7 @@ const TaskDashboard = (props: any) => {
                 getChilds1(item, taskUsers);
                 userGroups.push(item);
             })
-            userGroups?.sort((a:any, b:any) => a.SortOrder - b.SortOrder)
+            userGroups?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)
             setGroupedUsers(userGroups);
             GetMetaData();
         } catch (error) {
@@ -1473,6 +1513,9 @@ const TaskDashboard = (props: any) => {
     const onChangeInSelectAll = (event: any) => {
         setPageSizeAll(Number(event.target.value));
     };
+    const onChangeInSelectAllSite = (event: any) => {
+        setPageSizeAllSite(Number(event.target.value));
+    };
     //End
     return (
         <>
@@ -1529,7 +1572,7 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
-                        <section className="sidebar__section sidebar__section--menu">
+                        <section className="sidebar__section sidebar__section--menu" onClick={()=>setCurrentView('Home')}>
                             <nav className="nav__item">
                                 {
                                     (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
@@ -1578,9 +1621,21 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
+                        {/* <section className="sidebar__section sidebar__section--menu">
+                            <nav className="nav__item">
+                                <ul className="nav__list ms-2" >
+                                    <li id="DefaultViewSelectId" className="nav__text  ms-3" onClick={()=>setCurrentView('allBottlenecks')}>
+                                       All Bottlenecks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className="nav__text  ms-3 " onClick={()=>setCurrentView('allTasksView')}>
+                                       All Tasks
+                                    </li>
+                                </ul>
+                            </nav>
+                        </section> */}
                     </aside>
                     <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
-                        <article className="row">
+                      { currentView=='Home'? <article className="row">
                             {selectedUser?.Title != undefined ?
                                 <div className="col-md-12 clearfix">
                                     <h5 className="d-inline-block">
@@ -2064,7 +2119,122 @@ const TaskDashboard = (props: any) => {
                                         </> : ''}
 
                             </div>
-                        </article>
+                        </article>:''}
+                        { currentView=='allBottlenecks'? <article className="row">
+                           <div>
+
+                            </div>
+                        </article>:''}
+                        { currentView=='allTasksView'? <article className="row">
+                           <div>
+                           <div className='AccordionContent mx-height' >
+                                        {AllSitesTask?.length > 0 ?
+                                            <>
+                                                <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllSite()} >
+                                                    <thead className="fixed-Header">
+                                                        {headerGroupsAllSite?.map((headerGroup: any) => (
+                                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                {headerGroup.headers.map((column: any) => (
+                                                                    <th {...column.getHeaderProps()} style={column?.style}>
+                                                                        <span
+                                                                            class="Table-SortingIcon"
+                                                                            style={{ marginTop: "-6px" }}
+                                                                            {...column.getSortByToggleProps()}
+                                                                        >
+                                                                            {column.render("Header")}
+                                                                            {generateSortingIndicator(column)}
+                                                                        </span>
+                                                                        <Filter column={column} />
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </thead>
+                                                    {pageAllSite?.length > 0 ? <tbody {...getTableBodyPropsAllSite()}>
+                                                        {pageAllSite?.map((row: any) => {
+                                                            prepareRowAllSite(row);
+                                                            return (
+                                                                <tr >
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody> : <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+
+                                                </Table>
+                                                <nav>
+                                                    <Pagination>
+                                                        <PaginationItem>
+                                                            <PaginationLink onClick={() => previousPageAllSite()} disabled={!canPreviousPageAllSite}>
+                                                                <span aria-hidden={true}>
+                                                                    <FaAngleLeft aria-hidden={true} />
+                                                                </span>
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <PaginationItem>
+                                                            <PaginationLink>
+                                                                {pageIndexAllSite + 1}
+
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <PaginationItem>
+                                                            <PaginationLink onClick={() => nextPageAllSite()} disabled={!canNextPageAllSite}>
+                                                                <span aria-hidden={true}>
+                                                                    <FaAngleRight
+                                                                        aria-hidden={true}
+
+                                                                    />
+                                                                </span>
+                                                            </PaginationLink>
+                                                        </PaginationItem>
+                                                        <Col md={2}>
+                                                            <Input
+                                                                type='select'
+                                                                value={pageSizeAllSite}
+                                                                onChange={onChangeInSelectAllSite}
+                                                            >
+
+                                                                {[10, 20, 30, 40, 50].map((pageSizeAllSite) => (
+                                                                    <option key={pageSizeAllSite} value={pageSizeAllSite}>
+                                                                        Show {pageSizeAllSite}
+                                                                    </option>
+                                                                ))}
+                                                            </Input>
+                                                        </Col>
+                                                    </Pagination>
+                                                </nav>
+                                            </>
+                                            : <div className='text-center full-width'>
+                                                <span>No All Sites Tasks Available</span>
+                                            </div>}
+                                    </div>
+                            </div>
+                        </article>:''}
                     </div>
                     <div>
                         {isOpenEditPopup ? (
