@@ -110,7 +110,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setModalIsOpen(false);
   };
   
-  const Call = React.useCallback((item1: any, type: any) => {
+  const Call = React.useCallback((item1: any, type: any,functionType: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
         item.smartComponent = item1.smartComponent;
@@ -137,7 +137,14 @@ function EditInstitution({item,SelectD,Calls}: any) {
         //  item.smartCategories.push(title);
       }
     }
-    if (type == "LinkedComponent") {
+    if (functionType == "Close") {
+      if (type == "Service") {
+        setIsService(false);
+      } else {
+          setIsComponent(false)
+      }
+  } else {
+    if (type == "Component") {
       if (item1?.linkedComponent?.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
@@ -146,7 +153,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
     }
 
-    if (type == "LinkedServices") {
+    if (type == "Service") {
       if (item1?.linkedComponent?.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
@@ -154,6 +161,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
+  }
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
