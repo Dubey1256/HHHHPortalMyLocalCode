@@ -21,6 +21,7 @@ import {
   FaChevronDown,
   FaMinus,
   FaPlus,
+  FaCompressArrowsAlt,
 } from "react-icons/fa";
 import { RxDotsVertical } from "react-icons/rx";
 import { MdAdd } from "react-icons/Md";
@@ -119,7 +120,7 @@ function Filter({
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
       placeholder={`${placeholder?.placeholder}`}
-      // className="w-36 border shadow rounded"
+    // className="w-36 border shadow rounded"
     />
   );
 }
@@ -148,20 +149,20 @@ function IndeterminateCheckbox({
 // ReactTable Part end/////
 
 function ComponentTable(SelectedProp: any) {
-    try{
-        if (SelectedProp.SelectedProp != undefined) {
-            SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
-              SelectedProp.SelectedProp?.TimeEntry
-            );
-        
-            SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
-              SelectedProp.SelectedProp?.SiteCompostion
-            );
-          }
-    }catch(e){
-        console.log(e);
+  try {
+    if (SelectedProp.SelectedProp != undefined) {
+      SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
+        SelectedProp.SelectedProp?.TimeEntry
+      );
+
+      SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
+        SelectedProp.SelectedProp?.SiteCompostion
+      );
     }
-    
+  } catch (e) {
+    console.log(e);
+  }
+
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -721,7 +722,7 @@ function ComponentTable(SelectedProp: any) {
               if (
                 child.Id == filterItem.Id &&
                 child.siteType.toLowerCase() ==
-                  filterItem.siteType.toLowerCase()
+                filterItem.siteType.toLowerCase()
               ) {
                 item.childs[parentIndex].flag = true;
                 arrayItem[pareIndex].flag = true;
@@ -735,7 +736,7 @@ function ComponentTable(SelectedProp: any) {
                   if (
                     subchild.Id == filterItem.Id &&
                     subchild.siteType.toLowerCase() ==
-                      filterItem.siteType.toLowerCase()
+                    filterItem.siteType.toLowerCase()
                   ) {
                     item.childs[parentIndex].flag = true;
                     child.flag = true;
@@ -756,7 +757,7 @@ function ComponentTable(SelectedProp: any) {
                         if (
                           subchilds.Id == filterItem.Id &&
                           subchilds.siteType.toLowerCase() ==
-                            filterItem.siteType.toLowerCase()
+                          filterItem.siteType.toLowerCase()
                         ) {
                           subchilds.flag = true;
                           item.childs[parentIndex].flag = true;
@@ -778,7 +779,7 @@ function ComponentTable(SelectedProp: any) {
                               if (
                                 Lastsubchilds.Id == filterItem.Id &&
                                 Lastsubchilds.siteType.toLowerCase() ==
-                                  filterItem.siteType.toLowerCase()
+                                filterItem.siteType.toLowerCase()
                               ) {
                                 Lastsubchilds.flag = true;
                                 item.childs[parentIndex].flag = true;
@@ -1861,10 +1862,7 @@ function ComponentTable(SelectedProp: any) {
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
       if (
-        newtest.Title == "SDC Sites" ||
-        newtest.Title == "DRR" ||
-        newtest.Title == "Small Projects" ||
-        newtest.Title == "Offshore Tasks" ||
+        newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Small Projects" || newtest.Title == "Offshore Tasks" ||
         newtest.Title == "Health" ||
         newtest.Title == "Shareweb Old" ||
         newtest.Title == "Master Tasks"
@@ -3493,7 +3491,7 @@ function ComponentTable(SelectedProp: any) {
     setCheckedList((checkedList) => [...list]);
   };
 
-  function AddItem() {}
+  function AddItem() { }
   const hideAllChildsMinus = (item: any) => {
     if (item?.childs?.length > 0) {
       item.Isexpend = false;
@@ -3856,8 +3854,8 @@ function ComponentTable(SelectedProp: any) {
       checkedList[0].Item_x0020_Type === "Feature"
         ? "SubComponent"
         : checkedList[0].Item_x0020_Type === "SubComponent"
-        ? "Component"
-        : checkedList[0].Item_x0020_Type;
+          ? "Component"
+          : checkedList[0].Item_x0020_Type;
     let Items: any = [];
     Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
     setRestructureChecked(Items);
@@ -4272,9 +4270,10 @@ function ComponentTable(SelectedProp: any) {
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "Shareweb_x0020_ID",
-        placeholder: "ID",
-        size: 15,
+        accessorKey: "",
+        placeholder: "",
+        size: 1,
+        id: 'Id',
         header: ({ table }: any) => (
           <>
             <button
@@ -4284,30 +4283,23 @@ function ComponentTable(SelectedProp: any) {
               }}
             >
               {table.getIsAllRowsExpanded() ? (
-                <FaChevronDown />
-              ) : (
-                <FaChevronRight />
-              )}
+                <FaChevronDown />) : (<FaChevronRight />)}
             </button>{" "}
-            <IndeterminateCheckbox
+            {/* <IndeterminateCheckbox
               {...{
                 checked: table.getIsAllRowsSelected(),
                 indeterminate: table.getIsSomeRowsSelected(),
                 onChange: table.getToggleAllRowsSelectedHandler(),
               }}
-            />{" "}
+            />{" "} */}
           </>
         ),
         cell: ({ row, getValue }) => (
-          <div
-            style={
-              row.getCanExpand()
-                ? {
-                    paddingLeft: `${row.depth * 5}px`,
-                  }
-                : {
-                    paddingLeft: "18px",
-                  }
+          <div className="d-flex"
+            style={row.getCanExpand() ? { paddingLeft: `${row.depth * 3}px`, }
+              : {
+                paddingLeft: "18px",
+              }
             }
           >
             <>
@@ -4324,7 +4316,7 @@ function ComponentTable(SelectedProp: any) {
               ) : (
                 ""
               )}{" "}
-              {row?.original?.Title != "Others" ? (
+              {/* {row?.original?.Title != "Others" ? (
                 <IndeterminateCheckbox
                   {...{
                     checked: row.getIsSelected(),
@@ -4334,13 +4326,9 @@ function ComponentTable(SelectedProp: any) {
                 />
               ) : (
                 ""
-              )}{" "}
-              {row?.original?.SiteIcon != undefined ? (
-                <a
-                  className="hreflink"
-                  title="Show All Child"
-                  data-toggle="modal"
-                >
+              )}{" "} */}
+              {/* {row?.original?.SiteIcon != undefined ? (
+                <a className="hreflink" title="Show All Child" data-toggle="modal" >
                   <img
                     className="icon-sites-img ml20 me-1"
                     src={row?.original?.SiteIcon}
@@ -4358,7 +4346,7 @@ function ComponentTable(SelectedProp: any) {
                 </>
               )}
               {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
-              row.original.subRows?.length ? (
+                row.original.subRows?.length ? (
                 <span
                   className="mx-1"
                   {...{
@@ -4391,111 +4379,116 @@ function ComponentTable(SelectedProp: any) {
                 </span>
               ) : (
                 ""
-              )}{" "}
+              )}{" "} */}
               {getValue()}
             </>
           </div>
         ),
       },
-      // {
-      //     accessorKey: "Title",
-      //     cell: ({ column, getValue }) => (
-      //         <HighlightableCell
-      //             value={getValue()}
-      //             searchTerm={column.getFilterValue()}
-      //         />
-      //     ),
-      //     placeholder: "Title",
-      //     header: ""
-      // },
-      // {
-      //     accessorFn: (row) => row?.Title,
-      //     cell: ({ row, column, getValue }) => (
-      //         <>
-      //             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-      //                 href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
-      //             >
-      //                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
-      //             </a>}
-      //             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
-      //                 <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
-      //                     href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + '&Site=' + row?.original?.siteType}
-      //                 >
-      //                     <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
-      //                 </a>}
-      //             {row?.original.Title === 'Others' ?
-      //                 <span>{row?.original.Title}</span> : ""}
 
-      //             {row?.original?.Short_x0020_Description_x0020_On != null &&
-      //                 <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-      //                     <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-      //                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /> */}
-      //                     <span className="popover__content">
-      //                         {row?.original?.Short_x0020_Description_x0020_On}
-      //                     </span>
-      //                 </span>}
-      //         </>
-      //     ),
-      //     id: "Title",
-      //     placeholder: "Title",
-      //     header: "",
-      //     size: 27,
-      // },
+
+      {
+        header: ({ table }: any) => (
+          <>
+            {/* <button
+              className="border-0 bg-Ff"
+              {...{
+                onClick: table.getToggleAllRowsExpandedHandler(),
+              }}
+            >
+              {table.getIsAllRowsExpanded() ? (
+                <FaChevronDown />) : (<FaChevronRight />)}
+            </button>{" "} */}
+            <IndeterminateCheckbox className="mx-1"
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />{" "}
+          </>
+        ),
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              {row?.original?.Title != "Others" ? (
+                <IndeterminateCheckbox
+                  {...{
+                    checked: row.getIsSelected(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                />
+              ) : (
+                ""
+              )}{" "}
+              {row?.original?.SiteIcon != undefined ? (
+                <a className="hreflink" title="Show All Child" data-toggle="modal" >
+                  <img
+                    className="icon-sites-img ml20 me-1"
+                    src={row?.original?.SiteIcon}
+                  ></img>
+                </a>
+              ) : (
+                <>
+                  {row?.original?.Title != "Others" ? (
+                    <div className="Dyicons">
+                      {row?.original?.SiteIconTitle}
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </>
+              )}
+              {getValue()}
+            </span>
+          </>
+        ),
+        accessorKey: "",
+        id: "row?.original.Id",
+        canSort: false,
+        placeholder: "",
+        size: 2,
+      },
+      {
+        accessorKey: "Shareweb_x0020_ID",
+        placeholder: "ID",
+        header: "",
+        size: 8,
+      },
+
+
+
+
+
+
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
           <>
-            {row?.original?.siteType == "Master Tasks" &&
-              row?.original?.Title !== "Others" && (
-                <a
-                  data-interception="off"
-                  target="_blank"
-                  className="hreflink serviceColor_Active"
-                  href={
-                    ContextValue.siteUrl +
-                    "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                    row?.original?.ID
-                  }
-                >
-                  <HighlightableCell
-                    value={getValue()}
-                    searchTerm={column.getFilterValue()}
-                  />
-                </a>
-              )}
-            {row?.original?.siteType != "Master Tasks" &&
-              row?.original?.Title !== "Others" && (
-                <a
-                  data-interception="off"
-                  target="_blank"
-                  className="hreflink serviceColor_Active"
-                  onClick={(e) => EditData(e, row?.original)}
-                  href={
-                    ContextValue.siteUrl +
-                    "/SitePages/Task-Profile.aspx?taskId=" +
-                    row?.original?.ID +
-                    "&Site=" +
-                    row?.original?.siteType
-                  }
-                >
-                  <HighlightableCell
-                    value={getValue()}
-                    searchTerm={column.getFilterValue()}
-                  />
-                </a>
-              )}
+            {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
+              <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
+                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+              </a>
+            )}
+            {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
+              <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
+                href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
+                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+              </a>
+            )}
             {row?.original.Title === "Others" ? (
               <span>{row?.original.Title}</span>
             ) : (
               ""
             )}
+            {row?.original?.Categories == 'Draft' ?
+              <FaCompressArrowsAlt style={{height:'11px', width: '20px'}}/> : ''}
+            {row?.original?.subRows?.length > 0 ?
+              <span className='ms-1'>({row?.original?.childsLength})</span> : ''}
 
             {row?.original?.Short_x0020_Description_x0020_On != null && (
-              <span
-                className="popover__wrapper ms-1"
-                data-bs-toggle="tooltip"
-                data-bs-placement="auto"
-              >
+              <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
                 <span
                   title="Edit"
                   className="svg__iconbox svg__icon--info"
@@ -4514,7 +4507,7 @@ function ComponentTable(SelectedProp: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 27,
+        size: 28,
       },
       {
         accessorFn: (row) =>
@@ -4536,7 +4529,7 @@ function ComponentTable(SelectedProp: any) {
         id: "ClientCategory",
         placeholder: "Client Category",
         header: "",
-        size: 15,
+        size: 10,
       },
       {
         accessorFn: (row) =>
@@ -4553,7 +4546,7 @@ function ComponentTable(SelectedProp: any) {
         id: "TeamLeaderUser",
         placeholder: "Team",
         header: "",
-        size: 15,
+        size: 7,
       },
       // {
       //     // accessorKey: "PercentComplete",
@@ -4572,13 +4565,13 @@ function ComponentTable(SelectedProp: any) {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
-        size: 7,
+        size: 2,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
-        size: 7,
+        size: 2,
       },
       // {
       //     accessorFn: (row) => row?.DueDate,
@@ -4596,7 +4589,7 @@ function ComponentTable(SelectedProp: any) {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
-        size: 9,
+        size: 4,
       },
       {
         cell: ({ row, getValue }) => (
@@ -4623,7 +4616,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -4651,7 +4644,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -4695,7 +4688,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 1,
       },
     ],
     [data]
@@ -4737,35 +4730,35 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-          // parentData = elem?.parentRow;
-          // parentDataCopy = elem?.parentRow?.original
-          parentDataCopy = elem?.getParentRows()[0]?.original;
-          // if (parentData != undefined && parentData?.parentRow != undefined) {
+        // parentData = elem?.parentRow;
+        // parentDataCopy = elem?.parentRow?.original
+        parentDataCopy = elem?.getParentRows()[0]?.original;
+        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.original
+        //   parentData = elem?.parentRow?.parentRow
+        //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-          //     if (parentData != undefined && parentData?.parentRow != undefined) {
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //         parentData = elem?.parentRow?.parentRow?.parentRow
-          //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-          //     }
-          //     if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-          //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //     }
-          //     if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //     }
-          //     if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //         parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //         parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //     }
-          // }
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        // }
         }
 
         elem.original.Id = elem.original.ID;
@@ -4889,29 +4882,29 @@ function ComponentTable(SelectedProp: any) {
     });
   }
 
-  // React.useEffect(() => {
-  //     if (table.getState().columnFilters.length) {
-  //         setExpanded(true);
-  //     } else {
-  //         setExpanded({});
-  //     }
-  // }, [table.getState().columnFilters]);
-
   React.useEffect(() => {
     if (table.getState().columnFilters.length) {
-      const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
-        (acc: any, cur: any) => {
-          acc[cur] = true;
-          return acc;
-        },
-        {}
-      );
-      setExpanded(allKeys);
+      setExpanded(true);
     } else {
       setExpanded({});
     }
-    forceExpanded = [];
   }, [table.getState().columnFilters]);
+
+  // React.useEffect(() => {
+  //   if (table.getState().columnFilters.length) {
+  //     const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+  //       (acc: any, cur: any) => {
+  //         acc[cur] = true;
+  //         return acc;
+  //       },
+  //       {}
+  //     );
+  //     setExpanded(allKeys);
+  //   } else {
+  //     setExpanded({});
+  //   }
+  //   forceExpanded = [];
+  // }, [table.getState().columnFilters]);
 
   return (
     <div
@@ -4920,143 +4913,10 @@ function ComponentTable(SelectedProp: any) {
         IsUpdated == "Events Portfolio"
           ? "app component clearfix eventpannelorange"
           : IsUpdated == "Service Portfolio"
-          ? "app component clearfix serviepannelgreena"
-          : "app component clearfix"
+            ? "app component clearfix serviepannelgreena"
+            : "app component clearfix"
       }
     >
-      {/* ---------------------------------------Editpopup------------------------------------------------------------------------------------------------------- */}
-      {/* <Modal
-                isOpen={modalIsOpen}
-                onDismiss={setModalIsOpenToFalse}
-                isBlocking={false} >
-                <div className='modal-dialog modal-lg'>
-                    <form>
-                        <div className='modal-content'>
-                            <div className='modal-header'>
-                                <h5 className='modal-title'><span>Add Item</span></h5>
-                                <button type="button" className='btn btn-danger pull-right' onClick={setModalIsOpenToFalse}>Cancel</button>
-                            </div>
-                            <div className='modal-body clearfix bg-f5f5'>
-                                <div className="col-sm-12 tab-content">
-                                    <div className="col-md-5">
-                                        <div className="row">
-                                            <div className="col-sm-4 mb-10 p-0" title="Task Name">
-                                                <label>Title</label>
-                                                <input type="text" className="form-control" placeholder="Task Name"
-                                                    value={Title} onChange={handleTitle} />
-                                            </div>
-                                            <div className="col-sm-4 mb-10 Doc-align padR0">
-                                                <label className="full_width">ItemRank
-                                                </label>
-                                                <select className="form-control" value="2">
-                                                    <option value="">Select Item Rank</option>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                </select>
-                                            </div>
-                                            <div className="col-4 mb-10">
-                                                <label>Item Type</label>
-                                                <select value={itemType} onChange={(e: any) => setitemType(e.target.value)}>
-                                                    <option>Component</option>
-                                                    <option>Feature</option>
-                                                    <option>SubComponent</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-sm-6 p-0">
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Service'"
-                                                    className="col-sm-12 mb-10 Doc-align padL-0">
-                                                    <div className="col-sm-11 PadR0 Doc-align">
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-                                                            </span>
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtSharewebComponent" ng-model="SearchComponent"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-                                                        <img ng-src="{{baseUrl}}/SiteCollectionImages/ICONS/32/edititem.gif"
-                                                            ng-click="EditComponent('Components',item)" />
-                                                    </div>
-                                                </div>
-                                                <div ng-show="Item.Portfolio_x0020_Type=='Component'"
-                                                    className="col-sm-12 padL-0">
-                                                    <div className="col-sm-11 p-0 Doc-align">
-                                                        <label>
-                                                            Service Portfolio
-                                                            <span data-toggle="popover" data-placement="right"
-                                                                data-trigger="hover"
-                                                                data-content="Click to activate auto suggest for components/services"
-                                                                data-original-title="Click to activate auto suggest for components/services"
-                                                                title="Click to activate auto suggest for components/services">
-                                                            </span>
-                                                        </label>
-                                                        <input type="text" className="form-control ui-autocomplete-input"
-                                                            id="txtServiceSharewebComponent" ng-model="SearchService"
-                                                        /><span role="status" aria-live="polite"
-                                                            className="ui-helper-hidden-accessible"></span>
-                                                    </div>
-                                                    <div className="col-sm-1 no-padding">
-                                                        <label className="full_width">&nbsp;</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 padR0">
-                                                <label>Deliverable-Synonyms </label>
-                                                <input type="text" className="form-control ui-autocomplete-input"
-                                                    id="txtDeliverable_x002d_Synonyms"
-                                                    ng-model="Item.Deliverable_x002d_Synonyms" /><span
-                                                        role="status" aria-live="polite"
-                                                        className="ui-helper-hidden-accessible"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" onClick={AddItem}>Save</button>
-                    <button type="button" className="btn btn-danger" onClick={setModalIsOpenToFalse}>Cancel</button>
-                </div>
-            </Modal> */}
-      {/* ------------------------Add Popup------------------------------------------------------------------------------------------------------------------------------ */}
-
-      {/* <Modal
-                isOpen={addModalOpen}
-                onDismiss={closeModal}
-                isBlocking={false}>
-                <div className='modal-dialog modal-lg'>
-                    <div className='modal-header'>
-                        <h5 className='modal-title'><span>Add Component</span></h5>
-                        <button type="button" className='btn btn-danger pull-right' onClick={closeModal}>Cancel</button>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6 mb-10" title="Task Name">
-                            <label>Title</label>
-                            <input type="text" className="form-control" placeholder="Task Name"
-                                ng-required="true" />
-                        </div>
-                    </div>
-                </div>
-                <div className='modal-footer mt-3'>
-                    <button type="button" className="btn btn-primary m-2" disabled={true}> Create & Open Popup</button>
-                    <button type="button" className="btn btn-primary" disabled={true} onClick={closeModal}>Create</button>
-                </div>
-            </Modal> */}
-      {/* -----------------------------------------end-------------------------------------------------------------------------------------------------------------------------------------- */}
-
       <section className="ContentSection">
         <div className="col-sm-12 clearfix">
           <h2 className="d-flex justify-content-between align-items-center siteColor  serviceColor_Active">
@@ -5215,27 +5075,27 @@ function ComponentTable(SelectedProp: any) {
                   IsUpdated.toLowerCase().indexOf("component") > -1) ||
                   (IsUpdated != undefined &&
                     IsUpdated.toLowerCase().indexOf("event") > -1)) && (
-                  <span>
-                    <img
-                      className="icon-sites-img  wid22 ml5"
-                      title="Share SmartFilters selection"
-                      onClick={() =>
-                        setIsSmartfilter(IsSmartfilter === true ? false : true)
-                      }
-                      src={
-                        IsSmartfilter === true
-                          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png"
-                          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
-                      }
-                    />
-                    <img
-                      className="icon-sites-img  wid22 ml5"
-                      title="Share SmartFilters selection"
-                      ng-click="GenerateUrl()"
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png"
-                    />
-                  </span>
-                )}
+                    <span>
+                      <img
+                        className="icon-sites-img  wid22 ml5"
+                        title="Share SmartFilters selection"
+                        onClick={() =>
+                          setIsSmartfilter(IsSmartfilter === true ? false : true)
+                        }
+                        src={
+                          IsSmartfilter === true
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/newsub_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Add-New.png"
+                        }
+                      />
+                      <img
+                        className="icon-sites-img  wid22 ml5"
+                        title="Share SmartFilters selection"
+                        ng-click="GenerateUrl()"
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Icon_Share_Blue.png"
+                      />
+                    </span>
+                  )}
               </span>
             </label>
             {IsSmartfilter ? (
@@ -5620,8 +5480,8 @@ function ComponentTable(SelectedProp: any) {
                                     /> */}
                   <span className="toolbox mx-auto">
                     {checkedList != undefined &&
-                    checkedList.length > 0 &&
-                    checkedList[0]?.Item_x0020_Type === "Feature" ? (
+                      checkedList.length > 0 &&
+                      checkedList[0]?.Item_x0020_Type === "Feature" ? (
                       <button
                         type="button"
                         disabled={true}
@@ -5717,7 +5577,7 @@ function ComponentTable(SelectedProp: any) {
                                             }
                                           />
                                         ) : // </span>
-                                        null}
+                                          null}
                                         {header.column.getCanSort() ? (
                                           <div
                                             {...{
@@ -5734,7 +5594,7 @@ function ComponentTable(SelectedProp: any) {
                                                 asc: <FaSortDown />,
                                                 desc: <FaSortUp />,
                                               }[
-                                                header.column.getIsSorted() as string
+                                              header.column.getIsSorted() as string
                                               ] ?? null
                                             ) : (
                                               <FaSort />
@@ -5768,8 +5628,8 @@ function ComponentTable(SelectedProp: any) {
                               IsUpdated == "Events Portfolio"
                                 ? "#f98b36"
                                 : IsUpdated == "Service Portfolio"
-                                ? "#228b22"
-                                : "#000069"
+                                  ? "#228b22"
+                                  : "#000069"
                             }
                             speed={2}
                             trail={60}
@@ -5788,24 +5648,24 @@ function ComponentTable(SelectedProp: any) {
                               <tr
                                 className={
                                   row?.getIsExpanded() == true &&
-                                  row.original.Item_x0020_Type == "Component"
+                                    row.original.Item_x0020_Type == "Component"
                                     ? "c-bg"
                                     : row?.getIsExpanded() == true &&
                                       row.original.Item_x0020_Type ==
-                                        "SubComponent"
-                                    ? "s-bg"
-                                    : row?.getIsExpanded() == true &&
-                                      row.original.Item_x0020_Type == "Feature"
-                                    ? "f-bg"
-                                    : row?.getIsExpanded() == true &&
-                                      row.original.SharewebTaskType?.Title ==
-                                        "Activities"
-                                    ? "a-bg"
-                                    : row?.getIsExpanded() == true &&
-                                      row.original.SharewebTaskType?.Title ==
-                                        "Workstream"
-                                    ? "w-bg"
-                                    : ""
+                                      "SubComponent"
+                                      ? "s-bg"
+                                      : row?.getIsExpanded() == true &&
+                                        row.original.Item_x0020_Type == "Feature"
+                                        ? "f-bg"
+                                        : row?.getIsExpanded() == true &&
+                                          row.original.SharewebTaskType?.Title ==
+                                          "Activities"
+                                          ? "a-bg"
+                                          : row?.getIsExpanded() == true &&
+                                            row.original.SharewebTaskType?.Title ==
+                                            "Workstream"
+                                            ? "w-bg"
+                                            : ""
                                 }
                                 key={row.id}
                               >
@@ -5908,8 +5768,8 @@ function ComponentTable(SelectedProp: any) {
               IsUpdated == "Events Portfolio"
                 ? "app component clearfix eventpannelorange"
                 : IsUpdated == "Service Portfolio"
-                ? "app component clearfix serviepannelgreena"
-                : "app component clearfix"
+                  ? "app component clearfix serviepannelgreena"
+                  : "app component clearfix"
             }
           >
             <div id="portfolio" className="section-event pt-0">
@@ -5949,7 +5809,7 @@ function ComponentTable(SelectedProp: any) {
                                          
                                     } */}
               {childsData != undefined &&
-              childsData[0]?.SharewebTaskType?.Title == "Workstream" ? (
+                childsData[0]?.SharewebTaskType?.Title == "Workstream" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                     <div onClick={(e) => CreateMeetingPopups("Task")}>
@@ -6146,8 +6006,8 @@ function ComponentTable(SelectedProp: any) {
                 "restructure functio test in div==================================="
               )}
               {checkedList != undefined &&
-              checkedList.length > 0 &&
-              checkedList[0].Item_x0020_Type != "Task" ? (
+                checkedList.length > 0 &&
+                checkedList[0].Item_x0020_Type != "Task" ? (
                 <div>
                   <span>
                     {" "}
@@ -6195,8 +6055,8 @@ function ComponentTable(SelectedProp: any) {
         </div>
         <footer className="mt-2 text-end">
           {checkedList != undefined &&
-          checkedList.length > 0 &&
-          checkedList[0]?.Item_x0020_Type === "Task" ? (
+            checkedList.length > 0 &&
+            checkedList[0]?.Item_x0020_Type === "Task" ? (
             <button
               type="button"
               className="btn btn-primary "

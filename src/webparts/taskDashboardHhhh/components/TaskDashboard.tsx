@@ -1,6 +1,7 @@
 import * as React from 'react'
 import $ from 'jquery';
 import axios from 'axios';
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -15,7 +16,6 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
-import { getStartDateOfWeek } from '@fluentui/react';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -42,11 +42,13 @@ var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
@@ -64,6 +66,14 @@ const TaskDashboard = (props: any) => {
         taskId: '',
         origin: ''
     });
+    const TimeEntryCallBack = React.useCallback((item1) => {
+        setOpenTimeEntryPopup(false);
+    }, []);
+    const EditDataTimeEntry = (e: any, item: any) => {
+
+        setTaskTimeDetails(item);
+        setOpenTimeEntryPopup(true);
+    };
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
@@ -91,6 +101,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
+       
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -413,7 +424,24 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
-                            filterCurrentUserTask();
+                            const params = new URLSearchParams(window.location.search);
+                            let query = params.get("UserId");
+                            let userFound=false;
+                            if(query!=undefined&&query!=null&&query!=''){
+                                taskUsers.map((user:any)=>{
+                                    if(user?.AssingedToUserId==query){
+                                        userFound=true;
+                                        changeSelectedUser(user)
+                                    }
+                                })
+                                if(userFound==false){
+                                    if(confirm("User Not Found , Do you want to continue to your Dashboard?")){
+                                        filterCurrentUserTask()
+                                    }
+                                }
+                            }else{
+                                filterCurrentUserTask();
+                            }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
                         }
@@ -801,14 +829,30 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '35px' },
+                style: { width: '65px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
-                    <span
-                        title="Edit Task"
-                        onClick={() => EditPopup(row?.original)}
-                        className="svg__iconbox svg__icon--edit hreflink"
-                    ></span>
+                    <>
+                        <a
+                            onClick={(e) => EditDataTimeEntry(e, row.original)}
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="auto"
+                            title="Click To Edit Timesheet"
+                        >
+                            <span
+                                className="svg__iconbox svg__icon--clock"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                title="Click To Edit Timesheet"
+                            ></span>
+                        </a>
+                        <span
+                            title="Edit Task"
+                            onClick={() => EditPopup(row?.original)}
+                            className="svg__iconbox svg__icon--edit hreflink"
+                        ></span>
+                    </>
+
                 ),
             },
         ],
@@ -1043,26 +1087,26 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-   try {
-    // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-    currentUserId= props?.pageContext?.legacyPageContext?.userId
-    taskUsers = await loadTaskUsers();
-    taskUsers?.map((item: any) => {
-        item.isAdmin = false;
-        if (currentUserId == item?.AssingedToUser?.Id) {
-            currentUser = item;
-            setCurrentUserData(item);
+        try {
+            currentUserId = props?.pageContext?.legacyPageContext?.userId
+            taskUsers = await loadTaskUsers();
+            taskUsers?.map((item: any) => {
+                item.isAdmin = false;
+                if (currentUserId == item?.AssingedToUser?.Id) {
+                    currentUser = item;
+                    setCurrentUserData(item);
+                }
+                item.expanded = false;
+                getChilds1(item, taskUsers);
+                userGroups.push(item);
+            })
+            userGroups?.sort((a:any, b:any) => a.SortOrder - b.SortOrder)
+            setGroupedUsers(userGroups);
+            GetMetaData();
+        } catch (error) {
+            console.log(error)
         }
-        item.expanded = false;
-        getChilds1(item, taskUsers);
-        userGroups.push(item);
-    })
-    setGroupedUsers(userGroups);
-    GetMetaData();
-   } catch (error) {
-    console.log(error)
-   }
-      
+
     }
     const loadTaskUsers = async () => {
         let taskUser;
@@ -1389,7 +1433,7 @@ const TaskDashboard = (props: any) => {
                         teamsTaskBody.push(body);
                     })
                     let TeamTitle = '<h2>'
-                        + userGroup.Title 
+                        + userGroup.Title
                         + '</h2>'
                         + teamsTaskBody
                     finalBody.push(TeamTitle)
@@ -1500,7 +1544,7 @@ const TaskDashboard = (props: any) => {
                                         </> : ""
                                 }
                                 <ul className="nav__list">
-                                    {currentUserData?.Title == "Ranu Trivedi"||currentUserData?.Title == "Abhishek" ?
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
@@ -2034,6 +2078,8 @@ const TaskDashboard = (props: any) => {
                 </div>
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
+            {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+
         </>
     )
 }
