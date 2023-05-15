@@ -37,7 +37,10 @@ export default function ProjectOverview(props: any) {
             TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
             DocumentsListID: props?.props?.DocumentsListID,
             SmartInformationListID: props?.props?.SmartInformationListID,
-            siteUrl: props?.props?.siteUrl
+            siteUrl: props?.props?.siteUrl,
+            Context:props?.props?.Context
+
+
         }
         TaskUser()
         GetMasterData();
@@ -182,7 +185,7 @@ export default function ProjectOverview(props: any) {
     };
 
     const EditComponentPopup = (item: any) => {
-        item['siteUrl'] = `${props?.siteUrl}`;
+        item['siteUrl'] = `${props?.props?.siteUrl}`;
         item['listName'] = 'Master Tasks';
         // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
         setIsComponent(true);

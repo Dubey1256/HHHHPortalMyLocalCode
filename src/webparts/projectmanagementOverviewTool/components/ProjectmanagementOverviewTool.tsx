@@ -8,6 +8,7 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
   public render(): React.ReactElement<IProjectmanagementOverviewToolProps> {
     const {
       description,
+      Context,
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
