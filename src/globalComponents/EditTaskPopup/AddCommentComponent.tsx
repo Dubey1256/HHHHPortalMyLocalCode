@@ -167,8 +167,9 @@ const AddCommentComponent = (FbData: any) => {
                                             <>
                                                 {commentDtl.isApprovalComment != undefined && commentDtl.isApprovalComment == true ?
                                                     <div className='add_cmnt borde-0 border-0 col-10 d-flex float-end justify-content-between m-0 my-1 p-0 align-autoplay'>
-                                                        <div className="alignCenter">
-                                                            {isCurrentUserApprover ? <span className="MR5">
+                                                        <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"}>
+                                                            {/* {isCurrentUserApprover ?  */}
+                                                            <span className="MR5">
                                                                 <span title="Rejected"
                                                                     onClick={() => SmartLightUpdateSubComment(index, "Reject")}
                                                                     className={commentDtl.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -178,8 +179,8 @@ const AddCommentComponent = (FbData: any) => {
                                                                 </span>
                                                                 <span title="Approved" onClick={() => SmartLightUpdateSubComment(index, "Approve")} className={commentDtl.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                                 </span>
-                                                            </span> : null
-                                                            }
+                                                            </span>
+                                                            {/* : null } */}
                                                             {commentDtl.ApproverData != undefined && commentDtl.ApproverData.length > 0 ?
                                                                 <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(index, commentDtl)}>
                                                                     Pre-approved by - <span className="ms-1"><a title={commentDtl.ApproverData[commentDtl.ApproverData.length - 1]?.Title}><img className='imgAuthor' src={commentDtl.ApproverData[commentDtl.ApproverData.length - 1]?.ImageUrl} /></a></span>
