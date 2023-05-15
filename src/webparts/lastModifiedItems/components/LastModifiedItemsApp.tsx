@@ -219,7 +219,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                site:curSiteType,
+                site:curNavItem.title,
                 siteUrl: curSiteURL
             }));
         }
@@ -242,7 +242,8 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 siteType: curSiteType,
-                site:curSiteType,
+                site:curNavItem.title,
+               
                 siteUrl: curSiteURL
             }));
         }
@@ -269,7 +270,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 Id: resListItem.Id,
                 listId: curListId,
                 SiteType: curSiteType,
-                site:curSiteType,
+                site:curNavItem.title,
                 siteUrl: curSiteURL
             }));
         }
@@ -295,7 +296,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
                 },
                 Id: resListItem.Id,
                 ListId: curListId,
-                site:curSiteType,
+                site:curNavItem.title,
                 siteType: curSiteType,
                 siteUrl: curSiteURL
             }));
@@ -692,7 +693,7 @@ export default class LastModifiedItemsApp extends React.Component<ILastModifiedI
 
         );
 
-        const elemListLMI = (this.state.filteredItems.length > 0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId} TabName={this.state.selNavItem.tabName} callBack={this.callBack} Site={this.state.selNavItem.site}  ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} siteUrl={this.props.siteUrl} />);
+        const elemListLMI = (this.state.filteredItems.length > 0 && <ListLastModifiedItems context={this.props.Context} Items={this.state.filteredItems} AllListId={AllListId} TabName={this.state.selNavItem.tabName} callBack={this.callBack} Site={this.state.selNavItem.site}  ResetItems={this.state.resetRecords} OnDelete={this.onDeleteIconClick} OnFilter={this._onFilterItems} propItem={this.props} siteUrl={this.props.siteUrl} />);
 
         const elemDeleteRecord = (<Dialog
             hidden={this.state.hideDeleteDialog}

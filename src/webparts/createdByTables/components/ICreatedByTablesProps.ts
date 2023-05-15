@@ -16,4 +16,5 @@ export interface ICreatedByTablesProps {
   AdminConfigrationListID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
   isShowTimeEntry: any;
   isShowSiteCompostion: any;
+
 }

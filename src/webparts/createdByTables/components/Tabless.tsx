@@ -39,7 +39,7 @@ const Tabless = (props: any) => {
     }
     let allData: any = [];
     let userlists: any = [];
-    let QueryId: any=36;
+    let QueryId: any;
     let dataLength: any = [];
     const [result, setResult]: any = React.useState(false);
     const [editPopup, setEditPopup]: any = React.useState(false);
@@ -55,6 +55,7 @@ const Tabless = (props: any) => {
     const [checkPrioritys, setCheckPriority] : any = React.useState([])
     const [checkedValues, setCheckedValues] = React.useState([]);
     const [copyData, setCopyData] :any= React.useState([]);
+    const [date, setDate] :any= React.useState({due:'',modify:'',created:''});
     
     
 
@@ -153,13 +154,39 @@ const Tabless = (props: any) => {
                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" onClick={()=>editPopFunc(row.original)} >
 
                         </span>
-                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink" ></span>
+                        <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
                     </span>
                 )
             },
         ],
         [data]
     );
+
+
+    const deleteItemFunction = async (item: any) => {
+        let confirmation = confirm(
+            "Are you sure you want to delete this task ?"
+          );
+          if(confirmation){
+            try {
+                if (item.listId != undefined) {
+                  let web = new Web(props.Items.siteUrl);
+        
+                  await web.lists
+                    .getById(item.listId)
+                    .items.getById(item.ID)
+                    .recycle();
+                } 
+        
+                getTaskUserData();
+        
+                console.log("Your post has been deleted successfully");
+              } catch (error) {
+                console.log("Error:", error.message);
+              }
+          }
+      
+    };
 
 
 const editPopFunc=(item:any)=>{
@@ -212,7 +239,7 @@ const editPopFunc=(item:any)=>{
            }
 
        if(checked && column== 'percentage'){
-        setCheckPercentage([...checkPercentages,value+'%'])
+        setCheckPercentage([...checkPercentages,value])
       } else{
         setCheckPercentage(checkPercentages.filter((val: any) => val !== value));
        }
@@ -223,6 +250,7 @@ const editPopFunc=(item:any)=>{
       } else{
         setCheckPriority(checkPrioritys.filter((val: any) => val !== value));
        }
+
       
        console.log("checkedValues" ,checkedValues,filterCatogries, checkPercentages,checkPrioritys);
     }
@@ -250,7 +278,7 @@ const editPopFunc=(item:any)=>{
         let localArray:any=[];
        
             if(filterCatogries.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
                 filterCatogries.map((item:any)=>{
                  if(alldataitem.Categories==item){
                     localArray.push(alldataitem)
@@ -260,9 +288,10 @@ const editPopFunc=(item:any)=>{
             }
 
             if(checkPercentages.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
+                    let percent = parseInt(alldataitem.percentage);
                 checkPercentages.map((item:any)=>{
-                    if(alldataitem.percentage==item || alldataitem.priority==item){
+                    if(percent==item || alldataitem.priority==item){
                        localArray.push(alldataitem)
                     }
                    })
@@ -270,7 +299,7 @@ const editPopFunc=(item:any)=>{
             }
 
             if(checkPrioritys.length >= 1){
-                data.map((alldataitem:any)=>{
+                copyData.map((alldataitem:any)=>{
                 checkPrioritys.map((item:any)=>{
                     if(alldataitem.priority==item){
                        localArray.push(alldataitem)
@@ -283,7 +312,11 @@ const editPopFunc=(item:any)=>{
 
 
     const clearFilter=()=>{
-        setCheckedValues(['1']);
+        setCheckedValues(['']);
+          setFilterCatogries(['']);
+             setCheckPercentage(['']);
+       
+              setCheckPriority(['']);
         getTaskUserData();
     }
 
@@ -360,13 +393,14 @@ const editPopFunc=(item:any)=>{
 
     function CallBack() {
        setEditPopup(false);
+       getTaskUserData();
     }
 
     const getQueryVariable = () => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("CreatedBy");
         QueryId = query;
-        setQueryId(query);
+        setQueryId(query)
         console.log(query); //"app=article&act=news_content&aid=160990"
     };
     const getAllData = async (items: any) => {
@@ -483,7 +517,7 @@ const editPopFunc=(item:any)=>{
                         newCreated: dataItem.newCreated,
                         editorImg: dataItem.EditorImg,
                         authorImg: dataItem.AuthorImg,
-                        siteIcon: items.ImageUrl,
+                        siteIcon:   items.Title=="Migration" ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_migration.png" : items.ImageUrl,
                         siteUrl: items.siteUrl,
                         Id: dataItem.Id,
                         ID: dataItem.Id,
@@ -523,9 +557,16 @@ const editPopFunc=(item:any)=>{
 
     return (
         <div>
+            <span>Created By {QueryId}</span>
+            <span>
+                <span>
+                Showing {data.length} of {copyData.length} Tasks
+                </span>
             <span>
                 <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)}  />
             </span>
+            </span>
+            
             <Table className="SortingTable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups.map((headerGroup: any) => (
@@ -563,6 +604,14 @@ const editPopFunc=(item:any)=>{
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPercentage.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}
                                           </ul>
+                                          <div>
+                                            <li>
+                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                            </li>
+                                            </div>
                                           <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                           </div>}
 
@@ -583,6 +632,14 @@ const editPopFunc=(item:any)=>{
                                           <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPriority.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
+                                            <div>
+                                            <li>
+                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                            </li>
+                                            </div>
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                             </div>}
 
