@@ -56,6 +56,7 @@ const Tabless = (props: any) => {
     const [checkedValues, setCheckedValues] = React.useState([]);
     const [copyData, setCopyData] :any= React.useState([]);
     const [date, setDate] :any= React.useState({due:'',modify:'',created:''});
+    const [radio, setRadio] :any= React.useState({due:'',modify:'',created:''});
     
     
 
@@ -654,7 +655,7 @@ const editPopFunc=(item:any)=>{
                                                 <span><input type='radio' name='newDueDate' value={'ne'} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, due:e.target.value})} />
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
 
@@ -669,7 +670,7 @@ const editPopFunc=(item:any)=>{
                                                 <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, modify:e.target.value})} />
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
 
@@ -677,13 +678,13 @@ const editPopFunc=(item:any)=>{
                                        <div className="dropdown-menu p-2 ">
                                          <div>
                                             <li>
-                                                <span><input type='radio' name='newCreated' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newCreated' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newCreated' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newCreated' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'equal'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})}  /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'le'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newCreated' value={'ge'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'ne'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, created:e.target.value})}  />
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
                                            </div>}
                                     </div> : ''
