@@ -625,7 +625,7 @@ export default function ProjectOverview(props: any) {
 
                         {GroupedDisplayTable ?
                             <div className="Alltable p-2">
-                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
+                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData}  pageName={"ProjectOverview"}/>
                             </div>
                             : ""}
 
@@ -671,7 +671,6 @@ export default function ProjectOverview(props: any) {
             ) : (
                 ""
             )}
-            {pageLoaderActive ? <PageLoader /> : ''}
             {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
 
         </div>
