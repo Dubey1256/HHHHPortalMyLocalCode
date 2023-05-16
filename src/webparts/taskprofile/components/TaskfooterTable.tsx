@@ -56,7 +56,7 @@ function TasksTable(props: any) {
     const [ChengedTitle, setChengedTitle] = React.useState('');
     //const [count, setcount] = React.useState(0);
     IsUpdated = props.props.Portfolio_x0020_Type;
-
+      console.log(props)
     const GetSmartmetadata = async () => {
         //  var metadatItem: any = []
         let smartmetaDetails: any = [];
