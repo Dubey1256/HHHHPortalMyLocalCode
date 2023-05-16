@@ -45,6 +45,7 @@ var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
 let portfolioType = "";
+var CheckCategory: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -602,6 +603,9 @@ function EditProjectPopup(item: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
+        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title== "Email Notification" || val.Title== "Approval" || val.Title== "Immediate")) {
+          CheckCategory.push(val);
+        }
       });
       site.forEach(function (val: any) {
         if (
@@ -896,6 +900,17 @@ function EditProjectPopup(item: any) {
           });
         }
       }
+    }
+    if (CategoriesData != undefined) {
+      CategoriesData.forEach(function (type: any) {
+        CheckCategory.forEach(function (val: any) {
+          if (type.Id == val.Id) {
+            BackupCat = type.Id;
+            setcheckedCat(true);
+          }
+        });
+      });
+      setUpdate(update + 2);
     }
     portfolioType = type;
     setIsPortfolio(true);
@@ -1236,18 +1251,18 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
+  
+  // CheckCategory.push(
+  //   { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
+  //   {
+  //     TaxType: "Categories",
+  //     Title: "Email Notification",
+  //     Id: 276,
+  //     ParentId: 225,
+  //   },
+  //   { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
+  //   { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
+  // );
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1810,32 +1825,53 @@ function EditProjectPopup(item: any) {
                               </span>
                             </div>
 
-                            <div className="col-sm-11  inner-tabb">
-                              <div className="col">
-                                <div className="col">
-                                  {CheckCategory.map((type: any) => {
-                                    return (
-                                      <>
-                                        <div className="form-check">
-                                          <input
-                                            className="form-check-input"
-                                            checked={
-                                              BackupCat == type.Id
-                                                ? checkedCat
-                                                : false
-                                            }
-                                            type="checkbox"
-                                            onClick={() => checkCat(type.Title)}
-                                          />
-                                          <label className="form-check-label">
-                                            {type.Title}
-                                          </label>
-                                        </div>
-                                      </>
-                                    );
-                                  })}
+                            <div className="col">
+                            <div className="col">
+                            {CategoriesData.map((type: any) => (
+  <>
+    {CheckCategory.map((BackupCat: any) => (
+      <div className="form-check" key={BackupCat.Id}>
+        <input
+          className="form-check-input"
+          defaultChecked={BackupCat.Id === type.Id}
+          type="checkbox"
+          onClick={() => checkCat(BackupCat.Title)}
+        />
+        <label className="form-check-label">{type.Title}</label>
+      </div>
+    ))}
+  </>
+))}
 
-{CategoriesData != undefined ? (
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                onClick={()=>checkCat('Phone')}/>
+                                                                <label className="form-check-label">Phone</label>
+                                                            </div> */}
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Email Notification')} />
+                                                                <label>Email Notification</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Approvel')}/>
+                                                                <label>Approvel</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
+                                                                <label>Immediate</label>
+                                                            </div> */}
+                              {CategoriesData != undefined ? (
                                 <div>
                                   {CategoriesData?.map(
                                     (type: any, index: number) => {
@@ -1853,7 +1889,7 @@ function EditProjectPopup(item: any) {
                                                   }}
                                                   target="_blank"
                                                   data-interception="off"
-                                                  href={`${TeamConfigInfo.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  href={`${item.props.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
                                                 >
                                                   {type.Title}
                                                 </a>
@@ -1872,9 +1908,8 @@ function EditProjectPopup(item: any) {
                                   )}
                                 </div>
                               ) : null}
-                                </div>
-                              </div>
                             </div>
+                          </div>
                           </div>
                           {/* <div className="col-sm-4 ps-0 ">
                 <div className="input-group">
@@ -2064,7 +2099,7 @@ function EditProjectPopup(item: any) {
                           userDisplayName={EditData.userDisplayName}
                           listName={EditData.siteType}
                           itemID={EditData.Id}
-                          AllListId={TeamConfigInfo.AllListId}
+                          AllListId={item?.AllListId}
                         ></CommentCard>
                       </div>
                       <div className="col-sm-8">
