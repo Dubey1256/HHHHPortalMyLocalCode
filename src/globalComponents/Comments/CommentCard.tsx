@@ -44,6 +44,7 @@ export interface ICommentCardState {
   updateCommentPost: any;
   editorValue: string;
   editorChangeValue: string;
+  mailReply:boolean
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -67,6 +68,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
+      mailReply:false,
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -363,9 +365,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private GetMentionValues() {
     let mention_str = '';
     if (this.state.mentionValue != '') {
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\[(.*?)\]/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+      let allMention :any;
+      if(this.state.mailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+       if(items.display==this.state.mentionValue){
+          return items
+       }
+       })  
+       let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+       let regExpLiteral = /\[(.*?)\]/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\[(.*?)\]/gi;
+         allMention = regExpStr.match(regExpLiteral);
+      }
+    
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
@@ -498,10 +513,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     if (this.state.mentionValue != '') {
       //Get All To's
-      let mention_To: any = [];
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\{(.*?)\}/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+    var allMention:any;
+      let mention_To: any = []; 
+      if(this.state.mailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+          if(items.display==this.state.mentionValue){
+             return items
+          }
+          })  
+          let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+          let regExpLiteral = /\{(.*?)\}/gi;
+           allMention = regExpStr.match(regExpLiteral); 
+      } else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\{(.*?)\}/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }
+     
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           /*For Prod when mail is open for all */
@@ -608,6 +636,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
   }
+  private replyMailFunction=(replyData:any,index:any)=>{
+    console.log(replyData)
+    console.log(this.mentionUsers)
+      //  var mentionEmail = this.mentionUsers.filter((items:any)=>{
+      //  if(items.display==replyData.AuthorName){
+      //     return items.id
+      //  }
+      //  })          
+    this.setState({
+      mentionValue:replyData.AuthorName,
+      mailReply:true
+    }, () => { console.log(this.state.mentionValue) })
+  }
 
   public render(): React.ReactElement<ICommentCardProps> {
  
@@ -670,6 +711,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons ">
+                              {/* <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a> */}
                               <a  onClick={() => this.openEditModal(cmtData, i)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
