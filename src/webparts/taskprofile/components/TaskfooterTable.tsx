@@ -53,7 +53,7 @@ function TasksTable(props: any) {
 
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
     const [selectedItem, setSelectedItem] = React.useState([]);
-    const [ChengedTitle, setChengedTitle] = React.useState('');
+    const [ChengedTitle, setChengedTitle] = React.useState('');     
     //const [count, setcount] = React.useState(0);
     IsUpdated = props.props.Portfolio_x0020_Type;
       console.log(props)
@@ -103,7 +103,7 @@ function TasksTable(props: any) {
 
         })
         LoadAllSiteTasks(filter);
-        console.log(AllWSTasks);
+        console.log("All task Details ============================",AllWSTasks);
     }
     var Response: any = []
     const getTaskUsers = async () => {
