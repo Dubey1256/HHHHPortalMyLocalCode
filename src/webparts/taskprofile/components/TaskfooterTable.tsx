@@ -279,7 +279,7 @@ function TasksTable(props: any) {
         //MeetingItems.push(props)
         getTaskUsers();
 
-        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services[0].Id))
+        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined &&props.props.Services.length>0 && props.props.Services[0].Id))
             GetComponents(props.props)
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
             props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
