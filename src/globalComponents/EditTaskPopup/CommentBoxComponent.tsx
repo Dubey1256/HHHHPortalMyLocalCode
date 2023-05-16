@@ -191,8 +191,9 @@ const CommentBoxComponent = (commentData: any) => {
                                     <div className="Task-panel d-flex justify-content-between">
                                         <div className="d-flex">
                                             {ApprovalStatus ?
-                                                <div>{isCurrentUserApprover ?
-                                                    <div className="my-1 alignCenter">
+                                                <div>
+                                                    {/* {isCurrentUserApprover ? */}
+                                                    <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"}>
                                                         <span className="MR5">
                                                             <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
                                                                 className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -204,8 +205,7 @@ const CommentBoxComponent = (commentData: any) => {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    : null
-                                                }
+                                                    {/* : null } */}
                                                 </div>
                                                 : null
                                             }
@@ -257,7 +257,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className={`d-flex ${obj.isShowLight}`} title={obj.isShowLight}>
+                                    <div className={`d-flex`} title={obj.isShowLight}>
                                         <span className="SubTestBorder p-1 me-1">{i + 1}</span>
                                         <HtmlEditorCard
                                             editorValue={obj.Title != undefined ? obj.Title : ''}

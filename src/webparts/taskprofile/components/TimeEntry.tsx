@@ -19,7 +19,7 @@ function TimeEntry(props: any) {
         type={PanelType.large}
       >
         <div className="modal-body">
-          <TimeEntryPopup props={props.data} />
+          <TimeEntryPopup props={props.data} Context={props.context}context={props.context} />
         </div>
         <footer className="mt-3">
           <Button variant="primary" onClick={handleClose}>
