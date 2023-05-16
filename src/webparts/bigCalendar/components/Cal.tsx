@@ -559,7 +559,7 @@ const App = (props:any) => {
       </div>
 
       <Panel
-        headerText="Leave-S"
+        headerText="Event-S"
         isOpen={m}
         onDismiss={closem}
         // isFooterAtBottom={true}
