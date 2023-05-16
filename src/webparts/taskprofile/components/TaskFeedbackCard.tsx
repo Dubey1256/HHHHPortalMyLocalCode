@@ -679,7 +679,7 @@ private approvalcallback(){
                 <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)}  className="form-control full-width" ></textarea>
               </div>
 
-              <div className="col-sm-1 mt-2 ps-1 full-width " style={{ display: this.state.showcomment_subtext }}>
+              <div className="col-sm-1 mt-2 ps-1 full-width" style={{ display: this.state.showcomment_subtext }}>
                 <button type="button" className={this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id?"btn-primary mt-4 postbtn px-3":"btn-primary postbtn px-3"} onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
               </div>
             </div> : null}
