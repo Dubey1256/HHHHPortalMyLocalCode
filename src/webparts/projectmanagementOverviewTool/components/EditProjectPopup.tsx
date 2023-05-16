@@ -1386,15 +1386,12 @@ function EditProjectPopup(item: any) {
       }
       
     });
-    CheckCategory?.forEach((val:any,index:any)=>{
-      if(type.isChecked == true){
-        CheckCategory.splice(index,1)
-        NewArray.push(val)
-      }
-    })
+    
    
 
   };
+
+  
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
     setLinkedComponentData(array);

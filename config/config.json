@@ -257,6 +257,14 @@
           "manifest": "./src/webparts/createdByTables/CreatedByTablesWebPart.manifest.json"
         }
       ]
+    },
+    "calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
+          "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -310,6 +318,7 @@
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
-    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js"
+    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
+    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js"
   }
 }
