@@ -195,11 +195,11 @@ function ShowTaskTeamMembers(item: any) {
             ) : (
               ""
             )}
-            {item.Context.dropdownvalue != 'Service Portfolio' && item.Context.dropdownvalue != 'Component Portfolio' && item.Context.dropdownvalue != 'Events Portfolio' ?<div>
-              {ItemNew.allMembersEmail != null ? (
+            {item?.Context?.dropdownvalue != 'Service Portfolio' && item?.Context?.dropdownvalue != 'Component Portfolio' && item?.Context?.dropdownvalue != 'Events Portfolio' ?<div>
+              {ItemNew?.allMembersEmail != null ? (
                 <span style={{ marginLeft: '5px' }} >
                   <a
-                    href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
+                    href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew?.allMembersEmail}`}
                     target="_blank"
                   >
                     <img alt="m-teams"
