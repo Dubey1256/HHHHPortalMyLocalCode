@@ -27,7 +27,6 @@ import InlineEditingcolumns from './inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 var siteConfig: any = []
-var DataSiteIcon: any = [];
 var AllTaskUsers: any = []
 var Idd: number;
 var allSitesTasks: any = [];
@@ -498,35 +497,8 @@ export default function ProjectOverview(props: any) {
         });
         return component;
     };
-    const loadAdminConfigurations = async () => {
-        if (AllListId?.AdminConfigrationListID != undefined) {
-            var CurrentSiteType = "";
-            let web = new Web(AllListId?.siteUrl);
-            await web.lists
-                .getById(AllListId.AdminConfigrationListID)
-                .items.select(
-                    "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-                )
-                .top(4999)
-                .get()
-                .then(
-                    (response) => {
-                        var SmartFavoritesConfig = [];
-                        $.each(response, function (index: any, smart: any) {
-                            if (smart.Configurations != undefined) {
-                                DataSiteIcon = JSON.parse(smart.Configurations);
-                            }
-                        });
-                    },
-                    function (error) { }
-                );
-        } else {
-            alert('Admin Configration List Id not present')
-            DataSiteIcon = [];
-        }
-    };
+   
     const LoadAllSiteTasks = function () {
-        loadAdminConfigurations();
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
@@ -574,13 +546,7 @@ export default function ProjectOverview(props: any) {
                             items.PortfolioTitle = items?.Services[0]?.Title;
                             items["Portfoliotype"] = "Service";
                         }
-                        if (DataSiteIcon != undefined) {
-                            DataSiteIcon.map((site: any) => {
-                                if (site.Site?.toLowerCase() == items.siteType?.toLowerCase()) {
-                                    items["siteIcon"] = site.SiteIcon;
-                                }
-                            });
-                        }
+                        items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
 
 
                         items.TeamMembersSearch = "";
@@ -671,7 +637,7 @@ export default function ProjectOverview(props: any) {
                                                             {column.render('Header')}
                                                             {generateSortingIndicator(column)}
                                                         </span>
-                                                        <Filter column={column} />
+                                                        <Filter  column={column} />
                                                     </th>
                                                 ))}
                                             </tr>

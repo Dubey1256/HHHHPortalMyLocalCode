@@ -321,7 +321,6 @@ const TaskDashboard = (props: any) => {
 
     // All Sites Task
     const LoadAllSiteTasks = function () {
-        loadAdminConfigurations();
         let AllSiteTasks: any = [];
         let AllBottleNeckTasks: any = [];
         let query =
@@ -363,16 +362,7 @@ const TaskDashboard = (props: any) => {
                                         task.PortfolioTitle = task?.Services[0]?.Title;
                                         task["Portfoliotype"] = "Service";
                                     }
-                                    if (DataSiteIcon != undefined) {
-                                        DataSiteIcon.map((site: any) => {
-                                            if (site.Site?.toLowerCase() == task.siteType?.toLowerCase()) {
-                                                task["siteIcon"] = site.SiteIcon;
-                                            }
-                                        });
-                                    }
-                                    if(task.siteType=="Kathabeck"){
-                                        task["siteIcon"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png";
-                                    }
+                                    task["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
                                     task.componentString =
                                         task.Component != undefined &&
