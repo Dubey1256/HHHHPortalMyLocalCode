@@ -43,9 +43,10 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
-var BackupCat: any = "";
+var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
+var backcatss: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -174,7 +175,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -514,8 +515,9 @@ function EditProjectPopup(item: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              BackupCat = type.Id;
-              setcheckedCat(true);
+              val.isChecked=true;
+              // BackupCat.push(type.Id);
+              // setcheckedCat(true);
             }
           });
         });
@@ -564,6 +566,12 @@ function EditProjectPopup(item: any) {
     });
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
+    backcatss = BackupCat.filter((val: any, id: any, array: any) => {
+
+      return array.indexOf(val) == id;
+    
+   })
+   //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -912,7 +920,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -1371,13 +1379,19 @@ function EditProjectPopup(item: any) {
   };
   var NewArray: any = [];
   const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
+    CheckCategory.map((catTitle: any,index:any) => {
       setcheckedCat(false);
-      if (type == catTitle.Title) {
+      if (type.Title == catTitle.Title) {
         NewArray.push(catTitle);
       }
+      
     });
+    
+   
+
   };
+
+  
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
     setLinkedComponentData(array);
@@ -1840,13 +1854,9 @@ function EditProjectPopup(item: any) {
                                     <div className="form-check">
                                       <input
                                         className="form-check-input"
-                                        defaultChecked={
-                                          BackupCat == type.Id
-                                            ? checkedCat
-                                            : false
-                                        }
+                                        defaultChecked={type.isChecked}
                                         type="checkbox"
-                                        onClick={() => checkCat(type.Title)}
+                                        onClick={() => checkCat(type)}
                                       />
                                       <label className="form-check-label">
                                         {type.Title}
