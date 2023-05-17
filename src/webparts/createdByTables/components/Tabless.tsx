@@ -74,7 +74,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Task ID',
                 accessor: 'idType',
                 showSortIcon: true,
-                style: { width: '90px' },
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
@@ -106,7 +106,7 @@ const Tabless = (props: any) => {
                 internalHeader: '%',
                 showSortIcon: true,
                 accessor: 'percentage',
-                style: { width: '70px' },
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.percentage}</span>
@@ -117,7 +117,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Priority',
                 showSortIcon: true,
                 accessor: 'priority',
-                style: { width: '70px' },
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.priority}</span>
@@ -128,7 +128,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Due Date', 
                 accessor: 'newDueDate',
                 showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <div className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newDueDate}</div>
@@ -140,7 +140,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Modified',
                 accessor: 'newModified',
                 showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newModified}</span>
@@ -152,7 +152,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Created',
                 accessor: 'newCreated',
                 showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newCreated}</span>
@@ -175,10 +175,10 @@ const Tabless = (props: any) => {
             {
                 internalHeader: '',
                 id: 'ID',
-                style: { width: '80px' },
+                style: { width: '60px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" onClick={()=>editPopFunc(row.original)} >
+                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={()=>editPopFunc(row.original)} >
 
                         </span>
                         <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
@@ -475,15 +475,17 @@ const editPopFunc=(item:any)=>{
     }
 
 
-    const clearFilter=(column:any)=>{
+    const clearFilter=async (column:any)=>{
         switch(column){
           case "Categories" :
-            setFilterCatogries([]);
+            
+            setFilterCatogries([])
             listFilters1();
             break;
 
             case "percentage" :
-                setCheckPercentage([]);
+              
+                setCheckPercentage([])
                 listFilters1();
             break;
 
@@ -493,12 +495,7 @@ const editPopFunc=(item:any)=>{
             break;
             default : getTaskUserData();
         }
-       
          
-             
-       
-              
-        
     }
 
     const generateSortingIndicator = (column: any) => {
