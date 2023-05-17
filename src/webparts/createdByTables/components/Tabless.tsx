@@ -495,12 +495,7 @@ const editPopFunc=(item:any)=>{
             break;
             default : getTaskUserData();
         }
-       
          
-             
-       
-              
-        
     }
 
     const generateSortingIndicator = (column: any) => {
