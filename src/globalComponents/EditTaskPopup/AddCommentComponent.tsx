@@ -166,7 +166,7 @@ const AddCommentComponent = (FbData: any) => {
                                         {ApprovalStatus ?
                                             <>
                                                 {commentDtl.isApprovalComment != undefined && commentDtl.isApprovalComment == true ?
-                                                    <div className='add_cmnt borde-0 border-0 col-10 d-flex float-end justify-content-between m-0 my-1 p-0 align-autoplay'>
+                                                    <div className='add_cmnt borde-0 border-0 col-12 d-flex float-end justify-content-between m-0 my-1 p-0 align-autoplay'>
                                                         <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"}>
                                                             {/* {isCurrentUserApprover ?  */}
                                                             <span className="MR5">
@@ -195,7 +195,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     : null}
                                             </> :
                                             null}
-                                        <div className={`col-10 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
+                                        <div className={`col-12 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
                                             <div className="">
                                                 <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                     commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -226,11 +226,11 @@ const AddCommentComponent = (FbData: any) => {
                     {
                         FbData.postStatus ?
                             <section className="mt-1 clearfix">
-                                {ApprovalStatus ? <div className="col-10 d-flex float-end">
+                                {ApprovalStatus ? <div className="col-12 d-flex float-end">
                                     <input type="checkbox" onClick={() => setMarkAsApproval(true)} className="form-check-input m-0 me-1 mt-1 rounded-0" />
                                     <label className="siteColor">Mark as Approval Comment</label>
                                 </div> : null}
-                                <div className="col-10 d-flex float-end my-1">
+                                <div className="col-12 d-flex float-end my-1">
                                     <textarea id="txtComment SubTestBorder" style={{ height: "40px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
                                     <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>

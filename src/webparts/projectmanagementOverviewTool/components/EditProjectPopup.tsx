@@ -43,9 +43,10 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
-var BackupCat: any = "";
+var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
+var backcatss: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -174,7 +175,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -514,8 +515,9 @@ function EditProjectPopup(item: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              BackupCat = type.Id;
-              setcheckedCat(true);
+              val.isChecked=true;
+              // BackupCat.push(type.Id);
+              // setcheckedCat(true);
             }
           });
         });
@@ -564,6 +566,12 @@ function EditProjectPopup(item: any) {
     });
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
+    backcatss = BackupCat.filter((val: any, id: any, array: any) => {
+
+      return array.indexOf(val) == id;
+    
+   })
+   //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -586,6 +594,7 @@ function EditProjectPopup(item: any) {
   const GetSmartmetadata = async () => {
     let web = new Web(AllListId?.siteUrl);
     let smartmetaDetails = [];
+    let categoryhh:any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
@@ -604,9 +613,15 @@ function EditProjectPopup(item: any) {
           site.push(val);
         }
         if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title== "Email Notification" || val.Title== "Approval" || val.Title== "Immediate")) {
-          CheckCategory.push(val);
+          categoryhh.push(val);
         }
+
       });
+       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+
+          return array.indexOf(val) == id;
+        
+       })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -905,7 +920,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -1364,13 +1379,19 @@ function EditProjectPopup(item: any) {
   };
   var NewArray: any = [];
   const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
+    CheckCategory.map((catTitle: any,index:any) => {
       setcheckedCat(false);
-      if (type == catTitle.Title) {
+      if (type.Title == catTitle.Title) {
         NewArray.push(catTitle);
       }
+      
     });
+    
+   
+
   };
+
+  
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
     setLinkedComponentData(array);
@@ -1827,22 +1848,23 @@ function EditProjectPopup(item: any) {
 
                             <div className="col">
                             <div className="col">
-                            {CategoriesData.map((type: any) => (
-  <>
-    {CheckCategory.map((BackupCat: any) => (
-      <div className="form-check" key={BackupCat.Id}>
-        <input
-          className="form-check-input"
-          defaultChecked={BackupCat.Id === type.Id}
-          type="checkbox"
-          onClick={() => checkCat(BackupCat.Title)}
-        />
-        <label className="form-check-label">{type.Title}</label>
-      </div>
-    ))}
-  </>
-))}
-
+                              {CheckCategory.map((type: any) => {
+                                return (
+                                  <>
+                                    <div className="form-check">
+                                      <input
+                                        className="form-check-input"
+                                        defaultChecked={type.isChecked}
+                                        type="checkbox"
+                                        onClick={() => checkCat(type)}
+                                      />
+                                      <label className="form-check-label">
+                                        {type.Title}
+                                      </label>
+                                    </div>
+                                  </>
+                                );
+                              })}
                               {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
@@ -1889,7 +1911,7 @@ function EditProjectPopup(item: any) {
                                                   }}
                                                   target="_blank"
                                                   data-interception="off"
-                                                  href={`${item.props.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
                                                 >
                                                   {type.Title}
                                                 </a>
