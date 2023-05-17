@@ -125,7 +125,7 @@ const Tabless = (props: any) => {
                 )
             },
             {
-                internalHeader: 'Due Date',
+                internalHeader: 'Due Date', 
                 accessor: 'newDueDate',
                 showSortIcon: true,
                 style: { width: '130px' },
