@@ -770,7 +770,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const autoSuggestionsForServiceAndComponent = (e: any) => {
-        if(GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0){
+        if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
             if (ServicesTaskCheck) {
                 GetAllComponentAndServiceData("Service");
             }
@@ -827,6 +827,7 @@ const EditTaskPopup = (Items: any) => {
                     setSmartComponentData([]);
                     console.log("Popup component linkedComponent", DataItem);
                 }
+                setIsServices(false);
             }
             if (Type == "Component") {
                 if (DataItem != undefined && DataItem.length > 0) {
@@ -851,6 +852,7 @@ const EditTaskPopup = (Items: any) => {
                     setSmartServicesData([])
                     console.log("Popup component smartComponent ", DataItem)
                 }
+                setIsComponent(false)    
             }
         }
     }, [])
