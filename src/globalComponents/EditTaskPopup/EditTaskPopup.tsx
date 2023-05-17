@@ -811,7 +811,7 @@ const EditTaskPopup = (Items: any) => {
 
     }
 
-    //  ###################  Service And Component Portfolio Popup Clla Back Functions and Validations ##################
+    //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
         if (functionType == "Close") {
             if (Type == "Service") {
@@ -3428,7 +3428,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control"
                                                                 value={SearchedServiceCompnentKey}
                                                                 onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-
+                                                                placeholder="Select Service / Component And Search Here"
                                                             />
                                                         </>
                                                     }
@@ -3995,7 +3995,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage <= 15 && EditData.Mileage >= 0 ? true : false} type="radio"
+                                                                checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
                                                                 defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
                                                             />

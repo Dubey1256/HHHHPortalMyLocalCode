@@ -193,7 +193,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             {ApprovalStatus ?
                                                 <div>
                                                     {/* {isCurrentUserApprover ? */}
-                                                    <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"}>
+                                                    <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"}>
                                                         <span className="MR5">
                                                             <span title="Rejected" onClick={() => SmartLightUpdate(i, "Reject")}
                                                                 className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
