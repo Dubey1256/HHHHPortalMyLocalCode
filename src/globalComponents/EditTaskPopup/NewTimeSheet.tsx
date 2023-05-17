@@ -10,6 +10,7 @@ const NewTameSheetComponent = (props: any) => {
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
         console.log(TeamConfig)
+        console.log(TeamConfig)
         props?.TeamConfigDataCallBack(dt);
     }
     // var itemInfo = {

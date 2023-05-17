@@ -5115,7 +5115,7 @@ export default function ComponentTable({ props,NextProp }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}  Context={NextProp.Context}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}  context={NextProp.Context}></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>

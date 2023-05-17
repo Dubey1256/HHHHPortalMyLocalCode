@@ -20,7 +20,9 @@ export interface IProjectmanagementOverviewToolWebPartProps {
   SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
-  SiteUrl:'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+  AdminConfigrationListID: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class ProjectmanagementOverviewToolWebPart extends BaseClientSideWebPart<IProjectmanagementOverviewToolWebPartProps> {
@@ -37,7 +39,8 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        Context: this.context,
+        pageContext: this.context.pageContext,
+        Context:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskUsertListID: this.properties.TaskUsertListID,
@@ -45,6 +48,9 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
         SmartInformationListID: this.properties.SmartInformationListID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        AdminConfigrationListID: this.properties.AdminConfigrationListID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
       }
     );
 
@@ -122,6 +128,15 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
                 }),
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
+                }),
+                PropertyPaneTextField('TimeEntry', {
+                  label: "TimeEntry"
+                }),
+                PropertyPaneTextField('SiteCompostion', {
+                  label: "SiteCompostion"
+                }),
+                PropertyPaneTextField('AdminConfigrationListID', {
+                  label: "AdminConfigrationListID"
                 })
               ]
             }

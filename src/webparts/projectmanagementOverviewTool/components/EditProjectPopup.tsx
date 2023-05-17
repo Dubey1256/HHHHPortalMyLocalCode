@@ -43,8 +43,10 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
-var BackupCat: any = "";
+var BackupCat: any = [];
 let portfolioType = "";
+var CheckCategory: any = [];
+var backcatss: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -143,22 +145,22 @@ function EditProjectPopup(item: any) {
     }
 
     if (type == "Category") {
-      if (item != undefined && item.Categories != "") {
+      if (item != undefined && item?.Categories != "") {
         var title: any = {};
-        title.Title = item.categories;
-        item.categories.map((itenn: any) => {
+        title.Title = item?.categories;
+        item?.categories?.map((itenn: any) => {
           if (!isItemExists(CategoriesData, itenn.Id)) {
             CategoriesData.push(itenn);
           }
         });
-        item.SharewebCategories.map((itenn: any) => {
+        item?.SharewebCategories.map((itenn: any) => {
           CategoriesData.push(itenn);
         });
 
         //  Backupdata = CategoriesData
         setCategoriesData(CategoriesData);
-        //item.props.smartCategories = item1.smartCategories;
-        //  item.props.smartCategories.push(title);
+        //item.smartCategories = item1.smartCategories;
+        //  item.smartCategories.push(title);
       }
     }
     if (type == "LinkedComponent") {
@@ -173,7 +175,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -513,8 +515,9 @@ function EditProjectPopup(item: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              BackupCat = type.Id;
-              setcheckedCat(true);
+              val.isChecked=true;
+              // BackupCat.push(type.Id);
+              // setcheckedCat(true);
             }
           });
         });
@@ -563,6 +566,12 @@ function EditProjectPopup(item: any) {
     });
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
+    backcatss = BackupCat.filter((val: any, id: any, array: any) => {
+
+      return array.indexOf(val) == id;
+    
+   })
+   //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -585,6 +594,7 @@ function EditProjectPopup(item: any) {
   const GetSmartmetadata = async () => {
     let web = new Web(AllListId?.siteUrl);
     let smartmetaDetails = [];
+    let categoryhh:any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
@@ -602,7 +612,16 @@ function EditProjectPopup(item: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
+        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title== "Email Notification" || val.Title== "Approval" || val.Title== "Immediate")) {
+          categoryhh.push(val);
+        }
+
       });
+       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+
+          return array.indexOf(val) == id;
+        
+       })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -896,6 +915,17 @@ function EditProjectPopup(item: any) {
           });
         }
       }
+    }
+    if (CategoriesData != undefined) {
+      CategoriesData.forEach(function (type: any) {
+        CheckCategory.forEach(function (val: any) {
+          if (type.Id == val.Id) {
+            BackupCat.push(type.Id);
+            setcheckedCat(true);
+          }
+        });
+      });
+      setUpdate(update + 2);
     }
     portfolioType = type;
     setIsPortfolio(true);
@@ -1236,18 +1266,18 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
+  
+  // CheckCategory.push(
+  //   { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
+  //   {
+  //     TaxType: "Categories",
+  //     Title: "Email Notification",
+  //     Id: 276,
+  //     ParentId: 225,
+  //   },
+  //   { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
+  //   { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
+  // );
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1349,13 +1379,19 @@ function EditProjectPopup(item: any) {
   };
   var NewArray: any = [];
   const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
+    CheckCategory.map((catTitle: any,index:any) => {
       setcheckedCat(false);
-      if (type == catTitle.Title) {
+      if (type.Title == catTitle.Title) {
         NewArray.push(catTitle);
       }
+      
     });
+    
+   
+
   };
+
+  
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
     setLinkedComponentData(array);
@@ -1810,74 +1846,92 @@ function EditProjectPopup(item: any) {
                               </span>
                             </div>
 
-                            <div className="col-sm-11  inner-tabb">
-                              <div className="col">
-                                <div className="col">
-                                  {CheckCategory.map((type: any) => {
-                                    return (
-                                      <>
-                                        <div className="form-check">
-                                          <input
-                                            className="form-check-input"
-                                            checked={
-                                              BackupCat == type.Id
-                                                ? checkedCat
-                                                : false
-                                            }
-                                            type="checkbox"
-                                            onClick={() => checkCat(type.Title)}
-                                          />
-                                          <label className="form-check-label">
-                                            {type.Title}
-                                          </label>
-                                        </div>
-                                      </>
-                                    );
-                                  })}
-
-                                  {CategoriesData != undefined ? (
-                                    <div>
-                                      {CategoriesData?.map(
-                                        (type: any, index: number) => {
-                                          return (
-                                            <>
-                                              {type.Title != "Phone" &&
-                                                type.Title !=
-                                                  "Email Notification" &&
-                                                type.Title != "Approval" &&
-                                                type.Title != "Immediate" && (
-                                                  <div className="Component-container-edit-task d-flex my-1 justify-content-between">
-                                                    <a
-                                                      style={{
-                                                        color:
-                                                          "#fff !important",
-                                                      }}
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}
-                                                    >
-                                                      {type.Title}
-                                                    </a>
-                                                    <img
-                                                      src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
-                                                      onClick={() =>
-                                                        deleteCategories(
-                                                          type.Id
-                                                        )
-                                                      }
-                                                      className="p-1"
-                                                    />
-                                                  </div>
-                                                )}
-                                            </>
-                                          );
-                                        }
-                                      )}
+                            <div className="col">
+                            <div className="col">
+                              {CheckCategory.map((type: any) => {
+                                return (
+                                  <>
+                                    <div className="form-check">
+                                      <input
+                                        className="form-check-input"
+                                        defaultChecked={type.isChecked}
+                                        type="checkbox"
+                                        onClick={() => checkCat(type)}
+                                      />
+                                      <label className="form-check-label">
+                                        {type.Title}
+                                      </label>
                                     </div>
-                                  ) : null}
+                                  </>
+                                );
+                              })}
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                onClick={()=>checkCat('Phone')}/>
+                                                                <label className="form-check-label">Phone</label>
+                                                            </div> */}
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Email Notification')} />
+                                                                <label>Email Notification</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Approvel')}/>
+                                                                <label>Approvel</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
+                                                                <label>Immediate</label>
+                                                            </div> */}
+                              {CategoriesData != undefined ? (
+                                <div>
+                                  {CategoriesData?.map(
+                                    (type: any, index: number) => {
+                                      return (
+                                        <>
+                                          {type.Title != "Phone" &&
+                                            type.Title !=
+                                              "Email Notification" &&
+                                            type.Title != "Approval" &&
+                                            type.Title != "Immediate" && (
+                                              <div className="block d-flex justify-content-between my-1 p-1">
+                                                <a
+                                                  style={{
+                                                    color: "#fff !important",
+                                                  }}
+                                                  target="_blank"
+                                                  data-interception="off"
+                                                  href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                >
+                                                  {type.Title}
+                                                </a>
+                                                <img
+                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                  onClick={() =>
+                                                    deleteCategories(type.Id)
+                                                  }
+                                                  className="p-1"
+                                                />
+                                              </div>
+                                            )}
+                                        </>
+                                      );
+                                    }
+                                  )}
                                 </div>
-                              </div>
+                              ) : null}
                             </div>
+                          </div>
                           </div>
                           {/* <div className="col-sm-4 ps-0 ">
                 <div className="input-group">
@@ -2017,7 +2071,7 @@ function EditProjectPopup(item: any) {
                             <div className="input-group">
                             <div className="TaskUsers">
                                     <label className="form-label full-width  mx-2">
-                                      Task Users
+                                      Working Member
                                     </label>
                                     {EditData.AssignedUsers?.map(
                               (userDtl: any, index: any) => {
@@ -2067,6 +2121,7 @@ function EditProjectPopup(item: any) {
                           userDisplayName={EditData.userDisplayName}
                           listName={EditData.siteType}
                           itemID={EditData.Id}
+                          AllListId={item?.AllListId}
                         ></CommentCard>
                       </div>
                       <div className="col-sm-8">

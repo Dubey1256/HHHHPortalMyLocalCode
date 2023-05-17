@@ -60,7 +60,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
     this.site = params.get('Site');
-    this.oldTaskLink = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile-Old.aspx?taskId=" + params.get('taskId') + "&Site=" + params.get('Site');
+    this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
       Result: {},
       listName: params.get('Site'),
@@ -227,7 +227,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
      this. smartMetaDataIcon=data;
 
     }).catch((error:any)=>{
-
+    console.log(error)
     });
   }
 
@@ -1166,8 +1166,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
               {this.currentUser != undefined && this.state.sendMail && this.state.emailStatus != "" && <EmailComponenet approvalcallback={() => { this.approvalcallback() }} Context={this.props.Context} emailStatus={this.state.emailStatus} currentUser={this.currentUser} items={this.state.Result} />}
             </span>
-            {this.state.Result.sitePage == "SP" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
-            {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>}
+          <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={this.oldTaskLink} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>
+            {/* {this.state.Result.sitePage == "SH" && <span className="text-end fs-6"> <a target='_blank' data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${this.state.Result.Id}&Site=${this.state.Result.listName}`} style={{ cursor: "pointer", fontSize: "14px" }}>Old Task Profile</a></span>} */}
           </h2>
         </section>
         <section>

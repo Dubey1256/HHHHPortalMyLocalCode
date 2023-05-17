@@ -230,7 +230,7 @@ let AllAvailableTitle: any = [];
                         </table>
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item?.props} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
         </>
     )
 }

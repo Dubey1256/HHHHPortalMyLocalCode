@@ -273,7 +273,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
             ApprovalType: taskItem.IsApprovalMail,
-            CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+            //CategoriesItemsJson: taskItem.CategoriesItemsJson != null ? JSON.parse(taskItem.CategoriesItemsJson) : [],
             TimeCategory: taskItem.TimeCategory,
             IsActive: taskItem.IsActive,
             IsTaskNotifications: taskItem.IsTaskNotifications,
@@ -371,7 +371,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         selTaskItem.approverMail = selTask.ApproverMail;
         selTaskItem.timeCategory = selTask.TimeCategory;
         selTaskItem.approvalType = selTask.ApprovalType;
-        selTaskItem.selSmartMetadataItems = selTask.CategoriesItemsJson;
+        selTaskItem.selSmartMetadataItems = selTask?.CategoriesItemsJson;
         selTaskItem.company = selTask.Company;
         selTaskItem.roles = selTask.Role ? selTask.Role.split(",") : []
         selTaskItem.isActive = selTask.IsActive,
@@ -522,7 +522,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             TimeCategory: taskItem.timeCategory,
             ApproverId: taskItem.approverId,
             IsApprovalMail: taskItem.approvalType,
-            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
+            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems != undefined && this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
             Company: taskItem.company,
             Role: taskItem.roles,
             IsActive: taskItem.isActive,
@@ -613,7 +613,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             AssignedToUserMail: taskItem.AssingedToUser ? [taskItem.AssingedToUser.Name.split("|")[2]] : [],
             ApproverMail: taskItem.Approver ? taskItem.Approver.map((i: { Name: string; })=>i.Name.split("|")[2]) : [],
             ApprovalType: taskItem.IsApprovalMail,
-            CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
+           // CategoriesItemsJson: taskItem.CategoriesItemsJson ? JSON.parse(taskItem.CategoriesItemsJson) : [],
             TimeCategory: taskItem.TimeCategory,
             IsActive: taskItem.IsActive,
             IsTaskNotifications: taskItem.IsTaskNotifications,
@@ -965,7 +965,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
              
         const elemApproveSelectedMenu = (<PrimaryButton menuProps={this.menuProps()}>Select Items</PrimaryButton>);
 
-        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems.map((selSmartMetadataItem) =>(
+        const elemSelSmartMetadataItems = this.state.taskItem.selSmartMetadataItems?.map((selSmartMetadataItem) =>(
             <Label>
                 {selSmartMetadataItem.Title}
                 <Icon iconName="Delete" onClick={()=>this.onRemoveSmartMetadataItem(selSmartMetadataItem.Id)}></Icon>

@@ -74,6 +74,7 @@ import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
+import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
@@ -174,6 +175,9 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [checkData, setcheckData]=React.useState({})
+  const [showTeamMemberOnCheck, setShowTeamMemberOnCheck]=React.useState(false)
+  const [checkCounter,setCheckCounter]=React.useState(true)
 
   const [maidataBackup, setmaidataBackup] = React.useState([]);
   const [search, setSearch]: [string, (search: string) => void] =
@@ -3211,6 +3215,7 @@ function ComponentTable(SelectedProp: any) {
               if (subComp.Id == MainId || subComp.ID == MainId) {
                 subComp.childs.push(childItem.data);
                 subComp.subRows.push(childItem.data);
+
               }
 
               if (subComp.subRows != undefined && subComp.subRows.length > 0) {
@@ -3233,6 +3238,8 @@ function ComponentTable(SelectedProp: any) {
                       Feat.subRows == undefined ? [] : Feat.subRows;
                     Feat.childs.push(childItem.data);
                     Feat.subRows.push(childItem.data);
+                    
+                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) =>ind === Feat?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
                   }
 
                   if (Feat.subRows != undefined && Feat.subRows.length > 0) {
@@ -3262,13 +3269,7 @@ function ComponentTable(SelectedProp: any) {
                         // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
                         //     return array.indexOf(val) == id;
                         // })
-                        Activity.subRows = Activity?.subRows?.filter(
-                          (ele: any, ind: any) =>
-                            ind ===
-                            Activity?.subRows?.findIndex(
-                              (elem: { ID: any }) => elem.ID === ele.ID
-                            )
-                        );
+                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) =>ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
                       }
 
                       if (
@@ -3298,13 +3299,7 @@ function ComponentTable(SelectedProp: any) {
                               workst.subRows == undefined ? [] : workst.subRows;
                             workst.childs.push(childItem.data);
                             workst.subRows.push(childItem.data);
-
-                            workst.subRows = workst?.subRows?.filter(
-                              (ele: any, ind: any) =>
-                                ind ===
-                                workst?.subRows?.findIndex(
-                                  (elem: { ID: any }) => elem.ID === ele.ID
-                                )
+                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) =>ind ===workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID)
                             );
                           }
                         });
@@ -3317,7 +3312,7 @@ function ComponentTable(SelectedProp: any) {
           }
         });
 
-        setData((array) => [...array]);
+        // setData((array) => [...array]);
         refreshData();
         // rerender();
       }
@@ -3418,6 +3413,13 @@ function ComponentTable(SelectedProp: any) {
   //////////CheckBox Item Start/////
 
   const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+    if(eTarget == true){
+      setcheckData(itrm)
+      setShowTeamMemberOnCheck(true)
+    }else{
+      setcheckData({})
+      setShowTeamMemberOnCheck(false)
+    }
     var Arrays: any = [];
     const checked = eTarget;
     if (checked == true) {
@@ -3487,6 +3489,7 @@ function ComponentTable(SelectedProp: any) {
         });
       }
     });
+    // setData(maidataBackup);
     setData((data) => [...maidataBackup]);
     setCheckedList((checkedList) => [...list]);
   };
@@ -4296,11 +4299,11 @@ function ComponentTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <div className="d-flex"
-            style={row.getCanExpand() ? { paddingLeft: `${row.depth * 3}px`, }
-              : {
-                paddingLeft: "18px",
-              }
-            }
+            // style={row.getCanExpand() ? { paddingLeft: `${row.depth * 3}px`, }
+            //   : {
+            //     paddingLeft: "18px",
+            //   }
+            // }
           >
             <>
               {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
@@ -4425,14 +4428,14 @@ function ComponentTable(SelectedProp: any) {
               {row?.original?.SiteIcon != undefined ? (
                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
                   <img
-                    className="icon-sites-img ml20 me-1"
+                    className="icon-sites-img ml20 me-1" style={{ marginLeft: `${row.depth * 12}px`,}}
                     src={row?.original?.SiteIcon}
                   ></img>
                 </a>
               ) : (
                 <>
                   {row?.original?.Title != "Others" ? (
-                    <div className="Dyicons">
+                    <div className="Dyicons" style={{ marginLeft: `${row.depth * 8}px`,}}>
                       {row?.original?.SiteIconTitle}
                     </div>
                   ) : (
@@ -4448,7 +4451,7 @@ function ComponentTable(SelectedProp: any) {
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 2,
+        size: 5,
       },
       {
         accessorKey: "Shareweb_x0020_ID",
@@ -4483,7 +4486,7 @@ function ComponentTable(SelectedProp: any) {
               ""
             )}
             {row?.original?.Categories == 'Draft' ?
-              <FaCompressArrowsAlt style={{height:'11px', width: '20px'}}/> : ''}
+              <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
               <span className='ms-1'>({row?.original?.childsLength})</span> : ''}
 
@@ -4507,11 +4510,10 @@ function ComponentTable(SelectedProp: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 28,
+        size: 25,
       },
       {
-        accessorFn: (row) =>
-          row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
+        accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
             {row?.original?.ClientCategory?.map((elem: any) => {
@@ -4532,15 +4534,10 @@ function ComponentTable(SelectedProp: any) {
         size: 10,
       },
       {
-        accessorFn: (row) =>
-          row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
+        accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
         cell: ({ row }) => (
           <div>
-            <ShowTaskTeamMembers
-              key={row?.original?.Id}
-              props={row?.original}
-              TaskUsers={AllUsers}
-            />
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp.SelectedProp}/>
           </div>
         ),
         id: "TeamLeaderUser",
@@ -4716,11 +4713,21 @@ function ComponentTable(SelectedProp: any) {
     enableSubRowSelection: false,
     filterFns: undefined,
   });
-
+  
   console.log(".........", table.getSelectedRowModel().flatRows);
   React.useEffect(() => {
-    CheckDataPrepre();
-  }, [table?.getSelectedRowModel()?.flatRows.length]);
+      CheckDataPrepre();
+  },[table?.getSelectedRowModel()?.flatRows.length]);
+
+
+  
+  // React.useEffect(() => {
+  //   if (CheckCounter == 0) {
+  //     CheckCounter=CheckCounter+1
+  //     CheckDataPrepre();
+  //   }
+  //   // CheckDataPrepre();
+  // }, [table?.getSelectedRowModel()?.flatRows.length]);
 
   const CheckDataPrepre = () => {
     let eTarget = false;
@@ -4754,7 +4761,6 @@ function ComponentTable(SelectedProp: any) {
         //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
         //   }
         //   if (parentData != undefined && parentData?.parentRow != undefined) {
-
         //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
         //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
         //   }
@@ -4763,7 +4769,7 @@ function ComponentTable(SelectedProp: any) {
 
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
-        if (elem?.getCanSelect() == true) {
+        if (elem?.getCanSelect() == true){
           eTarget = true;
         } else {
           eTarget = false;
@@ -4776,6 +4782,15 @@ function ComponentTable(SelectedProp: any) {
       onChangeHandler(itrm, parentDataCopy, eTarget);
     }
   };
+
+  // if(table?.getSelectedRowModel()?.flatRows.length > 0){
+  //   if (checkCounter == true) {
+  //     setCheckCounter(false)
+  //     CheckDataPrepre();
+  //   }else
+  //   setCheckCounter(true)
+  // }
+
   let activity = 0;
   let workstrim = 0;
   let task = 0;
@@ -5365,29 +5380,6 @@ function ComponentTable(SelectedProp: any) {
                         {AllCountItems.AllFeaturesItems.length} Features
                       </label>
                     )}
-
-                    {/* <label className="ms-1 me-1"> | </label>
-                                        {FilterShowhideShwingData === true ? <label>
-                                            {activityCopy}  of {activity} Activities
-                                        </label> :
-                                            <label>
-                                                {activity}  of {activity} Activities
-                                            </label>}
-                                        <label className="ms-1 me-1"> | </label>
-                                        {FilterShowhideShwingData === true ? <label>
-                                            {workstrimCopy}  of {workstrim} Workstreams
-                                        </label> :
-                                            <label>
-                                                {workstrim}  of {workstrim} Workstreams
-                                            </label>}
-                                        <label className="ms-1 me-1"> | </label>
-                                        {FilterShowhideShwingData === true ? <label>
-                                            {taskCopy}  of {task} Tasks
-                                        </label> :
-                                            <label>
-                                                {task}  of {task} Tasks
-                                            </label>} */}
-
                     <span
                       className="popover__wrapper ms-1"
                       style={{ position: "unset" }}
@@ -5464,20 +5456,6 @@ function ComponentTable(SelectedProp: any) {
                       </span>
                     </span>
                   </span>
-                  {/* <span id="showing-all-tool">
-                                        <FaInfoCircle style={{ color: "#228b22" }} /> 
-                                    </span>
-                                    <ReactTooltip
-                                        anchorId="showing-all-tool"
-                                        place="bottom"
-                                        variant="info"
-                                        content={"Showing " + ComponentCopy + " of " + `${AllCountItems?.AllComponentItems?.length}` + " Components " + " | " +
-                                         FilterShowhideShwingData === "true" ? SubComponentCopy + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " : AllCountItems.AllSubComponentItems.length + " of " + AllCountItems.AllSubComponentItems.length + " SubComponents " + " | " + 
-                                         FilterShowhideShwingData === "true" ? FeatureCopy + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | " : AllCountItems.AllFeaturesItems.length + " of " + AllCountItems.AllFeaturesItems.length + " Features " + " | "  +
-                                         FilterShowhideShwingData === "true" ? activityCopy + " of " + activity + " Activities " + " | " : activity + " of " + activity + " Activities " + " | " +  
-                                         FilterShowhideShwingData === "true" ? workstrimCopy + " of " + workstrim + " Workstreams " + " | " : workstrim + " of " + workstrim + " Workstreams " + " | " + 
-                                         FilterShowhideShwingData === "true" ? taskCopy + " of " + task + " Tasks " + " | " : task + " of " + task + " Tasks "}
-                                    /> */}
                   <span className="toolbox mx-auto">
                     {checkedList != undefined &&
                       checkedList.length > 0 &&
@@ -5521,6 +5499,8 @@ function ComponentTable(SelectedProp: any) {
                       <MdAdd />
                       Restructure
                     </button>
+
+                    {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers}/>: ''}
 
                     <a className="brush" onClick={clearSearch}>
                       <FaPaintBrush />

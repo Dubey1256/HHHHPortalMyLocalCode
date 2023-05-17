@@ -166,9 +166,10 @@ const AddCommentComponent = (FbData: any) => {
                                         {ApprovalStatus ?
                                             <>
                                                 {commentDtl.isApprovalComment != undefined && commentDtl.isApprovalComment == true ?
-                                                    <div className='add_cmnt borde-0 border-0 col-10 d-flex float-end justify-content-between m-0 my-1 p-0 align-autoplay'>
-                                                        <div className="alignCenter">
-                                                            {isCurrentUserApprover ? <span className="MR5">
+                                                    <div className='add_cmnt borde-0 border-0 col-12 d-flex float-end justify-content-between m-0 my-1 p-0 align-autoplay'>
+                                                        <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"}>
+                                                            {/* {isCurrentUserApprover ?  */}
+                                                            <span className="MR5">
                                                                 <span title="Rejected"
                                                                     onClick={() => SmartLightUpdateSubComment(index, "Reject")}
                                                                     className={commentDtl.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -178,8 +179,8 @@ const AddCommentComponent = (FbData: any) => {
                                                                 </span>
                                                                 <span title="Approved" onClick={() => SmartLightUpdateSubComment(index, "Approve")} className={commentDtl.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                                 </span>
-                                                            </span> : null
-                                                            }
+                                                            </span>
+                                                            {/* : null } */}
                                                             {commentDtl.ApproverData != undefined && commentDtl.ApproverData.length > 0 ?
                                                                 <span className="siteColor ms-2 hreflink" title="Approval-History Popup" onClick={() => ApprovalPopupOpenHandle(index, commentDtl)}>
                                                                     Pre-approved by - <span className="ms-1"><a title={commentDtl.ApproverData[commentDtl.ApproverData.length - 1]?.Title}><img className='imgAuthor' src={commentDtl.ApproverData[commentDtl.ApproverData.length - 1]?.ImageUrl} /></a></span>
@@ -194,7 +195,7 @@ const AddCommentComponent = (FbData: any) => {
                                                     : null}
                                             </> :
                                             null}
-                                        <div className={`col-10 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
+                                        <div className={`col-12 d-flex float-end add_cmnt my-1 ${commentDtl.isShowLight}`} title={commentDtl.isShowLight}>
                                             <div className="">
                                                 <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={commentDtl.AuthorImage != undefined && commentDtl.AuthorImage != '' ?
                                                     commentDtl.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
@@ -225,11 +226,11 @@ const AddCommentComponent = (FbData: any) => {
                     {
                         FbData.postStatus ?
                             <section className="mt-1 clearfix">
-                                {ApprovalStatus ? <div className="col-10 d-flex float-end">
+                                {ApprovalStatus ? <div className="col-12 d-flex float-end">
                                     <input type="checkbox" onClick={() => setMarkAsApproval(true)} className="form-check-input m-0 me-1 mt-1 rounded-0" />
                                     <label className="siteColor">Mark as Approval Comment</label>
                                 </div> : null}
-                                <div className="col-10 d-flex float-end my-1">
+                                <div className="col-12 d-flex float-end my-1">
                                     <textarea id="txtComment SubTestBorder" style={{ height: "40px" }} onChange={(e) => handleChangeInput(e)} className="full-width" ></textarea>
                                     <button type="button" className="post btn btn-primary mx-1" onClick={() => PostButtonClick(FbData.postStatus, FbData.index)}>Post</button>
                                     <button type="button" className="post btn btn-default" onClick={cancelCommentBtn}>Cancel</button>
