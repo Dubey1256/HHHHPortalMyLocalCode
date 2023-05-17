@@ -3433,9 +3433,7 @@ function ComponentTable(SelectedProp: any) {
       }
       if (itrm.SharewebTaskType != undefined) {
         if (
-          itrm?.SharewebTaskType?.Title == "Activities" ||
-          itrm.SharewebTaskType.Title == "Workstream"
-        ) {
+          itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
           setActivityDisable(false);
           itrm["siteUrl"] = ContextValue?.siteUrl;
           // itrm['listName'] = 'Master Tasks';
@@ -4805,6 +4803,7 @@ function ComponentTable(SelectedProp: any) {
       if (Sub?.SharewebTaskType?.Title == "Task") {
         task = task + 1;
       }
+      
       Sub?.subRows?.map((feat: any) => {
         if (feat?.SharewebTaskType?.Title == "Activities") {
           activity = activity + 1;
