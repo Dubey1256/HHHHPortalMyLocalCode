@@ -43,8 +43,10 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
-var BackupCat: any = "";
+var BackupCat: any = [];
 let portfolioType = "";
+var CheckCategory: any = [];
+var backcatss: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -173,7 +175,7 @@ function EditProjectPopup(item: any) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
           if (type.Id == val.Id) {
-            BackupCat = type.Id;
+            BackupCat.push(type.Id);
             setcheckedCat(true);
           }
         });
@@ -513,8 +515,9 @@ function EditProjectPopup(item: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              BackupCat = type.Id;
-              setcheckedCat(true);
+              val.isChecked=true;
+              // BackupCat.push(type.Id);
+              // setcheckedCat(true);
             }
           });
         });
@@ -563,6 +566,12 @@ function EditProjectPopup(item: any) {
     });
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
+    backcatss = BackupCat.filter((val: any, id: any, array: any) => {
+
+      return array.indexOf(val) == id;
+    
+   })
+   //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -585,6 +594,7 @@ function EditProjectPopup(item: any) {
   const GetSmartmetadata = async () => {
     let web = new Web(AllListId?.siteUrl);
     let smartmetaDetails = [];
+    let categoryhh:any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
@@ -602,7 +612,16 @@ function EditProjectPopup(item: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
+        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title== "Email Notification" || val.Title== "Approval" || val.Title== "Immediate")) {
+          categoryhh.push(val);
+        }
+
       });
+       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+
+          return array.indexOf(val) == id;
+        
+       })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -896,6 +915,17 @@ function EditProjectPopup(item: any) {
           });
         }
       }
+    }
+    if (CategoriesData != undefined) {
+      CategoriesData.forEach(function (type: any) {
+        CheckCategory.forEach(function (val: any) {
+          if (type.Id == val.Id) {
+            BackupCat.push(type.Id);
+            setcheckedCat(true);
+          }
+        });
+      });
+      setUpdate(update + 2);
     }
     portfolioType = type;
     setIsPortfolio(true);
@@ -1236,18 +1266,18 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
+  
+  // CheckCategory.push(
+  //   { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
+  //   {
+  //     TaxType: "Categories",
+  //     Title: "Email Notification",
+  //     Id: 276,
+  //     ParentId: 225,
+  //   },
+  //   { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
+  //   { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
+  // );
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1349,13 +1379,19 @@ function EditProjectPopup(item: any) {
   };
   var NewArray: any = [];
   const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
+    CheckCategory.map((catTitle: any,index:any) => {
       setcheckedCat(false);
-      if (type == catTitle.Title) {
+      if (type.Title == catTitle.Title) {
         NewArray.push(catTitle);
       }
+      
     });
+    
+   
+
   };
+
+  
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
     setLinkedComponentData(array);
@@ -1810,32 +1846,54 @@ function EditProjectPopup(item: any) {
                               </span>
                             </div>
 
-                            <div className="col-sm-11  inner-tabb">
-                              <div className="col">
-                                <div className="col">
-                                  {CheckCategory.map((type: any) => {
-                                    return (
-                                      <>
-                                        <div className="form-check">
-                                          <input
-                                            className="form-check-input"
-                                            checked={
-                                              BackupCat == type.Id
-                                                ? checkedCat
-                                                : false
-                                            }
-                                            type="checkbox"
-                                            onClick={() => checkCat(type.Title)}
-                                          />
-                                          <label className="form-check-label">
-                                            {type.Title}
-                                          </label>
-                                        </div>
-                                      </>
-                                    );
-                                  })}
+                            <div className="col">
+                            <div className="col">
+                              {CheckCategory.map((type: any) => {
+                                return (
+                                  <>
+                                    <div className="form-check">
+                                      <input
+                                        className="form-check-input"
+                                        defaultChecked={type.isChecked}
+                                        type="checkbox"
+                                        onClick={() => checkCat(type)}
+                                      />
+                                      <label className="form-check-label">
+                                        {type.Title}
+                                      </label>
+                                    </div>
+                                  </>
+                                );
+                              })}
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                onClick={()=>checkCat('Phone')}/>
+                                                                <label className="form-check-label">Phone</label>
+                                                            </div> */}
+                              {/* <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Email Notification')} />
+                                                                <label>Email Notification</label>
 
-{CategoriesData != undefined ? (
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onClick={()=>checkCat('Approvel')}/>
+                                                                <label>Approvel</label>
+
+                                                            </div>
+                                                            <div
+                                                                className="form-check">
+                                                                <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
+                                                                <label>Immediate</label>
+                                                            </div> */}
+                              {CategoriesData != undefined ? (
                                 <div>
                                   {CategoriesData?.map(
                                     (type: any, index: number) => {
@@ -1853,7 +1911,7 @@ function EditProjectPopup(item: any) {
                                                   }}
                                                   target="_blank"
                                                   data-interception="off"
-                                                  href={`${TeamConfigInfo.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
                                                 >
                                                   {type.Title}
                                                 </a>
@@ -1872,9 +1930,8 @@ function EditProjectPopup(item: any) {
                                   )}
                                 </div>
                               ) : null}
-                                </div>
-                              </div>
                             </div>
+                          </div>
                           </div>
                           {/* <div className="col-sm-4 ps-0 ">
                 <div className="input-group">
@@ -2064,7 +2121,7 @@ function EditProjectPopup(item: any) {
                           userDisplayName={EditData.userDisplayName}
                           listName={EditData.siteType}
                           itemID={EditData.Id}
-                          AllListId={TeamConfigInfo.AllListId}
+                          AllListId={item?.AllListId}
                         ></CommentCard>
                       </div>
                       <div className="col-sm-8">
