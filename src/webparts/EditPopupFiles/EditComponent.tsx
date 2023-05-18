@@ -206,7 +206,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     });
   };
   // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-  //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+  //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
 
   //     // below logic works fine in all condition
   //     if (LocalDateTime != '') {
@@ -413,18 +413,18 @@ function EditInstitution({item,SelectD,Calls}: any) {
     $.each(Tasks, function (index: any, item: any) {
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
-        item.TaskDueDate = moment(item.DueDate).format("DD/MM/YYYY");
-      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+        item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
+      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'MM-DD-YYYY');
       item.FilteredModifiedDate = item.Modified;
       item.DateModified = new Date(item.Modified);
       item.DateCreatedNew = new Date(item.Created);
 
       item.DateCreated = item.CreatedDate = moment(item.Created).format(
-        "DD/MM/YYYY"
-      ); // ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-      item.Creatednewdate = moment(item.Created).format("DD/MM/YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-      // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
-      //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+        "MM-DD-YYYY"
+      ); // ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY');
+      item.Creatednewdate = moment(item.Created).format("MM-DD-YYYY"); //ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY HH:mm');
+      // item.Modified = moment(item.Modified).format('MM-DD-YYYY');
+      //ConvertLocalTOServerDate(item.Modified, 'MM-DD-YYYY HH:mm');
       if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
         switch (item.Priority) {
           case "(1) High":
@@ -504,7 +504,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       if (item.Task_x0020_Type == undefined)
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
-        item.DueDate = moment(item.DueDate).format("DD/MM/YYYY");
+        item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
       if (item.SharewebCategories != null) {
@@ -529,7 +529,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         setLinkedComponentData(Rr);
       }
       // if (item.StartDate != undefined) {
-      //   item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
+      //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
       //   //setStartdate(item.StartDate);
       // }
       if (item.component_x0020_link != null) {
@@ -537,7 +537,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         //setStartdate(item.StartDate);
       }
       if (item.CompletedDate != undefined) {
-        item.CompletedDate = moment(item.CompletedDate).format("DD/MM/YYYY");
+        item.CompletedDate = moment(item.CompletedDate).format("MM-DD-YYYY");
         // item.CompletedDate = item.CompletedDate.toString();
         // setCompletiondatenew(item.CompletedDate);
       }
@@ -1794,7 +1794,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Start Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-DD-MM")}
+                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
                                                         })}
@@ -1808,7 +1808,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Due Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-DD-MM") : ''}
+                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
                                                         })}
@@ -2874,10 +2874,10 @@ function EditInstitution({item,SelectD,Calls}: any) {
                 <div>
                   <div className="text-left">
                     Created{" "}
-                    <span ng-bind="EditData?.Created | date:'dd/MM/yyyy'">
+                    <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
                       {" "}
                       {EditData?.Created != null
-                        ? moment(EditData?.Created).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData?.Created).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by
@@ -2891,7 +2891,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     Last modified{" "}
                     <span>
                       {EditData?.Modified != null
-                        ? moment(EditData?.Modified).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData?.Modified).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by{" "}
