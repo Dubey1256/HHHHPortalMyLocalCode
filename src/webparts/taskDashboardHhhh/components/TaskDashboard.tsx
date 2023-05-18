@@ -53,6 +53,7 @@ const TaskDashboard = (props: any) => {
     const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
+    const [sharewebTasks, setSharewebTasks] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
     const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
@@ -322,6 +323,8 @@ const TaskDashboard = (props: any) => {
     // All Sites Task
     const LoadAllSiteTasks = function () {
         let AllSiteTasks: any = [];
+        let approverTask: any = [];
+        let SharewebTask: any = [];
         let AllBottleNeckTasks: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
@@ -336,7 +339,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+                            .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -398,7 +401,6 @@ const TaskDashboard = (props: any) => {
                                         }
                                     })
 
-                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
@@ -417,8 +419,17 @@ const TaskDashboard = (props: any) => {
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
+
+                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+                                    const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                                    if (isCurrentUserApprover && task?.PercentComplete == '1') {
+                                        approverTask.push(task)
+                                    }
                                     if (isBottleneckTask) {
                                         AllBottleNeckTasks.push(task)
+                                    }
+                                    if (task.ClientActivityJson != undefined) {
+                                        SharewebTask.push(task)
                                     }
                                     AllSiteTasks.push(task)
                                 });
@@ -427,7 +438,10 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
+                            backupTaskArray.assignedApproverTasks = approverTask;
+                            setAssignedApproverTasks(approverTask)
                             setAllSitesTask(AllSiteTasks)
+                            setSharewebTasks(SharewebTask)
                             setAllBottleNeck(AllBottleNeckTasks)
                             const params = new URLSearchParams(window.location.search);
                             let query = params.get("UserId");
@@ -492,6 +506,7 @@ const TaskDashboard = (props: any) => {
         inlineCallBack(item)
     }, []);
     const inlineCallBack = React.useCallback((item: any) => {
+        console.log(pageAll)
         AllTasks?.map((task: any, index: any) => {
             if (task?.Id == item?.Id && task?.siteType == item?.siteType) {
                 AllTasks[index] = { ...task, ...item };
@@ -515,19 +530,14 @@ const TaskDashboard = (props: any) => {
         let workingTodayTask: any = [];
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
-        let approverTask: any = [];
 
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
-                const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUserId);
-                const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+
                 const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                 let alreadyPushed = false;
-                if (isCurrentUserApprover && task?.PercentComplete == '1') {
-                    approverTask.push(task)
-                    alreadyPushed = true;
-                } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
                     workingTodayTask.push(task)
                     alreadyPushed = true;
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
@@ -547,12 +557,10 @@ const TaskDashboard = (props: any) => {
         backupTaskArray.workingTodayTasks = workingTodayTask;
         backupTaskArray.thisWeekTasks = workingThisWeekTask;
         backupTaskArray.bottleneckTasks = bottleneckTask;
-        backupTaskArray.assignedApproverTasks = approverTask;
         setAllAssignedTasks(AllAssignedTask);
         setWorkingTodayTasks(workingTodayTask)
         setThisWeekTasks(workingThisWeekTask)
         setBottleneckTasks(bottleneckTask)
-        setAssignedApproverTasks(approverTask)
     }
     const filterCurrentUserWorkingTodayTask = (UserId: any) => {
         let workingTodayTask: any = [];
@@ -722,7 +730,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
         ],
-        [AllAssignedTasks, thisWeekTasks, workingTodayTasks]
+        [AllAssignedTasks,workingTodayTasks,thisWeekTasks]
     );
     const columnTimeReport = React.useMemo(
         () => [
@@ -888,7 +896,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
         ],
-        [weeklyTimeReport]
+        []
     );
 
     const {
@@ -1073,6 +1081,33 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllBottleNeck,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsSharewebTask,
+        getTableBodyProps: getTableBodyPropsSharewebTask,
+        headerGroups: headerGroupsSharewebTask,
+        page: pageSharewebTask,
+        prepareRow: prepareRowSharewebTask,
+        gotoPage: gotoPageSharewebTask,
+        setPageSize: setPageSizeSharewebTask,
+        canPreviousPage: canPreviousPageSharewebTask,
+        canNextPage: canNextPageSharewebTask,
+        pageOptions: pageOptionsSharewebTask,
+        pageCount: pageCountSharewebTask,
+        nextPage: nextPageSharewebTask,
+        previousPage: previousPageSharewebTask,
+        state: { pageIndex: pageIndexSharewebTask, pageSize: pageSizeSharewebTask },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: sharewebTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 10 },
         },
@@ -1567,6 +1602,9 @@ const TaskDashboard = (props: any) => {
     const onChangeInSelectAllBottle = (event: any) => {
         setPageSizeAllBottle(Number(event.target.value));
     };
+    const onChangeInSelectSharewebTask = (event: any) => {
+        setPageSizeSharewebTask(Number(event.target.value));
+    };
     //End
     return (
         <>
@@ -1674,13 +1712,20 @@ const TaskDashboard = (props: any) => {
                         </section>
                         <section className="sidebar__section sidebar__section--menu">
                             <nav className="nav__item">
-                                <ul className="nav__list ms-2" >
-                                    <li id="DefaultViewSelectId" className="nav__text  ms-3 hreflink" onClick={() => { setCurrentView('allBottlenecks') }}>
+                                <ul className="nav__list text-center" >
+                                    <li id="DefaultViewSelectId" className={currentView=='allApproverView'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allApproverView') }}>
+                                        Approver Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView=='sharewebTasks'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
+                                        Shareweb Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView=='allBottlenecks'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
                                         All Bottlenecks
                                     </li>
-                                    <li id="DefaultViewSelectId" className="nav__text  ms-3 hreflink" onClick={() => { setCurrentView('allTasksView') }}>
+                                    <li id="DefaultViewSelectId" className={currentView=='allTasksView'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
                                         All Tasks
                                     </li>
+
                                 </ul>
                             </nav>
                         </section>
@@ -1905,72 +1950,7 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                <details>
-                                    <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
-                                    <div className='AccordionContent mx-height'  >
-                                        {assignedApproverTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
-                                                <thead className="fixed-Header">
-                                                    {headerGroupsApprover?.map((headerGroup: any) => (
-                                                        <tr {...headerGroup.getHeaderGroupProps()}>
-                                                            {headerGroup.headers.map((column: any) => (
-                                                                <th {...column.getHeaderProps()} style={column?.style}>
-                                                                    <span
-                                                                        class="Table-SortingIcon"
-                                                                        style={{ marginTop: "-6px" }}
-                                                                        {...column.getSortByToggleProps()}
-                                                                    >
-                                                                        {column.render("Header")}
-                                                                        {generateSortingIndicator(column)}
-                                                                    </span>
-                                                                    <Filter column={column} />
-                                                                </th>
-                                                            ))}
-                                                        </tr>
-                                                    ))}
-                                                </thead>
-                                                {pageApprover?.length > 0 ?
-                                                    <tbody {...getTableBodyPropsApprover}>
-                                                        {pageApprover?.map((row: any) => {
-                                                            prepareRowApprover(row);
-                                                            return (
-                                                                <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
-                                                                    {row.cells.map(
-                                                                        (cell: {
-                                                                            getCellProps: () => JSX.IntrinsicAttributes &
-                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
-                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                                            render: (
-                                                                                arg0: string
-                                                                            ) =>
-                                                                                | boolean
-                                                                                | React.ReactChild
-                                                                                | React.ReactFragment
-                                                                                | React.ReactPortal;
-                                                                        }) => {
-                                                                            return (
-                                                                                <td {...cell.getCellProps()}>
-                                                                                    {cell.render("Cell")}
-                                                                                </td>
-                                                                            );
-                                                                        }
-                                                                    )}
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody> :
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colSpan={columns?.length}>
-                                                                <div className="text-center full-width"><span>No Search Result</span></div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>}
-                                            </Table> : <div className='text-center full-width'>
-                                                <span>No Approver Tasks Available</span>
-                                            </div>}
-                                    </div>
-                                </details>
+
                                 <details onDrop={(e: any) => handleDrop('AllTasks')}
                                     onDragOver={(e: any) => e.preventDefault()}>
                                     <summary>
@@ -2399,6 +2379,195 @@ const TaskDashboard = (props: any) => {
                                         </>
                                         : <div className='text-center full-width'>
                                             <span>No All Sites Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'allApproverView' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Approver Tasks - ${pageApprover?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {assignedApproverTasks?.length > 0 ?
+                                        <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
+                                            <thead className="fixed-Header">
+                                                {headerGroupsApprover?.map((headerGroup: any) => (
+                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                        {headerGroup.headers.map((column: any) => (
+                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                <span
+                                                                    class="Table-SortingIcon"
+                                                                    style={{ marginTop: "-6px" }}
+                                                                    {...column.getSortByToggleProps()}
+                                                                >
+                                                                    {column.render("Header")}
+                                                                    {generateSortingIndicator(column)}
+                                                                </span>
+                                                                <Filter column={column} />
+                                                            </th>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </thead>
+                                            {pageApprover?.length > 0 ?
+                                                <tbody {...getTableBodyPropsApprover}>
+                                                    {pageApprover?.map((row: any) => {
+                                                        prepareRowApprover(row);
+                                                        return (
+                                                            <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> :
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+                                        </Table> : <div className='text-center full-width'>
+                                            <span>No Approver Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'sharewebTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Shareweb Tasks - ${sharewebTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {sharewebTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllSite()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsSharewebTask?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageSharewebTask?.length > 0 ? <tbody {...getTableBodyPropsSharewebTask()}>
+                                                    {pageSharewebTask?.map((row: any) => {
+                                                        prepareRowSharewebTask(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageSharewebTask()} disabled={!canPreviousPageSharewebTask}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexSharewebTask + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageSharewebTask()} disabled={!canNextPageSharewebTask}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeSharewebTask}
+                                                            onChange={onChangeInSelectSharewebTask}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeSharewebTask) => (
+                                                                <option key={pageSizeSharewebTask} value={pageSizeSharewebTask}>
+                                                                    Show {pageSizeSharewebTask}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Shareweb Tasks Available</span>
                                         </div>}
                                 </div>
                             </div>

@@ -367,7 +367,7 @@ export default function ProjectOverview(props: any) {
                 ),
             },
         ],
-        [data]
+        []
     );
 
 
@@ -488,6 +488,7 @@ export default function ProjectOverview(props: any) {
     }, []);
 
     const CallBack = React.useCallback(() => {
+        console.log(page);
         GetMasterData()
     }, [])
     const getComponentasString = function (results: any) {
