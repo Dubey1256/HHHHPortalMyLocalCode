@@ -6,3 +6,17 @@
     max-width: 1461px;
     min-height: 0;
   }
+
+  .filtertable .Table-SortingIcon {
+    top: 18px;
+    right: -7px;
+  }
+  .dropdown.filtericons {
+    top: 14px;
+    position: absolute;
+    right: 7px;
+  }
+
+  .Alltable .table>tbody>tr>th, .Alltable .table>tfoot>tr>th, .Alltable .table>thead>tr>th {
+    padding: 5px;
+  }

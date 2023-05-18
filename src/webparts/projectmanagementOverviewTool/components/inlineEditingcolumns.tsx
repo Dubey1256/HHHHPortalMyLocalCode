@@ -852,7 +852,7 @@ const inlineEditingcolumns = (props: any) => {
                 headerText={`Update Task Priority`}
                 isOpen={TaskPriorityPopup}
                 onDismiss={() => setTaskPriorityPopup(false)}
-                isBlocking={TaskStatusPopup}
+                isBlocking={TaskPriorityPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
@@ -885,8 +885,9 @@ const inlineEditingcolumns = (props: any) => {
                                 onChange={(event) => handleCategoryChange(event, option.Id)}
                             />
                             <a title={option.Title}>
-                                <span className={option.spfxIconName} ></span>
-                                {/* <img className=' imgAuthor' src={require(`../../../Assets/ICON/${option.spfxIconName}`)} />  */}
+                                {option.Title=='Immediate'?<span className="workmember svg__iconbox svg__icon--alert " ></span>:''}
+                                {option.Title=='Bottleneck'?<span className="workmember svg__iconbox svg__icon--bottleneck " ></span>:''}
+                                {option.Title=='Favorite'?<span className="workmember svg__iconbox svg__icon--Star " ></span>:''}
                             </a>
                             <label htmlFor={option.Id} className='ms-2'>{option.Title}</label>
                         </div>
@@ -902,7 +903,7 @@ const inlineEditingcolumns = (props: any) => {
                 headerText={`Update Team Members`}
                 isOpen={teamMembersPopup}
                 onDismiss={() => setTeamMembersPopup(false)}
-                isBlocking={TaskStatusPopup}
+                isBlocking={teamMembersPopup}
                 type={PanelType.medium}
             >
                 <div>
@@ -919,7 +920,7 @@ const inlineEditingcolumns = (props: any) => {
                 headerText={`Update Remarks`}
                 isOpen={remark}
                 onDismiss={() => setRemark(false)}
-                isBlocking={TaskStatusPopup}
+                isBlocking={remark}
             >
                 <div>
                     <textarea value={feedback} className='full-width' onChange={(e: any) => setFeedback(e.target.value)} />

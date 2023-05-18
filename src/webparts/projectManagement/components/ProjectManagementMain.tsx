@@ -30,7 +30,6 @@ var AllUser: any = [];
 var siteConfig: any = [];
 var AllListId: any = {};
 var backupAllTasks: any = [];
-var DataSiteIcon: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -413,33 +412,7 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  const loadAdminConfigurations = async () => {
-    if (AllListId?.AdminConfigrationListID != undefined) {
-      var CurrentSiteType = "";
-      let web = new Web(props?.siteUrl);
-      await web.lists
-        .getById(AllListId.AdminConfigrationListID)
-        .items.select(
-          "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-        )
-        .top(4999)
-        .get()
-        .then(
-          (response) => {
-            var SmartFavoritesConfig = [];
-            $.each(response, function (index: any, smart: any) {
-              if (smart.Configurations != undefined) {
-                DataSiteIcon = JSON.parse(smart.Configurations);
-              }
-            });
-          },
-          function (error) { }
-        );
-    } else {
-      alert('Admin Configration List Id not present')
-      DataSiteIcon = [];
-    }
-  };
+
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
   }, []);
@@ -456,7 +429,6 @@ const ProjectManagementMain = (props: any) => {
     // setData(backupAllTasks);
   }, []);
   const LoadAllSiteTasks = function () {
-    loadAdminConfigurations();
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -508,13 +480,7 @@ const ProjectManagementMain = (props: any) => {
                 items.PortfolioTitle = items?.Services[0]?.Title;
                 items["Portfoliotype"] = "Service";
               }
-              if (DataSiteIcon != undefined) {
-                DataSiteIcon.map((site: any) => {
-                  if (site.Site == items.siteType) {
-                    items["siteIcon"] = site.SiteIcon;
-                  }
-                });
-              }
+              items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
 
               items.TeamMembersSearch = "";
               if (items.AssignedTo != undefined) {
