@@ -224,14 +224,14 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                     className="col"
                                     onChange={handleChangeChild}
                                 >
-                                    <div className="Task-panel alignCenter justify-content-between ">
+                                    <div className="Task-panel alignCenter justify-content-between">
                                         <div className="alignCenter">
                                             <span className="me-1">{`${SubTextItemsArray.index}.${index + 1}`}</span>
                                             <div className="d-flex">
                                                 {ApprovalStatus ?
                                                     <div>
                                                         {/* {isCurrentUserApprover ? */}
-                                                        <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"} >
+                                                        <div className={isCurrentUserApprover ? "alignCenter mt-1" : "alignCenter Disabled-Link mt-1"} >
                                                             <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                                                                 <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
                                                                     className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}

@@ -223,14 +223,14 @@ const SiteCompositionComponent = (Props: any) => {
             // setCheckBoxStatus(true);
         }
         if (Type == "Overridden") {
-            let object:any;
-            if(SiteCompositionSettings[0].localSiteComposition == true){
-                object = { ...SiteCompositionSettings[0],localSiteComposition: false }
-            }else{
-                object = { ...SiteCompositionSettings[0],localSiteComposition: true }
+            let object: any;
+            if (SiteCompositionSettings[0].localSiteComposition == true) {
+                object = { ...SiteCompositionSettings[0], localSiteComposition: false }
+            } else {
+                object = { ...SiteCompositionSettings[0], localSiteComposition: true }
             }
             SiteCompositionSettings[0] = object;
-           
+
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
@@ -550,7 +550,7 @@ const SiteCompositionComponent = (Props: any) => {
             </div>
         )
     }
-
+    let TotalPercent: any = 0;
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {console.log("All Category Data in Div ======", AllClientCategoryData)}
@@ -594,7 +594,7 @@ const SiteCompositionComponent = (Props: any) => {
                 <label>
                     Portfolio
                 </label>
-                <img className="mt-0 siteColor mx-1" onClick={()=>alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
                 <span className="pull-right">
                     <input
                         type="checkbox"
@@ -613,6 +613,10 @@ const SiteCompositionComponent = (Props: any) => {
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
                                 if (siteData.Title !== "Health" && siteData.Title !== "Offshore Tasks" && siteData.Title !== "Gender" && siteData.Title !== "Small Projects") {
+                                    if (siteData.ClienTimeDescription != undefined || siteData.ClienTimeDescription != null) {
+                                        let num: any = Number(siteData.ClienTimeDescription).toFixed(0);
+                                        TotalPercent = TotalPercent + Number(num);
+                                    }
                                     return (
                                         <tr>
                                             <th scope="row" className="m-0 p-1 align-middle" style={{ width: "3%" }}>
@@ -639,7 +643,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
                                                         type="number" min="1"
-                                                        value={siteData.ClienTimeDescription ?  Number(siteData.ClienTimeDescription).toFixed(2) : null}
+                                                        value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                         className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                         onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
                                                     /> : <input type="number" min="1"
@@ -866,7 +870,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </table>
                 <div className="bg-secondary d-flex justify-content-end p-1 shadow-lg">
                     <div className="bg-body col-sm-2 p-1">
-                        <div className="">100%</div>
+                        <div className="">{isPortfolioComposition == true || ProportionalStatus == false ? `${TotalPercent} %` : "100%"}</div>
                     </div>
                     <div className="bg-body col-sm-2 p-1 mx-2">
                         <div className="">{TotalTime ? TotalTime : 0}</div>
