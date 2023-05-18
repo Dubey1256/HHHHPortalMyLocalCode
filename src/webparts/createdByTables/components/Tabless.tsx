@@ -89,7 +89,7 @@ const Tabless = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Title}</span>
+                        <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a>
                     </div>
                 )
             },
@@ -144,8 +144,11 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newModified}</span>
+                    
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newModified}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -156,8 +159,10 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newCreated}</span>
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newCreated}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -710,6 +715,7 @@ const editPopFunc=(item:any)=>{
                             userItem.AssingedToUser.Id == dataItem.Author.Id
                         ) {
                             dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
+
                         }
                         if (
                             userItem.AssingedToUser != undefined &&
