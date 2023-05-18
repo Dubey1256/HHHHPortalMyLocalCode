@@ -164,7 +164,7 @@ function ComponentTable(SelectedProp: any) {
     console.log(e);
   }
 
-
+  const [Display, setDisplay] = React.useState("none");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -175,9 +175,9 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [checkData, setcheckData]=React.useState({})
-  const [showTeamMemberOnCheck, setShowTeamMemberOnCheck]=React.useState(false)
-  const [checkCounter,setCheckCounter]=React.useState(true)
+  const [checkData, setcheckData] = React.useState({})
+  const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+  const [checkCounter, setCheckCounter] = React.useState(true)
 
   const [maidataBackup, setmaidataBackup] = React.useState([]);
   const [search, setSearch]: [string, (search: string) => void] =
@@ -1379,11 +1379,8 @@ function ComponentTable(SelectedProp: any) {
                   }
                 });
               }
-              result["SiteIcon"] = GetIconImageUrl(
-                result.siteType,
-                ContextValue.siteUrl,
-                undefined
-              );
+              // result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
+              result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
               if (
                 result.ClientCategory != undefined &&
                 result.ClientCategory.length > 0
@@ -3238,8 +3235,8 @@ function ComponentTable(SelectedProp: any) {
                       Feat.subRows == undefined ? [] : Feat.subRows;
                     Feat.childs.push(childItem.data);
                     Feat.subRows.push(childItem.data);
-                    
-                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) =>ind === Feat?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+
+                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
                   }
 
                   if (Feat.subRows != undefined && Feat.subRows.length > 0) {
@@ -3269,7 +3266,7 @@ function ComponentTable(SelectedProp: any) {
                         // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
                         //     return array.indexOf(val) == id;
                         // })
-                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) =>ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
                       }
 
                       if (
@@ -3299,7 +3296,7 @@ function ComponentTable(SelectedProp: any) {
                               workst.subRows == undefined ? [] : workst.subRows;
                             workst.childs.push(childItem.data);
                             workst.subRows.push(childItem.data);
-                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) =>ind ===workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID)
+                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID)
                             );
                           }
                         });
@@ -3336,87 +3333,14 @@ function ComponentTable(SelectedProp: any) {
     setSharewebTask(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  // const onChangeHandler = (itrm: any, child: any, e: any) => {
-  //     var Arrays: any = []
-  //     const { checked } = e.target;
-  //     if (checked == true) {
-  //         itrm.chekBox = true;
-  //         if (itrm.SharewebTaskType == undefined) {
-  //             setActivityDisable(false)
-  //             itrm['siteUrl'] = ContextValue.siteUrl;
-  //             itrm['listName'] = 'Master Tasks';
-  //             MeetingItems.push(itrm)
-  //             //setMeetingItems(itrm);
-
-  //         }
-  //         if (itrm.SharewebTaskType != undefined) {
-  //             if (itrm.SharewebTaskType.Title == 'Activities' || itrm.SharewebTaskType.Title == "Workstream") {
-  //                 setActivityDisable(false)
-  //                 itrm['siteUrl'] = ContextValue.siteUrl;
-  //                 itrm['listName'] = 'Master Tasks';
-  //                 Arrays.push(itrm)
-  //                 itrm['PortfolioId'] = child.Id;
-  //                 childsData.push(itrm)
-  //             }
-  //         }
-  //         if (itrm.SharewebTaskType != undefined) {
-  //             if (itrm.SharewebTaskType.Title == 'Task') {
-  //                 setActivityDisable(true)
-
-  //             }
-  //         }
-  //     }
-  //     if (checked == false) {
-  //         itrm.chekBox = false;
-  //         MeetingItems?.forEach((val: any, index: any) => {
-  //             if (val.Id == itrm.Id) {
-  //                 MeetingItems.splice(index, 1)
-  //             }
-  //         })
-  //         if (MeetingItems.length == 0) {
-  //             setActivityDisable(true)
-  //         }
-
-  //         $('#ClientCategoryPopup').hide();
-  //     }
-
-  //     const list = [...checkedList];
-  //     var flag = true;
-  //     list.forEach((obj: any, index: any) => {
-  //         if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
-  //             flag = false;
-  //             list.splice(index, 1);
-  //         }
-  //     })
-  //     if (flag)
-  //         list.push(itrm);
-  //     maidataBackup.forEach((obj, index) => {
-  //         obj.isRestructureActive = false;
-  //         if (obj.childs != undefined && obj.childs.length > 0) {
-  //             obj.childs.forEach((sub: any, indexsub: any) => {
-  //                 sub.isRestructureActive = false;
-  //                 if (sub.childs != undefined && sub.childs.length > 0) {
-  //                     sub.childs.forEach((newsub: any, lastIndex: any) => {
-  //                         newsub.isRestructureActive = false;
-
-  //                     })
-  //                 }
-
-  //             })
-  //         }
-
-  //     })
-  //     setData(data => ([...maidataBackup]));
-  //     setCheckedList(checkedList => ([...list]));
-  // };
 
   //////////CheckBox Item Start/////
 
   const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
-    if(eTarget == true){
+    if (eTarget == true) {
       setcheckData(itrm)
       setShowTeamMemberOnCheck(true)
-    }else{
+    } else {
       setcheckData({})
       setShowTeamMemberOnCheck(false)
     }
@@ -3433,9 +3357,7 @@ function ComponentTable(SelectedProp: any) {
       }
       if (itrm.SharewebTaskType != undefined) {
         if (
-          itrm?.SharewebTaskType?.Title == "Activities" ||
-          itrm.SharewebTaskType.Title == "Workstream"
-        ) {
+          itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
           setActivityDisable(false);
           itrm["siteUrl"] = ContextValue?.siteUrl;
           // itrm['listName'] = 'Master Tasks';
@@ -4268,6 +4190,17 @@ function ComponentTable(SelectedProp: any) {
     );
   };
 
+  const handleSuffixHover = () => {
+    setDisplay("block");
+    //  setTeamMember((TeamMember: any) => (...TeamMember: any));
+  };
+
+  const handleuffixLeave = () => {
+    setDisplay("none");
+
+    //  setTeamMember((TeamMember: any) => (...TeamMember: any));
+  };
+
   ///react table start function//////
 
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
@@ -4299,11 +4232,11 @@ function ComponentTable(SelectedProp: any) {
         ),
         cell: ({ row, getValue }) => (
           <div className="d-flex"
-            // style={row.getCanExpand() ? { paddingLeft: `${row.depth * 3}px`, }
-            //   : {
-            //     paddingLeft: "18px",
-            //   }
-            // }
+          // style={row.getCanExpand() ? { paddingLeft: `${row.depth * 3}px`, }
+          //   : {
+          //     paddingLeft: "18px",
+          //   }
+          // }
           >
             <>
               {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
@@ -4427,15 +4360,29 @@ function ComponentTable(SelectedProp: any) {
               )}{" "}
               {row?.original?.SiteIcon != undefined ? (
                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                  <img
-                    className="icon-sites-img ml20 me-1" style={{ marginLeft: `${row.depth * 12}px`,}}
-                    src={row?.original?.SiteIcon}
-                  ></img>
+                  {/* <img
+                    className="icon-sites-img ml20 me-1" style={{ marginLeft: `${row.depth * 12}px`, }}
+                    src={row?.original?.SiteIcon}>
+                  </img> */}
+                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
+                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                  }
+                    src={row?.original?.SiteIcon}>
+                  </img>
                 </a>
               ) : (
                 <>
+                  {/* {row?.original?.Title != "Others" ? (
+                    <div className="Dyicons" style={{ marginLeft: `${row.depth * 8}px`, }}>
+                      {row?.original?.SiteIconTitle}
+                    </div>
+                  ) : (
+                    ""
+                  )} */}
                   {row?.original?.Title != "Others" ? (
-                    <div className="Dyicons" style={{ marginLeft: `${row.depth * 8}px`,}}>
+                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                      row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                    }>
                       {row?.original?.SiteIconTitle}
                     </div>
                   ) : (
@@ -4451,7 +4398,7 @@ function ComponentTable(SelectedProp: any) {
         id: "row?.original.Id",
         canSort: false,
         placeholder: "",
-        size: 5,
+        size: 8,
       },
       {
         accessorKey: "Shareweb_x0020_ID",
@@ -4459,12 +4406,6 @@ function ComponentTable(SelectedProp: any) {
         header: "",
         size: 8,
       },
-
-
-
-
-
-
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -4510,40 +4451,60 @@ function ComponentTable(SelectedProp: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 25,
+        size: 30,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
-            {row?.original?.ClientCategory?.map((elem: any) => {
+            {row?.original?.ClientCategory?.map((elem: any, index: any) => {
               return (
                 <>
                   {" "}
-                  <span title={elem?.Title} className="ClientCategory-Usericon">
+                  {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon">
                     {elem?.Title?.slice(0, 2).toUpperCase()}
-                  </span>
+                  </span> : ''}
                 </>
               );
             })}
+            {row?.original?.ClientCategory != null && row?.original?.ClientCategory.length > 1 && row?.original?.ClientCategory?.slice(2)?.length != 0 ? (
+              <span className="position-relative user_Member_img_suffix2 ms-1 popover__wrapper " data-bs-toggle="tooltip" data-bs-placement="auto">
+                +{row?.original?.ClientCategory?.slice(2)?.length}
+                <span className="tooltiptext popover__content p-2" style={{ minWidth: "200px" }}>
+                  <div>
+                    {row?.original?.ClientCategory.slice(2).map((rcData: any, i: any) => {
+                      return (
+                        <>
+                          <span className="team_Members_Item" style={{ padding: "2px" }}>
+                            <div className="mx-2">{rcData?.Title}</div>
+                          </span>
+                        </>
+                      );
+                    })}
+                  </div>
+                </span>
+              </span>
+            ) : (
+              ""
+            )}
           </>
         ),
         id: "ClientCategory",
         placeholder: "Client Category",
         header: "",
-        size: 10,
+        size: 6,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
         cell: ({ row }) => (
           <div>
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp.SelectedProp}/>
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp.SelectedProp} />
           </div>
         ),
         id: "TeamLeaderUser",
         placeholder: "Team",
         header: "",
-        size: 7,
+        size: 5,
       },
       // {
       //     // accessorKey: "PercentComplete",
@@ -4613,7 +4574,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 1,
+        size: 0,
       },
       {
         cell: ({ row, getValue }) => (
@@ -4641,7 +4602,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 1,
+        size: 0,
       },
       {
         cell: ({ row, getValue }) => (
@@ -4713,14 +4674,14 @@ function ComponentTable(SelectedProp: any) {
     enableSubRowSelection: false,
     filterFns: undefined,
   });
-  
+
   console.log(".........", table.getSelectedRowModel().flatRows);
   React.useEffect(() => {
-      CheckDataPrepre();
-  },[table?.getSelectedRowModel()?.flatRows.length]);
+    CheckDataPrepre();
+  }, [table?.getSelectedRowModel()?.flatRows.length]);
 
 
-  
+
   // React.useEffect(() => {
   //   if (CheckCounter == 0) {
   //     CheckCounter=CheckCounter+1
@@ -4737,39 +4698,39 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-        // parentData = elem?.parentRow;
-        // parentDataCopy = elem?.parentRow?.original
-        parentDataCopy = elem?.getParentRows()[0]?.original;
-        // if (parentData != undefined && parentData?.parentRow != undefined) {
+          // parentData = elem?.parentRow;
+          // parentDataCopy = elem?.parentRow?.original
+          parentDataCopy = elem?.getParentRows()[0]?.original;
+          // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //   parentData = elem?.parentRow?.parentRow
-        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+          //   parentData = elem?.parentRow?.parentRow
+          //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        // }
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          // }
         }
 
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
-        if (elem?.getCanSelect() == true){
+        if (elem?.getCanSelect() == true) {
           eTarget = true;
         } else {
           eTarget = false;
@@ -4805,6 +4766,7 @@ function ComponentTable(SelectedProp: any) {
       if (Sub?.SharewebTaskType?.Title == "Task") {
         task = task + 1;
       }
+
       Sub?.subRows?.map((feat: any) => {
         if (feat?.SharewebTaskType?.Title == "Activities") {
           activity = activity + 1;
@@ -5500,7 +5462,7 @@ function ComponentTable(SelectedProp: any) {
                       Restructure
                     </button>
 
-                    {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers}/>: ''}
+                    {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers} /> : ''}
 
                     <a className="brush" onClick={clearSearch}>
                       <FaPaintBrush />
@@ -5627,25 +5589,20 @@ function ComponentTable(SelectedProp: any) {
                             return (
                               <tr
                                 className={
-                                  row?.getIsExpanded() == true &&
-                                    row.original.Item_x0020_Type == "Component"
-                                    ? "c-bg"
+                                  row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent"
+                                    ? "s-bg"
                                     : row?.getIsExpanded() == true &&
-                                      row.original.Item_x0020_Type ==
-                                      "SubComponent"
-                                      ? "s-bg"
+                                      row.original.Item_x0020_Type == "Feature"
+                                      ? "f-bg"
                                       : row?.getIsExpanded() == true &&
-                                        row.original.Item_x0020_Type == "Feature"
-                                        ? "f-bg"
+                                        row.original.SharewebTaskType?.Title ==
+                                        "Activities"
+                                        ? ""
                                         : row?.getIsExpanded() == true &&
                                           row.original.SharewebTaskType?.Title ==
-                                          "Activities"
-                                          ? "a-bg"
-                                          : row?.getIsExpanded() == true &&
-                                            row.original.SharewebTaskType?.Title ==
-                                            "Workstream"
-                                            ? "w-bg"
-                                            : ""
+                                          "Workstream"
+                                          ? ""
+                                          : ""
                                 }
                                 key={row.id}
                               >
