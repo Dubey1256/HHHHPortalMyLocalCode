@@ -20,7 +20,6 @@ export interface IProjectManagementWebPartProps {
   SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
-  AdminConfigrationListID: 'e968902a-3021-4af2-a30a-174ea95cf8fa';
   TimeEntry: any;
   SiteCompostion: any;
 }
@@ -48,7 +47,6 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         SmartInformationListID: this.properties.SmartInformationListID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        AdminConfigrationListID: this.properties.AdminConfigrationListID,
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion
       }
@@ -126,9 +124,6 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
                 }),
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
-                }),
-                PropertyPaneTextField('AdminConfigrationListID', {
-                  label: "AdminConfigrationListID"
                 }),
                 PropertyPaneTextField('TimeEntry', {
                   label: "TimeEntry"

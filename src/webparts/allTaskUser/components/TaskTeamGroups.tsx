@@ -523,7 +523,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         return (<div className="ms-Grid">
             <div className="ms-Grid-row">{false && elemControls}</div>
             <div className="ms-Grid-row">{elemCommandBar}</div>
-            <div className="ms-Grid-row">{elemGroupTaskList}</div>
+            <div>{elemGroupTaskList}</div>
             {elemNewTaskGroup}
             {elemEditTaskGroup}
             {elemDeleteDialog}

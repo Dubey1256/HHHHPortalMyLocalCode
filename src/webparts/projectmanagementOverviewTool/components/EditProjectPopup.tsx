@@ -108,21 +108,21 @@ function EditProjectPopup(item: any) {
     EditComponentCallback();
     setModalIsOpen(false);
   };
-  const handleDate = (date: any) => {
-    EditData.CompletedDate = date;
-    setCompletiondate(date);
-    setComponent((EditData) => [...EditData]);
-  };
-  const handleDatestart = (date: any) => {
-    EditData.StartDate = date;
-    setStartdate(date);
-    setComponent((EditData) => [...EditData]);
-  };
-  const handleDatedue = (date: any) => {
-    EditData.DueDate = date;
-    setDate(date);
-    setComponent((EditData) => [...EditData]);
-  };
+  // const handleDate = (date: any) => {
+  //   EditData.CompletedDate = date;
+  //   setCompletiondate(date);
+  //   setComponent((EditData) => [...EditData]);
+  // };
+  // const handleDatestart = (date: any) => {
+  //   EditData.StartDate = date;
+  //   setStartdate(date);
+  //   setComponent((EditData) => [...EditData]);
+  // };
+  // const handleDatedue = (date: any) => {
+  //   EditData.DueDate = date;
+  //   setDate(date);
+  //   setComponent((EditData) => [...EditData]);
+  // };
   const Call = React.useCallback((item: any, type: any) => {
     setIsPortfolio(false);
     // if (type == "SmartComponent") {
@@ -215,7 +215,7 @@ function EditProjectPopup(item: any) {
     });
   };
   // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-  //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+  //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
 
   //     // below logic works fine in all condition
   //     if (LocalDateTime != '') {
@@ -422,16 +422,16 @@ function EditProjectPopup(item: any) {
     $.each(Tasks, function (index: any, item: any) {
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
-        item.TaskDueDate = moment(item.DueDate).format("DD/MM/YYYY");
+        item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
       // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
       item.FilteredModifiedDate = item.Modified;
       item.DateModified = new Date(item.Modified);
       item.DateCreatedNew = new Date(item.Created);
 
       item.DateCreated = item.CreatedDate = moment(item.Created).format(
-        "DD/MM/YYYY"
+        "MM-DD-YYYY"
       ); // ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-      item.Creatednewdate = moment(item.Created).format("DD/MM/YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
+      item.Creatednewdate = moment(item.Created).format("MM-DD-YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
       // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
       //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
       if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
@@ -505,7 +505,7 @@ function EditProjectPopup(item: any) {
       if (item.Task_x0020_Type == undefined)
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
-        item.DueDate = moment(item.DueDate).format("DD/MM/YYYY");
+        item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
       if (item.SharewebCategories != null) {
@@ -534,7 +534,7 @@ function EditProjectPopup(item: any) {
         setLinkedComponentData(Rr);
       }
       // if (item.StartDate != undefined) {
-      //   item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
+      //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
       //   //setStartdate(item.StartDate);
       // }
       if (item.component_x0020_link != null) {
@@ -542,7 +542,7 @@ function EditProjectPopup(item: any) {
         //setStartdate(item.StartDate);
       }
       if (item.CompletedDate != undefined) {
-        item.CompletedDate = moment(item.CompletedDate).format("DD/MM/YYYY");
+        item.CompletedDate = moment(item.CompletedDate).format("MM-DD-YYYY");
         // item.CompletedDate = item.CompletedDate.toString();
         // setCompletiondatenew(item.CompletedDate);
       }
@@ -965,49 +965,9 @@ function EditProjectPopup(item: any) {
     item[title] = item[title] = item[title] == true ? false : true;
     setComponent((EditData) => [...EditData]);
   };
-  const test12 = (e: any, item: any) => {
-    item.SynonymsTitle = e.target.value;
-    setComponent((EditData) => [...EditData]);
-  };
-  const createSynonyms = (item: any) => {
-    if (item.SynonymsTitle == undefined || item.SynonymsTitle == "") {
-      alert("You have not enter Synonym name.");
-    } else {
-      let flag = true;
-      if (item["Synonyms"] != undefined && item["Synonyms"].length > 0) {
-        if (
-          item["Synonyms"][item["Synonyms"].length - 1]["Title"] ==
-          item.SynonymsTitle
-        ) {
-          flag = false;
-          alert("You have a blank synonym try to fill it first");
-        } else if (
-          item["Synonyms"][item["Synonyms"].length - 1]["status"] == false
-        ) {
-          flag = false;
-          alert("You have not saved your last item.");
-        }
-      } else item["Synonyms"] = [];
-      flag
-        ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: "",
-          })
-        : null;
-      item.SynonymsTitle = "";
-    }
-    item.SynonymsTitle = "";
-    setComponent((EditData) => [...EditData]);
-  };
-  const deleteItem = (item: any) => {
-    if (item["Synonyms"] != undefined && item["Synonyms"].length > 0) {
-      map(item["Synonyms"], (val, index) => {
-        item["Synonyms"].splice(index, 1);
-      });
-    }
-    setComponent((EditData) => [...EditData]);
-  };
+
+ 
+  
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -1015,15 +975,27 @@ function EditProjectPopup(item: any) {
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
     var Items = EditData;
-
+    
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+       if(itemm.isChecked == true ){
+        array2.push(itemm)
+       }
+      })
+     if(array2 != undefined && array2.length>0){
+      NewArray = array2
+     }
+    
     if (NewArray != undefined && NewArray.length > 0) {
+      CheckCategory=[]
       NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
+        CheckCategory.push(NeitemA);
       });
+    }else{
+      CheckCategory = []
     }
     var categoriesItem = "";
-    CategoriesData.map((category) => {
-      if (category.Title != undefined) {
+    CheckCategory?.map((category:any) => {
+      if (category.Title != undefined ) {
         categoriesItem =
           categoriesItem == ""
             ? category.Title
@@ -1031,7 +1003,7 @@ function EditProjectPopup(item: any) {
       }
     });
     var CategoryID: any = [];
-    CategoriesData.map((category) => {
+    CheckCategory?.map((category:any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
@@ -1135,7 +1107,7 @@ function EditProjectPopup(item: any) {
               : [],
         },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+       StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
         DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
         CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
@@ -1378,19 +1350,38 @@ function EditProjectPopup(item: any) {
     }
   };
   var NewArray: any = [];
-  const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any,index:any) => {
-      setcheckedCat(false);
-      if (type.Title == catTitle.Title) {
-        NewArray.push(catTitle);
-      }
-      
-    });
-    
-   
+  var array2:any=[];
+  const checkCat = (type: any,e:any) => {
+
+    const { checked } = e.target;
+    if(checked == true){
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
+    }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
+
 
   };
-
+ 
   
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
@@ -1856,7 +1847,7 @@ function EditProjectPopup(item: any) {
                                         className="form-check-input"
                                         defaultChecked={type.isChecked}
                                         type="checkbox"
-                                        onClick={() => checkCat(type)}
+                                        onClick={(e) => checkCat(type,e)}
                                       />
                                       <label className="form-check-label">
                                         {type.Title}
