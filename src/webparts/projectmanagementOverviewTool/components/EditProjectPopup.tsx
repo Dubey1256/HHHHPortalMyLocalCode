@@ -965,49 +965,9 @@ function EditProjectPopup(item: any) {
     item[title] = item[title] = item[title] == true ? false : true;
     setComponent((EditData) => [...EditData]);
   };
-  const test12 = (e: any, item: any) => {
-    item.SynonymsTitle = e.target.value;
-    setComponent((EditData) => [...EditData]);
-  };
-  const createSynonyms = (item: any) => {
-    if (item.SynonymsTitle == undefined || item.SynonymsTitle == "") {
-      alert("You have not enter Synonym name.");
-    } else {
-      let flag = true;
-      if (item["Synonyms"] != undefined && item["Synonyms"].length > 0) {
-        if (
-          item["Synonyms"][item["Synonyms"].length - 1]["Title"] ==
-          item.SynonymsTitle
-        ) {
-          flag = false;
-          alert("You have a blank synonym try to fill it first");
-        } else if (
-          item["Synonyms"][item["Synonyms"].length - 1]["status"] == false
-        ) {
-          flag = false;
-          alert("You have not saved your last item.");
-        }
-      } else item["Synonyms"] = [];
-      flag
-        ? item["Synonyms"].push({
-            status: true,
-            Title: item.SynonymsTitle,
-            Id: "",
-          })
-        : null;
-      item.SynonymsTitle = "";
-    }
-    item.SynonymsTitle = "";
-    setComponent((EditData) => [...EditData]);
-  };
-  const deleteItem = (item: any) => {
-    if (item["Synonyms"] != undefined && item["Synonyms"].length > 0) {
-      map(item["Synonyms"], (val, index) => {
-        item["Synonyms"].splice(index, 1);
-      });
-    }
-    setComponent((EditData) => [...EditData]);
-  };
+
+ 
+  
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -1015,16 +975,27 @@ function EditProjectPopup(item: any) {
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
     var Items = EditData;
-
-    // if (NewArray != undefined && NewArray.length > 0) {
-    //   CheckCategory=[]
-    //   NewArray.map((NeitemA: any) => {
-    //     CheckCategory.push(NeitemA);
-    //   });
-    // }
+    
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+       if(itemm.isChecked == true ){
+        array2.push(itemm)
+       }
+      })
+     if(array2 != undefined && array2.length>0){
+      NewArray = array2
+     }
+    
+    if (NewArray != undefined && NewArray.length > 0) {
+      CheckCategory=[]
+      NewArray.map((NeitemA: any) => {
+        CheckCategory.push(NeitemA);
+      });
+    }else{
+      CheckCategory = []
+    }
     var categoriesItem = "";
-    CheckCategory.map((category:any) => {
-      if (category.Title != undefined) {
+    CheckCategory?.map((category:any) => {
+      if (category.Title != undefined ) {
         categoriesItem =
           categoriesItem == ""
             ? category.Title
@@ -1032,7 +1003,7 @@ function EditProjectPopup(item: any) {
       }
     });
     var CategoryID: any = [];
-    CheckCategory.map((category:any) => {
+    CheckCategory?.map((category:any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
@@ -1136,8 +1107,8 @@ function EditProjectPopup(item: any) {
               : [],
         },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-       // StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-        //DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+       StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+        DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
         CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
         Categories: categoriesItem ? categoriesItem : null,
@@ -1379,39 +1350,38 @@ function EditProjectPopup(item: any) {
     }
   };
   var NewArray: any = [];
+  var array2:any=[];
   const checkCat = (type: any,e:any) => {
-     NewArray = [];
+
     const { checked } = e.target;
     if(checked == true){
-      CheckCategory.push(type)
-      // CheckCategory.map((catTitle: any,index:any) => {
-      //   setcheckedCat(false);
-      //   if (type.Title == catTitle.Title) {
-      //     NewArray.push(catTitle);
-      //   }
-      // });
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
     }
-    else{
-      CheckCategory?.forEach((val:any,index:any)=>{
-        if(type.Id == val.Id){
-          CheckCategory.splice(index,1)
-          
-        }
-        // else{
-        //   NewArray.push(val);
-        // }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
 
-      })
-
-    }
-   
-      
-   
-   
-   
 
   };
-
+ 
   
   const unTagService = (array: any, index: any) => {
     array.splice(index, 1);
