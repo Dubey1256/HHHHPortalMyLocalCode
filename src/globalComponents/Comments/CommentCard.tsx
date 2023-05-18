@@ -44,7 +44,7 @@ export interface ICommentCardState {
   updateCommentPost: any;
   editorValue: string;
   editorChangeValue: string;
-  mailReply:boolean
+  mailReply:any;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -68,7 +68,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
-      mailReply:false,
+      mailReply:{isMailReply:false,Index:null},
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -245,6 +245,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private async PostComment(txtCommentControlId: any) {
     console.log("this is post comment function")
+    console.log(this.state.Result["Comments"])
     commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
@@ -261,7 +262,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Add object in feedback
 
       if (this.state.Result["Comments"] != undefined) {
-        this.state.Result["Comments"].push(temp);
+      
+        // if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+        //   if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }else{
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }
+      
+        // }else{
+          this.state.Result["Comments"].push(temp);
+        // }
+      
       }
       else {
         this.state.Result["Comments"] = [temp];
@@ -286,11 +299,12 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         updateComment: true
       }, () => this.GetEmailObjects());
-
+       
       this.setState({
         updateComment: true,
         CommenttoPost: '',
-        mentionValue: ''
+        mentionValue: '',
+        mailReply:{isMailReply:true,index:null}
       });
     } else {
       alert('Please input some text.')
@@ -366,7 +380,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     let mention_str = '';
     if (this.state.mentionValue != '') {
       let allMention :any;
-      if(this.state.mailReply){
+      if(this.state.mailReply.isMailReply){
         var mentionEmail = this.mentionUsers.filter((items:any)=>{
        if(items.display==this.state.mentionValue){
           return items
@@ -515,7 +529,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Get All To's
     var allMention:any;
       let mention_To: any = []; 
-      if(this.state.mailReply){
+      if(this.state.mailReply.isMailReply){
         var mentionEmail = this.mentionUsers.filter((items:any)=>{
           if(items.display==this.state.mentionValue){
              return items
@@ -643,10 +657,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //  if(items.display==replyData.AuthorName){
       //     return items.id
       //  }
-      //  })          
+      //  }) 
+      // var replyData2:any={
+      //   isMailReply:true,
+      //   index:index
+      // }         
     this.setState({
       mentionValue:replyData.AuthorName,
-      mailReply:true
+      mailReply:{isMailReply:true,index:index}
     }, () => { console.log(this.state.mentionValue) })
   }
 
@@ -711,7 +729,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons ">
-                              {/* <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a> */}
+                              <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
                               <a  onClick={() => this.openEditModal(cmtData, i)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
@@ -730,6 +748,43 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                         </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                          return(
+                            <li className="media  p-1 my-1">
+                            <div className="media-bodyy">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="comment-date ng-binding">
+                                <span className="round  pe-1">
+                                  <img className="align-self-start " title={replyerData?.AuthorName}
+                                    src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                    replyerData?.AuthorImage :
+                                      "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                  />
+                                </span>
+                                {replyerData.Created}</span>
+                              <div className="d-flex ml-auto media-icons ">
+                                <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                 
+                                </a>
+                                <a title="Delete" onClick={() => this.clearComment(i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--trash'></span>
+                                </a>
+                              </div>
+                            </div>
+  
+                            <div className="media-text">
+                              {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                              <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                            </div>
+  
+                          </div>
+                          </li>
+                          )
+                        })} */}
                       </li>
                     })}
                   </ul>
