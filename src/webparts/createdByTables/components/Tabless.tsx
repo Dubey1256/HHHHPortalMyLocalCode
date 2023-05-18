@@ -503,7 +503,7 @@ const editPopFunc=(item:any)=>{
             case "priority" : 
             filteringColumn = {...filteringColumn,priority:false }
             setCheckPriority([]);
-            listFilters1();
+            listFilters1(); 
             break;
             case "newDueDate" : 
             filteringColumn = {...filteringColumn,due:false }
