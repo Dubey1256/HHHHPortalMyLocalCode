@@ -12,6 +12,7 @@ import {
   FaSortDown,
   FaSortUp,
   FaSort,
+  FaCompressArrowsAlt,
 } from "react-icons/fa";
 import { MdAdd } from "react-icons/Md";
 import Tooltip from "../../../globalComponents/Tooltip";
@@ -48,8 +49,11 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import HighlightableCell from '../../componentPortfolio/components/highlight'
+// import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
+import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
+
 
 ///TanstackTable filter And CheckBox 
 function Filter({
@@ -123,6 +127,10 @@ export default function ComponentTable({ props, NextProp }: any) {
   const [color, setColor] = React.useState(false);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
+  const [showTeamMemberOnCheck, setShowTeamMemberOnCheck]=React.useState(false)
+  const [checkCounter,setCheckCounter]=React.useState(true)
+  const [checkData, setcheckData]=React.useState({})
+
 
 
 
@@ -192,6 +200,10 @@ export default function ComponentTable({ props, NextProp }: any) {
     );
   };
 
+
+  function closeaddstructure(){
+    setAddModalOpen(false)
+  }
   // CustomHeader of the Add Structure End
 
   function handleClick(item: any) {
@@ -399,10 +411,15 @@ export default function ComponentTable({ props, NextProp }: any) {
                 result.TeamLeaderUserTitle = "";
                 //  result.AllTeamMembers = []
                 result.Display = "none";
+                result.Created = Moment(result.Created).format("DD/MM/YYYY");
                 result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
-                if (result.DueDate == "Invalid date" || "") {
+                if (result.DueDate == "Invalid date" || result.Created == "Invalid date"|| "") {
                   result.DueDate = result.DueDate.replaceAll(
+                    "Invalid date",
+                    ""
+                  );
+                  result.Created = result.Created.replaceAll(
                     "Invalid date",
                     ""
                   );
@@ -1459,6 +1476,13 @@ export default function ComponentTable({ props, NextProp }: any) {
   //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
   const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+    if(eTarget == true){
+      setcheckData(itrm)
+      setShowTeamMemberOnCheck(true)
+    }else{
+      setcheckData({})
+      setShowTeamMemberOnCheck(false)
+    }
     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
     var Arrays: any = []
     const checked = eTarget;
@@ -1810,9 +1834,9 @@ export default function ComponentTable({ props, NextProp }: any) {
         if (CountArray == 0) {
           AllItems.push(childItem.data)
         }
-        setData(AllItems => ([...AllItems]))
+        // setData(AllItems => ([...AllItems]))
         refreshData();
-        rerender();
+        // rerender();
       }
 
     }
@@ -3426,6 +3450,11 @@ export default function ComponentTable({ props, NextProp }: any) {
               >
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
               </a>}
+              {row?.original?.Categories == 'Draft' ?
+              <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
+            {row?.original?.subRows?.length > 0 ?
+              <span className='ms-1'>({row?.original?.childsLength})</span> : ''}
+
             {row?.original?.Short_x0020_Description_x0020_On != null &&
               <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
@@ -3434,6 +3463,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   {row?.original?.Short_x0020_Description_x0020_On}
                 </span>
               </span>}
+             
           </>
         ),
         id: "Title",
@@ -3488,21 +3518,25 @@ export default function ComponentTable({ props, NextProp }: any) {
         size: 9,
       },
       {
-        accessorFn: (row) => row?.original?.Created != null ? Moment(row?.original?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row }) => (
+        accessorFn: (row) => Moment(row?.Created).format("DD/MM/YYYY"),
+        cell: ({ row ,getValue}) => (
           <>
             {row?.original?.Created == null ? (""
             ) : (
               <>
                 {row?.original?.Author != undefined ? (
+                  <>
                   <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
+                 
+                  </>
                 ) : (
                   <img
                     className="AssignUserPhoto"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
+                {getValue()}
               </>
             )
             }
@@ -4040,6 +4074,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             >
               Restructure
             </button>
+            {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers}/>: ''}
             <button
               type="button"
               className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
@@ -4056,7 +4091,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           </span>
         </div>
         <div className="col-sm-12 pad0 smart">
-          <div className="section-event">
+          <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
               <table className="SortingTable table table-hover" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
@@ -4130,7 +4165,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call} context={NextProp.Context}></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
@@ -4139,6 +4174,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         <TimeEntryPopup
           props={SharewebTimeComponent}
           CallBackTimeEntry={TimeEntryCallBack}
+          Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
@@ -4160,7 +4196,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         type={PanelType.medium}
         isOpen={addModalOpen}
         isBlocking={false}
-        onDismiss={CloseCall}
+        onDismiss={closeaddstructure}
       >
         <PortfolioStructureCreationCard
           CreatOpen={CreateOpenCall}
@@ -4197,7 +4233,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   : "app component clearfix"
             }
           >
-            <div id="portfolio" className="section-event pt-0">
+            <div id="portfolio" className=" pt-0">
               {/* {
                                     
                                     MeetingItems.SharewebTaskType == undefined  &&

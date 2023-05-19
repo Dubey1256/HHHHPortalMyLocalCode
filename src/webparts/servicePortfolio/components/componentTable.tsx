@@ -4172,6 +4172,23 @@ function ComponentTable(SelectedProp: any) {
   //         PortfolioLevelNum = 1;
   //     }
   // }
+  const onRenderCustomHeaderMain1 = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div
+          style={{
+            marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            marginLeft: "20px",
+          }}
+        >
+          <span>{`Create Component `}</span>
+        </div>
+        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+      </div>
+    );
+  };
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
@@ -5672,7 +5689,7 @@ function ComponentTable(SelectedProp: any) {
         ></CreateWS>
       )}
       <Panel
-        headerText={` Create Component `}
+        onRenderHeader={onRenderCustomHeaderMain1}
         type={PanelType.large}
         isOpen={addModalOpen}
         isBlocking={false}
