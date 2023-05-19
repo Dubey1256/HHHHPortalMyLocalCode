@@ -4317,7 +4317,7 @@ const EditTaskPopup = (Items: any) => {
                             Dynamic={AllListIdData}
                             ComponentType={"Component"}
                             Call={ComponentServicePopupCallBack}
-
+                            selectionType={"Single"}
                         />
                     }
                     {IsServices &&
@@ -4326,7 +4326,7 @@ const EditTaskPopup = (Items: any) => {
                             Dynamic={AllListIdData}
                             Call={ComponentServicePopupCallBack}
                             ComponentType={"Service"}
-
+                            selectionType={"Single"}
                         />
                     }
                     {IsComponentPicker &&
