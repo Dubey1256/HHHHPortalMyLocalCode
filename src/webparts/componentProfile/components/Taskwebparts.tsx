@@ -454,14 +454,14 @@ export default function ComponentTable({ props, NextProp }: any) {
                   GlobalConstants.MAIN_SITE_URL + "/SP",
                   undefined
                 );
-                if (
-                  result.ClientCategory != undefined &&
-                  result.ClientCategory.length > 0
-                ) {
-                  map(result.Team_x0020_Members, (catego: any) => {
-                    result.ClientCategory.push(catego);
-                  });
-                }
+                // if (
+                //   result.ClientCategory != undefined &&
+                //   result.ClientCategory.length > 0
+                // ) {
+                //   map(result.Team_x0020_Members, (catego: any) => {
+                //     result.ClientCategory.push(catego);
+                //   });
+                // }
                 if (result.Id === 498 || result.Id === 104) console.log(result);
                 result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
                 if (result["Shareweb_x0020_ID"] == undefined) {
@@ -1125,14 +1125,14 @@ export default function ComponentTable({ props, NextProp }: any) {
       } else {
         result["Shareweb_x0020_ID"] = "";
       }
-      if (
-        result.ClientCategory != undefined &&
-        result.ClientCategory.length > 0
-      ) {
-        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-          result.ClientCategory.push(catego);
-        });
-      }
+      // if (
+      //   result.ClientCategory != undefined &&
+      //   result.ClientCategory.length > 0
+      // ) {
+      //   $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+      //     result.ClientCategory.push(catego);
+      //   });
+      // }
       if (result.Item_x0020_Type == "Root Component") {
         result["subRows"] =
           result["subRows"] != undefined ? result["subRows"] : [];
