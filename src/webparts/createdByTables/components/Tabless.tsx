@@ -669,7 +669,7 @@ const Tabless = (props: any) => {
         .catch((err) => {
           console.log(err);
         });
-    };
+    }; 
 
     function CallBack() {
        setEditPopup(false);
