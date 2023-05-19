@@ -110,7 +110,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setModalIsOpen(false);
   };
   
-  const Call = React.useCallback((item1: any, type: any) => {
+  const Call = React.useCallback((item1: any, type: any,functionType: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
         item.smartComponent = item1.smartComponent;
@@ -137,23 +137,31 @@ function EditInstitution({item,SelectD,Calls}: any) {
         //  item.smartCategories.push(title);
       }
     }
-    if (type == "LinkedComponent") {
-      if (item1?.linkedComponent?.length > 0) {
+    if (functionType == "Close") {
+      if (type == "Service") {
+        setIsService(false);
+      } else {
+          setIsComponent(false)
+      }
+  } else {
+    if (type == "Component") {
+      if (item1 != undefined && item1.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1.linkedComponent);
+        setLinkedComponentData(item1);
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
 
-    if (type == "LinkedServices") {
-      if (item1?.linkedComponent?.length > 0) {
+    if (type == "Service") {
+      if (item1 != undefined && item1.length > 0) {
         // item.linkedComponent = item1.linkedComponent;
         // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1.linkedComponent);
+        setLinkedComponentData(item1);
         console.log("Popup component linkedComponent", item1.linkedComponent);
       }
     }
+  }
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
@@ -2126,7 +2134,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           
                                   <div className="TaskUsers">
                                     <label className="form-label full-width  mx-2">
-                                      Task Users
+                                      Working Member
                                     </label>
                                     {EditData?.AssignedUsers?.map(
                               (userDtl: any, index: any) => {
@@ -2338,7 +2346,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" href={EditData.component_x0020_link}>Open</a></span>
+                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}>Open</a></span>
                       </div>
                     </div>
                   </div>

@@ -70,17 +70,17 @@ let AllAvailableTitle: any = [];
 
                 success: function (data) {
                     count++;
-                    // var duplicateArray:any=[];
+                    var duplicateArray:any=[];
                     if (data?.d?.results != undefined && data?.d?.results?.length > 0) {
-                        // data?.d?.results?.map((items:any)=>{
-                        //     if(items.AdditionalTimeEntry!=null){
-                        //      items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
-                        //      duplicateArray.push(items);
-                        //    }
-                        //  })
-                        //   if(duplicateArray!=undefined&& duplicateArray.length>0){
-                            AllTimeSpentDetails = AllTimeSpentDetails.concat(data?.d?.results);
-                        //   }
+                        data?.d?.results?.map((items:any)=>{
+                            if(items.AdditionalTimeEntry!=null){
+                             items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)
+                             duplicateArray.push(items);
+                           }
+                         })
+                          if(duplicateArray!=undefined&& duplicateArray.length>0){
+                            AllTimeSpentDetails = AllTimeSpentDetails.concat(duplicateArray);
+                          }
                     
                          if(AllTimeSpentDetails!=undefined&&AllTimeSpentDetails.length>0){
                             getStructureData();
@@ -98,29 +98,16 @@ let AllAvailableTitle: any = [];
   
         // Smart total time code   get code
         var TotalTime = 0.0;
-        if(AllTimeSpentDetails!=undefined && AllTimeSpentDetails.length>0){
-            AllTimeSpentDetails.map((items:any)=>{
-                if(items.AdditionalTimeEntry!=null){
-                 items.AdditionalTime = JSON.parse(items.AdditionalTimeEntry)  
-                }
-            })
-            
-               
-        }
 
         console.log(timeEntry);
-        console.log(AllTimeSpentDetails)
         let newArray: any = [];
         let hoversmartArray: any = [];
         AllTimeSpentDetails.map((items: any) => {
-            if(items.AdditionalTime!=null){
-                items.AdditionalTime.map((item: any) => {
-                    item.additionaltime2 = [];
-                    item.additionaltime2.push(item);
-                    hoversmartArray.push(item)
-                })
-            }
-           
+            items.AdditionalTime.map((item: any) => {
+                item.additionaltime2 = [];
+                item.additionaltime2.push(item);
+                hoversmartArray.push(item)
+            })
                })
         console.log(hoversmartArray);
 
@@ -147,30 +134,30 @@ let AllAvailableTitle: any = [];
 
         // =================Remove duplicate Description in a array =========
 
-        newArray.forEach((item:any)=>{
-            if(item.additionaltime2 != undefined && item.additionaltime2.length>0){
-                item.additionaltime3 =item.additionaltime2 .reduce(function (previous: any, current: any) {
+        // newArray.forEach((item:any)=>{
+        //     if(item.additionaltime2 != undefined && item.additionaltime2.length>0){
+        //         item.additionaltime3 =item.additionaltime2 .reduce(function (previous: any, current: any) {
 
-                    let alredyExists =
+        //             let alredyExists =
                     
-                     previous.filter(function (item: any) {
+        //              previous.filter(function (item: any) {
                     
-                     return item.Description === current.Description;
+        //              return (item.Description === current.Description||item.Created==current.Created);
                     
-                   }).length > 0;
+        //            }).length > 0;
                     
-                     if (!alredyExists) {
+        //              if (!alredyExists) {
                     
-                     previous.push(current);
+        //              previous.push(current);
                     
-                    }
+        //             }
                     
-                     return previous;
+        //              return previous;
                     
-                  }, []);
-            }
+        //           }, []);
+        //     }
            
-        })
+        // })
 
         setTimeEntry(newArray)
         console.log(newArray);
@@ -178,8 +165,8 @@ let AllAvailableTitle: any = [];
         if (newArray.length > 0) {
             newArray.map((items: any) => {
                 var hoverTime = 0;
-                if (items.additionaltime3.length > 0) {
-                    $.each(items.additionaltime3, function (index: any, time: any) {
+                if (items.additionaltime2.length > 0) {
+                    $.each(items.additionaltime2, function (index: any, time: any) {
                         hoverTime = hoverTime + parseFloat(time.TaskTime);
                         TotalTime=TotalTime+ parseFloat(time.TaskTime)
                     })
@@ -199,7 +186,7 @@ let AllAvailableTitle: any = [];
     const CallBackTimesheet = () => {
         setisTimeEntry(false)
         AllTimeSpentDetails = [];
-     
+        EditData(item.props);
     }
     return (
         <>
@@ -225,7 +212,7 @@ let AllAvailableTitle: any = [];
                                                 <td style={{ width: "80%" }} colSpan={2}><span className='px-2'>Total- Time</span>{items.hoverTime}</td>
                                             </tr>
 
-                                            {items?.additionaltime3?.length > 0 && items?.additionaltime3?.map((details: any) => {
+                                            {items?.additionaltime2?.length > 0 && items?.additionaltime2?.map((details: any) => {
                                                 return (
                                                     <>       <tr>
                                                         <td style={{ width: "20%" }}>{details.TaskDate}</td>
@@ -243,7 +230,7 @@ let AllAvailableTitle: any = [];
                         </table>
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item?.props} isopen={isTimeEntry} Context={item.Context} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
         </>
     )
 }

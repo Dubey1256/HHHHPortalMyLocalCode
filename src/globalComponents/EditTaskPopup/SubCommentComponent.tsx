@@ -60,7 +60,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                             Title: userData.Title,
                             Id: userData.AssingedToUserId,
                             ImageUrl: userData.Item_x0020_Cover?.Url,
-                            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm')
+                            ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')
                         }
                         setCurrentUserData(TempObject);
                     }
@@ -174,7 +174,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
             Title: currentUserData.Title != undefined ? currentUserData.Title : Context.pageContext._user.displayName,
             Id: currentUserData.Id,
             ImageUrl: currentUserData.ImageUrl != undefined ? currentUserData.ImageUrl : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-            ApprovalDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            ApprovalDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             isShowLight: value
         }
         // currentUserData.isShowLight = value;
@@ -229,8 +229,9 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                             <span className="me-1">{`${SubTextItemsArray.index}.${index + 1}`}</span>
                                             <div className="d-flex">
                                                 {ApprovalStatus ?
-                                                    <div>{isCurrentUserApprover ?
-                                                        <div className="my-1 alignCenter">
+                                                    <div>
+                                                        {/* {isCurrentUserApprover ? */}
+                                                        <div className={isCurrentUserApprover ? "alignCenter" : "alignCenter Disabled-Link"} >
                                                             <span className="MR5 ng-scope" ng-disabled="Item.PercentComplete >= 80">
                                                                 <span title="Rejected" onClick={() => SmartLightUpdateSubChildComment(index, "Reject")}
                                                                     className={obj.isShowLight == "Reject" ? "circlelight br_red pull-left ml5 red" : "circlelight br_red pull-left ml5"}
@@ -241,7 +242,8 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                                                 <span title="Approved" onClick={() => SmartLightUpdateSubChildComment(index, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                                 </span>
                                                             </span>
-                                                        </div> : null}
+                                                        </div> 
+                                                        {/* : null} */}
                                                     </div>
                                                     : null
                                                 }
@@ -305,7 +307,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                         <div className="d-flex" title={obj.isShowLight}>
                                             <textarea
                                                 style={{ width: "100%" }}
-                                                className={`form-control SubTestLeftBorder ${obj.isShowLight}`}
+                                                className={`form-control SubTestLeftBorder`}
                                                 defaultValue={obj?.Title?.replace(/<[^>]*>/g, ' ')}
                                                 name='Title'
                                             ></textarea>

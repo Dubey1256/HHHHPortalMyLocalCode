@@ -44,6 +44,7 @@ export interface ICommentCardState {
   updateCommentPost: any;
   editorValue: string;
   editorChangeValue: string;
+  mailReply:any;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -67,6 +68,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
+      mailReply:{isMailReply:false,Index:null},
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -243,6 +245,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
   private async PostComment(txtCommentControlId: any) {
     console.log("this is post comment function")
+    console.log(this.state.Result["Comments"])
     commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
@@ -259,7 +262,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Add object in feedback
 
       if (this.state.Result["Comments"] != undefined) {
-        this.state.Result["Comments"].push(temp);
+      
+        if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+          if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+            this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+          }else{
+            this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+            this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+          }
+      
+        }else{
+          this.state.Result["Comments"].push(temp);
+        }
+      
       }
       else {
         this.state.Result["Comments"] = [temp];
@@ -363,9 +378,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private GetMentionValues() {
     let mention_str = '';
     if (this.state.mentionValue != '') {
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\[(.*?)\]/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+      let allMention :any;
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+       if(items.display==this.state.mentionValue){
+          return items
+       }
+       })  
+       let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+       let regExpLiteral = /\[(.*?)\]/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\[(.*?)\]/gi;
+         allMention = regExpStr.match(regExpLiteral);
+      }
+    
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
@@ -498,10 +526,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     if (this.state.mentionValue != '') {
       //Get All To's
-      let mention_To: any = [];
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\{(.*?)\}/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+    var allMention:any;
+      let mention_To: any = []; 
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+          if(items.display==this.state.mentionValue){
+             return items
+          }
+          })  
+          let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+          let regExpLiteral = /\{(.*?)\}/gi;
+           allMention = regExpStr.match(regExpLiteral); 
+      } else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\{(.*?)\}/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }
+     
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           /*For Prod when mail is open for all */
@@ -608,6 +649,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
   }
+  private replyMailFunction=(replyData:any,index:any)=>{
+    console.log(replyData)
+    console.log(this.mentionUsers)
+      //  var mentionEmail = this.mentionUsers.filter((items:any)=>{
+      //  if(items.display==replyData.AuthorName){
+      //     return items.id
+      //  }
+      //  }) 
+      // var replyData2:any={
+      //   isMailReply:true,
+      //   index:index
+      // }         
+    this.setState({
+      mentionValue:replyData.AuthorName,
+      mailReply:{isMailReply:true,index:index}
+    }, () => { console.log(this.state.mentionValue) })
+  }
 
   public render(): React.ReactElement<ICommentCardProps> {
  
@@ -670,6 +728,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons ">
+                              <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
                               <a  onClick={() => this.openEditModal(cmtData, i)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
@@ -688,6 +747,43 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                         </div>
+                        {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                          return(
+                            <li className="media  p-1 my-1">
+                            <div className="media-bodyy">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="comment-date ng-binding">
+                                <span className="round  pe-1">
+                                  <img className="align-self-start " title={replyerData?.AuthorName}
+                                    src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                    replyerData?.AuthorImage :
+                                      "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                  />
+                                </span>
+                                {replyerData.Created}</span>
+                              {/* <div className="d-flex ml-auto media-icons ">
+                                <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                 
+                                </a>
+                                <a title="Delete" onClick={() => this.clearComment(i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--trash'></span>
+                                </a>
+                              </div> */}
+                            </div>
+  
+                            <div className="media-text">
+                              {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                              <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                            </div>
+  
+                          </div>
+                          </li>
+                          )
+                        })}
                       </li>
                     })}
                   </ul>

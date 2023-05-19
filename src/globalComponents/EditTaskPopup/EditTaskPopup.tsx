@@ -9,7 +9,8 @@ import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
-import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
+// import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
+import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
@@ -75,8 +76,7 @@ var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 
 const EditTaskPopup = (Items: any) => {
-    const Context = Items.context != undefined && Items.context != null?Items.context:Items.Context ;
-     
+    const Context = Items.context;
     const AllListIdData = Items.AllListId;
     Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
@@ -172,6 +172,19 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+    let ItemRankArray = [
+        { rankTitle: 'Select Item Rank', rank: null },
+        { rankTitle: '(8) Top Highlights', rank: 8 },
+        { rankTitle: '(7) Featured Item', rank: 7 },
+        { rankTitle: '(6) Key Item', rank: 6 },
+        { rankTitle: '(5) Relevant Item', rank: 5 },
+        { rankTitle: '(4) Background Item', rank: 4 },
+        { rankTitle: '(2) to be verified', rank: 2 },
+        { rankTitle: '(1) Archive', rank: 1 },
+        { rankTitle: '(0) No Show', rank: 0 }
+    ]
+
+    //  ************** This is used for handeling Site Url for Diffrent Cases ******************** 
 
     var siteUrls: any;
     if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
@@ -183,643 +196,24 @@ const EditTaskPopup = (Items: any) => {
     } else {
         siteUrls = AllListIdData.siteUrl
     }
-
-    // const setModalIsOpenToTrue = () => {
-    //     setModalIsOpen(true)
-    // }
-
     React.useEffect(() => {
         loadTaskUsers();
         getCurrentUserDetails();
         GetExtraLookupColumnData();
         getCurrentUserDetails();
-        getSmartMetaData();
+        getAllSitesData();
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
         GetMasterData();
-        // getInformationForSmartLight();
-        // Descriptions();
     }, [])
 
-    const Call = React.useCallback((PopupItemData: any, type: any) => {
-        setIsServices(false)
-        setIsComponent(false);
-        setIsComponentPicker(false);
-        if (type == "SmartComponent") {
-            if (PopupItemData?.smartComponent?.length > 0) {
-                Items.Items.smartComponent = PopupItemData.smartComponent;
-                if (PopupItemData.smartComponent[0].Sitestagging != null || PopupItemData.smartComponent[0].Sitestagging != undefined) {
-                    let ClientData = JSON.parse(PopupItemData.smartComponent[0].Sitestagging ? PopupItemData.smartComponent[0].Sitestagging : [{}]);
-                    let TempSiteCompositionArray: any = [];
-                    if (ClientData != undefined && ClientData.length > 0) {
-                        ClientData.map((SiteData: any) => {
-                            let TempObject: any = {
-                                SiteName: SiteData.Title,
-                                ClienTimeDescription: SiteData.ClienTimeDescription,
-                                localSiteComposition: true
-                            }
-                            TempSiteCompositionArray.push(TempObject);
-                        })
-                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
-                            // setClientTimeData(TempSiteCompositionArray);
-                            setSitesTaggingData(TempSiteCompositionArray);
-                        }
-                    }
-                }
-                setSmartComponentData(PopupItemData.smartComponent);
-                setSmartServicesData([])
-                console.log("Popup component smartComponent ", PopupItemData.smartComponent)
-            }
-        }
-        if (type == "Category") {
-            if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
-                Items.Items.Categories = PopupItemData.categories;
-                let category: any = tempCategoryData ? tempCategoryData + ";" + PopupItemData.categories[0]?.Title : PopupItemData.categories[0]?.Title;
-                setCategoriesData(category);
-                tempShareWebTypeData.push(PopupItemData.categories[0]);
-                setShareWebTypeData(tempShareWebTypeData);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                let DesignCheck = category.search("Design")
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true)
-                } else {
-                    setPhoneStatus(false)
-                }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true)
-                } else {
-                    setEmailStatus(false)
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true)
-                } else {
-                    setImmediateStatus(false)
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true)
-                } else {
-                    setApprovalStatus(false)
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-                if (DesignCheck >= 0) {
-                    setDesignStatus(true);
-                } else {
-                    setDesignStatus(false);
-                }
-            }
-        }
-        if (type == "LinkedServices") {
-            if (PopupItemData?.linkedComponent?.length > 0) {
-                Items.Items.linkedComponent = PopupItemData.linkedComponent;
-                setLinkedComponentData(PopupItemData.linkedComponent);
-                setSmartServicesData(PopupItemData.linkedComponent);
-                setSmartComponentData([]);
-                console.log("Popup component linkedComponent", PopupItemData.linkedComponent)
-            }
-        }
 
-    }, []);
 
-    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+    // ************************** This is the Fetch All Data for the slected Task and related to Task from Backend *******************************
 
-    const loadAllClientCategoryData = function (SmartTaxonomy: any) {
-        var AllTaskusers = []
-        var AllMetaData: any = []
-        var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
-        $.ajax({
-            url: url,
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                AllTaskusers = data.d.results;
-                $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EPS';
-                    }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EI';
-                    }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Education';
-                    }
-                    else {
-                        item.newTitle = item.Title;
-                    }
-                    AllMetaData.push(item);
-                })
-                if (SmartTaxonomy == "Client Category") {
-                    setAllClientCategoryData(AllMetaData);
-                    AllClientCategoryDataBackup = AllMetaData;
-                }
-            },
-            error: function (error: any) {
-                console.log('Error:', error)
-            }
-        })
-    };
 
-    var SmartTaxonomyName: any = '';
-    var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
-        var AllTaskusers = []
-        var AllMetaData: any = []
-        var TaxonomyItems: any = []
-        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
-        $.ajax({
-            url: url,
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                AllTaskusers = data.d.results;
-                $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EPS';
-                    }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EI';
-                    }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Education';
-                    }
-                    else {
-                        item.newTitle = item.Title;
-                    }
-                    AllMetaData.push(item);
+    // #################### this is used for getting more the 12 lookup column data for selected task from Backend ##############################
 
-                })
-                if (SmartTaxonomy == "Categories") {
-                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
-                    setAllCategoryData(TaxonomyItems)
-                }
-            },
-            error: function (error: any) {
-                console.log('Error:', error)
-            }
-        })
-    };
-    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
-        var TaxonomyItems: any = [];
-        var uniqueNames: any = [];
-        $.each(AllTaxonomyItems, function (index: any, item: any) {
-            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
-                TaxonomyItems.push(item);
-                getChilds(item, AllTaxonomyItems);
-                if (item.childs != undefined && item.childs.length > 0) {
-                    TaxonomyItems.push(item)
-                }
-                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
-                });
-            }
-        });
-        return uniqueNames;
-    }
-    const getChilds = (item: any, items: any) => {
-        item.childs = [];
-        $.each(items, function (index: any, childItem: any) {
-            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
-                childItem.isChild = true;
-                item.childs.push(childItem);
-                getChilds(childItem, items);
-            }
-        });
-    }
-
-    if (AllCategoryData?.length > 0) {
-        AllCategoryData?.map((item: any) => {
-            if (item.newTitle != undefined) {
-                item['Newlabel'] = item.newTitle;
-                AutoCompleteItems.push(item)
-                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-                    item.childs.map((childitem: any) => {
-                        if (childitem.newTitle != undefined) {
-                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-                            AutoCompleteItems.push(childitem)
-                        }
-                        if (childitem.childs.length > 0) {
-                            childitem.childs.map((subchilditem: any) => {
-                                if (subchilditem.newTitle != undefined) {
-                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-                                    AutoCompleteItems.push(subchilditem)
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-        })
-    }
-
-    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        var alredyExists = previous.filter(function (item: any) {
-            return item.Title === current.Title
-        }).length > 0
-        if (!alredyExists) {
-            previous.push(current)
-        }
-        return previous
-    }, [])
-
-    // **************** this is for Smart Category Call Back functions ******************
-
-    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
-        setSelectedCategoryData(selectCategoryDataCallBack, "For-Panel");
-    }, [])
-
-    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-        setIsComponentPicker(false);
-        let TempArray: any = [];
-        selectCategoryData.map((existingData: any) => {
-            let elementFoundCount: any = 0;
-            if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-                tempShareWebTypeData.map((currentData: any) => {
-                    if (existingData.Title == currentData.Title) {
-                        elementFoundCount++;
-                    }
-                })
-            }
-            if (elementFoundCount == 0) {
-                let category: any;
-                if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-                    selectCategoryData.map((categoryData: any) => {
-                        if (usedFor == "For-Auto-Search") {
-                            tempShareWebTypeData.push(categoryData);
-                        }
-                        TempArray.push(categoryData)
-                        let isExists: any = 0;
-                        if (tempCategoryData != undefined) {
-                            isExists = tempCategoryData.search(categoryData.Title);
-                        } else {
-                            category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
-                        }
-                        if (isExists < 0) {
-                            category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
-                        }
-                    })
-                }
-                setCategoriesData(category);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true)
-                } else {
-                    setPhoneStatus(false)
-                }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true)
-                } else {
-                    setEmailStatus(false)
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true)
-                } else {
-                    setImmediateStatus(false)
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true);
-                    setApproverData(TaskApproverBackupArray);
-                } else {
-                    setApprovalStatus(false)
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-            }
-        })
-
-        if (usedFor == "For-Panel") {
-            setShareWebTypeData(selectCategoryData);
-            tempShareWebTypeData = selectCategoryData;
-        }
-        if (usedFor == "For-Auto-Search") {
-            setShareWebTypeData(tempShareWebTypeData);
-            setSearchedCategoryData([])
-            setCategorySearchKey("");
-        }
-    }
-
-    const smartCategoryPopup = React.useCallback(() => {
-        setIsComponentPicker(false);
-    }, [])
-
-    const autoSuggestionsForCategory = (e: any) => {
-        let searchedKey: any = e.target.value;
-        setCategorySearchKey(e.target.value);
-        let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray?.map((itemData: any) => {
-                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                    tempArray.push(itemData);
-                }
-            })
-            setSearchedCategoryData(tempArray);
-        } else {
-            setSearchedCategoryData([]);
-        }
-    }
-
-    // **************** this is for category change and remove function functions ******************
-
-    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
-        let tempString: any;
-
-        let tempArray2: any = [];
-        tempShareWebTypeData = [];
-        ShareWebTypeData?.map((dataType: any) => {
-            if (dataType.Id != TypeId) {
-                tempArray2.push(dataType)
-                tempShareWebTypeData.push(dataType);
-            }
-        })
-        if (tempArray2 != undefined && tempArray2.length > 0) {
-            tempArray2.map((itemData: any) => {
-                tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
-            })
-        }
-        setCategoriesData(tempString);
-        tempCategoryData = tempString;
-        setShareWebTypeData(tempArray2);
-    }
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-        let statusValue: any = e.target.value;
-        let type: any = typeValue;
-        let Id: any = IdValue;
-        CategoryChangeUpdateFunction(statusValue, type, Id)
-    }
-
-    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
-        if (Status == "true") {
-            removeCategoryItem(type, Id);
-            if (type == "Phone") {
-                setPhoneStatus(false)
-            }
-            if (type == "Email") {
-                setEmailStatus(false)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(false)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(false)
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(false)
-            }
-        } else {
-            let category: any = tempCategoryData + ";" + type;
-            setCategoriesData(category);
-            tempCategoryData = category;
-            let tempObject = {
-                Title: type,
-                Id: Id
-            }
-            ShareWebTypeData.push(tempObject);
-            tempShareWebTypeData.push(tempObject);
-            if (type == "Phone") {
-                setPhoneStatus(true)
-            }
-            if (type == "Email") {
-                setEmailStatus(true)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(true)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(true);
-                setApproverData(TaskApproverBackupArray);
-                StatusArray?.map((item: any) => {
-                    if (item.value == 1) {
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(true)
-            }
-        }
-    }
-
-    // ********** ========= End ============== category change and remove function ******************
-
-    // *********** End Smart Category Function **********
-
-    function EditComponentCallback() {
-        Items.Items.Call();
-    }
-    const EditComponent = (item: any, title: any) => {
-        setIsComponent(true);
-        setShareWebComponent(item);
-    }
-    const EditComponentPicker = (item: any, title: any) => {
-        setIsComponentPicker(true);
-        setShareWebComponent(item);
-    }
-    const EditLinkedServices = (item: any, title: any) => {
-        setIsServices(true);
-        setShareWebComponent(item);
-        setServicePopupType(title);
-    }
-    const setPriority = function (val: any) {
-        setPriorityStatus(val)
-    }
-
-    const getSmartMetaData = async () => {
-        let web = new Web(siteUrls);
-        let MetaData: any = [];
-        let siteConfig: any = [];
-        let tempArray: any = [];
-        MetaData = await web.lists
-            .getById(AllListIdData.SmartMetadataListID)
-            .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-            .top(4999)
-            .expand('Author,Editor')
-            .get()
-
-        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
-        siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
-                site.BtnStatus = false;
-                tempArray.push(site);
-            }
-        })
-        setSiteTypes(tempArray);
-        tempArray?.map((tempData: any) => {
-            SiteTypeBackupArray.push(tempData);
-        })
-        // if (smartCategory.length > 0 && smartCategory != undefined) {
-        //     smartCategory.map((item: any) => {
-        //         if (item.Title != undefined) {
-        //             item['Newlabel'] = item.newTitle;
-        //             AutoCompleteItems.push(item)
-        //             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-        //                 item.childs.map((childitem: any) => {
-        //                     if (childitem.newTitle != undefined) {
-        //                         childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-        //                         AutoCompleteItems.push(childitem)
-        //                     }
-        //                     if (childitem.childs.length > 0) {
-        //                         childitem.childs.map((subchilditem: any) => {
-        //                             if (subchilditem.newTitle != undefined) {
-        //                                 subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-        //                                 AutoCompleteItems.push(subchilditem)
-        //                             }
-        //                         })
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     })
-        // }
-        // AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        //     var alredyExists = previous.filter(function (item: any) {
-        //         return item.Title === current.Title
-        //     }).length > 0
-        //     if (!alredyExists) {
-        //         previous.push(current)
-        //     }
-        //     return previous
-        // }, [])
-        // console.log("Final Smart Category Array 1 =======", smartCategory);
-        // console.log("Final Smart Category Array =======", AutoCompleteItems);
-    }
-    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
-        var Items: any = [];
-        metadataItems.map((taxItem: any) => {
-            if (taxItem.TaxType === taxType)
-                Items.push(taxItem);
-        });
-        Items.sort((a: any, b: any) => {
-            return a.SortOrder - b.SortOrder;
-        });
-        return Items;
-    }
-
-    // **************** this is for Getting current user Data ************* 
-
-    const getCurrentUserDetails = async () => {
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-        if (currentUserId != undefined) {
-            if (taskUsers != null && taskUsers?.length > 0) {
-                taskUsers?.map((userData: any) => {
-                    if (userData.AssingedToUserId == currentUserId) {
-                        let temp: any = [];
-                        temp.push(userData)
-                        setCurrentUserData(temp);
-                        currentUserBackupArray.push(userData);
-                    }
-                })
-            }
-        }
-    }
-
-    const openTaskStatusUpdatePopup = (itemData: any) => {
-        setTaskStatusPopup(true);
-    }
-
-    var count = 0;
-    const loadTaskUsers = async () => {
-        var AllTaskUsers: any = []
-        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
-            .then((response: AxiosResponse) => {
-                taskUsers = response.data.value;
-                getAllEmployeeData();
-                $.each(taskUsers, function (index: any, user: any) {
-                    var ApproverUserItem = '';
-                    var UserApproverMail: any = []
-                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
-                        if (user.Approver != undefined) {
-                            $.each(user.Approver.results, function (ApproverUser: any, index) {
-                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
-                                UserApproverMail.push(ApproverUser.Name.split('|')[2]);
-                            })
-                            user['UserManagerName'] = ApproverUserItem;
-                            user['UserManagerMail'] = UserApproverMail;
-                        }
-                        AllTaskUsers.push(user);
-                    }
-                });
-                if (AllMetaData != undefined && AllMetaData?.length > 0) {
-                    GetEditData();
-                }
-            },
-                function (data) {
-                });
-        // try {
-        //     taskUsers = await globalCommon.loadTaskUsers;
-        //     $.each(taskUsers, function (index: any, user: any) {
-        //         var ApproverUserItem = '';
-        //         var UserApproverMail: any = []
-        //         if (user.Title != undefined && user.IsShowTeamLeader === true) {
-        //             if (user.Approver != undefined) {
-        //                 $.each(user.Approver.results, function (ApproverUser: any, index) {
-        //                     ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
-        //                     UserApproverMail.push(ApproverUser.Name.split('|')[2]);
-        //                 })
-        //                 user['UserManagerName'] = ApproverUserItem;
-        //                 user['UserManagerMail'] = UserApproverMail;
-        //             }
-        //             AllTaskUsers.push(user);
-        //         }
-
-        //     });
-        //     if (AllMetaData != undefined && AllMetaData?.length > 0) {
-        //         GetEditData();
-        //     }
-        // } catch (error) {
-        //     console.log("Error:", error.message);
-        // }
-    }
-
-    // ********** this is for Getting All  Employee For Approval Function Data *******************
-
-    const getAllEmployeeData = () => {
-        let UsersData: any = [];
-        let Groups: any = [];
-        let MainArray: any = [];
-        taskUsers.map((EmpData: any) => {
-            if (EmpData.ItemType == "Group") {
-                EmpData.Child = [];
-                Groups.push(EmpData);
-                MainArray.push(EmpData);
-            }
-            if (EmpData.ItemType == "User") {
-                UsersData.push(EmpData);
-            }
-        })
-        if (UsersData.length > 0 && Groups.length > 0) {
-            Groups.map((groupData: any) => {
-                UsersData.map((userData: any) => {
-                    if (groupData.Id == userData.UserGroupId) {
-                        userData.NewLabel = groupData.Title + " > " + userData.Title;
-                        groupData.Child.push(userData);
-                    }
-                })
-            })
-        }
-        setAllEmployeeData(Groups);
-    }
     const GetExtraLookupColumnData = async () => {
         try {
             let web = new Web(siteUrls);
@@ -872,7 +266,7 @@ const EditTaskPopup = (Items: any) => {
                             ApproverData.map((itemData: any) => {
                                 let tempObject: any = {
                                     ApproverName: itemData.Title,
-                                    ApprovedDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+                                    ApprovedDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                                     ApproverId: itemData.AssingedToUserId,
                                     ApproverImage: (itemData.Item_x0020_Cover != undefined || itemData.Item_x0020_Cover != null ? itemData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
                                     ApproverSuffix: itemData.Suffix,
@@ -903,7 +297,7 @@ const EditTaskPopup = (Items: any) => {
                         console.log("selected client category form backend ==========", TempArray)
                     }
                 }
-                GetEditData();
+                GetSelectedTaskDetails();
             } else {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
@@ -952,13 +346,16 @@ const EditTaskPopup = (Items: any) => {
                         setSelectedClientCategory(ClientCategory);
                     }
                 }
-                GetEditData();
+                GetSelectedTaskDetails();
             }
         } catch (error) {
             console.log("Error:", error.message);
         }
     }
-    const GetEditData = async () => {
+
+    // #################### this is used for getting All Information for selected task from Backend ##############################
+
+    const GetSelectedTaskDetails = async () => {
         try {
             let web = new Web(siteUrls);
             let smartMeta: any;
@@ -1129,8 +526,8 @@ const EditTaskPopup = (Items: any) => {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
                 // if (item.Priority_x0020_Rank != undefined) {
-                //     if (currentUsers != undefined) {
-                //         currentUsers?.map((rank: any) => {
+                //     if (ItemRankArray != undefined) {
+                //         ItemRankArray?.map((rank: any) => {
                 //             if (rank.rank == item.Priority_x0020_Rank) {
                 //                 item.Priority_x0020_Rank = rank.rank;
                 //             }
@@ -1326,16 +723,539 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
+    const EditComponent = (item: any, title: any) => {
+        setIsComponent(true);
+        setShareWebComponent(item);
+    }
+    const EditComponentPicker = (item: any, title: any) => {
+        setIsComponentPicker(true);
+        setShareWebComponent(item);
+    }
+    const EditLinkedServices = (item: any, title: any) => {
+        setIsServices(true);
+        setShareWebComponent(item);
+        setServicePopupType(title);
+    }
+
+    //  ###################  Service And Component Portfolio Popup Clla Back Functions and Validations ##################
+    const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        if (functionType == "Close") {
+            if (Type == "Service") {
+                setIsServices(false);
+            } else {
+                setIsComponent(false)
+            }
+        } else {
+            if (Type == "Service") {
+                if (DataItem != undefined && DataItem.length > 0) {
+                    setLinkedComponentData(DataItem);
+                    setSmartServicesData(DataItem);
+                    setSmartComponentData([]);
+                    console.log("Popup component linkedComponent", DataItem);
+                }
+            }
+            if (Type == "Component") {
+                if (DataItem != undefined && DataItem.length > 0) {
+                    if (DataItem[0].Sitestagging != null || DataItem[0].Sitestagging != undefined) {
+                        let ClientData = JSON.parse(DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]);
+                        let TempSiteCompositionArray: any = [];
+                        if (ClientData != undefined && ClientData.length > 0) {
+                            ClientData.map((SiteData: any) => {
+                                let TempObject: any = {
+                                    SiteName: SiteData.Title,
+                                    ClienTimeDescription: SiteData.ClienTimeDescription,
+                                    localSiteComposition: true
+                                }
+                                TempSiteCompositionArray.push(TempObject);
+                            })
+                            if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                                setSitesTaggingData(TempSiteCompositionArray);
+                            }
+                        }
+                    }
+                    setSmartComponentData(DataItem);
+                    setSmartServicesData([])
+                    console.log("Popup component smartComponent ", DataItem)
+                }
+            }
+        }
+    }, [])
+
+    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+
+
+    //  ######################  This is  Client Category Get Data Call From Backend  #######################
+
+    const loadAllClientCategoryData = function (SmartTaxonomy: any) {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+                })
+                if (SmartTaxonomy == "Client Category") {
+                    setAllClientCategoryData(AllMetaData);
+                    AllClientCategoryDataBackup = AllMetaData;
+                }
+            },
+            error: function (error: any) {
+                console.log('Error:', error)
+            }
+        })
+    };
+    var AutoCompleteItems: any = [];
+    const loadAllCategoryData = function (SmartTaxonomy: any) {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+
+                })
+                if (SmartTaxonomy == "Categories") {
+                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
+                    setAllCategoryData(TaxonomyItems)
+                }
+            },
+            error: function (error: any) {
+                console.log('Error:', error)
+            }
+        })
+    };
+    // **************** this is for Smart Category Data fetch from Backend and Call Back functions ******************
+
+    //  ######################  This is Smart Category Get Data Call From Backend and Bulid Nested Array According to Parent Child Categories #######################
+
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+        var TaxonomyItems: any = [];
+        var uniqueNames: any = [];
+        $.each(AllTaxonomyItems, function (index: any, item: any) {
+            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
+                TaxonomyItems.push(item);
+                getChilds(item, AllTaxonomyItems);
+                if (item.childs != undefined && item.childs.length > 0) {
+                    TaxonomyItems.push(item)
+                }
+                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+            }
+        });
+        return uniqueNames;
+    }
+    const getChilds = (item: any, items: any) => {
+        item.childs = [];
+        $.each(items, function (index: any, childItem: any) {
+            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+                childItem.isChild = true;
+                item.childs.push(childItem);
+                getChilds(childItem, items);
+            }
+        });
+    }
+
+    if (AllCategoryData?.length > 0) {
+        AllCategoryData?.map((item: any) => {
+            if (item.newTitle != undefined) {
+                item['Newlabel'] = item.newTitle;
+                AutoCompleteItems.push(item)
+                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                    item.childs.map((childitem: any) => {
+                        if (childitem.newTitle != undefined) {
+                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                            AutoCompleteItems.push(childitem)
+                        }
+                        if (childitem.childs.length > 0) {
+                            childitem.childs.map((subchilditem: any) => {
+                                if (subchilditem.newTitle != undefined) {
+                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                    AutoCompleteItems.push(subchilditem)
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Title === current.Title
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+
+    //  ###################  Smart Category Popup Call Back Functions and Validations ##################
+
+    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
+        setSelectedCategoryData(selectCategoryDataCallBack, "For-Panel");
+    }, [])
+
+    //  ###################  Smart Category slection Common Functions with Validations ##################
+
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setIsComponentPicker(false);
+        let TempArray: any = [];
+        selectCategoryData.map((existingData: any) => {
+            let elementFoundCount: any = 0;
+            if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                tempShareWebTypeData.map((currentData: any) => {
+                    if (existingData.Title == currentData.Title) {
+                        elementFoundCount++;
+                    }
+                })
+            }
+            if (elementFoundCount == 0) {
+                let category: any;
+                if (selectCategoryData != undefined && selectCategoryData.length > 0) {
+                    selectCategoryData.map((categoryData: any) => {
+                        if (usedFor == "For-Auto-Search") {
+                            tempShareWebTypeData.push(categoryData);
+                        }
+                        TempArray.push(categoryData)
+                        let isExists: any = 0;
+                        if (tempCategoryData != undefined) {
+                            isExists = tempCategoryData.search(categoryData.Title);
+                        } else {
+                            category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
+                        }
+                        if (isExists < 0) {
+                            category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
+                        }
+                    })
+                }
+                setCategoriesData(category);
+                let phoneCheck = category.search("Phone");
+                let emailCheck = category.search("Email");
+                let ImmediateCheck = category.search("Immediate");
+                let ApprovalCheck = category.search("Approval");
+                let OnlyCompletedCheck = category.search("Only Completed");
+                if (phoneCheck >= 0) {
+                    setPhoneStatus(true)
+                } else {
+                    setPhoneStatus(false)
+                }
+                if (emailCheck >= 0) {
+                    setEmailStatus(true)
+                } else {
+                    setEmailStatus(false)
+                }
+                if (ImmediateCheck >= 0) {
+                    setImmediateStatus(true)
+                } else {
+                    setImmediateStatus(false)
+                }
+                if (ApprovalCheck >= 0) {
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
+                } else {
+                    setApprovalStatus(false)
+                }
+                if (OnlyCompletedCheck >= 0) {
+                    setOnlyCompletedStatus(true);
+                } else {
+                    setOnlyCompletedStatus(false);
+                }
+            }
+        })
+
+        if (usedFor == "For-Panel") {
+            setShareWebTypeData(selectCategoryData);
+            tempShareWebTypeData = selectCategoryData;
+        }
+        if (usedFor == "For-Auto-Search") {
+            setShareWebTypeData(tempShareWebTypeData);
+            setSearchedCategoryData([])
+            setCategorySearchKey("");
+        }
+    }
+
+    const smartCategoryPopup = React.useCallback(() => {
+        setIsComponentPicker(false);
+    }, [])
+
+
+    //  ###################  Smart Category Auto Suggesution Functions  ##################
+
+    const autoSuggestionsForCategory = (e: any) => {
+        let searchedKey: any = e.target.value;
+        setCategorySearchKey(e.target.value);
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray?.map((itemData: any) => {
+                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            })
+            setSearchedCategoryData(tempArray);
+        } else {
+            setSearchedCategoryData([]);
+        }
+    }
+
+    // ################ this is for Smart category change and remove function #############
+
+    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+        let tempString: any;
+
+        let tempArray2: any = [];
+        tempShareWebTypeData = [];
+        ShareWebTypeData?.map((dataType: any) => {
+            if (dataType.Id != TypeId) {
+                tempArray2.push(dataType)
+                tempShareWebTypeData.push(dataType);
+            }
+        })
+        if (tempArray2 != undefined && tempArray2.length > 0) {
+            tempArray2.map((itemData: any) => {
+                tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
+            })
+        }
+        setCategoriesData(tempString);
+        tempCategoryData = tempString;
+        setShareWebTypeData(tempArray2);
+    }
+    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+        let statusValue: any = e.target.value;
+        let type: any = typeValue;
+        let Id: any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type, Id)
+    }
+
+    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
+        if (Status == "true") {
+            removeCategoryItem(type, Id);
+            if (type == "Phone") {
+                setPhoneStatus(false)
+            }
+            if (type == "Email") {
+                setEmailStatus(false)
+            }
+            if (type == "Immediate") {
+                setImmediateStatus(false)
+            }
+            if (type == "Approval") {
+                setApprovalStatus(false)
+            }
+            if (type == "Only Completed") {
+                setOnlyCompletedStatus(false)
+            }
+        } else {
+            let category: any = tempCategoryData + ";" + type;
+            setCategoriesData(category);
+            tempCategoryData = category;
+            let tempObject = {
+                Title: type,
+                Id: Id
+            }
+            ShareWebTypeData.push(tempObject);
+            tempShareWebTypeData.push(tempObject);
+            if (type == "Phone") {
+                setPhoneStatus(true)
+            }
+            if (type == "Email") {
+                setEmailStatus(true)
+            }
+            if (type == "Immediate") {
+                setImmediateStatus(true)
+            }
+            if (type == "Approval") {
+                setApprovalStatus(true);
+                setApproverData(TaskApproverBackupArray);
+                StatusArray?.map((item: any) => {
+                    if (item.value == 1) {
+                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                        setPercentCompleteStatus(item.status);
+                        setTaskStatus(item.taskStatusComment);
+                    }
+                })
+            }
+            if (type == "Only Completed") {
+                setOnlyCompletedStatus(true)
+            }
+        }
+    }
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$ End Smart Category Section Functions $$$$$$$$$$$$$$$$
+
+    //  ******************  This is All Site Details Get Data Call From Backend **************
+
+    const getAllSitesData = async () => {
+        let web = new Web(siteUrls);
+        let MetaData: any = [];
+        let siteConfig: any = [];
+        let tempArray: any = [];
+        MetaData = await web.lists
+            .getById(AllListIdData.SmartMetadataListID)
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .top(4999)
+            .expand('Author,Editor')
+            .get()
+
+        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
+        siteConfig?.map((site: any) => {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
+                site.BtnStatus = false;
+                tempArray.push(site);
+            }
+        })
+        setSiteTypes(tempArray);
+        tempArray?.map((tempData: any) => {
+            SiteTypeBackupArray.push(tempData);
+        })
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
+
+    // **************************  This is for Loading All Task Users From Back End Call Functions And validations ****************************
+    var count = 0;
+    const loadTaskUsers = async () => {
+        var AllTaskUsers: any = []
+        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
+            .then((response: AxiosResponse) => {
+                taskUsers = response.data.value;
+                getAllEmployeeData();
+                $.each(taskUsers, function (index: any, user: any) {
+                    var ApproverUserItem = '';
+                    var UserApproverMail: any = []
+                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
+                        if (user.Approver != undefined) {
+                            $.each(user.Approver.results, function (ApproverUser: any, index) {
+                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
+                                UserApproverMail.push(ApproverUser.Name.split('|')[2]);
+                            })
+                            user['UserManagerName'] = ApproverUserItem;
+                            user['UserManagerMail'] = UserApproverMail;
+                        }
+                        AllTaskUsers.push(user);
+                    }
+                });
+                if (AllMetaData != undefined && AllMetaData?.length > 0) {
+                    GetSelectedTaskDetails();
+                }
+            },
+                function (data) {
+                });
+    }
+
+
+    // **************** this is for Getting current user Data ************* 
+
+    const getCurrentUserDetails = async () => {
+        let currentUserId: number;
+        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        if (currentUserId != undefined) {
+            if (taskUsers != null && taskUsers?.length > 0) {
+                taskUsers?.map((userData: any) => {
+                    if (userData.AssingedToUserId == currentUserId) {
+                        let temp: any = [];
+                        temp.push(userData)
+                        setCurrentUserData(temp);
+                        currentUserBackupArray.push(userData);
+                    }
+                })
+            }
+        }
+    }
+
+    // ********** this is for Getting All  Employees Data For Approval Function and Approval Popup  *******************
+
+    const getAllEmployeeData = () => {
+        let UsersData: any = [];
+        let Groups: any = [];
+        let MainArray: any = [];
+        taskUsers.map((EmpData: any) => {
+            if (EmpData.ItemType == "Group") {
+                EmpData.Child = [];
+                Groups.push(EmpData);
+                MainArray.push(EmpData);
+            }
+            if (EmpData.ItemType == "User") {
+                UsersData.push(EmpData);
+            }
+        })
+        if (UsersData.length > 0 && Groups.length > 0) {
+            Groups.map((groupData: any) => {
+                UsersData.map((userData: any) => {
+                    if (groupData.Id == userData.UserGroupId) {
+                        userData.NewLabel = groupData.Title + " > " + userData.Title;
+                        groupData.Child.push(userData);
+                    }
+                })
+            })
+        }
+        setAllEmployeeData(Groups);
+    }
+
+
+    // ************************** this is used for getting Site Composition For Selected Portfolio which in Taaged into Task ***********************
+
     const GetPortfolioSiteComposition = async (ProtfolioId: any) => {
         let DataFromCall: any;
         let web = new Web(siteUrls);
-
         try {
             DataFromCall = await web.lists
                 .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title, Id").top(5000).filter(`Id eq ${ProtfolioId}`).get();
             if (DataFromCall != undefined) {
                 let TempSiteCompositionArray: any = [];
-                console.log("Portfolio Site Composition data =====================", DataFromCall)
                 if (DataFromCall[0].Sitestagging != undefined) {
                     let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
                     if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
@@ -1358,6 +1278,7 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    // ************************** this is used for getting All Projects Data From Back End ***********************
 
     const GetMasterData = async () => {
         try {
@@ -1394,183 +1315,181 @@ const EditTaskPopup = (Items: any) => {
         } catch (error) {
             console.log("Error:", error.message)
         }
-
     }
 
-    // const getInformationForSmartLight = () => {
-    //     if (EditData.TaskApprovers?.length > 0 && EditData.TaskApprovers != undefined) {
-    //         EditData.TaskApprovers?.map((Approver: any) => {
-    //             currentUserBackupArray?.map((current: any) => {
-    //                 if (Approver.Id == current.Id) {
-    //                     setSmartLightStatus(true);
-    //                 }
-    //             })
-    //         })
-    //     }
-    // }
 
-    //    *********** This is for status section Functions **************
+
+    //    ************************* This is for status section Functions **************************
+
+    const openTaskStatusUpdatePopup = (itemData: any) => {
+        setTaskStatusPopup(true);
+    }
+
+    //   ###################### This is used for Status Auto Suggesution Function #########################
+
     const StatusAutoSuggestion = (e: any) => {
         let StatusInput = e.target.value;
         let value = Number(e.target.value)
-        // if (value <= 100) {
-        if (StatusInput.length > 0) {
-            if (StatusInput == 0) {
-                setTaskStatus('Not Started');
-                setPercentCompleteStatus('Not Started');
+        if (value <= 100) {
+            if (StatusInput.length > 0) {
+                if (StatusInput == 0) {
+                    setTaskStatus('Not Started');
+                    setPercentCompleteStatus('Not Started');
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+                }
+                if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
+                    setTaskStatus("In Progress");
+                    setPercentCompleteStatus(`${StatusInput}% In Progress`);
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                    EditData.IsTodaysTask = false;
+                } else {
+                    StatusArray.map((percentStatus: any, index: number) => {
+                        if (percentStatus.value == StatusInput) {
+                            setTaskStatus(percentStatus.taskStatusComment);
+                            setPercentCompleteStatus(percentStatus.status);
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                        }
+                    })
+                }
+                if (StatusInput == 80) {
+                    // let tempArray: any = [];
+                    if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+                    } else {
+                        setWorkingMember(143);
+                    }
+                    EditData.IsTodaysTask = false;
+                    EditData.CompletedDate = undefined;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 5) {
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
+                    EditData.CompletedDate = undefined;
+                    EditData.IsTodaysTask = false;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 10) {
+                    EditData.CompletedDate = undefined;
+                    if (EditData.StartDate == undefined) {
+                        EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+                    }
+                    EditData.IsTodaysTask = true;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
+                }
+                if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
+                    setWorkingMember(9);
+                    EditData.IsTodaysTask = false;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 90) {
+                    EditData.IsTodaysTask = false;
+                    if (EditData.siteType == 'Offshore Tasks') {
+                        setWorkingMember(36);
+                    } else if (DesignStatus) {
+                        setWorkingMember(172);
+                    } else {
+                        setWorkingMember(42);
+                    }
+                    EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 2) {
+                    setInputFieldDisable(true)
+                    StatusArray.map((percentStatus: any, index: number) => {
+                        if (percentStatus.value == StatusInput) {
+                            setTaskStatus(percentStatus.taskStatusComment);
+                            setPercentCompleteStatus(percentStatus.status);
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                        }
+                    })
+                }
+                if (StatusInput != 2) {
+                    setInputFieldDisable(false)
+                }
+                if (StatusInput <= 3 && ApprovalStatusGlobal) {
+                    ChangeTaskUserStatus = false;
+                } else {
+                    ChangeTaskUserStatus = true;
+                }
+                // if (StatusInput == 1) {
+                //     let tempArray: any = [];
+                //     if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                //         if (TaskApproverBackupArray?.length > 0) {
+                //             TaskApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                //         if (TaskCreatorApproverBackupArray?.length > 0) {
+                //             TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     }
+                //     StatusArray?.map((item: any) => {
+                //         if (StatusInput == item.value) {
+                //             setPercentCompleteStatus(item.status);
+                //             setTaskStatus(item.taskStatusComment);
+                //         }
+                //     })
+                //     setTaskAssignedTo(tempArray);
+                //     setTaskTeamMembers(tempArray);
+                //     setApproverData(tempArray);
+                // }
+            } else {
+                setTaskStatus('');
+                setPercentCompleteStatus('');
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
             }
-            if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
-                setTaskStatus("In Progress");
-                setPercentCompleteStatus(`${StatusInput}% In Progress`);
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                EditData.IsTodaysTask = false;
-            } else {
-                StatusArray.map((percentStatus: any, index: number) => {
-                    if (percentStatus.value == StatusInput) {
-                        setTaskStatus(percentStatus.taskStatusComment);
-                        setPercentCompleteStatus(percentStatus.status);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                    }
-                })
-            }
-            if (StatusInput == 80) {
-                // let tempArray: any = [];
-                if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
-                } else {
-                    setWorkingMember(143);
-                }
-                EditData.IsTodaysTask = false;
-                EditData.CompletedDate = undefined;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 5) {
-                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-
-                // } else {
-                //     setWorkingMember(156);
-                // }
-                EditData.CompletedDate = undefined;
-                EditData.IsTodaysTask = false;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 10) {
-                EditData.CompletedDate = undefined;
-                if (EditData.StartDate == undefined) {
-                    EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
-                }
-                EditData.IsTodaysTask = true;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // } else {
-                //     setWorkingMember(156);
-                // }
-            }
-            if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
-                setWorkingMember(9);
-                EditData.IsTodaysTask = false;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 90) {
-                EditData.IsTodaysTask = false;
-                if (EditData.siteType == 'Offshore Tasks') {
-                    setWorkingMember(36);
-                } else if (DesignStatus) {
-                    setWorkingMember(172);
-                } else {
-                    setWorkingMember(42);
-                }
-                EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 2) {
-                setInputFieldDisable(true)
-                StatusArray.map((percentStatus: any, index: number) => {
-                    if (percentStatus.value == StatusInput) {
-                        setTaskStatus(percentStatus.taskStatusComment);
-                        setPercentCompleteStatus(percentStatus.status);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                    }
-                })
-            }
-            if (StatusInput != 2) {
-                setInputFieldDisable(false)
-            }
-            if (StatusInput <= 3 && ApprovalStatusGlobal) {
-                ChangeTaskUserStatus = false;
-            } else {
-                ChangeTaskUserStatus = true;
-            }
-            // if (StatusInput == 1) {
-            //     let tempArray: any = [];
-            //     if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-            //         if (TaskApproverBackupArray?.length > 0) {
-            //             TaskApproverBackupArray.map((dataItem: any) => {
-            //                 tempArray.push(dataItem);
-            //             })
-            //         }
-            //     } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-            //         if (TaskCreatorApproverBackupArray?.length > 0) {
-            //             TaskCreatorApproverBackupArray.map((dataItem: any) => {
-            //                 tempArray.push(dataItem);
-            //             })
-            //         }
-            //     }
-            //     StatusArray?.map((item: any) => {
-            //         if (StatusInput == item.value) {
-            //             setPercentCompleteStatus(item.status);
-            //             setTaskStatus(item.taskStatusComment);
-            //         }
-            //     })
-            //     setTaskAssignedTo(tempArray);
-            //     setTaskTeamMembers(tempArray);
-            //     setApproverData(tempArray);
-            // }
         } else {
-            setTaskStatus('');
-            setPercentCompleteStatus('');
-            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+            alert("Status not should be greater than 100");
+            setEditData({ ...EditData, Priority_x0020_Rank: 0 })
         }
-        // } else {
-        //     alert("Status not should be greater than 100");
-        //     setEditData({ ...EditData, Priority_x0020_Rank: 0 })
-        // }
 
 
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
 
+    //   ######################  This is used for Status Popup Chnage Status #########################
     const PercentCompleted = (StatusData: any) => {
+        setTaskStatusPopup(false);
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
@@ -1672,18 +1591,8 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const setWorkingMember = (statusId: any) => {
-        taskUsers.map((dataTask: any) => {
-            if (dataTask.AssingedToUserId == statusId) {
-                let tempArray: any = [];
-                tempArray.push(dataTask)
-                EditData.TaskAssignedUsers = tempArray;
-                let updateUserArray: any = [];
-                updateUserArray.push(tempArray[0].AssingedToUser)
-                setTaskAssignedTo(updateUserArray);
-            }
-        })
-    }
+
+    //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
 
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
         let tempArray: any = [];
@@ -1707,16 +1616,33 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
-    const closeTaskStatusUpdatePopup = () => {
-        setTaskStatusPopup(false)
-        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
-        StatusArray?.map((array: any) => {
-            if (EditData.PercentComplete == array.value) {
-                setPercentCompleteStatus(array.status);
-                setTaskStatus(array.taskStatusComment);
+    //  ###################### This is Common Function for Chnage The Working Members According to Change Status ######################
+
+    const setWorkingMember = (statusId: any) => {
+        taskUsers.map((dataTask: any) => {
+            if (dataTask.AssingedToUserId == statusId) {
+                let tempArray: any = [];
+                tempArray.push(dataTask)
+                EditData.TaskAssignedUsers = tempArray;
+                let updateUserArray: any = [];
+                updateUserArray.push(tempArray[0].AssingedToUser)
+                setTaskAssignedTo(updateUserArray);
             }
         })
-        setPercentCompleteCheck(false);
+    }
+
+   
+
+    const closeTaskStatusUpdatePopup = () => {
+        setTaskStatusPopup(false)
+        // setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
+        // StatusArray?.map((array: any) => {
+        //     if (EditData.PercentComplete == array.value) {
+        //         setPercentCompleteStatus(array.status);
+        //         setTaskStatus(array.taskStatusComment);
+        //     }
+        // })
+        // setPercentCompleteCheck(false);
     }
     const setModalIsOpenToFalse = () => {
         let callBack = Items.Call
@@ -1737,17 +1663,7 @@ const EditTaskPopup = (Items: any) => {
         TaskApproverBackupArray = []
         ApproverIds = []
     }
-    let currentUsers = [
-        { rankTitle: 'Select Item Rank', rank: null },
-        { rankTitle: '(8) Top Highlights', rank: 8 },
-        { rankTitle: '(7) Featured Item', rank: 7 },
-        { rankTitle: '(6) Key Item', rank: 6 },
-        { rankTitle: '(5) Relevant Item', rank: 5 },
-        { rankTitle: '(4) Background Item', rank: 4 },
-        { rankTitle: '(2) to be verified', rank: 2 },
-        { rankTitle: '(1) Archive', rank: 1 },
-        { rankTitle: '(0) No Show', rank: 0 }
-    ]
+
     var smartComponentsIds: any = [];
     var RelevantPortfolioIds: any = [];
     var AssignedToIds: any = [];
@@ -1758,23 +1674,28 @@ const EditTaskPopup = (Items: any) => {
     var SmartServicesId: any = [];
     var ApproverIds: any = [];
 
+
+
+
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        UserName: imgItem.UserName,
-                        UserImage: imgItem.UserImage
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
                     }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
                 }
 
             })
@@ -2038,7 +1959,7 @@ const EditTaskPopup = (Items: any) => {
                 Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
                 Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
             },
-            BasicImageInfo: JSON.stringify(UploadImageArray),
+            BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
             ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
             ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
             ClientTime: JSON.stringify(ClientCategoryData),
@@ -2144,6 +2065,7 @@ const EditTaskPopup = (Items: any) => {
 
     }
 
+    // *************************  This is for workingThisWeek,  IsTodaysTask, and waitForResponse Functions ****************************
     const changeStatus = (e: any, type: any) => {
         if (type == "workingThisWeek") {
             if (e.target.value === 'true') {
@@ -2167,7 +2089,10 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     }
-    //    ************* this is team configuration call Back function **************
+
+
+    //    ************* This is team configuration call Back function **************
+
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
@@ -2219,7 +2144,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
 
-    // *************** this is footer section share this task function ***************
+    // *************** This is footer section share This task function ***************
 
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
@@ -2228,6 +2153,8 @@ const EditTaskPopup = (Items: any) => {
             + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
         window.location.href = link;
     }
+
+    // ****************** This is used for Delete Task Functions **********************
     const deleteTaskFunction = async (TaskID: number) => {
         let deletePost = confirm("Do you really want to delete this Task?")
         if (deletePost) {
@@ -2414,8 +2341,8 @@ const EditTaskPopup = (Items: any) => {
         setModalIsOpenToFalse();
     }
 
-    // ************ ======= END ===== of Save And Add Time sheet function *************
     //***************** This is for Image Upload Section  Functions *****************
+    
     const FlorarImageUploadComponentCallBack = (dt: any) => {
         setUploadBtnStatus(false);
         let DataObject: any = {
@@ -2514,17 +2441,19 @@ const EditTaskPopup = (Items: any) => {
         var UploadImageArray: any = []
         if (JsonData != undefined && JsonData.length > 0) {
             JsonData?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        UserName: imgItem.UserName,
-                        UserImage: imgItem.UserImage
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
                     }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
                 }
             })
         }
@@ -2971,7 +2900,7 @@ const EditTaskPopup = (Items: any) => {
         })
         let ApproverHistoryObject: any = {
             ApproverName: ApproverData.Title,
-            ApprovedDate: Moment(new Date().toLocaleString()).format('DD MMM YYYY HH:mm'),
+            ApprovedDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
             ApproverId: ApproverData.AssingedToUserId,
             ApproverImage: (ApproverData.Item_x0020_Cover != undefined || ApproverData.Item_x0020_Cover != null ? ApproverData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
             ApproverSuffix: ApproverData.Suffix,
@@ -3286,11 +3215,11 @@ const EditTaskPopup = (Items: any) => {
                             </tbody>
                         </table>
                     </div>
-                    <footer className="float-end">
+                    {/* <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
                             OK
                         </button>
-                    </footer>
+                    </footer> */}
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
@@ -3303,7 +3232,7 @@ const EditTaskPopup = (Items: any) => {
                 isBlocking={false}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
-                    <TimeEntryPopup props={Items.Items} Context={Items.Context} />
+                    <TimeEntryPopup props={Items.Items} />
                 </div>
             </Panel>
             {/* ***************** this is Main Panel *********** */}
@@ -3399,7 +3328,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="input-group">
                                                     <label className="form-label full-width">Item Rank</label>
                                                     <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setEditData({ ...EditData, ItemRank: e.target.value })}>
-                                                        {currentUsers.map(function (h: any, i: any) {
+                                                        {ItemRankArray.map(function (h: any, i: any) {
                                                             return (
                                                                 <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                             )
@@ -4025,7 +3954,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">Task Users</label>
+                                                    <label className="form-label full-width  mx-2">Working Member</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>
@@ -4250,7 +4179,7 @@ const EditTaskPopup = (Items: any) => {
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
                                         <NewTameSheetComponent props={Items} AllListId={AllListIdData}
-                                             Context={Context} TeamConfigDataCallBack={getTeamConfigData}
+                                            TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
                                     <div className="col-sm-5">
@@ -4285,10 +4214,37 @@ const EditTaskPopup = (Items: any) => {
                                 })} */}
                     </div>
 
-                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call} Dynamic={AllListIdData}>
-                    </ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={ShareWebComponent} selectedCategoryData={ShareWebTypeData} usedFor="Task-Popup" siteUrls={siteUrls} AllListId={AllListIdData} CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType} Dynamic={AllListIdData}></LinkedComponent>}
+                    {IsComponent &&
+                        <ServiceComponentPortfolioPopup
+                            props={ShareWebComponent}
+                            Dynamic={AllListIdData}
+                            ComponentType={"Component"}
+                            Call={ComponentServicePopupCallBack}
+
+                        />
+                    }
+                    {IsServices &&
+                        <ServiceComponentPortfolioPopup
+                            props={ShareWebComponent}
+                            Dynamic={AllListIdData}
+                            Call={ComponentServicePopupCallBack}
+                            ComponentType={"Service"}
+
+                        />
+                    }
+                    {IsComponentPicker &&
+                        <Picker
+                            props={ShareWebComponent}
+                            selectedCategoryData={ShareWebTypeData}
+                            usedFor="Task-Popup"
+                            siteUrls={siteUrls}
+                            AllListId={AllListIdData}
+                            CallBack={SelectCategoryCallBack}
+                            isServiceTask={ServicesTaskCheck}
+                            closePopupCallBack={smartCategoryPopup}
+                        />
+                    }
+
                     {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
@@ -4478,7 +4434,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">Item Rank</label>
                                                                 <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setItemRank(e.target.value)}>
-                                                                    {currentUsers.map(function (h: any, i: any) {
+                                                                    {ItemRankArray.map(function (h: any, i: any) {
                                                                         return (
                                                                             <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                                         )
@@ -4720,20 +4676,20 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input className="form-check-input"
                                                                             name="radioPriority" type="radio"
                                                                             value="(1) High" checked={PriorityStatus === "(1) High"}
-                                                                            onChange={(e: any) => setPriority("(1) High")}
+
                                                                         />
                                                                         <label className="form-check-label">High</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" value="(2) Normal" onChange={(e) => setPriority("(2) Normal")}
+                                                                            type="radio" value="(2) Normal"
                                                                             checked={PriorityStatus === "(2) Normal"}
                                                                         />
                                                                         <label className="form-check-label">Normal</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" value="(3) Low" onChange={(e) => setPriority("(3) Low")}
+                                                                            type="radio" value="(3) Low"
                                                                             checked={PriorityStatus === "(3) Low"}
                                                                         />
                                                                         <label className="form-check-label">Low</label>

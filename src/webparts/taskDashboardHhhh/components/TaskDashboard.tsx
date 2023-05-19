@@ -1,6 +1,7 @@
 import * as React from 'react'
 import $ from 'jquery';
 import axios from 'axios';
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
@@ -15,7 +16,6 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
-import { getStartDateOfWeek } from '@fluentui/react';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -42,14 +42,19 @@ var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [currentView, setCurrentView] = React.useState('Home');
+    const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const [AllSitesTask, setAllSitesTask] = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
     const [isTimeEntry, setIsTimeEntry] = React.useState(false);
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
+    const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
@@ -64,6 +69,14 @@ const TaskDashboard = (props: any) => {
         taskId: '',
         origin: ''
     });
+    const TimeEntryCallBack = React.useCallback((item1) => {
+        setOpenTimeEntryPopup(false);
+    }, []);
+    const EditDataTimeEntry = (e: any, item: any) => {
+
+        setTaskTimeDetails(item);
+        setOpenTimeEntryPopup(true);
+    };
     React.useEffect(() => {
         try {
             isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
@@ -91,6 +104,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
+
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -309,6 +323,7 @@ const TaskDashboard = (props: any) => {
     const LoadAllSiteTasks = function () {
         loadAdminConfigurations();
         let AllSiteTasks: any = [];
+        let AllBottleNeckTasks: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
@@ -329,6 +344,7 @@ const TaskDashboard = (props: any) => {
                                 smartmeta.map((task: any) => {
                                     task.AllTeamMember = [];
                                     task.siteType = config.Title;
+                                    task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                                     task.listId = config.listId;
                                     task.siteUrl = config.siteUrl.Url;
                                     task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -349,10 +365,13 @@ const TaskDashboard = (props: any) => {
                                     }
                                     if (DataSiteIcon != undefined) {
                                         DataSiteIcon.map((site: any) => {
-                                            if (site.Site == task.siteType) {
+                                            if (site.Site?.toLowerCase() == task.siteType?.toLowerCase()) {
                                                 task["siteIcon"] = site.SiteIcon;
                                             }
                                         });
+                                    }
+                                    if(task.siteType=="Kathabeck"){
+                                        task["siteIcon"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Foundation/Icon_Kathabeck.png";
                                     }
                                     task.TeamMembersSearch = "";
                                     task.componentString =
@@ -388,6 +407,8 @@ const TaskDashboard = (props: any) => {
                                             task.createdImg = user?.Item_x0020_Cover?.Url;
                                         }
                                     })
+
+                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
@@ -406,6 +427,9 @@ const TaskDashboard = (props: any) => {
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
+                                    if (isBottleneckTask) {
+                                        AllBottleNeckTasks.push(task)
+                                    }
                                     AllSiteTasks.push(task)
                                 });
                                 arraycount++;
@@ -413,7 +437,26 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
-                            filterCurrentUserTask();
+                            setAllSitesTask(AllSiteTasks)
+                            setAllBottleNeck(AllBottleNeckTasks)
+                            const params = new URLSearchParams(window.location.search);
+                            let query = params.get("UserId");
+                            let userFound = false;
+                            if (query != undefined && query != null && query != '') {
+                                taskUsers.map((user: any) => {
+                                    if (user?.AssingedToUserId == query) {
+                                        userFound = true;
+                                        changeSelectedUser(user)
+                                    }
+                                })
+                                if (userFound == false) {
+                                    if (confirm("User Not Found , Do you want to continue to your Dashboard?")) {
+                                        filterCurrentUserTask()
+                                    }
+                                }
+                            } else {
+                                filterCurrentUserTask();
+                            }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
                         }
@@ -500,13 +543,14 @@ const TaskDashboard = (props: any) => {
                 } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } else if (isBottleneckTask && (isCurrentUserAssigned)) {
+                } if (isBottleneckTask && (isCurrentUserAssigned)) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
-                } else if (!alreadyPushed && (isCurrentUserAssigned)) {
+                } if (!alreadyPushed && (isCurrentUserAssigned)) {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
+
             })
         }
         backupTaskArray.AllAssignedTasks = AllAssignedTask;
@@ -562,7 +606,19 @@ const TaskDashboard = (props: any) => {
                             {row?.values?.Title}
                         </a>
 
-
+                        {row?.original?.Body !== null && <span className="me-1">
+                            <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                <span className="svg__iconbox svg__icon--info " ></span>
+                                <div className="popover__content">
+                                    <span>
+                                        <p
+                                            dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
+                                        ></p>
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                        }
                     </span>
                 ),
             },
@@ -698,7 +754,7 @@ const TaskDashboard = (props: any) => {
                 accessor: "Title",
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span>
+                    <span className="d-flex">
                         <a className='hreflink'
                             href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
@@ -706,6 +762,20 @@ const TaskDashboard = (props: any) => {
                         >
                             {row?.values?.Title}
                         </a>
+                        {
+                            row?.original?.Body !== null && <span className="me-1">
+                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                    <span className="svg__iconbox svg__icon--info " ></span>
+                                    <div className="popover__content">
+                                        <span>
+                                            <p
+                                                dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
+                                            ></p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </span>
+                        }
 
                     </span>
                 ),
@@ -801,14 +871,30 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "",
                 id: "Id", // 'id' is required
                 isSorted: false,
-                style: { width: '35px' },
+                style: { width: '65px' },
                 showSortIcon: false,
                 Cell: ({ row }: any) => (
-                    <span
-                        title="Edit Task"
-                        onClick={() => EditPopup(row?.original)}
-                        className="svg__iconbox svg__icon--edit hreflink"
-                    ></span>
+                    <>
+                        <a
+                            onClick={(e) => EditDataTimeEntry(e, row.original)}
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="auto"
+                            title="Click To Edit Timesheet"
+                        >
+                            <span
+                                className="svg__iconbox svg__icon--clock"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                title="Click To Edit Timesheet"
+                            ></span>
+                        </a>
+                        <span
+                            title="Edit Task"
+                            onClick={() => EditPopup(row?.original)}
+                            className="svg__iconbox svg__icon--edit hreflink"
+                        ></span>
+                    </>
+
                 ),
             },
         ],
@@ -951,6 +1037,61 @@ const TaskDashboard = (props: any) => {
         usePagination
     );
 
+    const {
+        getTableProps: getTablePropsAllSite,
+        getTableBodyProps: getTableBodyPropsAllSite,
+        headerGroups: headerGroupsAllSite,
+        page: pageAllSite,
+        prepareRow: prepareRowAllSite,
+        gotoPage: gotoPageAllSite,
+        setPageSize: setPageSizeAllSite,
+        canPreviousPage: canPreviousPageAllSite,
+        canNextPage: canNextPageAllSite,
+        pageOptions: pageOptionsAllSite,
+        pageCount: pageCountAllSite,
+        nextPage: nextPageAllSite,
+        previousPage: previousPageAllSite,
+        state: { pageIndex: pageIndexAllSite, pageSize: pageSizeAllSite },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllSitesTask,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllBottle,
+        getTableBodyProps: getTableBodyPropsAllBottle,
+        headerGroups: headerGroupsAllBottle,
+        page: pageAllBottle,
+        prepareRow: prepareRowAllBottle,
+        gotoPage: gotoPageAllBottle,
+        setPageSize: setPageSizeAllBottle,
+        canPreviousPage: canPreviousPageAllBottle,
+        canNextPage: canNextPageAllBottle,
+        pageOptions: pageOptionsAllBottle,
+        pageCount: pageCountAllBottle,
+        nextPage: nextPageAllBottle,
+        previousPage: previousPageAllBottle,
+        state: { pageIndex: pageIndexAllBottle, pageSize: pageSizeAllBottle },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllBottleNeck,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
     const generateSortingIndicator = (column: any) => {
         return column.isSorted ? (
             column.isSortedDesc ? (
@@ -1043,26 +1184,26 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-   try {
-    // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-    currentUserId= props?.pageContext?.legacyPageContext?.userId
-    taskUsers = await loadTaskUsers();
-    taskUsers?.map((item: any) => {
-        item.isAdmin = false;
-        if (currentUserId == item?.AssingedToUser?.Id) {
-            currentUser = item;
-            setCurrentUserData(item);
+        try {
+            currentUserId = props?.pageContext?.legacyPageContext?.userId
+            taskUsers = await loadTaskUsers();
+            taskUsers?.map((item: any) => {
+                item.isAdmin = false;
+                if (currentUserId == item?.AssingedToUser?.Id) {
+                    currentUser = item;
+                    setCurrentUserData(item);
+                }
+                item.expanded = false;
+                getChilds1(item, taskUsers);
+                userGroups.push(item);
+            })
+            userGroups?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)
+            setGroupedUsers(userGroups);
+            GetMetaData();
+        } catch (error) {
+            console.log(error)
         }
-        item.expanded = false;
-        getChilds1(item, taskUsers);
-        userGroups.push(item);
-    })
-    setGroupedUsers(userGroups);
-    GetMetaData();
-   } catch (error) {
-    console.log(error)
-   }
-      
+
     }
     const loadTaskUsers = async () => {
         let taskUser;
@@ -1118,6 +1259,7 @@ const TaskDashboard = (props: any) => {
         currentUserId = currentUserData?.AssingedToUserId;
         filterCurrentUserTask()
         currentUserTimeEntry('This Week');
+        setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
     }
@@ -1389,7 +1531,7 @@ const TaskDashboard = (props: any) => {
                         teamsTaskBody.push(body);
                     })
                     let TeamTitle = '<h2>'
-                        + userGroup.Title 
+                        + userGroup.Title
                         + '</h2>'
                         + teamsTaskBody
                     finalBody.push(TeamTitle)
@@ -1428,6 +1570,12 @@ const TaskDashboard = (props: any) => {
     }
     const onChangeInSelectAll = (event: any) => {
         setPageSizeAll(Number(event.target.value));
+    };
+    const onChangeInSelectAllSite = (event: any) => {
+        setPageSizeAllSite(Number(event.target.value));
+    };
+    const onChangeInSelectAllBottle = (event: any) => {
+        setPageSizeAllBottle(Number(event.target.value));
     };
     //End
     return (
@@ -1485,7 +1633,7 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
-                        <section className="sidebar__section sidebar__section--menu">
+                        <section className="sidebar__section sidebar__section--menu" onClick={() => setCurrentView('Home')}>
                             <nav className="nav__item">
                                 {
                                     (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
@@ -1500,7 +1648,7 @@ const TaskDashboard = (props: any) => {
                                         </> : ""
                                 }
                                 <ul className="nav__list">
-                                    {currentUserData?.Title == "Ranu Trivedi"||currentUserData?.Title == "Abhishek" ?
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
@@ -1534,9 +1682,21 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
+                        <section className="sidebar__section sidebar__section--menu">
+                            <nav className="nav__item">
+                                <ul className="nav__list ms-2" >
+                                    <li id="DefaultViewSelectId" className="nav__text  ms-3 hreflink" onClick={() => { setCurrentView('allBottlenecks') }}>
+                                        All Bottlenecks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className="nav__text  ms-3 hreflink" onClick={() => { setCurrentView('allTasksView') }}>
+                                        All Tasks
+                                    </li>
+                                </ul>
+                            </nav>
+                        </section>
                     </aside>
                     <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
-                        <article className="row">
+                        {currentView == 'Home' ? <article className="row">
                             {selectedUser?.Title != undefined ?
                                 <div className="col-md-12 clearfix">
                                     <h5 className="d-inline-block">
@@ -2020,7 +2180,239 @@ const TaskDashboard = (props: any) => {
                                         </> : ''}
 
                             </div>
-                        </article>
+                        </article> : ''}
+                        {currentView == 'allBottlenecks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`All Bottleneck Tasks - ${AllBottleNeck?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllBottleNeck?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllBottle()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllBottle?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllBottle?.length > 0 ? <tbody {...getTableBodyPropsAllBottle()}>
+                                                    {pageAllBottle?.map((row: any) => {
+                                                        prepareRowAllBottle(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllBottle()} disabled={!canPreviousPageAllBottle}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllBottle + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllBottle()} disabled={!canNextPageAllBottle}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllBottle}
+                                                            onChange={onChangeInSelectAllBottle}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllBottle) => (
+                                                                <option key={pageSizeAllBottle} value={pageSizeAllBottle}>
+                                                                    Show {pageSizeAllBottle}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Bottleneck Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'allTasksView' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`All Site's Tasks - ${AllSitesTask?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllSitesTask?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllSite()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllSite?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllSite?.length > 0 ? <tbody {...getTableBodyPropsAllSite()}>
+                                                    {pageAllSite?.map((row: any) => {
+                                                        prepareRowAllSite(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllSite()} disabled={!canPreviousPageAllSite}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllSite + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllSite()} disabled={!canNextPageAllSite}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllSite}
+                                                            onChange={onChangeInSelectAllSite}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllSite) => (
+                                                                <option key={pageSizeAllSite} value={pageSizeAllSite}>
+                                                                    Show {pageSizeAllSite}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No All Sites Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
                     </div>
                     <div>
                         {isOpenEditPopup ? (
@@ -2034,6 +2426,8 @@ const TaskDashboard = (props: any) => {
                 </div>
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
+            {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+
         </>
     )
 }
