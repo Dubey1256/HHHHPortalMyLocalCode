@@ -12,6 +12,7 @@ import {
   FaSortDown,
   FaSortUp,
   FaSort,
+  FaCompressArrowsAlt,
 } from "react-icons/fa";
 import { MdAdd } from "react-icons/Md";
 import Tooltip from "../../../globalComponents/Tooltip";
@@ -26,6 +27,7 @@ import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import PortfolioStructureCreationCard from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
 // import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
@@ -48,8 +50,10 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import HighlightableCell from '../../componentPortfolio/components/highlight'
+// import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
+import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
+import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 
 ///TanstackTable filter And CheckBox 
 function Filter({
@@ -123,6 +127,10 @@ export default function ComponentTable({ props, NextProp }: any) {
   const [color, setColor] = React.useState(false);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
+  const [showTeamMemberOnCheck, setShowTeamMemberOnCheck]=React.useState(false)
+  const [checkCounter,setCheckCounter]=React.useState(true)
+  const [checkData, setcheckData]=React.useState({})
+
 
 
 
@@ -142,7 +150,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   const [count, setCount] = React.useState(0);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
-  // const [AllMetadata, setMetadata] = React.useState([])
+  const [AllMetadata, setMetadata] = React.useState([])
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [IsTask, setIsTask] = React.useState(false);
@@ -192,6 +200,10 @@ export default function ComponentTable({ props, NextProp }: any) {
     );
   };
 
+
+  function closeaddstructure(){
+    setAddModalOpen(false)
+  }
   // CustomHeader of the Add Structure End
 
   function handleClick(item: any) {
@@ -399,13 +411,18 @@ export default function ComponentTable({ props, NextProp }: any) {
                 result.TeamLeaderUserTitle = "";
                 //  result.AllTeamMembers = []
                 result.Display = "none";
+                // result.Created = Moment(result.Created).format("DD/MM/YYYY");
                 result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
-                if (result.DueDate == "Invalid date" || "") {
+                if (result.DueDate == "Invalid date" || result.Created == "Invalid date"|| "") {
                   result.DueDate = result.DueDate.replaceAll(
                     "Invalid date",
                     ""
                   );
+                  // result.Created = result.Created.replaceAll(
+                  //   "Invalid date",
+                  //   ""
+                  // );
                 }
                 result.PercentComplete = (result.PercentComplete * 100).toFixed(
                   0
@@ -708,14 +725,14 @@ export default function ComponentTable({ props, NextProp }: any) {
     var metadatItem: any = [];
     let smartmetaDetails: any = [];
     var select: any =
-      "Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent";
+      "Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,Color_x0020_Tag,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent";
     smartmetaDetails = await globalCommon.getData(
       NextProp.siteUrl,
       NextProp.SmartMetadataListID,
       select
     );
     console.log(smartmetaDetails);
-    // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
+    setMetadata(smartmetaDetails);
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
       // if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -1459,6 +1476,13 @@ export default function ComponentTable({ props, NextProp }: any) {
   //------------------Edit Data----------------------------------------------------------------------------------------------------------------------------
 
   const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+    if(eTarget == true){
+      setcheckData(itrm)
+      setShowTeamMemberOnCheck(true)
+    }else{
+      setcheckData({})
+      setShowTeamMemberOnCheck(false)
+    }
     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
     var Arrays: any = []
     const checked = eTarget;
@@ -1810,9 +1834,9 @@ export default function ComponentTable({ props, NextProp }: any) {
         if (CountArray == 0) {
           AllItems.push(childItem.data)
         }
-        setData(AllItems => ([...AllItems]))
+        // setData(AllItems => ([...AllItems]))
         refreshData();
-        rerender();
+        // rerender();
       }
 
     }
@@ -3352,12 +3376,13 @@ export default function ComponentTable({ props, NextProp }: any) {
 
   ///react table start function//////
 
+  
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "ID",
-        size: 15,
+        size: 17,
         header: ({ table }: any) => (
           <>
             <button className='border-0 bg-Ff'
@@ -3426,6 +3451,11 @@ export default function ComponentTable({ props, NextProp }: any) {
               >
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
               </a>}
+              {row?.original?.Categories == 'Draft' ?
+              <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
+            {row?.original?.subRows?.length > 0 ?
+              <span className='ms-1'>({row?.original?.childsLength})</span> : ''}
+
             {row?.original?.Short_x0020_Description_x0020_On != null &&
               <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                 <span title="Edit" className="svg__iconbox svg__icon--info"></span>
@@ -3434,28 +3464,30 @@ export default function ComponentTable({ props, NextProp }: any) {
                   {row?.original?.Short_x0020_Description_x0020_On}
                 </span>
               </span>}
+             
           </>
         ),
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 27,
+        size: 28,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
-            {row?.original?.ClientCategory?.map((elem: any) => {
+          <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata}/>
+            {/* {row?.original?.ClientCategory?.map((elem: any) => {
               return (
                 <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
               )
-            })}
+            })} */}
           </>
         ),
         id: 'ClientCategory',
         placeholder: "Client Category",
         header: "",
-        size: 15,
+        size: 8,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -3467,42 +3499,46 @@ export default function ComponentTable({ props, NextProp }: any) {
         id: 'TeamLeaderUser',
         placeholder: "Team",
         header: "",
-        size: 15,
+        size: 5,
       },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
-        size: 7,
+        size: 3,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
-        size: 7,
+        size: 3,
       },
       {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
-        size: 9,
+        size: 4,
       },
       {
-        accessorFn: (row) => row?.original?.Created != null ? Moment(row?.original?.Created).format("DD/MM/YYYY") : "",
-        cell: ({ row }) => (
+        accessorFn: (row) => Moment(row?.Created).format("DD/MM/YYYY"),
+        cell: ({ row ,getValue}) => (
           <>
             {row?.original?.Created == null ? (""
             ) : (
               <>
                 {row?.original?.Author != undefined ? (
+                  <>
                   <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
+                 
+                  </>
                 ) : (
                   <img
                     className="AssignUserPhoto"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
+                {getValue()}
               </>
             )
             }
@@ -3511,7 +3547,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         id: 'Created',
         placeholder: "Created Date",
         header: "",
-        size: 15,
+        size: 9,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3528,12 +3564,12 @@ export default function ComponentTable({ props, NextProp }: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 0,
       },
       {
         cell: ({ row, getValue }) => (
           <>
-            <td style={{ width: "2%" }}>
+           
               {row?.original?.siteType === "Master Tasks" && row?.original?.isRestructureActive && (
                 <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit">
                   <img className="icon-sites-img" src={row?.original?.Restructuring} onClick={(e) => OpenModal(row?.original)} />
@@ -3551,7 +3587,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   ""
                 )}
               </span>
-            </td>
+            
             {getValue()}
           </>
         ),
@@ -3559,19 +3595,19 @@ export default function ComponentTable({ props, NextProp }: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 0,
       },
       {
         cell: ({ row, getValue }) => (
           <>
-            <td style={{ width: "2%" }}>
+           
               <a> {row?.original?.siteType == "Master Tasks" && (
                 <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
                 {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
                   <span onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
                 )}
               </a>
-            </td>
+            
             {getValue()}
           </>
         ),
@@ -3579,7 +3615,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 2,
+        size: 1,
       },
 
     ],
@@ -4040,6 +4076,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             >
               Restructure
             </button>
+            {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers}/>: ''}
             <button
               type="button"
               className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
@@ -4056,7 +4093,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           </span>
         </div>
         <div className="col-sm-12 pad0 smart">
-          <div className="section-event">
+          <div className="">
             <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
               <table className="SortingTable table table-hover" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
@@ -4130,7 +4167,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         </div>
       </div>
       {IsTask && (
-        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call}></EditTaskPopup>
+        <EditTaskPopup Items={SharewebTask} AllListId={NextProp} Call={Call} context={NextProp.Context}></EditTaskPopup>
       )}
       {IsComponent && (
         <EditInstituton item={SharewebComponent} SelectD={NextProp} Calls={Call}></EditInstituton>
@@ -4139,6 +4176,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         <TimeEntryPopup
           props={SharewebTimeComponent}
           CallBackTimeEntry={TimeEntryCallBack}
+          Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
@@ -4160,7 +4198,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         type={PanelType.medium}
         isOpen={addModalOpen}
         isBlocking={false}
-        onDismiss={CloseCall}
+        onDismiss={closeaddstructure}
       >
         <PortfolioStructureCreationCard
           CreatOpen={CreateOpenCall}
@@ -4197,7 +4235,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   : "app component clearfix"
             }
           >
-            <div id="portfolio" className="section-event pt-0">
+            <div id="portfolio" className=" pt-0">
               {/* {
                                     
                                     MeetingItems.SharewebTaskType == undefined  &&
