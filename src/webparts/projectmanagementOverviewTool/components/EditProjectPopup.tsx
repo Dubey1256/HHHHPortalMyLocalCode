@@ -22,7 +22,6 @@ import DatePicker from "react-datepicker";
 import { ClickAwayListener } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection";
 import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
@@ -30,13 +29,14 @@ import Tooltip from "../../../globalComponents/Tooltip";
 // import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
-import PortfolioTagging from "./PortfolioTagging";
+// import PortfolioTagging from "./PortfolioTagging"; // replace 
+import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
 var PostShort_x0020_Description_x0020_On = "";
 var PostBody = "";
-var AllListId:any={};
+var AllListId: any = {};
 var AllUsers: any = [];
 var Assin: any = [];
 var AssignedToIds: any = [];
@@ -47,6 +47,8 @@ var BackupCat: any = [];
 let portfolioType = "";
 var CheckCategory: any = [];
 var backcatss: any = [];
+var TaggedServices: any = [];
+var TaggedComponents: any = [];
 function EditProjectPopup(item: any) {
   // Id:any
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
@@ -186,6 +188,35 @@ function EditProjectPopup(item: any) {
     setIsComponent(false);
     // setComponent(CompoenetItem => ([...CompoenetItem]));
   }, []);
+
+
+  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+    if (functionType == 'close') {
+      setIsComponent(false);
+      setIsPortfolio(false);
+    } else {
+      if (Type === "Service") {
+        if (DataItem.length > 0) {
+          DataItem.map((selectedData: any) => {
+            TaggedServices.push(selectedData);
+          })
+        }
+        setLinkedComponentData(TaggedServices)
+      }
+      if (Type === "Component") {
+        if (DataItem?.length > 0) {
+          DataItem.map((selectedData: any) => {
+            TaggedComponents.push(selectedData);
+          })
+        }
+        setSmartComponentData(TaggedComponents);
+      }
+      setIsPortfolio(false);
+    }
+  }, [])
+
+
+
   var isItemExists = function (arr: any, Id: any) {
     var isExists = false;
     $.each(arr, function (index: any, items: any) {
@@ -515,7 +546,7 @@ function EditProjectPopup(item: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              val.isChecked=true;
+              val.isChecked = true;
               // BackupCat.push(type.Id);
               // setcheckedCat(true);
             }
@@ -524,9 +555,11 @@ function EditProjectPopup(item: any) {
       }
       if (item.Component?.length > 0) {
         setSmartComponentData(item.Component);
+        TaggedComponents = item.Component;
       }
       if (item.Services?.length > 0) {
         setLinkedComponentData(item.Services);
+        TaggedServices = item.Services;
       }
       var Rr: any = [];
       if (item.ServicePortfolio != undefined) {
@@ -547,19 +580,19 @@ function EditProjectPopup(item: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
-      item.siteUrl =AllListId?.siteUrl;
+      item.siteUrl = AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
           ? GetIconImageUrl(
-              item.siteType,
-              AllListId?.siteUrl,
-              undefined
-            )
+            item.siteType,
+            AllListId?.siteUrl,
+            undefined
+          )
           : GetIconImageUrl(
-              item.siteType,
-              AllListId?.siteUrl,
-              undefined
-            );
+            item.siteType,
+            AllListId?.siteUrl,
+            undefined
+          );
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -569,9 +602,9 @@ function EditProjectPopup(item: any) {
     backcatss = BackupCat.filter((val: any, id: any, array: any) => {
 
       return array.indexOf(val) == id;
-    
-   })
-   //CheckCategory.forEach((val:any)=>{})
+
+    })
+    //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
 
@@ -594,7 +627,7 @@ function EditProjectPopup(item: any) {
   const GetSmartmetadata = async () => {
     let web = new Web(AllListId?.siteUrl);
     let smartmetaDetails = [];
-    let categoryhh:any = [];
+    let categoryhh: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
@@ -612,16 +645,16 @@ function EditProjectPopup(item: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
-        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title== "Email Notification" || val.Title== "Approval" || val.Title== "Immediate")) {
+        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title == "Email Notification" || val.Title == "Approval" || val.Title == "Immediate")) {
           categoryhh.push(val);
         }
 
       });
-       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+      CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
 
-          return array.indexOf(val) == id;
-        
-       })
+        return array.indexOf(val) == id;
+
+      })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -642,7 +675,7 @@ function EditProjectPopup(item: any) {
   };
 
   React.useEffect(() => {
-    AllListId=item?.AllListId;
+    AllListId = item?.AllListId;
     GetTaskUsers();
     var initLoading = function () {
       if (item.props != undefined) {
@@ -722,7 +755,7 @@ function EditProjectPopup(item: any) {
     console.log(componentDetails);
   };
   function EditComponentCallback() {
-    item.Call("","EditPopup");
+    item.Call("", "EditPopup");
   }
   let mentionUsers: any = [];
   //  mentionUsers = this.taskUsers.map((i:any)=>{
@@ -933,22 +966,22 @@ function EditProjectPopup(item: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    if (item.Priority_x0020_Rank<=10) {
-      
-      if(item.Priority_x0020_Rank == 8||item.Priority_x0020_Rank == 9||item.Priority_x0020_Rank == 10) {
+    if (item.Priority_x0020_Rank <= 10) {
+
+      if (item.Priority_x0020_Rank == 8 || item.Priority_x0020_Rank == 9 || item.Priority_x0020_Rank == 10) {
         item.Priority = "(1) High";
       }
-      if(item.Priority_x0020_Rank == 4||item.Priority_x0020_Rank == 5||item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
+      if (item.Priority_x0020_Rank == 4 || item.Priority_x0020_Rank == 5 || item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
         item.Priority = "(2) Normal";
       }
-      if(item.Priority_x0020_Rank == 1||item.Priority_x0020_Rank == 2||item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
+      if (item.Priority_x0020_Rank == 1 || item.Priority_x0020_Rank == 2 || item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
         item.Priority = "(3) Low";
       }
-  
-    }else{
+
+    } else {
       item.Priority_x0020_Rank = ""
       alert("Please Enter priority between 0 to 10");
-      
+
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -966,8 +999,8 @@ function EditProjectPopup(item: any) {
     setComponent((EditData) => [...EditData]);
   };
 
- 
-  
+
+
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -975,27 +1008,27 @@ function EditProjectPopup(item: any) {
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
     var Items = EditData;
-    
-      CheckCategory?.forEach((itemm:any,index:any)=>{
-       if(itemm.isChecked == true ){
+
+    CheckCategory?.forEach((itemm: any, index: any) => {
+      if (itemm.isChecked == true) {
         array2.push(itemm)
-       }
-      })
-     if(array2 != undefined && array2.length>0){
+      }
+    })
+    if (array2 != undefined && array2.length > 0) {
       NewArray = array2
-     }
-    
+    }
+
     if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory=[]
+      CheckCategory = []
       NewArray.map((NeitemA: any) => {
         CheckCategory.push(NeitemA);
       });
-    }else{
+    } else {
       CheckCategory = []
     }
     var categoriesItem = "";
-    CheckCategory?.map((category:any) => {
-      if (category.Title != undefined ) {
+    CheckCategory?.map((category: any) => {
+      if (category.Title != undefined) {
         categoriesItem =
           categoriesItem == ""
             ? category.Title
@@ -1003,7 +1036,7 @@ function EditProjectPopup(item: any) {
       }
     });
     var CategoryID: any = [];
-    CheckCategory?.map((category:any) => {
+    CheckCategory?.map((category: any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
@@ -1107,7 +1140,7 @@ function EditProjectPopup(item: any) {
               : [],
         },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-       StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
         DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
         CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
@@ -1137,7 +1170,7 @@ function EditProjectPopup(item: any) {
         },
         TechnicalExplanations:
           PostTechnicalExplanations != undefined &&
-          PostTechnicalExplanations != ""
+            PostTechnicalExplanations != ""
             ? PostTechnicalExplanations
             : EditData.TechnicalExplanations,
         Deliverables:
@@ -1146,7 +1179,7 @@ function EditProjectPopup(item: any) {
             : EditData.Deliverables,
         Short_x0020_Description_x0020_On:
           PostShort_x0020_Description_x0020_On != undefined &&
-          PostShort_x0020_Description_x0020_On != ""
+            PostShort_x0020_Description_x0020_On != ""
             ? PostShort_x0020_Description_x0020_On
             : EditData.Short_x0020_Description_x0020_On,
         Body:
@@ -1177,7 +1210,8 @@ function EditProjectPopup(item: any) {
       })
       .then((res: any) => {
         console.log(res);
-
+        TaggedComponents = [];
+        TaggedServices = [];
         setModalIsOpenToFalse();
       });
   };
@@ -1238,7 +1272,7 @@ function EditProjectPopup(item: any) {
     },
     []
   );
-  
+
   // CheckCategory.push(
   //   { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
   //   {
@@ -1298,7 +1332,7 @@ function EditProjectPopup(item: any) {
     Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
     siteUrl: TeamConfigInfo
       ? TeamConfigInfo.siteUrl
-      :AllListId?.siteUrl,
+      : AllListId?.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
   };
@@ -1322,11 +1356,13 @@ function EditProjectPopup(item: any) {
     return (
       <>
         <div
-          style={{     marginRight: "auto",
-          fontSize: "20px",
-          fontWeight: "600",
-          paddingLeft: "25px" }}
-      >
+          style={{
+            marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            paddingLeft: "25px"
+          }}
+        >
           {`Project > ${EditData.Title}`}
         </div>
         <Tooltip />
@@ -1350,49 +1386,60 @@ function EditProjectPopup(item: any) {
     }
   };
   var NewArray: any = [];
-  var array2:any=[];
-  const checkCat = (type: any,e:any) => {
+  var array2: any = [];
+  const checkCat = (type: any) => {
+    CheckCategory.map((catTitle: any, index: any) => {
+      setcheckedCat(false);
+      if (type.Title == catTitle.Title) {
+        NewArray.push(catTitle);
+      }
 
-    const { checked } = e.target;
-    if(checked == true){
-      type.isselected = true
-      array2.push(type)
-    }else{
-      type.isselected = false
-      CheckCategory?.forEach((itemm:any,index:any)=>{
-            if(itemm.Id == type.Id){
-              itemm.isChecked = false
-            }
-          })
-      // array2.push(type)
+    });
+
+
+
+  };
+
+
+  // const unTagService = (array: any, index: any) => {
+  //   array.splice(index, 1);
+  //   setLinkedComponentData(array);
+  //   setEditData(EditData);
+  // };
+  // const unTagComponent = (array: any, index: any) => {
+  //   array.splice(index, 1);
+  //   setSmartComponentData(array);
+  //   setEditData(EditData);
+  // };
+
+  const RemoveSelectedServiceComponent = (DataId: any, ComponentType: any) => {
+    let BackupArray: any = [];
+    let TempArray: any = []
+    if (ComponentType == "Service") {
+      BackupArray = TaggedServices
     }
-    // else{
-    //   NewArray?.forEach((itemm:any,index:any)=>{
-    //     if(itemm.Id == type.Id){
-    //       NewArray.splice(index,1)
-    //     }
-    //   })
-    //   CheckCategory?.forEach((itemm:any,index:any)=>{
-    //     if(itemm.Id == type.Id){
-    //       CheckCategory.splice(index,1)
-    //     }
-    //   })
-    // }
+    if (ComponentType == "Component") {
+      BackupArray = TaggedComponents
+    }
+    if (BackupArray != undefined && BackupArray.length > 0) {
+      BackupArray.map((componentData: any) => {
+        if (DataId != componentData.Id) {
+          TempArray.push(componentData);
+        }
+      })
+    }
+    if (TempArray != undefined && TempArray.length >= 0) {
+      if (ComponentType == "Service") {
+        TaggedServices = TempArray;
+        setLinkedComponentData(TempArray);
+      }
+      if (ComponentType == "Component") {
+        TaggedComponents = TempArray;
+        setSmartComponentData(TempArray);
+      }
+    }
 
-
-  };
- 
-  
-  const unTagService = (array: any, index: any) => {
-    array.splice(index, 1);
-    setLinkedComponentData(array);
-    setEditData(EditData);
-  };
-  const unTagComponent = (array: any, index: any) => {
-    array.splice(index, 1);
-    setSmartComponentData(array);
-    setEditData(EditData);
-  };
+  }
   return (
     <>
       {console.log("Done")}
@@ -1433,10 +1480,10 @@ function EditProjectPopup(item: any) {
                     aria-controls="concept"
                     aria-selected="false"
                   >
-                    Concept
+                    CONCEPT
                   </button>
                 </li>
-             
+
               </ul>
               <div
                 className="tab-content border border-top-0 clearfix "
@@ -1553,36 +1600,32 @@ function EditProjectPopup(item: any) {
                                     <div>
                                       {smartComponentData
                                         ? smartComponentData?.map(
-                                            (com: any, index: any) => {
-                                              return (
-                                                <>
-                                                  <div className="d-flex Component-container-edit-task">
-                                                    <a
-                                                      style={{
-                                                        color: "#fff !important",
-                                                      }}
-                                                      target="_blank"
-                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                                    >
-                                                      {com.Title}
-                                                    </a>
-                                                    <a>
-                                                      <img
-                                                        className="mx-2"
-                                                        src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
-                                                        onClick={() =>
-                                                          unTagComponent(
-                                                            smartComponentData,
-                                                            index
-                                                          )
-                                                        }
-                                                      />
-                                                    </a>
-                                                  </div>
-                                                </>
-                                              );
-                                            }
-                                          )
+                                          (com: any, index: any) => {
+                                            return (
+                                              <>
+                                                <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
+                                                  <a
+                                                    style={{
+                                                      color: "#fff !important",
+                                                    }}
+                                                    target="_blank"
+                                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                  >
+                                                    {com.Title}
+                                                  </a>
+                                                  <a>
+                                                    <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Component")} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                    {/* <img
+                                                      className="mx-2"
+                                                      src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
+                                                      
+                                                    /> */}
+                                                  </a>
+                                                </div>
+                                              </>
+                                            );
+                                          }
+                                        )
                                         : null}
                                     </div>
                                   </div>
@@ -1615,30 +1658,33 @@ function EditProjectPopup(item: any) {
                                   <div className="inner-tabb full-width">
                                     {linkedComponentData?.length > 0 ? (
                                       <div className="serviepannelgreena">
-                                      {linkedComponentData?.map(
-                                        (com: any, index: any) => {
-                                          return (
-                                            <>
-                                              <div className="d-flex Component-container-edit-task block">
-                                                  <div>
-                                                    <a
-                                                      className="hreflink "
-                                                      target="_blank"
-                                                      data-interception="off"
-                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                        {linkedComponentData?.map(
+                                          (com: any, index: any) => {
+                                            return (
+                                              <>
+                                                <div className="Component-container-edit-task block d-flex justify-content-between my-1">
+
+                                                  <a
+                                                    className="hreflink "
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                  >
+                                                    {com.Title}
+                                                  </a>
+                                                  <a>
+                                                    <span
+                                                      onClick={() => RemoveSelectedServiceComponent(com.Id, "Service")}
+                                                      className="bg-light svg__icon--cross svg__iconbox"
                                                     >
-                                                      {com.Title}
-                                                    </a>
-                                                    <img
+
+                                                    </span>
+                                                  </a>
+                                                  {/* <img
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
-                                                      onClick={() =>
-                                                        unTagService(
-                                                          linkedComponentData,
-                                                          index
-                                                        )
-                                                      }
-                                                    />
-                                                  </div>
+                                                     
+                                                    /> */}
+
                                                 </div>
                                               </>
                                             );
@@ -1653,47 +1699,47 @@ function EditProjectPopup(item: any) {
                           )}
                         </div>
                         <div className="mx-0 row mt-2">
-                        <div className="col-sm-4 ps-0 ">
-                          <div className="input-group">
-                            <label className="form-label  full-width">
-                              Start Date
-                            </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData.StartDate ?moment(EditData.StartDate).format("YYYY-MM-DD"):""}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, StartDate: e.target.value
-                                                        })}
-                                                    />
-                          
+                          <div className="col-sm-4 ps-0 ">
+                            <div className="input-group">
+                              <label className="form-label  full-width">
+                                Start Date
+                              </label>
+                              <input type="date" className="form-control" max="9999-12-31"
+                                defaultValue={EditData.StartDate ? moment(EditData.StartDate).format("YYYY-MM-DD") : ""}
+                                onChange={(e) => setEditData({
+                                  ...EditData, StartDate: e.target.value
+                                })}
+                              />
+
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-sm-4 ps-0">
-                          <div className="input-group">
-                            <label className="form-label  full-width">
-                              Due Date
-                            </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, DueDate: e.target.value
-                                                        })}
-                                                    />
+                          <div className="col-sm-4 ps-0">
+                            <div className="input-group">
+                              <label className="form-label  full-width">
+                                Due Date
+                              </label>
+                              <input type="date" className="form-control" max="9999-12-31"
+                                defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
+                                onChange={(e) => setEditData({
+                                  ...EditData, DueDate: e.target.value
+                                })}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-sm-4 p-0">
-                          <div className="input-group">
-                            <label className="form-label  full-width">
-                              {" "}
-                              Completion Date{" "}
-                            </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, CompletedDate: e.target.value
-                                                        })}
-                                                    />
+                          <div className="col-sm-4 p-0">
+                            <div className="input-group">
+                              <label className="form-label  full-width">
+                                {" "}
+                                Completion Date{" "}
+                              </label>
+                              <input type="date" className="form-control" max="9999-12-31"
+                                defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
+                                onChange={(e) => setEditData({
+                                  ...EditData, CompletedDate: e.target.value
+                                })}
+                              />
+                            </div>
                           </div>
-                        </div>
                         </div>
                         <div className="mx-0 row mt-2 ">
                           <div className="col-sm-6 ps-0">
@@ -1838,32 +1884,32 @@ function EditProjectPopup(item: any) {
                             </div>
 
                             <div className="col">
-                            <div className="col">
-                              {CheckCategory.map((type: any) => {
-                                return (
-                                  <>
-                                    <div className="form-check">
-                                      <input
-                                        className="form-check-input"
-                                        defaultChecked={type.isChecked}
-                                        type="checkbox"
-                                        onClick={(e) => checkCat(type,e)}
-                                      />
-                                      <label className="form-check-label">
-                                        {type.Title}
-                                      </label>
-                                    </div>
-                                  </>
-                                );
-                              })}
-                              {/* <div
+                              <div className="col">
+                                {CheckCategory.map((type: any) => {
+                                  return (
+                                    <>
+                                      <div className="form-check">
+                                        <input
+                                          className="form-check-input"
+                                          defaultChecked={type.isChecked}
+                                          type="checkbox"
+                                          onClick={() => checkCat(type)}
+                                        />
+                                        <label className="form-check-label">
+                                          {type.Title}
+                                        </label>
+                                      </div>
+                                    </>
+                                  );
+                                })}
+                                {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
                                                                 onClick={()=>checkCat('Phone')}/>
                                                                 <label className="form-check-label">Phone</label>
                                                             </div> */}
-                              {/* <div
+                                {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
@@ -1884,45 +1930,45 @@ function EditProjectPopup(item: any) {
                                                                 <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
                                                                 <label>Immediate</label>
                                                             </div> */}
-                              {CategoriesData != undefined ? (
-                                <div>
-                                  {CategoriesData?.map(
-                                    (type: any, index: number) => {
-                                      return (
-                                        <>
-                                          {type.Title != "Phone" &&
-                                            type.Title !=
+                                {CategoriesData != undefined ? (
+                                  <div>
+                                    {CategoriesData?.map(
+                                      (type: any, index: number) => {
+                                        return (
+                                          <>
+                                            {type.Title != "Phone" &&
+                                              type.Title !=
                                               "Email Notification" &&
-                                            type.Title != "Approval" &&
-                                            type.Title != "Immediate" && (
-                                              <div className="block d-flex justify-content-between my-1 p-1">
-                                                <a
-                                                  style={{
-                                                    color: "#fff !important",
-                                                  }}
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                  href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
-                                                >
-                                                  {type.Title}
-                                                </a>
-                                                <img
-                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                                  onClick={() =>
-                                                    deleteCategories(type.Id)
-                                                  }
-                                                  className="p-1"
-                                                />
-                                              </div>
-                                            )}
-                                        </>
-                                      );
-                                    }
-                                  )}
-                                </div>
-                              ) : null}
+                                              type.Title != "Approval" &&
+                                              type.Title != "Immediate" && (
+                                                <div className="block d-flex justify-content-between my-1 p-1">
+                                                  <a
+                                                    style={{
+                                                      color: "#fff !important",
+                                                    }}
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                    href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  >
+                                                    {type.Title}
+                                                  </a>
+                                                  <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                    onClick={() =>
+                                                      deleteCategories(type.Id)
+                                                    }
+                                                    className="p-1"
+                                                  />
+                                                </div>
+                                              )}
+                                          </>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                ) : null}
+                              </div>
                             </div>
-                          </div>
                           </div>
                           {/* <div className="col-sm-4 ps-0 ">
                 <div className="input-group">
@@ -2060,48 +2106,48 @@ function EditProjectPopup(item: any) {
                           </div>
                           <div className="col mt-2">
                             <div className="input-group">
-                            <div className="TaskUsers">
-                                    <label className="form-label full-width  mx-2">
-                                      Working Member
-                                    </label>
-                                    {EditData.AssignedUsers?.map(
-                              (userDtl: any, index: any) => {
-                                return (
-                                    <a
-                                      target="_blank"
-                                      href={
-                                        userDtl.Item_x0020_Cover
-                                          ? userDtl.Item_x0020_Cover.Url
-                                          : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                      }
-                                    >
-                                      <img
-                                        ui-draggable="true"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom"
-                                        title={
-                                          userDtl.Title ? userDtl.Title : ""
-                                        }
-                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                        data-toggle="popover"
-                                        data-trigger="hover"
-                                        style={{
-                                          width: "35px",
-                                          height: "35px",
-                                          marginLeft: "10px",
-                                          borderRadius: "50px",
-                                        }}
-                                        src={
-                                          userDtl.Item_x0020_Cover.Url
+                              <div className="TaskUsers">
+                                <label className="form-label full-width  mx-2">
+                                  Working Member
+                                </label>
+                                {EditData.AssignedUsers?.map(
+                                  (userDtl: any, index: any) => {
+                                    return (
+                                      <a
+                                        target="_blank"
+                                        href={
+                                          userDtl.Item_x0020_Cover
                                             ? userDtl.Item_x0020_Cover.Url
                                             : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                         }
-                                      />
-                                    </a>
-                                      );
-                                    }
-                                  )}
-                                  </div>
+                                      >
+                                        <img
+                                          ui-draggable="true"
+                                          data-bs-toggle="tooltip"
+                                          data-bs-placement="bottom"
+                                          title={
+                                            userDtl.Title ? userDtl.Title : ""
+                                          }
+                                          on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          style={{
+                                            width: "35px",
+                                            height: "35px",
+                                            marginLeft: "10px",
+                                            borderRadius: "50px",
+                                          }}
+                                          src={
+                                            userDtl.Item_x0020_Cover.Url
+                                              ? userDtl.Item_x0020_Cover.Url
+                                              : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+                                          }
+                                        />
+                                      </a>
+                                    );
+                                  }
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2133,65 +2179,65 @@ function EditProjectPopup(item: any) {
                           ></input>
                         </div>
                         <div className="card shadow-none  mb-2">
-                              <div
-                                className="accordion-item border-0"
-                                id="t_draggable1"
+                          <div
+                            className="accordion-item border-0"
+                            id="t_draggable1"
+                          >
+                            <div
+                              className="card-header p-0 border-bottom-0 "
+                              onClick={() =>
+                                expendcollapsAccordion(EditData, "showdes")
+                              }
+                            >
+                              <button
+                                className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                data-bs-toggle="collapse"
                               >
-                                <div
-                                  className="card-header p-0 border-bottom-0 "
-                                  onClick={() =>
-                                    expendcollapsAccordion(EditData, "showdes")
-                                  }
-                                >
-                                  <button
-                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
-                                    data-bs-toggle="collapse"
-                                  >
-                                    <span className="fw-medium font-sans-serif text-900">
-                                      <span className="sign">
-                                        {EditData.showdes ? (
-                                          <IoMdArrowDropdown />
-                                        ) : (
-                                          <IoMdArrowDropright />
-                                        )}
-                                      </span>{" "}
-                                      Description
-                                    </span>
-                                  </button>
-                                </div>
-                                <div className="accordion-collapse collapse show">
-                                  {EditData.showdes && (
-                                    <div
-                                      className="accordion-body pt-1"
-                                      id="testDiv1"
-                                    >
-                                      <span className="form-check text-end">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked={
-                                            EditData.descriptionVerified ===
-                                            true
-                                          }
-                                        ></input>
-                                        <span className="ps-1">Verified</span>
-                                      </span>
-
-                                      <HtmlEditorCard
-                                        editorValue={
-                                          EditData.Body != undefined
-                                            ? EditData.Body
-                                            : ""
-                                        }
-                                        HtmlEditorStateChange={
-                                          HtmlEditorCallBack
-                                        }
-                                      ></HtmlEditorCard>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
+                                <span className="fw-medium font-sans-serif text-900">
+                                  <span className="sign">
+                                    {EditData.showdes ? (
+                                      <IoMdArrowDropdown />
+                                    ) : (
+                                      <IoMdArrowDropright />
+                                    )}
+                                  </span>{" "}
+                                  Description
+                                </span>
+                              </button>
                             </div>
-                           
+                            <div className="accordion-collapse collapse show">
+                              {EditData.showdes && (
+                                <div
+                                  className="accordion-body pt-1"
+                                  id="testDiv1"
+                                >
+                                  <span className="form-check text-end">
+                                    <input
+                                      type="checkbox"
+                                      defaultChecked={
+                                        EditData.descriptionVerified ===
+                                        true
+                                      }
+                                    ></input>
+                                    <span className="ps-1">Verified</span>
+                                  </span>
+
+                                  <HtmlEditorCard
+                                    editorValue={
+                                      EditData.Body != undefined
+                                        ? EditData.Body
+                                        : ""
+                                    }
+                                    HtmlEditorStateChange={
+                                      HtmlEditorCallBack
+                                    }
+                                  ></HtmlEditorCard>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -2214,8 +2260,8 @@ function EditProjectPopup(item: any) {
                       <div className="row">
                         <section className="accordionbox">
                           <div className="accordion p-0  overflow-hidden">
-                            
-                         
+
+
 
                             <div className="card shadow-none  mb-2">
                               <div
@@ -2258,8 +2304,8 @@ function EditProjectPopup(item: any) {
                                             EditData.BackgroundVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2318,8 +2364,8 @@ function EditProjectPopup(item: any) {
                                             EditData.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2337,7 +2383,7 @@ function EditProjectPopup(item: any) {
                               </div>
                             </div>
 
-                           
+
 
                             <div className="card shadow-none mb-2">
                               <div
@@ -2405,8 +2451,8 @@ function EditProjectPopup(item: any) {
                     <div className="col-sm-5"></div>
                   </div>
                 </div>
-                
-             
+
+
               </div>
             </div>
 
@@ -2489,11 +2535,10 @@ function EditProjectPopup(item: any) {
                         src={`${AllListId?.siteUrl}/SiteCollectionImages/ICONS/32/icon_maill.png`}
                       />
                       <a
-                      target="_blank"
-                      data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData.component_x0020_link
-                        }`}
+                        target="_blank"
+                        data-interception="off"
+                        href={`mailto:?subject=${"Test"}&body=${EditData.component_x0020_link
+                          }`}
                       >
                         {" "}
                         Share this task ||
@@ -2501,7 +2546,7 @@ function EditProjectPopup(item: any) {
                     </span>
                     <span className="p-1">|</span>
                     <a
-                    
+
                       data-interception="off"
                       className="p-1"
                       href={`${AllListId?.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
@@ -2529,15 +2574,16 @@ function EditProjectPopup(item: any) {
             </footer>
 
             {IsPortfolio && (
-              <PortfolioTagging
+              <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
-                AllListId={AllListId}
-                type={portfolioType}
-                Call={Call}
-              ></PortfolioTagging>
+                Dynamic={AllListId}
+                ComponentType={portfolioType}
+                Call={ComponentServicePopupCallBack}
+                selectionType={"Multi"}
+              ></ServiceComponentPortfolioPopup>
             )}
             {IsComponentPicker && (
-            <Picker props={SharewebCategory} AllListId={AllListId} Call={Call}></Picker>
+              <Picker props={SharewebCategory} AllListId={AllListId} Call={Call}></Picker>
             )}
           </div>
         )}
