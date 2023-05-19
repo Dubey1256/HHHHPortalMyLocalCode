@@ -188,12 +188,17 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
   }, [table.getState().columnFilters[0]?.id])
 
   return (
-    <div className="p-2">
-      <div style={{ display: "inline", width: "50%" }}>
+ 
+    <div className="border ms-Grid">
+      {/* <div style={{ display: "inline", width: "50%" }}>
         <PrimaryButton className='mb-1' text="Add Team Member" onClick={() => props.AddTask()} style={{ float: "right" }} />
       </div>
       <br />
-      <div className="h-2"></div>
+      <div className="h-2"></div> */}
+      <div className='bg-transparent justify-content-between tbl-headings'>
+        <span className='leftsec'></span>
+        <span className='toolbox'><PrimaryButton  text="Add Team Member" onClick={() => props.AddTask()} /></span>
+      </div>
       <div className="Alltable mt-10">
         <div className="col-sm-12 p-0 smart">
           <div className="wrapper">
@@ -353,6 +358,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
           ))}
         </select> */}
     </div>
+  
   )
 }
 

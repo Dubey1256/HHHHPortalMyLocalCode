@@ -45,6 +45,8 @@ const Tabless = (props: any) => {
     let userlists: any = [];
     let QueryId: any;
     let dataLength: any = [];
+    const checkPercentage:any=[0,5,10,70,80,90,93,96,99,100];
+    let filteringColumn:any= {due:true,modify:true,created:true,priority:true,percentage:true,catogries:true};
     const [result, setResult]: any = React.useState(false);
     const [editPopup, setEditPopup]: any = React.useState(false);
     const [queryId, setQueryId]: any = React.useState([]);
@@ -54,7 +56,6 @@ const Tabless = (props: any) => {
     const [filterCatogries, setFilterCatogries]: any = React.useState([]);
     const [allLists, setAllLists]: any = React.useState([]);
     const [checkComSer, setCheckComSer]: any = React.useState({component:'', services:''});
-    const checkPercentage:any=[0,5,10,70,80,90,93,96,99,100]
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const checkPriority:any=[1,2,3,4,5,6,7,8,9,10];
     const [checkPercentages, setCheckPercentage] : any = React.useState([]);
@@ -88,7 +89,7 @@ const Tabless = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Title}</span>
+                        <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a>
                     </div>
                 )
             },
@@ -143,8 +144,11 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newModified}</span>
+                    
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newModified}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -155,8 +159,10 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newCreated}</span>
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newCreated}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -324,10 +330,20 @@ const editPopFunc=(item:any)=>{
         })
     }
 
+        //   const listFilters1=()=>{
+        //     let newData=copyData;
+        //     const filters = { Categories: ['Improvement']};
+        //     setData(newData.filter((obj:any) =>
+        //         Object.entries(filters).every(([key, values]:any) =>
+        //           Array.isArray(values) ? values > obj[key] : values === obj[key]
+        //         )
+        //       )) 
+
+        //   }
+      
     const listFilters1=()=>{
         let newData=copyData;
-       
-            if(filterCatogries.length >= 1){
+            if(filterCatogries.length >= 1 && filteringColumn.catogries){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                 filterCatogries?.map((item:any)=>{
@@ -338,8 +354,8 @@ const editPopFunc=(item:any)=>{
             })
             newData=localArray;
             }
-
-            if(checkPercentages.length >= 1){
+           
+            if(checkPercentages.length >= 1 && filteringColumn.percentage){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                     let percent = parseInt(alldataitem.percentage);
@@ -367,7 +383,7 @@ const editPopFunc=(item:any)=>{
                 newData=localArray;
             }
 
-            if(checkPrioritys.length >= 1){
+            if(checkPrioritys.length >= 1 && filteringColumn.priority){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                 checkPrioritys?.map((item:any)=>{
@@ -393,7 +409,7 @@ const editPopFunc=(item:any)=>{
                 })
                 newData=localArray;
             }
-            if(date.due != null){
+            if(date.due != null && filteringColumn.due){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                     let dueDate = moment(alldataitem.dueDate).format('MM/DD/YYYY');
@@ -418,8 +434,8 @@ const editPopFunc=(item:any)=>{
                      
                 })
                 newData=localArray;
-            }
-            if(date.created != null){
+            } 
+            if(date.created != null && filteringColumn.created){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                     let created = moment(alldataitem.created).format('MM/DD/YYYY');
@@ -445,7 +461,7 @@ const editPopFunc=(item:any)=>{
                 })
                 newData=localArray;
             }
-            if(date.modify != null){
+            if(date.modify != null && filteringColumn.modify){
                 let localArray:any=[];
                 newData?.map((alldataitem:any)=>{
                     let modify = moment(alldataitem.modified).format('MM/DD/YYYY');
@@ -478,19 +494,35 @@ const editPopFunc=(item:any)=>{
     const clearFilter=async (column:any)=>{
         switch(column){
           case "Categories" :
-            
+            filteringColumn = {...filteringColumn,catogries:false }
             setFilterCatogries([])
             listFilters1();
             break;
 
             case "percentage" :
-              
+                filteringColumn = {...filteringColumn,percentage:false }
                 setCheckPercentage([])
                 listFilters1();
             break;
 
             case "priority" : 
+            filteringColumn = {...filteringColumn,priority:false }
             setCheckPriority([]);
+            listFilters1(); 
+            break;
+            case "newDueDate" : 
+            filteringColumn = {...filteringColumn,due:false }
+             setDate({...date,due:null})          
+            listFilters1();
+            break;
+            case "newModified" : 
+            filteringColumn = {...filteringColumn,modify:false }
+            setDate({...date,modify:null}) 
+            listFilters1();
+            break;
+            case "newCreated" : 
+            filteringColumn = {...filteringColumn,created:false }
+            setDate({...date,created:null}) 
             listFilters1();
             break;
             default : getTaskUserData();
@@ -683,6 +715,7 @@ const editPopFunc=(item:any)=>{
                             userItem.AssingedToUser.Id == dataItem.Author.Id
                         ) {
                             dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
+
                         }
                         if (
                             userItem.AssingedToUser != undefined &&

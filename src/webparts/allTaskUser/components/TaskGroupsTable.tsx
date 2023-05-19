@@ -115,8 +115,8 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
         accessorKey: "TaskId",
         header: null,
         cell: (info)=>(<div>
-          <Link href="#" onClick={()=>props.EditTask(info.getValue())}><Icon iconName="Edit" style={{color:"blue", paddingLeft:"10px"}} /></Link>
-          <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><Icon iconName="Delete" style={{color:"red", paddingLeft:"10px"}} /></Link>
+          <Link href="#" onClick={()=>props.EditTask(info.getValue())}><span className='svg__iconbox svg__icon--edit' title='Edit'></span></Link>
+          <Link href="#" onClick={()=>props.DeleteTask(info.getValue())}><span className='svg__iconbox svg__icon--trash' title='Trash'></span></Link>
         </div>),
         enableColumnFilter: false,
         enableSorting: false,
@@ -160,7 +160,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   }, [table.getState().columnFilters[0]?.id])
 
   return (
-    <div className="p-2">
+    <div className="border ms-Grid">
   
         {/* <div style={{display:"inline",width:"50%"}}>
           <DebouncedInput
@@ -170,13 +170,17 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
             placeholder="Search all columns..."
           />
         </div> */}
-        <div style={{display:"inline",width:"50%"}}>
+        {/* <div style={{display:"inline",width:"50%"}}>
           <PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
-        </div>        
-     
-      <br />
-      <div className="h-2"></div>
-      <BTable striped bordered hover responsive size="lg">
+        </div>         */}
+          <div className='bg-transparent justify-content-between tbl-headings'>
+        <span className='leftsec'></span>
+        <span className='toolbox'><PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} /></span>
+      </div>
+      <div className="Alltable mt-10">
+        <div className="col-sm-12 p-0 smart">
+          <div className="wrapper">
+          <BTable striped bordered hover responsive size="lg">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
@@ -243,6 +247,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
           })}
         </tbody>
       </BTable>
+          </div>
+        </div>
+      </div>
+
       <div className="h-2" />
       {data.length>10 && <div className="flex items-center gap-2">
         <button
