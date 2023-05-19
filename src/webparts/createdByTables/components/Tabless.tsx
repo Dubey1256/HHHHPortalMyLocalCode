@@ -675,7 +675,7 @@ const Tabless = (props: any) => {
        setEditPopup(false);
        getTaskUserData();
     }
-
+    
 
     const getQueryVariable = () => {
       const params = new URLSearchParams(window.location.search);
