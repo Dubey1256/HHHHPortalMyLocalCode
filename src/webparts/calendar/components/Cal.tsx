@@ -158,8 +158,8 @@ const App = (props:any) => {
           const eventDate = getLocalTime(event.EventDate, timeZoneOffset);
           const endDate = getLocalTime(event.EndDate, timeZoneOffset);
           
-          const isAllDayEvent: boolean = event["fAllDayEvent.value"] === "1";
-
+          // const isAllDayEvent: boolean = event["fAllDayEvent.value"] === "1";
+          const isAllDayEvent: boolean = event["fAllDayEvent"] == true;
           events.push({
             Id: event.ID,
             ID: event.ID,
@@ -233,6 +233,7 @@ const App = (props:any) => {
     
     const eventDate = await getLocalDateTime(event.EventDate);
     const endDate = await getLocalDateTime(event.EndDate);
+    const isAllDayEvent: boolean = event["fAllDayEvent"] == true;
 
     returnEvent = {
       Id: event.ID,
@@ -240,8 +241,8 @@ const App = (props:any) => {
       EventType: event.EventType,
       title: await deCodeHtmlEntities(event.Title),
       Description: event.Description ? event.Description : '',
-      EventDate: new Date(eventDate),
-      EndDate: new Date(endDate),
+      EventDate: isAllDayEvent ? new Date(event.EventDate.slice(0, -1)) : new Date(eventDate),
+      EndDate: isAllDayEvent ? new Date(event.EndDate.slice(0, -1)) : new Date(endDate),
       location: event.Location,      
       fAllDayEvent: event.fAllDayEvent,
       Category: event.Category,
