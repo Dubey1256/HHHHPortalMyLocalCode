@@ -1386,16 +1386,34 @@ function EditProjectPopup(item: any) {
     }
   };
   var NewArray: any = [];
-  var array2: any = [];
-  const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any, index: any) => {
-      setcheckedCat(false);
-      if (type.Title == catTitle.Title) {
-        NewArray.push(catTitle);
-      }
+  var array2:any=[];
+  const checkCat = (type: any,e:any) => {
 
-    });
-
+    const { checked } = e.target;
+    if(checked == true){
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
+    }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
 
 
   };
@@ -1893,7 +1911,7 @@ function EditProjectPopup(item: any) {
                                           className="form-check-input"
                                           defaultChecked={type.isChecked}
                                           type="checkbox"
-                                          onClick={() => checkCat(type)}
+                                          onClick={(e:any) => checkCat(type,e)}
                                         />
                                         <label className="form-check-label">
                                           {type.Title}
