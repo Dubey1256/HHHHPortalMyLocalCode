@@ -75,6 +75,7 @@ import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
+import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
@@ -205,7 +206,7 @@ function ComponentTable(SelectedProp: any) {
   const [state, setState] = React.useState([]);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
-  // const [AllMetadata, setMetadata] = React.useState([])
+  const [AllMetadata, setMetadata] = React.useState([])
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [IsTask, setIsTask] = React.useState(false);
@@ -1850,16 +1851,18 @@ function ComponentTable(SelectedProp: any) {
         "SortOrder",
         "SmartFilters",
         "Selectable",
+        'Color_x0020_Tag',
         "Parent/Id",
         "Parent/Title"
       )
       .top(4999)
-      // .filter("TaxType eq 'Categories'")
+      // .filter("TaxType eq 'Client Category'")
       .expand("Parent")
       .get();
 
     console.log(smartmetaDetails);
-    // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
+    setMetadata(smartmetaDetails);
+
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
       if (
@@ -2191,6 +2194,7 @@ function ComponentTable(SelectedProp: any) {
         "Team_x0020_Members/Title",
         "ClientCategory/Id",
         "ClientCategory/Title",
+        'ClientCategory/Color_x0020_Tag',
         "Responsible_x0020_Team/Id",
         "Responsible_x0020_Team/Title"
       )
@@ -3152,6 +3156,7 @@ function ComponentTable(SelectedProp: any) {
       }
       if (childItem?.data?.ComponentId[0] != undefined) {
         childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
+        
       }
       if (
         childItem?.data?.ServicesId != undefined &&
@@ -3542,7 +3547,7 @@ function ComponentTable(SelectedProp: any) {
         setIsComponent(true);
       }
       refreshData();
-      rerender();
+      // rerender();
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -3574,9 +3579,9 @@ function ComponentTable(SelectedProp: any) {
       //     checkedList[0].childs.unshift(item.data);
       // else
       array.unshift(item.data);
-      setData((array) => [...array]);
+      // setData((array) => [...array]);
       refreshData();
-      rerender();
+      // rerender();
     }
     setAddModalOpen(false);
   }, []);
@@ -4474,11 +4479,11 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
-            {row?.original?.ClientCategory?.map((elem: any, index: any) => {
+            {/* {row?.original?.ClientCategory?.map((elem: any, index: any) => {
               return (
                 <>
                   {" "}
-                  {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon">
+                  {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon" style={{ color: elem?.Color_x0020_Tag }}>
                     {elem?.Title?.slice(0, 2).toUpperCase()}
                   </span> : ''}
                 </>
@@ -4493,6 +4498,9 @@ function ComponentTable(SelectedProp: any) {
                       return (
                         <>
                           <span className="team_Members_Item" style={{ padding: "2px" }}>
+                            <span title={rcData?.Title} className="ClientCategory-Usericon" style={{ color: rcData?.Color_x0020_Tag }}>
+                              {rcData?.Title?.slice(0, 2).toUpperCase()}
+                            </span>
                             <div className="mx-2">{rcData?.Title}</div>
                           </span>
                         </>
@@ -4503,7 +4511,8 @@ function ComponentTable(SelectedProp: any) {
               </span>
             ) : (
               ""
-            )}
+            )} */}
+            <ShowClintCatogory  clintData={row?.original} AllMetadata={AllMetadata}/>
           </>
         ),
         id: "ClientCategory",
