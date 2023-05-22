@@ -42,6 +42,7 @@ var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
     const [currentView, setCurrentView] = React.useState('Home');
     const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
     const [AllSitesTask, setAllSitesTask] = React.useState([]);
@@ -55,6 +56,10 @@ const TaskDashboard = (props: any) => {
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [sharewebTasks, setSharewebTasks] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
+    const [AllImmediateTasks, setAllImmediateTasks] = React.useState([]);
+    const [UserImmediateTasks, setUserImmediateTasks] = React.useState([]);
+    const [AllEmailTasks, setAllEmailTasks] = React.useState([]);
+    const [UserEmailTasks, setUserEmailTasks] = React.useState([]);
     const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
@@ -271,6 +276,7 @@ const TaskDashboard = (props: any) => {
         return result;
     }
     const currentUserTimeEntry = (start: any) => {
+        let totalTime = 0;
         setSelectedTimeReport(start)
         let startDate = getStartingDate(start);
         startDate = new Date(startDate.setHours(0, 0, 0, 0));
@@ -281,32 +287,35 @@ const TaskDashboard = (props: any) => {
                 AdditionalTime?.map((filledTime: any) => {
                     let [day, month, year] = filledTime?.TaskDate?.split('/')
                     const timeFillDate = new Date(+year, +month - 1, +day)
-                    // let timeFillDate = new Date(filledTime?.TaskDate);
-                    // if (filledTime?.AuthorId == currentUserId && timeFillDate > startDate && timeEntry?.taskDetails != '' && timeEntry?.taskDetails != undefined) {
-                    if (start == 'Today' || start == 'Yesterday') {
-                        if (filledTime?.AuthorId == currentUserId && timeFillDate == startDate) {
-                            let data = { ...timeEntry?.taskDetails[0] };
-                            if (data == '' || data == undefined)
-                                data = {};
-                            data.TaskTime = filledTime?.TaskTime;
-                            data.timeDate = filledTime?.TaskDate;
-                            data.Description = filledTime?.Description
-                            data.timeFillDate = timeFillDate;
-                            weekTimeEntries.push(data);
-                        }
+                    if (filledTime?.AuthorId == currentUserId) {
+                        if (start == 'Today' || start == 'Yesterday') {
+                            if (startDate.getTime() == timeFillDate.getTime()) {
+                                let data = { ...timeEntry?.taskDetails[0] };
+                                if (data == '' || data == undefined)
+                                    data = {};
+                                totalTime += parseFloat(filledTime?.TaskTime);
+                                data.TaskTime = filledTime?.TaskTime;
+                                data.timeDate = filledTime?.TaskDate;
+                                data.Description = filledTime?.Description
+                                data.timeFillDate = timeFillDate;
+                                weekTimeEntries.push(data);
+                            }
 
-                    } else {
-                        if (filledTime?.AuthorId == currentUserId && timeFillDate >= startDate) {
-                            let data = { ...timeEntry?.taskDetails[0] };
-                            if (data == '' || data == undefined)
-                                data = {};
-                            data.TaskTime = filledTime?.TaskTime;
-                            data.timeDate = filledTime?.TaskDate;
-                            data.Description = filledTime?.Description
-                            data.timeFillDate = timeFillDate;
-                            weekTimeEntries.push(data);
+                        } else {
+                            if (timeFillDate >= startDate) {
+                                let data = { ...timeEntry?.taskDetails[0] };
+                                if (data == '' || data == undefined)
+                                    data = {};
+                                totalTime += parseFloat(filledTime?.TaskTime);
+                                data.TaskTime = filledTime?.TaskTime;
+                                data.timeDate = filledTime?.TaskDate;
+                                data.Description = filledTime?.Description
+                                data.timeFillDate = timeFillDate;
+                                weekTimeEntries.push(data);
+                            }
                         }
                     }
+
                 })
             }
         })
@@ -314,6 +323,7 @@ const TaskDashboard = (props: any) => {
             return b.timeFillDate - a.timeFillDate;
         });
         setWeeklyTimeReport(weekTimeEntries)
+        setTimeEntryTotal(totalTime);
         weekTimeEntry = weekTimeEntries;
     }
 
@@ -325,6 +335,8 @@ const TaskDashboard = (props: any) => {
         let AllSiteTasks: any = [];
         let approverTask: any = [];
         let SharewebTask: any = [];
+        let AllImmediates: any = [];
+        let AllEmails: any = [];
         let AllBottleNeckTasks: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
@@ -421,12 +433,20 @@ const TaskDashboard = (props: any) => {
                                     });
 
                                     const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+                                    const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
+                                    const isEmailNotification = checkUserExistence('Email Notification', task?.SharewebCategories);
                                     const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
                                     if (isCurrentUserApprover && task?.PercentComplete == '1') {
                                         approverTask.push(task)
                                     }
                                     if (isBottleneckTask) {
                                         AllBottleNeckTasks.push(task)
+                                    }
+                                    if (isImmediate) {
+                                        AllImmediates.push(task)
+                                    }
+                                    if (isEmailNotification) {
+                                        AllEmails.push(task)
                                     }
                                     if (task.ClientActivityJson != undefined) {
                                         SharewebTask.push(task)
@@ -439,10 +459,12 @@ const TaskDashboard = (props: any) => {
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
                             backupTaskArray.assignedApproverTasks = approverTask;
-                            setAssignedApproverTasks(approverTask)
-                            setAllSitesTask(AllSiteTasks)
-                            setSharewebTasks(SharewebTask)
-                            setAllBottleNeck(AllBottleNeckTasks)
+                            setAllImmediateTasks(AllImmediates);
+                            setAssignedApproverTasks(approverTask);
+                            setAllEmailTasks(AllEmails);
+                            setAllSitesTask(AllSiteTasks);
+                            setSharewebTasks(SharewebTask);
+                            setAllBottleNeck(AllBottleNeckTasks);
                             const params = new URLSearchParams(window.location.search);
                             let query = params.get("UserId");
                             let userFound = false;
@@ -498,6 +520,18 @@ const TaskDashboard = (props: any) => {
                 }
             }
         })
+        item.childs.sort((a: any, b: any) => {
+            const titleA = a.Title.toLowerCase();
+            const titleB = b.Title.toLowerCase();
+
+            if (titleA < titleB) {
+                return -1;
+            }
+            if (titleA > titleB) {
+                return 1;
+            }
+            return 0;
+        });
     }
 
     //Edit CallBack
@@ -530,11 +564,14 @@ const TaskDashboard = (props: any) => {
         let workingTodayTask: any = [];
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
+        let Immediates: any = [];
+        let EmailsTasks: any = [];
 
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
-
+                const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
+                const isEmailNotfication = checkUserExistence('Email Notification', task?.SharewebCategories);
                 const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
                 let alreadyPushed = false;
                 if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
@@ -550,6 +587,13 @@ const TaskDashboard = (props: any) => {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
+                if (isImmediate && (isCurrentUserAssigned)) {
+                    Immediates.push(task)
+                }
+                if (isEmailNotfication && (isCurrentUserAssigned)) {
+                    EmailsTasks.push(task)
+                }
+
 
             })
         }
@@ -558,6 +602,8 @@ const TaskDashboard = (props: any) => {
         backupTaskArray.thisWeekTasks = workingThisWeekTask;
         backupTaskArray.bottleneckTasks = bottleneckTask;
         setAllAssignedTasks(AllAssignedTask);
+        setUserEmailTasks(EmailsTasks)
+        setUserImmediateTasks(Immediates)
         setWorkingTodayTasks(workingTodayTask)
         setThisWeekTasks(workingThisWeekTask)
         setBottleneckTasks(bottleneckTask)
@@ -730,7 +776,7 @@ const TaskDashboard = (props: any) => {
                 ),
             },
         ],
-        [AllAssignedTasks,workingTodayTasks,thisWeekTasks]
+        [AllAssignedTasks, workingTodayTasks, thisWeekTasks]
     );
     const columnTimeReport = React.useMemo(
         () => [
@@ -950,13 +996,19 @@ const TaskDashboard = (props: any) => {
         prepareRow: prepareRowApprover,
         gotoPage: gotoPageApprover,
         setPageSize: setPageSizeApprover,
+        canPreviousPage: canPreviousPageApprover,
+        canNextPage: canNextPageApprover,
+        pageOptions: pageOptionsApprover,
+        pageCount: pageCountApprover,
+        nextPage: nextPageApprover,
+        previousPage: previousPageApprover,
         state: { pageIndex: pageIndexApprover, pageSize: pageSizeApprover },
     }: any = useTable(
         {
             columns: columns,
             data: assignedApproverTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 100000 },
+            initialState: { pageIndex: 0, pageSize: 10 },
         },
         useFilters,
         useSortBy,
@@ -1054,6 +1106,60 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: AllSitesTask,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllImmediate,
+        getTableBodyProps: getTableBodyPropsAllImmediate,
+        headerGroups: headerGroupsAllImmediate,
+        page: pageAllImmediate,
+        prepareRow: prepareRowAllImmediate,
+        gotoPage: gotoPageAllImmediate,
+        setPageSize: setPageSizeAllImmediate,
+        canPreviousPage: canPreviousPageAllImmediate,
+        canNextPage: canNextPageAllImmediate,
+        pageOptions: pageOptionsAllImmediate,
+        pageCount: pageCountAllImmediate,
+        nextPage: nextPageAllImmediate,
+        previousPage: previousPageAllImmediate,
+        state: { pageIndex: pageIndexAllImmediate, pageSize: pageSizeAllImmediate },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllImmediateTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllEmail,
+        getTableBodyProps: getTableBodyPropsAllEmail,
+        headerGroups: headerGroupsAllEmail,
+        page: pageAllEmail,
+        prepareRow: prepareRowAllEmail,
+        gotoPage: gotoPageAllEmail,
+        setPageSize: setPageSizeAllEmail,
+        canPreviousPage: canPreviousPageAllEmail,
+        canNextPage: canNextPageAllEmail,
+        pageOptions: pageOptionsAllEmail,
+        pageCount: pageCountAllEmail,
+        nextPage: nextPageAllEmail,
+        previousPage: previousPageAllEmail,
+        state: { pageIndex: pageIndexAllEmail, pageSize: pageSizeAllEmail },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllEmailTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 10 },
         },
@@ -1427,12 +1533,65 @@ const TaskDashboard = (props: any) => {
                     + body1
                     + '</tbody>'
                     + '</table>'
-                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + AllListId?.siteUrl + '/SitePages/TaskDashboard.aspx?UserName=' + CurrentUserSpace + '><span style="font-size:13px; font-weight:600">' + AllListId?.siteUrl + '/SitePages/TaskDashboard.aspx?UserName=' + currentLoginUser + '</span>' + '</a>' + '</p>'
+                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '</span>' + '</a>' + '</p>'
 
 
             }
             body = body.replaceAll('>,<', '><')
         }
+        if (input == 'today time entries') {
+            var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
+
+            weeklyTimeReport.map((item: any) => {
+                if (item?.Categories == undefined || item.Categories == '')
+                    item.Categories = '';
+
+                text =
+                    '<tr>'
+                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.siteType + '</td>'
+                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.Shareweb_x0020_ID + '</td>'
+                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
+                    + '<td style="line-height:24px;font-size:13px;padding:15px;width:4%">' + item?.TaskTime + '</td>'
+                    + '<td style="line-height:24px;font-size:13px;padding:15px;width:55%">' + item?.Description + '</td>'
+                body1.push(text);
+
+            });
+            body =
+                '<h2>'
+                + currentLoginUser + '- Today Time Entries'
+                + '</h2>'
+                + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                + '<thead>'
+                + '<tr>'
+                + '<th bgcolor="#f5f5f5" style="line-height:24px;font-size:15px;padding:15px;width:5%">'
+                + 'Site'
+                + '</th>'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
+                + 'Task ID'
+                + '</th>'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
+                + 'Title'
+                + '</th>'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:4%" bgcolor="#f5f5f5">'
+                + 'Time'
+                + '</th>'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:55%" bgcolor="#f5f5f5">'
+                + 'Description'
+                + '</th>'
+                + '</tr>'
+                + '</thead>'
+                + '<tbody>'
+                + '<tr>'
+                + body1
+                + '</tr>'
+                + '</tbody>'
+                + '</table>'
+                + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '</span>' + '</a>' + '</p>'
+            body = body.replaceAll('>,<', '><')
+        }
+
+
+
 
         if (body1.length > 0 && body1 != undefined) {
             if (currentUserData?.Email != undefined) {
@@ -1596,6 +1755,9 @@ const TaskDashboard = (props: any) => {
     const onChangeInSelectAll = (event: any) => {
         setPageSizeAll(Number(event.target.value));
     };
+    const onChangeInSelectApprover = (event: any) => {
+        setPageSizeApprover(Number(event.target.value));
+    };
     const onChangeInSelectAllSite = (event: any) => {
         setPageSizeAllSite(Number(event.target.value));
     };
@@ -1604,6 +1766,12 @@ const TaskDashboard = (props: any) => {
     };
     const onChangeInSelectSharewebTask = (event: any) => {
         setPageSizeSharewebTask(Number(event.target.value));
+    };
+    const onChangeInSelectAllImmediate = (event: any) => {
+        setPageSizeAllImmediate(Number(event.target.value));
+    };
+    const onChangeInSelectAllEmail = (event: any) => {
+        setPageSizeAllEmail(Number(event.target.value));
     };
     //End
     return (
@@ -1636,6 +1804,11 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" ?
+                                        <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                                            Share Everyone's Today's Task
+                                        </a> : ''}
+
                                 </ul>
                             </nav>
                         </section>
@@ -1661,26 +1834,48 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
-                        <section className="sidebar__section sidebar__section--menu" onClick={() => setCurrentView('Home')}>
-                            <nav className="nav__item">
-                                {
-                                    (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
-                                        <>
-                                            <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
-                                                Drop here to Un-Assign
-                                            </div>
-                                            {/* <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                        <section className="sidebar__section sidebar__section--menu">
+                            {
+                                (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
+                                    <>
+                                        <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
+                                            Drop here to Un-Assign
+                                        </div>
+                                        {/* <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                                 Share Everyone Today's Task
                                             </a> */}
-                                            <></>
-                                        </> : ""
-                                }
-                                <ul className="nav__list">
-                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" ?
-                                        <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
-                                            Share Everyone's Today's Task
-                                        </a> : ''}
+                                        <></>
+                                    </> : ""
+                            }
+                            <nav className="nav__item">
+                                <ul className="nav__list text-center" >
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
+                                        Email-Notification
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllImmediateTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllImmediateTasks') }}>
+                                        Immediate
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allApproverView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allApproverView') }}>
+                                        Approver Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'sharewebTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
+                                        Shareweb Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allBottlenecks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
+                                        All Bottlenecks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allTasksView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
+                                        All Tasks
+                                    </li>
 
+                                </ul>
+                            </nav>
+                        </section>
+                        <section className="sidebar__section sidebar__section--menu" onClick={() => setCurrentView('Home')}>
+                            <nav className="nav__item">
+
+                                <ul className="nav__list">
+                                  
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
                                             return (
@@ -1710,25 +1905,7 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
-                        <section className="sidebar__section sidebar__section--menu">
-                            <nav className="nav__item">
-                                <ul className="nav__list text-center" >
-                                    <li id="DefaultViewSelectId" className={currentView=='allApproverView'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allApproverView') }}>
-                                        Approver Tasks
-                                    </li>
-                                    <li id="DefaultViewSelectId" className={currentView=='sharewebTasks'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
-                                        Shareweb Tasks
-                                    </li>
-                                    <li id="DefaultViewSelectId" className={currentView=='allBottlenecks'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
-                                        All Bottlenecks
-                                    </li>
-                                    <li id="DefaultViewSelectId" className={currentView=='allTasksView'? "nav__text bg-secondary mb-1 hreflink":"nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
-                                        All Tasks
-                                    </li>
 
-                                </ul>
-                            </nav>
-                        </section>
                     </aside>
                     <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
                         {currentView == 'Home' ? <article className="row">
@@ -2082,7 +2259,19 @@ const TaskDashboard = (props: any) => {
                                                 </span>
                                             </div>
                                             <details>
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + pageTimeReport?.length + ')'}</summary>
+                                                {timeEntryTotal > 1 ?
+                                                    <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hours)'}
+                                                        {
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                        }
+                                                    </summary> :
+                                                    <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hour)'}
+                                                        {
+                                                            currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                        }
+                                                    </summary>
+                                                }
+
                                                 <div className='AccordionContent mx-height'  >
                                                     {weeklyTimeReport?.length > 0 ?
                                                         <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
@@ -2393,7 +2582,7 @@ const TaskDashboard = (props: any) => {
                                         <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
                                     </div>
                                     {assignedApproverTasks?.length > 0 ?
-                                        <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
                                             <thead className="fixed-Header">
                                                 {headerGroupsApprover?.map((headerGroup: any) => (
                                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2450,7 +2639,51 @@ const TaskDashboard = (props: any) => {
                                                         </td>
                                                     </tr>
                                                 </tbody>}
-                                        </Table> : <div className='text-center full-width'>
+                                        </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageApprover()} disabled={!canPreviousPageApprover}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexApprover + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageApprover()} disabled={!canNextPageApprover}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeApprover}
+                                                            onChange={onChangeInSelectApprover}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeApprover) => (
+                                                                <option key={pageSizeApprover} value={pageSizeApprover}>
+                                                                    Show {pageSizeApprover}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+
+                                        : <div className='text-center full-width'>
                                             <span>No Approver Tasks Available</span>
                                         </div>}
                                 </div>
@@ -2568,6 +2801,238 @@ const TaskDashboard = (props: any) => {
                                         </>
                                         : <div className='text-center full-width'>
                                             <span>No Shareweb Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllImmediateTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Immediate Tasks - ${AllImmediateTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllImmediateTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllImmediate()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllImmediate?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllImmediate?.length > 0 ? <tbody {...getTableBodyPropsAllImmediate()}>
+                                                    {pageAllImmediate?.map((row: any) => {
+                                                        prepareRowAllImmediate(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllImmediate()} disabled={!canPreviousPageAllImmediate}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllImmediate + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllImmediate()} disabled={!canNextPageAllImmediate}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllImmediate}
+                                                            onChange={onChangeInSelectAllImmediate}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllImmediate) => (
+                                                                <option key={pageSizeAllImmediate} value={pageSizeAllImmediate}>
+                                                                    Show {pageSizeAllImmediate}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Immediate Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllEmailTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Email-Notification's Tasks - ${AllEmailTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllEmailTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllEmail()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllEmail?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllEmail?.length > 0 ? <tbody {...getTableBodyPropsAllEmail()}>
+                                                    {pageAllEmail?.map((row: any) => {
+                                                        prepareRowAllEmail(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllEmail()} disabled={!canPreviousPageAllEmail}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllEmail + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllEmail()} disabled={!canNextPageAllEmail}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllEmail}
+                                                            onChange={onChangeInSelectAllEmail}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllEmail) => (
+                                                                <option key={pageSizeAllEmail} value={pageSizeAllEmail}>
+                                                                    Show {pageSizeAllEmail}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No E-Mail Tasks Available</span>
                                         </div>}
                                 </div>
                             </div>
