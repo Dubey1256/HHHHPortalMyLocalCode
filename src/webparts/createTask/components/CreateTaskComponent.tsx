@@ -27,16 +27,11 @@ let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 var ContextValue: any = {};
-<<<<<<< .merge_file_avku0T
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
-=======
-function CreateTaskComponent(props:any) {
-    let base_Url=props?.pageContext?._web?.absoluteUrl;
->>>>>>> .merge_file_BybZR6
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
         passdata: null
@@ -497,7 +492,7 @@ function CreateTaskComponent(props:any) {
         MetaData = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
             .expand('Author,Editor')
             .get();
