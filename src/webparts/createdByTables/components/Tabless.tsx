@@ -45,7 +45,8 @@ const Tabless = (props: any) => {
     let userlists: any = [];
     let QueryId: any;
     let dataLength: any = [];
-    const checkPercentage: any = React.useState([0, 5, 10, 70, 80, 90, 93, 96, 99, 100]);
+    const [checkPercentage, setPercentagess]: any = React.useState([]);
+    const [checkPriority,setPriorityss]: any = React.useState([]) ;
     let filteringColumn: any = {idType:true,due: true,  modify: true,  created: true,  priority: true,  percentage: true,  catogries: true,teamMembers:true};
     // let [clearFiltering, setClearFiltering]: any = {due: "",modify: "",created: "",priority: "",percentage: "",catogries: ""};
     const [result, setResult]: any = React.useState(false);
@@ -58,7 +59,6 @@ const Tabless = (props: any) => {
     const [allLists, setAllLists]: any = React.useState([]);
     const [checkComSer, setCheckComSer]: any = React.useState({component: "",services: "",});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-    const checkPriority: any = React.useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) ;
     const [checkPercentages, setCheckPercentage]: any = React.useState([]);
     const [checkTeamMembers, setCheckTeamMembers]: any = React.useState([]);
     const [checkPrioritys, setCheckPriority]: any = React.useState([]);
@@ -709,6 +709,8 @@ const Tabless = (props: any) => {
         .then((data) => {
           userlists = data;
           setTaskUser(data);
+          setPercentagess([0, 5, 10, 70, 80, 90, 93, 96, 99, 100]);
+          setPriorityss([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
           getQueryVariable();
           smartMetaData();
         })
@@ -716,7 +718,7 @@ const Tabless = (props: any) => {
           console.log(err);
         });
     };
-
+ 
     const smartMetaData = async () => {
       let categories: any = [];
       let sites: any = [];
@@ -958,7 +960,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                         <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.percentage} onChange={(e:any)=>selectAll(e)}  value={'percentage'} /> <label>Select All</label> </span></li>
                                        <dl>
-                                        {checkPercentage.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> {item}</dt>)}
+                                        {checkPercentage.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /><label> {item}</label></dt>)}
                                           </dl>
                                           <div>
                                             <li>
@@ -1000,7 +1002,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                             </div>}
 
 
-                                            {column?.id == 'newDueDate' && 
+                                            {column?.id == 'dueDate' && 
                                            <div className="dropdown-menu p-2 ">
                                             <div>
                                             <li>
@@ -1015,7 +1017,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                            </div>}
 
 
-                                            {column?.id == 'newModified' && 
+                                            {column?.id == 'modified' && 
                                             <div className="dropdown-menu p-2 ">
                                                  <div>
                                             <li>
@@ -1029,7 +1031,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
                                            
-                                            {column?.id == 'newCreated' && 
+                                            {column?.id == 'created' && 
                                        <div className="dropdown-menu p-2 ">
                                          <div>
                                             <li>
