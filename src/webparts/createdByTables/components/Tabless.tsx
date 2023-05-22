@@ -646,7 +646,7 @@ const Tabless = (props: any) => {
             setCheckPercentage(arrayTeam);
           }else{
             setSelectAllChecks({...selectAllChecks,percentage:e.target.checked})
-            setCheckPercentage([]);
+            setCheckPercentage([]);   
           }
           break;
 
