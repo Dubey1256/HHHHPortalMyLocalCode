@@ -45,7 +45,7 @@ const Tabless = (props: any) => {
     let userlists: any = [];
     let QueryId: any;
     let dataLength: any = [];
-    const checkPercentage: any = [0, 5, 10, 70, 80, 90, 93, 96, 99, 100];
+    const checkPercentage: any = React.useState([0, 5, 10, 70, 80, 90, 93, 96, 99, 100]);
     let filteringColumn: any = {idType:true,due: true,  modify: true,  created: true,  priority: true,  percentage: true,  catogries: true,teamMembers:true};
     // let [clearFiltering, setClearFiltering]: any = {due: "",modify: "",created: "",priority: "",percentage: "",catogries: ""};
     const [result, setResult]: any = React.useState(false);
@@ -58,7 +58,7 @@ const Tabless = (props: any) => {
     const [allLists, setAllLists]: any = React.useState([]);
     const [checkComSer, setCheckComSer]: any = React.useState({component: "",services: "",});
     const [tablecontiner, settablecontiner]: any = React.useState("hundred");
-    const checkPriority: any = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const checkPriority: any = React.useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) ;
     const [checkPercentages, setCheckPercentage]: any = React.useState([]);
     const [checkTeamMembers, setCheckTeamMembers]: any = React.useState([]);
     const [checkPrioritys, setCheckPriority]: any = React.useState([]);
@@ -66,6 +66,7 @@ const Tabless = (props: any) => {
     const [copyData, setCopyData]: any = React.useState([]);
     const [copyData1, setCopyData1]: any = React.useState([]);
     const [date, setDate]: any = React.useState({due: null, modify: null, created: null});
+    const [selectAllChecks, setSelectAllChecks]: any = React.useState({idType:false, priority: false,  percentage: false,  catogries: false,teamMembers:false});
     const [radio, setRadio]: any = React.useState({due: "", modify: "", created: "", priority: "", percentage: ""});
     const fileType ="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
@@ -272,6 +273,7 @@ const Tabless = (props: any) => {
           if (checked) {
             setCheckedValues([...checkedValues, value]);
           } else {
+            setSelectAllChecks({...selectAllChecks,idType:false})
             setCheckedValues(checkedValues.filter((val:any) => val !== value));
           }
           break;
@@ -279,6 +281,7 @@ const Tabless = (props: any) => {
           if (checked) {
             setFilterCatogries([...filterCatogries, value]);
           } else {
+            setSelectAllChecks({...selectAllChecks,catogries:false})
             setFilterCatogries(
               filterCatogries.filter((val: any) => val !== value)
             );
@@ -288,6 +291,7 @@ const Tabless = (props: any) => {
           if (checked) {
             setCheckPercentage([...checkPercentages, value]);
           } else {
+            setSelectAllChecks({...selectAllChecks,percentage:false})
             setCheckPercentage(
               checkPercentages.filter((val: any) => val !== value)
             );
@@ -297,6 +301,7 @@ const Tabless = (props: any) => {
           if (checked) {
             setCheckPriority([...checkPrioritys, value]);
           } else {
+            setSelectAllChecks({...selectAllChecks,priority:false})
             setCheckPriority(
               checkPrioritys.filter((val: any) => val !== value)
             );
@@ -307,6 +312,7 @@ const Tabless = (props: any) => {
           if (checked) {
             setCheckTeamMembers([...checkTeamMembers, value]);
           } else {
+            setSelectAllChecks({...selectAllChecks,teamMembers:false})
             setCheckTeamMembers(
               checkTeamMembers.filter((val: any) => val !== value)
             );
@@ -528,6 +534,7 @@ const Tabless = (props: any) => {
       setCheckedValues([]);
       setDate({ ...date, due: null , modify: null, created: null});
       setRadio({ ...radio, percentage: false,priority: false,due: false , created: null,modify: null});
+      setSelectAllChecks({...selectAllChecks,idType:false,percentage: false,priority: false,catogries:false,teamMembers:false})
       getTaskUserData();
     }
 
@@ -536,16 +543,19 @@ const Tabless = (props: any) => {
         case "idType":
           setCheckedValues([]);
           filteringColumn = { ...filteringColumn, idType: false };
+          setSelectAllChecks({...selectAllChecks,idType:false})
           listFilters1();
           break;
         case "Categories":
           filteringColumn = { ...filteringColumn, catogries: false };
+          setSelectAllChecks({...selectAllChecks,catogries:false})
           setFilterCatogries([]);
           listFilters1();
           break;
 
         case "percentage":
           filteringColumn = { ...filteringColumn, percentage: false };
+           setSelectAllChecks({...selectAllChecks,percentage:false})
           setRadio({ ...radio, percentage: false });
           setCheckPercentage([]);
           listFilters1();
@@ -553,6 +563,7 @@ const Tabless = (props: any) => {
 
         case "priority":
           filteringColumn = { ...filteringColumn, priority: false };
+          setSelectAllChecks({...selectAllChecks,priority:false})
           setRadio({ ...radio, priority: false });
           setCheckPriority([]);
           listFilters1();
@@ -580,6 +591,7 @@ const Tabless = (props: any) => {
           break;
           case "TeamMembersSearch":
           filteringColumn = { ...filteringColumn, teamMembers: false };
+          setSelectAllChecks({...selectAllChecks,teamMembers:false})
           setCheckTeamMembers([]);
           listFilters1();
           break;
@@ -592,12 +604,82 @@ const Tabless = (props: any) => {
 
     const selectAll=(e:any)=>{
       let {checked, value} = e.target;
+      
+      switch (value) {
+        case "idType":
+          if(checked){
+            setSelectAllChecks({...selectAllChecks,idType:e.target.checked})
+            let arrayTeam:any=[];
+            allLists.map((item:any)=>{
+              arrayTeam.push(item.Title);
+              
+            })
+            setCheckedValues(arrayTeam);
+          }else{
+            setSelectAllChecks({...selectAllChecks,idType:e.target.checked})
+            setCheckedValues([]);
+          }
+          break;
+        case "Categories":
+          if(checked){
+            setSelectAllChecks({...selectAllChecks,catogries:e.target.checked})
+            let arrayTeam:any=[];
+            catogries?.map((item:any)=>{
+              arrayTeam.push(item);
+              
+            })
+            setFilterCatogries(arrayTeam);
+          }else{
+            setSelectAllChecks({...selectAllChecks,catogries:e.target.checked})
+            setFilterCatogries([]);
+          }
+          break;
 
-      if(checked){
-        setCheckPercentage(checkPercentage);
-      }else{
-        setCheckPercentage([]);
+        case "percentage":
+          if(checked){
+            setSelectAllChecks({...selectAllChecks,percentage:e.target.checked})
+            let arrayTeam:any=[];
+            checkPercentage?.map((item:any)=>{
+              arrayTeam.push(item);
+              
+            })
+            setCheckPercentage(arrayTeam);
+          }else{
+            setSelectAllChecks({...selectAllChecks,percentage:e.target.checked})
+            setCheckPercentage([]);   
+          }
+          break;
+
+        case "priority":
+          if(checked){
+            setSelectAllChecks({...selectAllChecks,priority:e.target.checked})
+            let arrayTeam:any=[];
+            checkPriority?.map((item:any)=>{
+              arrayTeam.push(item);
+              
+            })
+            setCheckPriority(arrayTeam);
+          }else{
+            setSelectAllChecks({...selectAllChecks,priority:e.target.checked})
+            setCheckPriority([]);
+          }
+          break;
+          case "TeamMembersSearch":
+            if(checked){
+              setSelectAllChecks({...selectAllChecks,teamMembers:e.target.checked})
+              let arrayTeam:any=[];
+              taskUser.map((item:any)=>{
+                arrayTeam.push(item.Title);
+                
+              })
+              setCheckTeamMembers(arrayTeam);
+            }else{
+              setSelectAllChecks({...selectAllChecks,teamMembers:e.target.checked})
+              setCheckTeamMembers([]);
+            }
+          break;
       }
+     
 
     }
 
@@ -864,7 +946,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
 
                                        {column?.id == "idType" && 
                                        <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox'   value={'Select all'} /> <label>Select All</label> </span></li>
+                                        <li><span><input type='checkbox' checked={selectAllChecks.idType} onChange={(e:any)=>selectAll(e)}   value={'idType'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                             {allLists.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
@@ -874,7 +956,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
 
                                         {column?.id == 'percentage' && 
                                         <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox' onChange={(e:any)=>selectAll(e)}  value={'Select all'} /> <label>Select All</label> </span></li>
+                                        <li><span><input type='checkbox' checked={selectAllChecks.percentage} onChange={(e:any)=>selectAll(e)}  value={'percentage'} /> <label>Select All</label> </span></li>
                                        <dl>
                                         {checkPercentage.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> {item}</dt>)}
                                           </dl>
@@ -892,7 +974,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
 
                                             {column?.id == 'Categories' && 
                                            <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox'  value={'Select all'} /> <label>Select All</label> </span></li>
+                                        <li><span><input type='checkbox' checked={selectAllChecks.catogries} onChange={(e:any)=>selectAll(e)}  value={'Categories'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {catogries.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
@@ -902,7 +984,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
 
                                             {column?.id == 'priority' && 
                                            <div className="dropdown-menu p-2 ">
-                                           <li><span><input type='checkbox'  value={'Select all'} /> <label>Select All</label> </span></li>
+                                           <li><span><input type='checkbox' checked={selectAllChecks.priority} onChange={(e:any)=>selectAll(e)}  value={'priority'} /> <label>Select All</label> </span></li>
                                           <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {checkPriority.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
@@ -963,7 +1045,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
 
                                            {column?.id == 'TeamMembersSearch' && 
                                            <div className="dropdown-menu p-2 ">
-                                        <li><span><input type='checkbox'  value={'Select all'} /> <label>Select All</label> </span></li>
+                                        <li><span><input type='checkbox' checked={selectAllChecks.teamMembers} onChange={(e:any)=>selectAll(e)}  value={'TeamMembersSearch'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {taskUser.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
                                             </ul> 
