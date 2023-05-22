@@ -1014,8 +1014,13 @@ function EditProjectPopup(item: any) {
         array2.push(itemm)
       }
     })
-    if (array2 != undefined && array2.length > 0) {
-      NewArray = array2
+    if(array2 != undefined && array2.length>0 ){
+      array2.map((item:any)=>{
+         if(item.isselected == true || item.isChecked == true){
+          NewArray.push(item)
+         }
+      })
+    //  NewArray = array2
     }
 
     if (NewArray != undefined && NewArray.length > 0) {

@@ -412,18 +412,18 @@ export default function ComponentTable({ props, NextProp }: any) {
                 //  result.AllTeamMembers = []
                 result.Display = "none";
                 // result.Created = Moment(result.Created).format("DD/MM/YYYY");
-                result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+                // result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
 
-                if (result.DueDate == "Invalid date" || result.Created == "Invalid date"|| "") {
-                  result.DueDate = result.DueDate.replaceAll(
-                    "Invalid date",
-                    ""
-                  );
-                  // result.Created = result.Created.replaceAll(
-                  //   "Invalid date",
-                  //   ""
-                  // );
-                }
+                // if (result.DueDate == "Invalid date" || result.Created == "Invalid date"|| "") {
+                //   result.DueDate = result.DueDate.replaceAll(
+                //     "Invalid date",
+                //     ""
+                //   );
+                //   result.Created = result.Created.replaceAll(
+                //     "Invalid date",
+                //     ""
+                //   );
+                // }
                 result.PercentComplete = (result.PercentComplete * 100).toFixed(
                   0
                 );
@@ -806,6 +806,8 @@ export default function ComponentTable({ props, NextProp }: any) {
       NextProp.MasterTaskListID,
       select
     );
+    componentDetails=componentDetails?.map((items:any) =>{
+      items.Created = Moment(items.Created).format("DD/MM/YYYY")})
     console.log(componentDetails);
     var array: any = [];
     if (
@@ -3514,13 +3516,25 @@ export default function ComponentTable({ props, NextProp }: any) {
         size: 3,
       },
       {
-        accessorKey: "DueDate",
+        accessorFn: (row) =>row?.DueDate ,
+        cell: ({ row ,getValue}) => (
+          <>
+            {row?.original?.DueDate == null ? (""
+            ) : (
+              <>
+              <span>{Moment(row?.original?.DueDate).format("DD/MM/YYYY")}</span>
+              </>
+            )
+            }
+          </>
+        ),
+        id: 'DueDate',
         placeholder: "Due Date",
         header: "",
         size: 4,
       },
       {
-        accessorFn: (row) => Moment(row?.Created).format("DD/MM/YYYY"),
+        accessorFn: (row) =>row?.Created ,
         cell: ({ row ,getValue}) => (
           <>
             {row?.original?.Created == null ? (""
@@ -3530,7 +3544,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   <>
                   <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
-                 
+                 <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
                   </>
                 ) : (
                   <img
@@ -3538,7 +3552,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
-                {getValue()}
+              
               </>
             )
             }
