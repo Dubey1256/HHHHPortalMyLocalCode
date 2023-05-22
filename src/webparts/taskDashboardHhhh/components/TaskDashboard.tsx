@@ -459,12 +459,12 @@ const TaskDashboard = (props: any) => {
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
                             backupTaskArray.assignedApproverTasks = approverTask;
-                            setAllImmediateTasks(AllImmediates);
-                            setAssignedApproverTasks(approverTask);
-                            setAllEmailTasks(AllEmails);
-                            setAllSitesTask(AllSiteTasks);
-                            setSharewebTasks(SharewebTask);
-                            setAllBottleNeck(AllBottleNeckTasks);
+                            setAllImmediateTasks(sortOnCreated(AllImmediates));
+                            setAssignedApproverTasks(sortOnCreated(approverTask));
+                            setAllEmailTasks(sortOnCreated(AllEmails));
+                            setAllSitesTask(sortOnCreated(AllSiteTasks));
+                            setSharewebTasks(sortOnCreated(SharewebTask));
+                            setAllBottleNeck(sortOnCreated(AllBottleNeckTasks));
                             const params = new URLSearchParams(window.location.search);
                             let query = params.get("UserId");
                             let userFound = false;
@@ -495,6 +495,10 @@ const TaskDashboard = (props: any) => {
             console.log(e)
         }
     };
+    const sortOnCreated = (Array: any) => {
+        Array.sort((a:any, b:any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+        return Array;
+    }
     const getChilds1 = function (item: any, array: any) {
         item.childs = [];
 
@@ -601,12 +605,12 @@ const TaskDashboard = (props: any) => {
         backupTaskArray.workingTodayTasks = workingTodayTask;
         backupTaskArray.thisWeekTasks = workingThisWeekTask;
         backupTaskArray.bottleneckTasks = bottleneckTask;
-        setAllAssignedTasks(AllAssignedTask);
-        setUserEmailTasks(EmailsTasks)
-        setUserImmediateTasks(Immediates)
-        setWorkingTodayTasks(workingTodayTask)
-        setThisWeekTasks(workingThisWeekTask)
-        setBottleneckTasks(bottleneckTask)
+        setAllAssignedTasks(sortOnCreated(AllAssignedTask));
+        setUserEmailTasks(sortOnCreated(EmailsTasks))
+        setUserImmediateTasks(sortOnCreated(Immediates))
+        setWorkingTodayTasks(sortOnCreated(workingTodayTask))
+        setThisWeekTasks(sortOnCreated(workingThisWeekTask))
+        setBottleneckTasks(sortOnCreated(bottleneckTask))
     }
     const filterCurrentUserWorkingTodayTask = (UserId: any) => {
         let workingTodayTask: any = [];
@@ -1016,18 +1020,18 @@ const TaskDashboard = (props: any) => {
         usePagination
     );
     const {
-        getTableProps: getTablePropsBottleneck,
-        getTableBodyProps: getTableBodyPropsBottleneck,
-        headerGroups: headerGroupsBottleneck,
-        page: pageBottleneck,
-        prepareRow: prepareRowBottleneck,
-        gotoPage: gotoPageBottleneck,
-        setPageSize: setPageSizeBottleneck,
-        state: { pageIndex: pageIndexBottleneck, pageSize: pageSizeBottleneck },
+        getTableProps: getTablePropsImmediate,
+        getTableBodyProps: getTableBodyPropsImmediate,
+        headerGroups: headerGroupsImmediate,
+        page: pageImmediate,
+        prepareRow: prepareRowImmediate,
+        gotoPage: gotoPageImmediate,
+        setPageSize: setPageSizeImmediate,
+        state: { pageIndex: pageIndexImmediate, pageSize: pageSizeImmediate },
     }: any = useTable(
         {
             columns: columns,
-            data: bottleneckTasks,
+            data: UserImmediateTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
@@ -1875,7 +1879,7 @@ const TaskDashboard = (props: any) => {
                             <nav className="nav__item">
 
                                 <ul className="nav__list">
-                                  
+
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
                                             return (
@@ -2061,12 +2065,12 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 <details>
-                                    <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
+                                    <summary>  Immediate Tasks {'(' + pageImmediate?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
-                                        {bottleneckTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
+                                        {UserImmediateTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsImmediate()}>
                                                 <thead className="fixed-Header">
-                                                    {headerGroupsBottleneck?.map((headerGroup: any) => (
+                                                    {headerGroupsImmediate?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
                                                                 <th {...column.getHeaderProps()} style={column?.style}>
@@ -2084,10 +2088,10 @@ const TaskDashboard = (props: any) => {
                                                         </tr>
                                                     ))}
                                                 </thead>
-                                                {pageBottleneck?.length > 0 ?
-                                                    <tbody {...getTableBodyPropsBottleneck}>
-                                                        {pageBottleneck?.map((row: any) => {
-                                                            prepareRowBottleneck(row);
+                                                {pageImmediate?.length > 0 ?
+                                                    <tbody {...getTableBodyPropsImmediate}>
+                                                        {pageImmediate?.map((row: any) => {
+                                                            prepareRowImmediate(row);
                                                             return (
                                                                 <tr onClick={() => { selectedInlineTask = { table: "bottleneck", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
@@ -2123,7 +2127,7 @@ const TaskDashboard = (props: any) => {
                                                     </tbody>}
                                             </Table>
                                             : <div className='text-center full-width'>
-                                                <span>No Bottleneck Tasks Available</span>
+                                                <span>No Immediate Tasks Available</span>
                                             </div>}
                                     </div>
                                 </details>
