@@ -852,7 +852,7 @@ const EditTaskPopup = (Items: any) => {
                     setSmartServicesData([])
                     console.log("Popup component smartComponent ", DataItem)
                 }
-                setIsComponent(false)    
+                setIsComponent(false)
             }
         }
     }, [])
@@ -1164,37 +1164,43 @@ const EditTaskPopup = (Items: any) => {
                 setOnlyCompletedStatus(false)
             }
         } else {
-            let category: any = tempCategoryData + ";" + type;
-            setCategoriesData(category);
-            tempCategoryData = category;
-            let tempObject = {
-                Title: type,
-                Id: Id
-            }
-            ShareWebTypeData.push(tempObject);
-            tempShareWebTypeData.push(tempObject);
-            if (type == "Phone") {
-                setPhoneStatus(true)
-            }
-            if (type == "Email") {
-                setEmailStatus(true)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(true)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(true);
-                setApproverData(TaskApproverBackupArray);
-                StatusArray?.map((item: any) => {
-                    if (item.value == 1) {
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
+            if (tempCategoryData != undefined) {
+                let CheckTaggedCategory = tempCategoryData.includes(type)
+                if (CheckTaggedCategory == false) {
+                    let category: any = tempCategoryData + ";" + type;
+                    setCategoriesData(category);
+                    tempCategoryData = category;
+                    let tempObject = {
+                        Title: type,
+                        Id: Id
                     }
-                })
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(true)
+                    ShareWebTypeData.push(tempObject);
+                    tempShareWebTypeData.push(tempObject);
+                    // setSearchedCategoryData(tempShareWebTypeData);
+                    if (type == "Phone") {
+                        setPhoneStatus(true)
+                    }
+                    if (type == "Email") {
+                        setEmailStatus(true)
+                    }
+                    if (type == "Immediate") {
+                        setImmediateStatus(true)
+                    }
+                    if (type == "Approval") {
+                        setApprovalStatus(true);
+                        setApproverData(TaskApproverBackupArray);
+                        StatusArray?.map((item: any) => {
+                            if (item.value == 1) {
+                                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+                    if (type == "Only Completed") {
+                        setOnlyCompletedStatus(true)
+                    }
+                }
             }
         }
     }
@@ -1883,8 +1889,8 @@ const EditTaskPopup = (Items: any) => {
             updateFeedbackArray = JSON.parse(EditData.FeedBack);
         }
         FeedBackBackupArray = [];
-        if (ShareWebTypeData != undefined && ShareWebTypeData?.length > 0) {
-            ShareWebTypeData.map((typeData: any) => {
+        if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
+            tempShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id)
             })
         }
@@ -2268,6 +2274,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const BuildFeedBackArray = () => {
+        let PhoneCount = 0;
         let TempFeedBackArray: any = [];
         if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
             TempFeedBackArray = CommentBoxData.concat(SubCommentBoxData)
@@ -2353,6 +2360,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         if (item.Phone) {
+                            PhoneCount = PhoneCount + 1;
                             // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
@@ -2381,7 +2389,13 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             }
                         }
+                        if (subItem.Phone == true) {
+                            PhoneCount = PhoneCount + 1;
+                        }
                     })
+                }
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
                 }
             })
             if (ApprovedStatusCount == 0) {
@@ -2389,6 +2403,9 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalTaskStatus(true)
             }
+        }
+        if (PhoneCount > 0) {
+            CategoryChangeUpdateFunction("false", "Phone", 199)
         }
     }
 
@@ -2490,25 +2507,27 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (Items.Items.listId != undefined) {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists.getById(listId).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                UpdateBasicImageInfoJSON(DataJson);
-                setUploadBtnStatus(false);
-            })().catch(console.log)
-        } else {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists.getByTitle(listName).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                UpdateBasicImageInfoJSON(DataJson);
-                setUploadBtnStatus(false);
-            })().catch(console.log)
-        }
+        setTimeout(() => {
+            if (Items.Items.listId != undefined) {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getById(listId).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data);
+                    console.log("Attachment added");
+                    UpdateBasicImageInfoJSON(DataJson);
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            } else {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getByTitle(listName).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data);
+                    console.log("Attachment added");
+                    UpdateBasicImageInfoJSON(DataJson);
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            }
+        }, 1000);
     }
 
 
@@ -4298,7 +4317,7 @@ const EditTaskPopup = (Items: any) => {
                             Dynamic={AllListIdData}
                             ComponentType={"Component"}
                             Call={ComponentServicePopupCallBack}
-
+                            selectionType={"Single"}
                         />
                     }
                     {IsServices &&
@@ -4307,7 +4326,7 @@ const EditTaskPopup = (Items: any) => {
                             Dynamic={AllListIdData}
                             Call={ComponentServicePopupCallBack}
                             ComponentType={"Service"}
-
+                            selectionType={"Single"}
                         />
                     }
                     {IsComponentPicker &&
