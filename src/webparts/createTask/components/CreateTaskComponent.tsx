@@ -27,11 +27,16 @@ let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 var ContextValue: any = {};
+<<<<<<< .merge_file_avku0T
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
+=======
+function CreateTaskComponent(props:any) {
+    let base_Url=props?.pageContext?._web?.absoluteUrl;
+>>>>>>> .merge_file_BybZR6
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
         passdata: null
