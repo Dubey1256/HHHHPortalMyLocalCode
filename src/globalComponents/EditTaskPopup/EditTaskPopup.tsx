@@ -2512,23 +2512,25 @@ const EditTaskPopup = (Items: any) => {
                 (async () => {
                     let web = new Web(siteUrls);
                     let item = web.lists.getById(listId).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data);
-                    console.log("Attachment added");
-                    UpdateBasicImageInfoJSON(DataJson);
+                    item.attachmentFiles.add(imageName, data).then(()=>{
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson);
+                    });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
             } else {
                 (async () => {
                     let web = new Web(siteUrls);
                     let item = web.lists.getByTitle(listName).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data);
-                    console.log("Attachment added");
-                    UpdateBasicImageInfoJSON(DataJson);
+                    item.attachmentFiles.add(imageName, data).then(()=>{
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson);
+                    });
                     setUploadBtnStatus(false);
                 })().catch(console.log)
             }
-        }, 1000);
-    }
+        }, 2500);
+    }  
 
 
     const UpdateBasicImageInfoJSON = async (JsonData: any) => {
@@ -3505,7 +3507,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <ul className="list-group">
                                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                                 return (
-                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
+                                                                    <li className= "hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
                                                                         <a>{Item.NewLeble}</a>
                                                                     </li>
                                                                 )
@@ -3529,7 +3531,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <ul className="list-group">
                                                             {SearchedCategoryData.map((item: any) => {
                                                                 return (
-                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                                         <a>{item.Newlabel}</a>
                                                                     </li>
                                                                 )
@@ -3657,7 +3659,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <ul className="list-group">
                                                                             {ApproverSearchedData.map((item: any) => {
                                                                                 return (
-                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
                                                                                         <a>{item.NewLabel}</a>
                                                                                     </li>
                                                                                 )
@@ -3893,7 +3895,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <ul className="list-group">
                                                                 {SearchedProjectData.map((item: any) => {
                                                                     return (
-                                                                        <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                        <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                             <a>{item.Title}</a>
                                                                         </li>
                                                                     )
@@ -4630,7 +4632,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <ul className="list-group">
                                                                         {SearchedCategoryData.map((item: any) => {
                                                                             return (
-                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                                                     <a>{item.Newlabel}</a>
                                                                                 </li>
                                                                             )
@@ -4976,7 +4978,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <ul className="list-group">
                                                                             {SearchedProjectData.map((item: any) => {
                                                                                 return (
-                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                                         <a>{item.Title}</a>
                                                                                     </li>
                                                                                 )
@@ -5419,7 +5421,7 @@ const EditTaskPopup = (Items: any) => {
                                     <ul className="list-group">
                                         {ApproverSearchedDataForPopup.map((item: any) => {
                                             return (
-                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
                                                     <a>{item.NewLabel}</a>
                                                 </li>
                                             )
@@ -5482,7 +5484,6 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                     </div>
                     <footer className="float-end mt-1">
-
                         <button type="button" className="btn btn-primary px-3 mx-1" onClick={UpdateApproverFunction}>
                             Save
                         </button>
