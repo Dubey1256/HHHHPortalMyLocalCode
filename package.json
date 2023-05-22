@@ -63,6 +63,7 @@
     "react-loader": "^2.4.7",
     "react-mentions": "^4.4.7",
     "react-moment": "^1.1.2",
+    "react-quill": "^2.0.0",
     "react-table": "^7.0.4",
     "react-to-print": "^2.14.10",
     "reactjs-popup": "^2.0.5",
