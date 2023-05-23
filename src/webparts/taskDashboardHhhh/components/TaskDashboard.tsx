@@ -1892,10 +1892,10 @@ const TaskDashboard = (props: any) => {
                             <nav className="nav__item">
                                 <ul className="nav__list text-center" >
                                     <li id="DefaultViewSelectId" className={currentView == 'AllImmediateTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllImmediateTasks') }}>
-                                        Immediate
+                                        Immediate Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
-                                        Email-Notification
+                                        Email-Notification 
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllPriorityTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllPriorityTasks') }}>
                                         Priority Tasks
@@ -1904,7 +1904,7 @@ const TaskDashboard = (props: any) => {
                                         Approver Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allBottlenecks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
-                                        All Bottlenecks
+                                        Bottleneck Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allTasksView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
                                         All Tasks
