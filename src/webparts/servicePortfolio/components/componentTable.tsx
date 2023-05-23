@@ -1380,16 +1380,16 @@ function ComponentTable(SelectedProp: any) {
                   }
                 });
               }
-              // result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
-              result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
-              if (
-                result.ClientCategory != undefined &&
-                result.ClientCategory.length > 0
-              ) {
-                map(result.Team_x0020_Members, (catego: any) => {
-                  result.ClientCategory.push(catego);
-                });
-              }
+              result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
+              // result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
+              // if (
+              //   result.ClientCategory != undefined &&
+              //   result.ClientCategory.length > 0
+              // ) {
+              //   map(result.Team_x0020_Members, (catego: any) => {
+              //     result.ClientCategory.push(catego);
+              //   });
+              // }
               if (result.Id === 1441) console.log(result);
               result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
               if (result["Shareweb_x0020_ID"] == undefined) {
@@ -2669,14 +2669,14 @@ function ComponentTable(SelectedProp: any) {
       } else {
         result["Shareweb_x0020_ID"] = "";
       }
-      if (
-        result.ClientCategory != undefined &&
-        result.ClientCategory.length > 0
-      ) {
-        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-          result.ClientCategory.push(catego);
-        });
-      }
+      // if (
+      //   result.ClientCategory != undefined &&
+      //   result.ClientCategory.length > 0
+      // ) {
+      //   $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+      //     result.ClientCategory.push(catego);
+      //   });
+      // }
       if (result.Item_x0020_Type == "Root Component") {
         result["childs"] =
           result["childs"] != undefined ? result["childs"] : [];
