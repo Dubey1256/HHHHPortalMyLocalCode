@@ -5,10 +5,10 @@ import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import * as moment from "moment";
+import * as globalCommon from "../globalCommon";
 import {
     ColumnDef,
 } from "@tanstack/react-table";
-
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../GroupByReactTableComponents/highlight";
@@ -21,10 +21,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
     const [selectedComponent, setSelectedComponent] = React.useState('');
     const [AllUsers, setTaskUser] = React.useState([]);
     const PopupType: any = props?.PopupType;
+    let GlobalArray: any = [];
     React.useEffect(() => {
         if (props.smartComponent != undefined && props.smartComponent.length > 0)
             setSelectedComponent(props?.smartComponent[0]);
         GetComponents();
+
     },
         []);
     function Example(callBack: any, type: any, functionType: any) {
@@ -47,137 +49,19 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
         item.show = item.show = item?.show == true ? false : true;
         setData(data => ([...data]));
     };
-    var Response: [] = [];
-    const GetTaskUsers = async () => {
-        let web = new Web(Dynamic.siteUrl);
-        let taskUsers = [];
-        taskUsers = await web.lists
-            .getById(Dynamic.TaskUsertListID)
-            .items
-            .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'UserGroup/Id')
-            .expand('AssingedToUser', 'UserGroup')
-            .get();
-        Response = taskUsers;
-        setTaskUser(taskUsers);
-    }
     const GetComponents = async () => {
-        var RootComponentsData: any = [];
-        var ComponentsData: any = [];
-        var SubComponentsData: any = [];
-        var FeatureData: any = [];
-        let web = new Web(Dynamic.siteUrl);
-        let componentDetails = [];
-        componentDetails = await web.lists
-            .getById(Dynamic.MasterTaskListID)
-            .items
-            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
-                "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
-            .top(4999)
-            .get()
-
-        console.log(componentDetails);
-        await GetTaskUsers();
-
-        $.each(componentDetails, function (index: any, result: any) {
-            result.TeamLeaderUser = []
-            if (result.Portfolio_x0020_Type == ComponentType) {
-                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
-                if (result.DueDate == 'Invalid date' || '') {
-                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                }
-                if (result.PercentComplete != undefined)
-                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                if (result.Short_x0020_Description_x0020_On != undefined) {
-                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                }
-                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                    $.each(result.AssignedTo, function (index: any, Assig: any) {
-                        if (Assig.Id != undefined) {
-                            $.each(Response, function (index: any, users: any) {
-                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                    users.ItemCover = users.Item_x0020_Cover;
-                                    result.TeamLeaderUser.push(users);
-                                }
-                            })
-                        }
-                    })
-                }
-                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
-                        if (Assig.Id != undefined) {
-                            $.each(Response, function (index: any, users: any) {
-                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                    users.ItemCover = users.Item_x0020_Cover;
-                                    result.TeamLeaderUser.push(users);
-                                }
-
-                            })
-                        }
-                    })
-                }
-
-                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, categoryData: any) {
-                        result.ClientCategory.push(categoryData);
-                    })
-                }
-                if (result.Item_x0020_Type == 'Root Component') {
-                    RootComponentsData.push(result);
-                }
-                if (result.Item_x0020_Type == 'Component') {
-                    result['Child'] = [];
-                    result['subRows'] = [];
-                    result.SiteIconTitle = "C"
-                    ComponentsData.push(result);
-                }
-
-                if (result.Item_x0020_Type == 'SubComponent') {
-                    result['Child'] = [];
-                    result['subRows'] = [];
-                    result.SiteIconTitle = "S"
-                    SubComponentsData.push(result);
-                }
-                if (result.Item_x0020_Type == 'Feature') {
-                    result['Child'] = [];
-                    result['subRows'] = [];
-                    result.SiteIconTitle = "F"
-                    FeatureData.push(result);
-                }
-
-            }
-        });
-        $.each(SubComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-                $.each(FeatureData, function (index: any, featurecomp: any) {
-                    if (
-                        featurecomp.Parent != undefined &&
-                        subcomp.Id == featurecomp.Parent.Id
-                    ) {
-                        subcomp["Child"].push(featurecomp);
-                        subcomp['subRows'].push(featurecomp);
-                    }
-                });
-            }
-        });
-
-        $.each(ComponentsData, function (index: any, subcomp: any) {
-            if (subcomp.Title != undefined) {
-                $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                    if (
-                        featurecomp.Parent != undefined &&
-                        subcomp.Id == featurecomp.Parent.Id
-                    ) {
-                        subcomp["Child"].push(featurecomp);
-                        subcomp['subRows'].push(featurecomp);
-                    }
-                });
-            }
-        });
-        setData(ComponentsData);
+        let PropsObject: any = {
+            MasterTaskListID: Dynamic.MasterTaskListID,
+            siteUrl: Dynamic.siteUrl,
+            ComponentType: ComponentType,
+            TaskUserListId: Dynamic.TaskUsertListID
+        }
+        GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+        if (GlobalArray.GroupByData != undefined && GlobalArray.GroupByData.length > 0) {
+            setData(GlobalArray.GroupByData);
+            LinkedServicesBackupArray = GlobalArray.GroupByData;
+        }
         setModalIsOpen(true);
-        LinkedServicesBackupArray = ComponentsData;
     }
     const onRenderCustomHeader = (
     ) => {
@@ -432,4 +316,5 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType }:
             </div>
         </Panel >
     )
-}; export default ServiceComponentPortfolioPopup;
+};
+export default ServiceComponentPortfolioPopup;

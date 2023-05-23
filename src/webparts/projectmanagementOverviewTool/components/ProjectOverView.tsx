@@ -27,7 +27,6 @@ import InlineEditingcolumns from './inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 var siteConfig: any = []
-var DataSiteIcon: any = [];
 var AllTaskUsers: any = []
 var Idd: number;
 var allSitesTasks: any = [];
@@ -142,8 +141,9 @@ export default function ProjectOverview(props: any) {
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-                accessorKey: "Title",
-                placeholder: "Title",
+                accessorKey: "Shareweb_x0020_ID",
+                placeholder: "Id",
+                size:4,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -177,22 +177,50 @@ export default function ProjectOverview(props: any) {
                             ) : (
                                 ""
                             )}{" "}
-                            {row?.original?.siteType === "Master Tasks" ? <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> : ''}
-                            {row?.original?.siteType !== "Master Tasks" ? <span>
-                                <a className='hreflink'
-                                    href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                                    data-interception="off"
-                                    target="_blank"
-                                >
-                                    {row?.original?.Title}
-                                </a>
 
-
-                            </span> : ''}
-
+                            {row.original.Shareweb_x0020_ID}
                         </>
                     </div>
                 ),
+            },
+            {
+                accessorFn: (row) => row?.siteType,
+                cell: ({ row, getValue }) => (
+                 <>{
+                    row?.original?.siteType !== "Master Tasks" ?
+                    <span>
+                    {row?.original?.siteIcon != undefined ?
+                        <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
+                </span>:''
+                 }</>
+                ),
+                id: "siteType",
+                placeholder: "Site",
+                header: "",
+                size: 4,
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                cell: ({ row, getValue }) => (
+                    <>
+                        {row?.original?.siteType === "Master Tasks" ? <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> : ''}
+                        {row?.original?.siteType !== "Master Tasks" ? <span>
+                            <a className='hreflink'
+                                href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                                data-interception="off"
+                                target="_blank"
+                            >
+                                {row?.original?.Title}
+                            </a>
+
+
+                        </span> : ''}
+                    </>
+
+                ),
+                id: "Title",
+                placeholder: "Title",
+                header: "",
             },
             {
                 accessorFn: (row) => row?.PercentComplete,
@@ -250,7 +278,7 @@ export default function ProjectOverview(props: any) {
                 size: 8,
             },
             {
-                accessorFn: (row) => row?.Id,
+             
                 cell: ({ row }) => (
                     <>
                         {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
@@ -339,7 +367,7 @@ export default function ProjectOverview(props: any) {
                 ),
             },
         ],
-        [data]
+        []
     );
 
 
@@ -422,6 +450,7 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
+                items['Shareweb_x0020_ID']='P'+items.Id
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
                     if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
@@ -459,6 +488,7 @@ export default function ProjectOverview(props: any) {
     }, []);
 
     const CallBack = React.useCallback(() => {
+        console.log(page);
         GetMasterData()
     }, [])
     const getComponentasString = function (results: any) {
@@ -468,35 +498,8 @@ export default function ProjectOverview(props: any) {
         });
         return component;
     };
-    const loadAdminConfigurations = async () => {
-        if (AllListId?.AdminConfigrationListID != undefined) {
-            var CurrentSiteType = "";
-            let web = new Web(AllListId?.siteUrl);
-            await web.lists
-                .getById(AllListId.AdminConfigrationListID)
-                .items.select(
-                    "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-                )
-                .top(4999)
-                .get()
-                .then(
-                    (response) => {
-                        var SmartFavoritesConfig = [];
-                        $.each(response, function (index: any, smart: any) {
-                            if (smart.Configurations != undefined) {
-                                DataSiteIcon = JSON.parse(smart.Configurations);
-                            }
-                        });
-                    },
-                    function (error) { }
-                );
-        } else {
-            alert('Admin Configration List Id not present')
-            DataSiteIcon = [];
-        }
-    };
+   
     const LoadAllSiteTasks = function () {
-        loadAdminConfigurations();
         if (siteConfig?.length > 0) {
             try {
                 var AllTask: any = [];
@@ -544,14 +547,8 @@ export default function ProjectOverview(props: any) {
                             items.PortfolioTitle = items?.Services[0]?.Title;
                             items["Portfoliotype"] = "Service";
                         }
-                        if (DataSiteIcon != undefined) {
-                            DataSiteIcon.map((site: any) => {
-                                if (site.Site?.toLowerCase() == items.siteType?.toLowerCase()) {
-                                    items["siteIcon"] = site.SiteIcon;
-                                }
-                            });
-                        }
-                       
+                        items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+
 
                         items.TeamMembersSearch = "";
                         if (items.AssignedTo != undefined) {
@@ -612,70 +609,69 @@ export default function ProjectOverview(props: any) {
     console.log(AllTasks);
     return (
         <>
-        <div>
-            <div className="col-sm-12 pad0 smart">
-                <div className="section-event">
-                    <div >
-                        <div className='header-section justify-content-between'>
-                            <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
-                            <div className="text-end">
-                                {GroupedDisplayTable ? <a className="hreflink" onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
+            <div>
+                <div className="col-sm-12 pad0 smart">
+                    <div className="section-event">
+                        <div >
+                            <div className='header-section justify-content-between'>
+                                <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
+                                <div className="text-end">
+                                    {GroupedDisplayTable ? <a className="hreflink" onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
+                                </div>
                             </div>
-                        </div>
 
-                        {GroupedDisplayTable ?
-                            <div className="Alltable p-2">
-                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
-                            </div>
-                            : ""}
+                            {GroupedDisplayTable ?
+                                <div className="Alltable p-2">
+                                    <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} pageName={"ProjectOverview"} />
+                                </div>
+                                : ""}
 
 
-                        <div>
-                            {!GroupedDisplayTable ? <Table className="SortingTable" bordered hover {...getTableProps()}>
-                                <thead className="fixed-Header">
-                                    {headerGroups.map((headerGroup: any) => (
-                                        <tr  {...headerGroup.getHeaderGroupProps()}>
-                                            {headerGroup.headers.map((column: any) => (
-                                                <th  {...column.getHeaderProps()} style={column?.style}>
-                                                    <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
-                                                        {column.render('Header')}
-                                                        {generateSortingIndicator(column)}
-                                                    </span>
-                                                    <Filter column={column} />
-                                                </th>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </thead>
-
-                                <tbody {...getTableBodyProps()}>
-                                    {page?.map((row: any) => {
-                                        prepareRow(row)
-                                        return (
-                                            <tr {...row.getRowProps()}  >
-                                                {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                                })}
+                            <div>
+                                {!GroupedDisplayTable ? <Table className="SortingTable" bordered hover {...getTableProps()}>
+                                    <thead className="fixed-Header">
+                                        {headerGroups.map((headerGroup: any) => (
+                                            <tr  {...headerGroup.getHeaderGroupProps()}>
+                                                {headerGroup.headers.map((column: any) => (
+                                                    <th  {...column.getHeaderProps()} style={column?.style}>
+                                                        <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                                            {column.render('Header')}
+                                                            {generateSortingIndicator(column)}
+                                                        </span>
+                                                        <Filter  column={column} />
+                                                    </th>
+                                                ))}
                                             </tr>
-                                        )
+                                        ))}
+                                    </thead>
 
-                                    })}
-                                </tbody>
-                            </Table> : ''}
+                                    <tbody {...getTableBodyProps()}>
+                                        {page?.map((row: any) => {
+                                            prepareRow(row)
+                                            return (
+                                                <tr {...row.getRowProps()}  >
+                                                    {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                                    })}
+                                                </tr>
+                                            )
+
+                                        })}
+                                    </tbody>
+                                </Table> : ''}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            {isOpenEditPopup ? (
-                <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
-            ) : (
-                ""
-            )}
-            {pageLoaderActive ? <PageLoader /> : ''}
-            {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
+                {isOpenEditPopup ? (
+                    <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
+                ) : (
+                    ""
+                )}
+                {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
 
-        </div>
-      
+            </div>
+
         </>
     )
 }

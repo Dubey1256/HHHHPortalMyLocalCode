@@ -18,6 +18,7 @@ import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 
 import Froala from "react-froala-wysiwyg";
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -503,6 +504,37 @@ const CreateActivity = (props: any) => {
         setSharewebComponent(items);
 
     }
+    const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        if (functionType == 'close') {
+            setIsComponentPicker(false);
+            setIsComponent(false);
+        } else {
+          if (Type === "Service") {
+            let ServiceData: any = []
+            if (DataItem?.linkedComponent?.length > 0) {
+                // Item.props.linkedComponent = item1.linkedComponent;
+                // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+                DataItem.linkedComponent.forEach((val: any) => {
+                    ServiceData.push(val)
+                })
+                setLinkedComponentData(ServiceData);
+                console.log("Popup component linkedComponent", DataItem.linkedComponent)
+            }
+          }
+          if (Type === "Component") {
+            var ComponentData: any = []
+            if (AllItems != undefined && DataItem != undefined) {
+                AllItems.smartComponent = DataItem.smartComponent;
+                DataItem.smartComponent.forEach((val: any) => {
+                    ComponentData.push(val)
+                })
+                setSmartComponentData(ComponentData);
+            }
+          }
+        //   console.log(Masterdata)
+        //   setIsPortfolio(false);
+        }
+      }, [])
     var LatestTaskNumber: any = ''
     var SharewebID: any = ''
    
@@ -1400,8 +1432,17 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>}
+            {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>} */}
+
+             {IsComponent && <ServiceComponentPortfolioPopup
+              props={SharewebComponent}
+              Dynamic={dynamicList}
+              ComponentType={props.props.Portfolio_x0020_Type}
+              Call={ComponentServicePopupCallBack}
+              selectionType={"Multi"}
+            ></ServiceComponentPortfolioPopup>}
+
             {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>

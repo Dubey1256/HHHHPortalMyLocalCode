@@ -2,7 +2,7 @@ import * as React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, FaFilter } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, FaFilter, FaPaintBrush } from "react-icons/fa";
 import {
     useTable,
     useSortBy,
@@ -15,12 +15,16 @@ import {
 } from 'react-table';
 // import styles from './CreatedByTables.module.scss';
 import './Style.css';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 import { Filter, DefaultColumnFilter } from './filters';
 import { Web } from "sp-pnp-js";
 // import * as Moment from 'moment';
 import moment from 'moment';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import ExpandTable from '../../../globalComponents/ExpandTable/Expandtable';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import { RiFileExcel2Fill } from 'react-icons/ri';
 
 const Tabless = (props: any) => {
     let count: any = 0;
@@ -41,6 +45,8 @@ const Tabless = (props: any) => {
     let userlists: any = [];
     let QueryId: any;
     let dataLength: any = [];
+    const checkPercentage:any=[0,5,10,70,80,90,93,96,99,100];
+    let filteringColumn:any= {due:true,modify:true,created:true,priority:true,percentage:true,catogries:true};
     const [result, setResult]: any = React.useState(false);
     const [editPopup, setEditPopup]: any = React.useState(false);
     const [queryId, setQueryId]: any = React.useState([]);
@@ -49,14 +55,18 @@ const Tabless = (props: any) => {
     const [catogries, setCatogries]: any = React.useState([]);
     const [filterCatogries, setFilterCatogries]: any = React.useState([]);
     const [allLists, setAllLists]: any = React.useState([]);
-    const checkPercentage:any=[0,5,10,70,80,90,93,96,99,100]
+    const [checkComSer, setCheckComSer]: any = React.useState({component:'', services:''});
+    const [tablecontiner, settablecontiner]: any = React.useState("hundred");
     const checkPriority:any=[1,2,3,4,5,6,7,8,9,10];
     const [checkPercentages, setCheckPercentage] : any = React.useState([]);
     const [checkPrioritys, setCheckPriority] : any = React.useState([])
     const [checkedValues, setCheckedValues] = React.useState([]);
     const [copyData, setCopyData] :any= React.useState([]);
-    const [date, setDate] :any= React.useState({due:'',modify:'',created:''});
-    
+    const [copyData1, setCopyData1] :any= React.useState([]);
+    const [date, setDate] :any= React.useState({due:null,modify:null,created:null});
+    const [radio, setRadio] :any= React.useState({due:'',modify:'',created:'',priority:'',percentage:''});
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
     
 
     const columns = React.useMemo(
@@ -65,11 +75,11 @@ const Tabless = (props: any) => {
                 internalHeader: 'Task ID',
                 accessor: 'idType',
                 showSortIcon: true,
-                style: { width: '90px' },
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <div>
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.siteIcon} /></span>
-                        <span>{row?.original?.idType}</span>
+                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.idType}</span>
                     </div>
                 )
             },
@@ -77,34 +87,52 @@ const Tabless = (props: any) => {
                 internalHeader: 'Task Title',
                 accessor: 'Title',
                 showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <div>
+                        <a className={row.original.Services.length >= 1 && 'text-success'} style={{textDecoration:'none',cursor:'pointer'}} target="_blank" href={`${props.Items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row.original.Id}&Site=${row.original.site}`}>{row?.original?.Title}</a>
+                    </div>
+                )
             },
             {
                 internalHeader: 'Categories',
                 accessor: 'Categories',
                 showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <div>
+                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.Categories}</span>
+                    </div>
+                )
             },
             {
                 internalHeader: '%',
                 showSortIcon: true,
                 accessor: 'percentage',
-                style: { width: '50px' },
+                style: { width: '100px' },
+                Cell: ({ row }: any) => (
+                    <div>
+                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.percentage}</span>
+                    </div>
+                )
             },
             {
                 internalHeader: 'Priority',
                 showSortIcon: true,
                 accessor: 'priority',
-                style: { width: '50px' },
-            },
-            {
-                internalHeader: 'Due Date',
-                accessor: 'newDueDate',
-                showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <div>{row?.original?.newDueDate}</div>
-                        {/* {new Date() < new Date(row?.original?.dueDate) ? <div style={{height:'12px', width:'12px', borderRadius:'50%', backgroundColor:'green'}}></div> :(new Date() > new Date(row?.original?.dueDate) ? <div style={{height:'12px', width:'12px', borderRadius:'50%', backgroundColor:'red'}}></div> : <div style={{height:'12px', width:'12px', borderRadius:'50%', backgroundColor:'yellow'}}></div>) }
-                     */}
+                        <span className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.priority}</span>
+                    </div>
+                )
+            },
+            {
+                internalHeader: 'Due Date', 
+                accessor: 'newDueDate',
+                showSortIcon: true,
+                style: { width: '110px' },
+                Cell: ({ row }: any) => (
+                    <div>
+                        <div className={row.original.Services.length >= 1 && 'text-success'}>{row?.original?.newDueDate}</div>
                     </div>
                 )
             },
@@ -113,11 +141,14 @@ const Tabless = (props: any) => {
                 internalHeader: 'Modified',
                 accessor: 'newModified',
                 showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span>{row?.original?.newModified}</span>
+                    
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newModified}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -125,11 +156,13 @@ const Tabless = (props: any) => {
                 internalHeader: 'Created',
                 accessor: 'newCreated',
                 showSortIcon: true,
-                style: { width: '130px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <span>{row?.original?.newCreated}</span>
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        {row?.original?.newCreated}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
+                        </a>
                     </div>
                 )
             },
@@ -147,11 +180,11 @@ const Tabless = (props: any) => {
             },
             {
                 internalHeader: '',
-                accessor: 'ID',
-                style: { width: '80px' },
+                id: 'ID',
+                style: { width: '60px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-3" onClick={()=>editPopFunc(row.original)} >
+                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink ms-1" onClick={()=>editPopFunc(row.original)} >
 
                         </span>
                         <span title="Delete Task" className="svg__iconbox svg__icon--trash hreflink"  onClick={()=>deleteItemFunction(row.original)} ></span>
@@ -200,17 +233,23 @@ const editPopFunc=(item:any)=>{
         headerGroups,
         page,
         prepareRow,
+        canPreviousPage,
+        canNextPage,
         gotoPage,
+         pageCount,
+         previousPage,
+         nextPage,
         setPageSize,
         filter,
         setGlobalFilter,
         state,
+        state: { pageIndex, pageSize },
     }: any = useTable(
         {
             columns,
             data,
             defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 150000 },
+            initialState: { pageIndex: 0, pageSize: 10 },
         },
         useFilters,
         useGlobalFilter,
@@ -220,49 +259,66 @@ const editPopFunc=(item:any)=>{
         
     );
 
+
+
    const {globalFilter} = state;
+
+   const onChangeInSelect = (event: any) => {
+    setPageSize(Number(event.target.value));
+      };
+
     const getSelectedSite = (e: any,column:any) => {
        const {value, checked}=e.target;
         console.log(value, checked);
+        switch(column){
+            case 'idType' :
+                if(checked){
+                    setCheckedValues([...checkedValues,value])
+                }
+                else{
+                 setCheckedValues(checkedValues.filter((val) => val !== value));
+                }
+            break;
+            case 'Categories' :
+                if(checked){
+                    setFilterCatogries([...filterCatogries,value])
+                  } else{
+                    setFilterCatogries(filterCatogries.filter((val: any) => val !== value));
+                   }
+               break;
+            case 'percentage' :
+                if(checked){
+                    setCheckPercentage([...checkPercentages,value])
+                  } else{
+                    setCheckPercentage(checkPercentages.filter((val: any) => val !== value));
+                   }
+            break;
+            case 'priority' :
+                if(checked){
+                    setCheckPriority([...checkPrioritys,value])
+                  } else{
+                    setCheckPriority(checkPrioritys.filter((val: any) => val !== value));
+                   }
             
-        if(checked && column== 'idType'){
-            setCheckedValues([...checkedValues,value])
+            break;
+
         }
-        else{
-         setCheckedValues(checkedValues.filter((val) => val !== value));
-        }
-
-        if(checked && column== 'Categories'){
-            setFilterCatogries([...filterCatogries,value])
-          } else{
-            setFilterCatogries(filterCatogries.filter((val: any) => val !== value));
-           }
-
-       if(checked && column== 'percentage'){
-        setCheckPercentage([...checkPercentages,value])
-      } else{
-        setCheckPercentage(checkPercentages.filter((val: any) => val !== value));
-       }
-
-
-       if(checked && column== 'priority'){
-        setCheckPriority([...checkPrioritys,value])
-      } else{
-        setCheckPriority(checkPrioritys.filter((val: any) => val !== value));
-       }
-
-      
        console.log("checkedValues" ,checkedValues,filterCatogries, checkPercentages,checkPrioritys);
     }
 
+    const expndpopup = (e: any) => {
+
+        settablecontiner(e);
+    };
 
     const listFilter=()=>{
+        setCopyData1(copyData);
         QueryId=queryId;
         userlists=taskUser;
         allLists?.map((alllists:any)=>{
-            checkedValues.map((checkedlists:any)=>{
-                if(alllists.Title==checkedlists){
-                    let a: any = JSON.parse(alllists.Configurations);
+            checkedValues?.map((checkedlists:any)=>{
+                if(alllists?.Title==checkedlists){
+                    let a: any = JSON.parse(alllists?.Configurations);
                     a?.map((newitem: any) => {
     
                         dataLength.push(newitem);
@@ -274,50 +330,204 @@ const editPopFunc=(item:any)=>{
         })
     }
 
+        //   const listFilters1=()=>{
+        //     let newData=copyData;
+        //     const filters = { Categories: ['Improvement']};
+        //     setData(newData.filter((obj:any) =>
+        //         Object.entries(filters).every(([key, values]:any) =>
+        //           Array.isArray(values) ? values > obj[key] : values === obj[key]
+        //         )
+        //       )) 
+
+        //   }
+      
     const listFilters1=()=>{
-        let localArray:any=[];
-       
-            if(filterCatogries.length >= 1){
-                copyData.map((alldataitem:any)=>{
-                filterCatogries.map((item:any)=>{
+        let newData=copyData;
+            if(filterCatogries.length >= 1 && filteringColumn.catogries){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
+                filterCatogries?.map((item:any)=>{
                  if(alldataitem.Categories==item){
                     localArray.push(alldataitem)
                  }
                 })
             })
+            newData=localArray;
             }
-
-            if(checkPercentages.length >= 1){
-                copyData.map((alldataitem:any)=>{
+           
+            if(checkPercentages.length >= 1 && filteringColumn.percentage){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
                     let percent = parseInt(alldataitem.percentage);
-                checkPercentages.map((item:any)=>{
-                    if(percent==item || alldataitem.priority==item){
-                       localArray.push(alldataitem)
+                checkPercentages?.map((item:any)=>{
+                    if(radio.percentage == "=="){
+                        if(percent==item){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.percentage == ">"){
+                        if(percent>item){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.percentage == "<"){
+                        if(percent < item){
+                            localArray.push(alldataitem)
+                         }
+                    }else{
+                        if(percent != item){
+                            localArray.push(alldataitem)
+                         }
                     }
+                    
                    })
                 })
+                newData=localArray;
             }
 
-            if(checkPrioritys.length >= 1){
-                copyData.map((alldataitem:any)=>{
-                checkPrioritys.map((item:any)=>{
-                    if(alldataitem.priority==item){
-                       localArray.push(alldataitem)
+            if(checkPrioritys.length >= 1 && filteringColumn.priority){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
+                checkPrioritys?.map((item:any)=>{
+                    if(radio.priority == "=="){
+                        if(alldataitem.priority==item){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.priority == ">"){
+                        if(alldataitem.priority>item){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.priority == "<"){
+                        if(alldataitem.priority<item){
+                            localArray.push(alldataitem)
+                         }
+                    }else{
+                        if(alldataitem.priority != item){
+                            localArray.push(alldataitem)
+                         }
                     }
+                   
                    })
                 })
+                newData=localArray;
             }
-       setData(localArray);
+            if(date.due != null && filteringColumn.due){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
+                    let dueDate = moment(alldataitem.dueDate).format('MM/DD/YYYY');
+                    let filterDate = moment(date.due).format('MM/DD/YYYY');
+                    if(radio.due == "=="){
+                        if(new Date(dueDate).getTime() == new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.due == ">"){
+                        if(new Date(dueDate).getTime() > new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.due == "<"){
+                        if(new Date(dueDate).getTime() < new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else{
+                        if(new Date(dueDate).getTime() != new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }
+                     
+                })
+                newData=localArray;
+            } 
+            if(date.created != null && filteringColumn.created){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
+                    let created = moment(alldataitem.created).format('MM/DD/YYYY');
+                    let filterDate = moment(date.created).format('MM/DD/YYYY');
+                    if(radio.created == "=="){
+                        if(new Date(created).getTime() == new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.created == ">"){
+                        if(new Date(created).getTime() > new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.created == "<"){
+                        if(new Date(created).getTime() < new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else{
+                        if(new Date(created).getTime() != new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }
+                     
+                })
+                newData=localArray;
+            }
+            if(date.modify != null && filteringColumn.modify){
+                let localArray:any=[];
+                newData?.map((alldataitem:any)=>{
+                    let modify = moment(alldataitem.modified).format('MM/DD/YYYY');
+                    let filterDate = moment(date.modify).format('MM/DD/YYYY');
+                    if(radio.modify == "=="){
+                        if(new Date(modify).getTime() == new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.modify == ">"){
+                        if(new Date(modify).getTime() > new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else if(radio.modify == "<"){
+                        if(new Date(modify).getTime() < new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }else{
+                        if(new Date(modify).getTime() != new Date(filterDate).getTime()){
+                            localArray.push(alldataitem)
+                         }
+                    }
+                     
+                })
+                newData=localArray;
+            }
+       setData(newData);
     }
 
 
-    const clearFilter=()=>{
-        setCheckedValues(['']);
-          setFilterCatogries(['']);
-             setCheckPercentage(['']);
-       
-              setCheckPriority(['']);
-        getTaskUserData();
+    const clearFilter=async (column:any)=>{
+        switch(column){
+          case "Categories" :
+            filteringColumn = {...filteringColumn,catogries:false }
+            setFilterCatogries([])
+            listFilters1();
+            break;
+
+            case "percentage" :
+                filteringColumn = {...filteringColumn,percentage:false }
+                setCheckPercentage([])
+                listFilters1();
+            break;
+
+            case "priority" : 
+            filteringColumn = {...filteringColumn,priority:false }
+            setCheckPriority([]);
+            listFilters1(); 
+            break;
+            case "newDueDate" : 
+            filteringColumn = {...filteringColumn,due:false }
+             setDate({...date,due:null})          
+            listFilters1();
+            break;
+            case "newModified" : 
+            filteringColumn = {...filteringColumn,modify:false }
+            setDate({...date,modify:null}) 
+            listFilters1();
+            break;
+            case "newCreated" : 
+            filteringColumn = {...filteringColumn,created:false }
+            setDate({...date,created:null}) 
+            listFilters1();
+            break;
+            default : getTaskUserData();
+        }
+         
     }
 
     const generateSortingIndicator = (column: any) => {
@@ -396,6 +606,7 @@ const editPopFunc=(item:any)=>{
        getTaskUserData();
     }
 
+
     const getQueryVariable = () => {
         const params = new URLSearchParams(window.location.search);
         let query = params.get("CreatedBy");
@@ -417,6 +628,10 @@ const editPopFunc=(item:any)=>{
                 "DueDate",
                 "Created",
                 "Modified",
+                "Component/Title",
+                "Component/Id",
+                "Services/Title",
+                "Services/Id",
                 "Team_x0020_Members/Id",
                 "Team_x0020_Members/Title",
                 "ID",
@@ -436,9 +651,11 @@ const editPopFunc=(item:any)=>{
                 "SharewebTaskType",
                 "Editor",
                 "Responsible_x0020_Team",
-                "AssignedTo"
+                "AssignedTo",
+                "Component",
+                "Services"
             )
-            .filter(`Author/Id eq ${QueryId} and PercentComplete le 0.96`).top(5000)
+            .filter(`(substringof('${QueryId}', Author/Title)) and PercentComplete le 0.96`).top(5000)
             .getAll()
             .then((data: any) => {
                 data.map((dataItem: any) => {
@@ -498,6 +715,7 @@ const editPopFunc=(item:any)=>{
                             userItem.AssingedToUser.Id == dataItem.Author.Id
                         ) {
                             dataItem.AuthorImg = userItem?.Item_x0020_Cover?.Url;
+
                         }
                         if (
                             userItem.AssingedToUser != undefined &&
@@ -529,6 +747,8 @@ const editPopFunc=(item:any)=>{
                         created: dataItem.Created,
                         modified: dataItem.Modified,
                         dueDate: dataItem.DueDate,
+                        Component:dataItem.Component,
+                        Services:dataItem.Services,
                         listId:items.listId,
                         site:items.siteName,
                     });
@@ -539,13 +759,52 @@ const editPopFunc=(item:any)=>{
                 if (count == dataLength.length) {
                     setData(allData);
                     setCopyData(allData);
-
+                    
                 }
             })
             .catch((err: any) => {
                 console.log("then catch error", err);
             });
     };
+
+
+    const filterCom=(e:any)=>{
+        let array:any=[];
+        let {checked, value} = e.target;
+        if(checked && value=='Component'){
+              data?.map((item:any)=>{
+                    if(item.Component.length >=1){
+                           array.push(item)
+                    }
+              })   
+        setData(array);
+    }else{
+        setData(copyData);
+    }
+}
+
+const filterServ=(e:any)=>{
+    let array:any=[];
+    let {checked, value} = e.target;
+    if(checked && value=='Services'){
+          data?.map((item:any)=>{
+                if(item.Services.length >=1){
+                       array.push(item)
+                }
+          })   
+    setData(array);
+}else{
+    setData(copyData);
+}
+}
+
+const downloadExcel = (csvData: any, fileName: any) => {
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
+}
 
 
 
@@ -556,37 +815,78 @@ const editPopFunc=(item:any)=>{
    
 
     return (
-        <div>
-            <span>Created By {QueryId}</span>
-            <span>
-                <span>
-                Showing {data.length} of {copyData.length} Tasks
+      
+        <div >
+             <div><h3 className="siteColor">Created By - {queryId}</h3></div>
+            {/* <span className='row pt-2 pb-2'>
+                <span className='col'>
+               
+                <span className='me-2'>
+                Showing {data.length} of {copyData1.length >= 1 ? copyData1.length : copyData.length} Tasks
                 </span>
-            <span>
-                <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)}  />
+                <span>
+                <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)} placeholder='Search in all tasks' />
             </span>
+                </span>
+                <span className='col d-flex justify-content-end'>
+                    <span>
+                        <input type="checkbox" value={'Component'} onChange={(e:any)=>filterCom(e)} /> <label className='me-1'>Component</label>
+                        <input type="checkbox" value={'Services'} onChange={(e:any)=>filterServ(e)} /> <label className='me-2'>Services</label>
+                        <a onClick={getTaskUserData} className='me-1'>
+                            <FaPaintBrush/>
+                        </a>
+                        <a onClick={()=>downloadExcel(data, 'Task-view')} className='me-1'>
+                            <RiFileExcel2Fill/>
+                        </a>
+                        <a className='me-1'>
+                        <ExpandTable prop={expndpopup} prop1={tablecontiner} />
+                        </a>
+                       
+                       
+                        
+                    </span>
+                </span>
+            </span> */}
+            <div  className='Alltable mt-2 ' id={tablecontiner}>
+        <div className='justify-content-between tbl-headings'>
+            <span className='leftsec'> <span className='me-1'>Showing {data.length} of {copyData1.length >= 1 ? copyData1.length : copyData.length} Tasks </span><span> <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)} placeholder='Search in all tasks' /></span> </span> 
+            <span className='toolbox'>
+            <input className='me-1' type="checkbox" value={'Component'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Component</label>
+                        <input className='me-1' type="checkbox" value={'Services'} onChange={(e:any)=>filterServ(e)} /> <label className='me-2'>Services</label>
+                        <a onClick={getTaskUserData} className='brush'>
+                            <FaPaintBrush/>
+                        </a>
+                        <a onClick={()=>downloadExcel(data, 'Task-view')} className='excal'>
+                            <RiFileExcel2Fill/>
+                        </a>
+                        <a className='expand'>
+                        <ExpandTable prop={expndpopup} prop1={tablecontiner} />
+                        </a>
             </span>
+        </div>
             
-            <Table className="SortingTable" bordered hover {...getTableProps()}>
+            <Table className="SortingTable filtertable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups.map((headerGroup: any) => (
                         <tr  {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map((column: any) => (
-                                <th  {...column.getHeaderProps()} style={column?.style}>
-
-                                    <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                <th className='position-relative'  {...column.getHeaderProps()} style={column?.style}>
+<div className='w80 position-relative'>
+<span class="Table-SortingIcon" {...column.getSortByToggleProps()} >
                                         {column.render('Header')}
                                         {generateSortingIndicator(column)}
 
                                     </span>
                                     <Filter column={column} />
+</div>
+                                
                                   
                                     {    
                                         column?.id !=='Title' && column.id !== 'ID' ?
-                                        <div className="dropdown">
-                                        <button className="btn" type={'button'} data-bs-toggle="dropdown" aria-expanded="false">
+                                        <div className="dropdown filtericons">
+                                        <span data-bs-toggle="dropdown" aria-expanded="false">
                                             <FaFilter />
-                                        </button>
+                                        </span>
 
                                        {column?.id == "idType" && 
                                        <div className="dropdown-menu p-2 ">
@@ -594,7 +894,7 @@ const editPopFunc=(item:any)=>{
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                             {allLists.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
-                                                 <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                                 <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilter}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                   </div> }
 
 
@@ -606,13 +906,13 @@ const editPopFunc=(item:any)=>{
                                           </ul>
                                           <div>
                                             <li>
-                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='percentage' value={'=='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='percentage' value={'>'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='percentage' value={'<'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='percentage' value={'!='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                          <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                          <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                           </div>}
 
 
@@ -622,7 +922,7 @@ const editPopFunc=(item:any)=>{
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
                                         {catogries.map((item: any) => <li><span><input type='checkbox' onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
@@ -634,13 +934,13 @@ const editPopFunc=(item:any)=>{
                                             </ul>
                                             <div>
                                             <li>
-                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='priority' value={'=='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})}  /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='priority' value={'>'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='priority' value={'<'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='priority' value={'!='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
@@ -648,14 +948,14 @@ const editPopFunc=(item:any)=>{
                                            <div className="dropdown-menu p-2 ">
                                             <div>
                                             <li>
-                                                <span><input type='radio' name='newDueDate' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newDueDate' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newDueDate' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newDueDate' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='newDueDate' value={'=='} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newDueDate' value={'>'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newDueDate' value={'<'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newDueDate' value={'!='} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, due:e.target.value})} />
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
 
@@ -663,28 +963,28 @@ const editPopFunc=(item:any)=>{
                                             <div className="dropdown-menu p-2 ">
                                                  <div>
                                             <li>
-                                                <span><input type='radio' name='newModified' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newModified' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newModified' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'=='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'>'}  onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newModified' value={'<'}  onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newModified' value={'!='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, modify:e.target.value})} />
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
                                             {column?.id == 'newCreated' && 
                                        <div className="dropdown-menu p-2 ">
                                          <div>
                                             <li>
-                                                <span><input type='radio' name='newCreated' value={'equal'} /> <label>{'='}</label> </span>
-                                                <span><input type='radio' name='newCreated' value={'le'} /> <label>{'>'}</label></span>
-                                                <span><input type='radio' name='newCreated' value={'ge'} /> <label>{'<'}</label> </span>
-                                                <span><input type='radio' name='newCreated' value={'ne'} /> <label>{'!='}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'=='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})}  /> <label>{'='}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'>'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'>'}</label></span>
+                                                <span><input type='radio' name='newCreated' value={'<'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'<'}</label> </span>
+                                                <span><input type='radio' name='newCreated' value={'!='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
                                             </div>
-                                            <input type='date'/>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={clearFilter}>Clear</a></li>
+                                            <input type='date' onChange={(e:any)=>setDate({...date, created:e.target.value})}  />
+                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
                                     </div> : ''
                                     }
@@ -709,6 +1009,72 @@ const editPopFunc=(item:any)=>{
                     })}
                 </tbody>
             </Table>
+            <nav>
+                    <Pagination>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+                                <span aria-hidden={true}>
+                                    {/* <i
+                                    aria-hidden={true}
+                                    className="tim-icons icon-double-left"
+                                /> */}
+                                    <FaAngleDoubleLeft aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => previousPage()} disabled={!canPreviousPage}>
+                                <span aria-hidden={true}>
+                                    <FaAngleLeft aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink>
+                                {pageIndex + 1}
+
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink onClick={() => nextPage()} disabled={!canNextPage}>
+                                <span aria-hidden={true}>
+                                    <FaAngleRight
+                                        aria-hidden={true}
+
+                                    />
+                                </span>
+                            </PaginationLink>
+                        </PaginationItem>
+
+                        <PaginationItem>
+                            <PaginationLink onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+                                <span aria-hidden={true}>
+                                    {/* <i
+                                    aria-hidden={true}
+                                    className="tim-icons icon-double-right"
+                                /> */}
+                                    <FaAngleDoubleRight aria-hidden={true} />
+                                </span>
+                            </PaginationLink>
+                            {' '}
+                        </PaginationItem>
+                        <Col md={2}>
+                            <Input
+                                type='select'
+                                value={pageSize}
+                                onChange={onChangeInSelect}
+                            >
+
+                                {[10, 20, 30, 40, 50].map((pageSize) => (
+                                    <option key={pageSize} value={pageSize}>
+                                        Show {pageSize}
+                                    </option>
+                                ))}
+                            </Input>
+                        </Col>
+                    </Pagination>
+                </nav>
+                </div>
             <span>
             {editPopup && <EditTaskPopup  Items={result} context={props.Items.Context} AllListId={AllListId} Call={() => {CallBack() }} /> }       
           

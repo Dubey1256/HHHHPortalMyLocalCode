@@ -74,7 +74,7 @@ var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
-
+var GlobalServiceAndComponentData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -157,6 +157,8 @@ const EditTaskPopup = (Items: any) => {
     const [ApproverHistoryData, setApproverHistoryData] = React.useState([]);
     const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
     const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -738,7 +740,78 @@ const EditTaskPopup = (Items: any) => {
         setServicePopupType(title);
     }
 
-    //  ###################  Service And Component Portfolio Popup Clla Back Functions and Validations ##################
+
+    // ################# this is for Change Task Component And Service Component #######################
+
+    const ChangeComponentStatus = (e: any, Type: any) => {
+        if (Type == "Component") {
+            setServicesTaskCheck(false);
+            setComponentTaskCheck(true);
+            GetAllComponentAndServiceData(Type)
+        }
+        if (Type == "Service") {
+            setServicesTaskCheck(true);
+            setComponentTaskCheck(false);
+            GetAllComponentAndServiceData(Type)
+        }
+    }
+
+    const GetAllComponentAndServiceData = async (ComponentType: any) => {
+        let PropsObject: any = {
+            MasterTaskListID: AllListIdData.MasterTaskListID,
+            siteUrl: AllListIdData.siteUrl,
+            ComponentType: ComponentType,
+            TaskUserListId: AllListIdData.TaskUsertListID
+        }
+        let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+        if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
+            GlobalServiceAndComponentData = CallBackData.AllData;
+        }
+    }
+
+    const autoSuggestionsForServiceAndComponent = (e: any) => {
+        if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
+            if (ServicesTaskCheck) {
+                GetAllComponentAndServiceData("Service");
+            }
+            if (ComponentTaskCheck) {
+                GetAllComponentAndServiceData("Component");
+            }
+        }
+        let SearchedKeyWord: any = e.target.value;
+        setSearchedServiceCompnentKey(SearchedKeyWord);
+        let TempArray: any = [];
+        if (SearchedKeyWord.length > 0) {
+            if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
+                GlobalServiceAndComponentData.map((AllDataItem: any) => {
+                    if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
+                        TempArray.push(AllDataItem);
+                    }
+                })
+            }
+            if (TempArray != undefined && TempArray.length > 0) {
+                setSearchedServiceCompnentData(TempArray);
+            }
+        } else {
+            setSearchedServiceCompnentData([]);
+            setSearchedServiceCompnentKey("");
+        }
+    }
+
+    const setSelectedServiceAndCompnentData = (SelectedData: any) => {
+        console.log("selected Data form auto suggestion from Auto Suggesution Service and comonente==========", SelectedData);
+        setSearchedServiceCompnentData([]);
+        setSearchedServiceCompnentKey("");
+        if (ServicesTaskCheck) {
+            ComponentServicePopupCallBack([SelectedData], "Service", "Save");
+        }
+        if (ComponentTaskCheck) {
+            ComponentServicePopupCallBack([SelectedData], "Component", "Save");
+        }
+
+    }
+
+    //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
         if (functionType == "Close") {
             if (Type == "Service") {
@@ -754,6 +827,7 @@ const EditTaskPopup = (Items: any) => {
                     setSmartComponentData([]);
                     console.log("Popup component linkedComponent", DataItem);
                 }
+                setIsServices(false);
             }
             if (Type == "Component") {
                 if (DataItem != undefined && DataItem.length > 0) {
@@ -778,6 +852,7 @@ const EditTaskPopup = (Items: any) => {
                     setSmartServicesData([])
                     console.log("Popup component smartComponent ", DataItem)
                 }
+                setIsComponent(false)
             }
         }
     }, [])
@@ -1089,37 +1164,43 @@ const EditTaskPopup = (Items: any) => {
                 setOnlyCompletedStatus(false)
             }
         } else {
-            let category: any = tempCategoryData + ";" + type;
-            setCategoriesData(category);
-            tempCategoryData = category;
-            let tempObject = {
-                Title: type,
-                Id: Id
-            }
-            ShareWebTypeData.push(tempObject);
-            tempShareWebTypeData.push(tempObject);
-            if (type == "Phone") {
-                setPhoneStatus(true)
-            }
-            if (type == "Email") {
-                setEmailStatus(true)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(true)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(true);
-                setApproverData(TaskApproverBackupArray);
-                StatusArray?.map((item: any) => {
-                    if (item.value == 1) {
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
+            if (tempCategoryData != undefined) {
+                let CheckTaggedCategory = tempCategoryData.includes(type)
+                if (CheckTaggedCategory == false) {
+                    let category: any = tempCategoryData + ";" + type;
+                    setCategoriesData(category);
+                    tempCategoryData = category;
+                    let tempObject = {
+                        Title: type,
+                        Id: Id
                     }
-                })
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(true)
+                    ShareWebTypeData.push(tempObject);
+                    tempShareWebTypeData.push(tempObject);
+                    // setSearchedCategoryData(tempShareWebTypeData);
+                    if (type == "Phone") {
+                        setPhoneStatus(true)
+                    }
+                    if (type == "Email") {
+                        setEmailStatus(true)
+                    }
+                    if (type == "Immediate") {
+                        setImmediateStatus(true)
+                    }
+                    if (type == "Approval") {
+                        setApprovalStatus(true);
+                        setApproverData(TaskApproverBackupArray);
+                        StatusArray?.map((item: any) => {
+                            if (item.value == 1) {
+                                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+                    if (type == "Only Completed") {
+                        setOnlyCompletedStatus(true)
+                    }
+                }
             }
         }
     }
@@ -1631,7 +1712,7 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
-   
+
 
     const closeTaskStatusUpdatePopup = () => {
         setTaskStatusPopup(false)
@@ -1808,8 +1889,8 @@ const EditTaskPopup = (Items: any) => {
             updateFeedbackArray = JSON.parse(EditData.FeedBack);
         }
         FeedBackBackupArray = [];
-        if (ShareWebTypeData != undefined && ShareWebTypeData?.length > 0) {
-            ShareWebTypeData.map((typeData: any) => {
+        if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
+            tempShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id)
             })
         }
@@ -2193,6 +2274,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const BuildFeedBackArray = () => {
+        let PhoneCount = 0;
         let TempFeedBackArray: any = [];
         if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
             TempFeedBackArray = CommentBoxData.concat(SubCommentBoxData)
@@ -2278,6 +2360,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         if (item.Phone) {
+                            PhoneCount = PhoneCount + 1;
                             // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
@@ -2306,7 +2389,13 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             }
                         }
+                        if (subItem.Phone == true) {
+                            PhoneCount = PhoneCount + 1;
+                        }
                     })
+                }
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
                 }
             })
             if (ApprovedStatusCount == 0) {
@@ -2314,6 +2403,9 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalTaskStatus(true)
             }
+        }
+        if (PhoneCount > 0) {
+            CategoryChangeUpdateFunction("false", "Phone", 199)
         }
     }
 
@@ -2342,7 +2434,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //***************** This is for Image Upload Section  Functions *****************
-    
+
     const FlorarImageUploadComponentCallBack = (dt: any) => {
         setUploadBtnStatus(false);
         let DataObject: any = {
@@ -2415,25 +2507,27 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (Items.Items.listId != undefined) {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists.getById(listId).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                UpdateBasicImageInfoJSON(DataJson);
-                setUploadBtnStatus(false);
-            })().catch(console.log)
-        } else {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists.getByTitle(listName).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                UpdateBasicImageInfoJSON(DataJson);
-                setUploadBtnStatus(false);
-            })().catch(console.log)
-        }
+        setTimeout(() => {
+            if (Items.Items.listId != undefined) {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getById(listId).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data);
+                    console.log("Attachment added");
+                    UpdateBasicImageInfoJSON(DataJson);
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            } else {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getByTitle(listName).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data);
+                    console.log("Attachment added");
+                    UpdateBasicImageInfoJSON(DataJson);
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            }
+        }, 1000);
     }
 
 
@@ -2648,18 +2742,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
 
-    // ******* this is for Change Task Component And Service Component ************
 
-    const ChangeComponentStatus = (e: any, Type: any) => {
-        if (Type == "Component") {
-            setServicesTaskCheck(false);
-            setComponentTaskCheck(true);
-        }
-        if (Type == "Service") {
-            setServicesTaskCheck(true);
-            setComponentTaskCheck(false);
-        }
-    }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3364,8 +3447,9 @@ const EditTaskPopup = (Items: any) => {
                                                         <>
                                                             <input type="text"
                                                                 className="form-control"
-                                                                id="{{PortfoliosID}}" autoComplete="off"
-
+                                                                value={SearchedServiceCompnentKey}
+                                                                onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
+                                                                placeholder="Select Service / Component And Search Here"
                                                             />
                                                         </>
                                                     }
@@ -3416,6 +3500,19 @@ const EditTaskPopup = (Items: any) => {
 
                                                     </span>
                                                 </div>
+                                                {SearchedServiceCompnentData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="list-group">
+                                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                                return (
+                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
+                                                                        <a>{Item.NewLeble}</a>
+                                                                    </li>
+                                                                )
+                                                            }
+                                                            )}
+                                                        </ul>
+                                                    </div>) : null}
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Categories
@@ -3919,7 +4016,7 @@ const EditTaskPopup = (Items: any) => {
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage <= 15 && EditData.Mileage >= 0 ? true : false} type="radio"
+                                                                checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
                                                                 defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
                                                             />
@@ -3927,7 +4024,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage <= 60 && EditData.Mileage >= 15 ? true : false} type="radio"
+                                                                checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
                                                                 defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
                                                             />
@@ -3935,7 +4032,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage <= 240 && EditData.Mileage >= 60 ? true : false} type="radio"
+                                                                checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
                                                                 defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
                                                             />
@@ -5029,7 +5126,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col mt-2">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">Task Users</label>
+                                                                <label className="form-label full-width  mx-2">Working Member</label>
                                                                 {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                                     return (
                                                                         <div className="TaskUsers" key={index}>

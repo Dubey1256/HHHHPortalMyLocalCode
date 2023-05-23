@@ -26,7 +26,8 @@ export interface ICommentCardProps {
   listName?: string;
   itemID?: number;
   Context?: any;
-  AllListId?:any
+  AllListId?:any;
+  
 }
 const sp = spfi();
 
@@ -45,6 +46,7 @@ export interface ICommentCardState {
   editorValue: string;
   editorChangeValue: string;
   mailReply:any;
+  postButtonHide:boolean;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -69,6 +71,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       AllCommentModal: false,
       mentionValue: '',
       mailReply:{isMailReply:false,Index:null},
+      postButtonHide:false,
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -244,6 +247,9 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    this.setState({
+      postButtonHide:true
+    })
     console.log("this is post comment function")
     console.log(this.state.Result["Comments"])
     commentlength=commentlength+1;
@@ -263,17 +269,17 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
       if (this.state.Result["Comments"] != undefined) {
       
-        if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
-          if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
-            this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
-          }else{
-            this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
-            this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
-          }
+        // if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+        //   if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }else{
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }
       
-        }else{
+        // }else{
           this.state.Result["Comments"].push(temp);
-        }
+        // }
       
       }
       else {
@@ -299,11 +305,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         updateComment: true
       }, () => this.GetEmailObjects());
-
+       
       this.setState({
         updateComment: true,
         CommenttoPost: '',
-        mentionValue: ''
+        mentionValue: '',
+        mailReply:{isMailReply:false,index:null},
+        postButtonHide:false
       });
     } else {
       alert('Please input some text.')
@@ -702,9 +710,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div>
               <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
            
+              {this.state.postButtonHide?
+              <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
+              Post
+            </button>:
               <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
-                Post
-              </button>
+              Post
+            </button>}
+              
             </div>
 
             <div className="clearfix"></div>
@@ -747,7 +760,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                         </div>
-                        {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
                           return(
                             <li className="media  p-1 my-1">
                             <div className="media-bodyy">
@@ -761,7 +774,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                                   />
                                 </span>
                                 {replyerData.Created}</span>
-                              {/* <div className="d-flex ml-auto media-icons ">
+                              <div className="d-flex ml-auto media-icons ">
                                 <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
                                 <a  onClick={() => this.openEditModal(replyerData, i)}>
                               
@@ -772,7 +785,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               
                                   <span className='svg__iconbox svg__icon--trash'></span>
                                 </a>
-                              </div> */}
+                              </div>
                             </div>
   
                             <div className="media-text">
@@ -783,7 +796,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
                           </li>
                           )
-                        })}
+                        })} */}
                       </li>
                     })}
                   </ul>
