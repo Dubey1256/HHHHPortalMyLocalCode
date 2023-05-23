@@ -61,6 +61,7 @@ const TaskDashboard = (props: any) => {
     const [AllEmailTasks, setAllEmailTasks] = React.useState([]);
     const [UserEmailTasks, setUserEmailTasks] = React.useState([]);
     const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
+    const [AllPriorityTasks, setAllPriorityTasks] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
@@ -338,6 +339,7 @@ const TaskDashboard = (props: any) => {
         let AllImmediates: any = [];
         let AllEmails: any = [];
         let AllBottleNeckTasks: any = [];
+        let AllPriority:any=[];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
@@ -451,6 +453,9 @@ const TaskDashboard = (props: any) => {
                                     if (task.ClientActivityJson != undefined) {
                                         SharewebTask.push(task)
                                     }
+                                    if(parseInt(task.Priority_x0020_Rank)>=8&&parseInt(task.Priority_x0020_Rank)<=10){
+                                        AllPriority.push(task);
+                                    }
                                     AllSiteTasks.push(task)
                                 });
                                 arraycount++;
@@ -459,6 +464,7 @@ const TaskDashboard = (props: any) => {
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
                             backupTaskArray.assignedApproverTasks = approverTask;
+                            setAllPriorityTasks(sortOnCreated(AllPriority))
                             setAllImmediateTasks(sortOnCreated(AllImmediates));
                             setAssignedApproverTasks(sortOnCreated(approverTask));
                             setAllEmailTasks(sortOnCreated(AllEmails));
@@ -496,7 +502,7 @@ const TaskDashboard = (props: any) => {
         }
     };
     const sortOnCreated = (Array: any) => {
-        Array.sort((a:any, b:any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+        Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
         return Array;
     }
     const getChilds1 = function (item: any, array: any) {
@@ -1019,6 +1025,35 @@ const TaskDashboard = (props: any) => {
         useExpanded,
         usePagination
     );
+
+    const {
+        getTableProps: getTablePropsAllPriority,
+        getTableBodyProps: getTableBodyPropsAllPriority,
+        headerGroups: headerGroupsAllPriority,
+        page: pageAllPriority,
+        prepareRow: prepareRowAllPriority,
+        gotoPage: gotoPageAllPriority,
+        setPageSize: setPageSizeAllPriority,
+        canPreviousPage: canPreviousPageAllPriority,
+        canNextPage: canNextPageAllPriority,
+        pageOptions: pageOptionsAllPriority,
+        pageCount: pageCountAllPriority,
+        nextPage: nextPageAllPriority,
+        previousPage: previousPageAllPriority,
+        state: { pageIndex: pageIndexAllPriority, pageSize: pageSizeAllPriority },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllPriorityTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 10 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
     const {
         getTableProps: getTablePropsImmediate,
         getTableBodyProps: getTableBodyPropsImmediate,
@@ -1759,6 +1794,9 @@ const TaskDashboard = (props: any) => {
     const onChangeInSelectAll = (event: any) => {
         setPageSizeAll(Number(event.target.value));
     };
+    const onChangeInSelectAllPriority = (event: any) => {
+        setPageSizeAllPriority(Number(event.target.value));
+    };
     const onChangeInSelectApprover = (event: any) => {
         setPageSizeApprover(Number(event.target.value));
     };
@@ -1853,23 +1891,26 @@ const TaskDashboard = (props: any) => {
                             }
                             <nav className="nav__item">
                                 <ul className="nav__list text-center" >
-                                    <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
-                                        Email-Notification
-                                    </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllImmediateTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllImmediateTasks') }}>
                                         Immediate
                                     </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
+                                        Email-Notification
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllPriorityTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllPriorityTasks') }}>
+                                        Priority Tasks
+                                    </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allApproverView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allApproverView') }}>
                                         Approver Tasks
-                                    </li>
-                                    <li id="DefaultViewSelectId" className={currentView == 'sharewebTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
-                                        Shareweb Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allBottlenecks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
                                         All Bottlenecks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allTasksView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
                                         All Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'sharewebTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
+                                        Shareweb Tasks
                                     </li>
 
                                 </ul>
@@ -2689,6 +2730,123 @@ const TaskDashboard = (props: any) => {
 
                                         : <div className='text-center full-width'>
                                             <span>No Approver Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllPriorityTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Priority Tasks - ${AllPriorityTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllPriorityTasks?.length > 0 ?
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsAllPriority()}>
+                                            <thead className="fixed-Header">
+                                                {headerGroupsAllPriority?.map((headerGroup: any) => (
+                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                        {headerGroup.headers.map((column: any) => (
+                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                <span
+                                                                    class="Table-SortingIcon"
+                                                                    style={{ marginTop: "-6px" }}
+                                                                    {...column.getSortByToggleProps()}
+                                                                >
+                                                                    {column.render("Header")}
+                                                                    {generateSortingIndicator(column)}
+                                                                </span>
+                                                                <Filter column={column} />
+                                                            </th>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </thead>
+                                            {pageAllPriority?.length > 0 ?
+                                                <tbody {...getTableBodyPropsAllPriority}>
+                                                    {pageAllPriority?.map((row: any) => {
+                                                        prepareRowAllPriority(row);
+                                                        return (
+                                                            <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> :
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+                                        </Table>
+                                            <nav>
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllPriority()} disabled={!canPreviousPageAllPriority}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllPriority + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllPriority()} disabled={!canNextPageAllPriority}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllPriority}
+                                                            onChange={onChangeInSelectAllPriority}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllPriority) => (
+                                                                <option key={pageSizeAllPriority} value={pageSizeAllPriority}>
+                                                                    Show {pageSizeAllPriority}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col>
+                                                </Pagination>
+                                            </nav>
+                                        </>
+
+                                        : <div className='text-center full-width'>
+                                            <span>No Priority Tasks Available</span>
                                         </div>}
                                 </div>
                             </div>
