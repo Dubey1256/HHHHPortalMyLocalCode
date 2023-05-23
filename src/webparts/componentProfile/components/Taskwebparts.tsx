@@ -731,6 +731,9 @@ export default function ComponentTable({ props, NextProp }: any) {
       NextProp.SmartMetadataListID,
       select
     );
+
+
+    
     console.log(smartmetaDetails);
     setMetadata(smartmetaDetails);
     map(smartmetaDetails, (newtest) => {
@@ -796,6 +799,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         "((Item_x0020_Type eq 'Component') or (Item_x0020_Type eq 'SubComponent') or (Item_x0020_Type eq 'Feature')) and ((Portfolio_x0020_Type eq 'Component'))";
 
     let componentDetails: any = [];
+    let componentDetails1: any = [];
     var select =
       "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,PortfolioStructureID,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Editor/Title,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebTaskType/Title,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=Parent,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
       filt +
@@ -806,9 +810,11 @@ export default function ComponentTable({ props, NextProp }: any) {
       NextProp.MasterTaskListID,
       select
     );
-    componentDetails=componentDetails?.map((items:any) =>{
-      items.Created = Moment(items.Created).format("DD/MM/YYYY")})
     console.log(componentDetails);
+    //  componentDetails?.map((items:any) =>{
+    //   items.Created = Moment(items?.Created).format("DD/MM/YYYY")
+    
+    // })
     var array: any = [];
     if (
       props.Item_x0020_Type != undefined &&
@@ -1087,11 +1093,11 @@ export default function ComponentTable({ props, NextProp }: any) {
       result.CreatedDateImg = [];
       result.childsLength = 0;
       result.TitleNew = result.Title;
-      result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
+      // result.DueDate = Moment(result.DueDate).format("DD/MM/YYYY");
       result.flag = true;
-      if (result.DueDate == "Invalid date" || "") {
-        result.DueDate = result.DueDate.replaceAll("Invalid date", "");
-      }
+      // if (result.DueDate == "Invalid date" || "") {
+      //   result.DueDate = result.DueDate.replaceAll("Invalid date", "");
+      // }
       result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
 
       if (result.Short_x0020_Description_x0020_On != undefined) {
@@ -3378,7 +3384,6 @@ export default function ComponentTable({ props, NextProp }: any) {
 
   ///react table start function//////
 
-  
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
@@ -3686,6 +3691,9 @@ export default function ComponentTable({ props, NextProp }: any) {
       } else {
         onChangeHandler(itrm, props, eTarget);
       }
+    }else{
+      setcheckData({})
+      setShowTeamMemberOnCheck(false)
     }
 
   }
