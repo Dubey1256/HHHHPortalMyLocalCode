@@ -64,7 +64,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             TaskUserListId: Dynamic.TaskUsertListID
         }
         GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-        if (GlobalArray.GroupByData != undefined && GlobalArray.GroupByData.length > 0) {
+        if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
             setData(GlobalArray.GroupByData);
             LinkedServicesBackupArray = GlobalArray.GroupByData;
         }
