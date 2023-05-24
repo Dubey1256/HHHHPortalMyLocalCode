@@ -89,11 +89,10 @@ export default class App extends React.Component<ITeamConfigurationProps> {
                     ArrayImage.push(data)
                 }
             }
-
         })
         let elem = document.createElement("img");
         elem.innerHTML = edData;
-        if (checkImage == false) {
+        if (ArrayImage != undefined && ArrayImage.length > 0) {
             this.imageArrayUpdateFunction(ArrayImage);
         }
 
@@ -102,7 +101,9 @@ export default class App extends React.Component<ITeamConfigurationProps> {
     private imageArrayUpdateFunction = (ImageData: any) => {
         let tempArray = ImageData.toString();
         let data1 = tempArray.split('"')
-        this.props.callBack(data1[1]);
+        if (data1 != undefined && data1.length > 0) {
+            this.props.callBack(data1[1]);
+        }
     }
 
 }
