@@ -11,17 +11,17 @@ import { HiOutlineArrowTopRightOnSquare } from 'react-icons/hi2';
 
 const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundComment, setBackgroundComment] = useState('');
-    const [EditCommentPanel, setEditCommentPanel] = useState(false)
-    const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments)
-    const [uploadImageContainer, setuploadImageContainer] = useState(false)
+    const [EditCommentPanel, setEditCommentPanel] = useState(false);
+    const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : []);
+    const [uploadImageContainer, setuploadImageContainer] = useState(false);
+    const [UpdateCommentData, setUpdateCommentData] = useState('');
+    const [CurrentIndex, setCurrentIndex] = useState<any>();
+
     const currentUserData: any = Props.CurrentUser;
-    var CommentedData: any = Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : [];
     var BackgroundImageData: any = Props.TaskData?.BackgroundImages != undefined ? Props.TaskData?.BackgroundImages : [];
     const Context = Props.Context;
     const siteUrls = Props.siteUrls;
-
     // This is used for Upload Background Images section and callback functions
-
     const FlorarImageReplaceComponentCallBack = (dt: any) => {
         let DataObject: any = {
             data_url: dt,
@@ -29,9 +29,7 @@ const BackgroundCommentComponent = (Props: any) => {
         }
         let ReplaceImageData = DataObject;
     }
-
     // This is used for Adding Background Comments 
-
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
             let CurrentUserData: any
@@ -45,12 +43,12 @@ const BackgroundCommentComponent = (Props: any) => {
                 Body: BackgroundComment,
                 AuthorImage: CurrentUserData.Item_x0020_Cover != null ? CurrentUserData.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                 AuthorName: CurrentUserData.Title != undefined ? CurrentUserData.Title : Context.pageContext._user.displayName,
-                ID: (CommentedData != undefined ? CommentedData?.length + 1 : 0)
+                ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
-            CommentedData.push(CommentJSON);
-            setBackgroundComments(CommentedData);
+            BackgroundComments.push(CommentJSON);
+            setBackgroundComments(BackgroundComments);
             setBackgroundComment("");
-            updateCommentFunction(CommentedData);
+            updateCommentFunction(BackgroundComments);
         } else {
             alert("Please Enter Your Comment First!")
         }
@@ -58,8 +56,8 @@ const BackgroundCommentComponent = (Props: any) => {
     // This is used for Deleteing Background Comments 
     const DeleteBackgroundCommentFunction = (ID: any, Body: any) => {
         let tempArray: any = [];
-        if (CommentedData != undefined && CommentedData.length > 0) {
-            CommentedData.map((CommentData: any) => {
+        if (BackgroundComments != undefined && BackgroundComments.length > 0) {
+            BackgroundComments.map((CommentData: any) => {
                 if (ID != undefined) {
                     if (CommentData.ID != ID) {
                         tempArray.push(CommentData)
@@ -71,20 +69,17 @@ const BackgroundCommentComponent = (Props: any) => {
                 }
             })
         }
-        CommentedData = tempArray;
+
         setBackgroundComments(tempArray);
         updateCommentFunction(tempArray);
         tempArray = [];
     }
-
-
     // This is common function for  Update Commnent on Backend Side 
-
     const updateCommentFunction = async (UpdateData: any) => {
         try {
             let web = new Web(siteUrls);
             await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update({
-                OffshoreComments: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : [{}]
+                OffshoreComments: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
             }).then(() => {
                 console.log("Background Comment Updated !!!")
             })
@@ -92,11 +87,22 @@ const BackgroundCommentComponent = (Props: any) => {
             console.log("Error : ", error.message)
         }
     }
-
     const editPostCloseFunction = () => {
         setEditCommentPanel(false);
     }
-
+    const openEditModal = (Index: any, Body: any) => {
+        setEditCommentPanel(true);
+        setUpdateCommentData(Body);
+        setCurrentIndex(Index);
+    }
+    const ChangeCommentFunction = () => {
+        if (BackgroundComments != undefined && BackgroundComments.length > 0) {
+            BackgroundComments[CurrentIndex].Body = UpdateCommentData;
+            updateCommentFunction(BackgroundComments);
+            setUpdateCommentData("");
+        }
+        setEditCommentPanel(false);
+    }
     return (
         <div className="d-flex justify-content-between">
             <div className="Background_Image col-4">
@@ -156,13 +162,13 @@ const BackgroundCommentComponent = (Props: any) => {
                     {BackgroundImageData != undefined && BackgroundImageData.length > 0 ?
                         null :
                         <span className="hreflink ms-0 ps-0 siteColor" onClick={() => setuploadImageContainer(true)}>Add New Image</span>
-                        
+
                     }
                 </div>
             </div>
             <div className="Background_Comment col-8 full-width ps-3">
                 <p className="siteColor mb-0">Comments</p>
-                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any) => {
+                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index:any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
@@ -176,14 +182,14 @@ const BackgroundCommentComponent = (Props: any) => {
                                     </span>
                                     <span>
                                         <a className="ps-1"
-                                            // onClick={() => openEditModal(dataItem.Title,)}
-                                            onClick={() => alert("We are working on it. This feature will be live soon ....")}
+                                            onClick={() => openEditModal(Index, dataItem.Body)}
+                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                         </a>
                                         <a className="ps-1"
-                                            // onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)}
-                                            onClick={() => alert("We are working on it. This feature will be live soon ....")}
+                                            onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)}
+                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/cross.svg')} width="25">
                                             </img>
@@ -224,13 +230,18 @@ const BackgroundCommentComponent = (Props: any) => {
                 >
                     <div className="parentDiv">
                         <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
-                            <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e)} style={{ width: '100%', marginLeft: '3px' }}>
+                            <textarea
+                                id="txtUpdateComment"
+                                rows={6}
+                                defaultValue={UpdateCommentData}
+                                onChange={(e) => setUpdateCommentData(e.target.value)}
+                                style={{ width: '100%', marginLeft: '3px' }}
+                            >
                             </textarea>
                         </div>
-                        <footer className="d-flex justify-content-between ms-3 mx-2">
-
+                        <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
                             <div>
-                                <button className="btn btnPrimary" onClick={editPostCloseFunction}>
+                                <button className="btn btnPrimary" onClick={ChangeCommentFunction}>
                                     Save
                                 </button>
                                 <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
