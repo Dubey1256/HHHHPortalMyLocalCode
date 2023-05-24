@@ -47,6 +47,8 @@ var Backupdata: any = [];
 var BackupCat: any = "";
 let web:any='';
 let RequireData:any={};
+
+var CheckCategory: any = [];
 function EditInstitution({item,SelectD,Calls}: any) {
   // Id:any
    
@@ -206,7 +208,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
     });
   };
   // var ConvertLocalTOServerDate = function (LocalDateTime: any, dtformat: any) {
-  //     if (dtformat == undefined || dtformat == '') dtformat = "DD/MM/YYYY";
+  //     if (dtformat == undefined || dtformat == '') dtformat = "MM-DD-YYYY";
 
   //     // below logic works fine in all condition
   //     if (LocalDateTime != '') {
@@ -413,18 +415,18 @@ function EditInstitution({item,SelectD,Calls}: any) {
     $.each(Tasks, function (index: any, item: any) {
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
-        item.TaskDueDate = moment(item.DueDate).format("DD/MM/YYYY");
-      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'DD/MM/YYYY');
+        item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
+      // item.TaskDueDate = ConvertLocalTOServerDate(item.DueDate, 'MM-DD-YYYY');
       item.FilteredModifiedDate = item.Modified;
       item.DateModified = new Date(item.Modified);
       item.DateCreatedNew = new Date(item.Created);
 
       item.DateCreated = item.CreatedDate = moment(item.Created).format(
-        "DD/MM/YYYY"
-      ); // ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY');
-      item.Creatednewdate = moment(item.Created).format("DD/MM/YYYY"); //ConvertLocalTOServerDate(item.Created, 'DD/MM/YYYY HH:mm');
-      // item.Modified = moment(item.Modified).format('DD/MM/YYYY');
-      //ConvertLocalTOServerDate(item.Modified, 'DD/MM/YYYY HH:mm');
+        "MM-DD-YYYY"
+      ); // ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY');
+      item.Creatednewdate = moment(item.Created).format("MM-DD-YYYY"); //ConvertLocalTOServerDate(item.Created, 'MM-DD-YYYY HH:mm');
+      // item.Modified = moment(item.Modified).format('MM-DD-YYYY');
+      //ConvertLocalTOServerDate(item.Modified, 'MM-DD-YYYY HH:mm');
       if (item.Priority_x0020_Rank == undefined && item.Priority != undefined) {
         switch (item.Priority) {
           case "(1) High":
@@ -504,7 +506,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       if (item.Task_x0020_Type == undefined)
         item.Task_x0020_Type = "Activity Tasks";
       if (item.DueDate != undefined) {
-        item.DueDate = moment(item.DueDate).format("DD/MM/YYYY");
+        item.DueDate = moment(item.DueDate).format("MM-DD-YYYY");
         // setDate(item.DueDate);
       }
       if (item.SharewebCategories != null) {
@@ -529,7 +531,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         setLinkedComponentData(Rr);
       }
       // if (item.StartDate != undefined) {
-      //   item.StartDate = moment(item.StartDate).format("DD/MM/YYYY");
+      //   item.StartDate = moment(item.StartDate).format("MM-DD-YYYY");
       //   //setStartdate(item.StartDate);
       // }
       if (item.component_x0020_link != null) {
@@ -537,7 +539,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         //setStartdate(item.StartDate);
       }
       if (item.CompletedDate != undefined) {
-        item.CompletedDate = moment(item.CompletedDate).format("DD/MM/YYYY");
+        item.CompletedDate = moment(item.CompletedDate).format("MM-DD-YYYY");
         // item.CompletedDate = item.CompletedDate.toString();
         // setCompletiondatenew(item.CompletedDate);
       }
@@ -616,6 +618,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const GetSmartmetadata = async () => {
    
     let smartmetaDetails = [];
+    let categoryhh: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
@@ -632,8 +635,15 @@ function EditInstitution({item,SelectD,Calls}: any) {
       smartmetaDetails.forEach(function (val: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
+        } if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title == "Email Notification" || val.Title == "Approval" || val.Title == "Immediate")) {
+          categoryhh.push(val);
         }
       });
+      CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+
+        return array.indexOf(val) == id;
+
+      })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -1007,14 +1017,29 @@ function EditInstitution({item,SelectD,Calls}: any) {
         }
       });
     }
+    CheckCategory?.forEach((itemm: any, index: any) => {
+      if (itemm.isChecked == true) {
+        array2.push(itemm)
+      }
+    })
+    if(array2 != undefined && array2.length>0 ){
+      array2.map((item:any)=>{
+         if(item.isselected == true || item.isChecked == true){
+          NewArray.push(item)
+         }
+      })
+    //  NewArray = array2
+    }
     if (NewArray != undefined && NewArray.length > 0) {
-      CategoriesData=[]
+      CheckCategory = []
       NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
+        CheckCategory.push(NeitemA);
       });
+    } else {
+      CheckCategory = []
     }
     var categoriesItem = "";
-    CategoriesData.map((category) => {
+    CheckCategory.map((category:any) => {
       if (category.Title != undefined) {
         categoriesItem =
           categoriesItem == ""
@@ -1023,11 +1048,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
     });
     var CategoryID: any = [];
-    CategoriesData.map((category) => {
+    CheckCategory.map((category:any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
     });
+   
     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
       linkedComponentData?.map((com: any) => {
         if (
@@ -1250,18 +1276,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
+  
+  
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1422,13 +1438,36 @@ function EditInstitution({item,SelectD,Calls}: any) {
     }
   };
   var NewArray: any = [];
-  const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
-      setcheckedCat(false);
-      if (type == catTitle.Title) {
-        NewArray.push(catTitle);
-      }
-    });
+  var array2:any=[];
+  const checkCat = (type: any,e:any) => {
+
+    const { checked } = e.target;
+    if(checked == true){
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
+    }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
+
+
   };
   return (
     <>
@@ -1794,7 +1833,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Start Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-DD-MM")}
+                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
                                                         })}
@@ -1808,7 +1847,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               Due Date
                             </label>
                             <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-DD-MM") : ''}
+                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
                                                         })}
@@ -2236,13 +2275,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     <div className="form-check">
                                       <input
                                         className="form-check-input"
-                                        defaultChecked={
-                                          BackupCat == type.Id
-                                            ? checkedCat
-                                            : false
-                                        }
+                                        defaultChecked={type.isChecked}
                                         type="checkbox"
-                                        onClick={() => checkCat(type.Title)}
+                                        onClick={(e:any) => checkCat(type,e)}
                                       />
                                       <label className="form-check-label">
                                         {type.Title}
@@ -2874,10 +2909,10 @@ function EditInstitution({item,SelectD,Calls}: any) {
                 <div>
                   <div className="text-left">
                     Created{" "}
-                    <span ng-bind="EditData?.Created | date:'dd/MM/yyyy'">
+                    <span ng-bind="EditData?.Created | date:'MM-DD-YYYY'">
                       {" "}
                       {EditData?.Created != null
-                        ? moment(EditData?.Created).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData?.Created).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by
@@ -2891,7 +2926,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     Last modified{" "}
                     <span>
                       {EditData?.Modified != null
-                        ? moment(EditData?.Modified).format("DD/MM/YYYY MM:SS")
+                        ? moment(EditData?.Modified).format("MM-DD-YYYY MM:SS")
                         : ""}
                     </span>{" "}
                     by{" "}

@@ -6,7 +6,7 @@ import * as moment from "moment";
 // import './style.css';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment-timezone";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
@@ -27,10 +27,10 @@ import {
 // import 'froala-editor/css/froala_editor.pkgd.min.css';
 // import 'froala-editor/css/froala_style.min.css';
 // import FroalaEditorComponent from 'react-froala-wysiwyg';
-import ReactQuill from "react-quill";
+import * as ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
-import parseRecurrentEvent from './EventRecurrenceControls/service/parseRecurrentEvent';
+import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
 interface IEventData {
   Event_x002d_Type?: string;
   Location?: string;
@@ -39,7 +39,7 @@ interface IEventData {
   ID?: number;
   title?: string;
   Description?: any;
-  location?: string;  
+  location?: string;
   EventDate: Date | string;
   EndDate: Date | string;
   color?: string;
@@ -49,7 +49,7 @@ interface IEventData {
   ownerName?: string;
   fAllDayEvent?: boolean;
   attendes?: number[];
-  geolocation?: { Longitude: number, Latitude: number };
+  geolocation?: { Longitude: number; Latitude: number };
   Category?: string;
   Duration?: number;
   RecurrenceData?: string;
@@ -61,14 +61,14 @@ interface IEventData {
   Author?: any;
   Editor?: any;
 
-  iD?: number; 
+  iD?: number;
   start?: Date | String;
   end?: Date | String;
   desc?: any;
   alldayevent?: boolean;
-  eventType?: string,
-  created?: string,
-  modify?: string
+  eventType?: string;
+  created?: string;
+  modify?: string;
 }
 //import TimePicker from 'react-time-picker';
 //import { format } from "date-fns";
@@ -87,8 +87,7 @@ let startTime: any,
 //let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
 
-const App = (props:any) => {
-
+const App = (props: any) => {
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];
@@ -114,28 +113,35 @@ const App = (props:any) => {
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
 
   const [showRecurrence, setshowRecurrence] = React.useState(false);
-  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] = React.useState(false);
+  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
+    React.useState(false);
   const [newRecurrenceEvent, setNewRecurrenceEvent] = React.useState(false);
   const [editRecurrenceEvent, setEditRecurrenceEvent] = React.useState(false);
-  const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] = React.useState(null);
+  const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] =
+    React.useState(null);
   const [recurrenceData, setRecurrenceData] = React.useState(null);
   const returnRecurrenceInfo = (startDate: Date, recurrenceData: string) => {
-    const returnedRecurrenceInfo = { recurrenceData: recurrenceData, eventDate: startDate, endDate: moment().add(20, 'years').toDate() };
-    setReturnedRecurrenceInfo(returnedRecurrenceInfo)
+    const returnedRecurrenceInfo = {
+      recurrenceData: recurrenceData,
+      eventDate: startDate,
+      endDate: moment().add(20, "years").toDate(),
+    };
+    setReturnedRecurrenceInfo(returnedRecurrenceInfo);
     console.log(returnedRecurrenceInfo);
-  }
-  const handleRecurrenceCheck = (ev: React.FormEvent<HTMLElement | HTMLInputElement>, recurChecked: boolean) => {
+  };
+  const handleRecurrenceCheck = (
+    ev: React.FormEvent<HTMLElement | HTMLInputElement>,
+    recurChecked: boolean
+  ) => {
     ev.preventDefault();
     setShowRecurrenceSeriesInfo(recurChecked);
     setNewRecurrenceEvent(recurChecked);
-  }
+  };
 
   const getEvents = async (): Promise<IEventData[]> => {
-
     let events: IEventData[] = [];
-    
-    try {     
 
+    try {
       const web = new Web(props.props.siteUrl);
       /*const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).renderListDataAsStream(
         {
@@ -146,91 +152,140 @@ const App = (props:any) => {
         }
       );*/
 
-      const results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type").expand("Author,Editor").top(500).getAll();
-      
+      const results = await web.lists
+        .getById(props.props.SmalsusLeaveCalendar)
+        .items.select(
+          "RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type"
+        )
+        .expand("Author,Editor")
+        .top(500)
+        .getAll();
+
       const timeZoneOffset: number = await getTimeZoneOffset();
 
-      if (results && results.length > 0) {        
-        
-        let event: any = '';
-        const mapEvents = async () : Promise<boolean> => {
-            for (event of results) {
-          const eventDate = getLocalTime(event.EventDate, timeZoneOffset);
-          const endDate = getLocalTime(event.EndDate, timeZoneOffset);
-          
-          const isAllDayEvent: boolean = event["fAllDayEvent.value"] === "1";
+      if (results && results.length > 0) {
+        let event: any = "";
+        const mapEvents = async (): Promise<boolean> => {
+          for (event of results) {
+            const eventDate = getLocalTime(event.EventDate, timeZoneOffset);
+            const endDate = getLocalTime(event.EndDate, timeZoneOffset);
 
-          events.push({
-            Id: event.ID,
-            ID: event.ID,
-            EventType: event.EventType,
-            title: event.Title ? await deCodeHtmlEntities(event.Title) : "",
-            Description: event.Description,
-            EventDate: isAllDayEvent ? new Date(event.EventDate.slice(0, -1)) : new Date(eventDate),
-            EndDate: isAllDayEvent ? new Date(event.EndDate.slice(0, -1)) : new Date(endDate),
-            location: event.Location,                
-            fAllDayEvent: isAllDayEvent,                
-            Duration: event.Duration,
-            RecurrenceData: event.RecurrenceData ? await deCodeHtmlEntities(event.RecurrenceData) : "",
-            fRecurrence: event.fRecurrence,
-            RecurrenceID: event.RecurrenceID ? event.RecurrenceID : undefined,
-            MasterSeriesItemID: event.MasterSeriesItemID,
-            UID: event.UID ? event.UID.replace("{", "").replace("}", "") : "",
-            Author: event.Author,
-            Editor: event.Editor                
-          });
-        }
-          
-        return true;
+            const isAllDayEvent: boolean = event["fAllDayEvent.value"] === "1";
+
+            events.push({
+              Id: event.ID,
+              ID: event.ID,
+              EventType: event.EventType,
+              title: event.Title ? await deCodeHtmlEntities(event.Title) : "",
+              Description: event.Description,
+              EventDate: isAllDayEvent
+                ? new Date(event.EventDate.slice(0, -1))
+                : new Date(eventDate),
+              EndDate: isAllDayEvent
+                ? new Date(event.EndDate.slice(0, -1))
+                : new Date(endDate),
+              location: event.Location,
+              fAllDayEvent: isAllDayEvent,
+              Duration: event.Duration,
+              RecurrenceData: event.RecurrenceData
+                ? await deCodeHtmlEntities(event.RecurrenceData)
+                : "",
+              fRecurrence: event.fRecurrence,
+              RecurrenceID: event.RecurrenceID ? event.RecurrenceID : undefined,
+              MasterSeriesItemID: event.MasterSeriesItemID,
+              UID: event.UID ? event.UID.replace("{", "").replace("}", "") : "",
+              Author: event.Author,
+              Editor: event.Editor,
+            });
+          }
+
+          return true;
         };
         //Checks to see if there are any results saved in local storage
 
         //await mapEvents();
-        
-        if(window.localStorage.getItem("eventResult")){
-          //if there is a local version - compares it to the current version 
-          if(window.localStorage.getItem("eventResult") === JSON.stringify(results)){
+
+        if (window.localStorage.getItem("eventResult")) {
+          //if there is a local version - compares it to the current version
+          if (
+            window.localStorage.getItem("eventResult") ===
+            JSON.stringify(results)
+          ) {
             //No update needed use current savedEvents
-            events = JSON.parse(window.localStorage.getItem("calendarEventsWithLocalTime"));
-          }else{
+            events = JSON.parse(
+              window.localStorage.getItem("calendarEventsWithLocalTime")
+            );
+          } else {
             //update local storage
             window.localStorage.setItem("eventResult", JSON.stringify(results));
             //when they are not equal then we loop through the results and maps them to IEventData
             /* tslint:disable:no-unused-expression */
-            await mapEvents() ? window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events)) : null;           
+            (await mapEvents())
+              ? window.localStorage.setItem(
+                  "calendarEventsWithLocalTime",
+                  JSON.stringify(events)
+                )
+              : null;
           }
-        }else{
+        } else {
           //if there is no local storage of the events we create them
           //window.localStorage.setItem("eventResult", JSON.stringify(results));
           //we also needs to map through the events the first time and save the mapped version to local storage
-          await mapEvents() ? window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events)) : null;           
+          (await mapEvents())
+            ? window.localStorage.setItem(
+                "calendarEventsWithLocalTime",
+                JSON.stringify(events)
+              )
+            : null;
         }
       }
-      
+
       let parseEvt: parseRecurrentEvent = new parseRecurrentEvent();
       events = parseEvt.parseEvents(events, null, null, timeZoneOffset);
-       
+
       // Return Data
       return events;
-      
     } catch (error) {
       console.dir(error);
       return Promise.reject(error);
     }
-  }
+  };
 
   const getEvent = async (eventId: number): Promise<IEventData> => {
-
     let returnEvent: any = undefined;
 
     const web = new Web(props.props.siteUrl);
 
-    const event = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.usingCaching().getById(eventId)
-        .select("RecurrenceID", "MasterSeriesItemID", "Id", "ID", "ParticipantsPickerId", "EventType", "Title", "Description", "EventDate", "EndDate", "Location", "Author/SipAddress", "Author/Title", "Geolocation", "fAllDayEvent", "fRecurrence", "RecurrenceData", "RecurrenceData", "Duration", "Category", "UID")
-        .expand("Author")
-        .get();
+    const event = await web.lists
+      .getById(props.props.SmalsusLeaveCalendar)
+      .items.usingCaching()
+      .getById(eventId)
+      .select(
+        "RecurrenceID",
+        "MasterSeriesItemID",
+        "Id",
+        "ID",
+        "ParticipantsPickerId",
+        "EventType",
+        "Title",
+        "Description",
+        "EventDate",
+        "EndDate",
+        "Location",
+        "Author/SipAddress",
+        "Author/Title",
+        "Geolocation",
+        "fAllDayEvent",
+        "fRecurrence",
+        "RecurrenceData",
+        "RecurrenceData",
+        "Duration",
+        "Category",
+        "UID"
+      )
+      .expand("Author")
+      .get();
 
-    
     const eventDate = await getLocalDateTime(event.EventDate);
     const endDate = await getLocalDateTime(event.EndDate);
 
@@ -239,24 +294,25 @@ const App = (props:any) => {
       ID: event.ID,
       EventType: event.EventType,
       title: await deCodeHtmlEntities(event.Title),
-      Description: event.Description ? event.Description : '',
+      Description: event.Description ? event.Description : "",
       EventDate: new Date(eventDate),
       EndDate: new Date(endDate),
-      location: event.Location,      
+      location: event.Location,
       fAllDayEvent: event.fAllDayEvent,
       Category: event.Category,
       Duration: event.Duration,
       UID: event.UID,
-      RecurrenceData: event.RecurrenceData ? await deCodeHtmlEntities(event.RecurrenceData) : "",
+      RecurrenceData: event.RecurrenceData
+        ? await deCodeHtmlEntities(event.RecurrenceData)
+        : "",
       fRecurrence: event.fRecurrence,
       RecurrenceID: event.RecurrenceID,
       MasterSeriesItemID: event.MasterSeriesItemID,
     };
 
     return returnEvent;
+  };
 
-  }
- 
   const today: Date = new Date();
   const minDate: Date = today;
 
@@ -396,28 +452,30 @@ const App = (props:any) => {
 
   const getData = async () => {
     const events = await getEvents();
-      console.log(events);
-      const eventsFormatted: any[] = events.map(event=>({
-        iD: event.ID,
-        title: event.title,
-        start: event.EventDate,
-        end: event.EndDate,
-        alldayevent: event.fAllDayEvent,
-        desc: event.Description,
-        eventType: event.Event_x002d_Type,
-        created: event.Author.Title,
-        modify: event.Editor.Title,
-        MasterSeriesItemID: event.MasterSeriesItemID,
-        RecurrenceData: event.RecurrenceData,
-        RecurrenceID: event.RecurrenceID,
-        UID: event.UID,
-        fRecurrence: event.fRecurrence
-      }));
-      localArr = eventsFormatted;
-      setEvents(eventsFormatted);
-      return;
+    console.log(events);
+    const eventsFormatted: any[] = events.map((event) => ({
+      iD: event.ID,
+      title: event.title,
+      start: event.EventDate,
+      end: event.EndDate,
+      alldayevent: event.fAllDayEvent,
+      desc: event.Description,
+      eventType: event.Event_x002d_Type,
+      created: event.Author.Title,
+      modify: event.Editor.Title,
+      MasterSeriesItemID: event.MasterSeriesItemID,
+      RecurrenceData: event.RecurrenceData,
+      RecurrenceID: event.RecurrenceID,
+      UID: event.UID,
+      fRecurrence: event.fRecurrence,
+  
+    }));
+    // localArr = eventsFormatted;
+    // setEvents(eventsFormatted);
+    console.log(eventsFormatted,"dadd"  );
+    // return;
     let localcomp = [];
-    let startdate: any, enddate: any;
+    let startdate: any, enddate: any,createdAt:any;
     const web = new Web(props.props.siteUrl);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
@@ -427,7 +485,7 @@ const App = (props:any) => {
       .expand("Author", "Editor")
       .get()
       .then((dataaa: any[]) => {
-        //console.log("datata", dataaa);
+        console.log("datata", dataaa);
         compareData = dataaa;
         // dataaa.EventDate
         let localArray: any = [];
@@ -441,8 +499,8 @@ const App = (props:any) => {
           };
           let a = new Date(comp.start);
           let b = new Date(comp.end);
-         console.log("start", a, comp.iD);
-         console.log("end", b, comp.iD);
+          console.log("start", a, comp.iD);
+          console.log("end", b, comp.iD);
           localcomp.push(comp);
         });
 
@@ -452,6 +510,10 @@ const App = (props:any) => {
             startdate.setHours(startdate.getHours() - 12);
             startdate.setMinutes(startdate.getMinutes() - 30);
 
+            createdAt = new Date(item.Created)
+            createdAt.setHours(createdAt.getHours() - 12);
+            createdAt.setMinutes(createdAt.getMinutes() - 30);
+            
             enddate = new Date(item.EndDate);
             enddate.setHours(enddate.getHours() - 12);
             enddate.setMinutes(enddate.getMinutes() - 30);
@@ -488,114 +550,123 @@ const App = (props:any) => {
         });
         localArr = localArray;
         setEvents(localArray);
-        
       })
       .catch((error: any) => {
         //console.log(error);
       });
-      
   };
 
   const deleteElement = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this item?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
     if (confirmed) {
       let web = new Web(props.props.siteUrl);
 
-    await web.lists
-      .getById(props.props.SmalsusLeaveCalendar)
-      .items.getById(eventPass.iD)
-      .delete()
+      await web.lists
+        .getById(props.props.SmalsusLeaveCalendar)
+        .items.getById(eventPass.iD)
+        .delete()
 
-      .then((i: any) => {
-        //console.log(i);
-        void getData();
-        closem();
-        void getData();
-      });
+        .then((i: any) => {
+          //console.log(i);
+          void getData();
+          closem();
+          void getData();
+        });
     }
   };
 
   const saveEvent = async () => {
-    if(newRecurrenceEvent) {
-      await saveRecurrenceEvent();
-      void getData();
-      closem();
-      setIsChecked(false);
-      setSelectedTime(selectedTime);
-      setSelectedTimeEnd(selectedTimeEnd);
-      return;
-    }
-    const newEvent = {
-      title: inputValueName,
-      start: startDate,
-      end: endDate,
-      reason: inputValueReason,
-      type: type,
-      loc: location,
-    };
-    
-    //console.log("postEvent", allDay);
-
-    //  // const dateObjstart = new Date(newEvent.start);
-    //   //const formattedDatestart = dateObjstart.toLocaleDateString("en-IN");
-    //   //ConvertLocalTOServerDate(newEvent.start,'');
-    //   const dateObjend = new Date(newEvent.end);
-    //   const formattedDateend = dateObjend.toLocaleDateString("en-IN");
-
-    let eventData = {
-      Title: newEvent.title,
-
-      Location: newEvent.loc,
-
-      Event_x002d_Type: newEvent.type,
-
-      Description: newEvent.reason,
-
-      EndDate:
-        ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
-        " " +
-        (selectedTimeEnd + "" + ":00"),
-
-      EventDate:
-        ConvertLocalTOServerDateToSave(startDate, selectedTime) +
-        " " +
-        (selectedTime + "" + ":00"),
-
-      fAllDayEvent: allDay,
+    if (inputValueName.length > 0) {
+      const chkstartDate = new Date(startDate);
+      const chkendDate = new Date(endDate);
+      if(chkstartDate > chkendDate){
+        alert("End Date cant fall behind start date")
+      }
+      else if(chkstartDate < chkendDate){
+        {
+          if(newRecurrenceEvent) {
+            await saveRecurrenceEvent();
+            void getData();
+            closem();
+            setIsChecked(false);
+            setSelectedTime(selectedTime);
+            setSelectedTimeEnd(selectedTimeEnd);
+            return;
+          }
+          const newEvent = {
+            title: inputValueName,
+            start: startDate,
+            end: endDate,
+            reason: inputValueReason,
+            type: type,
+            loc: location,
+          };
       
-    }    
-
-    let web = new Web(props.props.siteUrl);
-
-    await web.lists
-      .getById(props.props.SmalsusLeaveCalendar)
-      .items.add(eventData)
-      .then((res: any) => {
-        //console.log(res);
-        void getData();
-        closem();
-        setIsChecked(false);
-        setSelectedTime(selectedTime);
-        setSelectedTimeEnd(selectedTimeEnd);
-      });
+          let eventData = {
+            Title: newEvent.title,
+      
+            Location: newEvent.loc,
+      
+            Event_x002d_Type: newEvent.type,
+      
+            Description: newEvent.reason,
+      
+            EndDate:
+              ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
+              " " +
+              (selectedTimeEnd + "" + ":00"),
+      
+            EventDate:
+              ConvertLocalTOServerDateToSave(startDate, selectedTime) +
+              " " +
+              (selectedTime + "" + ":00"),
+      
+            fAllDayEvent: allDay,
+            
+          }    
+      
+          let web = new Web(props.props.siteUrl);
+      
+          await web.lists
+            .getById(props.props.SmalsusLeaveCalendar)
+            .items.add(eventData)
+            .then((res: any) => {
+              //console.log(res);
+              void getData();
+              closem();
+              setIsChecked(false);
+              setSelectedTime(selectedTime);
+              setSelectedTimeEnd(selectedTimeEnd);
+            });
+        }
+      }
+    } else {
+      alert("Please Input Event Title");
+    }
     // setEvents([...events, newEvent]);
     // setEvents([...events, saveE]);
-   // console.log(newEvent);
+    // console.log(newEvent);
   };
 
   const saveRecurrenceEvent = async () => {
-    let _startDate: string = `${moment(returnedRecurrenceInfo.eventDate).format('YYYY/MM/DD')}`;
-    let _endDate: string = `${moment(returnedRecurrenceInfo.endDate).format('YYYY/MM/DD')}`;
+    let _startDate: string = `${moment(returnedRecurrenceInfo.eventDate).format(
+      "YYYY/MM/DD"
+    )}`;
+    let _endDate: string = `${moment(returnedRecurrenceInfo.endDate).format(
+      "YYYY/MM/DD"
+    )}`;
     // Start Date
     const startTime = selectedTime;
     const startDateTime = `${_startDate} ${startTime}`;
-    const start = moment(startDateTime, 'YYYY/MM/DD HH:mm').toLocaleString();
+    const start = moment(startDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
     // End Date
     const endTime = selectedTimeEnd;
     const endDateTime = `${_endDate} ${endTime}`;
-    const end = moment(endDateTime, 'YYYY/MM/DD HH:mm').toLocaleString();
-    
-    if(!editRecurrenceEvent) {
+    const end = moment(endDateTime, "YYYY/MM/DD HH:mm").toLocaleString();
+
+    if (!editRecurrenceEvent) {
       const newEventData: IEventData = {
         EventType: "1",
         Title: inputValueName,
@@ -607,11 +678,10 @@ const App = (props:any) => {
         fAllDayEvent: allDay,
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
-        UID: uuidv4()
-      }
+        UID: uuidv4(),
+      };
       await addEvent(newEventData);
-    }     
-    else if(editRecurrenceEvent) {
+    } else if (editRecurrenceEvent) {
       const editEventData: IEventData = {
         EventType: "1",
         Title: inputValueName,
@@ -623,14 +693,13 @@ const App = (props:any) => {
         fAllDayEvent: allDay,
         fRecurrence: true,
         RecurrenceData: returnedRecurrenceInfo.recurrenceData,
-        UID: uuidv4()
-      }
+        UID: uuidv4(),
+      };
       await editEvent(editEventData);
-    }  
+    }
   };
 
   const deCodeHtmlEntities = async (string: string) => {
-
     const HtmlEntitiesMap = {
       "'": "&#39;",
       "<": "&lt;",
@@ -645,7 +714,7 @@ const App = (props:any) => {
       "§": "&sect;",
       "¨": "&uml;",
       "©": "&copy;",
-      "ª": "&ordf;",
+      ª: "&ordf;",
       "«": "&laquo;",
       "¬": "&not;",
       "®": "&reg;",
@@ -655,141 +724,141 @@ const App = (props:any) => {
       "²": "&sup2;",
       "³": "&sup3;",
       "´": "&acute;",
-      "µ": "&micro;",
+      µ: "&micro;",
       "¶": "&para;",
       "·": "&middot;",
       "¸": "&cedil;",
       "¹": "&sup1;",
-      "º": "&ordm;",
+      º: "&ordm;",
       "»": "&raquo;",
       "¼": "&frac14;",
       "½": "&frac12;",
       "¾": "&frac34;",
       "¿": "&iquest;",
-      "À": "&Agrave;",
-      "Á": "&Aacute;",
-      "Â": "&Acirc;",
-      "Ã": "&Atilde;",
-      "Ä": "&Auml;",
-      "Å": "&Aring;",
-      "Æ": "&AElig;",
-      "Ç": "&Ccedil;",
-      "È": "&Egrave;",
-      "É": "&Eacute;",
-      "Ê": "&Ecirc;",
-      "Ë": "&Euml;",
-      "Ì": "&Igrave;",
-      "Í": "&Iacute;",
-      "Î": "&Icirc;",
-      "Ï": "&Iuml;",
-      "Ð": "&ETH;",
-      "Ñ": "&Ntilde;",
-      "Ò": "&Ograve;",
-      "Ó": "&Oacute;",
-      "Ô": "&Ocirc;",
-      "Õ": "&Otilde;",
-      "Ö": "&Ouml;",
+      À: "&Agrave;",
+      Á: "&Aacute;",
+      Â: "&Acirc;",
+      Ã: "&Atilde;",
+      Ä: "&Auml;",
+      Å: "&Aring;",
+      Æ: "&AElig;",
+      Ç: "&Ccedil;",
+      È: "&Egrave;",
+      É: "&Eacute;",
+      Ê: "&Ecirc;",
+      Ë: "&Euml;",
+      Ì: "&Igrave;",
+      Í: "&Iacute;",
+      Î: "&Icirc;",
+      Ï: "&Iuml;",
+      Ð: "&ETH;",
+      Ñ: "&Ntilde;",
+      Ò: "&Ograve;",
+      Ó: "&Oacute;",
+      Ô: "&Ocirc;",
+      Õ: "&Otilde;",
+      Ö: "&Ouml;",
       "×": "&times;",
-      "Ø": "&Oslash;",
-      "Ù": "&Ugrave;",
-      "Ú": "&Uacute;",
-      "Û": "&Ucirc;",
-      "Ü": "&Uuml;",
-      "Ý": "&Yacute;",
-      "Þ": "&THORN;",
-      "ß": "&szlig;",
-      "à": "&agrave;",
-      "á": "&aacute;",
-      "â": "&acirc;",
-      "ã": "&atilde;",
-      "ä": "&auml;",
-      "å": "&aring;",
-      "æ": "&aelig;",
-      "ç": "&ccedil;",
-      "è": "&egrave;",
-      "é": "&eacute;",
-      "ê": "&ecirc;",
-      "ë": "&euml;",
-      "ì": "&igrave;",
-      "í": "&iacute;",
-      "î": "&icirc;",
-      "ï": "&iuml;",
-      "ð": "&eth;",
-      "ñ": "&ntilde;",
-      "ò": "&ograve;",
-      "ó": "&oacute;",
-      "ô": "&ocirc;",
-      "õ": "&otilde;",
-      "ö": "&ouml;",
+      Ø: "&Oslash;",
+      Ù: "&Ugrave;",
+      Ú: "&Uacute;",
+      Û: "&Ucirc;",
+      Ü: "&Uuml;",
+      Ý: "&Yacute;",
+      Þ: "&THORN;",
+      ß: "&szlig;",
+      à: "&agrave;",
+      á: "&aacute;",
+      â: "&acirc;",
+      ã: "&atilde;",
+      ä: "&auml;",
+      å: "&aring;",
+      æ: "&aelig;",
+      ç: "&ccedil;",
+      è: "&egrave;",
+      é: "&eacute;",
+      ê: "&ecirc;",
+      ë: "&euml;",
+      ì: "&igrave;",
+      í: "&iacute;",
+      î: "&icirc;",
+      ï: "&iuml;",
+      ð: "&eth;",
+      ñ: "&ntilde;",
+      ò: "&ograve;",
+      ó: "&oacute;",
+      ô: "&ocirc;",
+      õ: "&otilde;",
+      ö: "&ouml;",
       "÷": "&divide;",
-      "ø": "&oslash;",
-      "ù": "&ugrave;",
-      "ú": "&uacute;",
-      "û": "&ucirc;",
-      "ü": "&uuml;",
-      "ý": "&yacute;",
-      "þ": "&thorn;",
-      "ÿ": "&yuml;",
-      "Œ": "&OElig;",
-      "œ": "&oelig;",
-      "Š": "&Scaron;",
-      "š": "&scaron;",
-      "Ÿ": "&Yuml;",
-      "ƒ": "&fnof;",
-      "ˆ": "&circ;",
+      ø: "&oslash;",
+      ù: "&ugrave;",
+      ú: "&uacute;",
+      û: "&ucirc;",
+      ü: "&uuml;",
+      ý: "&yacute;",
+      þ: "&thorn;",
+      ÿ: "&yuml;",
+      Œ: "&OElig;",
+      œ: "&oelig;",
+      Š: "&Scaron;",
+      š: "&scaron;",
+      Ÿ: "&Yuml;",
+      ƒ: "&fnof;",
+      ˆ: "&circ;",
       "˜": "&tilde;",
-      "Α": "&Alpha;",
-      "Β": "&Beta;",
-      "Γ": "&Gamma;",
-      "Δ": "&Delta;",
-      "Ε": "&Epsilon;",
-      "Ζ": "&Zeta;",
-      "Η": "&Eta;",
-      "Θ": "&Theta;",
-      "Ι": "&Iota;",
-      "Κ": "&Kappa;",
-      "Λ": "&Lambda;",
-      "Μ": "&Mu;",
-      "Ν": "&Nu;",
-      "Ξ": "&Xi;",
-      "Ο": "&Omicron;",
-      "Π": "&Pi;",
-      "Ρ": "&Rho;",
-      "Σ": "&Sigma;",
-      "Τ": "&Tau;",
-      "Υ": "&Upsilon;",
-      "Φ": "&Phi;",
-      "Χ": "&Chi;",
-      "Ψ": "&Psi;",
-      "Ω": "&Omega;",
-      "α": "&alpha;",
-      "β": "&beta;",
-      "γ": "&gamma;",
-      "δ": "&delta;",
-      "ε": "&epsilon;",
-      "ζ": "&zeta;",
-      "η": "&eta;",
-      "θ": "&theta;",
-      "ι": "&iota;",
-      "κ": "&kappa;",
-      "λ": "&lambda;",
-      "μ": "&mu;",
-      "ν": "&nu;",
-      "ξ": "&xi;",
-      "ο": "&omicron;",
-      "π": "&pi;",
-      "ρ": "&rho;",
-      "ς": "&sigmaf;",
-      "σ": "&sigma;",
-      "τ": "&tau;",
-      "υ": "&upsilon;",
-      "φ": "&phi;",
-      "χ": "&chi;",
-      "ψ": "&psi;",
-      "ω": "&omega;",
-      "ϑ": "&thetasym;",
-      "ϒ": "&Upsih;",
-      "ϖ": "&piv;",
+      Α: "&Alpha;",
+      Β: "&Beta;",
+      Γ: "&Gamma;",
+      Δ: "&Delta;",
+      Ε: "&Epsilon;",
+      Ζ: "&Zeta;",
+      Η: "&Eta;",
+      Θ: "&Theta;",
+      Ι: "&Iota;",
+      Κ: "&Kappa;",
+      Λ: "&Lambda;",
+      Μ: "&Mu;",
+      Ν: "&Nu;",
+      Ξ: "&Xi;",
+      Ο: "&Omicron;",
+      Π: "&Pi;",
+      Ρ: "&Rho;",
+      Σ: "&Sigma;",
+      Τ: "&Tau;",
+      Υ: "&Upsilon;",
+      Φ: "&Phi;",
+      Χ: "&Chi;",
+      Ψ: "&Psi;",
+      Ω: "&Omega;",
+      α: "&alpha;",
+      β: "&beta;",
+      γ: "&gamma;",
+      δ: "&delta;",
+      ε: "&epsilon;",
+      ζ: "&zeta;",
+      η: "&eta;",
+      θ: "&theta;",
+      ι: "&iota;",
+      κ: "&kappa;",
+      λ: "&lambda;",
+      μ: "&mu;",
+      ν: "&nu;",
+      ξ: "&xi;",
+      ο: "&omicron;",
+      π: "&pi;",
+      ρ: "&rho;",
+      ς: "&sigmaf;",
+      σ: "&sigma;",
+      τ: "&tau;",
+      υ: "&upsilon;",
+      φ: "&phi;",
+      χ: "&chi;",
+      ψ: "&psi;",
+      ω: "&omega;",
+      ϑ: "&thetasym;",
+      ϒ: "&Upsih;",
+      ϖ: "&piv;",
       "–": "&ndash;",
       "—": "&mdash;",
       "‘": "&lsquo;",
@@ -810,11 +879,11 @@ const App = (props:any) => {
       "‾": "&oline;",
       "⁄": "&frasl;",
       "€": "&euro;",
-      "ℑ": "&image;",
+      ℑ: "&image;",
       "℘": "&weierp;",
-      "ℜ": "&real;",
+      ℜ: "&real;",
       "™": "&trade;",
-      "ℵ": "&alefsym;",
+      ℵ: "&alefsym;",
       "←": "&larr;",
       "↑": "&uarr;",
       "→": "&rarr;",
@@ -874,32 +943,31 @@ const App = (props:any) => {
       "♠": "&spades;",
       "♣": "&clubs;",
       "♥": "&hearts;",
-      "♦": "&diams;"
+      "♦": "&diams;",
     };
 
     var entityMap = HtmlEntitiesMap;
-    
+
     for (var key in entityMap) {
       var entity = entityMap[key as keyof typeof entityMap];
-      var regex = new RegExp(entity, 'g');
+      var regex = new RegExp(entity, "g");
       string = string.replace(regex, key);
     }
     string = string.replace(/&quot;/g, '"');
-    string = string.replace(/&amp;/g, '&');
+    string = string.replace(/&amp;/g, "&");
     return string;
-  }
+  };
 
-  const getUtcTime = async (date: string | Date): Promise<string> => {        
+  const getUtcTime = async (date: string | Date): Promise<string> => {
     const web = new Web(props.props.siteUrl);
     try {
       const utcTime = await web.regionalSettings.timeZone.localTimeToUTC(date);
       return utcTime;
-    }
-    catch (error) {
+    } catch (error) {
       return Promise.reject(error);
     }
-  }
-  
+  };
+
   /**
    *
    * @private
@@ -908,30 +976,37 @@ const App = (props:any) => {
    */
   const getLocalTime = (date: string | Date, offset: number): string => {
     const localTime = moment.utc(date).utcOffset(offset);
-    return localTime.format("LLL");    
-  }
+    return localTime.format("LLL");
+  };
   const getLocalDateTime = async (date: string | Date): Promise<string> => {
     try {
       const web = new Web(props.props.siteUrl);
-      const localTime = await web.regionalSettings.timeZone.utcToLocalTime(date);
+      const localTime = await web.regionalSettings.timeZone.utcToLocalTime(
+        date
+      );
       return localTime;
-    }
-    catch (error) {
+    } catch (error) {
       return Promise.reject(error);
     }
-  }
+  };
 
   const getTimeZoneOffset = async (): Promise<number> => {
     const web = new Web(props.props.siteUrl);
     try {
-      const timeZoneInfo = (await web.regionalSettings.timeZone.select("Information").get()).Information;
-      const timeZoneOffset = -(timeZoneInfo.Bias+timeZoneInfo.StandardBias+timeZoneInfo.DaylightBias)/60.0;
+      const timeZoneInfo = (
+        await web.regionalSettings.timeZone.select("Information").get()
+      ).Information;
+      const timeZoneOffset =
+        -(
+          timeZoneInfo.Bias +
+          timeZoneInfo.StandardBias +
+          timeZoneInfo.DaylightBias
+        ) / 60.0;
       return timeZoneOffset;
-    }
-    catch (error) {
+    } catch (error) {
       return Promise.reject(error);
     }
-  }
+  };
 
   const addEvent = async (newEvent: IEventData) => {
     let results = null;
@@ -939,25 +1014,28 @@ const App = (props:any) => {
       const web = new Web(props.props.siteUrl);
       const addEventItem = {
         Title: newEvent.Title,
-        Description: newEvent.Description,        
+        Description: newEvent.Description,
         EventDate: await getUtcTime(newEvent.EventDate),
         EndDate: await getUtcTime(newEvent.EndDate),
         Location: newEvent.Location,
         fAllDayEvent: newEvent.fAllDayEvent,
-        fRecurrence: newEvent.fRecurrence,        
+        fRecurrence: newEvent.fRecurrence,
         EventType: newEvent.EventType,
         UID: newEvent.UID,
-        RecurrenceData: newEvent.RecurrenceData ? await deCodeHtmlEntities(newEvent.RecurrenceData) : "",
+        RecurrenceData: newEvent.RecurrenceData
+          ? await deCodeHtmlEntities(newEvent.RecurrenceData)
+          : "",
         MasterSeriesItemID: newEvent.MasterSeriesItemID,
         RecurrenceID: newEvent.RecurrenceID ? newEvent.RecurrenceID : undefined,
-      }
-      results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.add(addEventItem);
-    }
-    catch (error) {
+      };
+      results = await web.lists
+        .getById(props.props.SmalsusLeaveCalendar)
+        .items.add(addEventItem);
+    } catch (error) {
       return Promise.reject(error);
     }
     return results;
-  }
+  };
 
   const editEvent = async (editEvent: IEventData) => {
     let results = null;
@@ -965,28 +1043,34 @@ const App = (props:any) => {
       const web = new Web(props.props.siteUrl);
       const editEventItem = {
         Title: editEvent.Title,
-        Description: editEvent.Description,        
+        Description: editEvent.Description,
         EventDate: await getUtcTime(editEvent.EventDate),
         EndDate: await getUtcTime(editEvent.EndDate),
         Location: editEvent.Location,
         fAllDayEvent: editEvent.fAllDayEvent,
-        fRecurrence: editEvent.fRecurrence,        
+        fRecurrence: editEvent.fRecurrence,
         EventType: editEvent.EventType,
         UID: editEvent.UID,
-        RecurrenceData: editEvent.RecurrenceData ? await deCodeHtmlEntities(editEvent.RecurrenceData) : "",
+        RecurrenceData: editEvent.RecurrenceData
+          ? await deCodeHtmlEntities(editEvent.RecurrenceData)
+          : "",
         MasterSeriesItemID: editEvent.MasterSeriesItemID,
-        RecurrenceID: editEvent.RecurrenceID ? editEvent.RecurrenceID : undefined,
-      }
-      results = await web.lists.getById(props.props.SmalsusLeaveCalendar).items.getById(eventPass.iD).update(editEventItem);
-    }
-    catch (error) {
+        RecurrenceID: editEvent.RecurrenceID
+          ? editEvent.RecurrenceID
+          : undefined,
+      };
+      results = await web.lists
+        .getById(props.props.SmalsusLeaveCalendar)
+        .items.getById(eventPass.iD)
+        .update(editEventItem);
+    } catch (error) {
       return Promise.reject(error);
     }
     return results;
-  }
+  };
 
   const updateElement = async () => {
-    if(editRecurrenceEvent) {
+    if (editRecurrenceEvent) {
       await saveRecurrenceEvent();
       void getData();
       closem();
@@ -1045,14 +1129,14 @@ const App = (props:any) => {
         setSelectedTimeEnd(endTime);
       });
   };
-  
+
   const handleDateClick = async (event: any) => {
     setshowRecurrence(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
-    
+
     openm();
-    if(event.RecurrenceData) {
+    if (event.RecurrenceData) {
       setdisab(true);
       eventPass = event;
       setInputValueName(event.title);
@@ -1068,15 +1152,15 @@ const App = (props:any) => {
       modofiedBy = event.modify;
       setType(event.eventType);
       setInputValueReason(event.desc);
-      
+
       const eventItem: any = await getEvent(event.iD);
       // Get hours of event
       const startDate = new Date(eventItem.EventDate);
       const endDate = new Date(eventItem.EndDate);
-      const startHour = moment(startDate).format('HH').toString();
-      const startMin = moment(startDate).format('mm').toString();
-      const endHour = moment(endDate).format('HH').toString();
-      const endMin = moment(endDate).format('mm').toString();
+      const startHour = moment(startDate).format("HH").toString();
+      const startMin = moment(startDate).format("mm").toString();
+      const endHour = moment(endDate).format("HH").toString();
+      const endMin = moment(endDate).format("mm").toString();
 
       setStartDate(startDate);
       setSelectedTime(`${startHour}:${startMin}`);
@@ -1171,17 +1255,17 @@ const App = (props:any) => {
     time = time.target.value;
     startTime = time;
     setSelectedTime(time);
-   // console.log("time", time);
+    // console.log("time", time);
   };
   const handleTimeChangeEnd = (time: any) => {
     time = time.target.value;
     endTime = time;
     setSelectedTimeEnd(time);
-   // console.log("time", time);
+    // console.log("time", time);
   };
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
-   // console.log("check", isChecked);
+    // console.log("check", isChecked);
     if (isChecked == false) {
       startTime = "10:00";
       endTime = "19:00";
@@ -1257,19 +1341,18 @@ const App = (props:any) => {
               onChange={handleInputChangeName}
             />
           </div>
-          {
-            showRecurrenceSeriesInfo!=true &&
-          (<div className="col-md-6">
-            <DatePicker
-              label="Start Date"
-              styles={{ root: { width: "70%" } }}
-              minDate={minDate}
-              value={startDate}
-              onSelectDate={(date) => setStartDatefunction(date)}
-              hidden={showRecurrenceSeriesInfo}
-            />
-          </div>)
-          }
+          {showRecurrenceSeriesInfo != true && (
+            <div className="col-md-6">
+              <DatePicker
+                label="Start Date"
+                styles={{ root: { width: "70%" } }}
+                minDate={minDate}
+                value={startDate}
+                onSelectDate={(date) => setStartDatefunction(date)}
+                hidden={showRecurrenceSeriesInfo}
+              />
+            </div>
+          )}
           {!disableTime ? (
             <div className="col-md-6">
               <label htmlFor="1">Start Time:</label>
@@ -1284,19 +1367,18 @@ const App = (props:any) => {
           ) : (
             ""
           )}
-          {
-          showRecurrenceSeriesInfo!=true &&
-          (<div className="col-md-6">
-            <DatePicker
-              label="End Date"
-              styles={{ root: { width: "70%" } }}
-              value={endDate}
-              minDate={startDate}
-              maxDate={maxD}
-              onSelectDate={(date) => setEndDate(date)}              
-            />
-          </div>)
-          }
+          {showRecurrenceSeriesInfo != true && (
+            <div className="col-md-6">
+              <DatePicker
+                label="End Date"
+                styles={{ root: { width: "70%" } }}
+                value={endDate}
+                minDate={startDate}
+                maxDate={maxD}
+                onSelectDate={(date) => setEndDate(date)}
+              />
+            </div>
+          )}
           {!disableTime ? (
             <div className="col-md-6">
               <label htmlFor="2">End Time:</label>
@@ -1322,22 +1404,26 @@ const App = (props:any) => {
               All Day Event
             </label>
           </div>
-          {            
+          {
             <div>
-              {
-              showRecurrence &&
-              <div style={{ display: 'inline-block', verticalAlign: 'top', width: '200px' }}>
-                <Toggle
-                  defaultChecked={false}
-                  checked={showRecurrenceSeriesInfo}
-                  inlineLabel
-                  label="Recurrence ?"  
-                  onChange={handleRecurrenceCheck}
-                />
+              {showRecurrence && (
+                <div
+                  style={{
+                    display: "inline-block",
+                    verticalAlign: "top",
+                    width: "200px",
+                  }}
+                >
+                  <Toggle
+                    defaultChecked={false}
+                    checked={showRecurrenceSeriesInfo}
+                    inlineLabel
+                    label="Recurrence ?"
+                    onChange={handleRecurrenceCheck}
+                  />
                 </div>
-              }
-              {
-                showRecurrenceSeriesInfo && 
+              )}
+              {showRecurrenceSeriesInfo && (
                 <EventRecurrenceInfo
                   context={props.props.context}
                   display={true}
@@ -1345,9 +1431,8 @@ const App = (props:any) => {
                   startDate={startDate}
                   siteUrl={props.props.siteUrl}
                   returnRecurrenceData={returnRecurrenceInfo}
-                >
-                </EventRecurrenceInfo>
-              }
+                ></EventRecurrenceInfo>
+              )}
             </div>
           }
           <div>
@@ -1393,9 +1478,6 @@ const App = (props:any) => {
       </Panel>
     </div>
   );
-
-  
-  
 };
 
 export default App;

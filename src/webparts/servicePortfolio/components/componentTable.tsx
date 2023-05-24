@@ -75,6 +75,7 @@ import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
+import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 // import { BsFillCaretDownFill, BsFillCaretRightFill } from 'react-icons/bs';
 // import { Tooltip as ReactTooltip } from "react-tooltip";
 // import "react-tooltip/dist/react-tooltip.css";
@@ -205,7 +206,7 @@ function ComponentTable(SelectedProp: any) {
   const [state, setState] = React.useState([]);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
-  // const [AllMetadata, setMetadata] = React.useState([])
+  const [AllMetadata, setMetadata] = React.useState([])
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [IsTask, setIsTask] = React.useState(false);
@@ -1379,16 +1380,16 @@ function ComponentTable(SelectedProp: any) {
                   }
                 });
               }
-              // result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
-              result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
-              if (
-                result.ClientCategory != undefined &&
-                result.ClientCategory.length > 0
-              ) {
-                map(result.Team_x0020_Members, (catego: any) => {
-                  result.ClientCategory.push(catego);
-                });
-              }
+              result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
+              // result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
+              // if (
+              //   result.ClientCategory != undefined &&
+              //   result.ClientCategory.length > 0
+              // ) {
+              //   map(result.Team_x0020_Members, (catego: any) => {
+              //     result.ClientCategory.push(catego);
+              //   });
+              // }
               if (result.Id === 1441) console.log(result);
               result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
               if (result["Shareweb_x0020_ID"] == undefined) {
@@ -1850,16 +1851,18 @@ function ComponentTable(SelectedProp: any) {
         "SortOrder",
         "SmartFilters",
         "Selectable",
+        'Color_x0020_Tag',
         "Parent/Id",
         "Parent/Title"
       )
       .top(4999)
-      // .filter("TaxType eq 'Categories'")
+      // .filter("TaxType eq 'Client Category'")
       .expand("Parent")
       .get();
 
     console.log(smartmetaDetails);
-    // setMetadata(smartmetaDetails => ([...smartmetaDetails]));
+    setMetadata(smartmetaDetails);
+
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
       if (
@@ -2191,6 +2194,7 @@ function ComponentTable(SelectedProp: any) {
         "Team_x0020_Members/Title",
         "ClientCategory/Id",
         "ClientCategory/Title",
+        'ClientCategory/Color_x0020_Tag',
         "Responsible_x0020_Team/Id",
         "Responsible_x0020_Team/Title"
       )
@@ -2665,14 +2669,14 @@ function ComponentTable(SelectedProp: any) {
       } else {
         result["Shareweb_x0020_ID"] = "";
       }
-      if (
-        result.ClientCategory != undefined &&
-        result.ClientCategory.length > 0
-      ) {
-        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-          result.ClientCategory.push(catego);
-        });
-      }
+      // if (
+      //   result.ClientCategory != undefined &&
+      //   result.ClientCategory.length > 0
+      // ) {
+      //   $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+      //     result.ClientCategory.push(catego);
+      //   });
+      // }
       if (result.Item_x0020_Type == "Root Component") {
         result["childs"] =
           result["childs"] != undefined ? result["childs"] : [];
@@ -3152,6 +3156,7 @@ function ComponentTable(SelectedProp: any) {
       }
       if (childItem?.data?.ComponentId[0] != undefined) {
         childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
+        
       }
       if (
         childItem?.data?.ServicesId != undefined &&
@@ -4172,6 +4177,23 @@ function ComponentTable(SelectedProp: any) {
   //         PortfolioLevelNum = 1;
   //     }
   // }
+  const onRenderCustomHeaderMain1 = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div
+          style={{
+            marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            marginLeft: "20px",
+          }}
+        >
+          <span>{`Create Component `}</span>
+        </div>
+        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+      </div>
+    );
+  };
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
@@ -4457,11 +4479,11 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <>
-            {row?.original?.ClientCategory?.map((elem: any, index: any) => {
+            {/* {row?.original?.ClientCategory?.map((elem: any, index: any) => {
               return (
                 <>
                   {" "}
-                  {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon">
+                  {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon" style={{ color: elem?.Color_x0020_Tag }}>
                     {elem?.Title?.slice(0, 2).toUpperCase()}
                   </span> : ''}
                 </>
@@ -4476,6 +4498,9 @@ function ComponentTable(SelectedProp: any) {
                       return (
                         <>
                           <span className="team_Members_Item" style={{ padding: "2px" }}>
+                            <span title={rcData?.Title} className="ClientCategory-Usericon" style={{ color: rcData?.Color_x0020_Tag }}>
+                              {rcData?.Title?.slice(0, 2).toUpperCase()}
+                            </span>
                             <div className="mx-2">{rcData?.Title}</div>
                           </span>
                         </>
@@ -4486,7 +4511,8 @@ function ComponentTable(SelectedProp: any) {
               </span>
             ) : (
               ""
-            )}
+            )} */}
+            <ShowClintCatogory  clintData={row?.original} AllMetadata={AllMetadata}/>
           </>
         ),
         id: "ClientCategory",
@@ -5672,7 +5698,7 @@ function ComponentTable(SelectedProp: any) {
         ></CreateWS>
       )}
       <Panel
-        headerText={` Create Component `}
+        onRenderHeader={onRenderCustomHeaderMain1}
         type={PanelType.large}
         isOpen={addModalOpen}
         isBlocking={false}

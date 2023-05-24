@@ -87,6 +87,7 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
         const elemPivot = (<Pivot linkFormat={ PivotLinkFormat.tabs } linkSize={ PivotLinkSize.normal }>
             <PivotItem headerText="TEAM MEMBERS">{elemTaskTeamMembers}</PivotItem>
             <PivotItem headerText="TEAM GROUPS">{elemTaskTeamGroups}</PivotItem>
+
         </Pivot>);
 
         return (<div className="ms-Grid"><div className="ms-Grid-row">{elemPivot}</div></div>);
