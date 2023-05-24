@@ -239,8 +239,7 @@ const BackgroundCommentComponent = (Props: any) => {
                             >
                             </textarea>
                         </div>
-                        <footer className="d-flex justify-content-between ms-3 mx-2">
-
+                        <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
                             <div>
                                 <button className="btn btnPrimary" onClick={ChangeCommentFunction}>
                                     Save
