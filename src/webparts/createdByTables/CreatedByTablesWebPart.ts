@@ -24,7 +24,7 @@ export interface ICreatedByTablesWebPartProps {
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
   AdminConfigrationListID:'e968902a-3021-4af2-a30a-174ea95cf8fa';
   TimeEntry: any;
-  SiteCompostion: any;
+  SiteCompostion: any;   
 }
 
 export default class CreatedByTablesWebPart extends BaseClientSideWebPart<ICreatedByTablesWebPartProps> {

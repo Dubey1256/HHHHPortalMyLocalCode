@@ -13,11 +13,13 @@ var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
+var changeTime: any = 0;
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
-
+    const [TimeInHours, setTimeInHours] = React.useState(0)
+    const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
@@ -42,6 +44,7 @@ const inlineEditingcolumns = (props: any) => {
     const [taskStatus, setTaskStatus] = React.useState('');
     const [taskPriority, setTaskPriority] = React.useState('');
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
+    const [UpdateEstimatedTime, setUpdateEstimatedTime] = React.useState(false);
     const [PercentCompleteCheck, setPercentCompleteCheck] = React.useState(true)
     const [selectedCatId, setSelectedCatId]: any[] = React.useState([]);
     const [feedback, setFeedback] = useState("");
@@ -631,25 +634,79 @@ const inlineEditingcolumns = (props: any) => {
             setDueDate({ ...dueDate, editDate: lastDay, selectDateName: item });
         }
     }
+    const changeTimes = (val: any, time: any, type: any) => {
+        if (val === '15') {
+            changeTime = Number(changeTime)
+            changeTime = changeTime + 15
+            // changeTime = changeTime > 0
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+            setTimeInMinutes(changeTime)
+        }
+        if (val === '60') {
+            changeTime = Number(changeTime)
+            changeTime = changeTime + 60
+            // changeTime = changeTime > 0
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+            setTimeInMinutes(changeTime)
+        }
+    }
+    const changeTimesDec = (items: any) => {
 
-    //     const updateTaskDueDate=async ()=> {
+        if (items === '15') {
+            changeTime = Number(changeTime)
+            changeTime = changeTime - 15
+            setTimeInMinutes(changeTime)
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
 
-    //            let newDate = new Date(dueDate.editDate);
-    //         let web = new Web(props?.item?.siteUrl);
-    //         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-    //            DueDate : newDate
-    //         })
-    //             .then((res: any) => {
-    //                 console.log(res);
-    //                 props?.callBack();
-    //                 setTaskStatusPopup(false);
-    //                 setTaskPriorityPopup(false);
-    //                 setTeamMembersPopup(false);
-    //                 setDueDate({...dueDate, editPopup:false})
-    //             }).catch((err:any)=>{
-    // console.log(err)
-    //             })
-    //     }
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+
+        }
+        if (items === '60') {
+            changeTime = Number(changeTime)
+            changeTime = changeTime - 60
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+            setTimeInMinutes(changeTime)
+
+
+        }
+
+    }
+    const changeTimeFunction = (e: any, type: any) => {
+        if (type == 'Add') {
+            changeTime = e.target.value
+            if (changeTime != undefined) {
+                var TimeInHour: any = changeTime / 60;
+                setTimeInHours(TimeInHour.toFixed(2))
+            }
+            setTimeInMinutes(changeTime)
+        }
+        if (type == 'Edit') {
+            if (e.target.value > 0) {
+                changeTime = e.target.value
+                if (changeTime != undefined) {
+                    var TimeInHour: any = changeTime / 60;
+                    setTimeInHours(TimeInHour.toFixed(2))
+                }
+                setTimeInMinutes(changeTime)
+            }
+            else {
+                setTimeInMinutes(undefined)
+                setTimeInHours(0)
+            }
+        }
+    }
 
 
 
@@ -672,9 +729,9 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Priority' ?
                     <>
-                        <span className={ServicesTaskCheck && props?.pageName !=='ProjectOverView'  ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
+                        <span className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTaskPriorityPopup(true)} >
                             &nbsp;
-                           { props?.item?.Priority_x0020_Rank}
+                            {props?.item?.Priority_x0020_Rank}
                             {
                                 props?.item?.SharewebCategories?.map((category: any) => {
                                     if (category?.Title == 'Immediate') {
@@ -708,8 +765,13 @@ const inlineEditingcolumns = (props: any) => {
                     : ''
             }
             {props?.columnName == 'Remark' ?
-                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !=='ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
+                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
                     &nbsp;{props.item.Remark}</span></>
+                : ""
+            }
+            {props?.columnName == 'EstimatedTime' ?
+                <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setUpdateEstimatedTime(true)}>
+                    &nbsp;{props.item.EstimatedTime}</span></>
                 : ""
             }
 
@@ -809,6 +871,79 @@ const inlineEditingcolumns = (props: any) => {
                     </footer>
                 </div>
             </Panel>
+            <Panel
+                headerText={`Update Estimated Time`}
+                isOpen={UpdateEstimatedTime}
+                onDismiss={() => setUpdateEstimatedTime(false)}
+                isBlocking={UpdateEstimatedTime}
+            >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+
+                    <div className="row">
+                        <div className="col-sm-6 pe-0">
+                            <label ng-bind-html="GetColumnDetails('TimeSpent') | trustedHTML"></label>
+                            <input type="text"
+                                ng-model="TimeSpentInMinutes" className="form-control"
+                                value={TimeInMinutes}
+                                onChange={(e) => changeTimeFunction(e, 'Add')} />
+
+                        </div>
+                        <div className="col-sm-6 ps-0">
+                            <label></label>
+                            <input className="form-control bg-e9" type="text" value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
+                            />
+                        </div>
+                        
+                    </div>
+                    <div className="row">
+                    <div className="col-sm-12 Time-control-buttons">
+                            <div className="pe-0 Quaterly-Time">
+                                <label
+                                    className="full_width"></label>
+                                <button className="btn btn-primary"
+                                    title="Decrease by 15 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                    onClick={() => changeTimesDec('15')}>
+                                    <i className="fa fa-minus"
+                                        aria-hidden="true"></i>
+
+                                </button>
+                                <span> 15 min </span>
+                                <button className="btn btn-primary"
+                                    title="Increase by 15 Min"
+                                    onClick={() => changeTimes('15', 'add', 'AddNewStructure')}>
+                                    <i className="fa fa-plus"
+                                        aria-hidden="true"></i>
+
+                                </button>
+                            </div>
+                            <div className="pe-0 Full-Time">
+                                <label
+                                    className="full_width"></label>
+                                <button className="btn btn-primary"
+                                    title="Decrease by 60 Min" disabled={TimeInMinutes <= 0 ? true : false}
+                                    onClick={() => changeTimesDec('60')}>
+                                    <i className="fa fa-minus"
+                                        aria-hidden="true"></i>
+
+                                </button>
+                                <span> 60 min </span>
+                                <button className="btn btn-primary"
+                                    title="Increase by 60 Min"
+                                    onClick={() => changeTimes('60', 'add', 'AddNewStructure')}>
+                                    <i className="fa fa-plus"
+                                        aria-hidden="true"></i>
+
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={UpdateTaskStatus}>
+                            Save
+                        </button>
+                    </footer>
+                </div>
+            </Panel>
             {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck && props.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() => setDueDate({ ...dueDate, editPopup: true })}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
 
 
@@ -885,9 +1020,9 @@ const inlineEditingcolumns = (props: any) => {
                                 onChange={(event) => handleCategoryChange(event, option.Id)}
                             />
                             <a title={option.Title}>
-                                {option.Title=='Immediate'?<span className="workmember svg__iconbox svg__icon--alert " ></span>:''}
-                                {option.Title=='Bottleneck'?<span className="workmember svg__iconbox svg__icon--bottleneck " ></span>:''}
-                                {option.Title=='Favorite'?<span className="workmember svg__iconbox svg__icon--Star " ></span>:''}
+                                {option.Title == 'Immediate' ? <span className="workmember svg__iconbox svg__icon--alert " ></span> : ''}
+                                {option.Title == 'Bottleneck' ? <span className="workmember svg__iconbox svg__icon--bottleneck " ></span> : ''}
+                                {option.Title == 'Favorite' ? <span className="workmember svg__iconbox svg__icon--Star " ></span> : ''}
                             </a>
                             <label htmlFor={option.Id} className='ms-2'>{option.Title}</label>
                         </div>
