@@ -176,7 +176,7 @@ function EditProjectPopup(item: any) {
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
-          if (type.Id == val.Id) {
+          if (type.Id == val.Id ) {
             BackupCat.push(type.Id);
             setcheckedCat(true);
           }
@@ -949,17 +949,17 @@ function EditProjectPopup(item: any) {
         }
       }
     }
-    if (CategoriesData != undefined) {
-      CategoriesData.forEach(function (type: any) {
-        CheckCategory.forEach(function (val: any) {
-          if (type.Id == val.Id) {
-            BackupCat.push(type.Id);
-            setcheckedCat(true);
-          }
-        });
-      });
-      setUpdate(update + 2);
-    }
+    // if (CategoriesData != undefined) {
+    //   CategoriesData.forEach(function (type: any) {
+    //     CheckCategory.forEach(function (val: any) {
+    //       if (type.Id == val.Id) {
+    //         BackupCat.push(type.Id);
+    //         setcheckedCat(true);
+    //       }
+    //     });
+    //   });
+    //   setUpdate(update + 2);
+    // }
     portfolioType = type;
     setIsPortfolio(true);
     setSharewebComponent(item);
@@ -1010,10 +1010,16 @@ function EditProjectPopup(item: any) {
     var Items = EditData;
 
     CheckCategory?.forEach((itemm: any, index: any) => {
+      CategoriesData.map((catId, index) => {
+        if (itemm.Id == catId.Id) {
+          CategoriesData.splice(index, 1);
+        }
+      });
       if (itemm.isChecked == true) {
         array2.push(itemm)
       }
     })
+  
     if(array2 != undefined && array2.length>0 ){
       array2.map((item:any)=>{
          if(item.isselected == true || item.isChecked == true){
@@ -1026,13 +1032,13 @@ function EditProjectPopup(item: any) {
     if (NewArray != undefined && NewArray.length > 0) {
       CheckCategory = []
       NewArray.map((NeitemA: any) => {
-        CheckCategory.push(NeitemA);
+        CategoriesData.push(NeitemA);
       });
     } else {
       CheckCategory = []
     }
     var categoriesItem = "";
-    CheckCategory?.map((category: any) => {
+    CategoriesData?.map((category: any) => {
       if (category.Title != undefined) {
         categoriesItem =
           categoriesItem == ""
@@ -1041,7 +1047,7 @@ function EditProjectPopup(item: any) {
       }
     });
     var CategoryID: any = [];
-    CheckCategory?.map((category: any) => {
+    CategoriesData?.map((category: any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
