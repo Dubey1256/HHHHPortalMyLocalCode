@@ -11,11 +11,12 @@ import { HiOutlineArrowTopRightOnSquare } from 'react-icons/hi2';
 
 const BackgroundCommentComponent = (Props: any) => {
     const [BackgroundComment, setBackgroundComment] = useState('');
-    const [EditCommentPanel, setEditCommentPanel] = useState(false)
-    const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : [])
-    const [uploadImageContainer, setuploadImageContainer] = useState(false)
+    const [EditCommentPanel, setEditCommentPanel] = useState(false);
+    const [BackgroundComments, setBackgroundComments] = useState(Props.TaskData?.BackgroundComments != undefined ? Props.TaskData?.BackgroundComments : []);
+    const [uploadImageContainer, setuploadImageContainer] = useState(false);
     const [UpdateCommentData, setUpdateCommentData] = useState('');
-    const [CurrentIndex, setCurrentIndex] = useState();
+    const [CurrentIndex, setCurrentIndex] = useState<any>();
+
     const currentUserData: any = Props.CurrentUser;
     var BackgroundImageData: any = Props.TaskData?.BackgroundImages != undefined ? Props.TaskData?.BackgroundImages : [];
     const Context = Props.Context;
@@ -89,10 +90,18 @@ const BackgroundCommentComponent = (Props: any) => {
     const editPostCloseFunction = () => {
         setEditCommentPanel(false);
     }
-    const openEditModal = (ID: any, Body: any) => {
+    const openEditModal = (Index: any, Body: any) => {
         setEditCommentPanel(true);
         setUpdateCommentData(Body);
-        setCurrentIndex(ID);
+        setCurrentIndex(Index);
+    }
+    const ChangeCommentFunction = () => {
+        if (BackgroundComments != undefined && BackgroundComments.length > 0) {
+            BackgroundComments[CurrentIndex].Body = UpdateCommentData;
+            updateCommentFunction(BackgroundComments);
+            setUpdateCommentData("");
+        }
+        setEditCommentPanel(false);
     }
     return (
         <div className="d-flex justify-content-between">
@@ -159,7 +168,7 @@ const BackgroundCommentComponent = (Props: any) => {
             </div>
             <div className="Background_Comment col-8 full-width ps-3">
                 <p className="siteColor mb-0">Comments</p>
-                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any) => {
+                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index:any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
@@ -173,7 +182,7 @@ const BackgroundCommentComponent = (Props: any) => {
                                     </span>
                                     <span>
                                         <a className="ps-1"
-                                            onClick={() => openEditModal(dataItem.ID, dataItem.Body)}
+                                            onClick={() => openEditModal(Index, dataItem.Body)}
                                         // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
@@ -221,13 +230,19 @@ const BackgroundCommentComponent = (Props: any) => {
                 >
                     <div className="parentDiv">
                         <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
-                            <textarea id="txtUpdateComment" rows={6} defaultValue={UpdateCommentData} onChange={(e) => updateCommentFunction(e)} style={{ width: '100%', marginLeft: '3px' }}>
+                            <textarea
+                                id="txtUpdateComment"
+                                rows={6}
+                                defaultValue={UpdateCommentData}
+                                onChange={(e) => setUpdateCommentData(e.target.value)}
+                                style={{ width: '100%', marginLeft: '3px' }}
+                            >
                             </textarea>
                         </div>
                         <footer className="d-flex justify-content-between ms-3 mx-2">
 
                             <div>
-                                <button className="btn btnPrimary" onClick={editPostCloseFunction}>
+                                <button className="btn btnPrimary" onClick={ChangeCommentFunction}>
                                     Save
                                 </button>
                                 <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
