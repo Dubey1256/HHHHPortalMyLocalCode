@@ -6,6 +6,7 @@ import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSele
 import Button from 'react-bootstrap/Button';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent';
 import PortfolioTagging from './PortfolioTagging';
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 let portfolioType = '';
 let AllListId:any={};
 const AddProject = (props: any) => {
@@ -57,6 +58,24 @@ const AddProject = (props: any) => {
         setLgShow(false)
 
     }
+      const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        if (functionType == 'close') {
+            setIsComponent(false);
+            setIsPortfolio(false);
+          } else {
+            if (Type === "Service") {
+              if (DataItem.length > 0) {
+                setLinkedComponentData(DataItem);
+            }
+          }
+            if (Type === "Component") {
+              if (DataItem?.length > 0) {
+                  setSmartComponentData(DataItem);
+              }
+            }
+            setIsPortfolio(false);
+          }
+  }, [])
     const Call = (propsItems: any, type: any) => {
         setIsPortfolio(false);
         if (type === "Service") {
@@ -82,6 +101,31 @@ const AddProject = (props: any) => {
         setIsComponent(!IsComponent);
     }
     const EditPortfolio = (item: any, type: any) => {
+        if (type == "Component") {
+          if (item.Component != undefined) {
+            item.smartComponent = [];
+            if (item.smartComponent != undefined) {
+              smartComponentData?.map((com: any) => {
+                item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
+              });
+            }
+          }
+        } else if (type == "Service") {
+          if (item.Services != undefined) {
+            item.smartService = [];
+            if (item.smartService != undefined) {
+              linkedComponentData?.map((com: any) => {
+                item.smartService.push({ Title: com?.Title, Id: com?.Id });
+              });
+            }
+          }
+        }
+    
+        portfolioType = type;
+        setIsPortfolio(true);
+        setShareWebComponent(item);
+      };
+    const EditPortfolio1 = (item: any, type: any) => {
         if (type == 'Component') {
             item.smartComponent = [];
             if (item.smartComponent != undefined) {
@@ -160,7 +204,7 @@ const AddProject = (props: any) => {
                                                         <span className="d-flex full-width Component-container-edit-task" >
                                                             <a style={{ color: "#fff !important" }} target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                             <a>
-                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagComponent(smartComponentData, index)} className="svg__iconbox svg__icon--cross hreflink"></span>
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagComponent(smartComponentData, index)} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                             </a>
                                                         </span>
                                                     </>
@@ -189,22 +233,22 @@ const AddProject = (props: any) => {
                                 </div>
                                 {
                                     linkedComponentData?.length > 0 ?
-                                        <span className="full-width">
+                                        <div className="full-width ">
                                             {linkedComponentData?.map((com: any, index: any) => {
                                                 return (
                                                     <>
-                                                        <span className="d-flex Component-container-edit-task" >
+                                                        <span className="Component-container-edit-task block d-flex justify-content-between " >
 
                                                             <a className="hreflink " target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                 {com.Title}
                                                             </a>
-                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagService(linkedComponentData, index)} className="svg__iconbox svg__icon--cross hreflink"></span>
+                                                            <span style={{ marginLeft: "6px" }}onClick={() => unTagService(linkedComponentData, index)} className="bg-light svg__icon--cross svg__iconbox"></span>
 
                                                         </span>
                                                     </>
                                                 )
                                             })}
-                                        </span> : ""
+                                        </div> : ""
                                 }
 
                             </div>
@@ -213,8 +257,16 @@ const AddProject = (props: any) => {
                     </div>
                 </div>
             </Panel>
-
-            {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>}
+            {IsPortfolio && (
+            <ServiceComponentPortfolioPopup
+              props={ShareWebComponent}
+              Dynamic={props?.AllListId}
+              ComponentType={portfolioType}
+              Call={ComponentServicePopupCallBack}
+              selectionType={"Multi"}
+            ></ServiceComponentPortfolioPopup>
+          )}
+            {/* {IsPortfolio && <PortfolioTagging props={ShareWebComponent} AllListId={props?.AllListId} type={portfolioType} Call={Call}></PortfolioTagging>} */}
         </>
     )
 }

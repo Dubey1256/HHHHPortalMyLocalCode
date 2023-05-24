@@ -3547,7 +3547,7 @@ function ComponentTable(SelectedProp: any) {
         setIsComponent(true);
       }
       refreshData();
-      // rerender();
+      rerender();
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -3579,9 +3579,9 @@ function ComponentTable(SelectedProp: any) {
       //     checkedList[0].childs.unshift(item.data);
       // else
       array.unshift(item.data);
-      // setData((array) => [...array]);
+      setData((array) => [...array]);
       refreshData();
-      // rerender();
+      rerender();
     }
     setAddModalOpen(false);
   }, []);
