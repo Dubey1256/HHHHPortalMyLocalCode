@@ -731,6 +731,19 @@ const TaskDashboard = (props: any) => {
                     TaskUsers={taskUsers}
                 />,
             },
+            // {
+            //     internalHeader: "Estimated Time",
+            //     showSortIcon: true,
+            //     accessor: "EstimatedTime",
+            //     style: { width: '80px' },
+            //     Cell: ({ row }: any) => <InlineEditingcolumns
+            //         AllListId={AllListId}
+            //         callBack={inlineCallBack}
+            //         columnName="EstimatedTime"
+            //         item={row?.original}
+            //         TaskUsers={taskUsers}
+            //     />,
+            // },
 
             {
                 internalHeader: "% Complete",
@@ -1667,14 +1680,22 @@ const TaskDashboard = (props: any) => {
         let to: any = ["ranu.trivedi@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
-
+        let taskUsersGroup=groupedUsers;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
             var subject = "Today's Working Tasks of All Team";
-            groupedUsers?.map((userGroup: any) => {
+            taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team") {
-
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team"||userGroup.Title=="Smalsus Lead Team") {
+                    if(userGroup.Title=="Smalsus Lead Team"){
+                        userGroup.childBackup=userGroup?.childs;
+                        userGroup.childs=[];
+                        userGroup?.childBackup?.map((user:any)=>{
+                            if(user?.Title=='Ranu Trivedi'){
+                                userGroup.childs.push(user);
+                            }
+                        })
+                    }
                     userGroup?.childs?.map((teamMember: any) => {
                         let body: any = '';
                         let body1: any = [];
