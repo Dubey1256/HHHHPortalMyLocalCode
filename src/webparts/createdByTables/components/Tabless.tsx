@@ -947,7 +947,7 @@ const Tabless = (props: any) => {
               setData(array);
             }else{
               if(checked && value=='Component'){
-                setData(data);
+                setData(data);   
            }else{
              setData(copyData);
            }
