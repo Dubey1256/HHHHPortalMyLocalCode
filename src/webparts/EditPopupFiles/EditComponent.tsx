@@ -47,6 +47,8 @@ var Backupdata: any = [];
 var BackupCat: any = "";
 let web:any='';
 let RequireData:any={};
+
+var CheckCategory: any = [];
 function EditInstitution({item,SelectD,Calls}: any) {
   // Id:any
    
@@ -616,6 +618,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const GetSmartmetadata = async () => {
    
     let smartmetaDetails = [];
+    let categoryhh: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
@@ -632,8 +635,15 @@ function EditInstitution({item,SelectD,Calls}: any) {
       smartmetaDetails.forEach(function (val: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
+        } if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title == "Email Notification" || val.Title == "Approval" || val.Title == "Immediate")) {
+          categoryhh.push(val);
         }
       });
+      CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+
+        return array.indexOf(val) == id;
+
+      })
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -1007,14 +1017,21 @@ function EditInstitution({item,SelectD,Calls}: any) {
         }
       });
     }
-    if (NewArray != undefined && NewArray.length > 0) {
-      CategoriesData=[]
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
+    CheckCategory?.forEach((itemm: any, index: any) => {
+      if (itemm.isChecked == true) {
+        array2.push(itemm)
+      }
+    })
+    if(array2 != undefined && array2.length>0 ){
+      array2.map((item:any)=>{
+         if(item.isselected == true || item.isChecked == true){
+          NewArray.push(item)
+         }
+      })
+    //  NewArray = array2
     }
     var categoriesItem = "";
-    CategoriesData.map((category) => {
+    CheckCategory.map((category:any) => {
       if (category.Title != undefined) {
         categoriesItem =
           categoriesItem == ""
@@ -1023,11 +1040,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
     });
     var CategoryID: any = [];
-    CategoriesData.map((category) => {
+    CheckCategory.map((category:any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
     });
+   
     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
       linkedComponentData?.map((com: any) => {
         if (
@@ -1250,18 +1268,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
+  
+  
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1422,13 +1430,36 @@ function EditInstitution({item,SelectD,Calls}: any) {
     }
   };
   var NewArray: any = [];
-  const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
-      setcheckedCat(false);
-      if (type == catTitle.Title) {
-        NewArray.push(catTitle);
-      }
-    });
+  var array2:any=[];
+  const checkCat = (type: any,e:any) => {
+
+    const { checked } = e.target;
+    if(checked == true){
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
+    }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
+
+
   };
   return (
     <>
@@ -2236,13 +2267,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     <div className="form-check">
                                       <input
                                         className="form-check-input"
-                                        defaultChecked={
-                                          BackupCat == type.Id
-                                            ? checkedCat
-                                            : false
-                                        }
+                                        defaultChecked={type.isChecked}
                                         type="checkbox"
-                                        onClick={() => checkCat(type.Title)}
+                                        onClick={(e:any) => checkCat(type,e)}
                                       />
                                       <label className="form-check-label">
                                         {type.Title}
