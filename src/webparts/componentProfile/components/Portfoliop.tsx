@@ -1315,9 +1315,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ServicePortfolio.Id}
+                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ComponentPortfolio?.Id}
                                 >
-                                  {item?.ServicePortfolio?.Title}
+                                  {item?.ComponentPortfolio?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1333,9 +1333,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ComponentPortfolio?.Id}`}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ServicePortfolio?.Id}`}
                                 >
-                                  {item?.ComponentPortfolio?.Title}
+                                  {item?.ServicePortfolio?.Title}
                                 </a>
                               </div>
                             </dd>

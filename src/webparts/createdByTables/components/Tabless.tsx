@@ -66,8 +66,9 @@ const Tabless = (props: any) => {
     const [copyData, setCopyData]: any = React.useState([]);
     const [copyData1, setCopyData1]: any = React.useState([]);
     const [date, setDate]: any = React.useState({due: null, modify: null, created: null});
+    const [priorAndPerc, setPriorAndPerc]:any = React.useState({priority:true,percentage:true})
     const [selectAllChecks, setSelectAllChecks]: any = React.useState({idType:false, priority: false,  percentage: false,  catogries: false,teamMembers:false});
-    const [radio, setRadio]: any = React.useState({due: "", modify: "", created: "", priority: "", percentage: ""});
+    const [radio, setRadio]: any = React.useState({due: true, modify: true, created: true, priority: true, percentage: true});
     const fileType ="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     
@@ -99,6 +100,7 @@ const Tabless = (props: any) => {
             {
                 internalHeader: 'Categories',
                 accessor: 'Categories',
+                style: { width: '180px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <div>
@@ -147,7 +149,7 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Editor?.Id}&Name=${row?.original?.Editor?.Title}`}>
                         {row?.original?.newModified}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.editorImg} /></span>
                         </a>
@@ -161,7 +163,7 @@ const Tabless = (props: any) => {
                 style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <div>
-                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
+                        <a style={{textDecoration:'none',cursor:'pointer'}} className={row.original.Services.length >= 1 && 'text-success'} target='_blank' href={`${props.Items.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}>
                         {row?.original?.newCreated}
                         <span><img style={{ width: "25px", height: '25px', borderRadius: '20px' }} src={row?.original?.authorImg} /></span>
                         </a>
@@ -347,6 +349,7 @@ const Tabless = (props: any) => {
     const listFilters1=()=>{
         let newData=copyData;
 
+
         if (checkedValues.length >= 1 && filteringColumn.idType) {
           let localArray: any = [];
           newData?.map((alldataitem: any) => {
@@ -358,6 +361,7 @@ const Tabless = (props: any) => {
           });
           newData = localArray;
         }
+        
 
             if (filterCatogries.length >= 1 && filteringColumn.catogries) {
               let localArray: any = [];
@@ -376,33 +380,60 @@ const Tabless = (props: any) => {
               newData?.map((alldataitem: any) => {
                 let percent = parseInt(alldataitem.percentage);
                 checkPercentages?.map((item: any) => {
-                  if (radio.percentage == "==") {
-                    if (percent == item) {
-                      localArray.push(alldataitem);
+                    if (radio.percentage == "==" || radio.percentage == true) {
+                      if (percent == item) {
+                        localArray.push(alldataitem);
+                      }
+                    } else if (radio.percentage == ">") {
+                      if (percent > item) {
+                        localArray.push(alldataitem);
+                      }
+                    } else if (radio.percentage == "<") {
+                      if (percent < item) {
+                        localArray.push(alldataitem);
+                      }
+                    } else {
+                      if (percent != item) {
+                        localArray.push(alldataitem);
+                      }
                     }
-                  } else if (radio.percentage == ">") {
-                    if (percent > item) {
-                      localArray.push(alldataitem);
-                    }
-                  } else if (radio.percentage == "<") {
-                    if (percent < item) {
-                      localArray.push(alldataitem);
-                    }
-                  } else {
-                    if (percent != item) {
-                      localArray.push(alldataitem);
-                    }
-                  }
-                });
+                  });
               });
               newData = localArray;
+            }else{
+              if(priorAndPerc.percentage !== true){
+                let localArray: any = [];
+                newData?.map((alldataitem: any) => {
+                  let percent = parseInt(alldataitem.percentage);
+                      if (radio.percentage == "==" || radio.percentage == true) {
+                        if (percent == parseInt(priorAndPerc.percentage)) {
+                          localArray.push(alldataitem);
+                        }
+                      } else if (radio.percentage == ">") {
+                        if (percent > parseInt(priorAndPerc.percentage)) {
+                          localArray.push(alldataitem);
+                        }
+                      } else if (radio.percentage == "<") {
+                        if (percent < parseInt(priorAndPerc.percentage)) {
+                          localArray.push(alldataitem);
+                        }
+                      } else {
+                        if (percent != parseInt(priorAndPerc.percentage)) {
+                          localArray.push(alldataitem);
+                        }
+                      }
+                });
+                newData = localArray;
+              }
             }
+
+
 
             if (checkPrioritys.length >= 1 && filteringColumn.priority) {
               let localArray: any = [];
               newData?.map((alldataitem: any) => {
                 checkPrioritys?.map((item: any) => {
-                  if (radio.priority == "==") {
+                  if (radio.priority == "==" || radio.priority == true) {
                     if (alldataitem.priority == item) {
                       localArray.push(alldataitem);
                     }
@@ -422,7 +453,34 @@ const Tabless = (props: any) => {
                 });
               });
               newData = localArray;
+            }else{
+              if(priorAndPerc.priority !== true){
+                let localArray: any = [];
+                newData?.map((alldataitem: any) => {
+                    if (radio.priority == "==" || radio.priority == true) {
+                      if (alldataitem.priority == parseInt(priorAndPerc.priority) ) {
+                        localArray.push(alldataitem);
+                      }
+                    } else if (radio.priority == ">") {
+                      if (alldataitem.priority > parseInt(priorAndPerc.priority)) {
+                        localArray.push(alldataitem);
+                      }
+                    } else if (radio.priority == "<") {
+                      if (alldataitem.priority < parseInt(priorAndPerc.priority)) {
+                        localArray.push(alldataitem);
+                      }
+                    } else {
+                      if (alldataitem.priority != parseInt(priorAndPerc.priority)) {
+                        localArray.push(alldataitem);
+                      }
+                    }
+                
+                });
+                newData = localArray;
+              }
             }
+
+
 
             if (checkTeamMembers.length >= 1 && filteringColumn.teamMembers) {
               let localArray: any = [];
@@ -448,7 +506,7 @@ const Tabless = (props: any) => {
                 newData?.map((alldataitem:any)=>{
                     let dueDate = moment(alldataitem.dueDate).format('MM/DD/YYYY');
                     let filterDate = moment(date.due).format('MM/DD/YYYY');
-                    if(radio.due == "=="){
+                    if(radio.due == "==" || radio.due == true){
                         if(new Date(dueDate).getTime() == new Date(filterDate).getTime()){
                             localArray.push(alldataitem)
                          }
@@ -475,7 +533,7 @@ const Tabless = (props: any) => {
                 newData?.map((alldataitem:any)=>{
                     let created = moment(alldataitem.created).format('MM/DD/YYYY');
                     let filterDate = moment(date.created).format('MM/DD/YYYY');
-                    if(radio.created == "=="){
+                    if(radio.created == "==" || radio.created == true){
                         if(new Date(created).getTime() == new Date(filterDate).getTime()){
                             localArray.push(alldataitem)
                          }
@@ -501,7 +559,7 @@ const Tabless = (props: any) => {
                 newData?.map((alldataitem:any)=>{
                     let modify = moment(alldataitem.modified).format('MM/DD/YYYY');
                     let filterDate = moment(date.modify).format('MM/DD/YYYY');
-                    if(radio.modify == "=="){
+                    if(radio.modify == "==" || radio.modify == true){
                         if(new Date(modify).getTime() == new Date(filterDate).getTime()){
                             localArray.push(alldataitem)
                          }
@@ -533,7 +591,7 @@ const Tabless = (props: any) => {
       setCheckTeamMembers([]);
       setCheckedValues([]);
       setDate({ ...date, due: null , modify: null, created: null});
-      setRadio({ ...radio, percentage: false,priority: false,due: false , created: null,modify: null});
+      setRadio({ ...radio, percentage: true,priority: true,due: true , created: true,modify: true});
       setSelectAllChecks({...selectAllChecks,idType:false,percentage: false,priority: false,catogries:false,teamMembers:false})
       getTaskUserData();
     }
@@ -556,7 +614,7 @@ const Tabless = (props: any) => {
         case "percentage":
           filteringColumn = { ...filteringColumn, percentage: false };
            setSelectAllChecks({...selectAllChecks,percentage:false})
-          setRadio({ ...radio, percentage: false });
+          setRadio({ ...radio, percentage: true });
           setCheckPercentage([]);
           listFilters1();
           break;
@@ -564,7 +622,7 @@ const Tabless = (props: any) => {
         case "priority":
           filteringColumn = { ...filteringColumn, priority: false };
           setSelectAllChecks({...selectAllChecks,priority:false})
-          setRadio({ ...radio, priority: false });
+          setRadio({ ...radio, priority: true });
           setCheckPriority([]);
           listFilters1();
           break;
@@ -572,21 +630,21 @@ const Tabless = (props: any) => {
         case "newDueDate":
           filteringColumn = { ...filteringColumn, due: false };
           setDate({ ...date, due: null });
-          setRadio({ ...radio, due: false });
+          setRadio({ ...radio, due: true });
           listFilters1();
           break;
 
         case "newModified":
           filteringColumn = { ...filteringColumn, modify: false };
           setDate({ ...date, modify: null });
-          setRadio({ ...radio, modify: false });
+          setRadio({ ...radio, modify: true });
           listFilters1();
           break;
 
         case "newCreated":
           filteringColumn = { ...filteringColumn, created: false };
           setDate({ ...date, created: null });
-          setRadio({ ...radio, created: false });
+          setRadio({ ...radio, created: true });
           listFilters1();
           break;
           case "TeamMembersSearch":
@@ -610,7 +668,7 @@ const Tabless = (props: any) => {
           if(checked){
             setSelectAllChecks({...selectAllChecks,idType:e.target.checked})
             let arrayTeam:any=[];
-            allLists.map((item:any)=>{
+            allLists?.map((item:any)=>{
               arrayTeam.push(item.Title);
               
             })
@@ -668,7 +726,7 @@ const Tabless = (props: any) => {
             if(checked){
               setSelectAllChecks({...selectAllChecks,teamMembers:e.target.checked})
               let arrayTeam:any=[];
-              taskUser.map((item:any)=>{
+              taskUser?.map((item:any)=>{
                 arrayTeam.push(item.Title);
                 
               })
@@ -729,7 +787,7 @@ const Tabless = (props: any) => {
         .filter("TaxType eq 'Sites' or TaxType eq 'Categories'")
         .getAll()
         .then((data) => {
-          data.map((item: any) => {
+          data?.map((item: any) => {
             if (item.TaxType == "Sites") {
               sites.push(item);
               if (item.Title != "DRR" && item.Title != "Master Tasks" && item.Title != "SDC Sites" && item.Configurations != null)
@@ -778,8 +836,8 @@ const Tabless = (props: any) => {
             .filter(`(substringof('${QueryId}', Author/Title)) and PercentComplete le 0.96`).top(5000)
             .getAll()
             .then((data: any) => {
-                data.map((dataItem: any) => {
-                    userlists.map((userItem: any) => {
+                data?.map((dataItem: any) => {
+                    userlists?.map((userItem: any) => {
                         dataItem.percentage = dataItem.PercentComplete * 100 + "%";
             
                         if ((dataItem.SharewebTaskType == undefined  ? null  : dataItem.SharewebTaskType.Title) === "Activities") {
@@ -827,6 +885,7 @@ const Tabless = (props: any) => {
                         ID: dataItem.Id,
                         priority:dataItem.Priority_x0020_Rank,
                         Author: dataItem.Author,
+                        Editor: dataItem.Editor,
                         Team_x0020_Members: dataItem.Team_x0020_Members,
                         Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
                         AssignedTo: dataItem.AssignedTo,
@@ -837,6 +896,7 @@ const Tabless = (props: any) => {
                         Services:dataItem.Services,
                         listId:items.listId,
                         site:items.siteName,
+                        siteType:items.siteName,
                     });
 
                 });
@@ -855,34 +915,61 @@ const Tabless = (props: any) => {
 
 
     const filterCom = (e: any) => {
+      let data1:any=copyData;
       let array: any = [];
       let { checked, value } = e.target;
-      if (checked && value == "Component") {
-        data?.map((item: any) => {
-          if (item.Component.length >= 1) {
-            array.push(item);
+      switch(value){
+        case 'Component' :
+          if(checked){
+            data1?.map((item: any) => {
+              if (item.Component.length >= 1) {
+                array.push(item);
+              }
+            });
+            setData(array);
+          }else{
+            if(checked && value=='Services'){
+                 setData(data);
+            }else{
+              setData(copyData);
+            }
+            
           }
-        });
-        setData(array);
-      } else {
-        setData(copyData);
-      }
-    };
+          break;
 
-const filterServ = (e: any) => {
-  let array: any = [];
-  let { checked, value } = e.target;
-  if (checked && value == "Services") {
-    data?.map((item: any) => {
-      if (item.Services.length >= 1) {
-        array.push(item);
-      }
-    });
-    setData(array);
-  } else {
-    setData(copyData);
-  }
-};
+          case 'Services' :
+            if(checked){
+              data1?.map((item: any) => {
+                if (item.Services.length >= 1) {
+                  array.push(item);
+                }
+              });
+              setData(array);
+            }else{
+              if(checked && value=='Component'){
+                setData(data);   
+           }else{
+             setData(copyData);
+           }
+              
+            }
+            break;
+          }};
+
+// const filterServ = (e: any) => {
+//   let array: any = [];
+//   let { checked, value } = e.target;
+//   if (checked && value == "Services") {
+//     data?.map((item: any) => {
+//       if (item.Services.length >= 1) {
+//         array.push(item);
+//       }
+//     });
+//     setData(array);
+//   } else {
+//     setData(copyData);
+//   }
+// };
 
 const downloadExcel = (csvData: any, fileName: any) => {
   const ws = XLSX.utils.json_to_sheet(csvData);
@@ -903,14 +990,17 @@ const downloadExcel = (csvData: any, fileName: any) => {
     return (
       
         <div >
-             <div><h3 className="siteColor">Created By - {queryId}</h3></div>
+             <div className='row'>
+              <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
+              <div className='col d-flex justify-content-end align-items-end'><a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a></div>
+             </div>
            
             <div  className='Alltable mt-2 ' id={tablecontiner}>
         <div className='justify-content-between tbl-headings'>
             <span className='leftsec'> <span className='me-1'>Showing {data.length} of {copyData1.length >= 1 ? copyData1.length : copyData.length} Tasks </span><span> <input value={globalFilter || ''} onChange={(e:any)=>setGlobalFilter(e.target.value)} placeholder='Search in all tasks' /></span> </span> 
             <span className='toolbox'>
             <input className='me-1' type="checkbox" value={'Component'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Component</label>
-                        <input className='me-1' type="checkbox" value={'Services'} onChange={(e:any)=>filterServ(e)} /> <label className='me-2'>Services</label>
+                        <input className='me-1' type="checkbox" value={'Services'} onChange={(e:any)=>filterCom(e)} /> <label className='me-2'>Services</label>
                         <a onClick={clearAllFilters} className='brush'>
                             <FaPaintBrush/>
                         </a>
@@ -925,9 +1015,9 @@ const downloadExcel = (csvData: any, fileName: any) => {
             
             <Table className="SortingTable filtertable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
-                    {headerGroups.map((headerGroup: any) => (
+                    {headerGroups?.map((headerGroup: any) => (
                         <tr  {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map((column: any) => (
+                            {headerGroup.headers?.map((column: any) => (
                                 <th className='position-relative'  {...column.getHeaderProps()} style={column?.style}>
                            <div className='w80 position-relative'>
                                 <span class="Table-SortingIcon" {...column.getSortByToggleProps()} >
@@ -950,7 +1040,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                        <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.idType} onChange={(e:any)=>selectAll(e)}   value={'idType'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
-                                            {allLists.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
+                                            {allLists?.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
                                                  <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                   </div> }
@@ -960,7 +1050,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                         <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.percentage} onChange={(e:any)=>selectAll(e)}  value={'percentage'} /> <label>Select All</label> </span></li>
                                        <dl>
-                                        {checkPercentage.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /><label> {item}</label></dt>)}
+                                        {checkPercentage?.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /><label> {item}</label></dt>)}
                                           </dl>
                                           <div>
                                             <li>
@@ -969,6 +1059,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                                 <span><input type='radio' name='percentage' checked={radio.percentage=='<'} value={'<'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'<'}</label> </span>
                                                 <span><input type='radio' name='percentage' checked={radio.percentage=='!='} value={'!='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'!='}</label> </span>
                                             </li>
+                                            <span><input type='number' value={priorAndPerc.percentage}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,percentage:e.target.value})}  /></span>
                                             </div>
                                           <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                           </div>}
@@ -978,7 +1069,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                            <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.catogries} onChange={(e:any)=>selectAll(e)}  value={'Categories'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
-                                        {catogries.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
+                                        {catogries?.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
@@ -988,7 +1079,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                            <div className="dropdown-menu p-2 ">
                                            <li><span><input type='checkbox' checked={selectAllChecks.priority} onChange={(e:any)=>selectAll(e)}  value={'priority'} /> <label>Select All</label> </span></li>
                                           <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
-                                        {checkPriority.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
+                                        {checkPriority?.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
                                             <div>
                                             <li>
@@ -997,6 +1088,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                                 <span><input type='radio' name='priority' value={'<'} checked={radio.priority=='<'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'<'}</label> </span>
                                                 <span><input type='radio' name='priority' value={'!='} checked={radio.priority=='!='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
+                                            <span><input type='number' value={priorAndPerc.priority}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,priority:e.target.value})}  /></span>
                                             </div>
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
@@ -1049,7 +1141,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                                            <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.teamMembers} onChange={(e:any)=>selectAll(e)}  value={'TeamMembersSearch'} /> <label>Select All</label> </span></li>
                                        <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
-                                        {taskUser.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
+                                        {taskUser?.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
                                             </ul> 
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
@@ -1068,7 +1160,7 @@ const downloadExcel = (csvData: any, fileName: any) => {
                         prepareRow(row)
                         return (
                             <tr {...row.getRowProps()}  >
-                                {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                {row.cells?.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
                                     return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                 })}
                             </tr>

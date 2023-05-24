@@ -50,7 +50,8 @@ import SmartTotalTime from './SmartTimeTotal';
 // import SiteComposition from "../SiteComposition";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CurrentUser } from "sp-pnp-js/lib/sharepoint/siteusers";
+import BackgroundCommentComponent from "./BackgroundCommentComponent";
+
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -366,7 +367,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -376,7 +377,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -540,6 +541,7 @@ const EditTaskPopup = (Items: any) => {
                 item.siteUrl = siteUrls;
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
+                item.listId = Items.Items.listId;
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -711,11 +713,31 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     setServicesTaskCheck(false)
                 }
+
+                if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
+                    let BackgroundComments: any = JSON.parse(item.OffshoreComments);
+                    if (BackgroundComments != undefined && BackgroundComments.length > 0) {
+                        item.BackgroundComments = BackgroundComments
+                    } else {
+                        item.BackgroundComments = []
+                    }
+                }
+
+                if (item.OffshoreImageUrl != null || item.OffshoreImageUrl != undefined) {
+                    let BackgroundImages: any = JSON.parse(item.OffshoreImageUrl);
+                    if (BackgroundImages != undefined && BackgroundImages.length > 0) {
+                        item.BackgroundImages = BackgroundImages
+                    } else {
+                        item.BackgroundImages = []
+                    }
+                }
+
                 setEditData(item)
                 if (item.Component != undefined && item.Component.length > 0) {
                     let PortfolioId: any = item.Component[0].Id;
                     GetPortfolioSiteComposition(PortfolioId)
                 }
+
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details form backend  ==================", item)
@@ -1151,7 +1173,7 @@ const EditTaskPopup = (Items: any) => {
             if (type == "Phone") {
                 setPhoneStatus(false)
             }
-            if (type == "Email") {
+            if (type == "Email Notification") {
                 setEmailStatus(false)
             }
             if (type == "Immediate") {
@@ -1167,20 +1189,32 @@ const EditTaskPopup = (Items: any) => {
             if (tempCategoryData != undefined) {
                 let CheckTaggedCategory = tempCategoryData.includes(type)
                 if (CheckTaggedCategory == false) {
+                    let CheckTaagedCategory: any = true;
                     let category: any = tempCategoryData + ";" + type;
                     setCategoriesData(category);
                     tempCategoryData = category;
-                    let tempObject = {
-                        Title: type,
-                        Id: Id
+                    if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                        tempShareWebTypeData.map((tempItem: any) => {
+                            if (tempItem.Title == type) {
+                                CheckTaagedCategory = false;
+                            }
+                        })
                     }
-                    ShareWebTypeData.push(tempObject);
-                    tempShareWebTypeData.push(tempObject);
+                    if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                        AutoCompleteItemsArray.map((dataItem: any) => {
+                            if (dataItem.Title == type) {
+                                if (CheckTaagedCategory) {
+                                    ShareWebTypeData.push(dataItem);
+                                    tempShareWebTypeData.push(dataItem);
+                                }
+                            }
+                        })
+                    }
                     // setSearchedCategoryData(tempShareWebTypeData);
                     if (type == "Phone") {
                         setPhoneStatus(true)
                     }
-                    if (type == "Email") {
+                    if (type == "Email Notification") {
                         setEmailStatus(true)
                     }
                     if (type == "Immediate") {
@@ -2512,7 +2546,7 @@ const EditTaskPopup = (Items: any) => {
                 (async () => {
                     let web = new Web(siteUrls);
                     let item = web.lists.getById(listId).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data).then(()=>{
+                    item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
                         UpdateBasicImageInfoJSON(DataJson);
                     });
@@ -2522,7 +2556,7 @@ const EditTaskPopup = (Items: any) => {
                 (async () => {
                     let web = new Web(siteUrls);
                     let item = web.lists.getByTitle(listName).items.getById(Id);
-                    item.attachmentFiles.add(imageName, data).then(()=>{
+                    item.attachmentFiles.add(imageName, data).then(() => {
                         console.log("Attachment added");
                         UpdateBasicImageInfoJSON(DataJson);
                     });
@@ -2530,7 +2564,7 @@ const EditTaskPopup = (Items: any) => {
                 })().catch(console.log)
             }
         }, 2500);
-    }  
+    }
 
 
     const UpdateBasicImageInfoJSON = async (JsonData: any) => {
@@ -3036,6 +3070,9 @@ const EditTaskPopup = (Items: any) => {
 
 
 
+    // This is for the Background Comment section Functions 
+
+
     // ************** this is custom header and custom Footers section functions for panel *************
 
     const onRenderCustomHeaderMain = () => {
@@ -3044,7 +3081,7 @@ const EditTaskPopup = (Items: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
-                        {`${EditData.TaskId} ${EditData.Title}`}
+                        {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -3333,10 +3370,42 @@ const EditTaskPopup = (Items: any) => {
 
                     <div className="modal-body mb-5">
                         <ul className="nav nav-tabs" id="myTab" role="tablist">
-                            <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
+                            <button
+                                className="nav-link active"
+                                id="BASIC-INFORMATION"
+                                data-bs-toggle="tab"
+                                data-bs-target="#BASICINFORMATION"
+                                type="button"
+                                role="tab"
+                                aria-controls="BASICINFORMATION"
+                                aria-selected="true"
+                            >
                                 BASIC INFORMATION
                             </button>
-                            <button className="nav-link" id="NEW-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#NEWTIMESHEET" type="button" role="tab" aria-controls="NEWTIMESHEET" aria-selected="false">TIMESHEET</button>
+                            <button
+                                className="nav-link"
+                                id="NEW-TIME-SHEET"
+                                data-bs-toggle="tab"
+                                data-bs-target="#NEWTIMESHEET"
+                                type="button"
+                                role="tab"
+                                aria-controls="NEWTIMESHEET"
+                                aria-selected="false"
+                            >
+                                TEAM & TIMESHEET
+                            </button>
+                            <button
+                                className="nav-link"
+                                id="BACKGROUND-COMMENT"
+                                data-bs-toggle="tab"
+                                data-bs-target="#BACKGROUNDCOMMENT"
+                                type="button"
+                                role="tab"
+                                aria-controls="BACKGROUNDCOMMENT"
+                                aria-selected="false"
+                            >
+                                BACKGROUND
+                            </button>
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -3451,7 +3520,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 className="form-control"
                                                                 value={SearchedServiceCompnentKey}
                                                                 onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                placeholder="Select Service / Component And Search Here"
+                                                                placeholder="Select Componets / Service And Search Here"
                                                             />
                                                         </>
                                                     }
@@ -3507,7 +3576,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <ul className="list-group">
                                                             {SearchedServiceCompnentData.map((Item: any) => {
                                                                 return (
-                                                                    <li className= "hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
                                                                         <a>{Item.NewLeble}</a>
                                                                     </li>
                                                                 )
@@ -3557,7 +3626,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Email", 276)}
+                                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -4282,7 +4351,7 @@ const EditTaskPopup = (Items: any) => {
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {EditData.Title != null && AllListIdData.isShowSiteCompostion ?
+                                        {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
                                             <>
                                                 {SiteTypes != undefined && SiteTypes.length > 0 ?
                                                     <SiteCompositionComponent
@@ -4306,6 +4375,19 @@ const EditTaskPopup = (Items: any) => {
 
                                     </div>
                                 </div>
+                            </div>
+                            <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
+                                {
+                                    EditData.Id != null || EditData.Id != undefined ?
+                                        <BackgroundCommentComponent
+                                            CurrentUser={currentUserData}
+                                            TaskData={EditData}
+                                            Context={Context}
+                                            siteUrls={siteUrls}
+                                        />
+                                        : null
+                                }
+
                             </div>
                         </div>
                         {/* </>
@@ -4658,7 +4740,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
-                                                                            onClick={(e) => CategoryChange(e, "Email", 276)}
+                                                                            onClick={(e) => CategoryChange(e, "Email Notification", 276)}
                                                                         />
                                                                         <label>Email Notification</label>
                                                                         <div className="form-check ms-2">
