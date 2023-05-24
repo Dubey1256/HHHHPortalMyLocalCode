@@ -1030,6 +1030,14 @@ function EditInstitution({item,SelectD,Calls}: any) {
       })
     //  NewArray = array2
     }
+    if (NewArray != undefined && NewArray.length > 0) {
+      CheckCategory = []
+      NewArray.map((NeitemA: any) => {
+        CheckCategory.push(NeitemA);
+      });
+    } else {
+      CheckCategory = []
+    }
     var categoriesItem = "";
     CheckCategory.map((category:any) => {
       if (category.Title != undefined) {
