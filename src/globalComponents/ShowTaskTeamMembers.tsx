@@ -116,7 +116,7 @@ function ShowTaskTeamMembers(item: any) {
                   <>
                     <span className="user_Member_img">
                       <a
-                        href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                        href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUserId}&Name=${rcData.Title}`}
                         target="_blank"
                         data-interception="off"
                         title={rcData.Title}
@@ -136,7 +136,7 @@ function ShowTaskTeamMembers(item: any) {
               ItemNew["AllTeamMembers"].length > 0 ? (
               <div className="  ">
                 <a
-                  href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].Id}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
+                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${ItemNew["AllTeamMembers"][0].AssingedToUserId}&Name=${ItemNew["AllTeamMembers"][0].Title}`}
                   target="_blank"
                   data-interception="off"
                   title={ItemNew["AllTeamMembers"][0].Title}
@@ -174,7 +174,7 @@ function ShowTaskTeamMembers(item: any) {
                             >
                               <span>
                                 <a
-                                  href={`${siteUrl}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData.Id}&Name=${rcData.Title}`}
+                                  href={`${siteUrl}/SitePages/TaskDashboard.aspx?UserId=${rcData?.AssingedToUserId}&Name=${rcData.Title}`}
                                   target="_blank"
                                   data-interception="off"
                                 >

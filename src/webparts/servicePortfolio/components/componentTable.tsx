@@ -3547,7 +3547,7 @@ function ComponentTable(SelectedProp: any) {
         setIsComponent(true);
       }
       refreshData();
-      // rerender();
+      rerender();
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -3579,9 +3579,9 @@ function ComponentTable(SelectedProp: any) {
       //     checkedList[0].childs.unshift(item.data);
       // else
       array.unshift(item.data);
-      // setData((array) => [...array]);
+      setData((array) => [...array]);
       refreshData();
-      // rerender();
+      rerender();
     }
     setAddModalOpen(false);
   }, []);
@@ -4177,6 +4177,23 @@ function ComponentTable(SelectedProp: any) {
   //         PortfolioLevelNum = 1;
   //     }
   // }
+  const onRenderCustomHeaderMain1 = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div
+          style={{
+            marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            marginLeft: "20px",
+          }}
+        >
+          <span>{`Create Component `}</span>
+        </div>
+        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+      </div>
+    );
+  };
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
@@ -5681,7 +5698,7 @@ function ComponentTable(SelectedProp: any) {
         ></CreateWS>
       )}
       <Panel
-        headerText={` Create Component `}
+        onRenderHeader={onRenderCustomHeaderMain1}
         type={PanelType.large}
         isOpen={addModalOpen}
         isBlocking={false}
