@@ -97,7 +97,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         let taskDetails = [];
         if (this.props.ItemInfo.listId != undefined) {
             taskDetails = await web.lists
-                .getById(this.props?.ItemInfo?.listId)
+                .getById(this.props.ItemInfo.listId)
                 .items
                 .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
@@ -105,9 +105,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .get()
         } else {
             taskDetails = await web.lists
-                .getByTitle(this.props?.ItemInfo?.listName)
+                .getByTitle(this.props.ItemInfo.listName)
                 .items
-                .getById(this.props?.ItemInfo?.Id)
+                .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
                 .expand("Team_x0020_Members", "AssignedTo", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                 .get()
@@ -134,7 +134,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 }
                 this.getChilds(childItem, items);
             }
-
         }
     }
     private ResponsibleTeam: any = [];
@@ -310,55 +309,59 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         this.dropSuccessHandler(true);
     }
 
-    private onDropTeam(e: any, array: any, Team: any, AllUser: any) {
-        let $data = dragItem.user;
-        let self = this;
-        array.forEach(function (user: any, indexParent: any) {
-            if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
-                user.childs.push($data);
-            }
-        })
-        if (!self.isItemExists(array, $data.Id)) {
-            array.push($data);
-        }
-        if (Team != undefined) {
-            AllUser.forEach(function (Group: any, index: any) {
-                if (Group.childs != undefined && Group.childs.length > 0) {
-                    Group.childs.forEach(function (user: any, userindex: any) {
-                        if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
-                            Group.childs.splice(userindex, 1);
-                        }
-                    })
+    private onDropTeam(e: any, array: any, Team: any, AllUser: any, userType: any) {
+        if (dragItem.userType != userType) {
+            let $data = dragItem.user;
+            let self = this;
+            array.forEach(function (user: any, indexParent: any) {
+                if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
+                    user.childs.push($data);
                 }
             })
+            if (!self.isItemExists(array, $data.Id)) {
+                array.push($data);
+            }
+            if (Team != undefined) {
+                AllUser.forEach(function (Group: any, index: any) {
+                    if (Group.childs != undefined && Group.childs.length > 0) {
+                        Group.childs.forEach(function (user: any, userindex: any) {
+                            if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
+                                Group.childs.splice(userindex, 1);
+                            }
+                        })
+                    }
+                })
+            }
+            this.dropSuccessHandler(true);
         }
-        this.dropSuccessHandler(true);
     }
 
-    private onDropTeam1(e: any, array: any, Team: any, AllUser: any) {
-        let $data = dragItem.user;
-        let self = this;
-        array.forEach(function (user: any, indexParent: any) {
-            if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
-                user.childs.push($data);
-            }
-        })
-        if (Team != undefined) {
-            AllUser.forEach(function (Group: any, index: any) {
-                if (Group.childs != undefined && Group.childs.length > 0) {
-                    Group.childs.forEach(function (user: any, userindex: any) {
-                        if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
-                            Group.childs.splice(userindex, 1);
-                        }
-                    })
+    private onDropTeam1(e: any, array: any, Team: any, AllUser: any, userType: any) {
+        if (dragItem.userType != userType) {
+            let $data = dragItem.user;
+            let self = this;
+            array.forEach(function (user: any, indexParent: any) {
+                if (user.Title == $data.Company && !self.isItemExists(array, $data.Id)) {
+                    user.childs.push($data);
                 }
             })
-        }
+            if (Team != undefined) {
+                AllUser.forEach(function (Group: any, index: any) {
+                    if (Group.childs != undefined && Group.childs.length > 0) {
+                        Group.childs.forEach(function (user: any, userindex: any) {
+                            if ((user.AssingedToUserId != undefined && user.AssingedToUserId == $data.AssingedToUserId) || (user.Id != undefined && user.Id == $data.Id)) {
+                                Group.childs.splice(userindex, 1);
+                            }
+                        })
+                    }
+                })
+            }
 
-        if (!self.isItemExists(array, $data.Id)) {
-            array.push($data);
+            if (!self.isItemExists(array, $data.Id)) {
+                array.push($data);
+            }
+            this.dropSuccessHandler(false);
         }
-        this.dropSuccessHandler(false);
     }
 
     private dropSuccessHandler(isRemove: any) {
@@ -402,7 +405,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     Select Team Members
                                 </span>
                             </span>
-                            <span><Tooltip ComponentId="1745" /></span>
+                            <span className='mx-1'>
+                                <a target="_blank " className="text-end siteColor" href={`${this.props.AllListId?.siteUrl}/SitePages/TaskUser-Management.aspx`} data-interception="off">
+                                    Task User Management
+                                </a>
+                            </span>
                         </div>
                     </div>
                     {this.state.TeamUserExpended ?
@@ -445,10 +452,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                     <div className="d-flex p-1  UserTimeTabGray">
                                         <div className="col-sm-5 border-end p-0" >
                                             <div className="col"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers)}
+                                                onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers, 'ResponsibleTeam')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{ height: "30px" }}>
+                                                    <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
                                                         {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -463,10 +470,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         </div>
                                         <div className="col-sm-7 ">
                                             <div className="col-sm-12"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers)}
+                                                onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers, 'TeamMemberUsers')}
                                                 onDragOver={(e) => e.preventDefault()}>
                                                 <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{ height: "30px" }}>
+                                                    <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <div
                                                                 className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
@@ -486,10 +493,10 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 <div className='col-sm-3'>
                                     <h6 >Working Members</h6>
                                     <div className="col"
-                                        onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers)}
+                                        onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers, 'Assigned User')}
                                         onDragOver={(e) => e.preventDefault()}>
                                         <div className="working-box p-1" >
-                                            <div className='d-flex flex-wrap' style={{ height: "30px" }}>
+                                            <div className='d-flex flex-wrap' style={{ minHeight: "30px", height: 'auto' }}>
                                                 {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
                                                     return <div
                                                         className="ProirityAssignedUserPhoto"
@@ -512,7 +519,11 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src={(this.props?.ItemInfo?.Portfolio_x0020_Type == 'Service')||(this.props?.ItemInfo?.Services!=undefined&&this.props?.ItemInfo?.Services.length>0)?"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"}  />
+                                                src={this.props.ItemInfo.Services != undefined && this.props.ItemInfo.Services.length > 0 ?
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" :
+                                                    "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"
+                                                }
+                                            />
                                         </div>
                                     </div>
                                 </div>
