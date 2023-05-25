@@ -6,13 +6,11 @@ import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as globalCommon from '../../../globalComponents/globalCommon'
-import TimeEntry from './TimeEntry';
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
-import { Sync } from '@material-ui/icons';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 var ClientTimeArray: any = [];
@@ -1215,7 +1213,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-Ff'>
                       <div className="d-flex align-items-center">
                         {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
-                          return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
+                          return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
                             {rcData.userImage != null && <img className="imgAuthor" src={rcData?.userImage}></img>}
                             {rcData.userImage == null && <span className="imgAuthor bg-fxdark" >{rcData?.Suffix}</span>}
                           </a>
@@ -1226,14 +1224,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         }
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
-                          <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
+                          <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
                             {this.state.Result["TeamMembers"][0].userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
                             {this.state.Result["TeamMembers"][0].userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
                           </a>
                           </div>
                         }
 
-                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
+                        {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
                           {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
                           {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
                         </a>
@@ -1246,7 +1244,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                 {this.state.Result["TeamMembers"].slice(1)?.map((rcData: any, i: any) => {
 
                                   return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
-                                    <a href={`${this.state.Result["siteUrl"]}/SitePages/TeamLeader-Dashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
+                                    <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
                                       {rcData?.userImage != null && <img className={`imgAuthor ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
                                       {rcData?.userImage == null && <span className={`imgAuthor ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
@@ -1267,6 +1265,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                     </dd>
                   </dl>
+                
+                        
 
                   <dl>
                     <dt className='bg-Fa'>Status</dt>
@@ -1559,6 +1559,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
+ 
 
       </div>
     );

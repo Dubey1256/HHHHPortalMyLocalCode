@@ -367,7 +367,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -377,7 +377,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -792,31 +792,35 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const autoSuggestionsForServiceAndComponent = (e: any) => {
-        if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
-            if (ServicesTaskCheck) {
-                GetAllComponentAndServiceData("Service");
+        if (ServicesTaskCheck || ComponentTaskCheck) {
+            if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
+                if (ServicesTaskCheck) {
+                    GetAllComponentAndServiceData("Service");
+                }
+                if (ComponentTaskCheck) {
+                    GetAllComponentAndServiceData("Component");
+                }
             }
-            if (ComponentTaskCheck) {
-                GetAllComponentAndServiceData("Component");
-            }
-        }
-        let SearchedKeyWord: any = e.target.value;
-        setSearchedServiceCompnentKey(SearchedKeyWord);
-        let TempArray: any = [];
-        if (SearchedKeyWord.length > 0) {
-            if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
-                GlobalServiceAndComponentData.map((AllDataItem: any) => {
-                    if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
-                        TempArray.push(AllDataItem);
-                    }
-                })
-            }
-            if (TempArray != undefined && TempArray.length > 0) {
-                setSearchedServiceCompnentData(TempArray);
+            let SearchedKeyWord: any = e.target.value;
+            setSearchedServiceCompnentKey(SearchedKeyWord);
+            let TempArray: any = [];
+            if (SearchedKeyWord.length > 0) {
+                if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
+                    GlobalServiceAndComponentData.map((AllDataItem: any) => {
+                        if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
+                            TempArray.push(AllDataItem);
+                        }
+                    })
+                }
+                if (TempArray != undefined && TempArray.length > 0) {
+                    setSearchedServiceCompnentData(TempArray);
+                }
+            } else {
+                setSearchedServiceCompnentData([]);
+                setSearchedServiceCompnentKey("");
             }
         } else {
-            setSearchedServiceCompnentData([]);
-            setSearchedServiceCompnentKey("");
+            alert("Please Choose Component / Service For Searching!!!")
         }
     }
 
@@ -834,6 +838,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
+
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
         if (functionType == "Close") {
             if (Type == "Service") {
@@ -2080,7 +2085,8 @@ const EditTaskPopup = (Items: any) => {
             ClientTime: JSON.stringify(ClientCategoryData),
             ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
             SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
-            ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null
+            ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
+            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null
         }
 
 
@@ -4140,6 +4146,16 @@ const EditTaskPopup = (Items: any) => {
                                                         )
                                                     })}
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 mb-2">
+                                            <div className="input-group ">
+                                                <label className="form-label full-width">Estimated Time</label>
+                                                <input type="text" className="form-control"
+                                                    defaultValue={EditData.EstimatedTime}
+                                                    placeholder="Enter Estimated Time"
+                                                    onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
+                                                />
                                             </div>
                                         </div>
                                     </div>
