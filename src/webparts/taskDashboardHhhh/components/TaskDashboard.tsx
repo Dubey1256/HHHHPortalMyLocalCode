@@ -731,6 +731,19 @@ const TaskDashboard = (props: any) => {
                     TaskUsers={taskUsers}
                 />,
             },
+            // {
+            //     internalHeader: "Estimated Time",
+            //     showSortIcon: true,
+            //     accessor: "EstimatedTime",
+            //     style: { width: '80px' },
+            //     Cell: ({ row }: any) => <InlineEditingcolumns
+            //         AllListId={AllListId}
+            //         callBack={inlineCallBack}
+            //         columnName="EstimatedTime"
+            //         item={row?.original}
+            //         TaskUsers={taskUsers}
+            //     />,
+            // },
 
             {
                 internalHeader: "% Complete",
@@ -1667,14 +1680,22 @@ const TaskDashboard = (props: any) => {
         let to: any = ["ranu.trivedi@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
-
+        let taskUsersGroup=groupedUsers;
         let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
         if (confirmation) {
             var subject = "Today's Working Tasks of All Team";
-            groupedUsers?.map((userGroup: any) => {
+            taskUsersGroup?.map((userGroup: any) => {
                 let teamsTaskBody: any = [];
-                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team") {
-
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team"||userGroup.Title=="Smalsus Lead Team") {
+                    if(userGroup.Title=="Smalsus Lead Team"){
+                        userGroup.childBackup=userGroup?.childs;
+                        userGroup.childs=[];
+                        userGroup?.childBackup?.map((user:any)=>{
+                            if(user?.Title=='Ranu Trivedi'){
+                                userGroup.childs.push(user);
+                            }
+                        })
+                    }
                     userGroup?.childs?.map((teamMember: any) => {
                         let body: any = '';
                         let body1: any = [];
@@ -1892,10 +1913,10 @@ const TaskDashboard = (props: any) => {
                             <nav className="nav__item">
                                 <ul className="nav__list text-center" >
                                     <li id="DefaultViewSelectId" className={currentView == 'AllImmediateTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllImmediateTasks') }}>
-                                        Immediate
+                                        Immediate Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
-                                        Email-Notification
+                                        Email-Notification 
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'AllPriorityTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllPriorityTasks') }}>
                                         Priority Tasks
@@ -1904,7 +1925,7 @@ const TaskDashboard = (props: any) => {
                                         Approver Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allBottlenecks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
-                                        All Bottlenecks
+                                        Bottleneck Tasks
                                     </li>
                                     <li id="DefaultViewSelectId" className={currentView == 'allTasksView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
                                         All Tasks
