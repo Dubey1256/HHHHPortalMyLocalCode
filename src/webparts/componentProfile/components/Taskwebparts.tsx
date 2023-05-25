@@ -4066,7 +4066,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             ) : (
               <button
                 type="button"
-                disabled={checkedList.length >= 2}
+                disabled={checkedList.length >= 2 || props?.Item_x0020_Type == 'Feature'}
                 className="btn btn-primary"
                 onClick={addModal}
                 title=" Add Structure"
@@ -4095,6 +4095,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               type="button"
               className="btn btn-primary"
               onClick={buttonRestructuring}
+              disabled={props?.Item_x0020_Type == 'Feature'}
             >
               Restructure
             </button>
