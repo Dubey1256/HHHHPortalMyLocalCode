@@ -960,7 +960,8 @@ const Tabless = (props: any) => {
           setData(array);
       }else if(priorAndPercen.includes('Services')){
         let array: any = [];
-          data1?.map((item: any) => {
+          data1?.map((item: any) => {  
+            
             if (item.Services.length >= 1) {
               array.push(item);
             }
