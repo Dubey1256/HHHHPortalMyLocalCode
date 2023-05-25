@@ -3425,7 +3425,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                 </span>
               ) : ""}{" "}
-              {row?.original?.Title != 'Others' ? <IndeterminateCheckbox
+              {row?.original?.TitleNew != 'Tasks' ? <IndeterminateCheckbox
                 {...{
                   checked: row.getIsSelected(),
                   indeterminate: row.getIsSomeSelected(),
@@ -3436,7 +3436,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               {row?.original?.SiteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                   <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
               }
               {getValue()}
             </>
@@ -3458,6 +3458,11 @@ export default function ComponentTable({ props, NextProp }: any) {
               >
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
               </a>}
+              {row?.original.TitleNew === "Tasks" ? (
+              <span>{row?.original.Title}</span>
+            ) : (
+              ""
+            )}
               {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
