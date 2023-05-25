@@ -64,7 +64,7 @@ const AddProject = (props: any) => {
             setIsPortfolio(false);
           } else {
             if (Type === "Service") {
-              if (DataItem.length > 0) {
+              if (DataItem?.length > 0) {
                 setLinkedComponentData(DataItem);
             }
           }
@@ -102,23 +102,19 @@ const AddProject = (props: any) => {
     }
     const EditPortfolio = (item: any, type: any) => {
         if (type == "Component") {
-          if (item.Component != undefined) {
             item.smartComponent = [];
             if (item.smartComponent != undefined) {
               smartComponentData?.map((com: any) => {
                 item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
               });
             }
-          }
         } else if (type == "Service") {
-          if (item.Services != undefined) {
-            item.smartService = [];
-            if (item.smartService != undefined) {
+            item.smartComponent = [];
+            if (item.smartComponent != undefined) {
               linkedComponentData?.map((com: any) => {
-                item.smartService.push({ Title: com?.Title, Id: com?.Id });
+                item.smartComponent.push({ Title: com?.Title, Id: com?.Id });
               });
             }
-          }
         }
     
         portfolioType = type;
@@ -201,7 +197,7 @@ const AddProject = (props: any) => {
                                             smartComponentData?.map((com: any, index: any) => {
                                                 return (
                                                     <>
-                                                        <span className="d-flex full-width Component-container-edit-task" >
+                                                        <span className="Component-container-edit-task block d-flex justify-content-between" >
                                                             <a style={{ color: "#fff !important" }} target="_blank" href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                             <a>
                                                             <span style={{ marginLeft: "6px" }}onClick={() => unTagComponent(smartComponentData, index)} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -233,7 +229,7 @@ const AddProject = (props: any) => {
                                 </div>
                                 {
                                     linkedComponentData?.length > 0 ?
-                                        <div className="full-width ">
+                                        <div className="full-width serviepannelgreena">
                                             {linkedComponentData?.map((com: any, index: any) => {
                                                 return (
                                                     <>
