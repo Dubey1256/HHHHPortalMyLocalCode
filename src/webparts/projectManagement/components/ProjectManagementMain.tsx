@@ -2,7 +2,7 @@ import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaChevronDown, FaChevronRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
@@ -10,12 +10,16 @@ import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import * as Moment from "moment";
+import {
+  ColumnDef,
+} from "@tanstack/react-table";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import axios, { AxiosResponse } from "axios";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import TagTaskToProjectPopup from "./TagTaskToProjectPopup";
 import CreateTaskFromProject from "./CreateTaskFromProject";
 import * as globalCommon from "../../../globalComponents/globalCommon";
-// import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging"; // replace
+//// import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging"; // replace
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
@@ -29,13 +33,25 @@ let smartComponentData: any = [];
 let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
+var DynamicData: any = {}
+var ChildData: any = []
+var Parent: any = []
+var SubChild: any = []
+var AllData: any = []
+let AllComponentData: any = []
 var AllListId: any = {};
 var backupAllTasks: any = [];
+var MasterListData: any = []
+//var isCall = false;
+var MyAllData: any = []
+var DataSiteIcon: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
+  const [masterData, setMasterData] = React.useState([]);
   const [icon, seticon] = React.useState(false);
+  const [isCall, setIsCall] = React.useState(false);
   const [ShareWebCoseticonmponent, setShareWebComponent] = React.useState("");
   const [IsPortfolio, setIsPortfolio] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
@@ -43,9 +59,11 @@ const ProjectManagementMain = (props: any) => {
   const [AllTasks, setAllTasks] = React.useState([]);
   const [data, setData] = React.useState([]);
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+  const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
   const [Masterdata, setMasterdata] = React.useState<any>({});
   const [passdata, setpassdata] = React.useState("");
   const [projectTitle, setProjectTitle] = React.useState("");
+  const [count, setCount] = React.useState(0)
   const [projectId, setProjectId] = React.useState(null);
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
@@ -66,6 +84,7 @@ const ProjectManagementMain = (props: any) => {
   });
 
   React.useEffect(() => {
+
     try {
       isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
       isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
@@ -89,8 +108,9 @@ const ProjectManagementMain = (props: any) => {
       setIsSmartInfoAvailable(true)
     }
     getQueryVariable((e: any) => e);
-    GetMasterData();
+
     GetMetaData();
+    GetMasterData();
     try {
       $("#spPageCanvasContent").removeClass();
       $("#spPageCanvasContent").addClass("hundred");
@@ -144,6 +164,8 @@ const ProjectManagementMain = (props: any) => {
           .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
           .getById(QueryId)
           .get();
+
+
         if ((taskUsers.PercentComplete = undefined))
           taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
         if (taskUsers.Body != undefined) {
@@ -193,7 +215,9 @@ const ProjectManagementMain = (props: any) => {
           }
         });
         if (AllUsers?.length > 0) {
+
           setProjectTitle(AllUsers[0].Title);
+          setCount(count + 1)
           if (AllUsers[0].smartService != undefined && AllUsers[0].smartService.length > 0) {
             smartComponentData = AllUsers[0].smartService
           }
@@ -211,6 +235,10 @@ const ProjectManagementMain = (props: any) => {
   };
 
   // Load All Component And Services
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+  }, []);
 
   const getPortfolio = async (type: any) => {
     let result;
@@ -421,9 +449,38 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-
+  const loadAdminConfigurations = async () => {
+    if (AllListId?.AdminConfigrationListID != undefined) {
+      var CurrentSiteType = "";
+      let web = new Web(props?.siteUrl);
+      await web.lists
+        .getById(AllListId.AdminConfigrationListID)
+        .items.select(
+          "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
+        )
+        .top(4999)
+        .get()
+        .then(
+          (response) => {
+            var SmartFavoritesConfig = [];
+            $.each(response, function (index: any, smart: any) {
+              if (smart.Configurations != undefined) {
+                DataSiteIcon = JSON.parse(smart.Configurations);
+              }
+            });
+          },
+          function (error) { }
+        );
+    } else {
+      alert('Admin Configration List Id not present')
+      DataSiteIcon = [];
+    }
+  };
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
+  }, []);
+  const CreateTask = React.useCallback(() => {
+    setisOpenCreateTask(false)
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
     LoadAllSiteTasks();
@@ -437,7 +494,9 @@ const ProjectManagementMain = (props: any) => {
     // setAllTasks(backupAllTasks);
     // setData(backupAllTasks);
   }, []);
-  const LoadAllSiteTasks = function () {
+  const LoadAllSiteTasks = async function () {
+    await loadAllComponent()
+    loadAdminConfigurations();
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -554,7 +613,27 @@ const ProjectManagementMain = (props: any) => {
     });
     return component;
   };
+  const loadAllComponent = async () => {
 
+    let web = new Web(AllListId?.siteUrl);
+    MasterListData = await web.lists
+      .getById(AllListId?.MasterTaskListID)
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+      .top(4999)
+      .get().then((data) => {
+        console.log(data)
+        data?.forEach((val: any) => {
+          MyAllData.push(val)
+        })
+
+
+      }).catch((error) => {
+        console.log(error)
+      })
+
+
+  }
   React.useEffect(() => {
     if (Masterdata?.Id != undefined) {
       setItem(Masterdata);
@@ -568,6 +647,9 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     setIsPortfolio(true);
   };
+  const ClosePopup = () => {
+    setIsCall(false)
+  }
   const Call = (propsItems: any, type: any) => {
     setIsComponent(false);
     setIsPortfolio(false);
@@ -589,34 +671,38 @@ const ProjectManagementMain = (props: any) => {
   };
 
 
-  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-    if (functionType == 'close') {
-      setIsComponent(false);
-      setIsPortfolio(false);
-    } else {
-      if (Type === "Service") {
-        if (DataItem.length > 0) {
-          DataItem.map((selectedData: any) => {
-            linkedComponentData.push(selectedData);
-          })
-          TagPotfolioToProject();
-        }
-      }
-      if (Type === "Component") {
-        if (DataItem?.length > 0) {
-          DataItem.map((selectedData: any) => {
-            smartComponentData.push(selectedData);
-          })
-          TagPotfolioToProject();
-        }
-      }
-      console.log(Masterdata)
-      setIsPortfolio(false);
-    }
-  }, [])
+  // const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+  //   if (functionType == 'close') {
+  //     setIsComponent(false);
+  //     setIsPortfolio(false);
+  //   } else {
+  //     if (Type === "Service") {
+  //       if (DataItem.length > 0) {
+  //         DataItem.map((selectedData: any) => {
+  //           linkedComponentData.push(selectedData);
+  //         })
+  //         TagPotfolioToProject();
+  //       }
+  //     }
+  //     if (Type === "Component") {
+  //       if (DataItem?.length > 0) {
+  //         DataItem.map((selectedData: any) => {
+  //           smartComponentData.push(selectedData);
+  //         })
+  //         TagPotfolioToProject();
+  //       }
+  //     }
+  //     console.log(Masterdata)
+  //     setIsPortfolio(false);
+  //   }
+  // }, [])
 
   const ChangeIcon = () => {
     seticon(!icon)
+  }
+  const callParentItem = (item: any) => {
+    setSharewebComponent(item);
+    setIsCall(true)
   }
   const TagPotfolioToProject = async () => {
     if (QueryId != undefined && AllListId?.MasterTaskListID != undefined) {
@@ -666,6 +752,116 @@ const ProjectManagementMain = (props: any) => {
   //     $(".sidebar").removeAttr("collapsed");
   //   }
   // };
+  //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
+  const createOpenTask=(items:any)=>{
+    setCreateTaskId({ portfolioData: items, portfolioType: 'Component'});
+    setisOpenCreateTask(true)
+  }
+  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+    if (functionType == 'close') {
+      setIsComponent(false);
+      setIsPortfolio(false);
+    } else {
+      if (Type === "Service") {
+        if (DataItem.length > 0) {
+          DataItem.map((selectedData: any) => {
+            linkedComponentData.push(selectedData);
+          })
+          TagPotfolioToProject();
+        }
+      }
+      if (Type === "Component") {
+        if (DataItem?.length > 0) {
+          DataItem.map((selectedData: any) => {
+            smartComponentData.push(selectedData);
+          })
+          TagPotfolioToProject();
+        }
+      }
+      console.log(Masterdata)
+      setIsPortfolio(false);
+    }
+  }, [])
+  const column = React.useMemo<ColumnDef<any, unknown>[]>(
+    () => [
+      {
+        accessorKey: "",
+        size: 7,
+        canSort: false,
+        placeholder: "",
+        id:'PortfolioStructureID',
+        // header: ({ table }: any) => (
+        //   <>
+        //     <button className='border-0 bg-Ff'
+        //       {...{
+        //         onClick: table.getToggleAllRowsExpandedHandler(),
+        //       }}
+        //     >
+        //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+        //     </button>{" "}
+        //   </>
+        // ),
+        cell: ({ row, getValue }) => (
+          <div
+            style={row.getCanExpand() ? {
+              paddingLeft: `${row.depth * 5}px`,
+            } : {
+              paddingLeft: "18px",
+            }}
+          >
+            <>
+              {row.getCanExpand() ? (
+                <span className=' border-0'
+                  {...{
+                    onClick: row.getToggleExpandedHandler(),
+                    style: { cursor: "pointer" },
+                  }}
+                >
+                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                </span>
+              ) : (
+                ""
+              )}{" "}
+             
+              <> {row?.original?.siteIcon != undefined ?
+                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                  <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> 
+              }
+               <span>{row?.original?.PortfolioStructureID}</span></>
+             
+              {getValue()}
+            </>
+          </div>
+        ),
+      },
+      {
+        cell: ({ row }) => (
+          <>
+            <span>{row.original.Title}</span>
+          </>
+        ),
+        id: "Title",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        size: 15,
+      },
+      {
+        cell: ({ row }) => (
+          <>
+            <span onClick={()=>createOpenTask(row.original)}>+</span>
+          </>
+        ),
+        id: "Title",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        size: 5,
+      },
+    ],
+    [data]
+  );
   const columns = React.useMemo(
     () => [
       {
@@ -673,11 +869,25 @@ const ProjectManagementMain = (props: any) => {
         accessor: "Shareweb_x0020_ID",
         style: { width: "70px" },
         showSortIcon: false,
+        // Cell: ({ row }: any) => (
+        //   <span>{
+        //     (masterData != undefined && masterData.length>0) &&
+        //     <HierarchyItem
+        //     AllListId={AllListId}
+        //     props={row?.original}
+        //     type={portfolioType}
+        //     MasterListData={masterData}
+        //     Call={ClosePopup}
+        //   ></HierarchyItem>}
+
+        //   </span>
+        // ),
         Cell: ({ row }: any) => (
           <span>
             {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
 
           </span>
+
         ),
       },
       {
@@ -1233,16 +1443,16 @@ const ProjectManagementMain = (props: any) => {
                           </div>
                           <div>
                             <div className="d-flex">
-                              {/* {projectId && (
+                              {isOpenCreateTask && (
                                 <CreateTaskFromProject
                                   projectItem={Masterdata}
                                   SelectedProp={props?.props}
                                   pageContext={props.pageContext}
                                   projectId={projectId}
-                                  callBack={tagAndCreateCallBack}
+                                  callBack={CreateTask}
                                   createComponent={createTaskId}
                                 />
-                              )} */}
+                              )}
                               {/* {projectId && (
                             <TagTaskToProjectPopup
                               projectItem={Masterdata}
@@ -1513,8 +1723,8 @@ const ProjectManagementMain = (props: any) => {
                       itemID={QueryId}
                     />
                   )}
-                </span>
-                <span>
+                </span> 
+                 <span>
                   {(QueryId != undefined && isSmartInfoAvailable) ?
                     <SmartInformation
                       AllListId={AllListId}

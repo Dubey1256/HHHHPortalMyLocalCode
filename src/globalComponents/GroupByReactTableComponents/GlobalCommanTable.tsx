@@ -126,14 +126,16 @@ const GlobalCommanTable = ({ columns, data, callBackData, pageName }: any) => {
     }, [table?.getRowModel()?.rows])
 
     const CheckDataPrepre = () => {
+        let selectedArray:any=[];
         if (table?.getSelectedRowModel()?.flatRows.length > 0) {
             table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                 elem.original.Id = elem.original.ID
                 item = elem.original;
+                selectedArray.push(item)
             });
-            callBackData(item)
+            callBackData(item,undefined,selectedArray)
         } else {
-            callBackData(item)
+            callBackData(item,undefined,selectedArray)
         }
         console.log("itrm", item)
     }
