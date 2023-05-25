@@ -25,6 +25,8 @@ import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import ExpandTable from '../../../globalComponents/ExpandTable/Expandtable';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import { RiFileExcel2Fill } from 'react-icons/ri';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
 
 const Tabless = (props: any) => {
     let count: any = 0;
@@ -45,14 +47,18 @@ const Tabless = (props: any) => {
     let userlists: any = [];
     let QueryId: any;
     let dataLength: any = [];
+    let priorAndPercen: any = [];
+    const [priorPercenChecked, setPriorPercenChecked]: any = React.useState([]);
     const [checkPercentage, setPercentagess]: any = React.useState([]);
     const [checkPriority,setPriorityss]: any = React.useState([]) ;
     let filteringColumn: any = {idType:true,due: true,  modify: true,  created: true,  priority: true,  percentage: true,  catogries: true,teamMembers:true};
+    let excelSelct:any = [{item:'Task ID',value:'siteType'}, {item:'Category Item',value:'Categories'},{item:'Priority',value:'priority'}, {item:"Modified",value:'newModified'},{item:"Usertitle",value:'Editorss'},{item:"Title",value:'Title'},{item:"Percent Complete",value:'percentage'},{item:"Due Date",value:"newDueDate"},{item:"Created",value:'newCreated'}, {item:"URL",value:'Urlss'}]
     // let [clearFiltering, setClearFiltering]: any = {due: "",modify: "",created: "",priority: "",percentage: "",catogries: ""};
     const [result, setResult]: any = React.useState(false);
     const [editPopup, setEditPopup]: any = React.useState(false);
     const [queryId, setQueryId]: any = React.useState([]);
     const [data, setData]: any = React.useState([]);
+    const [selectExcelData, setSelectExcelData]: any = React.useState([]);
     const [taskUser, setTaskUser]: any = React.useState([]);
     const [catogries, setCatogries]: any = React.useState([]);
     const [filterCatogries, setFilterCatogries]: any = React.useState([]);
@@ -886,6 +892,7 @@ const Tabless = (props: any) => {
                         priority:dataItem.Priority_x0020_Rank,
                         Author: dataItem.Author,
                         Editor: dataItem.Editor,
+                        Editorss:dataItem.Editor.Title,
                         Team_x0020_Members: dataItem.Team_x0020_Members,
                         Responsible_x0020_Team: dataItem.Responsible_x0020_Team,
                         AssignedTo: dataItem.AssignedTo,
@@ -897,6 +904,7 @@ const Tabless = (props: any) => {
                         listId:items.listId,
                         site:items.siteName,
                         siteType:items.siteName,
+                        Urlss:`${items.siteUrl}/SitePages/Task-Profile.aspx?taskId=${dataItem.Id}&Site=${items.siteName}`
                     });
 
                 });
@@ -916,80 +924,105 @@ const Tabless = (props: any) => {
 
     const filterCom = (e: any) => {
       let data1:any=copyData;
-      let array: any = [];
+
+      priorAndPercen = priorPercenChecked;
       let { checked, value } = e.target;
-      switch(value){
-        case 'Component' :
-          if(checked){
-            data1?.map((item: any) => {
-              if (item.Component.length >= 1) {
-                array.push(item);
-              }
-            });
-            setData(array);
-          }else{
-            if(checked && value=='Services'){
-                 setData(data);
-            }else{
-              setData(copyData);
-            }
-            
+      if (checked) {
+        priorAndPercen.push(value);
+      } else {
+        priorAndPercen = priorAndPercen.filter((val: any) => val !== value)
+      }
+
+      if (checked) {
+        setPriorPercenChecked([...priorPercenChecked, value]);
+      } else {
+        setPriorPercenChecked(
+          priorPercenChecked.filter((val: any) => val !== value)
+        );
+      }
+
+
+      if(priorAndPercen.includes('Component') && priorAndPercen.includes('Services')){
+        let array: any = [];
+        data1?.map((item: any) => {
+          if (item.Component.length >= 1 || item.Services.length >= 1) {
+            array.push(item);
           }
-          break;
-
-          case 'Services' :
-            if(checked){
-              data1?.map((item: any) => {
-                if (item.Services.length >= 1) {
-                  array.push(item);
-                }
-              });
-              setData(array);
-            }else{
-              if(checked && value=='Component'){
-                setData(data);   
-           }else{
-             setData(copyData);
-           }
-              
+        });
+        setData(array);
+      }else if(priorAndPercen.includes('Component')){
+        let array: any = [];
+          data1?.map((item: any) => {
+            if (item.Component.length >= 1) {
+              array.push(item);
             }
-            break;
-          }};
+          });
+          setData(array);
+      }else if(priorAndPercen.includes('Services')){
+        let array: any = [];
+          data1?.map((item: any) => {
+            if (item.Services.length >= 1) {
+              array.push(item);
+            }
+          });
+          setData(array);
+      }else{
+        setData(data1);
+      }
 
-// const filterServ = (e: any) => {
-//   let array: any = [];
-//   let { checked, value } = e.target;
-//   if (checked && value == "Services") {
-//     data?.map((item: any) => {
-//       if (item.Services.length >= 1) {
-//         array.push(item);
-//       }
-//     });
-//     setData(array);
-//   } else {
-//     setData(copyData);
-//   }
-// };
+
+        };
+
+
+  const excelAllChecked=()=>{
+let array:any=[];
+    excelSelct.map((item:any)=>{
+      array.push(item.value);
+    })
+    setSelectExcelData(array);
+  }
 
 const downloadExcel = (csvData: any, fileName: any) => {
-  const ws = XLSX.utils.json_to_sheet(csvData);
+   let newData:any=[];
+   csvData.map((items:any)=>{
+    let objData:any;
+    selectExcelData.map((item:any)=>{
+      Object.keys(items).map((itemss:any)=>{
+        if(itemss==item){
+          objData={...objData,[item]:items[itemss]}
+        }
+      })
+    })
+    newData.push(objData);
+   })
+
+  const ws = XLSX.utils.json_to_sheet(newData);
   const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
   const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
   const data = new Blob([excelBuffer], { type: fileType });
   FileSaver.saveAs(data, fileName + fileExtension);
 };
 
-
+const excelSelectFunc=(e:any)=>{
+  let {checked, value} :any = e.target;
+  if (checked) {
+    setSelectExcelData([...selectExcelData, value]);
+  } else {
+    setSelectExcelData(
+      selectExcelData.filter((val: any) => val !== value)
+    );
+  }
+}
 
     React.useEffect(() => {
         getTaskUserData();
-       
-    }, []);
+       }, []);
    
 
     return (
       
         <div >
+           
              <div className='row'>
               <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
               <div className='col d-flex justify-content-end align-items-end'><a target='_blank'  href={`${props.Items.siteUrl}/SitePages/Tasks%20View.aspx?CreatedBy=${queryId}`} className="siteColor list-unstyled fw-bold">Old Task View</a></div>
@@ -1004,15 +1037,47 @@ const downloadExcel = (csvData: any, fileName: any) => {
                         <a onClick={clearAllFilters} className='brush'>
                             <FaPaintBrush/>
                         </a>
-                        <a onClick={()=>downloadExcel(data, 'Task-view')} className='excal'>
+                   
+                        {/* <a  className="excal" data-toggle="modal" data-target="#exampleModal">
+                            <RiFileExcel2Fill/>  </a> */}
+                           <span>
+                           <a onClick={excelAllChecked} className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                             <RiFileExcel2Fill/>
-                        </a>
+</a>
+
+
+<div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div className="modal-dialog">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h1 className="modal-title fs-5" id="staticBackdropLabel">Export To Excel</h1>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div className="modal-body">
+      {excelSelct.map((item:any)=>
+        <dl>
+          <dt> <input value={item.value} type='checkbox' checked={selectExcelData.includes(item.value)} onChange={(e:any)=>excelSelectFunc(e)} /><label>{item.item}</label></dt>
+        </dl>
+       
+     )}
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-primary"  data-bs-dismiss="modal" onClick={()=>downloadExcel(data,'Task-View')}>Create</button>
+        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+                           </span>
+            
                         <a className='expand'>
                         <ExpandTable prop={expndpopup} prop1={tablecontiner} />
                         </a>
             </span>
         </div>
             
+          
+       
             <Table className="SortingTable filtertable" bordered hover {...getTableProps()}>
                 <thead className="fixed-Header">
                     {headerGroups?.map((headerGroup: any) => (
