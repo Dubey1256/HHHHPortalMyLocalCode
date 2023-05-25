@@ -445,7 +445,7 @@ const TimeReport = () => {
                 header: '',
                 accessorKey: 'TimeSpent',
                 placeholder: "Effort",
-                size: 50
+               
 
             },
             {
@@ -498,7 +498,7 @@ const TimeReport = () => {
     const table = useReactTable({
         data,
         columns,
-        
+
         state: {
             columnFilters,
             globalFilter,
@@ -506,7 +506,7 @@ const TimeReport = () => {
         onColumnFiltersChange: setColumnFilters,
         // onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
-       
+
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         // getPaginationRowModel: getPaginationRowModel(),
@@ -516,6 +516,7 @@ const TimeReport = () => {
         debugTable: true,
         debugHeaders: true,
         debugColumns: false,
+        filterFns: undefined
     })
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 0) {

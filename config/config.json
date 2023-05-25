@@ -226,11 +226,51 @@
         }
       ]
     },
+    "big-calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/bigCalendar/BigCalendarWebPart.js",
+          "manifest": "./src/webparts/bigCalendar/BigCalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "update-top-navigation-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/updateTopNavigation/UpdateTopNavigationWebPart.js",
+          "manifest": "./src/webparts/updateTopNavigation/UpdateTopNavigationWebPart.manifest.json"
+        }
+      ]
+    },
     "task-dashboard-hhhh-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.js",
           "manifest": "./src/webparts/taskDashboardHhhh/TaskDashboardHhhhWebPart.manifest.json"
+        }
+      ]
+    },
+    "created-by-tables-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/createdByTables/CreatedByTablesWebPart.js",
+          "manifest": "./src/webparts/createdByTables/CreatedByTablesWebPart.manifest.json"
+        }
+      ]
+    },
+    "calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
+          "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "teamleader-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.js",
+          "manifest": "./src/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.manifest.json"
         }
       ]
     }
@@ -283,6 +323,11 @@
     "ManageSmartMetadataWebPartStrings": "lib/webparts/manageSmartMetadata/loc/{locale}.js",
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
     "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
-    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js"
+    "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
+    "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
+    "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
+    "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
+    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js"
   }
 }

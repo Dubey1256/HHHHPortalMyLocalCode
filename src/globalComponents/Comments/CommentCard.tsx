@@ -26,7 +26,8 @@ export interface ICommentCardProps {
   listName?: string;
   itemID?: number;
   Context?: any;
-
+  AllListId?:any;
+  
 }
 const sp = spfi();
 
@@ -44,6 +45,8 @@ export interface ICommentCardState {
   updateCommentPost: any;
   editorValue: string;
   editorChangeValue: string;
+  mailReply:any;
+  postButtonHide:boolean;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -59,14 +62,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     this.state = {
       Result: {},
-      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props.listName),
-      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props.itemID),
+      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
+      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
 
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
+      mailReply:{isMailReply:false,Index:null},
+      postButtonHide:false,
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -135,9 +140,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-      tempTask["Comments"].map((item: any) => {
+      tempTask["Comments"]?.map((item: any) => {
         if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
           var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+          // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
           item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
         }
         // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
@@ -200,7 +206,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //}); 
     let taskUsers = [];
     taskUsers = await web.lists
-      .getByTitle('Task Users')
+      // .getByTitle('Task Users')TaskUsertListID
+      .getById(this.props?.AllListId?.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
@@ -208,29 +215,31 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .get();
 
     this.taskUsers = taskUsers;
-
-    for (let index = 0; index < this.taskUsers.length; index++) {
-      this.mentionUsers.push({
-        id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-        display: this.taskUsers[index].Title
-      });
-
-      if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
-        this.topCommenters.push({
+     if(this.taskUsers!=undefined&&this.taskUsers.length>0){
+      for (let index = 0; index < this.taskUsers.length; index++) {
+        this.mentionUsers.push({
           id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-          display: this.taskUsers[index].Title,
-          Title: this.taskUsers[index].Title,
-          ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
-            this.taskUsers[index].Item_x0020_Cover.Url :
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-        })
+          display: this.taskUsers[index].Title
+        });
+  
+        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
+          this.topCommenters.push({
+            id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
+            display: this.taskUsers[index].Title,
+            Title: this.taskUsers[index].Title,
+            ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
+              this.taskUsers[index].Item_x0020_Cover.Url :
+              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+          })
+        }
+  
+        if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
+          this.currentUser = this.taskUsers[index];
       }
-
-      if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
-        this.currentUser = this.taskUsers[index];
-    }
-    console.log(this.topCommenters);
-    console.log(this.mentionUsers);
+      console.log(this.topCommenters);
+      console.log(this.mentionUsers);
+     }
+    
   }
 
   private handleInputChange(e: any) {
@@ -238,7 +247,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    this.setState({
+      postButtonHide:true
+    })
     console.log("this is post comment function")
+    console.log(this.state.Result["Comments"])
     commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
@@ -255,7 +268,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Add object in feedback
 
       if (this.state.Result["Comments"] != undefined) {
-        this.state.Result["Comments"].push(temp);
+      
+        // if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+        //   if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }else{
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }
+      
+        // }else{
+          this.state.Result["Comments"].push(temp);
+        // }
+      
       }
       else {
         this.state.Result["Comments"] = [temp];
@@ -280,11 +305,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         updateComment: true
       }, () => this.GetEmailObjects());
-
+       
       this.setState({
         updateComment: true,
         CommenttoPost: '',
-        mentionValue: ''
+        mentionValue: '',
+        mailReply:{isMailReply:false,index:null},
+        postButtonHide:false
       });
     } else {
       alert('Please input some text.')
@@ -359,9 +386,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private GetMentionValues() {
     let mention_str = '';
     if (this.state.mentionValue != '') {
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\[(.*?)\]/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+      let allMention :any;
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+       if(items.display==this.state.mentionValue){
+          return items
+       }
+       })  
+       let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+       let regExpLiteral = /\[(.*?)\]/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\[(.*?)\]/gi;
+         allMention = regExpStr.match(regExpLiteral);
+      }
+    
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
@@ -494,10 +534,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     if (this.state.mentionValue != '') {
       //Get All To's
-      let mention_To: any = [];
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\{(.*?)\}/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+    var allMention:any;
+      let mention_To: any = []; 
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+          if(items.display==this.state.mentionValue){
+             return items
+          }
+          })  
+          let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+          let regExpLiteral = /\{(.*?)\}/gi;
+           allMention = regExpStr.match(regExpLiteral); 
+      } else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\{(.*?)\}/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }
+     
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           /*For Prod when mail is open for all */
@@ -604,6 +657,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
   }
+  private replyMailFunction=(replyData:any,index:any)=>{
+    console.log(replyData)
+    console.log(this.mentionUsers)
+      //  var mentionEmail = this.mentionUsers.filter((items:any)=>{
+      //  if(items.display==replyData.AuthorName){
+      //     return items.id
+      //  }
+      //  }) 
+      // var replyData2:any={
+      //   isMailReply:true,
+      //   index:index
+      // }         
+    this.setState({
+      mentionValue:replyData.AuthorName,
+      mailReply:{isMailReply:true,index:index}
+    }, () => { console.log(this.state.mentionValue) })
+  }
 
   public render(): React.ReactElement<ICommentCardProps> {
  
@@ -640,9 +710,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div>
               <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
            
+              {this.state.postButtonHide?
+              <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
+              Post
+            </button>:
               <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
-                Post
-              </button>
+              Post
+            </button>}
+              
             </div>
 
             <div className="clearfix"></div>
@@ -666,6 +741,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons ">
+                              <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
                               <a  onClick={() => this.openEditModal(cmtData, i)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
@@ -684,6 +760,43 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                         </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                          return(
+                            <li className="media  p-1 my-1">
+                            <div className="media-bodyy">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="comment-date ng-binding">
+                                <span className="round  pe-1">
+                                  <img className="align-self-start " title={replyerData?.AuthorName}
+                                    src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                    replyerData?.AuthorImage :
+                                      "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                  />
+                                </span>
+                                {replyerData.Created}</span>
+                              <div className="d-flex ml-auto media-icons ">
+                                <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                 
+                                </a>
+                                <a title="Delete" onClick={() => this.clearComment(i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--trash'></span>
+                                </a>
+                              </div>
+                            </div>
+  
+                            <div className="media-text">
+                              {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                              <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                            </div>
+  
+                          </div>
+                          </li>
+                          )
+                        })} */}
                       </li>
                     })}
                   </ul>
@@ -937,7 +1050,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                         </tr>
                       </tbody>
                     </table>
-                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <table cellPadding="0" width="99%" style={{ width: "99.0%", border: "1px solid #ccc"  }}>
                       <tbody>
                         <tr>
                           <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
@@ -949,7 +1062,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
-                              <tr>
+                              <tr style={{ background: "#ccc" }}>
                                 <td>
                                   <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                                 </td>
@@ -967,7 +1080,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </tr>
                               {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
-                                  <tr>
+                                  <tr style={{ background: "#ccc" }}>
                                     <td>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                     </td>

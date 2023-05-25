@@ -9,7 +9,8 @@ import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
-import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
+// import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
+import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
@@ -42,7 +43,15 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
 import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
+// import {DatePicker} from 'react-date-picker';
+// import 'react-date-picker/dist/DatePicker.css';
+// import 'react-calendar/dist/Calendar.css';
+// import {CDatePicker} from '@coreui/react';
 // import SiteComposition from "../SiteComposition";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import BackgroundCommentComponent from "./BackgroundCommentComponent";
+
 
 var AllMetaData: any = []
 var taskUsers: any = []
@@ -66,9 +75,11 @@ var AllProjectBackupArray: any = [];
 var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
-
+var GlobalServiceAndComponentData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
+    const AllListIdData = Items.AllListId;
+    Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -80,9 +91,9 @@ const EditTaskPopup = (Items: any) => {
     const [AllCategoryData, setAllCategoryData] = React.useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
     const [linkedComponentData, setLinkedComponentData] = React.useState([]);
-    const [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
-    const [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
-    const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
+    let [TaskAssignedTo, setTaskAssignedTo] = React.useState([]);
+    let [TaskTeamMembers, setTaskTeamMembers] = React.useState([]);
+    let [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const maxNumber = 69;
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
@@ -144,11 +155,18 @@ const EditTaskPopup = (Items: any) => {
     const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
     const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
     const [AllClientCategoryData, setAllClientCategoryData] = React.useState([]);
+    const [ApproverHistoryData, setApproverHistoryData] = React.useState([]);
+    const [LastUpdateTaskData, setLastUpdateTaskData] = React.useState<any>({});
+    const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
+    const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
+    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
+
     const StatusArray = [
-        { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
-        { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
-        { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
-        { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
+        { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
+        { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
+        { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+        { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
         { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
         { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
         { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
@@ -158,491 +176,48 @@ const EditTaskPopup = (Items: any) => {
         { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
+    let ItemRankArray = [
+        { rankTitle: 'Select Item Rank', rank: null },
+        { rankTitle: '(8) Top Highlights', rank: 8 },
+        { rankTitle: '(7) Featured Item', rank: 7 },
+        { rankTitle: '(6) Key Item', rank: 6 },
+        { rankTitle: '(5) Relevant Item', rank: 5 },
+        { rankTitle: '(4) Background Item', rank: 4 },
+        { rankTitle: '(2) to be verified', rank: 2 },
+        { rankTitle: '(1) Archive', rank: 1 },
+        { rankTitle: '(0) No Show', rank: 0 }
+    ]
+
+    //  ************** This is used for handeling Site Url for Diffrent Cases ******************** 
 
     var siteUrls: any;
     if (Items != undefined && Items.Items.siteUrl != undefined && Items.Items.siteUrl.length < 20) {
-        siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+        if (Items.Items.siteType != undefined) {
+            siteUrls = `https://hhhhteams.sharepoint.com/sites/${Items.Items.siteType}${Items.Items.siteUrl}`
+        } else {
+            siteUrls = AllListIdData.siteUrl;
+        }
     } else {
-        siteUrls = Items.Items.siteUrl
+        siteUrls = AllListIdData.siteUrl
     }
-
-    // const setModalIsOpenToTrue = () => {
-    //     setModalIsOpen(true)
-    // }
-
     React.useEffect(() => {
         loadTaskUsers();
-        getCurrentUserDetails();
+        // getCurrentUserDetails();
         GetExtraLookupColumnData();
         getCurrentUserDetails();
-        getSmartMetaData();
+        getAllSitesData();
         loadAllCategoryData("Categories");
-        loadAllCategoryData("Client Category");
+        loadAllClientCategoryData("Client Category");
         GetMasterData();
-        // getInformationForSmartLight();
-        // Descriptions();
     }, [])
 
-    const Call = React.useCallback((PopupItemData: any, type: any) => {
-        setIsServices(false)
-        setIsComponent(false);
-        setIsComponentPicker(false);
-        if (type == "SmartComponent") {
-            if (PopupItemData?.smartComponent?.length > 0) {
-                Items.Items.smartComponent = PopupItemData.smartComponent;
-                setSmartComponentData(PopupItemData.smartComponent);
-                setSmartServicesData([])
-                console.log("Popup component smartComponent ", PopupItemData.smartComponent)
-            }
-        }
-        if (type == "Category") {
-            if (PopupItemData?.categories != "" && PopupItemData?.categories != undefined) {
-                Items.Items.Categories = PopupItemData.categories;
-                let category: any = tempCategoryData ? tempCategoryData + ";" + PopupItemData.categories[0]?.Title : PopupItemData.categories[0]?.Title;
-                setCategoriesData(category);
-                tempShareWebTypeData.push(PopupItemData.categories[0]);
-                setShareWebTypeData(tempShareWebTypeData);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                let DesignCheck = category.search("Design")
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true)
-                } else {
-                    setPhoneStatus(false)
-                }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true)
-                } else {
-                    setEmailStatus(false)
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true)
-                } else {
-                    setImmediateStatus(false)
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true)
-                } else {
-                    setApprovalStatus(false)
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-                if (DesignCheck >= 0) {
-                    setDesignStatus(true);
-                } else {
-                    setDesignStatus(false);
-                }
-            }
-        }
-        if (type == "LinkedComponent") {
-            if (PopupItemData?.linkedComponent?.length > 0) {
-                Items.Items.linkedComponent = PopupItemData.linkedComponent;
-                setLinkedComponentData(PopupItemData.linkedComponent);
-                setSmartServicesData(PopupItemData.linkedComponent);
-                setSmartComponentData([]);
-                console.log("Popup component linkedComponent", PopupItemData.linkedComponent)
-            }
-        }
-
-    }, []);
-
-    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
-    var SmartTaxonomyName: any = '';
-    var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
-        SmartTaxonomyName = SmartTaxonomy;
-        var AllTaskusers = []
-        var AllMetaData: any = []
-        var TaxonomyItems: any = []
-        var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('01a34938-8c7e-4ea6-a003-cee649e8c67a')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '" + SmartTaxonomy + "'")
-        $.ajax({
-            url: url,
-            method: "GET",
-            headers: {
-                "Accept": "application/json; odata=verbose"
-            },
-            success: function (data) {
-                AllTaskusers = data.d.results;
-                $.each(AllTaskusers, function (index: any, item: any) {
-                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EPS';
-                    }
-                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'EI';
-                    }
-                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                        item.newTitle = 'Education';
-                    }
-                    else {
-                        item.newTitle = item.Title;
-                    }
-                    AllMetaData.push(item);
-
-                })
-                if (SmartTaxonomy == "Categories") {
-                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData);
-                    setAllCategoryData(TaxonomyItems)
-                }
-                if (SmartTaxonomy == "Client Category") {
-                    setAllClientCategoryData(AllMetaData);
-                    AllClientCategoryDataBackup = AllMetaData;
-                    console.log("All Client Category Data on Task Popup ========", AllMetaData);
-                }
-            },
-            error: function (error: any) {
-                console.log('Error:', error)
-            }
-        })
-    };
-    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any) => {
-        var TaxonomyItems: any = [];
-        var uniqueNames: any = [];
-        $.each(AllTaxonomyItems, function (index: any, item: any) {
-            if (item.ParentID == 0 && SmartTaxonomyName == item.TaxType) {
-                TaxonomyItems.push(item);
-                getChilds(item, AllTaxonomyItems);
-                if (item.childs != undefined && item.childs.length > 0) {
-                    TaxonomyItems.push(item)
-                }
-                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
-                    return array.indexOf(val) == id;
-                });
-
-            }
-        });
-        return uniqueNames;
-    }
-    const getChilds = (item: any, items: any) => {
-        item.childs = [];
-        $.each(items, function (index: any, childItem: any) {
-            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
-                childItem.isChild = true;
-                item.childs.push(childItem);
-                getChilds(childItem, items);
-            }
-        });
-    }
-
-    if (AllCategoryData?.length > 0) {
-        AllCategoryData?.map((item: any) => {
-            if (item.newTitle != undefined) {
-                item['Newlabel'] = item.newTitle;
-                AutoCompleteItems.push(item)
-                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-                    item.childs.map((childitem: any) => {
-                        if (childitem.newTitle != undefined) {
-                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-                            AutoCompleteItems.push(childitem)
-                        }
-                        if (childitem.childs.length > 0) {
-                            childitem.childs.map((subchilditem: any) => {
-                                if (subchilditem.newTitle != undefined) {
-                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-                                    AutoCompleteItems.push(subchilditem)
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-        })
-    }
-
-    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        var alredyExists = previous.filter(function (item: any) {
-            return item.Title === current.Title
-        }).length > 0
-        if (!alredyExists) {
-            previous.push(current)
-        }
-        return previous
-    }, [])
-    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
-        setSelectedCategoryData(selectCategoryDataCallBack);
-    }, [])
-
-    const setSelectedCategoryData = (selectCategoryData: any) => {
-        setIsComponentPicker(false);
-        selectCategoryData.map((existingData: any) => {
-            let elementFound: any = false;
-            tempShareWebTypeData.map((currentData: any) => {
-                if (existingData.Title == currentData.Title) {
-                    elementFound = true
-                }
-            })
-            if (!elementFound) {
-                let category: any = tempCategoryData ? tempCategoryData + ";" + selectCategoryData[0]?.Title : selectCategoryData[0]?.Title;
-                setCategoriesData(category);
-                tempShareWebTypeData.push(selectCategoryData[0]);
-                setShareWebTypeData(tempShareWebTypeData);
-                let phoneCheck = category.search("Phone");
-                let emailCheck = category.search("Email");
-                let ImmediateCheck = category.search("Immediate");
-                let ApprovalCheck = category.search("Approval");
-                let OnlyCompletedCheck = category.search("Only Completed");
-                if (phoneCheck >= 0) {
-                    setPhoneStatus(true)
-                } else {
-                    setPhoneStatus(false)
-                }
-                if (emailCheck >= 0) {
-                    setEmailStatus(true)
-                } else {
-                    setEmailStatus(false)
-                }
-                if (ImmediateCheck >= 0) {
-                    setImmediateStatus(true)
-                } else {
-                    setImmediateStatus(false)
-                }
-                if (ApprovalCheck >= 0) {
-                    setApprovalStatus(true);
-                    setApproverData(TaskApproverBackupArray);
-                } else {
-                    setApprovalStatus(false)
-                }
-                if (OnlyCompletedCheck >= 0) {
-                    setOnlyCompletedStatus(true);
-                } else {
-                    setOnlyCompletedStatus(false);
-                }
-            }
-        })
-        setSearchedCategoryData([])
-        setCategorySearchKey("");
-    }
-
-    const smartCategoryPopup = React.useCallback(() => {
-        setIsComponentPicker(false);
-    }, [])
-
-    const autoSuggestionsForCategory = (e: any) => {
-        let searchedKey: any = e.target.value;
-        setCategorySearchKey(e.target.value);
-        let tempArray: any = [];
-        if (searchedKey?.length > 0) {
-            AutoCompleteItemsArray?.map((itemData: any) => {
-                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
-                    tempArray.push(itemData);
-                }
-            })
-            setSearchedCategoryData(tempArray);
-        } else {
-            setSearchedCategoryData([]);
-        }
-    }
-
-    // *********** End Smart Category Function **********
-
-    function EditComponentCallback() {
-        Items.Items.Call();
-    }
-    const EditComponent = (item: any, title: any) => {
-        setIsComponent(true);
-        setShareWebComponent(item);
-    }
-    const EditComponentPicker = (item: any, title: any) => {
-        setIsComponentPicker(true);
-        setShareWebComponent(item);
-    }
-    const EditLinkedServices = (item: any, title: any) => {
-        setIsServices(true);
-        setShareWebComponent(item);
-        setServicePopupType(title);
-    }
-
-    const setPriority = function (val: any) {
-        setPriorityStatus(val)
-    }
-
-    const getSmartMetaData = async () => {
-        let web = new Web(siteUrls);
-        let MetaData: any = [];
-        let siteConfig: any = [];
-        let tempArray: any = [];
-        MetaData = await web.lists
-            .getByTitle('SmartMetadata')
-            .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
-            .top(4999)
-            .expand('Author,Editor')
-            .get()
-
-        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
-        siteConfig?.map((site: any) => {
-            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
-                site.BtnStatus = false;
-                tempArray.push(site);
-            }
-        })
-        setSiteTypes(tempArray);
-        tempArray?.map((tempData: any) => {
-            SiteTypeBackupArray.push(tempData);
-        })
-        // if (smartCategory.length > 0 && smartCategory != undefined) {
-        //     smartCategory.map((item: any) => {
-        //         if (item.Title != undefined) {
-        //             item['Newlabel'] = item.newTitle;
-        //             AutoCompleteItems.push(item)
-        //             if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
-        //                 item.childs.map((childitem: any) => {
-        //                     if (childitem.newTitle != undefined) {
-        //                         childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
-        //                         AutoCompleteItems.push(childitem)
-        //                     }
-        //                     if (childitem.childs.length > 0) {
-        //                         childitem.childs.map((subchilditem: any) => {
-        //                             if (subchilditem.newTitle != undefined) {
-        //                                 subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
-        //                                 AutoCompleteItems.push(subchilditem)
-        //                             }
-        //                         })
-        //                     }
-        //                 })
-        //             }
-        //         }
-        //     })
-        // }
-        // AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
-        //     var alredyExists = previous.filter(function (item: any) {
-        //         return item.Title === current.Title
-        //     }).length > 0
-        //     if (!alredyExists) {
-        //         previous.push(current)
-        //     }
-        //     return previous
-        // }, [])
-        // console.log("Final Smart Category Array 1 =======", smartCategory);
-        // console.log("Final Smart Category Array =======", AutoCompleteItems);
-    }
-    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
-        var Items: any = [];
-        metadataItems.map((taxItem: any) => {
-            if (taxItem.TaxType === taxType)
-                Items.push(taxItem);
-        });
-        Items.sort((a: any, b: any) => {
-            return a.SortOrder - b.SortOrder;
-        });
-        return Items;
-    }
-
-    // **************** this is for Getting current user Data ************* 
-
-    const getCurrentUserDetails = async () => {
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-        if (currentUserId != undefined) {
-            if (taskUsers != null && taskUsers?.length > 0) {
-                taskUsers?.map((userData: any) => {
-                    if (userData.AssingedToUserId == currentUserId) {
-                        let temp: any = [];
-                        temp.push(userData)
-                        setCurrentUserData(temp);
-                        currentUserBackupArray.push(userData);
-                    }
-                })
-            }
-        }
-    }
-
-    const openTaskStatusUpdatePopup = (itemData: any) => {
-        setTaskStatusPopup(true);
-    }
-
-    var count = 0;
-    const loadTaskUsers = async () => {
-        var AllTaskUsers: any = []
-        axios.get("https://hhhhteams.sharepoint.com/sites/HHHH/sp/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc")
-            .then((response: AxiosResponse) => {
-                taskUsers = response.data.value;
-                getAllEmployeeData();
-                console.log("All Task user Data On Task Popup ========", response.data.value);
-                $.each(taskUsers, function (index: any, user: any) {
-                    var ApproverUserItem = '';
-                    var UserApproverMail: any = []
-                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
-                        if (user.Approver != undefined) {
-                            $.each(user.Approver.results, function (ApproverUser: any, index) {
-                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
-                                UserApproverMail.push(ApproverUser.Name.split('|')[2]);
-                            })
-                            user['UserManagerName'] = ApproverUserItem;
-                            user['UserManagerMail'] = UserApproverMail;
-                        }
-                        AllTaskUsers.push(user);
-                    }
-                });
-                if (AllMetaData != undefined && AllMetaData?.length > 0) {
-                    GetEditData();
-                }
-            },
-                function (data) {
-                });
 
 
-        // try {
-        //     taskUsers = await globalCommon.loadTaskUsers;
-        //     $.each(taskUsers, function (index: any, user: any) {
-        //         var ApproverUserItem = '';
-        //         var UserApproverMail: any = []
-        //         if (user.Title != undefined && user.IsShowTeamLeader === true) {
-        //             if (user.Approver != undefined) {
-        //                 $.each(user.Approver.results, function (ApproverUser: any, index) {
-        //                     ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
-        //                     UserApproverMail.push(ApproverUser.Name.split('|')[2]);
-        //                 })
-        //                 user['UserManagerName'] = ApproverUserItem;
-        //                 user['UserManagerMail'] = UserApproverMail;
-        //             }
-        //             AllTaskUsers.push(user);
-        //         }
+    // ************************** This is the Fetch All Data for the slected Task and related to Task from Backend *******************************
 
-        //     });
-        //     if (AllMetaData != undefined && AllMetaData?.length > 0) {
-        //         GetEditData();
-        //     }
-        // } catch (error) {
-        //     console.log("Error:", error.message);
-        // }
-    }
 
-    // ********** this is for Getting All  Employee For Approval Function Data *******************
+    // #################### this is used for getting more the 12 lookup column data for selected task from Backend ##############################
 
-    const getAllEmployeeData = () => {
-        let UsersData: any = [];
-        let Groups: any = [];
-        let MainArray: any = [];
-        taskUsers.map((EmpData: any) => {
-            if (EmpData.ItemType == "Group") {
-                EmpData.Child = [];
-                Groups.push(EmpData);
-                MainArray.push(EmpData);
-            }
-            if (EmpData.ItemType == "User") {
-                UsersData.push(EmpData);
-            }
-        })
-
-        if (UsersData.length > 0 && Groups.length > 0) {
-            Groups.map((groupData: any) => {
-                UsersData.map((userData: any) => {
-                    if (groupData.Id == userData.UserGroupId) {
-                        userData.NewLabel = groupData.Title + " > " + userData.Title;
-                        groupData.Child.push(userData);
-                    }
-
-                })
-            })
-        }
-        setAllEmployeeData(Groups);
-    }
     const GetExtraLookupColumnData = async () => {
         try {
             let web = new Web(siteUrls);
@@ -651,7 +226,7 @@ const EditTaskPopup = (Items: any) => {
                 extraLookupColumnData = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title")
+                    .select("Project/Id, Project/Title, AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Id,ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -660,8 +235,10 @@ const EditTaskPopup = (Items: any) => {
                     console.log("Extra Lookup Data =======", extraLookupColumnData);
                     let Data: any;
                     let ApproverData: any;
+                    let ApproverHistoryData: any;
                     let ClientCategory: any;
                     Data = extraLookupColumnData[0]?.Project;
+                    ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
@@ -678,9 +255,34 @@ const EditTaskPopup = (Items: any) => {
                         // })
                         setSelectedProject([Data]);
                     }
+                    if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
+                        let tempArray = JSON.parse(ApproverHistoryData);
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            setApproverHistoryData(tempArray);
+                        }
+                    }
+
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
+                        let TempApproverHistory: any = [];
+                        if (ApproverHistoryData == undefined || ApproverHistoryData == null) {
+                            ApproverData.map((itemData: any) => {
+                                let tempObject: any = {
+                                    ApproverName: itemData.Title,
+                                    ApprovedDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+                                    ApproverId: itemData.AssingedToUserId,
+                                    ApproverImage: (itemData.Item_x0020_Cover != undefined || itemData.Item_x0020_Cover != null ? itemData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
+                                    ApproverSuffix: itemData.Suffix,
+                                    ApproverEmail: itemData.Email
+                                }
+                                TempApproverHistory.push(tempObject);
+                            })
+                        }
+                        if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
+                            setApproverHistoryData(TempApproverHistory);
+                        }
+
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
                         let TempArray: any = [];
@@ -699,12 +301,12 @@ const EditTaskPopup = (Items: any) => {
                         console.log("selected client category form backend ==========", TempArray)
                     }
                 }
-                GetEditData();
+                GetSelectedTaskDetails();
             } else {
                 extraLookupColumnData = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Title")
+                    .select("Project/Id, Project/Title,AttachmentFiles/Title, Approver/Id, Approver/Title, ClientCategory/Title, ApproverHistory")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('Project, Approver, ClientCategory')
@@ -713,7 +315,9 @@ const EditTaskPopup = (Items: any) => {
                     let Data: any;
                     let ClientCategory: any;
                     let ApproverData: any;
+                    let ApproverHistoryData: any;
                     Data = extraLookupColumnData[0]?.Project;
+                    ApproverHistoryData = extraLookupColumnData[0]?.ApproverHistory;
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
@@ -731,6 +335,13 @@ const EditTaskPopup = (Items: any) => {
                         // SetAllProjectData(Data);
                         setSelectedProject([Data])
                     }
+                    if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
+                        let tempArray = JSON.parse(ApproverHistoryData);
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            setApproverHistoryData(tempArray);
+                        }
+
+                    }
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
@@ -739,14 +350,16 @@ const EditTaskPopup = (Items: any) => {
                         setSelectedClientCategory(ClientCategory);
                     }
                 }
-                GetEditData();
+                GetSelectedTaskDetails();
             }
         } catch (error) {
             console.log("Error:", error.message);
         }
     }
 
-    const GetEditData = async () => {
+    // #################### this is used for getting All Information for selected task from Backend ##############################
+
+    const GetSelectedTaskDetails = async () => {
         try {
             let web = new Web(siteUrls);
             let smartMeta: any;
@@ -755,7 +368,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getById(Items.Items.listId)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -765,7 +378,7 @@ const EditTaskPopup = (Items: any) => {
                 smartMeta = await web.lists
                     .getByTitle(Items.Items.listName)
                     .items
-                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,workingThisWeek,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,EstimatedTime,CompletedDate,EstimatedTimeDescription,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                    .select("Id,Title,Priority_x0020_Rank,BasicImageInfo,EstimatedTime,workingThisWeek,OffshoreImageUrl,OffshoreComments,waitForResponse,SiteCompositionSettings,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
                     .top(5000)
                     .filter(`Id eq ${Items.Items.Id}`)
                     .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
@@ -821,7 +434,14 @@ const EditTaskPopup = (Items: any) => {
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
-                            let siteName = siteData.SiteName.toLowerCase();
+                            let siteName: any;
+                            if (siteData != undefined) {
+                                if (siteData.SiteName != undefined) {
+                                    siteName = siteData.SiteName.toLowerCase();
+                                } else {
+                                    siteName = siteData.Title.toLowerCase();
+                                }
+                            }
                             if (siteName == "migration" || siteName == "health" || siteName == "eps" || siteName == "qa" || siteName == "ei" || siteName == "gender" || siteName == "education" || siteName == "cep" || siteName == "shareweb" || siteName == "small projects" || siteName == 'offshore tasks') {
                                 siteData.siteIcons = `https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/site_${siteName}.png`
                             }
@@ -877,10 +497,11 @@ const EditTaskPopup = (Items: any) => {
                 if (item.PercentComplete != undefined) {
                     statusValue = item.PercentComplete * 100;
                     item.PercentComplete = statusValue;
-                    if (statusValue < 70 && statusValue > 20) {
+                    if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
                         setTaskStatus("In Progress");
                         setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
+
                     } else {
                         StatusArray?.map((item: any) => {
                             if (statusValue == item.value) {
@@ -909,8 +530,8 @@ const EditTaskPopup = (Items: any) => {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
                 // if (item.Priority_x0020_Rank != undefined) {
-                //     if (currentUsers != undefined) {
-                //         currentUsers?.map((rank: any) => {
+                //     if (ItemRankArray != undefined) {
+                //         ItemRankArray?.map((rank: any) => {
                 //             if (rank.rank == item.Priority_x0020_Rank) {
                 //                 item.Priority_x0020_Rank = rank.rank;
                 //             }
@@ -921,6 +542,7 @@ const EditTaskPopup = (Items: any) => {
                 item.siteUrl = siteUrls;
                 item.siteType = Items.Items.siteType;
                 let AssignedUsers: any = [];
+                item.listId = Items.Items.listId;
                 // let ApproverDataTemp: any = [];
                 let TeamMemberTemp: any = [];
                 let TaskCreatorData: any = [];
@@ -935,12 +557,14 @@ const EditTaskPopup = (Items: any) => {
                         }
                     })
                     if ((statusValue <= 2) && ApprovalStatusGlobal) {
+                        let tempArray: any = [];
                         if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
                             taskUsers.map((userData1: any) => {
                                 TaskApproverBackupArray.map((itemData: any) => {
                                     if (itemData.Id == userData1?.AssingedToUserId) {
                                         AssignedUsers.push(userData1);
                                         TeamMemberTemp.push(userData1);
+                                        tempArray.push(userData1);
                                     }
                                 })
                             })
@@ -951,8 +575,24 @@ const EditTaskPopup = (Items: any) => {
                                         if (itemData.Id == userData1?.AssingedToUserId) {
                                             AssignedUsers.push(userData1);
                                             TeamMemberTemp.push(userData1);
+                                            tempArray.push(userData1);
                                         }
                                     })
+                                })
+                            }
+                        }
+                        if (tempArray != undefined && tempArray.length > 0) {
+                            tempArray.map((itemData: any) => {
+                                itemData.Id = itemData.AssingedToUserId
+                            })
+                            setApproverData(tempArray);
+                            if ((statusValue <= 1) && ApprovalStatusGlobal) {
+                                StatusArray?.map((item: any) => {
+                                    if (1 == item.value) {
+                                        setPercentCompleteStatus(item.status);
+                                        setTaskStatus(item.taskStatusComment);
+                                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `1` })
+                                    }
                                 })
                             }
                         }
@@ -1065,16 +705,42 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Component?.length > 0) {
                     setComponentTaskCheck(true)
                     setSmartComponentData(item.Component);
+                    item.Portfolio_x0020_Type = "Component"
                 } else {
                     setComponentTaskCheck(false)
                 }
                 if (item.Services?.length > 0) {
                     setServicesTaskCheck(true)
                     setSmartServicesData(item.Services);
+                    item.Portfolio_x0020_Type = "Service"
                 } else {
                     setServicesTaskCheck(false)
                 }
+
+                if (item.OffshoreComments != null || item.OffshoreComments != undefined) {
+                    let BackgroundComments: any = JSON.parse(item.OffshoreComments);
+                    if (BackgroundComments != undefined && BackgroundComments.length > 0) {
+                        item.BackgroundComments = BackgroundComments
+                    } else {
+                        item.BackgroundComments = []
+                    }
+                }
+
+                if (item.OffshoreImageUrl != null || item.OffshoreImageUrl != undefined) {
+                    let BackgroundImages: any = JSON.parse(item.OffshoreImageUrl);
+                    if (BackgroundImages != undefined && BackgroundImages.length > 0) {
+                        item.BackgroundImages = BackgroundImages
+                    } else {
+                        item.BackgroundImages = []
+                    }
+                }
+
                 setEditData(item)
+                if (item.Component != undefined && item.Component.length > 0) {
+                    let PortfolioId: any = item.Component[0].Id;
+                    GetPortfolioSiteComposition(PortfolioId)
+                }
+
                 EditDataBackup = item;
                 setPriorityStatus(item.Priority)
                 console.log("Task All Details form backend  ==================", item)
@@ -1084,12 +750,667 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+    //  ******************************* this is Service And Component Portfolio Popup Related All function and CallBack *******************
+    const EditComponent = (item: any, title: any) => {
+        setIsComponent(true);
+        setShareWebComponent(item);
+    }
+    const EditComponentPicker = (item: any, title: any) => {
+        setIsComponentPicker(true);
+        setShareWebComponent(item);
+    }
+    const EditLinkedServices = (item: any, title: any) => {
+        setIsServices(true);
+        setShareWebComponent(item);
+        setServicePopupType(title);
+    }
+
+
+    // ################# this is for Change Task Component And Service Component #######################
+
+    const ChangeComponentStatus = (e: any, Type: any) => {
+        if (Type == "Component") {
+            setServicesTaskCheck(false);
+            setComponentTaskCheck(true);
+            GetAllComponentAndServiceData(Type)
+        }
+        if (Type == "Service") {
+            setServicesTaskCheck(true);
+            setComponentTaskCheck(false);
+            GetAllComponentAndServiceData(Type)
+        }
+    }
+
+    const GetAllComponentAndServiceData = async (ComponentType: any) => {
+        let PropsObject: any = {
+            MasterTaskListID: AllListIdData.MasterTaskListID,
+            siteUrl: AllListIdData.siteUrl,
+            ComponentType: ComponentType,
+            TaskUserListId: AllListIdData.TaskUsertListID
+        }
+        let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+        if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
+            GlobalServiceAndComponentData = CallBackData.AllData;
+        }
+    }
+
+    const autoSuggestionsForServiceAndComponent = (e: any) => {
+        if (ServicesTaskCheck || ComponentTaskCheck) {
+            if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
+                if (ServicesTaskCheck) {
+                    GetAllComponentAndServiceData("Service");
+                }
+                if (ComponentTaskCheck) {
+                    GetAllComponentAndServiceData("Component");
+                }
+            }
+            let SearchedKeyWord: any = e.target.value;
+            setSearchedServiceCompnentKey(SearchedKeyWord);
+            let TempArray: any = [];
+            if (SearchedKeyWord.length > 0) {
+                if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
+                    GlobalServiceAndComponentData.map((AllDataItem: any) => {
+                        if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
+                            TempArray.push(AllDataItem);
+                        }
+                    })
+                }
+                if (TempArray != undefined && TempArray.length > 0) {
+                    setSearchedServiceCompnentData(TempArray);
+                }
+            } else {
+                setSearchedServiceCompnentData([]);
+                setSearchedServiceCompnentKey("");
+            }
+        } else {
+            alert("Please Choose Component / Service For Searching!!!")
+        }
+    }
+
+    const setSelectedServiceAndCompnentData = (SelectedData: any) => {
+        console.log("selected Data form auto suggestion from Auto Suggesution Service and comonente==========", SelectedData);
+        setSearchedServiceCompnentData([]);
+        setSearchedServiceCompnentKey("");
+        if (ServicesTaskCheck) {
+            ComponentServicePopupCallBack([SelectedData], "Service", "Save");
+        }
+        if (ComponentTaskCheck) {
+            ComponentServicePopupCallBack([SelectedData], "Component", "Save");
+        }
+
+    }
+
+    //  ###################  Service And Component Portfolio Popup Call Back Functions and Validations ##################
+
+    const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        if (functionType == "Close") {
+            if (Type == "Service") {
+                setIsServices(false);
+            } else {
+                setIsComponent(false)
+            }
+        } else {
+            if (Type == "Service") {
+                if (DataItem != undefined && DataItem.length > 0) {
+                    setLinkedComponentData(DataItem);
+                    setSmartServicesData(DataItem);
+                    setSmartComponentData([]);
+                    console.log("Popup component linkedComponent", DataItem);
+                }
+                setIsServices(false);
+            }
+            if (Type == "Component") {
+                if (DataItem != undefined && DataItem.length > 0) {
+                    if (DataItem[0].Sitestagging != null || DataItem[0].Sitestagging != undefined) {
+                        let ClientData = JSON.parse(DataItem[0].Sitestagging ? DataItem[0].Sitestagging : [{}]);
+                        let TempSiteCompositionArray: any = [];
+                        if (ClientData != undefined && ClientData.length > 0) {
+                            ClientData.map((SiteData: any) => {
+                                let TempObject: any = {
+                                    SiteName: SiteData.Title,
+                                    ClienTimeDescription: SiteData.ClienTimeDescription,
+                                    localSiteComposition: true
+                                }
+                                TempSiteCompositionArray.push(TempObject);
+                            })
+                            if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                                setSitesTaggingData(TempSiteCompositionArray);
+                            }
+                        }
+                    }
+                    setSmartComponentData(DataItem);
+                    setSmartServicesData([])
+                    console.log("Popup component smartComponent ", DataItem)
+                }
+                setIsComponent(false)
+            }
+        }
+    }, [])
+
+    // ********** this is for smart category Related all function and callBack function for Picker Component Popup ********
+
+
+    //  ######################  This is  Client Category Get Data Call From Backend  #######################
+
+    const loadAllClientCategoryData = function (SmartTaxonomy: any) {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+                })
+                if (SmartTaxonomy == "Client Category") {
+                    setAllClientCategoryData(AllMetaData);
+                    AllClientCategoryDataBackup = AllMetaData;
+                }
+            },
+            error: function (error: any) {
+                console.log('Error:', error)
+            }
+        })
+    };
+    var AutoCompleteItems: any = [];
+    const loadAllCategoryData = function (SmartTaxonomy: any) {
+        var AllTaskusers = []
+        var AllMetaData: any = []
+        var TaxonomyItems: any = []
+        var url = (`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
+        $.ajax({
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json; odata=verbose"
+            },
+            success: function (data) {
+                AllTaskusers = data.d.results;
+                $.each(AllTaskusers, function (index: any, item: any) {
+                    if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EPS';
+                    }
+                    else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'EI';
+                    }
+                    else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Education';
+                    }
+                    else {
+                        item.newTitle = item.Title;
+                    }
+                    AllMetaData.push(item);
+
+                })
+                if (SmartTaxonomy == "Categories") {
+                    TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
+                    setAllCategoryData(TaxonomyItems)
+                }
+            },
+            error: function (error: any) {
+                console.log('Error:', error)
+            }
+        })
+    };
+    // **************** this is for Smart Category Data fetch from Backend and Call Back functions ******************
+
+    //  ######################  This is Smart Category Get Data Call From Backend and Bulid Nested Array According to Parent Child Categories #######################
+
+    var loadSmartTaxonomyPortfolioPopup = (AllTaxonomyItems: any, SmartTaxonomy: any) => {
+        var TaxonomyItems: any = [];
+        var uniqueNames: any = [];
+        $.each(AllTaxonomyItems, function (index: any, item: any) {
+            if (item.ParentID == 0 && SmartTaxonomy == item.TaxType) {
+                TaxonomyItems.push(item);
+                getChilds(item, AllTaxonomyItems);
+                if (item.childs != undefined && item.childs.length > 0) {
+                    TaxonomyItems.push(item)
+                }
+                uniqueNames = TaxonomyItems.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                });
+            }
+        });
+        return uniqueNames;
+    }
+    const getChilds = (item: any, items: any) => {
+        item.childs = [];
+        $.each(items, function (index: any, childItem: any) {
+            if (childItem.ParentID != undefined && parseInt(childItem.ParentID) == item.ID) {
+                childItem.isChild = true;
+                item.childs.push(childItem);
+                getChilds(childItem, items);
+            }
+        });
+    }
+
+    if (AllCategoryData?.length > 0) {
+        AllCategoryData?.map((item: any) => {
+            if (item.newTitle != undefined) {
+                item['Newlabel'] = item.newTitle;
+                AutoCompleteItems.push(item)
+                if (item.childs != null && item.childs != undefined && item.childs.length > 0) {
+                    item.childs.map((childitem: any) => {
+                        if (childitem.newTitle != undefined) {
+                            childitem['Newlabel'] = item['Newlabel'] + ' > ' + childitem.Title;
+                            AutoCompleteItems.push(childitem)
+                        }
+                        if (childitem.childs.length > 0) {
+                            childitem.childs.map((subchilditem: any) => {
+                                if (subchilditem.newTitle != undefined) {
+                                    subchilditem['Newlabel'] = childitem['Newlabel'] + ' > ' + subchilditem.Title;
+                                    AutoCompleteItems.push(subchilditem)
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    AutoCompleteItemsArray = AutoCompleteItems.reduce(function (previous: any, current: any) {
+        var alredyExists = previous.filter(function (item: any) {
+            return item.Title === current.Title
+        }).length > 0
+        if (!alredyExists) {
+            previous.push(current)
+        }
+        return previous
+    }, [])
+
+
+    //  ###################  Smart Category Popup Call Back Functions and Validations ##################
+
+    const SelectCategoryCallBack = React.useCallback((selectCategoryDataCallBack: any) => {
+        setSelectedCategoryData(selectCategoryDataCallBack, "For-Panel");
+    }, [])
+
+    //  ###################  Smart Category slection Common Functions with Validations ##################
+
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setIsComponentPicker(false);
+        let TempArray: any = [];
+        selectCategoryData.map((existingData: any) => {
+            let elementFoundCount: any = 0;
+            if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                tempShareWebTypeData.map((currentData: any) => {
+                    if (existingData.Title == currentData.Title) {
+                        elementFoundCount++;
+                    }
+                })
+            }
+            if (elementFoundCount == 0) {
+                let category: any;
+                if (selectCategoryData != undefined && selectCategoryData.length > 0) {
+                    selectCategoryData.map((categoryData: any) => {
+                        if (usedFor == "For-Auto-Search") {
+                            tempShareWebTypeData.push(categoryData);
+                        }
+                        TempArray.push(categoryData)
+                        let isExists: any = 0;
+                        if (tempCategoryData != undefined) {
+                            isExists = tempCategoryData.search(categoryData.Title);
+                        } else {
+                            category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
+                        }
+                        if (isExists < 0) {
+                            category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
+                        }
+                    })
+                }
+                setCategoriesData(category);
+                let phoneCheck = category.search("Phone");
+                let emailCheck = category.search("Email");
+                let ImmediateCheck = category.search("Immediate");
+                let ApprovalCheck = category.search("Approval");
+                let OnlyCompletedCheck = category.search("Only Completed");
+                if (phoneCheck >= 0) {
+                    setPhoneStatus(true)
+                } else {
+                    setPhoneStatus(false)
+                }
+                if (emailCheck >= 0) {
+                    setEmailStatus(true)
+                } else {
+                    setEmailStatus(false)
+                }
+                if (ImmediateCheck >= 0) {
+                    setImmediateStatus(true)
+                } else {
+                    setImmediateStatus(false)
+                }
+                if (ApprovalCheck >= 0) {
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
+                } else {
+                    setApprovalStatus(false)
+                }
+                if (OnlyCompletedCheck >= 0) {
+                    setOnlyCompletedStatus(true);
+                } else {
+                    setOnlyCompletedStatus(false);
+                }
+            }
+        })
+
+        if (usedFor == "For-Panel") {
+            setShareWebTypeData(selectCategoryData);
+            tempShareWebTypeData = selectCategoryData;
+        }
+        if (usedFor == "For-Auto-Search") {
+            setShareWebTypeData(tempShareWebTypeData);
+            setSearchedCategoryData([])
+            setCategorySearchKey("");
+        }
+    }
+
+    const smartCategoryPopup = React.useCallback(() => {
+        setIsComponentPicker(false);
+    }, [])
+
+
+    //  ###################  Smart Category Auto Suggesution Functions  ##################
+
+    const autoSuggestionsForCategory = (e: any) => {
+        let searchedKey: any = e.target.value;
+        setCategorySearchKey(e.target.value);
+        let tempArray: any = [];
+        if (searchedKey?.length > 0) {
+            AutoCompleteItemsArray?.map((itemData: any) => {
+                if (itemData.Newlabel.toLowerCase().includes(searchedKey.toLowerCase())) {
+                    tempArray.push(itemData);
+                }
+            })
+            setSearchedCategoryData(tempArray);
+        } else {
+            setSearchedCategoryData([]);
+        }
+    }
+
+    // ################ this is for Smart category change and remove function #############
+
+    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+        let tempString: any;
+
+        let tempArray2: any = [];
+        tempShareWebTypeData = [];
+        ShareWebTypeData?.map((dataType: any) => {
+            if (dataType.Id != TypeId) {
+                tempArray2.push(dataType)
+                tempShareWebTypeData.push(dataType);
+            }
+        })
+        if (tempArray2 != undefined && tempArray2.length > 0) {
+            tempArray2.map((itemData: any) => {
+                tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
+            })
+        }
+        setCategoriesData(tempString);
+        tempCategoryData = tempString;
+        setShareWebTypeData(tempArray2);
+    }
+    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+        let statusValue: any = e.target.value;
+        let type: any = typeValue;
+        let Id: any = IdValue;
+        CategoryChangeUpdateFunction(statusValue, type, Id)
+    }
+
+    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
+        if (Status == "true") {
+            removeCategoryItem(type, Id);
+            if (type == "Phone") {
+                setPhoneStatus(false)
+            }
+            if (type == "Email Notification") {
+                setEmailStatus(false)
+            }
+            if (type == "Immediate") {
+                setImmediateStatus(false)
+            }
+            if (type == "Approval") {
+                setApprovalStatus(false)
+            }
+            if (type == "Only Completed") {
+                setOnlyCompletedStatus(false)
+            }
+        } else {
+            if (tempCategoryData != undefined) {
+                let CheckTaggedCategory = tempCategoryData.includes(type)
+                if (CheckTaggedCategory == false) {
+                    let CheckTaagedCategory: any = true;
+                    let category: any = tempCategoryData + ";" + type;
+                    setCategoriesData(category);
+                    tempCategoryData = category;
+                    if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                        tempShareWebTypeData.map((tempItem: any) => {
+                            if (tempItem.Title == type) {
+                                CheckTaagedCategory = false;
+                            }
+                        })
+                    }
+                    if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                        AutoCompleteItemsArray.map((dataItem: any) => {
+                            if (dataItem.Title == type) {
+                                if (CheckTaagedCategory) {
+                                    ShareWebTypeData.push(dataItem);
+                                    tempShareWebTypeData.push(dataItem);
+                                }
+                            }
+                        })
+                    }
+                    // setSearchedCategoryData(tempShareWebTypeData);
+                    if (type == "Phone") {
+                        setPhoneStatus(true)
+                    }
+                    if (type == "Email Notification") {
+                        setEmailStatus(true)
+                    }
+                    if (type == "Immediate") {
+                        setImmediateStatus(true)
+                    }
+                    if (type == "Approval") {
+                        setApprovalStatus(true);
+                        setApproverData(TaskApproverBackupArray);
+                        StatusArray?.map((item: any) => {
+                            if (item.value == 1) {
+                                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                                setPercentCompleteStatus(item.status);
+                                setTaskStatus(item.taskStatusComment);
+                            }
+                        })
+                    }
+                    if (type == "Only Completed") {
+                        setOnlyCompletedStatus(true)
+                    }
+                }
+            }
+        }
+    }
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$ End Smart Category Section Functions $$$$$$$$$$$$$$$$
+
+    //  ******************  This is All Site Details Get Data Call From Backend **************
+
+    const getAllSitesData = async () => {
+        let web = new Web(siteUrls);
+        let MetaData: any = [];
+        let siteConfig: any = [];
+        let tempArray: any = [];
+        MetaData = await web.lists
+            .getById(AllListIdData.SmartMetadataListID)
+            .items
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .top(4999)
+            .expand('Author,Editor')
+            .get()
+
+        siteConfig = getSmartMetadataItemsByTaxType(MetaData, 'Sites');
+        siteConfig?.map((site: any) => {
+            if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
+                site.BtnStatus = false;
+                tempArray.push(site);
+            }
+        })
+        setSiteTypes(tempArray);
+        tempArray?.map((tempData: any) => {
+            SiteTypeBackupArray.push(tempData);
+        })
+    }
+    var getSmartMetadataItemsByTaxType = function (metadataItems: any, taxType: any) {
+        var Items: any = [];
+        metadataItems.map((taxItem: any) => {
+            if (taxItem.TaxType === taxType)
+                Items.push(taxItem);
+        });
+        Items.sort((a: any, b: any) => {
+            return a.SortOrder - b.SortOrder;
+        });
+        return Items;
+    }
+
+    // **************************  This is for Loading All Task Users From Back End Call Functions And validations ****************************
+    var count = 0;
+    const loadTaskUsers = async () => {
+        var AllTaskUsers: any = []
+        axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
+            .then((response: AxiosResponse) => {
+                taskUsers = response.data.value;
+                getAllEmployeeData();
+                $.each(taskUsers, function (index: any, user: any) {
+                    var ApproverUserItem = '';
+                    var UserApproverMail: any = []
+                    if (user.Title != undefined && user.IsShowTeamLeader === true) {
+                        if (user.Approver != undefined) {
+                            $.each(user.Approver.results, function (ApproverUser: any, index) {
+                                ApproverUserItem += ApproverUser.Title + (index === user.Approver.results?.length - 1 ? '' : ',');
+                                UserApproverMail.push(ApproverUser.Name.split('|')[2]);
+                            })
+                            user['UserManagerName'] = ApproverUserItem;
+                            user['UserManagerMail'] = UserApproverMail;
+                        }
+                        AllTaskUsers.push(user);
+                    }
+                });
+                if (AllMetaData != undefined && AllMetaData?.length > 0) {
+                    GetSelectedTaskDetails();
+                }
+            },
+                function (data) {
+                });
+    }
+
+
+    // **************** this is for Getting current user Data ************* 
+
+    const getCurrentUserDetails = async () => {
+        let currentUserId: number;
+        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        if (currentUserId != undefined) {
+            if (taskUsers != null && taskUsers?.length > 0) {
+                taskUsers?.map((userData: any) => {
+                    if (userData.AssingedToUserId == currentUserId) {
+                        let temp: any = [];
+                        temp.push(userData)
+                        setCurrentUserData(temp);
+                        currentUserBackupArray.push(userData);
+                        if (userData.UserGroupId == 7) {
+                            setIsUserFromHHHHTeam(true);
+                        }
+                    }
+                })
+            }
+        }
+    }
+
+    // ********** this is for Getting All  Employees Data For Approval Function and Approval Popup  *******************
+
+    const getAllEmployeeData = () => {
+        let UsersData: any = [];
+        let Groups: any = [];
+        let MainArray: any = [];
+        taskUsers.map((EmpData: any) => {
+            if (EmpData.ItemType == "Group") {
+                EmpData.Child = [];
+                Groups.push(EmpData);
+                MainArray.push(EmpData);
+            }
+            if (EmpData.ItemType == "User") {
+                UsersData.push(EmpData);
+            }
+        })
+        if (UsersData.length > 0 && Groups.length > 0) {
+            Groups.map((groupData: any) => {
+                UsersData.map((userData: any) => {
+                    if (groupData.Id == userData.UserGroupId) {
+                        userData.NewLabel = groupData.Title + " > " + userData.Title;
+                        groupData.Child.push(userData);
+                    }
+                })
+            })
+        }
+        setAllEmployeeData(Groups);
+    }
+
+
+    // ************************** this is used for getting Site Composition For Selected Portfolio which in Taaged into Task ***********************
+
+    const GetPortfolioSiteComposition = async (ProtfolioId: any) => {
+        let DataFromCall: any;
+        let web = new Web(siteUrls);
+        try {
+            DataFromCall = await web.lists
+                .getById(AllListIdData?.MasterTaskListID).items.select("Sitestagging,SiteCompositionSettings, Title, Id").top(5000).filter(`Id eq ${ProtfolioId}`).get();
+            if (DataFromCall != undefined) {
+                let TempSiteCompositionArray: any = [];
+                if (DataFromCall[0].Sitestagging != undefined) {
+                    let tempSiteComposition: any = JSON.parse(DataFromCall[0].Sitestagging != undefined ? DataFromCall[0].Sitestagging : [{}])
+                    if (tempSiteComposition != undefined && tempSiteComposition.length > 0) {
+                        tempSiteComposition.map((SiteData: any) => {
+                            let TempObject: any = {
+                                SiteName: SiteData.Title,
+                                ClienTimeDescription: SiteData.ClienTimeDescription,
+                                localSiteComposition: true
+                            }
+                            TempSiteCompositionArray.push(TempObject);
+                        })
+                        if (TempSiteCompositionArray != undefined && TempSiteCompositionArray.length > 0) {
+                            setSitesTaggingData(TempSiteCompositionArray);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log("Error :", error)
+        }
+    }
+
+    // ************************** this is used for getting All Projects Data From Back End ***********************
 
     const GetMasterData = async () => {
         try {
             let web = new Web(siteUrls);
             let AllProjects: any = [];
-            AllProjects = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+            AllProjects = await web.lists.getById(AllListIdData?.MasterTaskListID)
                 .items
                 .select("Deliverables,TechnicalExplanations,ValueAdded,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Services/Title,Services/Id,Events/Id,Events/Title,SiteCompositionSettings,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title")
                 .expand("ComponentPortfolio,ServicePortfolio,ComponentCategory,AssignedTo,Component,Events,Services,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent")
@@ -1120,172 +1441,181 @@ const EditTaskPopup = (Items: any) => {
         } catch (error) {
             console.log("Error:", error.message)
         }
-
     }
 
-    // const getInformationForSmartLight = () => {
-    //     if (EditData.TaskApprovers?.length > 0 && EditData.TaskApprovers != undefined) {
-    //         EditData.TaskApprovers?.map((Approver: any) => {
-    //             currentUserBackupArray?.map((current: any) => {
-    //                 if (Approver.Id == current.Id) {
-    //                     setSmartLightStatus(true);
-    //                 }
-    //             })
-    //         })
-    //     }
-    // }
 
-    //    *********** This is for status section Functions **************
+
+    //    ************************* This is for status section Functions **************************
+
+    const openTaskStatusUpdatePopup = (itemData: any) => {
+        setTaskStatusPopup(true);
+    }
+
+    //   ###################### This is used for Status Auto Suggesution Function #########################
+
     const StatusAutoSuggestion = (e: any) => {
         let StatusInput = e.target.value;
-        if (StatusInput.length > 0) {
-            if (StatusInput == 0) {
-                setTaskStatus('Not Started');
-                setPercentCompleteStatus('Not Started');
+        let value = Number(e.target.value)
+        if (value <= 100) {
+            if (StatusInput.length > 0) {
+                if (StatusInput == 0) {
+                    setTaskStatus('Not Started');
+                    setPercentCompleteStatus('Not Started');
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+                }
+                if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
+                    setTaskStatus("In Progress");
+                    setPercentCompleteStatus(`${StatusInput}% In Progress`);
+                    setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                    EditData.IsTodaysTask = false;
+                } else {
+                    StatusArray.map((percentStatus: any, index: number) => {
+                        if (percentStatus.value == StatusInput) {
+                            setTaskStatus(percentStatus.taskStatusComment);
+                            setPercentCompleteStatus(percentStatus.status);
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                        }
+                    })
+                }
+                if (StatusInput == 80) {
+                    // let tempArray: any = [];
+                    if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                        setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
+                    } else {
+                        setWorkingMember(143);
+                    }
+                    EditData.IsTodaysTask = false;
+                    EditData.CompletedDate = undefined;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 5) {
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
+                    EditData.CompletedDate = undefined;
+                    EditData.IsTodaysTask = false;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 10) {
+                    EditData.CompletedDate = undefined;
+                    if (EditData.StartDate == undefined) {
+                        EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+                    }
+                    EditData.IsTodaysTask = true;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
+                }
+                if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
+                    setWorkingMember(9);
+                    EditData.IsTodaysTask = false;
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 90) {
+                    EditData.IsTodaysTask = false;
+                    if (EditData.siteType == 'Offshore Tasks') {
+                        setWorkingMember(36);
+                    } else if (DesignStatus) {
+                        setWorkingMember(172);
+                    } else {
+                        setWorkingMember(42);
+                    }
+                    EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
+                    StatusArray?.map((item: any) => {
+                        if (StatusInput == item.value) {
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (StatusInput == 2) {
+                    setInputFieldDisable(true)
+                    StatusArray.map((percentStatus: any, index: number) => {
+                        if (percentStatus.value == StatusInput) {
+                            setTaskStatus(percentStatus.taskStatusComment);
+                            setPercentCompleteStatus(percentStatus.status);
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
+                        }
+                    })
+                }
+                if (StatusInput != 2) {
+                    setInputFieldDisable(false)
+                }
+                if (StatusInput <= 3 && ApprovalStatusGlobal) {
+                    ChangeTaskUserStatus = false;
+                } else {
+                    ChangeTaskUserStatus = true;
+                }
+                // if (StatusInput == 1) {
+                //     let tempArray: any = [];
+                //     if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                //         if (TaskApproverBackupArray?.length > 0) {
+                //             TaskApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                //         if (TaskCreatorApproverBackupArray?.length > 0) {
+                //             TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     }
+                //     StatusArray?.map((item: any) => {
+                //         if (StatusInput == item.value) {
+                //             setPercentCompleteStatus(item.status);
+                //             setTaskStatus(item.taskStatusComment);
+                //         }
+                //     })
+                //     setTaskAssignedTo(tempArray);
+                //     setTaskTeamMembers(tempArray);
+                //     setApproverData(tempArray);
+                // }
+            } else {
+                setTaskStatus('');
+                setPercentCompleteStatus('');
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
             }
-            if (StatusInput < 70 && StatusInput > 20 || StatusInput < 80 && StatusInput > 70) {
-                setTaskStatus("In Progress");
-                setPercentCompleteStatus(`${StatusInput}% In Progress`);
-                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-            } else {
-                StatusArray.map((percentStatus: any, index: number) => {
-                    if (percentStatus.value == StatusInput) {
-                        setTaskStatus(percentStatus.taskStatusComment);
-                        setPercentCompleteStatus(percentStatus.status);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                    }
-                })
-            }
-            if (StatusInput == 80) {
-                // let tempArray: any = [];
-                if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                    setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
-                } else {
-                    setWorkingMember(143);
-                }
-                EditData.IsTodaysTask = false;
-                EditData.CompletedDate = undefined;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 5) {
-                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
-
-                // } else {
-                //     setWorkingMember(156);
-                // }
-                EditData.CompletedDate = undefined;
-                EditData.IsTodaysTask = false;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 10) {
-                EditData.CompletedDate = undefined;
-                if (EditData.StartDate == undefined) {
-                    EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
-                }
-                EditData.IsTodaysTask = true;
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-                // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-                //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
-                // } else {
-                //     setWorkingMember(156);
-                // }
-            }
-            if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
-                setWorkingMember(9);
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 90) {
-                if (EditData.siteType == 'Offshore Tasks') {
-                    setWorkingMember(36);
-                } else if (DesignStatus) {
-                    setWorkingMember(172);
-                } else {
-                    setWorkingMember(42);
-                }
-                EditData.CompletedDate = Moment(new Date()).format("MM-DD-YYYY")
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (StatusInput == 2) {
-                setInputFieldDisable(true)
-                StatusArray.map((percentStatus: any, index: number) => {
-                    if (percentStatus.value == StatusInput) {
-                        setTaskStatus(percentStatus.taskStatusComment);
-                        setPercentCompleteStatus(percentStatus.status);
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
-                    }
-                })
-            }
-            if (StatusInput != 2) {
-                setInputFieldDisable(false)
-            }
-            if (StatusInput <= 3 && ApprovalStatusGlobal) {
-                ChangeTaskUserStatus = false;
-            } else {
-                ChangeTaskUserStatus = true;
-            }
-            if (StatusInput == 1) {
-                let tempArray: any = [];
-                if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
-                    if (TaskApproverBackupArray?.length > 0) {
-                        TaskApproverBackupArray.map((dataItem: any) => {
-                            tempArray.push(dataItem);
-                        })
-                    }
-                } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
-                    if (TaskCreatorApproverBackupArray?.length > 0) {
-                        TaskCreatorApproverBackupArray.map((dataItem: any) => {
-                            tempArray.push(dataItem);
-                        })
-                    }
-                }
-                StatusArray?.map((item: any) => {
-                    if (StatusInput == item.value) {
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-                setTaskAssignedTo(tempArray);
-                setTaskTeamMembers(tempArray);
-                setApproverData(tempArray);
-            }
         } else {
-            setTaskStatus('');
-            setPercentCompleteStatus('');
-            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
+            alert("Status not should be greater than 100");
+            setEditData({ ...EditData, Priority_x0020_Rank: 0 })
         }
+
+
         // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
     }
 
+    //   ######################  This is used for Status Popup Chnage Status #########################
     const PercentCompleted = (StatusData: any) => {
+        setTaskStatusPopup(false);
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
@@ -1314,6 +1644,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (StatusData.value == 80) {
             // let tempArray: any = [];
+            EditData.IsTodaysTask = false;
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
             } else {
@@ -1358,6 +1689,7 @@ const EditTaskPopup = (Items: any) => {
         // }
 
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
+            EditData.IsTodaysTask = false;
             setWorkingMember(9);
             StatusArray?.map((item: any) => {
                 if (StatusData.value == item.value) {
@@ -1367,6 +1699,7 @@ const EditTaskPopup = (Items: any) => {
             })
         }
         if (StatusData.value == 90) {
+            EditData.IsTodaysTask = false;
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
@@ -1384,18 +1717,8 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
-    const setWorkingMember = (statusId: any) => {
-        taskUsers.map((dataTask: any) => {
-            if (dataTask.AssingedToUserId == statusId) {
-                let tempArray: any = [];
-                tempArray.push(dataTask)
-                EditData.TaskAssignedUsers = tempArray;
-                let updateUserArray: any = [];
-                updateUserArray.push(tempArray[0].AssingedToUser)
-                setTaskAssignedTo(updateUserArray);
-            }
-        })
-    }
+
+    //  ###################### This is Common Function for Chnage The Team Members According to Change Status ######################
 
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
         let tempArray: any = [];
@@ -1419,16 +1742,33 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
-    const closeTaskStatusUpdatePopup = () => {
-        setTaskStatusPopup(false)
-        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
-        StatusArray?.map((array: any) => {
-            if (EditData.PercentComplete == array.value) {
-                setPercentCompleteStatus(array.status);
-                setTaskStatus(array.taskStatusComment);
+    //  ###################### This is Common Function for Chnage The Working Members According to Change Status ######################
+
+    const setWorkingMember = (statusId: any) => {
+        taskUsers.map((dataTask: any) => {
+            if (dataTask.AssingedToUserId == statusId) {
+                let tempArray: any = [];
+                tempArray.push(dataTask)
+                EditData.TaskAssignedUsers = tempArray;
+                let updateUserArray: any = [];
+                updateUserArray.push(tempArray[0].AssingedToUser)
+                setTaskAssignedTo(updateUserArray);
             }
         })
-        setPercentCompleteCheck(false);
+    }
+
+
+
+    const closeTaskStatusUpdatePopup = () => {
+        setTaskStatusPopup(false)
+        // setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: (EditData.PercentComplete ? EditData.PercentComplete : null) })
+        // StatusArray?.map((array: any) => {
+        //     if (EditData.PercentComplete == array.value) {
+        //         setPercentCompleteStatus(array.status);
+        //         setTaskStatus(array.taskStatusComment);
+        //     }
+        // })
+        // setPercentCompleteCheck(false);
     }
     const setModalIsOpenToFalse = () => {
         let callBack = Items.Call
@@ -1449,17 +1789,7 @@ const EditTaskPopup = (Items: any) => {
         TaskApproverBackupArray = []
         ApproverIds = []
     }
-    let currentUsers = [
-        { rankTitle: 'Select Item Rank', rank: null },
-        { rankTitle: '(8) Top Highlights', rank: 8 },
-        { rankTitle: '(7) Featured Item', rank: 7 },
-        { rankTitle: '(6) Key Item', rank: 6 },
-        { rankTitle: '(5) Relevant Item', rank: 5 },
-        { rankTitle: '(4) Background Item', rank: 4 },
-        { rankTitle: '(2) to be verified', rank: 2 },
-        { rankTitle: '(1) Archive', rank: 1 },
-        { rankTitle: '(0) No Show', rank: 0 }
-    ]
+
     var smartComponentsIds: any = [];
     var RelevantPortfolioIds: any = [];
     var AssignedToIds: any = [];
@@ -1469,25 +1799,60 @@ const EditTaskPopup = (Items: any) => {
     var ClientCategoryIDs: any = [];
     var SmartServicesId: any = [];
     var ApproverIds: any = [];
+
+
+
+
+    // ******************** This is Task All Details Update Function  ***************************
+
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        UserName: imgItem.UserName,
-                        UserImage: imgItem.UserImage
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
                     }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
                 }
 
             })
         }
+        let PrecentStatus: any = UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus)) : 0;
+
+        if (PrecentStatus == 1) {
+            let tempArrayApprover: any = [];
+            if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                if (TaskApproverBackupArray?.length > 0) {
+                    TaskApproverBackupArray.map((dataItem: any) => {
+                        tempArrayApprover.push(dataItem);
+                    })
+                }
+            } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                if (TaskCreatorApproverBackupArray?.length > 0) {
+                    TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                        tempArrayApprover.push(dataItem);
+                    })
+                }
+            }
+            StatusArray?.map((item: any) => {
+                if (PrecentStatus == item.value) {
+                    setPercentCompleteStatus(item.status);
+                    setTaskStatus(item.taskStatusComment);
+                }
+            })
+            TaskAssignedTo = tempArrayApprover;
+            TaskTeamMembers = tempArrayApprover;
+        }
+
         // images?.map((imgDtl: any) => {
         //     if (imgDtl.dataURL != undefined) {
         //         var imgUrl = siteUrls + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
@@ -1569,8 +1934,8 @@ const EditTaskPopup = (Items: any) => {
             updateFeedbackArray = JSON.parse(EditData.FeedBack);
         }
         FeedBackBackupArray = [];
-        if (ShareWebTypeData != undefined && ShareWebTypeData?.length > 0) {
-            ShareWebTypeData.map((typeData: any) => {
+        if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
+            tempShareWebTypeData.map((typeData: any) => {
                 CategoryTypeID.push(typeData.Id)
             })
         }
@@ -1656,14 +2021,6 @@ const EditTaskPopup = (Items: any) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
             })
         }
-        if (sendEmailGlobalCount > 0) {
-            if (sendEmailStatus) {
-                setSendEmailComponentStatus(false)
-            } else {
-                setSendEmailComponentStatus(true)
-            }
-        }
-
         if (selectedClientCategory != undefined && selectedClientCategory.length > 0) {
             selectedClientCategory?.map((itemData: any) => {
                 ClientCategoryIDs.push(itemData.Id)
@@ -1700,43 +2057,78 @@ const EditTaskPopup = (Items: any) => {
         //         })
         //     }
         // }
+        let UpdateDataObject: any = {
+            IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
+            workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
+            waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
+            Priority_x0020_Rank: EditData.Priority_x0020_Rank,
+            ItemRank: EditData.ItemRank,
+            Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
+            Priority: Priority,
+            StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
+            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
+            ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
+            Categories: CategoriesData ? CategoriesData : null,
+            // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
+            SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
+            DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
+            CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+            Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
+            Mileage: (EditData.Mileage ? EditData.Mileage : ''),
+            ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
+            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
+            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
+            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
+            FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
+            component_x0020_link: {
+                "__metadata": { type: "SP.FieldUrlValue" },
+                Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
+                Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
+            },
+            BasicImageInfo: UploadImageArray != undefined && UploadImageArray.length > 0 ? JSON.stringify(UploadImageArray) : JSON.stringify(UploadImageArray),
+            ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
+            ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
+            ClientTime: JSON.stringify(ClientCategoryData),
+            ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+            SiteCompositionSettings: (SiteCompositionSetting != undefined && SiteCompositionSetting.length > 0) ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings,
+            ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
+            EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null
+        }
+
 
         try {
             let web = new Web(siteUrls);
-            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({
-                IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
-                workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
-                waitForResponse: (EditData.waitForResponse ? EditData.waitForResponse : null),
-                Priority_x0020_Rank: EditData.Priority_x0020_Rank,
-                ItemRank: EditData.ItemRank,
-                Title: UpdateTaskInfo.Title ? UpdateTaskInfo.Title : EditData.Title,
-                Priority: Priority,
-                StartDate: EditData.StartDate ? Moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-                PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (EditData.PercentComplete ? (EditData.PercentComplete / 100) : null),
-                ComponentId: { "results": (smartComponentsIds != undefined && smartComponentsIds.length > 0) ? smartComponentsIds : [] },
-                Categories: CategoriesData ? CategoriesData : null,
-                // RelevantPortfolioId: { "results": (RelevantPortfolioIds != undefined && RelevantPortfolioIds?.length > 0) ? RelevantPortfolioIds : [] },
-                SharewebCategoriesId: { "results": (CategoryTypeID != undefined && CategoryTypeID.length > 0) ? CategoryTypeID : [] },
-                DueDate: EditData.DueDate ? Moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-                CompletedDate: EditData.CompletedDate ? Moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
-                Status: taskStatus ? taskStatus : (EditData.Status ? EditData.Status : null),
-                Mileage: (EditData.Mileage ? EditData.Mileage : ''),
-                ServicesId: { "results": (SmartServicesId != undefined && SmartServicesId.length > 0) ? SmartServicesId : [] },
-                AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
-                Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
-                Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
-                FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
-                component_x0020_link: {
-                    "__metadata": { type: "SP.FieldUrlValue" },
-                    Description: EditData.Relevant_Url ? EditData.Relevant_Url : '',
-                    Url: EditData.Relevant_Url ? EditData.Relevant_Url : ''
-                },
-                BasicImageInfo: JSON.stringify(UploadImageArray),
-                ProjectId: (selectedProject.length > 0 ? selectedProject[0].Id : null),
-                ApproverId: { "results": (ApproverIds != undefined && ApproverIds.length > 0) ? ApproverIds : [] },
-                ClientTime: JSON.stringify(ClientCategoryData),
-                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] }
-            }).then((res: any) => {
+            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(UpdateDataObject).then(async (res: any) => {
+                let web = new Web(siteUrls);
+                let smartMetaCall: any;
+
+                if (Items.Items.listId != undefined) {
+                    smartMetaCall = await web.lists
+                        .getById(Items.Items.listId)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.Id}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+                } else {
+                    smartMetaCall = await web.lists
+                        .getById(Items.Items.listName)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.Id}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+
+                }
+                if (smartMetaCall != undefined && smartMetaCall.length > 0) {
+                    smartMetaCall[0].TaskCreatorData = EditData.TaskCreatorData;
+                    smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
+                    smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
+                    smartMetaCall[0].siteType = EditData.siteType;
+                }
+                setLastUpdateTaskData(smartMetaCall[0]);
                 tempShareWebTypeData = [];
                 AllMetaData = []
                 taskUsers = []
@@ -1752,8 +2144,33 @@ const EditTaskPopup = (Items: any) => {
                 TaskCreatorApproverBackupArray = []
                 TaskApproverBackupArray = []
                 ApproverIds = []
-                if (typeFunction != "TimeSheetPopup") {
+                if (Items.sendApproverMail != undefined) {
+                    if (Items.sendApproverMail) {
+                        setSendEmailComponentStatus(true)
+                    } else {
+                        setSendEmailComponentStatus(false)
+                    }
+                }
+                if (sendEmailGlobalCount > 0) {
+                    if (sendEmailStatus) {
+                        setSendEmailComponentStatus(false)
+                    } else {
+                        setSendEmailComponentStatus(true)
+                    }
+                }
+                if (
+                    typeFunction != "TimeSheetPopup" &&
+                    Items?.pageName != "TaskDashBoard" &&
+                    Items?.pageName != "ProjectProfile"
+                ) {
                     Items.Call();
+                }
+
+                if (
+                    Items?.pageName == "TaskDashBoard" ||
+                    Items?.pageName == "ProjectProfile"
+                ) {
+                    Items.Call(UpdateDataObject);
                 }
             })
         } catch (error) {
@@ -1775,6 +2192,7 @@ const EditTaskPopup = (Items: any) => {
 
     }
 
+    // *************************  This is for workingThisWeek,  IsTodaysTask, and waitForResponse Functions ****************************
     const changeStatus = (e: any, type: any) => {
         if (type == "workingThisWeek") {
             if (e.target.value === 'true') {
@@ -1798,7 +2216,10 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     }
-    //    ************* this is team configuration call Back function **************
+
+
+    //    ************* This is team configuration call Back function **************
+
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
         if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
@@ -1850,7 +2271,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
 
-    // *************** this is footer section share this task function ***************
+    // *************** This is footer section share This task function ***************
 
     const shareThisTaskFunction = (EmailData: any) => {
         var link = "mailTo:"
@@ -1859,6 +2280,8 @@ const EditTaskPopup = (Items: any) => {
             + "&body=" + `${siteUrls}/SitePages/Task-Profile-spfx.aspx?taskId=${EmailData.ID}` + "&" + `Site=${Items.Items.siteType}`;
         window.location.href = link;
     }
+
+    // ****************** This is used for Delete Task Functions **********************
     const deleteTaskFunction = async (TaskID: number) => {
         let deletePost = confirm("Do you really want to delete this Task?")
         if (deletePost) {
@@ -1897,6 +2320,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const BuildFeedBackArray = () => {
+        let PhoneCount = 0;
         let TempFeedBackArray: any = [];
         if (CommentBoxData?.length > 0 && SubCommentBoxData?.length > 0) {
             TempFeedBackArray = CommentBoxData.concat(SubCommentBoxData)
@@ -1982,6 +2406,7 @@ const EditTaskPopup = (Items: any) => {
                             }
                         }
                         if (item.Phone) {
+                            PhoneCount = PhoneCount + 1;
                             // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
@@ -2010,7 +2435,13 @@ const EditTaskPopup = (Items: any) => {
                                 }
                             }
                         }
+                        if (subItem.Phone == true) {
+                            PhoneCount = PhoneCount + 1;
+                        }
                     })
+                }
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
                 }
             })
             if (ApprovedStatusCount == 0) {
@@ -2018,6 +2449,9 @@ const EditTaskPopup = (Items: any) => {
             } else {
                 setApprovalTaskStatus(true)
             }
+        }
+        if (PhoneCount > 0) {
+            CategoryChangeUpdateFunction("false", "Phone", 199)
         }
     }
 
@@ -2031,91 +2465,7 @@ const EditTaskPopup = (Items: any) => {
         })
     }
 
-    // **************** this is for category change and remove function functions ******************
 
-    const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
-        let tempString: any = [];
-        CategoriesData.split(";")?.map((type: any, index: number) => {
-            if (type != TypeCategory) {
-                tempString.push(type);
-            }
-        })
-        setCategoriesData(tempString.join(";"));
-        tempCategoryData = tempString.join(";");
-        let tempArray2: any = [];
-        tempShareWebTypeData = [];
-        ShareWebTypeData?.map((dataType: any) => {
-            if (dataType.Id != TypeId) {
-                tempArray2.push(dataType)
-                tempShareWebTypeData.push(dataType);
-            }
-        })
-        setShareWebTypeData(tempArray2);
-    }
-    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
-        let statusValue: any = e.target.value;
-        let type: any = typeValue;
-        let Id: any = IdValue;
-        CategoryChangeUpdateFunction(statusValue, type, Id)
-    }
-
-    const CategoryChangeUpdateFunction = (Status: any, type: any, Id: any) => {
-        if (Status == "true") {
-            removeCategoryItem(type, Id);
-            if (type == "Phone") {
-                setPhoneStatus(false)
-            }
-            if (type == "Email") {
-                setEmailStatus(false)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(false)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(false)
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(false)
-            }
-
-
-        } else {
-            let category: any = tempCategoryData + ";" + type;
-            setCategoriesData(category);
-            tempCategoryData = category;
-            let tempObject = {
-                Title: type,
-                Id: Id
-            }
-            ShareWebTypeData.push(tempObject);
-            tempShareWebTypeData.push(tempObject);
-            if (type == "Phone") {
-                setPhoneStatus(true)
-            }
-            if (type == "Email") {
-                setEmailStatus(true)
-            }
-            if (type == "Immediate") {
-                setImmediateStatus(true)
-            }
-            if (type == "Approval") {
-                setApprovalStatus(true);
-                setApproverData(TaskApproverBackupArray);
-                StatusArray?.map((item: any) => {
-                    if (item.value == 1) {
-                        setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                        setPercentCompleteStatus(item.status);
-                        setTaskStatus(item.taskStatusComment);
-                    }
-                })
-            }
-            if (type == "Only Completed") {
-                setOnlyCompletedStatus(true)
-            }
-        }
-    }
-
-    // ********** ========= End ============== category change and remove function ******************
 
     // ************ this is for Save And Add Time sheet function *************
 
@@ -2129,13 +2479,8 @@ const EditTaskPopup = (Items: any) => {
         setModalIsOpenToFalse();
     }
 
-    // ************ ======= END ===== of Save And Add Time sheet function *************
-
-
-
-
-
     //***************** This is for Image Upload Section  Functions *****************
+
     const FlorarImageUploadComponentCallBack = (dt: any) => {
         setUploadBtnStatus(false);
         let DataObject: any = {
@@ -2166,8 +2511,10 @@ const EditTaskPopup = (Items: any) => {
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "",
-                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : "",
+                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : Items.context.pageContext._user.displayName,
+                    // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
+                    // UserName: "Test Dev",
                 };
                 tempArray.push(ImgArray);
             } else {
@@ -2183,7 +2530,8 @@ const EditTaskPopup = (Items: any) => {
             let updateIndex: any = addUpdateIndex[0]
             let updateImage: any = imageList[updateIndex];
             if (updateIndex + 1 >= imageList.length) {
-                UploadImageFunction(lastindexArray, fileName);
+                UploadImageFunction(lastindexArray, fileName, tempArray);
+
             }
             else {
                 if (updateIndex < imageList.length) {
@@ -2192,7 +2540,7 @@ const EditTaskPopup = (Items: any) => {
             }
         }
     };
-    const UploadImageFunction = (Data: any, imageName: any) => {
+    const UploadImageFunction = (Data: any, imageName: any, DataJson: any) => {
         let listId = Items.Items.listId;
         let listName = Items.Items.listName;
         let Id = Items.Items.Id
@@ -2205,27 +2553,64 @@ const EditTaskPopup = (Items: any) => {
         for (var i = 0; i < byteArray.byteLength; i++) {
             fileData += String.fromCharCode(byteArray[i]);
         }
-        if (Items.Items.listId != undefined) {
-            (async () => {
+        setTimeout(() => {
+            if (Items.Items.listId != undefined) {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getById(listId).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data).then(() => {
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson);
+                    });
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            } else {
+                (async () => {
+                    let web = new Web(siteUrls);
+                    let item = web.lists.getByTitle(listName).items.getById(Id);
+                    item.attachmentFiles.add(imageName, data).then(() => {
+                        console.log("Attachment added");
+                        UpdateBasicImageInfoJSON(DataJson);
+                    });
+                    setUploadBtnStatus(false);
+                })().catch(console.log)
+            }
+        }, 2500);
+    }
+
+
+    const UpdateBasicImageInfoJSON = async (JsonData: any) => {
+        var UploadImageArray: any = []
+        if (JsonData != undefined && JsonData.length > 0) {
+            JsonData?.map((imgItem: any) => {
+                if (imgItem.ImageName != undefined && imgItem.ImageName != null) {
+                    if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                        let tempObject: any = {
+                            ImageName: imgItem.ImageName,
+                            ImageUrl: imgItem.imageDataUrl,
+                            UploadeDate: imgItem.UploadeDate,
+                            UserName: imgItem.UserName,
+                            UserImage: imgItem.UserImage
+                        }
+                        UploadImageArray.push(tempObject)
+                    } else {
+                        UploadImageArray.push(imgItem);
+                    }
+                }
+            })
+        }
+        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+            try {
                 let web = new Web(siteUrls);
-                let item = web.lists.getById(listId).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                setUploadBtnStatus(false);
-            })().catch(console.log)
-        } else {
-            (async () => {
-                let web = new Web(siteUrls);
-                let item = web.lists.getByTitle(listName).items.getById(Id);
-                item.attachmentFiles.add(imageName, data);
-                console.log("Attachment added");
-                setUploadBtnStatus(false);
-            })().catch(console.log)
+                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+            } catch (error) {
+                console.log("Error Message :", error);
+            }
         }
     }
     const RemoveImageFunction = (imageIndex: number, imageName: any, FunctionType: any) => {
+        let tempArray: any = [];
         if (FunctionType == "Remove") {
-            let tempArray: any = [];
             TaskImages?.map((imageData: any, index: number) => {
                 if (index != imageIndex) {
                     tempArray.push(imageData)
@@ -2233,20 +2618,23 @@ const EditTaskPopup = (Items: any) => {
             })
             setTaskImages(tempArray);
         }
-
         if (Items.Items.listId != undefined) {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).delete();
+                item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         } else {
             (async () => {
                 let web = new Web(siteUrls);
                 let item = web.lists.getByTitle(Items.Items.listName).items.getById(Items.Items.Id);
-                item.attachmentFiles.getByName(imageName).delete();
+                item.attachmentFiles.getByName(imageName).recycle();
+                UpdateBasicImageInfoJSON(tempArray);
                 console.log("Attachment deleted");
+
             })().catch(console.log)
         }
     }
@@ -2402,18 +2790,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
 
-    // ******* this is for Change Task Component And Service Component ************
 
-    const ChangeComponentStatus = (e: any, Type: any) => {
-        if (Type == "Component") {
-            setServicesTaskCheck(false);
-            setComponentTaskCheck(true);
-        }
-        if (Type == "Service") {
-            setServicesTaskCheck(true);
-            setComponentTaskCheck(false);
-        }
-    }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -2495,7 +2872,7 @@ const EditTaskPopup = (Items: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-                        <a style={{ textDecoration: "none", color: "#000066" }} href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                        <a style={{ textDecoration: "none", color: "#000066" }} href={`${siteUrls}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
                     </span>
                 )
             },
@@ -2644,6 +3021,7 @@ const EditTaskPopup = (Items: any) => {
         setApproverSearchKey('');
         setTaskAssignedTo([ApproverData]);
         setTaskTeamMembers([ApproverData]);
+        TaskApproverBackupArray = [ApproverData];
         StatusArray?.map((item: any) => {
             if (item.value == 1) {
                 setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
@@ -2651,14 +3029,22 @@ const EditTaskPopup = (Items: any) => {
                 setTaskStatus(item.taskStatusComment);
             }
         })
+        let ApproverHistoryObject: any = {
+            ApproverName: ApproverData.Title,
+            ApprovedDate: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
+            ApproverId: ApproverData.AssingedToUserId,
+            ApproverImage: (ApproverData.Item_x0020_Cover != undefined || ApproverData.Item_x0020_Cover != null ? ApproverData.Item_x0020_Cover.Url : 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'),
+            ApproverSuffix: ApproverData.Suffix,
+            ApproverEmail: ApproverData.Email
+        }
+        ApproverHistoryData.push(ApproverHistoryObject);
     }
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
-    const SendEmailNotificationCallBack = () => {
-
-    }
-
+    const SendEmailNotificationCallBack = React.useCallback(() => {
+        setSendEmailComponentStatus(false);
+    }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
 
     const SmartTotalTimeCallBack = React.useCallback((TotalTime: any) => {
@@ -2670,7 +3056,7 @@ const EditTaskPopup = (Items: any) => {
         if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
             let tempArray: any = [];
             Data.ClientTime?.map((ClientTimeItems: any) => {
-                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons.Url.length > 0) {
+                if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
                     let newObject: any = {
                         SiteName: ClientTimeItems.SiteName,
                         ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
@@ -2690,12 +3076,13 @@ const EditTaskPopup = (Items: any) => {
         }
         if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
             setSiteCompositionSetting(Data.SiteCompositionSettings);
-        } else {
-            setSiteCompositionSetting([])
         }
         console.log("Site Composition final Call back Data =========", Data);
     }, [])
 
+
+
+    // This is for the Background Comment section Functions 
 
 
     // ************** this is custom header and custom Footers section functions for panel *************
@@ -2706,7 +3093,7 @@ const EditTaskPopup = (Items: any) => {
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
-                        {`${EditData.TaskId} ${EditData.Title}`}
+                        {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -2787,6 +3174,7 @@ const EditTaskPopup = (Items: any) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
+                                {/* <RiDeleteBin6Line /> */}
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -2798,7 +3186,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
                             </span>
                         </div>
                     </div>
@@ -2861,6 +3249,7 @@ const EditTaskPopup = (Items: any) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" style={{ marginLeft: "-5px" }} fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M19.3584 5.28375C18.4262 5.83254 18.1984 6.45859 18.1891 8.49582L18.1837 9.66172H13.5918H9V10.8591V12.0565H10.1612H11.3225L11.3551 26.3309L11.3878 40.6052L11.6525 41.1094C11.9859 41.7441 12.5764 42.3203 13.2857 42.7028L13.8367 43H23.9388C33.9989 43 34.0431 42.9989 34.6068 42.7306C35.478 42.316 36.1367 41.6314 36.4233 40.8428C36.6697 40.1649 36.6735 39.944 36.6735 26.1055V12.0565H37.8367H39V10.8591V9.66172H34.4082H29.8163L29.8134 8.49582C29.8118 7.85452 29.7618 7.11427 29.7024 6.85084C29.5542 6.19302 29.1114 5.56596 28.5773 5.2569C28.1503 5.00999 27.9409 4.99826 23.9833 5.00015C19.9184 5.0023 19.8273 5.00784 19.3584 5.28375ZM27.4898 8.46431V9.66172H24H20.5102V8.46431V7.26691H24H27.4898V8.46431ZM34.4409 25.9527C34.4055 40.9816 34.4409 40.2167 33.7662 40.5332C33.3348 40.7355 14.6335 40.7206 14.2007 40.5176C13.4996 40.1889 13.5306 40.8675 13.5306 25.8645V12.0565H24.0021H34.4736L34.4409 25.9527ZM18.1837 26.3624V35.8786H19.3469H20.5102V26.3624V16.8461H19.3469H18.1837V26.3624ZM22.8367 26.3624V35.8786H24H25.1633V26.3624V16.8461H24H22.8367V26.3624ZM27.4898 26.3624V35.8786H28.6531H29.8163V26.3624V16.8461H28.6531H27.4898V26.3624Z" fill="#333333" />
                                 </svg>
+                                {/* <RiDeleteBin6Line /> */}
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
@@ -2872,7 +3261,7 @@ const EditTaskPopup = (Items: any) => {
                             <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
-                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} /> : null}
+                                    <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
                             </span>
                         </div>
                     </div>
@@ -2914,6 +3303,12 @@ const EditTaskPopup = (Items: any) => {
     const customFooterForProjectManagement = () => {
         return (
             <footer className={ServicesTaskCheck ? "serviepannelgreena text-end me-4" : "text-end me-4"}>
+                <button type="button" className="btn btn-primary">
+                    <a target="_blank" className="text-light" data-interception="off"
+                        href={`${siteUrls}/SitePages/Project-Management-Overview.aspx`}>
+                        <span className="text-light">Create New One</span>
+                    </a>
+                </button>
                 <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedProject} >
                     Save
                 </button>
@@ -2954,11 +3349,11 @@ const EditTaskPopup = (Items: any) => {
                             </tbody>
                         </table>
                     </div>
-                    <footer className="float-end">
+                    {/* <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
                             OK
                         </button>
-                    </footer>
+                    </footer> */}
                 </div>
             </Panel>
             {/* ***************** this is Save And Time Sheet panel *********** */}
@@ -2986,11 +3381,44 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <div className="modal-body mb-5">
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
-                            <button className="nav-link active" id="BASIC-INFORMATION" data-bs-toggle="tab" data-bs-target="#BASICINFORMATION" type="button" role="tab" aria-controls="BASICINFORMATION" aria-selected="true">
+                        <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
+                            <button
+                                className="nav-link active"
+                                id="BASIC-INFORMATION"
+                                data-bs-toggle="tab"
+                                data-bs-target="#BASICINFORMATION"
+                                type="button"
+                                role="tab"
+                                aria-controls="BASICINFORMATION"
+                                aria-selected="true"
+                            >
                                 BASIC INFORMATION
                             </button>
-                            <button className="nav-link" id="NEW-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#NEWTIMESHEET" type="button" role="tab" aria-controls="NEWTIMESHEET" aria-selected="false">TIMESHEET</button>
+                            <button
+                                className="nav-link"
+                                id="NEW-TIME-SHEET"
+                                data-bs-toggle="tab"
+                                data-bs-target="#NEWTIMESHEET"
+                                type="button"
+                                role="tab"
+                                aria-controls="NEWTIMESHEET"
+                                aria-selected="false"
+                            >
+                                TEAM & TIMESHEET
+                            </button>
+                            {IsUserFromHHHHTeam ? null : <button
+                                className="nav-link"
+                                id="BACKGROUND-COMMENT"
+                                data-bs-toggle="tab"
+                                data-bs-target="#BACKGROUNDCOMMENT"
+                                type="button"
+                                role="tab"
+                                aria-controls="BACKGROUNDCOMMENT"
+                                aria-selected="false"
+                            >
+                                BACKGROUND
+                            </button>}
+
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -2998,7 +3426,7 @@ const EditTaskPopup = (Items: any) => {
                                     <div className="col-md-5">
                                         <div className="col-12 ">
                                             <div className="input-group">
-                                                <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
+                                                <div className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                     <span className="d-flex">
                                                         <span className="form-check mx-2">
                                                             <input className="form-check-input rounded-0" type="checkbox"
@@ -3016,16 +3444,20 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-check-label">Working Today?</label>
                                                         </span>
                                                     </span>
-                                                </label>
+                                                </div>
                                                 <input type="text" className="form-control" placeholder="Task Name"
-                                                    ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                    defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                             </div>
                                         </div>
                                         <div className="mx-0 row  ">
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
+                                                    {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
+                                                    {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
+                                                        ...EditData, StartDate: date
+                                                    })} /> */}
                                                     <label className="form-label full-width" >Start Date</label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, StartDate: e.target.value
@@ -3035,13 +3467,12 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 pe-0 mt-2">
                                                 <div className="input-group ">
-                                                    <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                    <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
-                                                            ng-model="dueDatePopUp"
-                                                            ng-click="OpenDueDatePopup()" />
-                                                    </span></label>
+                                                        />
+                                                    </span></div>
 
-                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31"
+                                                    <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, DueDate: e.target.value
@@ -3051,9 +3482,8 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col-6 ps-0 mt-2">
                                                 <div className="input-group ">
-                                                    <label className="form-label full-width"
-                                                    >Completed Date</label>
-                                                    <input type="date" className="form-control" max="9999-12-31"
+                                                    <label className="form-label full-width" > Completed Date </label>
+                                                    <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
                                                             ...EditData, CompletedDate: e.target.value
@@ -3065,7 +3495,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="input-group">
                                                     <label className="form-label full-width">Item Rank</label>
                                                     <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setEditData({ ...EditData, ItemRank: e.target.value })}>
-                                                        {currentUsers.map(function (h: any, i: any) {
+                                                        {ItemRankArray.map(function (h: any, i: any) {
                                                             return (
                                                                 <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                             )
@@ -3077,14 +3507,13 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="mx-0 row mt-2">
                                             <div className="col ps-0">
                                                 <div className="input-group mb-2">
-                                                    <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
+                                                    <label className="full-width">
                                                         <span className="form-check form-check-inline mb-0 l-radio">
                                                             <input type="radio" id="Components"
                                                                 name="Portfolios" checked={ComponentTaskCheck}
                                                                 onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                 title="Component"
-                                                                ng-model="PortfolioTypes"
-                                                                ng-click="getPortfoliosData()"
+
                                                                 className="form-check-input" />
                                                             <label className="form-check-label mb-0">Component</label>
                                                         </span>
@@ -3100,21 +3529,22 @@ const EditTaskPopup = (Items: any) => {
                                                     </label>
                                                     {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
                                                         <>
-                                                            <input type="text" ng-model="SearchService"
+                                                            <input type="text"
                                                                 className="form-control"
-                                                                id="{{PortfoliosID}}" autoComplete="off"
-
+                                                                value={SearchedServiceCompnentKey}
+                                                                onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
+                                                                placeholder="Select Componets / Service And Search Here"
                                                             />
                                                         </>
                                                     }
                                                     {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                         return (
                                                             <>
-                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                     <a>
-
-                                                                        <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                        <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                        {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                     </a>
                                                                 </div>
                                                             </>
@@ -3124,10 +3554,11 @@ const EditTaskPopup = (Items: any) => {
                                                         smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                             return (
                                                                 <>
-                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "85%" }}>
+                                                                    <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
                                                                         <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                         <a>
-                                                                            <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                            {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                         </a>
                                                                     </div>
                                                                 </>
@@ -3137,23 +3568,44 @@ const EditTaskPopup = (Items: any) => {
 
                                                     <span className="input-group-text">
                                                         {ComponentTaskCheck ?
-
-                                                            <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                                             : null}
 
-                                                        {ServicesTaskCheck ? <svg onClick={(e) => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <svg onClick={(e) => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
+                                                        {ServicesTaskCheck ?
+                                                            <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={(e) => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> 
+                                                            : null}
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
+                                                            <span title="Component/Service Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}
+                                                                className="svg__iconbox svg__icon--editBox"></span>
+                                                            // <svg onClick={(e) => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            : null}
 
                                                     </span>
                                                 </div>
+                                                {SearchedServiceCompnentData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="list-group">
+                                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                                return (
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
+                                                                        <a>{Item.NewLeble}</a>
+                                                                    </li>
+                                                                )
+                                                            }
+                                                            )}
+                                                        </ul>
+                                                    </div>) : null}
                                                 <div className="input-group mb-2">
                                                     <label className="form-label full-width">
                                                         Categories
                                                     </label>
                                                     <input type="text" className="form-control"
                                                         id="txtCategories" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
-                                                    <span className="input-group-text" onClick={(e) => EditComponentPicker(EditData, 'Categories')}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                    <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, 'Categories')}>
+                                                        <span className="svg__iconbox svg__icon--editBox"></span>
+                                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                     </span>
                                                 </div>
                                                 {SearchedCategoryData?.length > 0 ? (
@@ -3161,7 +3613,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <ul className="list-group">
                                                             {SearchedCategoryData.map((item: any) => {
                                                                 return (
-                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item])} >
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                                         <a>{item.Newlabel}</a>
                                                                     </li>
                                                                 )
@@ -3187,7 +3639,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 type="checkbox"
                                                                 checked={EmailStatus}
                                                                 value={`${EmailStatus}`}
-                                                                onClick={(e) => CategoryChange(e, "Email", 276)}
+                                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
                                                             />
                                                             <label>Email Notification</label>
                                                             <div className="form-check ms-2">
@@ -3218,7 +3670,8 @@ const EditTaskPopup = (Items: any) => {
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                     {type.Title}
                                                                                 </a>
-                                                                                <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                {/* <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                             </div>
                                                                         )
                                                                     }
@@ -3267,50 +3720,79 @@ const EditTaskPopup = (Items: any) => {
                                                         </ul>
                                                     </div>
                                                     {ApprovalStatus ?
-                                                        <div className="col-12">
-                                                            <div className="input-group">
-                                                                <input type="text"
-                                                                    className="form-control"
-                                                                    placeholder="Search Approver's Name Here"
-                                                                    value={ApproverSearchKey}
-                                                                    onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
-                                                                />
-                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                        <div>
+                                                            <div className="col-12">
+                                                                <div className="input-group">
+                                                                    <input type="text"
+                                                                        className="form-control"
+                                                                        placeholder="Search Approver's Name Here"
+                                                                        value={ApproverSearchKey}
+                                                                        onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
+                                                                    />
+                                                                    <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
+                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
 
-                                                                </span>
-                                                            </div>
-                                                            {ApproverSearchedData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {ApproverSearchedData.map((item: any) => {
+                                                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+
+                                                                    </span>
+                                                                </div>
+                                                                {ApproverSearchedData?.length > 0 ? (
+                                                                    <div className="SmartTableOnTaskPopup">
+                                                                        <ul className="list-group">
+                                                                            {ApproverSearchedData.map((item: any) => {
+                                                                                return (
+                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                                                        <a>{item.NewLabel}</a>
+                                                                                    </li>
+                                                                                )
+                                                                            }
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>) : null}
+
+                                                                {ApproverData != undefined && ApproverData.length > 0 ?
+                                                                    <div>
+                                                                        {ApproverData.map((Approver: any, index: number) => {
                                                                             return (
-                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
-                                                                                    <a>{item.NewLabel}</a>
-                                                                                </li>
-                                                                            )
-                                                                        }
-                                                                        )}
-                                                                    </ul>
-                                                                </div>) : null}
-
-                                                            {ApproverData != undefined && ApproverData.length > 0 ?
-                                                                <div>
-                                                                    {ApproverData.map((Approver: any, index: number) => {
-                                                                        return (
-                                                                            <div className="block mt-1 px-2 py-2">
-                                                                                <div className="d-flex justify-content-between">
-                                                                                    <a className="hreflink " target="_blank" data-interception="off" >
-                                                                                        {Approver.Title}
-                                                                                    </a>
-                                                                                    <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
-                                                                                    </svg>
+                                                                                <div className="block mt-1 px-2 py-2">
+                                                                                    <div className="d-flex justify-content-between">
+                                                                                        <a className="hreflink " target="_blank" data-interception="off" >
+                                                                                            {Approver.Title}
+                                                                                        </a>
+                                                                                        <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                        {/* <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
+                                                                                    </svg> */}
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        )
-                                                                    })}
-                                                                </div> : null}
-                                                        </div> : null}
+                                                                            )
+                                                                        })}
+                                                                    </div> : null}
+                                                            </div>
+                                                            <div className="Approval-History-section my-2">
+                                                                {ApproverHistoryData != undefined && ApproverHistoryData.length > 1 ?
+                                                                    <div>
+                                                                        {ApproverHistoryData.map((HistoryData: any, index: any) => {
+                                                                            if (index < ApproverHistoryData.length - 1) {
+                                                                                return (
+                                                                                    <div className="d-flex full-width justify-content-between">
+                                                                                        <div className="d-flex">
+                                                                                            Approved by-
+                                                                                            <span className="siteColor mx-1">{HistoryData.ApproverName}</span>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <span>{HistoryData.ApprovedDate}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            }
+                                                                        })}
+                                                                    </div>
+                                                                    : null
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        : null
+                                                    }
 
                                                     {/* {ApprovalStatus ?
                                                         <div className="input-group-text p-0">
@@ -3384,8 +3866,9 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="text" readOnly
                                                             className="form-control "
                                                         />
-                                                        <span className="input-group-text" onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")}>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                        <span className="input-group-text" title="Linked Component Task Popup" onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")}>
+                                                            <span className="svg__iconbox svg__icon--editBox"></span>
+                                                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -3397,11 +3880,11 @@ const EditTaskPopup = (Items: any) => {
                                                                     Linked Service
                                                                 </label>
                                                                 <input type="text"
-                                                                    className="form-control "
-
+                                                                    className="form-control"
                                                                 />
-                                                                <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                                <span className="input-group-text" title="Linked Service Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                                 </span>
                                                             </div>
                                                             {
@@ -3411,12 +3894,12 @@ const EditTaskPopup = (Items: any) => {
                                                                             return (
                                                                                 <div>
                                                                                     <div className="d-flex justify-content-between block px-2 py-2 mt-1">
-
                                                                                         <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                             {com.Title}
                                                                                         </a>
                                                                                         <a>
-                                                                                            <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                            <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                            {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                                         </a>
                                                                                     </div>
                                                                                 </div>
@@ -3435,8 +3918,9 @@ const EditTaskPopup = (Items: any) => {
                                                             <input type="text"
                                                                 className="form-control "
                                                             />
-                                                            <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                            <span className="input-group-text" title="Linked Component Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                             </span>
                                                         </div>
 
@@ -3451,19 +3935,17 @@ const EditTaskPopup = (Items: any) => {
                                                                                     {com.Title}
                                                                                 </a>
                                                                                 <a>
-                                                                                    <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                    <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                                                    {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
                                                                                 </a>
                                                                             </div>
-
                                                                         </div>
                                                                     )
                                                                 })}
                                                             </div> :
                                                                 null
                                                         }
-
                                                     </div> : null}
-
                                                 </div>
                                                 <div className="col-12">
                                                     <div className="input-group">
@@ -3476,19 +3958,26 @@ const EditTaskPopup = (Items: any) => {
                                                             value={ProjectSearchKey}
                                                             onChange={(e) => autoSuggestionsForProject(e)}
                                                         />
+                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ?
+                                                            <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
+                                                                <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" />
+                                                                </svg> */}
+                                                            </span>
 
-                                                        {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> </span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                        </span>}
-
-
+                                                            : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                <span className="svg__iconbox svg__icon--editBox">
+                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                </span>
+                                                            </span>}
                                                     </div>
                                                     {SearchedProjectData?.length > 0 ? (
                                                         <div className="SmartTableOnTaskPopup">
                                                             <ul className="list-group">
                                                                 {SearchedProjectData.map((item: any) => {
                                                                     return (
-                                                                        <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                        <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                             <a>{item.Title}</a>
                                                                         </li>
                                                                     )
@@ -3505,19 +3994,15 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                 {ProjectData.Title}
                                                                             </a>
-
                                                                             <svg onClick={() => setSelectedProject([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                         </div>
                                                                     </div>
                                                                 )
                                                             })}
-
                                                         </div> : null}
                                                 </div>
-
                                             </div>
                                         </div>
-
                                         <div className="col-12 mb-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width ">Relevant URL</label>
@@ -3534,8 +4019,9 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className="col-md-3">
-                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
                                             <div className="Sitecomposition">
                                                 <div className='dropdown'>
                                                     <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
@@ -3554,7 +4040,7 @@ const EditTaskPopup = (Items: any) => {
 
                                                                                 {SiteDtls.ClienTimeDescription != undefined &&
                                                                                     <span className="mx-2">
-                                                                                        {SiteDtls.ClienTimeDescription}%
+                                                                                        {Number(SiteDtls.ClienTimeDescription).toFixed(2)}%
                                                                                     </span>
                                                                                 }
                                                                                 {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ?
@@ -3573,7 +4059,6 @@ const EditTaskPopup = (Items: any) => {
                                                                         })}
                                                                     </> : null
                                                                 }
-
                                                             </ul>
                                                         </div> : null
                                                     }
@@ -3581,7 +4066,6 @@ const EditTaskPopup = (Items: any) => {
                                                         <label className="siteColor">Total Time</label>
                                                         {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
                                                     </div>
-
                                                 </div>
                                             </div>
                                             : null}
@@ -3589,13 +4073,13 @@ const EditTaskPopup = (Items: any) => {
                                         <div className="col mt-2">
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
-                                                <input type="text" placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
                                                     defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-                                                    onMouseOut={(e) => StatusAutoSuggestion(e)} />
-                                                <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                    onChange={(e) => StatusAutoSuggestion(e)} />
+                                                <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
+                                                    <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
                                                 </span>
-
                                                 {PercentCompleteStatus?.length > 0 ?
                                                     <span className="full-width l-radio">
                                                         <input type='radio' className="form-check-input my-2" checked />
@@ -3610,31 +4094,31 @@ const EditTaskPopup = (Items: any) => {
                                                 <div>
                                                     <div className="input-group">
                                                         <label className="form-label full-width ">Time</label>
-                                                        <input type="text" className="form-control" placeholder="Time"
-                                                            defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
+                                                        <input type="text" maxLength={3} className="form-control" placeholder="Time"
+                                                            defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e) => setEditData({ ...EditData, Mileage: e.target.value })} />
                                                     </div>
                                                     <ul className="p-0 mt-1">
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '15'} type="radio"
+                                                                checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
-                                                                defaultChecked={EditData.Mileage == "15" ? true : false}
+                                                                defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
                                                             />
                                                             <label className="form-check-label">Very Quick</label>
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '60'} type="radio"
+                                                                checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
-                                                                defaultChecked={EditData.Mileage == "60"}
+                                                                defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
                                                             />
                                                             <label className="form-check-label">Quick</label>
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input name="radioTime" className="form-check-input"
-                                                                checked={EditData.Mileage === '240'} type="radio"
+                                                                checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
-                                                                defaultChecked={EditData.Mileage == "240"}
+                                                                defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
                                                             />
                                                             <label className="form-check-label">Medium</label>
                                                         </li>
@@ -3642,7 +4126,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <input name="radioTime" className="form-check-input"
                                                                 checked={EditData.Mileage === '480'} type="radio"
                                                                 onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
-                                                                defaultChecked={EditData.Mileage == "480"}
+                                                                defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
                                                             />
                                                             <label className="form-check-label">Long</label>
                                                         </li>
@@ -3651,17 +4135,16 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">Task Users</label>
+                                                    <label className="form-label full-width  mx-2">Working Member</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                    href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                        style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
@@ -3671,10 +4154,20 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div className="col-12 mb-2">
+                                            <div className="input-group ">
+                                                <label className="form-label full-width">Estimated Time In Hours</label>
+                                                <input type="text" className="form-control"
+                                                    defaultValue={EditData.EstimatedTime}
+                                                    placeholder="Enter Estimated Time In Hours"
+                                                    onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -3752,7 +4245,6 @@ const EditTaskPopup = (Items: any) => {
 
                                                                     <div className="card-footer d-flex justify-content-between p-1 px-2">
                                                                         <div>
-
                                                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                                                             <span className="mx-1">
                                                                                 <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
@@ -3829,6 +4321,7 @@ const EditTaskPopup = (Items: any) => {
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
+                                                Context={Context}
                                             />
                                             <Example
                                                 textItems={EditData.FeedBackArray}
@@ -3839,7 +4332,7 @@ const EditTaskPopup = (Items: any) => {
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
-
+                                                Context={Context}
                                             />
                                         </>
                                             : null}
@@ -3875,37 +4368,89 @@ const EditTaskPopup = (Items: any) => {
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
-                                        <NewTameSheetComponent props={Items}
+                                        <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                             TeamConfigDataCallBack={getTeamConfigData}
                                         />
                                     </div>
                                     <div className="col-sm-5">
-                                        {EditData.Id != null ? <SiteCompositionComponent
-                                            siteUrls={siteUrls}
-                                            SiteTypes={SiteTypes}
-                                            ClientTime={EditData.siteCompositionData}
-                                            SiteCompositionSettings={EditData.SiteCompositionSettings}
-                                            SmartTotalTimeData={SmartTotalTimeData}
-                                            currentListName={EditData.siteType}
-                                            callBack={SiteCompositionCallBack}
-                                            isServiceTask={ServicesTaskCheck}
-                                            SelectedClientCategory={selectedClientCategory}
-                                        /> : null}
+                                        {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
+                                            <>
+                                                {SiteTypes != undefined && SiteTypes.length > 0 ?
+                                                    <SiteCompositionComponent
+                                                        AllListId={AllListIdData}
+                                                        siteUrls={siteUrls}
+                                                        SiteTypes={SiteTypes}
+                                                        ClientTime={EditData.siteCompositionData}
+                                                        SiteCompositionSettings={EditData.SiteCompositionSettings}
+                                                        SmartTotalTimeData={SmartTotalTimeData}
+                                                        currentListName={EditData.siteType}
+                                                        callBack={SiteCompositionCallBack}
+                                                        isServiceTask={ServicesTaskCheck}
+                                                        SelectedClientCategory={selectedClientCategory}
+                                                        isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
+                                                        SitesTaggingData={SitesTaggingData}
+                                                    /> : null
+                                                }
+                                            </>
+                                            : null
+                                        }
 
                                     </div>
                                 </div>
                             </div>
+                            {IsUserFromHHHHTeam ? null :
+                                <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
+                                    {
+                                        EditData.Id != null || EditData.Id != undefined ?
+                                            <BackgroundCommentComponent
+                                                CurrentUser={currentUserData}
+                                                TaskData={EditData}
+                                                Context={Context}
+                                                siteUrls={siteUrls}
+                                            />
+                                            : null
+                                    }
+
+                                </div>
+                            }
                         </div>
                         {/* </>
                                     )
                                 })} */}
                     </div>
 
-                    {IsComponent && <ComponentPortPolioPopup props={ShareWebComponent} Call={Call}>
-                    </ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={ShareWebComponent} usedFor="Task-Popup" CallBack={SelectCategoryCallBack} isServiceTask={ServicesTaskCheck} closePopupCallBack={smartCategoryPopup}></Picker>}
-                    {IsServices && <LinkedComponent props={ShareWebComponent} Call={Call} PopupType={ServicePopupType}></LinkedComponent>}
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} items={EditData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} /> : null}
+                    {IsComponent &&
+                        <ServiceComponentPortfolioPopup
+                            props={ShareWebComponent}
+                            Dynamic={AllListIdData}
+                            ComponentType={"Component"}
+                            Call={ComponentServicePopupCallBack}
+                            selectionType={"Single"}
+                        />
+                    }
+                    {IsServices &&
+                        <ServiceComponentPortfolioPopup
+                            props={ShareWebComponent}
+                            Dynamic={AllListIdData}
+                            Call={ComponentServicePopupCallBack}
+                            ComponentType={"Service"}
+                            selectionType={"Single"}
+                        />
+                    }
+                    {IsComponentPicker &&
+                        <Picker
+                            props={ShareWebComponent}
+                            selectedCategoryData={ShareWebTypeData}
+                            usedFor="Task-Popup"
+                            siteUrls={siteUrls}
+                            AllListId={AllListIdData}
+                            CallBack={SelectCategoryCallBack}
+                            isServiceTask={ServicesTaskCheck}
+                            closePopupCallBack={smartCategoryPopup}
+                        />
+                    }
+
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -3990,7 +4535,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
@@ -4029,7 +4574,7 @@ const EditTaskPopup = (Items: any) => {
                                                 <div className="col-md-5">
                                                     <div className="col-12 ">
                                                         <div className="input-group">
-                                                            <label className="d-flex justify-content-between align-items-center mb-0  full-width">Title
+                                                            <div className="d-flex justify-content-between align-items-center mb-0  full-width">Title
                                                                 <span className="d-flex">
                                                                     <span className="form-check mx-2">
                                                                         <input className="form-check-input rounded-0" type="checkbox"
@@ -4046,16 +4591,16 @@ const EditTaskPopup = (Items: any) => {
                                                                         <label className="form-check-label">Working Today?</label>
                                                                     </span>
                                                                 </span>
-                                                            </label>
+                                                            </div>
                                                             <input type="text" className="form-control" placeholder="Task Name"
-                                                                ng-required="true" defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
+                                                                defaultValue={EditData.Title} onChange={(e) => setUpdateTaskInfo({ ...UpdateTaskInfo, Title: e.target.value })} />
                                                         </div>
                                                     </div>
                                                     <div className="mx-0 row  ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control start-date" max="9999-12-31" min="2000-01-01"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -4065,13 +4610,12 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group ">
-                                                                <label className="form-label full-width">Due Date  <span title="Re-occurring Due Date">
+                                                                <div className="form-label full-width">Due Date<span title="Re-occurring Due Date">
                                                                     <input type="checkbox" className="form-check-input rounded-0 ms-2"
-                                                                        ng-model="dueDatePopUp"
-                                                                        ng-click="OpenDueDatePopup()" />
-                                                                </span></label>
+                                                                    />
+                                                                </span></div>
 
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4083,7 +4627,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group ">
                                                                 <label className="form-label full-width"
                                                                 >Completed Date</label>
-                                                                <input type="date" className="form-control" max="9999-12-31"
+                                                                <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -4095,7 +4639,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">Item Rank</label>
                                                                 <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setItemRank(e.target.value)}>
-                                                                    {currentUsers.map(function (h: any, i: any) {
+                                                                    {ItemRankArray.map(function (h: any, i: any) {
                                                                         return (
                                                                             <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
                                                                         )
@@ -4107,13 +4651,12 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row mt-2">
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
-                                                                <label className="full-width" ng-show="Item.SharewebTaskType.Title!='Project' && Item.SharewebTaskType.Title!='Step' && Item.SharewebTaskType.Title!='MileStone'">
+                                                                <label className="full-width">
                                                                     <span className="form-check l-radio form-check-inline mb-0">
                                                                         <input type="radio" id="Components"
                                                                             name="Portfolios" checked={ComponentTaskCheck}
                                                                             title="Component"
-                                                                            ng-model="PortfolioTypes"
-                                                                            ng-click="getPortfoliosData()"
+
                                                                             className="form-check-input " />
                                                                         <label className="form-check-label mb-0">Component</label>
                                                                     </span>
@@ -4128,7 +4671,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 </label>
                                                                 {smartComponentData?.length > 0 || smartServicesData?.length > 0 ? null :
                                                                     <>
-                                                                        <input type="text" ng-model="SearchService"
+                                                                        <input type="text"
                                                                             className="form-control"
                                                                             id="{{PortfoliosID}}" autoComplete="off"
                                                                         />
@@ -4137,7 +4680,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                 <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
 
@@ -4147,7 +4690,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         </>
                                                                     )
                                                                 }) : <>
-                                                                    <input type="text" ng-model="SearchService"
+                                                                    <input type="text"
                                                                         className="form-control"
                                                                         id="{{PortfoliosID}}" autoComplete="off"
                                                                     />
@@ -4156,7 +4699,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "85%" }}>
+                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
                                                                                     <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
                                                                                         <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
@@ -4166,7 +4709,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             </>
                                                                         )
                                                                     }) : <>
-                                                                        <input type="text" ng-model="SearchService"
+                                                                        <input type="text"
                                                                             className="form-control"
                                                                             id="{{PortfoliosID}}" autoComplete="off"
                                                                         />
@@ -4195,7 +4738,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <ul className="list-group">
                                                                         {SearchedCategoryData.map((item: any) => {
                                                                             return (
-                                                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item])} >
+                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                                                     <a>{item.Newlabel}</a>
                                                                                 </li>
                                                                             )
@@ -4221,7 +4764,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             type="checkbox"
                                                                             checked={EmailStatus}
                                                                             value={`${EmailStatus}`}
-                                                                            onClick={(e) => CategoryChange(e, "Email", 276)}
+                                                                            onClick={(e) => CategoryChange(e, "Email Notification", 276)}
                                                                         />
                                                                         <label>Email Notification</label>
                                                                         <div className="form-check ms-2">
@@ -4338,20 +4881,20 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input className="form-check-input"
                                                                             name="radioPriority" type="radio"
                                                                             value="(1) High" checked={PriorityStatus === "(1) High"}
-                                                                            onChange={(e: any) => setPriority("(1) High")}
+
                                                                         />
                                                                         <label className="form-check-label">High</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" value="(2) Normal" onChange={(e) => setPriority("(2) Normal")}
+                                                                            type="radio" value="(2) Normal"
                                                                             checked={PriorityStatus === "(2) Normal"}
                                                                         />
                                                                         <label className="form-check-label">Normal</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" value="(3) Low" onChange={(e) => setPriority("(3) Low")}
+                                                                            type="radio" value="(3) Low"
                                                                             checked={PriorityStatus === "(3) Low"}
                                                                         />
                                                                         <label className="form-check-label">Low</label>
@@ -4541,7 +5084,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <ul className="list-group">
                                                                             {SearchedProjectData.map((item: any) => {
                                                                                 return (
-                                                                                    <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
+                                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectProjectFromAutoSuggestion([item])} >
                                                                                         <a>{item.Title}</a>
                                                                                     </li>
                                                                                 )
@@ -4586,50 +5129,49 @@ const EditTaskPopup = (Items: any) => {
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3">
-
-                                                    <div className="Sitecomposition">
-                                                        <div className='dropdown'>
-                                                            <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
-                                                                <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
-                                                            </a>
-                                                            {composition ?
-                                                                <div className="mt-1 spxdropdown-menu">
-                                                                    <ul>
-                                                                        {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
-                                                                            <>
-                                                                                {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                                    return (<li className="Sitelist">
-                                                                                        <span className="ms-2">
-                                                                                            <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
-                                                                                        </span>
-
-                                                                                        {SiteDtls.ClienTimeDescription != undefined &&
-                                                                                            <span className="mx-2">
-                                                                                                {SiteDtls.ClienTimeDescription}%
+                                                    {AllListIdData.isShowSiteCompostion ?
+                                                        <div className="Sitecomposition">
+                                                            <div className='dropdown'>
+                                                                <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
+                                                                    <span>{composition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                                                                </a>
+                                                                {composition ?
+                                                                    <div className="mt-1 spxdropdown-menu">
+                                                                        <ul>
+                                                                            {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
+                                                                                <>
+                                                                                    {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
+                                                                                        return (<li className="Sitelist">
+                                                                                            <span className="ms-2">
+                                                                                                <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                             </span>
-                                                                                        }
-                                                                                    </li>)
-                                                                                })}
-                                                                            </> : null
-                                                                        }
 
-                                                                    </ul>
-                                                                </div> : null
-                                                            }
-                                                        </div>
-                                                        <div className="bg-e9 border-1 p-2">
-                                                            <label className="siteColor">Total Time</label>
-                                                            {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                        </div>
+                                                                                            {SiteDtls.ClienTimeDescription != undefined &&
+                                                                                                <span className="mx-2">
+                                                                                                    {Number(SiteDtls.ClienTimeDescription).toFixed(2)}%
+                                                                                                </span>
+                                                                                            }
+                                                                                        </li>)
+                                                                                    })}
+                                                                                </> : null
+                                                                            }
 
-                                                    </div>
+                                                                        </ul>
+                                                                    </div> : null
+                                                                }
+                                                            </div>
+                                                            <div className="bg-e9 border-1 p-2">
+                                                                <label className="siteColor">Total Time</label>
+                                                                {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                            </div>
+
+                                                        </div> : null}
 
                                                     <div className="col mt-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
                                                             <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
-
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
                                                             <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
@@ -4692,17 +5234,16 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col mt-2">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">Task Users</label>
+                                                                <label className="form-label full-width  mx-2">Working Member</label>
                                                                 {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                                     return (
                                                                         <div className="TaskUsers" key={index}>
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                                <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                                    on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                                    data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                                href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                                    style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                                     src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                                 />
                                                                             </a>
@@ -4812,7 +5353,7 @@ const EditTaskPopup = (Items: any) => {
                         </div>
                         <div className="tab-pane " id="IMAGETIMESHEET" role="tabpanel" aria-labelledby="IMAGETIMESHEET">
                             <div>
-                                <NewTameSheetComponent props={Items}
+                                <NewTameSheetComponent props={Items} AllListId={AllListIdData}
                                     TeamConfigDataCallBack={getTeamConfigData}
                                 />
                             </div>
@@ -4933,7 +5474,7 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
                     <div className="modal-body wrapper p-0 mt-2">
                         <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
-                            <thead>
+                            <thead className="fixed-Header">
                                 {headerGroups.map((headerGroup: any) => (
                                     <tr  {...headerGroup.getHeaderGroupProps()}>
                                         {headerGroup.headers.map((column: any) => (
@@ -4985,7 +5526,7 @@ const EditTaskPopup = (Items: any) => {
                                     <ul className="list-group">
                                         {ApproverSearchedDataForPopup.map((item: any) => {
                                             return (
-                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
+                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
                                                     <a>{item.NewLabel}</a>
                                                 </li>
                                             )
@@ -4999,7 +5540,7 @@ const EditTaskPopup = (Items: any) => {
                                     return (
                                         <>
                                             <span>
-                                                <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+                                                <a className="hreflink block p-1 px-2 mx-1" > {val.Title}
                                                     <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                 </a>
                                             </span>
@@ -5017,7 +5558,7 @@ const EditTaskPopup = (Items: any) => {
                                                         {item.Title}
                                                     </a>
                                                 </p>
-                                                <ul ng-if="item.childs.length>0" className="sub-menu clr mar0">
+                                                <ul className="sub-menu clr mar0">
                                                     {item.Child?.map(function (child1: any) {
                                                         return (
                                                             <>
@@ -5069,11 +5610,14 @@ export default React.memo(EditTaskPopup);
 
 // step-2A :
 // var Items = {
-//     siteUrl:{Enter Site url here},
-//     siteType: {Enter Site type here},
-//     listId:{Enter Site listId here},
-//     ***** OR *****
-//     listName:{Enter Site listName here},
+    // siteUrl:{Enter Site url here},
+    // siteType: {Enter Site type here},
+    // listId:{Enter Site listId here},
+    // ***** OR *****
+    // listName:{Enter Site listName here},
+    // Context:{Context}
+    // AllListIdData: { AllListIdData with site url,  }
+    // context:{Page Context}
 // }
 
 // step-2B :

@@ -16,11 +16,13 @@ import pnp from 'sp-pnp-js';
 
 export interface IComponentPortfolioWebPartProps {
   description: string;
-  ComponentlistId: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  TasklistId: 'ec34b38f-0669-480a-910c-f84e92e58adf';
-  SmartMetaDataId: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  TaskUserlistId: 'b318ba84-e21d-4876-8851-88b94b9dc300';
-  dropdownvalue:string;
+  MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
+  TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
+  SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
+  TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc';
+  dropdownvalue: string,
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<IComponentPortfolioWebPartProps> {
@@ -28,7 +30,7 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
- 
+
 
   protected onInit(): Promise<void> {
     //this._environmentMessage = this._getEnvironmentMessage();
@@ -38,7 +40,7 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
       });
     });
   }
-  
+
   public render(): void {
     const element: React.ReactElement<IComponentPortfolioProps> = React.createElement(
       ComponentPortfolio,
@@ -49,9 +51,14 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         siteUrl: this.context.pageContext.web.absoluteUrl,
+        MasterTaskListID: this.properties.MasterTaskListID,
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+         TaskTypeID: this.properties.TaskTypeID,
         Context: this.context,
-        dropdownvalue:this.properties.dropdownvalue,
-        
+        dropdownvalue: this.properties.dropdownvalue,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion,
       }
     );
 
@@ -112,7 +119,26 @@ export default class ComponentPortfolioWebPart extends BaseClientSideWebPart<ICo
                     { key: 'Events Portfolio', text: 'Events Portfolio' },
                     { key: 'Component Portfolio', text: 'Component Portfolio' },
                   ]
-                })
+                }),
+                PropertyPaneTextField('TaskUsertListID', {
+                  label: 'Task User List'
+                }),
+                PropertyPaneTextField('SmartMetadataListID', {
+                  label: 'Smart Metadata List'
+                }),
+                PropertyPaneTextField('MasterTaskListID', {
+                  label: 'Master Task List',
+                }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: 'Task Type List',
+                }),
+                PropertyPaneTextField("TimeEntry", {
+                  label: "TimeEntry",
+                }),
+
+                PropertyPaneTextField("SiteCompostion", {
+                  label: "SiteCompostion",
+                }),
               ]
             }
           ]

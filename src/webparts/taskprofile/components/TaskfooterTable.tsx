@@ -62,7 +62,7 @@ function TasksTable(props: any) {
         let smartmetaDetails: any = [];
 
         var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
-        smartmetaDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.SMARTMETADATA_LIST_ID, select);
+        smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
         console.log(smartmetaDetails);
         smartmetaDetails.forEach((newtest: any) => {
             newtest.Id = newtest.ID;
@@ -85,7 +85,7 @@ function TasksTable(props: any) {
     const loadActivityTasks = async (task: any) => {
         let activity: any = [];
         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=Id eq " + task.ParentTask.Id + ""
-        activity = await globalCommon.getData(GlobalConstants.SP_SITE_URL, task.listId, select)
+        activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
         if (activity.length > 0)
             GetComponents(activity[0])
         LoadAllSiteTasks(filter);
@@ -93,7 +93,7 @@ function TasksTable(props: any) {
     const loadWSTasks = async (task: any) => {
 
         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=ParentTask/Id eq " + task.Id + ""
-        AllWSTasks = await globalCommon.getData(GlobalConstants.SP_SITE_URL, task.listId, select)
+        AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
         if (AllWSTasks.length === 0)
             filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
         AllWSTasks.forEach((obj: any, index: any) => {
@@ -122,7 +122,7 @@ function TasksTable(props: any) {
         try {
             let AllTasksMatches = [];
             var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
-            AllTasksMatches = await globalCommon.getData(GlobalConstants.SP_SITE_URL, props.props.listId, select)
+            AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
             console.log(AllTasksMatches);
             Counter++;
             console.log(AllTasksMatches.length);
@@ -135,7 +135,7 @@ function TasksTable(props: any) {
                     item.siteType = props.props.siteType;
                     item.childs = [];
                     item.listId = props.props.listId;
-                    item.siteUrl = GlobalConstants.SP_SITE_URL;
+                    item.siteUrl = props?.AllListId?.siteUrl;
                     if (item.SharewebCategories != undefined) {
                         if (item.SharewebCategories.length > 0) {
                             $.each(item.SharewebCategories, function (ind: any, value: any) {
@@ -178,7 +178,7 @@ function TasksTable(props: any) {
                             })
                         }
                     }
-                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, GlobalConstants.MAIN_SITE_URL + '/SP', undefined);
+                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
                     if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                         result.ClientCategory.forEach((catego: any) => {
                             result.ClientCategory.push(catego);
@@ -279,7 +279,7 @@ function TasksTable(props: any) {
         //MeetingItems.push(props)
         getTaskUsers();
 
-        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services[0].Id))
+        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services.length > 0 && props.props.Services[0].Id))
             GetComponents(props.props)
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
             props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
@@ -905,7 +905,7 @@ function TasksTable(props: any) {
         }
         else {
             if (props.props.SharewebTaskType == 'Workstream') {
-                props.props['NoteCall']='Task'
+                props.props['NoteCall'] = 'Task'
                 MeetingItems.push(props.props)
                 setMeetingPopup(true)
             }
@@ -1940,12 +1940,12 @@ function TasksTable(props: any) {
                     </footer>
                 </Panel>
             }
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}></CreateWS>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} AllListId={props.AllListId}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
             }
         </div>

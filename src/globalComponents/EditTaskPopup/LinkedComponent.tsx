@@ -1,64 +1,66 @@
 import * as React from "react";
-import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
-import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
+import { Panel, PanelType } from 'office-ui-fabric-react';
+import pnp, { Web } from "sp-pnp-js";
 
 import Tooltip from "../Tooltip";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import * as moment from "moment";
 var LinkedServicesBackupArray: any = [];
-var ComponentsData: any = [];
-const LinkedServices = (item: any) => {
+const LinkedServices = ({ props, Dynamic, Call }: any) => {
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [table, setTable] = React.useState(data);
     const [selectedComponent, setSelectedComponent] = React.useState('');
+
+    const PopupType: any = props?.PopupType;
     React.useEffect(() => {
-        if (item.smartComponent != undefined && item.smartComponent.length > 0)
-            setSelectedComponent(item.smartComponent[0]);
+        if (props.smartComponent != undefined && props.smartComponent.length > 0)
+            setSelectedComponent(props?.smartComponent[0]);
         GetComponents();
     },
         []);
     function Example(callBack: any, type: any) {
-        item.Call(callBack.props, type);
+        Call(callBack, type);
     }
     const setModalIsOpenToFalse = () => {
-        Example(item, "LinkedComponent");
+        Example(props, "LinkedServices");
         setModalIsOpen(false)
     }
     const setModalIsOpenToOK = () => {
-        if (item.props.linkedComponent != undefined && item.props.linkedComponent.length == 0)
-            item.props.linkedComponent = CheckBoxData;
+        if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
+            props.linkedComponent = CheckBoxData;
         else {
-            item.props.linkedComponent = [];
-            item.props.linkedComponent = CheckBoxData;
+            props.linkedComponent = [];
+            props.linkedComponent = CheckBoxData;
         }
-        Example(item, "LinkedComponent");
+        Example(props, "LinkedServices");
         setModalIsOpen(false);
     }
     const handleOpen = (item: any) => {
-        item.show = item.show = item.show == true ? false : true;
+        item.show = item.show = item?.show == true ? false : true;
         setData(data => ([...data]));
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(Dynamic.siteUrl);
         let taskUsers = [];
         taskUsers = await web.lists
-            .getByTitle('Task Users')
+            .getById(Dynamic.TaskUsertListID)
             .items
             .get();
         Response = taskUsers;
     }
     const GetComponents = async () => {
         var RootComponentsData: any = [];
+        var ComponentsData: any = [];
         var SubComponentsData: any = [];
         var FeatureData: any = [];
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(Dynamic.siteUrl);
         let componentDetails = [];
         componentDetails = await web.lists
-            .getByTitle('Master Tasks')
+            .getById(Dynamic.MasterTaskListID)
             .items
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
@@ -153,7 +155,6 @@ const LinkedServices = (item: any) => {
         })
         //maidataBackup.push(ComponentsData)
         // setmaidataBackup(ComponentsData)
-        setCheckBoxData(item.linkedComponentData);
         setData(ComponentsData);
         setModalIsOpen(true);
         LinkedServicesBackupArray = ComponentsData;
@@ -182,90 +183,39 @@ const LinkedServices = (item: any) => {
         setTable(copy)
     }
 
-    // const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
-    //     let searchKey = e.target.value.toLoserCase();
-    //     let tempArray: any = [];
-    //     if (columnName == "Title") {
-    //         data?.map((dataItem: any) => {
-    //             if (dataItem.Title.toLowerCase() == searchKey) {
-    //                 if (dataItem.Child?.length > 0 && dataItem.Child != null) {
-    //                     dataItem.Child?.map((childItem: any) => {
-    //                         if (childItem.Title.toLoserCase() == searchKey) {
-    //                             tempArray.push(dataItem);
-    //                         }
-    //                     })
-    //                 } else {
-    //                     tempArray.push(dataItem);
-    //                 }
-    //             }
-    //         })
-    //         setData(tempArray);
-    //     }
-    //     if (columnName == "Client-Category") { }
-    //     if (columnName == "Team-Member") { }
-    //     if (columnName == "Status") { }
-    //     if (columnName == "Item-Rank") { }
-    //     if (columnName == "Due-Date") { }
-    //     if(searchKey.length == 0){
-    //         setData(LinkedServicesBackupArray);
-    //     }
-    // }
     const ColumnSearchForLinkedServices = (e: any, columnName: any) => {
-        let searchKey = e.target.value.toLowerCase();
+        let searchKey = e.target.value.toLoserCase();
         let tempArray: any = [];
-        let childs: any = [];
-        if(searchKey == ''){
-            tempArray?.forEach((item:any)=>{
-              item.show=false;
-            })
-            setData(ComponentsData)
-        }
         if (columnName == "Title") {
-            data?.forEach((dataItem: any) => {
-                let IsAvailable= dataItem.Title.toLowerCase().includes(searchKey.toLowerCase())
-                if (IsAvailable) {
-                    tempArray.push(dataItem)
-                } 
-                if(dataItem.Child != undefined && dataItem.Child.length>0){
-                    dataItem.Child.forEach((childData:any)=>{
-                        let IsAvailable = childData.Title.toLowerCase(). includes(searchKey.toLowerCase())
-                        if(IsAvailable){
-                           dataItem.show=true;
-                           childs.push(childData)
-                           tempArray.push(dataItem)
-                        }
-                    })
+            data?.map((dataItem: any) => {
+                if (dataItem.Title.toLowerCase() == searchKey) {
+                    tempArray.push(dataItem);
                 }
             })
-           
-            tempArray?.forEach((item:any)=>{
-                item.Child=[]
-                childs?.forEach((childData:any)=>{
-                    if(childData.Parent.Id == item.Id)
-                    item.Child.push(childData)
-                })
-            })
-            const finalData = tempArray.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
-            })
-            setData(finalData);
+            setData(tempArray);
         }
-        // if (columnName == "Client-Category") { }
-        // if (columnName == "Team-Member") { }
-        // if (columnName == "Status") { }
-        // if (columnName == "Item-Rank") { }
-        // if (columnName == "Due-Date") { }
-        // if(searchKey.length == 0){
-        //     setData(LinkedServicesBackupArray);
-        // }
+        if (columnName == "Client-Category") { }
+        if (columnName == "Team-Member") { }
+        if (columnName == "Status") { }
+        if (columnName == "Item-Rank") { }
+        if (columnName == "Due-Date") { }
+        if (searchKey.length == 0) {
+            setData(LinkedServicesBackupArray);
+        }
     }
 
     const CustomFooter = () => {
         return (
-            <div className="me-4 p-2 pe-3 text-end">
-                <button type="button" className="btn btn-primary" onClick={setModalIsOpenToOK}>OK</button>
-                <button type="button" className="btn btn-default ms-2" onClick={setModalIsOpenToFalse}>Cancel</button>
-            </div>
+            <div className="me-3 p-2 serviepannelgreena text-end">
+            <button type="button" className="btn btn-primary">
+                <a target="_blank" data-interception="off"
+                    href={`${Dynamic.siteUrl}/SitePages/Service-Portfolio.aspx`}>
+                    <span className="text-light"> Create New One</span>
+                </a>
+            </button>
+            <button type="button" className="btn btn-primary mx-1" onClick={setModalIsOpenToOK}>OK</button>
+            <button type="button" className="btn btn-default" onClick={setModalIsOpenToFalse}>Cancel</button>
+        </div>
         )
     }
     return (
@@ -289,11 +239,11 @@ const LinkedServices = (item: any) => {
                                             <tr>
                                                 <th style={{ width: "2%" }}>
                                                     <div style={{ width: "2%" }}>
-                                                        <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                            {item.Child != undefined &&
+                                                        <div className="accordian-header" onClick={() => handleOpen(props)}>
+                                                            {props?.Child != undefined &&
                                                                 <a className='hreflink'
                                                                     title="Tap to expand the childs">
-                                                                    <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                    <div className="sign">{props?.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                         : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                     </div>
                                                                 </a>
@@ -399,10 +349,10 @@ const LinkedServices = (item: any) => {
 
                                                                         <td style={{ width: "2%" }}>
                                                                             <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                {item.Child != undefined &&
+                                                                                {item?.Child != undefined &&
                                                                                     <a className='hreflink'
                                                                                         title="Tap to expand the childs">
-                                                                                        <div className="sign">{item.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
+                                                                                        <div className="sign">{item?.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
                                                                                             : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
                                                                                         </div>
                                                                                     </a>
@@ -411,7 +361,7 @@ const LinkedServices = (item: any) => {
 
                                                                         </td>
                                                                         <td style={{ width: "2%" }}>
-                                                                            <input type="checkbox" name="Active" checked={item.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData)} onClick={() => { item.checked = !item.checked; setCheckBoxData([item.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
+                                                                            <input type="checkbox" name="Active" checked={item?.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { item.checked = !item?.checked; setCheckBoxData([item?.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : item]) }} ></input>
 
                                                                         </td>
 
@@ -429,10 +379,10 @@ const LinkedServices = (item: any) => {
                                                                             <div className="">
                                                                                 <span>
                                                                                     <div className="accordian-header" onClick={() => handleOpen(item)}>
-                                                                                        {item.Child != undefined &&
+                                                                                        {item?.Child != undefined &&
                                                                                             <a className='hreflink'
                                                                                                 title="Tap to expand the childs">
-                                                                                                <div className="sign">{item.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
+                                                                                                <div className="sign">{item?.show ? <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Minus-Gray.png" />
                                                                                                     : <img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Add-New-Grey.png" />}
                                                                                                 </div>
                                                                                             </a>
@@ -444,19 +394,19 @@ const LinkedServices = (item: any) => {
                                                                         </td>
                                                                         <td style={{ width: "22%" }}>
                                                                             <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
-                                                                            >{item.Title}
+                                                                                href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + item?.Id}
+                                                                            >{item?.Title}
                                                                             </a>
-                                                                            {item.Child != undefined &&
-                                                                                <span className="ms-1">({item.Child.length})</span>
+                                                                            {item?.Child != undefined &&
+                                                                                <span className="ms-1">({item?.Child.length})</span>
                                                                             }
 
-                                                                            {item.Short_x0020_Description_x0020_On != null &&
+                                                                            {item?.Short_x0020_Description_x0020_On != null &&
                                                                                 <span className="project-tool"><img
                                                                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" /><span className="tooltipte">
                                                                                         <span className="tooltiptext">
                                                                                             <div className="tooltip_Desc">
-                                                                                                <span>{item.Short_x0020_Description_x0020_On}</span>
+                                                                                                <span>{item?.Short_x0020_Description_x0020_On}</span>
                                                                                             </div>
                                                                                         </span>
                                                                                     </span>
@@ -465,7 +415,7 @@ const LinkedServices = (item: any) => {
                                                                         </td>
                                                                         <td style={{ width: "18%" }}>
                                                                             <div>
-                                                                                {item.ClientCategory.map(function (client: { Title: string; }) {
+                                                                                {item?.ClientCategory.map(function (client: { Title: string; }) {
                                                                                     return (
                                                                                         <span className="ClientCategory-Usericon"
                                                                                             title={client.Title}>
@@ -475,7 +425,7 @@ const LinkedServices = (item: any) => {
                                                                                 })}</div>
                                                                         </td>
                                                                         <td style={{ width: "20%" }}>
-                                                                            <div>{item.TeamLeaderUser.map(function (client1: { Title: string; }) {
+                                                                            <div>{item?.TeamLeaderUser.map(function (client1: { Title: string; }) {
                                                                                 return (
                                                                                     <span className="ClientCategory-Usericon"
                                                                                         title={client1.Title}>
@@ -485,18 +435,18 @@ const LinkedServices = (item: any) => {
                                                                                     </span>
                                                                                 )
                                                                             })}</div></td>
-                                                                        <td style={{ width: "10%" }}>{item.PercentComplete}</td>
-                                                                        <td style={{ width: "10%" }}>{item.ItemRank}</td>
-                                                                        <td style={{ width: "10%" }}>{item.DueDate}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.PercentComplete}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.ItemRank}</td>
+                                                                        <td style={{ width: "10%" }}>{item?.DueDate}</td>
                                                                     </tr>
                                                                 </table>
                                                             </td>
 
 
                                                         </tr>
-                                                        {item.show && (
+                                                        {item?.show && (
                                                             <>
-                                                                {item.Child.map(function (childitem: any) {
+                                                                {item?.Child.map(function (childitem: any) {
 
                                                                     return (
 
@@ -519,7 +469,7 @@ const LinkedServices = (item: any) => {
                                                                                                 </div>
                                                                                             </td>
                                                                                             <td style={{ width: "2%" }}>
-                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
+                                                                                                <input type="checkbox" name="Active" checked={childitem.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childitem.checked = !childitem.checked; setCheckBoxData([childitem.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childitem]) }} ></input>
                                                                                             </td>
                                                                                             <td style={{ width: "4%" }}> <div>
 
@@ -549,7 +499,7 @@ const LinkedServices = (item: any) => {
                                                                                             </td>
                                                                                             <td style={{ width: "22%" }}>
                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
                                                                                                 >{childitem.Title}
                                                                                                 </a>
                                                                                                 {childitem.Child.length > 0 &&
@@ -612,7 +562,7 @@ const LinkedServices = (item: any) => {
 
                                                                                                             </td>
 
-                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData != undefined && CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData != undefined && CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
+                                                                                                            <td style={{ width: "2%" }}><input type="checkbox" name="Active" checked={childinew.Id == (CheckBoxData.length > 0 && CheckBoxData[0]["Id"] ? CheckBoxData[0]["Id"] : CheckBoxData) ? true : false} onClick={() => { childinew.checked = !childinew.checked; setCheckBoxData([childinew.Title == (CheckBoxData.length > 0 ? CheckBoxData[0]["Title"] : CheckBoxData) ? [] : childinew]) }}  ></input></td>
                                                                                                             <td style={{ width: "4%" }}> <div>
                                                                                                                 <span>
 
@@ -628,7 +578,7 @@ const LinkedServices = (item: any) => {
                                                                                                             <td style={{ width: "22%" }}>
 
                                                                                                                 <a className="hreflink serviceColor_Active" target="_blank"
-                                                                                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                    href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
                                                                                                                 >{childinew.Title}
                                                                                                                 </a>
                                                                                                                 {childinew.Child.length > 0 &&

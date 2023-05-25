@@ -108,7 +108,7 @@ export const getTaskId = (item: any) => {
             if (item.SharewebTaskType.Title == 'Project')
                 Shareweb_x0020_ID = 'P' + item.SharewebTaskLevel1No;
 
-            if (item.Component.length === 0  && item.Services.length === 0) {
+            if (item.Component.length === 0 && item.Services.length === 0) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No;
             }
         }
@@ -133,7 +133,7 @@ export const getTaskId = (item: any) => {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
-            if (item.Component.length==0||item.Component==undefined && item.Services.length==0 ||item.Services==undefined && item.Events == undefined) {
+            if (item.Component.length == 0 || item.Component == undefined && item.Services.length == 0 || item.Services == undefined && item.Events == undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
             }
             if (item.SharewebTaskType.Title == 'Step')
@@ -1121,9 +1121,6 @@ export const getPortfolio = async (type: any) => {
                 }
             })
             result = componentDetails;
-            //maidataBackup.push(ComponentsData)
-            // setmaidataBackup(ComponentsData)
-
         }
     }
     catch (error) {
@@ -1132,4 +1129,159 @@ export const getPortfolio = async (type: any) => {
 
     return result;
 
+}
+
+
+// ********************* This is for the Getting All Component And Service Portfolio Data ********************
+
+export const GetServiceAndComponentAllData = async (Props: any) => {
+
+    var RootComponentsData: any = [];
+    var ComponentsData: any = [];
+    var SubComponentsData: any = [];
+    var FeatureData: any = [];
+    let TaskUsers: any = [];
+    let componentDetails: any = [];
+    var AllData: any = [];
+    try {
+        let web = new Web(Props.siteUrl);
+        componentDetails = await web.lists
+            .getById(Props.MasterTaskListID)
+            .items
+            .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
+                "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
+            .top(4999)
+            .get();
+        // console.log("all Service and Coponent data form global Call=======", componentDetails);
+        TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
+        $.each(componentDetails, function (index: any, result: any) {
+            result.isSelected=false;
+            result.isSelected=Props?.selectedItems?.find((obj:any) => obj.Id === result.ID);
+            result.TeamLeaderUser = []
+            if (result.Portfolio_x0020_Type == Props.ComponentType) {
+                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+                if (result.DueDate == 'Invalid date' || '') {
+                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                }
+                if (result.PercentComplete != undefined)
+                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+
+                if (result.Short_x0020_Description_x0020_On != undefined) {
+                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                }
+                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                    $.each(result.AssignedTo, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+                            })
+                        }
+                    })
+                }
+                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                        if (Assig.Id != undefined) {
+                            $.each(Response, function (index: any, users: any) {
+                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                    users.ItemCover = users.Item_x0020_Cover;
+                                    result.TeamLeaderUser.push(users);
+                                }
+
+                            })
+                        }
+                    })
+                }
+
+                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    $.each(result.Team_x0020_Members, function (index: any, categoryData: any) {
+                        result.ClientCategory.push(categoryData);
+                    })
+                }
+                if (result.Item_x0020_Type == 'Root Component') {
+                    RootComponentsData.push(result);
+                }
+                if (result.Item_x0020_Type == 'Component') {
+                    result['Child'] = [];
+                    result['subRows'] = [];
+                    result.SiteIconTitle = "C"
+                    ComponentsData.push(result);
+                }
+
+                if (result.Item_x0020_Type == 'SubComponent') {
+                    result['Child'] = [];
+                    result['subRows'] = [];
+                    result.SiteIconTitle = "S"
+                    SubComponentsData.push(result);
+                }
+                if (result.Item_x0020_Type == 'Feature') {
+                    result['Child'] = [];
+                    result['subRows'] = [];
+                    result.SiteIconTitle = "F"
+                    FeatureData.push(result);
+                }
+
+            }
+
+        });
+        $.each(ComponentsData, function (index: any, subcomp: any) {
+            if (subcomp.Title != undefined) {
+                subcomp.NewLeble = subcomp.Title;
+                $.each(SubComponentsData, function (index: any, featurecomp: any) {
+                    if (
+                        featurecomp.Parent != undefined &&
+                        subcomp.Id == featurecomp.Parent.Id
+                    ) {
+                        featurecomp.NewLeble = subcomp.Title + " > " + featurecomp.Title
+                        subcomp["Child"].push(featurecomp);
+                        AllData.push(featurecomp);
+                        subcomp['subRows'].push(featurecomp);
+                    }
+                });
+            }
+        });
+        $.each(SubComponentsData, function (index: any, subcomp: any) {
+            if (subcomp.Title != undefined) {
+                $.each(FeatureData, function (index: any, featurecomp: any) {
+                    if (
+                        featurecomp.Parent != undefined &&
+                        subcomp.Id == featurecomp.Parent.Id
+                    ) {
+                        featurecomp.NewLeble = subcomp.NewLeble + " > " + featurecomp.Title
+                        subcomp["Child"].push(featurecomp);
+                        subcomp['subRows'].push(featurecomp);
+                        AllData.push(featurecomp);
+                    }
+                });
+            }
+        });
+        let dataObject = {
+            GroupByData: ComponentsData,
+            AllData: ComponentsData.concat(AllData)
+        }
+        return dataObject;
+
+    } catch (error) {
+        console.log("Error:", error)
+    }
+    // console.log("all Service andCoponent data in global common =======", componentDetails)
+}
+
+const AllTaskUsers = async (siteUrl: any, ListId: any) => {
+    let taskUser;
+    try {
+        let web = new Web(siteUrl);
+        taskUser = await web.lists
+            .getById(ListId)
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .get();
+    }
+    catch (error) {
+        return (error);
+    }
+    return taskUser;
 }

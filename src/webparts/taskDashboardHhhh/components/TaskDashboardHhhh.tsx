@@ -1,5 +1,4 @@
 import * as React from 'react';
-import styles from './TaskDashboardHhhh.module.scss';
 import { ITaskDashboardHhhhProps } from './ITaskDashboardHhhhProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import TaskDashboard from './TaskDashboard';
@@ -12,11 +11,21 @@ export default class TaskDashboardHhhh extends React.Component<ITaskDashboardHhh
       environmentMessage,
       hasTeamsContext,
       userDisplayName,
-      pageContext
+      pageContext,
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID,
+      Context,
+      TimeEntry,
+      SiteCompostion
     } = this.props;
 
     return (
-     <TaskDashboard pageContext={this.props.pageContext}/>
+      <TaskDashboard pageContext={this.props.pageContext} props={this.props} />
     );
   }
 }

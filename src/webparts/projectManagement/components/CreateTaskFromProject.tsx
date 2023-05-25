@@ -24,22 +24,20 @@ const CreateTaskFromProject = (props: any) => {
     }
    
     const callBack=()=>{
-        props?.callBack
+        props?.callBack()
         setLgShow(false)
     }
  
     return (
         <>
          
-                <Button type="button" variant="primary" className='pull-right' onClick={() => OpenCreateTaskPopup()}>Create Task</Button>
-       
-            <Panel
+                <Panel
              headerText={`Create Task`}
                type={PanelType.large }
                isOpen={lgShow}
-               onDismiss={() => setLgShow(false)}
+               onDismiss={() => callBack()}
                isBlocking={false}>
-                <CreateTaskComponent callBack={props?.callBack} projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent}/>
+                <CreateTaskComponent SelectedProp={props?.SelectedProp} callBack={callBack}  projectItem={props?.projectItem} pageContext={props?.pageContext} projectId={props?.projectId} createComponent={props?.createComponent}/>
             </Panel>
            
         </>

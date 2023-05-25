@@ -251,13 +251,17 @@ const PortfolioTagging = (item: any) => {
     };
     var Response: [] = [];
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let taskUsers = [];
-        taskUsers = await web.lists
-            .getByTitle('Task Users')
-            .items
-            .get();
-        Response = taskUsers;
+        if(item?.AllListId?.TaskUsertListID!=undefined){
+            let web = new Web(item?.AllListId?.siteUrl);
+            let taskUsers = [];
+            taskUsers = await web.lists
+                .getById(item?.AllListId?.TaskUsertListID)
+                .items
+                .get();
+            Response = taskUsers;
+        }else{
+         alert("Task User List Id Not Available")
+        }
         //console.log(this.taskUsers);
 
     }
@@ -274,120 +278,122 @@ const PortfolioTagging = (item: any) => {
         var RootComponentsData: any[] = []; var ComponentsData: any[] = [];
         var SubComponentsData: any[] = [];
         var FeatureData: any[] = [];
-        if (item?.type != undefined) {
-
-
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-            let componentDetails = [];
-            componentDetails = await web.lists
-                //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
-                .getByTitle('Master Tasks')
-                .items
-                //.getById(this.state.itemID)
-                .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
-                .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + item?.type + "'")
-                .top(4999)
-                .get()
-
-            console.log(componentDetails);
-            await GetTaskUsers();
-            
-            $.each(componentDetails, function (index: any, result: any) {
-                result.checked= isItemExist(result)
-                result.TitleNew = result.Title;
-                result.TeamLeaderUser = []
-                result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
-
-                if (result.DueDate == 'Invalid date' || '') {
-                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                }
-                if (result.PercentComplete != undefined)
-                    result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-
-                if (result.Short_x0020_Description_x0020_On != undefined) {
-                    result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                }
-
-                if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                    $.each(result.AssignedTo, function (index: any, Assig: any) {
-                        if (Assig.Id != undefined) {
-                            $.each(Response, function (index: any, users: any) {
-
-                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                    users.ItemCover = users.Item_x0020_Cover;
-                                    result.TeamLeaderUser.push(users);
-                                }
-
-                            })
-                        }
-                    })
-                }
-                if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
-                        if (Assig.Id != undefined) {
-                            $.each(Response, function (index: any, users: any) {
-                                if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
-                                    users.ItemCover = users.Item_x0020_Cover;
-                                    result.TeamLeaderUser.push(users);
-                                }
-
-                            })
-                        }
-                    })
-                }
-
-                if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                    $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-                        result.ClientCategory.push(catego);
-                    })
-                }
-                if (result.Item_x0020_Type == 'Root Component') {
-                    result['Child'] = [];
-                    RootComponentsData.push(result);
-                }
-                if (result.Item_x0020_Type == 'Component') {
-                    result['Child'] = [];
-                    ComponentsData.push(result);
-
-
-                }
-
-                if (result.Item_x0020_Type == 'SubComponent') {
-                    result['Child'] = [];
-                    SubComponentsData.push(result);
-
-
-                }
-                if (result.Item_x0020_Type == 'Feature') {
-                    result['Child'] = [];
-                    FeatureData.push(result);
-                }
-            });
-
-            $.each(SubComponentsData, function (index: any, subcomp: any) {
-                if (subcomp.Title != undefined) {
-                    $.each(FeatureData, function (index: any, featurecomp: any) {
-                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                            subcomp['Child'].push(featurecomp);;
-                        }
-                    })
-                }
-            })
-
-            $.each(ComponentsData, function (index: any, subcomp: any) {
-                if (subcomp.Title != undefined) {
-                    $.each(SubComponentsData, function (index: any, featurecomp: any) {
-                        if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
-                            subcomp['Child'].push(featurecomp);;
-                        }
-                    })
-                }
-            })
-            //maidataBackup.push(ComponentsData)
-            // setmaidataBackup(ComponentsData)
-            setComponentsData(ComponentsData);
-            setmaidataBackup(ComponentsData)
-            setModalIsOpen(true)
+        if (item?.type != undefined&&item?.AllListId?.MasterTaskListID!=undefined) {
+            try {
+                let web = new Web(item?.AllListId?.siteUrl);
+                let componentDetails = [];
+                componentDetails = await web.lists
+                    //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+                    .getById(item?.AllListId?.MasterTaskListID)
+                    .items
+                    //.getById(this.state.itemID)
+                    .select("ID", "Title", "DueDate", "Status", "ItemRank", "Item_x0020_Type", "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                    .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory").filter("Portfolio_x0020_Type eq '" + item?.type + "'")
+                    .top(4999)
+                    .get()
+    
+                console.log(componentDetails);
+                await GetTaskUsers();
+                
+                $.each(componentDetails, function (index: any, result: any) {
+                    result.checked= isItemExist(result)
+                    result.TitleNew = result.Title;
+                    result.TeamLeaderUser = []
+                    result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+    
+                    if (result.DueDate == 'Invalid date' || '') {
+                        result.DueDate = result.DueDate.replaceAll("Invalid date", "")
+                    }
+                    if (result.PercentComplete != undefined)
+                        result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+    
+                    if (result.Short_x0020_Description_x0020_On != undefined) {
+                        result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
+                    }
+    
+                    if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+                        $.each(result.AssignedTo, function (index: any, Assig: any) {
+                            if (Assig.Id != undefined) {
+                                $.each(Response, function (index: any, users: any) {
+    
+                                    if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                        users.ItemCover = users.Item_x0020_Cover;
+                                        result.TeamLeaderUser.push(users);
+                                    }
+    
+                                })
+                            }
+                        })
+                    }
+                    if (result.Team_x0020_Members != undefined && result.Team_x0020_Members.length > 0) {
+                        $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+                            if (Assig.Id != undefined) {
+                                $.each(Response, function (index: any, users: any) {
+                                    if (Assig.Id != undefined && users.AssingedToUserId != undefined && Assig.Id == users.AssingedToUserId) {
+                                        users.ItemCover = users.Item_x0020_Cover;
+                                        result.TeamLeaderUser.push(users);
+                                    }
+    
+                                })
+                            }
+                        })
+                    }
+    
+                    if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+                            result.ClientCategory.push(catego);
+                        })
+                    }
+                    if (result.Item_x0020_Type == 'Root Component') {
+                        result['Child'] = [];
+                        RootComponentsData.push(result);
+                    }
+                    if (result.Item_x0020_Type == 'Component') {
+                        result['Child'] = [];
+                        ComponentsData.push(result);
+    
+    
+                    }
+    
+                    if (result.Item_x0020_Type == 'SubComponent') {
+                        result['Child'] = [];
+                        SubComponentsData.push(result);
+    
+    
+                    }
+                    if (result.Item_x0020_Type == 'Feature') {
+                        result['Child'] = [];
+                        FeatureData.push(result);
+                    }
+                });
+    
+                $.each(SubComponentsData, function (index: any, subcomp: any) {
+                    if (subcomp.Title != undefined) {
+                        $.each(FeatureData, function (index: any, featurecomp: any) {
+                            if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                                subcomp['Child'].push(featurecomp);;
+                            }
+                        })
+                    }
+                })
+    
+                $.each(ComponentsData, function (index: any, subcomp: any) {
+                    if (subcomp.Title != undefined) {
+                        $.each(SubComponentsData, function (index: any, featurecomp: any) {
+                            if (featurecomp.Parent != undefined && subcomp.Id == featurecomp.Parent.Id) {
+                                subcomp['Child'].push(featurecomp);;
+                            }
+                        })
+                    }
+                })
+                //maidataBackup.push(ComponentsData)
+                // setmaidataBackup(ComponentsData)
+                setComponentsData(ComponentsData);
+                setmaidataBackup(ComponentsData)
+                setModalIsOpen(true)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     const selectPortfolio = (item: any) => {
