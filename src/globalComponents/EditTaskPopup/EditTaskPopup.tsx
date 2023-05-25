@@ -4155,10 +4155,10 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2">
                                             <div className="input-group ">
-                                                <label className="form-label full-width">Estimated Time</label>
+                                                <label className="form-label full-width">Estimated Time In Hours</label>
                                                 <input type="text" className="form-control"
                                                     defaultValue={EditData.EstimatedTime}
-                                                    placeholder="Enter Estimated Time"
+                                                    placeholder="Enter Estimated Time In Hours"
                                                     onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
                                                 />
                                             </div>
