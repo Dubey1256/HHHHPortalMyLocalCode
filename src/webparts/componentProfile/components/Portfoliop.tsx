@@ -678,7 +678,7 @@ function Portfolio({SelectedProp}:any) {
                             {item.Parent.Title != undefined && (
                               <dl>
                                 <dt className="bg-fxdark">Parent</dt>
-                                <dd className="bg-light">
+                                <dd className="bg-light" style={{width: "auto"}}>
                                   <a
                                     target="_blank"
                                     data-interception="off"
