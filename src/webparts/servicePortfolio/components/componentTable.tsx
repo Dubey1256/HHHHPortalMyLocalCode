@@ -59,17 +59,12 @@ import {
   getSortedRowModel,
   SortingState,
   ColumnFiltersState,
+  FilterFn,
+  getFacetedUniqueValues,
+  getFacetedRowModel,
 } from "@tanstack/react-table";
+import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  Button,
-  Row,
-  Col,
-  Pagination,
-  PaginationLink,
-  PaginationItem,
-  Input,
-} from "reactstrap";
 import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
@@ -99,8 +94,74 @@ let AllActivitysDatacopy: any = [];
 let AllWorkStreamData: any = [];
 let RemoveDuplicateTime: any = [];
 let forceExpanded: any = [];
+let globalFilterHighlited: any;
 
 // ReactTable Part/////
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
+
+///Global Filter Parts//////
+// A debounced input react component
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  const [value, setValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value]);
+
+  return (
+    <>
+      {/* <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    /> */}
+      <div className="container-2 mx-1">
+        <span className="icon"><FaSearch /></span>
+        <input type="search" id="search" {...props}
+          value={value}
+          onChange={(e) => setValue(e.target.value)} />
+      </div>
+    </>
+  );
+}
+
+
 function Filter({
   column,
   table,
@@ -176,6 +237,8 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  globalFilterHighlited = globalFilter;
   const [checkData, setcheckData] = React.useState({})
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
   const [checkCounter, setCheckCounter] = React.useState(true)
@@ -1380,7 +1443,7 @@ function ComponentTable(SelectedProp: any) {
                   }
                 });
               }
-              result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
+              result["SiteIcon"] = GetIconImageUrl(result.siteType, ContextValue.siteUrl, undefined);
               // result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
               // if (
               //   result.ClientCategory != undefined &&
@@ -3156,7 +3219,7 @@ function ComponentTable(SelectedProp: any) {
       }
       if (childItem?.data?.ComponentId[0] != undefined) {
         childItem.data.Component.push({ Id: childItem?.data?.ComponentId[0] });
-        
+
       }
       if (
         childItem?.data?.ServicesId != undefined &&
@@ -4261,7 +4324,8 @@ function ComponentTable(SelectedProp: any) {
           // }
           >
             <>
-              {row.getCanExpand() && !forceExpanded.includes(row.id) ? (
+              {/* {row.getCanExpand() && !forceExpanded.includes(row.id) ? ( */}
+              {row.getCanExpand() ? (
                 <span
                   className="border-0"
                   {...{
@@ -4302,8 +4366,8 @@ function ComponentTable(SelectedProp: any) {
                     ""
                   )}
                 </>
-              )}
-              {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
+              )} */}
+              {/* {(!row.getCanExpand() || forceExpanded.includes(row.id)) &&
                 row.original.subRows?.length ? (
                 <span
                   className="mx-1"
@@ -4412,6 +4476,61 @@ function ComponentTable(SelectedProp: any) {
                   )}
                 </>
               )}
+
+
+              {/* ////////// Plush Icons////// */}
+              {/* <span>
+                {((row.getCanExpand() &&
+                  row.subRows?.length !== row.original.subRows?.length) ||
+                  !row.getCanExpand() ||
+                  forceExpanded.includes(row.id)) &&
+                  row.original.subRows?.length ? (
+                  <span className="mx-1"
+                    {...{
+                      onClick: () => {
+                        if (!forceExpanded.includes(row.id)) {
+                          const coreIds = table.getCoreRowModel().rowsById;
+                          row.subRows = coreIds[row.id].subRows;
+                          const rowModel = table.getRowModel();
+                          const updateRowModelRecursively = (item: any) => {
+                            item.subRows?.forEach((elem: any) => {
+                              if (!rowModel.rowsById[elem.id]) {
+                                rowModel.flatRows.push(elem);
+                                rowModel.rowsById[elem.id] = elem;
+                              }
+                              elem?.subRows?.length &&
+                                updateRowModelRecursively(elem);
+                            });
+                          }
+                          updateRowModelRecursively(row);
+                          const temp = Object.keys(coreIds).filter((item: any) =>
+                            item.startsWith(row.id)
+                          );
+                          forceExpanded = [...forceExpanded, ...temp];
+                          setExpanded((prev: any) => ({
+                            ...prev,
+                            [row.id]: true,
+                          }));
+                          // rerender();
+                        } else {
+                          row.getToggleExpandedHandler()();
+                        }
+                      },
+                      style: { cursor: "pointer" },
+                    }}
+                  >
+                    {!row.getCanExpand() ||
+                      (row.getCanExpand() &&
+                        row.subRows?.length !== row.original.subRows?.length)
+                      ? <FaPlus />
+                      : row.getIsExpanded()
+                        ? <FaMinus />
+                        : <FaPlus />}
+                  </span>
+                ) : (
+                  ""
+                )}{" "}
+              </span> */}
               {getValue()}
             </span>
           </>
@@ -4434,13 +4553,13 @@ function ComponentTable(SelectedProp: any) {
           <>
             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== "Others" && (
               <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={ContextValue.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID} >
-                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
               </a>
             )}
             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== "Others" && (
               <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" onClick={(e) => EditData(e, row?.original)}
                 href={ContextValue.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType} >
-                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
               </a>
             )}
             {row?.original.Title === "Others" ? (
@@ -4512,7 +4631,7 @@ function ComponentTable(SelectedProp: any) {
             ) : (
               ""
             )} */}
-            <ShowClintCatogory  clintData={row?.original} AllMetadata={AllMetadata}/>
+            <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
           </>
         ),
         id: "ClientCategory",
@@ -4680,13 +4799,19 @@ function ComponentTable(SelectedProp: any) {
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     state: {
       columnFilters,
+      globalFilter,
       expanded,
       sorting,
       rowSelection,
     },
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     onExpandedChange: setExpanded,
     getSubRows: (row) => row.subRows,
@@ -4695,10 +4820,13 @@ function ComponentTable(SelectedProp: any) {
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     debugTable: true,
+    debugHeaders: true,
+    debugColumns: false,
     filterFromLeafRows: true,
     enableSubRowSelection: false,
-    filterFns: undefined,
   });
 
   console.log(".........", table.getSelectedRowModel().flatRows);
@@ -4753,7 +4881,6 @@ function ComponentTable(SelectedProp: any) {
           //   }
           // }
         }
-
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
         if (elem?.getCanSelect() == true) {
@@ -4763,7 +4890,7 @@ function ComponentTable(SelectedProp: any) {
         }
       });
     }
-    if (itrm?.Item_x0020_Type == "Component") {
+    if (itrm?.Item_x0020_Type === "Component") {
       onChangeHandler(itrm, "parent", eTarget);
     } else {
       onChangeHandler(itrm, parentDataCopy, eTarget);
@@ -4862,6 +4989,9 @@ function ComponentTable(SelectedProp: any) {
       ) {
         FilterShowhideShwingData = true;
       }
+      else if (Comp?.columnFilters?.__global__ === true) {
+        FilterShowhideShwingData = true;
+      }
       if (Comp.original != undefined) {
         if (Comp?.original?.Item_x0020_Type == "Component") {
           ComponentCopy = ComponentCopy + 1;
@@ -4886,6 +5016,14 @@ function ComponentTable(SelectedProp: any) {
   }
 
   React.useEffect(() => {
+    if (table.getState()?.globalFilter?.length > 0) {
+      setExpanded(true);
+    } else {
+      setExpanded({})
+    }
+  }, [table.getState().globalFilter]);
+
+  React.useEffect(() => {
     if (table.getState().columnFilters.length) {
       setExpanded(true);
     } else {
@@ -4897,7 +5035,9 @@ function ComponentTable(SelectedProp: any) {
   //   if (table.getState().columnFilters.length) {
   //     const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
   //       (acc: any, cur: any) => {
-  //         acc[cur] = true;
+  //         if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
+  //           acc[cur] = true;
+  //         }
   //         return acc;
   //       },
   //       {}
@@ -4908,6 +5048,10 @@ function ComponentTable(SelectedProp: any) {
   //   }
   //   forceExpanded = [];
   // }, [table.getState().columnFilters]);
+
+
+
+
 
   return (
     <div
@@ -5443,6 +5587,15 @@ function ComponentTable(SelectedProp: any) {
                         )}
                       </span>
                     </span>
+
+                    <span>
+                      <DebouncedInput
+                        value={globalFilter ?? ""}
+                        onChange={(value) => setGlobalFilter(String(value))}
+                        placeholder="Search All..."
+                      />
+                    </span>
+
                   </span>
                   <span className="toolbox mx-auto">
                     {checkedList != undefined &&
@@ -5488,7 +5641,7 @@ function ComponentTable(SelectedProp: any) {
                       Restructure
                     </button>
 
-                    {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers} /> : ''}
+                    {showTeamMemberOnCheck === true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers} /> : ''}
 
                     <a className="brush" onClick={clearSearch}>
                       <FaPaintBrush />
