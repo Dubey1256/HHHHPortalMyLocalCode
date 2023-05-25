@@ -160,6 +160,7 @@ const EditTaskPopup = (Items: any) => {
     const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
+    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -201,7 +202,7 @@ const EditTaskPopup = (Items: any) => {
     }
     React.useEffect(() => {
         loadTaskUsers();
-        getCurrentUserDetails();
+        // getCurrentUserDetails();
         GetExtraLookupColumnData();
         getCurrentUserDetails();
         getAllSitesData();
@@ -1330,6 +1331,9 @@ const EditTaskPopup = (Items: any) => {
                         temp.push(userData)
                         setCurrentUserData(temp);
                         currentUserBackupArray.push(userData);
+                        if (userData.UserGroupId == 7) {
+                            setIsUserFromHHHHTeam(true);
+                        }
                     }
                 })
             }
@@ -3375,7 +3379,7 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <div className="modal-body mb-5">
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                             <button
                                 className="nav-link active"
                                 id="BASIC-INFORMATION"
@@ -3400,7 +3404,7 @@ const EditTaskPopup = (Items: any) => {
                             >
                                 TEAM & TIMESHEET
                             </button>
-                            <button
+                            {IsUserFromHHHHTeam ? null : <button
                                 className="nav-link"
                                 id="BACKGROUND-COMMENT"
                                 data-bs-toggle="tab"
@@ -3411,7 +3415,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-selected="false"
                             >
                                 BACKGROUND
-                            </button>
+                            </button>}
+
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -4392,19 +4397,21 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
-                                {
-                                    EditData.Id != null || EditData.Id != undefined ?
-                                        <BackgroundCommentComponent
-                                            CurrentUser={currentUserData}
-                                            TaskData={EditData}
-                                            Context={Context}
-                                            siteUrls={siteUrls}
-                                        />
-                                        : null
-                                }
+                            {IsUserFromHHHHTeam ? null :
+                                <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
+                                    {
+                                        EditData.Id != null || EditData.Id != undefined ?
+                                            <BackgroundCommentComponent
+                                                CurrentUser={currentUserData}
+                                                TaskData={EditData}
+                                                Context={Context}
+                                                siteUrls={siteUrls}
+                                            />
+                                            : null
+                                    }
 
-                            </div>
+                                </div>
+                            }
                         </div>
                         {/* </>
                                     )
