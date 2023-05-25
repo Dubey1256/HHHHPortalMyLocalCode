@@ -1015,7 +1015,7 @@ function EditProjectPopup(item: any) {
           CategoriesData.splice(index, 1);
         }
       });
-      if (itemm.isChecked == true) {
+      if (itemm.isChecked == true || itemm.isselected == true) {
         array2.push(itemm)
       }
     })
