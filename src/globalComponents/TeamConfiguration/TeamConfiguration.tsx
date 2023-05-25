@@ -21,7 +21,7 @@ export interface ITeamConfigurationState {
 }
 
 const dragItem: any = {};
-let web: any;
+let web:any;
 
 export class TeamConfigurationCard extends React.Component<ITeamConfigurationProps, ITeamConfigurationState> {
     constructor(props: ITeamConfigurationProps) {
@@ -49,15 +49,15 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
     private dragUser: any;
     private async loadTaskUsers() {
         if (this.props.ItemInfo.siteUrl != undefined) {
-            web = new Web(this.props.ItemInfo.siteUrl);
+            web = new Web(this.props?.ItemInfo?.siteUrl);
         } else {
-            web = new Web(this.props.AllListId?.siteUrl);
+            web = new Web(this.props?.AllListId?.siteUrl);
         }
         let results: any = [];
 
         let taskUsers: any = [];
         results = await web.lists
-            .getById(this.props.AllListId?.TaskUsertListID)
+            .getById(this.props?.AllListId?.TaskUsertListID)
             .items
             .select('Id', 'IsActive', 'UserGroupId', 'Suffix', 'Title', 'Email', 'SortOrder', 'Role', 'Company', 'ParentID1', 'TaskStatusNotification', 'Status', 'Item_x0020_Cover', 'AssingedToUserId', 'isDeleted', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail', 'ItemType')
             .filter('IsActive eq 1')
@@ -87,32 +87,13 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 taskUsers.push(item);
             }
         });
-        if (taskUsers != undefined && taskUsers.length > 0) {
-            taskUsers?.map((Alluser: any) => {
-                if (Alluser.childs != undefined && Alluser.childs.length > 0) {
-                    Alluser.childs.map((ChildUser: any) => {
-                        if (ChildUser.Item_x0020_Cover == null || ChildUser.Item_x0020_Cover == undefined) {
-                            let tempObject: any = {
-                                Description: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg',
-                                Url: 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
-                            }
-                            ChildUser.Item_x0020_Cover = tempObject;
-                        }
-                    })
-                }
-            })
-        }
         console.log(taskUsers);
         this.setState({
             taskUsers
         })
     }
     private async GetTaskDetails() {
-        if (this.props.ItemInfo.siteUrl != undefined) {
-            web = new Web(this.props.ItemInfo.siteUrl);
-        } else {
-            web = new Web(this.props.AllListId?.siteUrl);
-        }
+        let web = new Web(this.props?.ItemInfo?.siteUrl);
         let taskDetails = [];
         if (this.props.ItemInfo.listId != undefined) {
             taskDetails = await web.lists
@@ -281,9 +262,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             if (self.AllUsers[i]) {
                 items.forEach(function (item: any) {
                     if (self.AllUsers[i] != undefined && self.AllUsers[i].AssingedToUserId != undefined && self.AllUsers[i].AssingedToUserId == item.Id) {
-                        if (self.AllUsers[i].Item_x0020_Cover == undefined || self.AllUsers[i].Item_x0020_Cover == null) {
+                        if (self.AllUsers[i].Item_x0020_Cover == undefined) {
                             self.AllUsers[i].Item_x0020_Cover = {}
-                            self.AllUsers[i].Item_x0020_Cover.Url = 'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg'
+                            self.AllUsers[i].Item_x0020_Cover.Url = null
                         }
                         item.userImage = self.AllUsers[i].Item_x0020_Cover.Url
                         item.Title = self.AllUsers[i].Title;

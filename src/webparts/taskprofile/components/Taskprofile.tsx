@@ -260,7 +260,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       DocumentsListID: this.props.DocumentsListID,
       SmartInformationListID: this.props.SmartInformationListID,
       siteUrl: this.props.siteUrl,
-      TaskTypeID:'21b55c7b-5748-483a-905a-62ef663972dc',
+      TaskTypeID:this.props.TaskTypeID,
       isShowTimeEntry: isShowTimeEntry,
       isShowSiteCompostion: isShowSiteCompostion
     }
