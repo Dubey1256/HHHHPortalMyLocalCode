@@ -120,8 +120,8 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
      
         folder.files.add(uploadedImage.fileName, data).then(async(item: any) => {
           console.log(item)
-          let hostWebURL = props.Context.pageContext._site.absoluteUrl.replace(props.Context.pageContext._site.absoluteUrl,"");
-              let imageURL: string = `${hostWebURL}${item.data.ServerRelativeUrl}`;
+        //   let hostWebURL = props.Context.pageContext._site.absoluteUrl.replace(props.Context.pageContext._site.absoluteUrl,"");
+              let imageURL: string = `${props.Context._pageContext._web.absoluteUrl.split(props.Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
               console.log(imageURL)
            // =========get pic data and its Id=============
       
