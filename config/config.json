@@ -265,6 +265,14 @@
           "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
         }
       ]
+    },
+    "teamleader-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.js",
+          "manifest": "./src/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -319,6 +327,7 @@
     "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
-    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js"
+    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js"
   }
 }
