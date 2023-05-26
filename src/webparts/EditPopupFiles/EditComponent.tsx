@@ -1389,61 +1389,72 @@ function EditInstitution({ item, SelectD, Calls }: any) {
 
   const GetAllComponentAndServiceData = async (ComponentType: any) => {
     let PropsObject: any = {
-        MasterTaskListID: RequireData.MasterTaskListID,
-        siteUrl: RequireData.siteUrl,
-        ComponentType: ComponentType,
-        TaskUserListId: RequireData.TaskUsertListID
-    }
-    let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+      MasterTaskListID: RequireData.MasterTaskListID,
+      siteUrl: RequireData.siteUrl,
+      ComponentType: ComponentType,
+      TaskUserListId: RequireData.TaskUsertListID,
+    };
+    let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+      PropsObject
+    );
     if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
-        GlobalServiceAndComponentData = CallBackData.AllData;
+      GlobalServiceAndComponentData = CallBackData.AllData;
     }
-}
+  };
 
-  const autoSuggestionsForServiceAndComponent = async(e: any, Type:any) => {
-   
-        // if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
-        //     if (ServicesTaskCheck) {
-        //         GetAllComponentAndServiceData("Service");
-        //     }
-        //     if (ComponentTaskCheck) {
-        //         GetAllComponentAndServiceData("Component");
-        //     }
-        // }
-        await GetAllComponentAndServiceData(Type);
-        let SearchedKeyWord: any = e.target.value;
-        setSearchedServiceCompnentKey(SearchedKeyWord);
-        let TempArray: any = [];
-        if (SearchedKeyWord.length > 0) {
-            if (GlobalServiceAndComponentData != undefined && GlobalServiceAndComponentData.length > 0) {
-                GlobalServiceAndComponentData.map((AllDataItem: any) => {
-                    if ((AllDataItem.NewLeble?.toLowerCase()).includes(SearchedKeyWord.toLowerCase())) {
-                        TempArray.push(AllDataItem);
-                    }
-                })
-            }
-            if (TempArray != undefined && TempArray.length > 0) {
-                setSearchedServiceCompnentData(TempArray);
-            }
-        } else {
-            setSearchedServiceCompnentData([]);
-            setSearchedServiceCompnentKey("");
-        }
-    
-}
+  const autoSuggestionsForServiceAndComponent =  (e: any) => {
+    let SearchedType: any = e.target.name;
+    // if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
+    //     if (ServicesTaskCheck) {
+    //         GetAllComponentAndServiceData("Service");
+    //     }
+    //     if (ComponentTaskCheck) {
+    //         GetAllComponentAndServiceData("Component");
+    //     }
+    // }
+     GetAllComponentAndServiceData(SearchedType);
+    let SearchedKeyWord: any = e.target.value;
+    setSearchedServiceCompnentKey(SearchedKeyWord);
+    let TempArray: any = [];
+    if (SearchedKeyWord.length > 0) {
+      if (
+        GlobalServiceAndComponentData != undefined &&
+        GlobalServiceAndComponentData.length > 0
+      ) {
+        GlobalServiceAndComponentData.map((AllDataItem: any) => {
+          if (
+            AllDataItem.NewLeble?.toLowerCase().includes(
+              SearchedKeyWord.toLowerCase()
+            )
+          ) {
+            TempArray.push(AllDataItem);
+          }
+        });
+      }
+      if (TempArray != undefined && TempArray.length > 0) {
+        setSearchedServiceCompnentData(TempArray);
+      }
+    } else {
+      setSearchedServiceCompnentData([]);
+      setSearchedServiceCompnentKey("");
+    }
+  };
 
-const setSelectedServiceAndCompnentData = (SelectedData: any,Type:any) => {
-  console.log("selected Data form auto suggestion from Auto Suggesution Service and comonente==========", SelectedData);
-  setSearchedServiceCompnentData([]);
-  setSearchedServiceCompnentKey("");
-  if (Type == "Component") {
-    Call([SelectedData], "Service", "Save");
-  }
-  if (Type ==  "Service") {
-    Call([SelectedData], "Component", "Save");
-  }
+  const setSelectedServiceAndCompnentData = (SelectedData: any, Type: any) => {
+    console.log(
+      "selected Data form auto suggestion from Auto Suggesution Service and comonente==========",
+      SelectedData
+    );
+    setSearchedServiceCompnentData([]);
+    setSearchedServiceCompnentKey("");
+    if (Type == "Component") {
+      Call([SelectedData], "Service", "Save");
+    }
+    if (Type == "Service") {
+      Call([SelectedData], "Component", "Save");
+    }
+  };
 
-}
 
   const onRenderCustomHeader = () => {
     return (
@@ -1774,11 +1785,12 @@ const setSelectedServiceAndCompnentData = (SelectedData: any,Type:any) => {
                               <input
                                 type="text"
                                 className="form-control"
+                                name="Service"
                                 value={SearchedServiceCompnentKey}
                                 onChange={(e) =>
-                                  autoSuggestionsForServiceAndComponent(e, "Componenent")
+                                  autoSuggestionsForServiceAndComponent(e)
                                 }
-                                placeholder="Select Componets / Service And Search Here"
+                                placeholder=" Search Here"
                               />
                               <span className="input-group-text">
                                 <svg
@@ -1804,7 +1816,16 @@ const setSelectedServiceAndCompnentData = (SelectedData: any,Type:any) => {
                               <label className="form-label full-width">
                                 Service Portfolio
                               </label>
-                              <input type="text" className="form-control" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="Component"
+                                value={SearchedServiceCompnentKey}
+                                onChange={(e) =>
+                                  autoSuggestionsForServiceAndComponent(e)
+                                }
+                                placeholder="Search Here"
+                              />
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
