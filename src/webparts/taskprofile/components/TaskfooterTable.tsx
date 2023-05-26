@@ -178,7 +178,7 @@ function TasksTable(props: any) {
                             })
                         }
                     }
-                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl , undefined);
+                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
                     if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                         result.ClientCategory.forEach((catego: any) => {
                             result.ClientCategory.push(catego);
@@ -279,7 +279,7 @@ function TasksTable(props: any) {
         //MeetingItems.push(props)
         getTaskUsers();
 
-        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined &&props.props.Services.length>0 && props.props.Services[0].Id))
+        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services.length > 0 && props.props.Services[0].Id))
             GetComponents(props.props)
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
             props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
@@ -905,7 +905,7 @@ function TasksTable(props: any) {
         }
         else {
             if (props.props.SharewebTaskType == 'Workstream') {
-                props.props['NoteCall']='Task'
+                props.props['NoteCall'] = 'Task'
                 MeetingItems.push(props.props)
                 setMeetingPopup(true)
             }
@@ -1941,11 +1941,11 @@ function TasksTable(props: any) {
                 </Panel>
             }
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}AllListId={props.AllListId}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}AllListId={props.AllListId}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}SelectedProp={props.AllListId}></CreateWS>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} AllListId={props.AllListId}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard   CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
             }
         </div>

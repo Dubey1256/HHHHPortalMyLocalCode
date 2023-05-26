@@ -369,7 +369,7 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
@@ -608,9 +608,9 @@ const CreateWS = (props: any) => {
             setcheckedTask(false)
         }
 
-        let web = new Web(dynamicList.siteUrl);
+        let web = new Web(dynamicList?.siteUrl);
         TaskTypeItems = await web.lists
-            .getById(dynamicList.TaskTypeID)
+            .getById(dynamicList?.TaskTypeID)
             .items
             .select("Id,Title,Shareweb_x0020_Edit_x0020_Column,Prefix,Level")
             .top(4999)
@@ -1065,7 +1065,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                        <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+                      {AllItems!=undefined && dynamicList!=undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
