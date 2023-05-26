@@ -27,16 +27,11 @@ let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
 let Isapproval;
 var ContextValue: any = {};
-<<<<<<< HEAD
-function CreateTaskComponent(props:any) {
-    let base_Url=props?.pageContext?._web?.absoluteUrl;
-=======
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 var AllListId: any = {}
 function CreateTaskComponent(props: any) {
     let base_Url = props?.pageContext?._web?.absoluteUrl;
->>>>>>> b67665c03cfca6ae0c3e0b4f2284507764e776d5
     const [editTaskPopupData, setEditTaskPopupData] = React.useState({
         isOpenEditPopup: false,
         passdata: null
