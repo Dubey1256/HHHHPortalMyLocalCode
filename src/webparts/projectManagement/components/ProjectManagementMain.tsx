@@ -1538,7 +1538,7 @@ const ProjectManagementMain = (props: any) => {
 
                               {
                                 Masterdata?.Body != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Description</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
                                   </details>
@@ -1548,18 +1548,20 @@ const ProjectManagementMain = (props: any) => {
 
                               {
                                 Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Background</summary>
-                                    <div className="AccordionContent">{Masterdata?.Background}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
                                   </details>
                                 </div> : ''
                               }
 
                               {
                                 Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Idea</summary>
-                                    <div className="AccordionContent">{Masterdata?.Idea}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
                                   </details>
                                 </div> : ''
                               }
