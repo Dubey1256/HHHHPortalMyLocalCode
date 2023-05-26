@@ -44,7 +44,6 @@ var backupAllTasks: any = [];
 var MasterListData: any = []
 //var isCall = false;
 var MyAllData: any = []
-var DataSiteIcon: any = [];
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
@@ -449,33 +448,7 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  const loadAdminConfigurations = async () => {
-    if (AllListId?.AdminConfigrationListID != undefined) {
-      var CurrentSiteType = "";
-      let web = new Web(props?.siteUrl);
-      await web.lists
-        .getById(AllListId.AdminConfigrationListID)
-        .items.select(
-          "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-        )
-        .top(4999)
-        .get()
-        .then(
-          (response) => {
-            var SmartFavoritesConfig = [];
-            $.each(response, function (index: any, smart: any) {
-              if (smart.Configurations != undefined) {
-                DataSiteIcon = JSON.parse(smart.Configurations);
-              }
-            });
-          },
-          function (error) { }
-        );
-    } else {
-      alert('Admin Configration List Id not present')
-      DataSiteIcon = [];
-    }
-  };
+
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
   }, []);
@@ -496,7 +469,6 @@ const ProjectManagementMain = (props: any) => {
   }, []);
   const LoadAllSiteTasks = async function () {
     await loadAllComponent()
-    loadAdminConfigurations();
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
