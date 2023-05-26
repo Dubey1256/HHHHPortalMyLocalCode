@@ -60,7 +60,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
-var tempCategoryData: any;
+var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
@@ -1194,8 +1194,8 @@ const EditTaskPopup = (Items: any) => {
                 setOnlyCompletedStatus(false)
             }
         } else {
-            if (tempCategoryData != undefined) {
-                let CheckTaggedCategory = tempCategoryData.includes(type)
+            // if (tempCategoryData != undefined) {
+                let CheckTaggedCategory = tempCategoryData?.includes(type)
                 if (CheckTaggedCategory == false) {
                     let CheckTaagedCategory: any = true;
                     let category: any = tempCategoryData + ";" + type;
@@ -1243,7 +1243,7 @@ const EditTaskPopup = (Items: any) => {
                         setOnlyCompletedStatus(true)
                     }
                 }
-            }
+            // }
         }
     }
 
@@ -2380,15 +2380,12 @@ const EditTaskPopup = (Items: any) => {
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
-                        // setTaskAssignedTo([]);
-                        // EditData.TaskAssignedUsers = [];
-                        // setTaskTeamMembers([]);
-                        // EditData.Team_x0020_Members = [];
+                       
                     }
                 }
-                if (item.Phone) {
-                    // CategoryChange("Phone", 199);
-                    // CategoryChangeUpdateFunction("false", "Phone", 199)
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
+                   
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -2399,15 +2396,11 @@ const EditTaskPopup = (Items: any) => {
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
-                                // setTaskAssignedTo([]);
-                                // EditData.TaskAssignedUsers = [];
-                                // setTaskTeamMembers([]);
-                                // EditData.Team_x0020_Members = [];
+                                
                             }
                         }
-                        if (item.Phone) {
+                        if (subItem.Phone == true) {
                             PhoneCount = PhoneCount + 1;
-                            // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
                 }
