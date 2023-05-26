@@ -273,6 +273,14 @@
           "manifest": "./src/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "list-provisioning-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/listProvisioning/ListProvisioningWebPart.js",
+          "manifest": "./src/webparts/listProvisioning/ListProvisioningWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -328,6 +336,7 @@
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
-    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js"
+    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
+    "ListProvisioningWebPartStrings": "lib/webparts/listProvisioning/loc/{locale}.js"
   }
 }

@@ -1,8 +1,7 @@
 import { Checkbox, css, DefaultButton, Dialog, DialogFooter, DialogType, Icon, Label, PivotItem, PrimaryButton, SearchBox } from "@fluentui/react";
 import * as React from "react";
 import spservices from "../../../spservices/spservices";
-
-import styles from "./CommonControl.module.scss";
+import styles from './CommonControl.module.scss';
 import { ILastModifiedItemsAppProps } from "./ILastModifiedItemsAppProps";
 import { ILastModifiedItemsAppState } from "./ILastModifiedItemsAppState";
 import ListLastModifiedItems from "./ListLastModifiedItems";
