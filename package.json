@@ -48,14 +48,9 @@
     "jquery": "^3.6.3",
     "material-table": "^2.0.3",
     "moment-timezone": "^0.5.40",
-<<<<<<< HEAD
     "office-ui-fabric-react": "^7.199.1",
     "react": "17.0.1",
     "react-apexcharts": "^1.4.0",
-=======
-    "office-ui-fabric-react": "7.174.1",
-    "react": "16.13.1",
->>>>>>> 97eb68f06c1db8fa7713bd60c25de1367887ecb6
     "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
     "react-checkbox-tree": "^1.8.0",
