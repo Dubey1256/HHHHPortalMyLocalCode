@@ -3459,7 +3459,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
               </a>}
               {row?.original.TitleNew === "Tasks" ? (
-              <span>{row?.original.Title}</span>
+              <span>{row?.original.TitleNew}</span>
             ) : (
               ""
             )}
