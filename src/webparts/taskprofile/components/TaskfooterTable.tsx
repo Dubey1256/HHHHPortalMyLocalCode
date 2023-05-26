@@ -107,9 +107,17 @@ function TasksTable(props: any) {
     }
     var Response: any = []
     const getTaskUsers = async () => {
-        taskUsers = Response = await globalCommon.loadTaskUsers();
-        setTaskUser(Response);
-        console.log(Response);
+        let web = new Web(props?.AllListId?.siteUrl);
+        await web.lists
+            .getById(props?.AllListId?.TaskUsertListID)
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .get().then((Response: any) => {
+                setTaskUser(Response);
+                console.log(Response);
+            })
+        // taskUsers = Response = await globalCommon.loadTaskUsers();
+
 
     }
     const handleClose = () => setLgShow(false);
@@ -246,10 +254,10 @@ function TasksTable(props: any) {
     }
     const GetComponents = async (Item: any) => {
         var filt = "Id eq " + (Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         let compo = [];
         compo = await web.lists
-            .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getById(props?.AllListId?.MasterTaskListID)
             .items
             .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type", "ItemType",
             )
@@ -348,7 +356,7 @@ function TasksTable(props: any) {
 
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
-                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['siteUrl'] = props?.AllListId?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
@@ -785,7 +793,7 @@ function TasksTable(props: any) {
 
         }
 
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(checkedList[0].listId).items.getById(checkedList[0].Id).update({
             ParentTaskId: NewArrayBackup[0].Id,
             SharewebTaskTypeId: ChengedTitle === 'Workstream' ? 3 : 2,
@@ -1265,12 +1273,12 @@ function TasksTable(props: any) {
                                                                     <td style={{ width: "23%" }}>
                                                                         {/* {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" onClick={() => window.open(GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId= + ${item.Id}`, '_blank')} */}
                                                                         {item.siteType === "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
+                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId= ${item.Id}`}
                                                                         >
                                                                             {item.Title}
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId= ${item.Id}&Site=${item.siteType}`}
                                                                         >{item.Title}
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
@@ -1328,7 +1336,7 @@ function TasksTable(props: any) {
                                                                                     return (
                                                                                         <span>
                                                                                             {item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                            <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                 <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                             </a>
@@ -1383,11 +1391,11 @@ function TasksTable(props: any) {
                                                                                             </td>
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
@@ -1441,7 +1449,7 @@ function TasksTable(props: any) {
                                                                                                             return (
                                                                                                                 <span>
                                                                                                                     {childitem.Created != null ? moment(childitem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                    <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                         <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                     </a>
@@ -1507,11 +1515,11 @@ function TasksTable(props: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childinew.Id}`}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childinew.Id} &Site=${childinew.siteType}`}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
@@ -1576,7 +1584,7 @@ function TasksTable(props: any) {
                                                                                                                                     return (
                                                                                                                                         <span>
                                                                                                                                             {childinew.Created != null ? moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                            <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                 <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                             </a>
@@ -1633,11 +1641,11 @@ function TasksTable(props: any) {
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${subchilditem.Id}&Site= ${subchilditem.siteType}`}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
@@ -1694,7 +1702,7 @@ function TasksTable(props: any) {
                                                                                                                                                         return (
                                                                                                                                                             <span>
                                                                                                                                                                 {subchilditem.Created != null ? moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                                <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                                     <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                                                 </a>
@@ -1758,11 +1766,11 @@ function TasksTable(props: any) {
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "23%" }}>
                                                                                                                                                                 {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                                                                                 >{nextsubchilditem.Title}
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
+                                                                                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${nextsubchilditem.Id}&Site=${nextsubchilditem.siteType}`}
                                                                                                                                                                 >{nextsubchilditem.Title}
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
@@ -1819,7 +1827,7 @@ function TasksTable(props: any) {
                                                                                                                                                                             return (
                                                                                                                                                                                 <span>
                                                                                                                                                                                     {nextsubchilditem.Created != null ? moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                                                    <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                                                         <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                                                                     </a>
@@ -1887,7 +1895,7 @@ function TasksTable(props: any) {
                             <div className='bg-ee p-2 restructurebox'>
                                 <div>
                                     {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                        href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${NewArrayBackup[0].Id}`}
                                     ><span>{NewArrayBackup[0].Title}</span>
                                     </a>  please click Submit to continue.</span> : ''}
                                 </div>
@@ -1903,7 +1911,7 @@ function TasksTable(props: any) {
                                         if (obj.Title !== 'Tasks') {
                                             return (
                                                 <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.Id}`}
                                                 ><span>{obj.Title}  </span>
                                                 </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                             )
@@ -1916,13 +1924,13 @@ function TasksTable(props: any) {
                                         return (
                                             <>
                                                 <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId= ${newobj.Id}`}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                         )
                                     })}
                                     <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${RestructureChecked[0].Id}`}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                                 </div>
@@ -1942,7 +1950,7 @@ function TasksTable(props: any) {
             }
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
             {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} AllListId={props.AllListId}></CreateActivity>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
                 <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
