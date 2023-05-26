@@ -27,6 +27,7 @@ var Array: any = []
 let taskUsers: any = [];
 let IsShowRestru: any = false;
 let componentDetails: any = '';
+let siteIconAllTask: any = [];
 function TasksTable(props: any) {
     const [data, setData] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
@@ -54,22 +55,29 @@ function TasksTable(props: any) {
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
     const [selectedItem, setSelectedItem] = React.useState([]);
     const [ChengedTitle, setChengedTitle] = React.useState('');
+    // const [siteIconAllTask,setSiteIconAllTask]=React.useState([])
     //const [count, setcount] = React.useState(0);
     IsUpdated = props.props.Portfolio_x0020_Type;
 
     const GetSmartmetadata = async () => {
         //  var metadatItem: any = []
         let smartmetaDetails: any = [];
-
+        let AllSiteName: any = [];
         var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
         smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
         console.log(smartmetaDetails);
+
         smartmetaDetails.forEach((newtest: any) => {
             newtest.Id = newtest.ID;
             if (newtest.TaxType == 'Sites' && newtest.Title != 'Master Tasks' && newtest.Title != 'SDC Sites') {
                 siteConfig.push(newtest)
             }
+            if (newtest.TaxType == 'Sites' && newtest.Item_x005F_x0020_Cover != undefined) {
+                siteIconAllTask.push(newtest)
+
+            }
         });
+
         // var filter: any = '';
         if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities') {
             filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
@@ -119,6 +127,17 @@ function TasksTable(props: any) {
         // taskUsers = Response = await globalCommon.loadTaskUsers();
 
 
+    }
+
+    const GetIconImageUrl = (siteType: any, siteUrl: any, undefined: any) => {
+        let siteIcon = '';
+        siteIconAllTask?.map((items: any) => {
+            if (items?.Title == siteType) {
+                siteIcon = items?.Item_x005F_x0020_Cover?.Url
+                // return siteIcon;
+            }
+        })
+        return siteIcon;
     }
     const handleClose = () => setLgShow(false);
     const LoadAllSiteTasks = async (filter: any) => {
@@ -186,7 +205,7 @@ function TasksTable(props: any) {
                             })
                         }
                     }
-                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
+                    result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
                     if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
                         result.ClientCategory.forEach((catego: any) => {
                             result.ClientCategory.push(catego);
@@ -1355,7 +1374,7 @@ function TasksTable(props: any) {
                                                                         } */}
                                                                     </td>
 
-                                                                    <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                    <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                     <td style={{ width: "3%" }}>{item.siteType !== "Master Tasks" && item.Title !== 'Tasks' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}<a>
                                                                         {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
@@ -1468,7 +1487,7 @@ function TasksTable(props: any) {
                                                                                                 {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
                                                                                             </td>
 
-                                                                                            <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                            <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>
                                                                                                 {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
@@ -1598,7 +1617,7 @@ function TasksTable(props: any) {
                                                                                                                     <td style={{ width: "7%" }}>
                                                                                                                     </td>
 
-                                                                                                                    <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                                                    <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>
                                                                                                                         {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
@@ -1723,7 +1742,7 @@ function TasksTable(props: any) {
                                                                                                                                         </td>
 
 
-                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                                         <td style={{ width: "3%" }}><a>
                                                                                                                                             {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
@@ -1844,7 +1863,7 @@ function TasksTable(props: any) {
                                                                                                                                                                 } */}
                                                                                                                                                             </td>
 
-                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                                                             <td style={{ width: "3%" }}><a>
                                                                                                                                                                 {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
                                                                                                                                                         </tr>
@@ -1949,7 +1968,7 @@ function TasksTable(props: any) {
                 </Panel>
             }
             {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId}></TimeEntryPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
             {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
             {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
