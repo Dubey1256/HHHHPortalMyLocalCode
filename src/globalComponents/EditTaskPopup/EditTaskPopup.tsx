@@ -705,12 +705,14 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Component?.length > 0) {
                     setComponentTaskCheck(true)
                     setSmartComponentData(item.Component);
+                    item.Portfolio_x0020_Type = "Component"
                 } else {
                     setComponentTaskCheck(false)
                 }
                 if (item.Services?.length > 0) {
                     setServicesTaskCheck(true)
                     setSmartServicesData(item.Services);
+                    item.Portfolio_x0020_Type = "Service"
                 } else {
                     setServicesTaskCheck(false)
                 }
@@ -4140,10 +4142,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                    href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                        style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
@@ -4155,10 +4156,10 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2">
                                             <div className="input-group ">
-                                                <label className="form-label full-width">Estimated Time</label>
+                                                <label className="form-label full-width">Estimated Time In Hours</label>
                                                 <input type="text" className="form-control"
                                                     defaultValue={EditData.EstimatedTime}
-                                                    placeholder="Enter Estimated Time"
+                                                    placeholder="Enter Estimated Time In Hours"
                                                     onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
                                                 />
                                             </div>
@@ -5240,10 +5241,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                                <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                                    on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                                    data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                                href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                                    style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                                     src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                                 />
                                                                             </a>
