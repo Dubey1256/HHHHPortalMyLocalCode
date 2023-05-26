@@ -23,11 +23,12 @@ export interface ITaskprofileWebPartProps {
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
   SmartMetadataListID: '01a34938-8c7e-4ea6-a003-cee649e8c67a';
-  SmartInformationListID:'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
-  DocumentsListID:'d0f88b8f-d96d-4e12-b612-2706ba40fb08';
-  TaskTimeSheetListID:'464fb776-e4b3-404c-8261-7d3c50ff343f';
-  TimeEntry:any;
-  SiteCompostion:any;
+  SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
+  DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
+  TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
+  TaskTypeID:"21b55c7b-5748-483a-905a-62ef663972dc";
+  TimeEntry: any;
+  SiteCompostion: any;
 }
 
 export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofileWebPartProps> {
@@ -57,14 +58,15 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
         // loginName:this.context.pageContext.user.loginName,
         Context: this.context,
         MasterTaskListID: this.properties.MasterTaskListID,
-       TaskUsertListID: this.properties.TaskUsertListID,
-       SmartMetadataListID: this.properties.SmartMetadataListID,
-       SmartInformationListID:this.properties.SmartInformationListID,
-        DocumentsListID:this.properties.DocumentsListID,
-        TaskTimeSheetListID:this.properties.TaskTimeSheetListID,
-        TimeEntry:this.properties.TimeEntry,
-        SiteCompostion:this.properties.SiteCompostion
-       }
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
+        SmartInformationListID: this.properties.SmartInformationListID,
+        DocumentsListID: this.properties.DocumentsListID,
+        TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
+        TaskTypeID:this.properties.TaskTypeID,
+        TimeEntry: this.properties.TimeEntry,
+        SiteCompostion: this.properties.SiteCompostion
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -133,12 +135,16 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
                 }),
+                PropertyPaneTextField('TaskTypeID', {
+                  label: "TaskTypeID"
+                }),
                 PropertyPaneTextField('TimeEntry', {
                   label: "TimeEntry"
                 }),
                 PropertyPaneTextField('SiteCompostion', {
                   label: "SiteCompostion"
                 }),
+                
               ]
             }
           ]
