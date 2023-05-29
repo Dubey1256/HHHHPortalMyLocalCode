@@ -1557,6 +1557,8 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
         // console.log("all Service and Coponent data form global Call=======", componentDetails);
         TaskUsers = await AllTaskUsers(Props.siteUrl, Props.TaskUserListId);
         $.each(componentDetails, function (index: any, result: any) {
+            result.isSelected=false;
+            result.isSelected=Props?.selectedItems?.find((obj:any) => obj.Id === result.ID);
             result.TeamLeaderUser = []
             if (result.Portfolio_x0020_Type == Props.ComponentType) {
                 result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')

@@ -65,6 +65,7 @@ function Portfolio({SelectedProp}:any) {
   const [AllTaskuser, setAllTaskuser] = React.useState([]);
   const [questionandhelp, setquestionandhelp] = React.useState([]);
 
+  const [ParentData, SetParentData] = React.useState([]);
 
   ID=getQueryVariable('taskId');
   const handleOpen = (item: any) => {
@@ -126,6 +127,8 @@ function Portfolio({SelectedProp}:any) {
   };
   React.useEffect(() => {
     let folderId: any = "";
+    
+    let ParentId: any = "";
      try {
 
    var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
@@ -170,6 +173,32 @@ function Portfolio({SelectedProp}:any) {
                   if (data.d.__next) {
                     urln = data.d.__next;
                   } else SetFolderData(responsen);
+                  // console.log(responsen);
+                },
+                error: function (error) {
+                  console.log(error);
+                  // error handler code goes here
+                },
+              });
+            }
+            if (
+              item?.Parent != undefined &&
+              item.Parent.Id != undefined &&
+              item.Item_x0020_Type == "Feature"
+            ) {
+              ParentId = item.Parent.Id;
+              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              $.ajax({
+                url: urln,
+                method: "GET",
+                headers: {
+                  Accept: "application/json; odata=verbose",
+                },
+                success: function (data) {
+                  let PaData = ParentData.concat(data.d.results);
+                  if (data.d.__next) {
+                    urln = data.d.__next;
+                  } else SetParentData(PaData);
                   // console.log(responsen);
                 },
                 error: function (error) {
@@ -386,19 +415,41 @@ function Portfolio({SelectedProp}:any) {
                       </li>
                       {(item.Item_x0020_Type == "SubComponent" ||
                         item.Item_x0020_Type == "Feature") && (
-                        <li>
-                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {item.Parent != undefined && (
-                            <a
-                              target="_blank"
-                              data-interception="off"
-                              href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item.Parent.Id}
-                            >
-                              {item.Parent.Title}
-                            </a>
-                          )}
-                        </li>
+                        <>
+                          <li>
+                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {ParentData != undefined &&
+                              ParentData.map((ParentD: any) => {
+                                return (
+                                  <>
+                                    {ParentD.Parent != undefined && (
+                                      <a
+                                        target="_blank"
+                                        data-interception="off"
+                                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ParentD.Parent.Id}`}
+                                      >
+                                        {ParentD.Parent.Title}
+                                      </a>
+                                    )}
+                                  </>
+                                );
+                              })}
+                          </li>
+                          <li>
+                            {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                            {item.Parent != undefined && (
+                              <a
+                                target="_blank"
+                                data-interception="off"
+                                href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${item.Parent.Id}`}
+                              >
+                                {item.Parent.Title}
+                              </a>
+                            )}
+                          </li>
+                        </>
                       )}
+
 
                       <li>
                         <a>{item.Title}</a>
@@ -597,7 +648,7 @@ function Portfolio({SelectedProp}:any) {
                                             
                                                 </>
                                         ):""}
-                                        <div className='px-1'>|</div>
+                                       
                                                 {AllTeamMember != null && AllTeamMember.length > 0 &&
                     <div className="user_Member_img"><a href={SelectedProp.siteUrl+`/SitePages/TeamLeader-Dashboard.aspx?UserId=${AllTeamMember[0].Id}&Name=${AllTeamMember[0].Title}`} target="_blank" data-interception="off"><img className="imgAuthor" src={AllTeamMember[0].Item_x0020_Cover?.Url} title={AllTeamMember[0].Title}></img></a></div>                        
                     }
@@ -678,7 +729,7 @@ function Portfolio({SelectedProp}:any) {
                             {item.Parent.Title != undefined && (
                               <dl>
                                 <dt className="bg-fxdark">Parent</dt>
-                                <dd className="bg-light">
+                                <dd className="bg-light" style={{width: "auto"}}>
                                   <a
                                     target="_blank"
                                     data-interception="off"
@@ -1308,16 +1359,16 @@ function Portfolio({SelectedProp}:any) {
                         {item.Portfolio_x0020_Type == "Component" && (
                           <dl>
                             <dt className="bg-fxdark">Service Portfolio</dt>
-                            <dd className="bg-light">
+                            <dd className="bg-light serviepannelgreena">
                               <div className="block">
                                 <a
                                   className="service"
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ServicePortfolio.Id}
+                                  href={SelectedProp.siteUrl+"/SitePages/Portfolio-Profile.aspx?taskId="+item?.ComponentPortfolio?.Id}
                                 >
-                                  {item?.ServicePortfolio?.Title}
+                                  {item?.ComponentPortfolio?.Title}
                                 </a>
                               </div>
                             </dd>
@@ -1333,9 +1384,9 @@ function Portfolio({SelectedProp}:any) {
                                   style={{ border: "0px" }}
                                   target="_blank"
                                   data-interception="off"
-                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ComponentPortfolio?.Id}`}
+                                  href={SelectedProp.siteUrl+`/SitePages/Portfolio-Profile.aspx?taskId=${item?.ServicePortfolio?.Id}`}
                                 >
-                                  {item?.ComponentPortfolio?.Title}
+                                  {item?.ServicePortfolio?.Title}
                                 </a>
                               </div>
                             </dd>

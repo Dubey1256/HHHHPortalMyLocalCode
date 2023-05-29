@@ -10,6 +10,8 @@ import {
 
 // import * as Moment from 'moment';
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as globalCommon from "../../globalComponents/globalCommon";
+
 import "bootstrap/js/dist/modal.js";
 import "bootstrap/js/dist/tab.js";
 import * as moment from "moment";
@@ -45,22 +47,23 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var Backupdata: any = [];
 var BackupCat: any = "";
-let web:any='';
-let RequireData:any={};
-function EditInstitution({item,SelectD,Calls}: any) {
-  // Id:any
-   
- 
+let web: any = "";
+let RequireData: any = {};
+var GlobalServiceAndComponentData: any = [];
 
-  if(SelectD != undefined && SelectD?.siteUrl !=  undefined){
+var CheckCategory: any = [];
+function EditInstitution({ item, SelectD, Calls }: any) {
+  // Id:any
+
+  if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
-    RequireData = SelectD
-  }else{
-    if(item?.siteUrl != undefined){
+    RequireData = SelectD;
+  } else {
+    if (item?.siteUrl != undefined) {
       web = new Web(item?.siteUrl);
     }
 
-    RequireData = SelectD.SelectedProp
+    RequireData = SelectD.SelectedProp;
     web = new Web(RequireData?.siteUrl);
   }
   const [CompoenetItem, setComponent] = React.useState([]);
@@ -94,6 +97,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     EditorState.createEmpty()
   );
   const [ParentData, SetParentData] = React.useState([]);
+  const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
+    const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
   // $('.ms-Dialog-main .main-153').hide();
   const setModalIsOpenToTrue = (e: any) => {
     // e.preventDefault()
@@ -109,8 +114,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
     EditComponentCallback();
     setModalIsOpen(false);
   };
-  
-  const Call = React.useCallback((item1: any, type: any,functionType: any) => {
+
+  const Call = React.useCallback((item1: any, type: any, functionType: any) => {
     if (type == "SmartComponent") {
       if (EditData != undefined && item1 != undefined) {
         item.smartComponent = item1.smartComponent;
@@ -141,27 +146,27 @@ function EditInstitution({item,SelectD,Calls}: any) {
       if (type == "Service") {
         setIsService(false);
       } else {
-          setIsComponent(false)
+        setIsComponent(false);
       }
-  } else {
-    if (type == "Component") {
-      if (item1 != undefined && item1.length > 0) {
-        // item.linkedComponent = item1.linkedComponent;
-        // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1);
-        console.log("Popup component linkedComponent", item1.linkedComponent);
+    } else {
+      if (type == "Component") {
+        if (item1 != undefined && item1.length > 0) {
+          // item.linkedComponent = item1.linkedComponent;
+          // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
       }
-    }
 
-    if (type == "Service") {
-      if (item1 != undefined && item1.length > 0) {
-        // item.linkedComponent = item1.linkedComponent;
-        // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
-        setLinkedComponentData(item1);
-        console.log("Popup component linkedComponent", item1.linkedComponent);
+      if (type == "Service") {
+        if (item1 != undefined && item1.length > 0) {
+          // item.linkedComponent = item1.linkedComponent;
+          // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
+          setLinkedComponentData(item1);
+          console.log("Popup component linkedComponent", item1.linkedComponent);
+        }
       }
     }
-  }
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
@@ -188,9 +193,11 @@ function EditInstitution({item,SelectD,Calls}: any) {
     return isExists;
   };
   const GetTaskUsers = async () => {
-   
     let taskUsers = [];
-    taskUsers = await web.lists.getById(RequireData.TaskUsertListID).items.top(4999).get();
+    taskUsers = await web.lists
+      .getById(RequireData.TaskUsertListID)
+      .items.top(4999)
+      .get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -293,7 +300,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
 
   var getMasterTaskListTasks = async function () {
     //  var query = "ComponentCategory/Id,ComponentCategory/Title,ComponentPortfolio/Id,ComponentPortfolio/Title,ServicePortfolio/Id,ServicePortfolio/Title,SiteCompositionSettings,PortfolioStructureID,ItemRank,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,Deliverable_x002d_Synonyms,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebComponent/Id,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Component/Id,Component/Title,Component/ItemType,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,ClientCategory/Id,ClientCategory/Title";
-   
+
     let componentDetails = [];
     componentDetails = await web.lists
       .getById(RequireData.MasterTaskListID)
@@ -379,7 +386,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
         "ClientCategory/Title",
         "Responsible_x0020_Team/Id",
         "Responsible_x0020_Team/Title",
-        "Parent/Id","Parent/Title","Parent/ItemType"
+        "Parent/Id",
+        "Parent/Title",
+        "Parent/ItemType"
       )
 
       .expand(
@@ -394,7 +403,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
         "Team_x0020_Members",
         "SharewebComponent",
         "SharewebCategories",
-        "Responsible_x0020_Team", "Parent"
+        "Responsible_x0020_Team",
+        "Parent"
       )
       .filter("Id eq " + item.Id + "")
       .get();
@@ -514,8 +524,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
         item.SharewebCategories.forEach(function (type: any) {
           CheckCategory.forEach(function (val: any) {
             if (type.Id == val.Id) {
-              BackupCat = type.Id;
-              setcheckedCat(true);
+              val.isChecked = true;
             }
           });
         });
@@ -614,12 +623,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
   const site: any = [];
   const siteDetail: any = [];
   const GetSmartmetadata = async () => {
-   
     let smartmetaDetails = [];
+    let categoryhh: any = [];
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.SmartMetadataListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
       )
@@ -633,6 +642,18 @@ function EditInstitution({item,SelectD,Calls}: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
+        if (
+          val.TaxType == "Categories" &&
+          (val.Title == "Phone" ||
+            val.Title == "Email Notification" ||
+            val.Title == "Approval" ||
+            val.Title == "Immediate")
+        ) {
+          categoryhh.push(val);
+        }
+      });
+      CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
+        return array.indexOf(val) == id;
       });
       site.forEach(function (val: any) {
         if (
@@ -652,7 +673,6 @@ function EditInstitution({item,SelectD,Calls}: any) {
     setsiteDetails(siteDetail);
     getMasterTaskListTasks();
   };
- 
 
   React.useEffect(() => {
     GetTaskUsers();
@@ -686,25 +706,24 @@ function EditInstitution({item,SelectD,Calls}: any) {
     };
     initLoading();
   }, []);
-  
+
   const EditComponent = (items: any, title: any) => {
-    if(title == "Service"){
+    if (title == "Service") {
       setIsComponent(true);
       setSharewebComponent(items);
-    }else{
+    } else {
       setIsService(true);
       setSharewebComponent(items);
     }
-    
+
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
   const GetComponents = async () => {
-   
     let componentDetails = [];
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(RequireData.MasterTaskListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID",
         "Title",
@@ -916,22 +935,33 @@ function EditInstitution({item,SelectD,Calls}: any) {
   };
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
-    if (item.Priority_x0020_Rank<=10) {
-      
-      if(item.Priority_x0020_Rank == 8||item.Priority_x0020_Rank == 9||item.Priority_x0020_Rank == 10) {
+    if (item.Priority_x0020_Rank <= 10) {
+      if (
+        item.Priority_x0020_Rank == 8 ||
+        item.Priority_x0020_Rank == 9 ||
+        item.Priority_x0020_Rank == 10
+      ) {
         item.Priority = "(1) High";
       }
-      if(item.Priority_x0020_Rank == 4||item.Priority_x0020_Rank == 5||item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
+      if (
+        item.Priority_x0020_Rank == 4 ||
+        item.Priority_x0020_Rank == 5 ||
+        item.Priority_x0020_Rank == 6 ||
+        item.Priority_x0020_Rank == 7
+      ) {
         item.Priority = "(2) Normal";
       }
-      if(item.Priority_x0020_Rank == 1||item.Priority_x0020_Rank == 2||item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
+      if (
+        item.Priority_x0020_Rank == 1 ||
+        item.Priority_x0020_Rank == 2 ||
+        item.Priority_x0020_Rank == 3 ||
+        item.Priority_x0020_Rank == 0
+      ) {
         item.Priority = "(3) Low";
       }
-  
-    }else{
-      item.Priority_x0020_Rank = ""
+    } else {
+      item.Priority_x0020_Rank = "";
       alert("Please Enter priority between 0 to 10");
-      
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1007,14 +1037,36 @@ function EditInstitution({item,SelectD,Calls}: any) {
         }
       });
     }
+    CheckCategory?.forEach((itemm: any, index: any) => {
+      CategoriesData.map((catId, index) => {
+        if (itemm.Id == catId.Id) {
+          CategoriesData.splice(index, 1);
+        }
+      });
+      if (itemm.isChecked == true || itemm.isselected == true) {
+        array2.push(itemm)
+      }
+    })
+  
+    if(array2 != undefined && array2.length>0 ){
+      array2.map((item:any)=>{
+         if(item.isselected == true || item.isChecked == true){
+          NewArray.push(item)
+         }
+      })
+    //  NewArray = array2
+    }
+
     if (NewArray != undefined && NewArray.length > 0) {
-      CategoriesData=[]
+      CheckCategory = []
       NewArray.map((NeitemA: any) => {
         CategoriesData.push(NeitemA);
       });
+    } else {
+      CheckCategory = []
     }
     var categoriesItem = "";
-    CategoriesData.map((category) => {
+    CategoriesData?.map((category: any) => {
       if (category.Title != undefined) {
         categoriesItem =
           categoriesItem == ""
@@ -1023,11 +1075,12 @@ function EditInstitution({item,SelectD,Calls}: any) {
       }
     });
     var CategoryID: any = [];
-    CategoriesData.map((category) => {
+    CategoriesData?.map((category: any) => {
       if (category.Id != undefined) {
         CategoryID.push(category.Id);
       }
     });
+
     if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
       linkedComponentData?.map((com: any) => {
         if (
@@ -1047,7 +1100,10 @@ function EditInstitution({item,SelectD,Calls}: any) {
         });
       }
     } else {
-      if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
+      if (
+        EditData?.AssignedTo != undefined &&
+        EditData?.AssignedTo?.length > 0
+      ) {
         EditData?.AssignedTo.map((taskInfo: any) => {
           AssignedToIds.push(taskInfo.Id);
         });
@@ -1107,7 +1163,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       var ItemRank = SharewebItemRank.filter(
         (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
       )[0].rank;
-   
+
     await web.lists
       .getById(RequireData.MasterTaskListID)
       .items.getById(Items.ID)
@@ -1118,10 +1174,16 @@ function EditInstitution({item,SelectD,Calls}: any) {
         Priority_x0020_Rank: Items.Priority_x0020_Rank,
         ComponentId: { results: smartComponentsIds },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
-        DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
-        CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
-        
+        StartDate: EditData?.StartDate
+          ? moment(EditData?.StartDate).format("MM-DD-YYYY")
+          : null,
+        DueDate: EditData?.DueDate
+          ? moment(EditData?.DueDate).format("MM-DD-YYYY")
+          : null,
+        CompletedDate: EditData?.CompletedDate
+          ? moment(EditData?.CompletedDate).format("MM-DD-YYYY")
+          : null,
+
         // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
         Categories: categoriesItem ? categoriesItem : null,
         SharewebCategoriesId: { results: CategoryID },
@@ -1250,18 +1312,6 @@ function EditInstitution({item,SelectD,Calls}: any) {
     },
     []
   );
-  var CheckCategory: any = [];
-  CheckCategory.push(
-    { TaxType: "Categories", Title: "Phone", Id: 199, ParentId: 225 },
-    {
-      TaxType: "Categories",
-      Title: "Email Notification",
-      Id: 276,
-      ParentId: 225,
-    },
-    { TaxType: "Categories", Title: "Approval", Id: 227, ParentId: 225 },
-    { TaxType: "Categories", Title: "Immediate", Id: 228, parentId: 225 }
-  );
 
   const DDComponentCallBack = (dt: any) => {
     setTeamConfig(dt);
@@ -1279,7 +1329,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       });
       setTaskAssignedTo(tempArray);
       console.log("Team Config  assigadf=====", tempArray);
-    }else {
+    } else {
       setTaskAssignedTo([]);
     }
     if (dt?.TeamMemberUsers?.length > 0) {
@@ -1293,7 +1343,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       });
       setTaskTeamMembers(tempArray);
       console.log("Team Config member=====", tempArray);
-    }else {
+    } else {
       setTaskTeamMembers([]);
     }
     if (dt.ResponsibleTeam != undefined && dt.ResponsibleTeam.length > 0) {
@@ -1316,9 +1366,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
       ? TeamConfigInfo?.Portfolio_x0020_Type
       : "",
     Services: TeamConfigInfo ? TeamConfigInfo?.Services : "",
-    siteUrl: TeamConfigInfo
-      ? TeamConfigInfo?.siteUrl
-      : RequireData.siteUrl,
+    siteUrl: TeamConfigInfo ? TeamConfigInfo?.siteUrl : RequireData.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo?.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo?.Id : "",
   };
@@ -1338,82 +1386,194 @@ function EditInstitution({item,SelectD,Calls}: any) {
     }
     setComponent((EditData) => [...EditData]);
   };
+
+  const GetAllComponentAndServiceData = async (ComponentType: any) => {
+    let PropsObject: any = {
+      MasterTaskListID: RequireData.MasterTaskListID,
+      siteUrl: RequireData.siteUrl,
+      ComponentType: ComponentType,
+      TaskUserListId: RequireData.TaskUsertListID,
+    };
+    let CallBackData = await globalCommon.GetServiceAndComponentAllData(
+      PropsObject
+    );
+    if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
+      GlobalServiceAndComponentData = CallBackData.AllData;
+    }
+  };
+
+  const autoSuggestionsForServiceAndComponent =  (e: any) => {
+    let SearchedType: any = e.target.name;
+    // if (GlobalServiceAndComponentData == undefined || GlobalServiceAndComponentData.length == 0) {
+    //     if (ServicesTaskCheck) {
+    //         GetAllComponentAndServiceData("Service");
+    //     }
+    //     if (ComponentTaskCheck) {
+    //         GetAllComponentAndServiceData("Component");
+    //     }
+    // }
+     GetAllComponentAndServiceData(SearchedType);
+    let SearchedKeyWord: any = e.target.value;
+    setSearchedServiceCompnentKey(SearchedKeyWord);
+    let TempArray: any = [];
+    if (SearchedKeyWord.length > 0) {
+      if (
+        GlobalServiceAndComponentData != undefined &&
+        GlobalServiceAndComponentData.length > 0
+      ) {
+        GlobalServiceAndComponentData.map((AllDataItem: any) => {
+          if (
+            AllDataItem.NewLeble?.toLowerCase().includes(
+              SearchedKeyWord.toLowerCase()
+            )
+          ) {
+            TempArray.push(AllDataItem);
+          }
+        });
+      }
+      if (TempArray != undefined && TempArray.length > 0) {
+        setSearchedServiceCompnentData(TempArray);
+      }
+    } else {
+      setSearchedServiceCompnentData([]);
+      setSearchedServiceCompnentKey("");
+    }
+  };
+
+  const setSelectedServiceAndCompnentData = (SelectedData: any, Type: any) => {
+    console.log(
+      "selected Data form auto suggestion from Auto Suggesution Service and comonente==========",
+      SelectedData
+    );
+    setSearchedServiceCompnentData([]);
+    setSearchedServiceCompnentKey("");
+    if (Type == "Component") {
+      Call([SelectedData], "Service", "Save");
+    }
+    if (Type == "Service") {
+      Call([SelectedData], "Component", "Save");
+    }
+  };
+
+
   const onRenderCustomHeader = () => {
     return (
       <>
-      <div className="align-items-center d-flex full-width justify-content-between">
-        <div className="ps-4">  <ul className=" m-0 p-0 spfxbreadcrumb"
-        >
-           <li>
-                        {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                        {EditData?.Portfolio_x0020_Type != undefined && (
-                          <a
-                            target="_blank"
-                            data-interception="off"
-                            href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
-                          >
-                            {EditData?.Portfolio_x0020_Type}-Portfolio
-                          </a>
-                        )}
-                      </li>
-                      {(EditData?.Item_x0020_Type == "SubComponent" ||
-                        EditData?.Item_x0020_Type == "Feature") && (
-                         <> <li>
-                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {(EditData?.Parent != undefined && ParentData != undefined && ParentData.length != 0 )&& (
-                           
-                            <a
-                              target="_blank"
-                              data-interception="off"
-                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
-                            >
-                              {ParentData[0].Parent.Title}
-                            </a>
-                           
-                          )}
-                        </li>
-                        <li>
-                          {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
-                          {EditData?.Parent != undefined && (
-                            <a
-                              target="_blank"
-                              data-interception="off"
-                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
-                            >
-                              {EditData?.Parent.Title}
-                            </a>
-                          )}
-                        </li>
-                        </>
+        <div className="align-items-center d-flex full-width justify-content-between">
+          <div className="ps-4">
+            {" "}
+            <ul className=" m-0 p-0 spfxbreadcrumb">
+              <li>
+                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                {EditData?.Portfolio_x0020_Type != undefined && (
+                  <a
+                    target="_blank"
+                    data-interception="off"
+                    href={`${RequireData.siteUrl}/SitePages/${EditData?.Portfolio_x0020_Type}-Portfolio.aspx`}
+                  >
+                    {EditData?.Portfolio_x0020_Type}-Portfolio
+                  </a>
+                )}
+              </li>
+              {(EditData?.Item_x0020_Type == "SubComponent" ||
+                EditData?.Item_x0020_Type == "Feature") && (
+                <>
+                  {" "}
+                  <li>
+                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                    {EditData?.Parent != undefined &&
+                      ParentData != undefined &&
+                      ParentData.length != 0 && (
+                        <a
+                          target="_blank"
+                          data-interception="off"
+                          href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${ParentData[0].Parent.Id}`}
+                        >
+                          {ParentData[0].Parent.Title}
+                        </a>
                       )}
+                  </li>
+                  <li>
+                    {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+                    {EditData?.Parent != undefined && (
+                      <a
+                        target="_blank"
+                        data-interception="off"
+                        href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${EditData?.Parent.Id}`}
+                      >
+                        {EditData?.Parent.Title}
+                      </a>
+                    )}
+                  </li>
+                </>
+              )}
 
-                      <li>
-                      {EditData?.Item_x0020_Type == "Feature"&&<a>
-                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData?.Title}</>
-                        </a>}
-                        {EditData?.Item_x0020_Type == "SubComponent"&&<a>
-                        <><img  style={{    width: "20px", marginRight: "2px"}} src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"}/>{EditData?.Title}</>
-                        </a>}
-                         {EditData?.Item_x0020_Type == "Component"&&<a>
-                        <><img style={{    width: "20px", marginRight: "2px"}}src={EditData?.Portfolio_x0020_Type == "Service"?"https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png":"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"}/>{EditData?.Title}</>
-                        </a>}
-                      </li>
-        </ul></div>
-      
-       <div className="feedbkicon"> <Tooltip /> </div>
-       </div>
+              <li>
+                {EditData?.Item_x0020_Type == "Feature" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+                {EditData?.Item_x0020_Type == "SubComponent" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/SubComponent_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/SubComponent_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+                {EditData?.Item_x0020_Type == "Component" && (
+                  <a>
+                    <>
+                      <img
+                        style={{ width: "20px", marginRight: "2px" }}
+                        src={
+                          EditData?.Portfolio_x0020_Type == "Service"
+                            ? "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
+                            : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
+                        }
+                      />
+                      {EditData?.Title}
+                    </>
+                  </a>
+                )}
+              </li>
+            </ul>
+          </div>
+
+          <div className="feedbkicon">
+            {" "}
+            <Tooltip />{" "}
+          </div>
+        </div>
       </>
     );
   };
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
-     
       await web.lists
         .getById(RequireData.MasterTaskListID)
         .items.getById(item.Id)
         .recycle()
-        .then((i:any) => {
+        .then((i: any) => {
           console.log(i);
           setComponent((EditData) => [...EditData]);
           setModalIsOpenToFalse();
@@ -1422,18 +1582,46 @@ function EditInstitution({item,SelectD,Calls}: any) {
     }
   };
   var NewArray: any = [];
-  const checkCat = (type: any) => {
-    CheckCategory.map((catTitle: any) => {
-      setcheckedCat(false);
-      if (type == catTitle.Title) {
-        NewArray.push(catTitle);
-      }
-    });
+  var array2: any = [];
+  const checkCat = (type: any,e:any) => {
+
+    const { checked } = e.target;
+    if(checked == true){
+      type.isselected = true
+      array2.push(type)
+    }else{
+      type.isselected = false
+      CheckCategory?.forEach((itemm:any,index:any)=>{
+            if(itemm.Id == type.Id){
+              itemm.isChecked = false
+            }
+          })
+      // array2.push(type)
+    }
+    // else{
+    //   NewArray?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       NewArray.splice(index,1)
+    //     }
+    //   })
+    //   CheckCategory?.forEach((itemm:any,index:any)=>{
+    //     if(itemm.Id == type.Id){
+    //       CheckCategory.splice(index,1)
+    //     }
+    //   })
+    // }
+
+
   };
   return (
     <>
       {console.log("Done")}
-      <Panel className={`${EditData?.Portfolio_x0020_Type == "Service" ? " serviepannelgreena":""}`}
+      <Panel
+        className={`${
+          EditData?.Portfolio_x0020_Type == "Service"
+            ? " serviepannelgreena"
+            : ""
+        }`}
         headerText={`${EditData?.Portfolio_x0020_Type}-Portfolio > ${EditData?.Title}`}
         isOpen={modalIsOpen}
         onDismiss={setModalIsOpenToFalse}
@@ -1523,7 +1711,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             type="text"
                             className="form-control"
                             defaultValue={
-                              EditData?.Title != undefined ? EditData?.Title : ""
+                              EditData?.Title != undefined
+                                ? EditData?.Title
+                                : ""
                             }
                             onChange={(e) => (EditData.Title = e.target.value)}
                           />
@@ -1574,7 +1764,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData?.Deliverable_x002d_Synonyms != undefined
+                                EditData?.Deliverable_x002d_Synonyms !=
+                                undefined
                                   ? EditData?.Deliverable_x002d_Synonyms
                                   : ""
                               }
@@ -1591,11 +1782,20 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <label className="form-label full-width">
                                 Component Portfolio
                               </label>
-                              <input type="text" className="form-control" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="Service"
+                                value={SearchedServiceCompnentKey}
+                                onChange={(e) =>
+                                  autoSuggestionsForServiceAndComponent(e)
+                                }
+                                placeholder=" Search Here"
+                              />
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, 'Component')
+                                    EditComponent(EditData, "Component")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1616,11 +1816,20 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               <label className="form-label full-width">
                                 Service Portfolio
                               </label>
-                              <input type="text" className="form-control" />
+                              <input
+                                type="text"
+                                className="form-control"
+                                name="Component"
+                                value={SearchedServiceCompnentKey}
+                                onChange={(e) =>
+                                  autoSuggestionsForServiceAndComponent(e)
+                                }
+                                placeholder="Search Here"
+                              />
                               <span className="input-group-text">
                                 <svg
                                   onClick={(e) =>
-                                    EditComponent(EditData, 'Service')
+                                    EditComponent(EditData, "Service")
                                   }
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 48 48"
@@ -1644,7 +1853,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block">
-                                          <div >
+                                          <div>
                                             <a
                                               className="hreflink service"
                                               target="_blank"
@@ -1672,7 +1881,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                                         </span> */}
                             </div>
                           )}
-                           {EditData?.Portfolio_x0020_Type == "Service" && (
+                          {EditData?.Portfolio_x0020_Type == "Service" && (
                             <div className="input-group">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
@@ -1680,7 +1889,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                     return (
                                       <>
                                         <div className="d-flex Component-container-edit-task  block ">
-                                          <div >
+                                          <div>
                                             <a
                                               className="hreflink service "
                                               target="_blank"
@@ -1708,6 +1917,20 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                                         </span> */}
                             </div>
                           )}
+
+{SearchedServiceCompnentData?.length > 0 ? (
+                                                    <div className="SmartTableOnTaskPopup">
+                                                        <ul className="list-group">
+                                                            {SearchedServiceCompnentData.map((Item: any) => {
+                                                                return (
+                                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item,"Service")} >
+                                                                        <a>{Item.NewLeble}</a>
+                                                                    </li>
+                                                                )
+                                                            }
+                                                            )}
+                                                        </ul>
+                                                    </div>) : null}
 
                           <div className="col-sm-12  inner-tabb">
                             <div>
@@ -1756,28 +1979,30 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                 ? smartComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                       <div className="">
-                                        <div
-                                          className="d-flex Component-container-edit-task block "
-                                          style={{ width: "81%" }}
-                                        >
-                                          <a
-                                            style={{ color: "#fff !important" }}
-                                            target="_blank"
-                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                        <div className="">
+                                          <div
+                                            className="d-flex Component-container-edit-task block "
+                                            style={{ width: "81%" }}
                                           >
-                                            {com.Title}
-                                          </a>
-                                          <a>
-                                            <img
-                                              className="mx-2"
-                                              src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                              onClick={() =>
-                                                setSmartComponentData([])
-                                              }
-                                            />
-                                          </a>
-                                        </div>
+                                            <a
+                                              style={{
+                                                color: "#fff !important",
+                                              }}
+                                              target="_blank"
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                            >
+                                              {com.Title}
+                                            </a>
+                                            <a>
+                                              <img
+                                                className="mx-2"
+                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                onClick={() =>
+                                                  setSmartComponentData([])
+                                                }
+                                              />
+                                            </a>
+                                          </div>
                                         </div>
                                       </>
                                     );
@@ -1786,6 +2011,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             </div>
                           </div>
                         </div>
+                        
                       </div>
                       <div className="mx-0 row mt-2">
                         <div className="col-sm-4 ps-0 ">
@@ -1793,13 +2019,20 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             <label className="form-label  full-width">
                               Start Date
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={moment(EditData?.StartDate).format("YYYY-MM-DD")}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, StartDate: e.target.value
-                                                        })}
-                                                    />
-                          
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={moment(EditData?.StartDate).format(
+                                "YYYY-MM-DD"
+                              )}
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  StartDate: e.target.value,
+                                })
+                              }
+                            />
                           </div>
                         </div>
                         <div className="col-sm-4 ">
@@ -1807,12 +2040,24 @@ function EditInstitution({item,SelectD,Calls}: any) {
                             <label className="form-label  full-width">
                               Due Date
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData?.DueDate ? moment(EditData?.DueDate).format("YYYY-MM-DD") : ''}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, DueDate: e.target.value
-                                                        })}
-                                                    />
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={
+                                EditData?.DueDate
+                                  ? moment(EditData?.DueDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  DueDate: e.target.value,
+                                })
+                              }
+                            />
                           </div>
                         </div>
                         <div className="col-sm-4 pe-0">
@@ -1821,12 +2066,24 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               {" "}
                               Completion Date{" "}
                             </label>
-                            <input type="date" className="form-control" max="9999-12-31"
-                                                        defaultValue={EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("YYYY-MM-DD") : ''}
-                                                        onChange={(e) => setEditData({
-                                                            ...EditData, CompletedDate: e.target.value
-                                                        })}
-                                                    />
+                            <input
+                              type="date"
+                              className="form-control"
+                              max="9999-12-31"
+                              defaultValue={
+                                EditData?.CompletedDate
+                                  ? moment(EditData?.CompletedDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                setEditData({
+                                  ...EditData,
+                                  CompletedDate: e.target.value,
+                                })
+                              }
+                            />
                           </div>
                         </div>
                       </div>
@@ -1899,7 +2156,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               type="text"
                               className="form-control"
                               defaultValue={
-                                EditData?.Package != null ? EditData?.Package : ""
+                                EditData?.Package != null
+                                  ? EditData?.Package
+                                  : ""
                               }
                               onChange={(e) =>
                                 (EditData.Package = e.target.value)
@@ -1989,7 +2248,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               value="Active"
                               onChange={(e) => setStatus(EditData, "Active")}
                               checked={
-                                EditData?.AdminStatus === "Active" ? true : false
+                                EditData?.AdminStatus === "Active"
+                                  ? true
+                                  : false
                               }
                             ></input>
                             <label className="form-check-label">Active</label>
@@ -2021,7 +2282,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               type="text"
                               className="form-control"
                               value={
-                                EditData?.Mileage != null ? EditData?.Mileage : ""
+                                EditData?.Mileage != null
+                                  ? EditData?.Mileage
+                                  : ""
                               }
                               onChange={(e) => changeTime(e, EditData)}
                             />
@@ -2032,7 +2295,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "05")}
-                              checked={EditData?.Mileage === "05" ? true : false}
+                              checked={
+                                EditData?.Mileage === "05" ? true : false
+                              }
                               type="radio"
                             ></input>
                             <label className="form-check-label">
@@ -2044,7 +2309,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "15")}
-                              checked={EditData?.Mileage === "15" ? true : false}
+                              checked={
+                                EditData?.Mileage === "15" ? true : false
+                              }
                               type="radio"
                             ></input>
 
@@ -2055,7 +2322,9 @@ function EditInstitution({item,SelectD,Calls}: any) {
                               className="form-check-input"
                               name="radioTime"
                               onChange={(e) => setTime(EditData, "60")}
-                              checked={EditData?.Mileage === "60" ? true : false}
+                              checked={
+                                EditData?.Mileage === "60" ? true : false
+                              }
                               type="radio"
                             ></input>
                             <label className="form-check-label">Medium</label>
@@ -2131,14 +2400,13 @@ function EditInstitution({item,SelectD,Calls}: any) {
                         </div>
                         <div className="col mt-2">
                           <div className="input-group">
-                          
-                                  <div className="TaskUsers">
-                                    <label className="form-label full-width  mx-2">
-                                      Working Member
-                                    </label>
-                                    {EditData?.AssignedUsers?.map(
-                              (userDtl: any, index: any) => {
-                                return (
+                            <div className="TaskUsers">
+                              <label className="form-label full-width  mx-2">
+                                Working Member
+                              </label>
+                              {EditData?.AssignedUsers?.map(
+                                (userDtl: any, index: any) => {
+                                  return (
                                     <a
                                       target="_blank"
                                       href={
@@ -2170,11 +2438,10 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                         }
                                       />
                                     </a>
-                                      );
-                                    }
-                                  )}
-                                  </div>
-                              
+                                  );
+                                }
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2229,36 +2496,32 @@ function EditInstitution({item,SelectD,Calls}: any) {
 
                                                     </div> */}
                           <div className="col">
-                            <div className="col">
-                              {CheckCategory.map((type: any) => {
-                                return (
-                                  <>
-                                    <div className="form-check">
-                                      <input
-                                        className="form-check-input"
-                                        defaultChecked={
-                                          BackupCat == type.Id
-                                            ? checkedCat
-                                            : false
-                                        }
-                                        type="checkbox"
-                                        onClick={() => checkCat(type.Title)}
-                                      />
-                                      <label className="form-check-label">
-                                        {type.Title}
-                                      </label>
-                                    </div>
-                                  </>
-                                );
-                              })}
-                              {/* <div
+                              <div className="col">
+                                {CheckCategory.map((type: any) => {
+                                  return (
+                                    <>
+                                      <div className="form-check">
+                                        <input
+                                          className="form-check-input"
+                                          defaultChecked={type.isChecked}
+                                          type="checkbox"
+                                          onClick={(e:any) => checkCat(type,e)}
+                                        />
+                                        <label className="form-check-label">
+                                          {type.Title}
+                                        </label>
+                                      </div>
+                                    </>
+                                  );
+                                })}
+                                {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
                                                                 onClick={()=>checkCat('Phone')}/>
                                                                 <label className="form-check-label">Phone</label>
                                                             </div> */}
-                              {/* <div
+                                {/* <div
                                                                 className="form-check">
                                                                 <input className="form-check-input"
                                                                     type="checkbox"
@@ -2279,45 +2542,45 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                                                 <input className="form-check-input" type="checkbox"  onClick={()=>checkCat('Immediate')}/>
                                                                 <label>Immediate</label>
                                                             </div> */}
-                              {CategoriesData != undefined ? (
-                                <div>
-                                  {CategoriesData?.map(
-                                    (type: any, index: number) => {
-                                      return (
-                                        <>
-                                          {type.Title != "Phone" &&
-                                            type.Title !=
+                                {CategoriesData != undefined ? (
+                                  <div>
+                                    {CategoriesData?.map(
+                                      (type: any, index: number) => {
+                                        return (
+                                          <>
+                                            {type.Title != "Phone" &&
+                                              type.Title !=
                                               "Email Notification" &&
-                                            type.Title != "Approval" &&
-                                            type.Title != "Immediate" && (
-                                              <div className="block d-flex justify-content-between my-1 p-1">
-                                                <a
-                                                  style={{
-                                                    color: "#fff !important",
-                                                  }}
-                                                  target="_blank"
-                                                  data-interception="off"
-                                                  href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
-                                                >
-                                                  {type.Title}
-                                                </a>
-                                                <img
-                                                  src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
-                                                  onClick={() =>
-                                                    deleteCategories(type.Id)
-                                                  }
-                                                  className="p-1"
-                                                />
-                                              </div>
-                                            )}
-                                        </>
-                                      );
-                                    }
-                                  )}
-                                </div>
-                              ) : null}
+                                              type.Title != "Approval" &&
+                                              type.Title != "Immediate" && (
+                                                <div className="block d-flex justify-content-between my-1 p-1">
+                                                  <a
+                                                    style={{
+                                                      color: "#fff !important",
+                                                    }}
+                                                    target="_blank"
+                                                    data-interception="off"
+                                                    href={`${item?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?${EditData?.Id}`}
+                                                  >
+                                                    {type.Title}
+                                                  </a>
+                                                  <img
+                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif"
+                                                    onClick={() =>
+                                                      deleteCategories(type.Id)
+                                                    }
+                                                    className="p-1"
+                                                  />
+                                                </div>
+                                              )}
+                                          </>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                ) : null}
+                              </div>
                             </div>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -2332,7 +2595,7 @@ function EditInstitution({item,SelectD,Calls}: any) {
                     </div>
                     <div className="col-sm-8">
                       <div className="input-group mb-2">
-                      <label className="form-label  full-width"></label>
+                        <label className="form-label  full-width"></label>
                         <input
                           type="text"
                           className="form-control"
@@ -2346,7 +2609,15 @@ function EditInstitution({item,SelectD,Calls}: any) {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}>Open</a></span>
+                        <span>
+                          <a
+                            target="_blank"
+                            data-interception="off"
+                            href={EditData.component_x0020_link}
+                          >
+                            Open
+                          </a>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -2580,7 +2851,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData?.BackgroundVerified === true
+                                            EditData?.BackgroundVerified ===
+                                            true
                                           }
                                           onChange={(e) =>
                                             (EditData.BackgroundVerified =
@@ -2700,7 +2972,8 @@ function EditInstitution({item,SelectD,Calls}: any) {
                                         <input
                                           type="checkbox"
                                           defaultChecked={
-                                            EditData?.ValueAddedVerified === true
+                                            EditData?.ValueAddedVerified ===
+                                            true
                                           }
                                           onChange={(e) =>
                                             (EditData.ValueAddedVerified =
@@ -2998,24 +3271,28 @@ function EditInstitution({item,SelectD,Calls}: any) {
                 Call={Call}
               ></ComponentPortPolioPopup>
             )} */}
-            {IsComponent ? 
+            {IsComponent ? (
               <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={RequireData}
                 Call={Call}
-                ComponentType= {"Service"}
-              ></ServiceComponentPortfolioPopup>:null
-            }
-            {IsService ? 
+                ComponentType={"Service"}
+              ></ServiceComponentPortfolioPopup>
+            ) : null}
+            {IsService ? (
               <ServiceComponentPortfolioPopup
                 props={SharewebComponent}
                 Dynamic={RequireData}
                 Call={Call}
-                ComponentType= {"Component"}
-              ></ServiceComponentPortfolioPopup>:null
-            }
+                ComponentType={"Component"}
+              ></ServiceComponentPortfolioPopup>
+            ) : null}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} Call={Call}  AllListId={RequireData}></Picker>
+              <Picker
+                props={SharewebCategory}
+                Call={Call}
+                AllListId={RequireData}
+              ></Picker>
             )}
           </div>
         )}

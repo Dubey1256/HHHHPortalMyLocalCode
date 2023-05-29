@@ -10,14 +10,16 @@ import * as moment from "moment-timezone";
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import { DragDropFiles } from "@pnp/spfx-controls-react/lib/DragDropFiles";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
-import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
+// import ComponentPortPolioPopup from "../../EditPopupFiles/ComponentPortfolioSelection"
+// import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
+import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup"
+
 import ImageTabComponenet from './ImageTabComponent'
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
 let mastertaskdetails: any;
-let checkboxTitle: any;
+let    MovefolderItemUrl2="";
 const SmartInformation = (props: any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
@@ -25,7 +27,8 @@ const SmartInformation = (props: any) => {
   const [allValue, setallSetValue] = useState({
     Title: "", URL: "", Acronym: "", Description: "", InfoType: "SmartNotes", SelectedFolder: "Public", fileupload: "", LinkTitle: "", LinkUrl: "", taskTitle: "", Dragdropdoc: "", emailDragdrop: "", ItemRank: "", componentservicesetdata: { smartComponent: undefined, linkedComponent: undefined }, componentservicesetdataTag: undefined, EditTaskpopupstatus: false, DocumentType: "", masterTaskdetails: [],
   })
-  const [imageTabOpen, setImageTabOpen] = useState(false);
+  const [addSmartInfoPopupAddlinkDoc, setaddSmartInfoPopupAddlinkDoc] = useState(false)
+  // const [imageTabOpen, setImageTabOpen] = useState(false);
   const [filterSmartinfo, setFiltersmartinfo] = useState([]);
   const [masterTaskdetails, setMasterTaskdetails] = useState([]);
   const [isopencomonentservicepopup, setisopencomonentservicepopup] = useState(false);
@@ -47,6 +50,7 @@ const SmartInformation = (props: any) => {
   const [Editdocpanel, setEditdocpanel] = useState(false);
   const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
+  const [folderCreated,setFolderCreated]=useState(true)
   const handleClose = () => {
     setpopupEdit(false);
     setshowAdddocument(false);
@@ -147,9 +151,14 @@ const SmartInformation = (props: any) => {
     setAllSmartInfo(Data)
     if (Data.length > 0) {
       SmartInformation?.map((items: any) => {
+       
         hhhsmartinfoId.push(items?.Id);
         if (SmartInformation?.length > 0) {
           Data?.map(async (tagsmartinfo: any) => {
+            if(tagsmartinfo.Title=="Only For Me"){
+              setFolderCreated(false)
+              MovefolderItemUrl2=`${tagsmartinfo.Id}_.000`
+            }
             if (tagsmartinfo?.Id == items?.Id) {
 
               if (tagsmartinfo.Description != null && tagsmartinfo?.Description.includes("<p></p>")) {
@@ -235,10 +244,10 @@ const SmartInformation = (props: any) => {
     console.log(allSmartInformationglobaltagdocuments)
   }
 
-  const OnChnageTab = () => {
-    console.log("sdf hfdsgbsd fbgregre==================");
-    setImageTabOpen(true);
-  }
+  // const OnChnageTab = () => {
+  //   console.log("sdf hfdsgbsd fbgregre==================");
+  //   setImageTabOpen(true);
+  // }
 
 
   //===============move folder to get the forlderName in the choice column ==================
@@ -249,14 +258,14 @@ const SmartInformation = (props: any) => {
       case 'Public':
         setMovefolderItemUrl("/SmartInformation");
         break;
-      case 'Memberarea':
-        setMovefolderItemUrl('/Memberarea');
-        break;
-      case 'EDA':
-        setMovefolderItemUrl('/EDA Only');
-        break;
-      case 'team':
-        setMovefolderItemUrl('/Team');
+      // case 'Memberarea':
+      //   setMovefolderItemUrl('/Memberarea');
+      //   break;
+      // case 'EDA':
+      //   setMovefolderItemUrl('/EDA Only');
+      //   break;
+      case 'Only For Me':
+        setMovefolderItemUrl('/Only For Me');
         break;
     }
   }
@@ -282,7 +291,13 @@ const SmartInformation = (props: any) => {
 
   const HtmlEditorCallBack = (items: any) => {
     console.log(items);
-    setallSetValue({ ...allValue, Description: items })
+    var description = ""
+    if (items == '<p></p>\n') {
+      description = ""
+    } else {
+      description = items
+    }
+    setallSetValue({ ...allValue, Description: description })
   }
 
   // ============set infoType function ==============
@@ -365,7 +380,7 @@ const SmartInformation = (props: any) => {
 
     console.log(movefolderurl);
     console.log(allValue);
-    if (allValue?.Title !== null && allValue?.Title !== "") {
+    if ((allValue?.Title == "" && allValue?.Description != "") || (allValue?.Title != "" && allValue?.Description == "") || (allValue?.Title != "" && allValue?.Description != "")) {
       var metaDataId;
       if (SmartMetaData != undefined) {
         SmartMetaData?.map((item: any) => {
@@ -376,10 +391,10 @@ const SmartInformation = (props: any) => {
       }
       const web = new Web(props?.AllListId?.siteUrl);
       let postdata = {
-        Title: allValue?.Title != null ? allValue?.Title : "",
+        Title: allValue?.Title != "" ? allValue?.Title : taskInfo?.Title,
         Acronym: allValue.Acronym != null ? allValue?.Acronym : "",
         InfoTypeId: metaDataId != undefined ? metaDataId : null,
-        Description: allValue?.Description != null ? allValue?.Description : "",
+        Description: allValue?.Description != "" ? allValue?.Description : "",
         SelectedFolder: allValue?.SelectedFolder,
         Created: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
         URL: {
@@ -398,16 +413,35 @@ const SmartInformation = (props: any) => {
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
-            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") && editvalue.SelectedFolder == "Public") {
+
+            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
+              if(folderCreated){
+                var folderName = MovefolderItemUrl.split('/')[1];
+                await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
+                  .items.add({
+                    FileSystemObjectType: 1,
+                    ContentTypeId: '0x0120',
+                    FileLeafRef: folderName,
+                    FileDirRef:folderName,
+                   
+                  })
+                  .then(async (data: any) => {
+                    console.log(data)
+                    MovefolderItemUrl2=`/${data.data.Id}_.000`;
+  
+                  }).catch((error: any) => {
+                    console.log(error)
+                  })
+              }
               let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
+                .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${editvalue?.Id}_.000`);
               console.log(movedata);
             }
-            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") && (editvalue.SelectedFolder == "Memberarea" || editvalue.SelectedFolder == "EDA Only")) {
-              let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue.SelectedFolder}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
-              console.log(movedata);
-            }
+            // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "Only For Me") && (editvalue.SelectedFolder == "Memberarea" || editvalue.SelectedFolder == "EDA Only")) {
+            //   let movedata = await web
+            //     .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue.SelectedFolder}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
+            //   console.log(movedata);
+            // }
             GetResult();
             handleClose();
           })
@@ -416,16 +450,40 @@ const SmartInformation = (props: any) => {
           })
       }
       else {
+    
         // await web.lists.getByTitle("SmartInformation")
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.add(postdata)
           .then(async (res: any) => {
             console.log(res);
             setPostSmartInfo(res)
-            if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Team") {
-              let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${res?.data?.ID}_.000`);
+            if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") {
+            
+              // =========== folder create ===========================
+              if(folderCreated){
+                var folderName = MovefolderItemUrl.split('/')[1];
+                await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
+                  .items.add({
+                    FileSystemObjectType: 1,
+                    ContentTypeId: '0x0120',
+                    FileLeafRef: folderName,
+                    FileDirRef:folderName,
+                   
+                  })
+                  .then(async (data: any) => {
+                    console.log(data)
+                    MovefolderItemUrl2=`/${data.data.Id}_.000`;
+  
+                  }).catch((error: any) => {
+                    console.log(error)
+                  })
+              }
+           
+     //================== move  items inside folder=============
+                let movedata = await web
+                .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${res?.data?.ID}_.000`);
               console.log(movedata);
+             
             }
             hhhsmartinfoId.push(res?.data?.ID)
             await web.lists.getByTitle(props?.listName)
@@ -455,6 +513,8 @@ const SmartInformation = (props: any) => {
     }
     else {
       alert("plese fill the Title")
+      // setallSetValue({...allValue,AstricMesaage:true})
+      setaddSmartInfoPopupAddlinkDoc(false)
     }
 
 
@@ -523,11 +583,15 @@ const SmartInformation = (props: any) => {
       setshowAdddocument(true)
     }
     else {
-
+      setaddSmartInfoPopupAddlinkDoc(true);
       await saveSharewebItem();
-      alert('Information saved now items can be attached.');
+      if (addSmartInfoPopupAddlinkDoc) {
+        alert('Information saved now items can be attached.');
+        setshowAdddocument(true)
+      }
+
     }
-    setshowAdddocument(true)
+
 
 
 
@@ -659,7 +723,7 @@ const SmartInformation = (props: any) => {
         console.log(updatedItem)
         if (allValue?.LinkUrl != "") {
           alert("Link upload successfully");
-         
+
         } else {
           alert("Document(s) upload successfully");
         }
@@ -804,16 +868,22 @@ const SmartInformation = (props: any) => {
 
   //========service and component call back function =================
 
-  const ServiceComponentCallBack = React.useCallback((items: any) => {
-    console.log(items)
-    if (items?.smartComponent != undefined) {
-      setallSetValue({ ...allValue, componentservicesetdataTag: items?.smartComponent[0] })
+  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+    console.log(DataItem)
+    console.log(Type)
+    console.log(functionType)
+    if (functionType == "Save") {
+      if (Type == "Component") {
+        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      }
+      if (Type == "Service") {
+        setallSetValue({ ...allValue, componentservicesetdataTag: DataItem[0] })
+      }
+      setisopencomonentservicepopup(false);
     }
-    if (items?.linkedComponent) {
-      setallSetValue({ ...allValue, componentservicesetdataTag: items?.linkedComponent[0] })
+    else {
+      setisopencomonentservicepopup(false);
     }
-
-    setisopencomonentservicepopup(false);
   }, [])
 
   //============ update documents link update both  function =============
@@ -900,8 +970,9 @@ const SmartInformation = (props: any) => {
 
                   </span>
                   <span className='d-flex'>
-                    <a onClick={() => handleShow(SmartInformation, "edit")}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" /></svg></a>
-                    <a onClick={() => addDocument("AddDocument", SmartInformation)}>
+                    <a style={{ cursor: "pointer" }}
+                      onClick={() => handleShow(SmartInformation, "edit")}><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" /></svg></a>
+                    <a style={{ cursor: "pointer" }} onClick={() => addDocument("AddDocument", SmartInformation)}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.8746 14.3436C22.8774 18.8722 22.8262 22.6308 22.7608 22.6962C22.6954 22.7616 18.9893 22.8128 14.525 22.8101C10.0606 22.8073 6.32545 22.8876 6.22467 22.9884C5.99582 23.2172 6.00541 24.6394 6.23742 24.8714C6.33182 24.9658 10.0617 25.0442 14.526 25.0455C18.9903 25.0469 22.6959 25.1009 22.7606 25.1657C22.8254 25.2304 22.8808 28.9921 22.8834 33.5248L22.8884 41.7663L23.9461 41.757L25.0039 41.7476L25.0012 33.3997L24.9986 25.0516L33.2932 25.0542C37.8555 25.0556 41.6431 25.0017 41.7105 24.9343C41.8606 24.7842 41.8537 23.0904 41.7024 22.9392C41.6425 22.8793 37.8594 22.8258 33.2955 22.8204L24.9975 22.8104L24.9925 14.4606L24.9874 6.11084L23.9285 6.11035L22.8695 6.10998L22.8746 14.3436Z" fill="#333333" /></svg>
                     </a>
                   </span>
@@ -968,7 +1039,7 @@ const SmartInformation = (props: any) => {
         </div>}
 
         <div className='border card-body p-1 text-end'>
-          <a onClick={() => handleShow(null, "add")}><span>+ Add SmartInformation</span></a>
+          <a style={{ cursor: "pointer" }} onClick={() => handleShow(null, "add")}><span>+ Add SmartInformation</span></a>
         </div>
 
 
@@ -987,17 +1058,22 @@ const SmartInformation = (props: any) => {
                 Select
                 Permission:
               </dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Public</label></dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
-              <dt><input type="radio" checked={allValue?.SelectedFolder == "team"} value="team" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Team</label></dt>
+              <dt><input type="radio" checked={allValue?.SelectedFolder == "Public"} value="Public" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Global</label></dt>
+              <dt><input type="radio" checked={allValue?.SelectedFolder == "Only For Me"} value="Only For Me" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Only for me</label></dt>
+
+              {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "Memberarea"} value="Memberarea" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Memberarea</label></dt> */}
+              {/* <dt><input type="radio" checked={allValue?.SelectedFolder == "EDA"} value="EDA" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>EDA Only</label></dt>
+              <dt><input type="radio" checked={allValue?.SelectedFolder == "team"} value="team" onChange={(e) => SeleteMoveFloderItem(e.target.value)} /><label>Team</label></dt> */}
+
             </dl>
           </div>
           <div className='row'>
             <div className='col-md-6'>
-              <label htmlFor="Title" className='full-width'>Title &nbsp;*
-                {popupEdit != true && <span><input type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
-              <input type="text" className='full-width' value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
+              <label htmlFor="Title" className='full-width'>Title
+                <span className='ml-1 mr-1 text-danger'>*</span>
+                {popupEdit != true && <span className='mx-2'><input type="checkbox" onClick={(e) => checkboxFunction(e)} /></span>}</label>
+              <input type="text" className="full-width" value={allValue?.Title} id="Title" onChange={(e) => changeInputField(e.target.value, "Title")} />
+              {/* {allValue.AstricMesaage &&<span className='ml-1 mr-1 text-danger'>Please enter your Title !</span>} */}
               {filterSmartinfo != undefined && filterSmartinfo.length > 0 && <div className='bg-Fa border overflow-auto'><ul className='list-group mx-2 tex'> {filterSmartinfo.map((smartinfofilter: any) => {
                 return (
                   < >
@@ -1042,7 +1118,7 @@ const SmartInformation = (props: any) => {
 
             <div className='col-sm-6 mt-2 p-0'>
               {popupEdit && <span className='pe-2'><a target="_blank" data-interception="off" href={`${props?.Context?._pageContext?._web?.absoluteUrl}/Lists/SmartInformation/EditForm.aspx?ID=${editvalue?.Id != null ? editvalue?.Id : null}`}>Open out-of-the-box form |</a></span>}
-              <span><a title='Add Link/ Document' onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
+              <span><a title='Add Link/ Document' style={{ cursor: "pointer" }} onClick={() => addDocument("popupaddDocument", editvalue)}>Add Link/ Document</a></span>
               <Button className='btn btn-primary ms-1  mx-2' onClick={saveSharewebItem}>
                 Save
               </Button>
@@ -1065,7 +1141,7 @@ const SmartInformation = (props: any) => {
         <div >
 
           <div className='bg-ee d-flex justify-content-center py-4 text-center'>
-            <a className={SelectedTilesTitle == "UploadDocument" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('UploadDocument')}>
+            <a className={SelectedTilesTitle == "UploadDocument" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadDocument')}>
               <p className='full-width floar-end'>
                 Document
               </p>
@@ -1074,7 +1150,7 @@ const SmartInformation = (props: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "UploadEmail" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('UploadEmail')}>
+            <a className={SelectedTilesTitle == "UploadEmail" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('UploadEmail')}>
               <p className='full-width floar-end'>
                 Email
               </p>
@@ -1082,7 +1158,7 @@ const SmartInformation = (props: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "CreateLink" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('CreateLink')}>
+            <a className={SelectedTilesTitle == "CreateLink" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('CreateLink')}>
               <p className='full-width floar-end'>
                 Link
               </p>
@@ -1090,7 +1166,7 @@ const SmartInformation = (props: any) => {
 
 
             </a>
-            <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} onClick={() => SelectedTiles('Task')}>
+            <a className={SelectedTilesTitle == "Task" ? "bg-69 me-2 pe-5 px-4 py-2 BoxShadow" : "bg-69 me-2 pe-5 px-4 py-2"} style={{ cursor: "pointer" }} onClick={() => SelectedTiles('Task')}>
               <p className='full-width floar-end'>
                 Task
               </p>
@@ -1247,7 +1323,7 @@ const SmartInformation = (props: any) => {
           <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
             <div className='border border-top-0 p-2'>
 
-              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context}/>
+              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} />
             </div>
           </Tab>
         </Tabs>
@@ -1274,9 +1350,27 @@ const SmartInformation = (props: any) => {
         </footer>
       </Panel>
       {allValue.EditTaskpopupstatus && <EditTaskPopup Items={EditTaskdata} context={props?.Context} AllListId={props?.AllListId} Call={() => { CallBack() }} />}
-      {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
-      {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>}
+      {/* {isopencomonentservicepopup && componentpopup && <ComponentPortPolioPopup props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></ComponentPortPolioPopup>}
+      {isopencomonentservicepopup && servicespopup && <LinkedComponent props={allValue?.componentservicesetdata} Call={ServiceComponentCallBack} Dynamic={props.AllListId}></LinkedComponent>} */}
+      {isopencomonentservicepopup && componentpopup &&
+        <ServiceComponentPortfolioPopup
 
+          props={allValue?.componentservicesetdata}
+          Dynamic={props.AllListId}
+          ComponentType={"Component"}
+          Call={ComponentServicePopupCallBack}
+
+        />
+      }
+      {isopencomonentservicepopup && servicespopup &&
+        <ServiceComponentPortfolioPopup
+          props={allValue?.componentservicesetdata}
+          Dynamic={props.AllListId}
+          Call={ComponentServicePopupCallBack}
+          ComponentType={"Service"}
+
+        />
+      }
     </div>
 
 

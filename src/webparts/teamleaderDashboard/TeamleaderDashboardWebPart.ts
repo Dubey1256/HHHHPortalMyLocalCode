@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import * as $ from 'jquery';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -9,16 +8,11 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'TaskprofileWebPartStrings';
-import Taskprofile from './components/Taskprofile';
-import { ITaskprofileProps } from './components/ITaskprofileProps';
+import * as strings from 'TeamleaderDashboardWebPartStrings';
+import TeamleaderDashboard from './components/TeamleaderDashboard';
+import { ITeamleaderDashboardProps } from './components/ITeamleaderDashboardProps';
 
-import * as pnp from 'sp-pnp-js';
-import { SPComponentLoader } from '@microsoft/sp-loader'
-SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/site_color.css");
-SPComponentLoader.loadCss("https://hhhhteams.sharepoint.com/sites/HHHH/Style%20Library/SPFx/CSS/Style.css");
-
-export interface ITaskprofileWebPartProps {
+export interface ITeamleaderDashboardWebPartProps {
   description: string;
   MasterTaskListID: 'ec34b38f-0669-480a-910c-f84e92e58adf';
   TaskUsertListID: 'b318ba84-e21d-4876-8851-88b94b9dc300';
@@ -26,44 +20,33 @@ export interface ITaskprofileWebPartProps {
   SmartInformationListID: 'edf0a6fb-f80e-4772-ab1e-666af03f7ccd';
   DocumentsListID: 'd0f88b8f-d96d-4e12-b612-2706ba40fb08';
   TaskTimeSheetListID: '464fb776-e4b3-404c-8261-7d3c50ff343f';
-  TaskTypeID:"21b55c7b-5748-483a-905a-62ef663972dc";
   TimeEntry: any;
   SiteCompostion: any;
 }
 
-export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofileWebPartProps> {
+export default class TeamleaderDashboardWebPart extends BaseClientSideWebPart<ITeamleaderDashboardWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
-  protected onInit(): Promise<void> {
-    //this._environmentMessage = this._getEnvironmentMessage();
-    return super.onInit().then(_ => {
-      pnp.setup({
-        spfxContext: this.context
-      });
-    });
-  }
-
   public render(): void {
-    const element: React.ReactElement<ITaskprofileProps> = React.createElement(
-      Taskprofile,
+    const element: React.ReactElement<ITeamleaderDashboardProps> = React.createElement(
+      TeamleaderDashboard,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
+        pageContext: this.context.pageContext,
+        Context:this.context,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        // loginName:this.context.pageContext.user.loginName,
-        Context: this.context,
         MasterTaskListID: this.properties.MasterTaskListID,
         TaskUsertListID: this.properties.TaskUsertListID,
         SmartMetadataListID: this.properties.SmartMetadataListID,
         SmartInformationListID: this.properties.SmartInformationListID,
         DocumentsListID: this.properties.DocumentsListID,
         TaskTimeSheetListID: this.properties.TaskTimeSheetListID,
-        TaskTypeID:this.properties.TaskTypeID,
         TimeEntry: this.properties.TimeEntry,
         SiteCompostion: this.properties.SiteCompostion
       }
@@ -72,12 +55,38 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
     ReactDom.render(element, this.domElement);
   }
 
-  private _getEnvironmentMessage(): string {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams
-      return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+  protected onInit(): Promise<void> {
+    return this._getEnvironmentMessage().then(message => {
+      this._environmentMessage = message;
+    });
+  }
+
+
+
+  private _getEnvironmentMessage(): Promise<string> {
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
+      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
+        .then(context => {
+          let environmentMessage: string = '';
+          switch (context.app.host.name) {
+            case 'Office': // running in Office
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
+              break;
+            case 'Outlook': // running in Outlook
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
+              break;
+            case 'Teams': // running in Teams
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              break;
+            default:
+              throw new Error('Unknown host');
+          }
+
+          return environmentMessage;
+        });
     }
 
-    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
+    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
@@ -89,9 +98,12 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
     const {
       semanticColors
     } = currentTheme;
-    this.domElement.style.setProperty('--bodyText', semanticColors.bodyText);
-    this.domElement.style.setProperty('--link', semanticColors.link);
-    this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered);
+
+    if (semanticColors) {
+      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
+      this.domElement.style.setProperty('--link', semanticColors.link || null);
+      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
+    }
 
   }
 
@@ -99,9 +111,9 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
-  // protected get dataVersion(): Version {
-  //   return Version.parse('1.0');
-  // }
+  protected get dataVersion(): Version {
+    return Version.parse('1.0');
+  }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
@@ -135,16 +147,12 @@ export default class TaskprofileWebPart extends BaseClientSideWebPart<ITaskprofi
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
                 }),
-                PropertyPaneTextField('TaskTypeID', {
-                  label: "TaskTypeID"
-                }),
                 PropertyPaneTextField('TimeEntry', {
                   label: "TimeEntry"
                 }),
                 PropertyPaneTextField('SiteCompostion', {
                   label: "SiteCompostion"
-                }),
-                
+                })
               ]
             }
           ]

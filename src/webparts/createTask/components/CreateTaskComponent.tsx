@@ -1018,7 +1018,7 @@ function CreateTaskComponent(props: any) {
         let TestUrl = e.target.value;
         let saveValue = save;
         saveValue.taskUrl = TestUrl;
-        if (siteType?.length > 1) {
+        if (SitesTypes?.length > 1) {
             let selectedSiteTitle = ''
             var testarray = e.target.value.split('&');
             // TestUrl = $scope.component_x0020_link;

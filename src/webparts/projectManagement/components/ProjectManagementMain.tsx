@@ -15,15 +15,15 @@ import {
 } from "@tanstack/react-table";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import axios, { AxiosResponse } from "axios";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
 import TagTaskToProjectPopup from "./TagTaskToProjectPopup";
 import CreateTaskFromProject from "./CreateTaskFromProject";
-import * as globalCommon from "../../../globalComponents/globalCommon";
-//// import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging"; // replace
+import * as globalCommon from '../../../globalComponents/globalCommon'
+import PortfolioTagging from "../../projectmanagementOverviewTool/components/PortfolioTagging";
+import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
-import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import CommentCard from "../../../globalComponents/Comments/CommentCard";
-import SmartInformation from "../../taskprofile/components/SmartInformation";
+//import CommentCard from "../../../globalComponents/Comments/CommentCard";
+//import SmartInformation from "../../taskprofile/components/SmartInformation";
 import Accordion from 'react-bootstrap/Accordion';
 //import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import Card from 'react-bootstrap/Card';
@@ -82,7 +82,177 @@ const ProjectManagementMain = (props: any) => {
     compoonents: true,
     services: true,
   });
+  //   const getMasterTaskData = async (items:any) => {
+  //     console.log(items)
+  //     MyAllData?.forEach((item: any) => {
+  //         if (items.Component != undefined) {
+  //           items.Component.forEach((com: any) => {
+  //                 if (item.Id == com.Id) {
+  //                     ChildData.push(item)
+  //                     ChildData?.forEach((val: any) => {
+  //                         if (val.Parent?.Id != undefined) {
+  //                             SubChild.push(val.Parent)
+  //                             SubChild?.forEach((item: any) => {
+  //                                 if (item.Parent?.Id != undefined) {
+  //                                     Parent.push(item.Parent)
+  //                                 }
 
+  //                             })
+
+  //                         }
+  //                     })
+  //                     Makegrouping(items);
+  //                 }
+  //             })
+  //         }
+  //         if (items?.Services != undefined) {
+  //           items.Services.forEach((com: any) => {
+  //                 if (item.Id == com.Id) {
+  //                     ChildData.push(item)
+  //                 }
+  //             })
+  //         }
+
+
+
+  //     })
+
+  // }
+  // const Makegrouping = (newitems:any) => {
+  //   if (Parent != undefined && Parent.length > 0) {
+  //       Parent.forEach((child: any) => {
+  //           child.subRows = []
+  //           SubChild?.forEach((val: any) => {
+  //               child.subRows.push(val)
+  //               child.subRows?.forEach((item: any) => {
+  //                   item.subRows = []
+  //                   ChildData?.forEach((data: any) => {
+  //                       item.subRows.push(data)
+  //                       item.subRows?.forEach((items: any) => {
+  //                           items.subRows = []
+  //                           items.subRows.push(newitems)
+
+  //                       })
+  //                   })
+  //               })
+  //           })
+  //           console.log(Parent)
+  //       })
+
+
+  //   }
+  //   if (SubChild != undefined && SubChild.length > 0) {
+  //       SubChild?.forEach((val: any) => {
+  //           val.subRows = []
+  //           if (val.Item_x0020_Type == undefined) {
+  //               AllComponentData?.forEach((items: any) => {
+  //                   if (items.Id == val.Id) {
+  //                       val.Item_x0020_Type = items.Item_x0020_Type;
+  //                       val.PortfolioStructureID = items.PortfolioStructureID
+  //                   }
+
+  //               })
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "Component") {
+  //               val.SiteIconTitle = "C"
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "SubComponent") {
+  //               val.SiteIconTitle = "S"
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "Feature") {
+  //               val.SiteIconTitle = "F"
+  //           }
+
+  //           AllData.push(val)
+  //           ChildData?.forEach((item: any) => {
+  //               item.subRows = []
+  //               if (item.Item_x0020_Type == undefined) {
+  //                   AllComponentData?.forEach((items: any) => {
+  //                       if (items.Id == val.Id) {
+  //                           val.Item_x0020_Type = items.Item_x0020_Type;
+  //                           val.PortfolioStructureID = items.PortfolioStructureID
+  //                       }
+
+  //                   })
+  //               }
+  //               if (item.Item_x0020_Type != undefined && item.Item_x0020_Type === "Component") {
+  //                   item.SiteIconTitle = "C"
+  //               }
+  //               if (item.Item_x0020_Type != undefined && item.Item_x0020_Type === "SubComponent") {
+  //                   item.SiteIconTitle = "S"
+  //               }
+  //               if (item.Item_x0020_Type != undefined && item.Item_x0020_Type === "Feature") {
+  //                   item.SiteIconTitle = "F"
+  //               }
+
+  //               AllData?.forEach((vall: any) => {
+  //                   vall.subRows.push(item)
+  //               })
+  //               item.subRows.push(props.props)
+  //               item.subRows[0].PortfolioStructureID = props.props?.Shareweb_x0020_ID
+  //               item.subRows[0].siteIcon = newitems?.siteIcon
+
+
+  //           })
+  //           console.log(AllData)
+  //           newitems.HierarchyData = AllData
+  //           setMasterData(newitems.HierarchyData)
+  //       })
+  //   }
+  //   if (ChildData != undefined && ChildData.length > 0) {
+  //       ChildData?.forEach((val: any) => {
+  //           val.subRows = []
+  //           if (val.Item_x0020_Type == undefined) {
+  //               AllComponentData?.forEach((items: any) => {
+  //                   if (items.Id == val.Id) {
+  //                       val.Item_x0020_Type = items.Item_x0020_Type;
+  //                       val.PortfolioStructureID = items.PortfolioStructureID
+  //                   }
+
+  //               })
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "Component") {
+  //               val.SiteIconTitle = "C"
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "SubComponent") {
+  //               val.SiteIconTitle = "S"
+  //           }
+  //           if (val.Item_x0020_Type != undefined && val.Item_x0020_Type === "Feature") {
+  //               val.SiteIconTitle = "F"
+  //           }
+
+  //           AllData.push(val)
+  //           val.subRows.push(props.props)
+  //           val.subRows[0].PortfolioStructureID = props.props?.Shareweb_x0020_ID
+  //           val.subRows[0].siteIcon = newitems?.siteIcon
+  //           console.log(AllData)
+  //           newitems.HierarchyData = AllData
+  //           setMasterData(newitems.HierarchyData)
+  //           setData(AllData)
+  //       })
+  //   }
+  // }
+  const loadAllComponent = async () => {
+
+    let web = new Web(AllListId?.siteUrl);
+    MasterListData = await web.lists
+      .getById(AllListId?.MasterTaskListID)
+      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+      .top(4999)
+      .get().then((data) => {
+        console.log(data)
+        data?.forEach((val: any) => {
+          MyAllData.push(val)
+        })
+
+
+      }).catch((error) => {
+        console.log(error)
+      })
+
+
+  }
   React.useEffect(() => {
 
     try {
@@ -218,12 +388,6 @@ const ProjectManagementMain = (props: any) => {
 
           setProjectTitle(AllUsers[0].Title);
           setCount(count + 1)
-          if (AllUsers[0].smartService != undefined && AllUsers[0].smartService.length > 0) {
-            smartComponentData = AllUsers[0].smartService
-          }
-          if (AllUsers[0].smartComponent != undefined && AllUsers[0].smartComponent.length > 0) {
-            linkedComponentData = AllUsers[0].smartComponent
-          }
         }
         setMasterdata(AllUsers[0]);
       } catch (error) {
@@ -232,14 +396,13 @@ const ProjectManagementMain = (props: any) => {
     } else {
       alert('Master Task List Id not present')
     }
-  };
 
-  // Load All Component And Services
+  };
+  //Load All Component And Services
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
 
   }, []);
-
   const getPortfolio = async (type: any) => {
     let result;
     if (AllListId?.MasterTaskListID != undefined) {
@@ -524,6 +687,7 @@ const ProjectManagementMain = (props: any) => {
           smartmeta.map((items: any) => {
 
             items.AllTeamMember = [];
+            items.HierarchyData = [];
             items.siteType = config.Title;
             items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
             items.listId = config.listId;
@@ -548,7 +712,13 @@ const ProjectManagementMain = (props: any) => {
               items.PortfolioTitle = items?.Services[0]?.Title;
               items["Portfoliotype"] = "Service";
             }
-            items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+            if (DataSiteIcon != undefined) {
+              DataSiteIcon.map((site: any) => {
+                if (site.Site == items.siteType) {
+                  items["siteIcon"] = site.SiteIcon;
+                }
+              });
+            }
 
             items.TeamMembersSearch = "";
             if (items.AssignedTo != undefined) {
@@ -570,6 +740,8 @@ const ProjectManagementMain = (props: any) => {
                 ? getComponentasString(items.Component)
                 : "";
             items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+            items.HierarchyData = globalCommon.hierarchyData(items, MyAllData)
+            // getMasterTaskData(items)
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -613,27 +785,7 @@ const ProjectManagementMain = (props: any) => {
     });
     return component;
   };
-  const loadAllComponent = async () => {
 
-    let web = new Web(AllListId?.siteUrl);
-    MasterListData = await web.lists
-      .getById(AllListId?.MasterTaskListID)
-      .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
-      .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
-      .top(4999)
-      .get().then((data) => {
-        console.log(data)
-        data?.forEach((val: any) => {
-          MyAllData.push(val)
-        })
-
-
-      }).catch((error) => {
-        console.log(error)
-      })
-
-
-  }
   React.useEffect(() => {
     if (Masterdata?.Id != undefined) {
       setItem(Masterdata);
@@ -669,34 +821,6 @@ const ProjectManagementMain = (props: any) => {
       GetMasterData();
     }
   };
-
-
-  // const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-  //   if (functionType == 'close') {
-  //     setIsComponent(false);
-  //     setIsPortfolio(false);
-  //   } else {
-  //     if (Type === "Service") {
-  //       if (DataItem.length > 0) {
-  //         DataItem.map((selectedData: any) => {
-  //           linkedComponentData.push(selectedData);
-  //         })
-  //         TagPotfolioToProject();
-  //       }
-  //     }
-  //     if (Type === "Component") {
-  //       if (DataItem?.length > 0) {
-  //         DataItem.map((selectedData: any) => {
-  //           smartComponentData.push(selectedData);
-  //         })
-  //         TagPotfolioToProject();
-  //       }
-  //     }
-  //     console.log(Masterdata)
-  //     setIsPortfolio(false);
-  //   }
-  // }, [])
-
   const ChangeIcon = () => {
     seticon(!icon)
   }
@@ -705,7 +829,7 @@ const ProjectManagementMain = (props: any) => {
     setIsCall(true)
   }
   const TagPotfolioToProject = async () => {
-    if (QueryId != undefined && AllListId?.MasterTaskListID != undefined) {
+    if (Masterdata?.Id != undefined && AllListId?.MasterTaskListID != undefined) {
       let selectedComponent: any[] = [];
       if (smartComponentData !== undefined && smartComponentData.length > 0) {
         $.each(smartComponentData, function (index: any, smart: any) {
@@ -721,7 +845,7 @@ const ProjectManagementMain = (props: any) => {
       let web = new Web(props?.siteUrl);
       await web.lists
         .getById(AllListId?.MasterTaskListID)
-        .items.getById(QueryId)
+        .items.getById(Masterdata?.Id)
         .update({
           ComponentId: {
             results:
@@ -738,8 +862,6 @@ const ProjectManagementMain = (props: any) => {
         })
         .then((res: any) => {
           GetMasterData();
-          smartComponentData = []
-          linkedComponentData = []
           console.log(res);
         });
     }
@@ -884,8 +1006,21 @@ const ProjectManagementMain = (props: any) => {
         // ),
         Cell: ({ row }: any) => (
           <span>
-            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
 
+            <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+              {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
+              <div className="popover__content">
+                <div className="tootltip-title">{row?.original?.Title}
+                </div>
+                <div className="tooltip-body">
+                  {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length >0 && 
+              <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+  )}
+                 
+
+                </div>
+              </div>
+            </div>
           </span>
 
         ),
@@ -1077,9 +1212,7 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             {
-              row.original.Services.length >= 1 ? <span className="ms-1 text-success">
-                {row?.original?.DisplayCreateDate}</span>
-                : <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+              row.original.Services.length >= 1 ? <span className="ms-1 text-success">{row?.original?.DisplayCreateDate}</span> : <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
             }
 
             {row?.original?.createdImg != undefined ? <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} /> : <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
@@ -1713,7 +1846,7 @@ const ProjectManagementMain = (props: any) => {
                 </article>
               </div>
               <div>
-                <span>
+                {/* <span>
                   {QueryId && (
                     <CommentCard
                       AllListId={AllListId}
@@ -1723,8 +1856,8 @@ const ProjectManagementMain = (props: any) => {
                       itemID={QueryId}
                     />
                   )}
-                </span> 
-                 <span>
+                </span> */}
+                {/* <span>
                   {(QueryId != undefined && isSmartInfoAvailable) ?
                     <SmartInformation
                       AllListId={AllListId}
@@ -1735,7 +1868,7 @@ const ProjectManagementMain = (props: any) => {
                       spPageContext={props?.Context?.pageContext?._web}
                     /> : ""
                   }
-                </span>
+                </span> */}
               </div>
             </div>
           </div>
@@ -1749,6 +1882,14 @@ const ProjectManagementMain = (props: any) => {
               selectionType={"Multi"}
             ></ServiceComponentPortfolioPopup>
           )}
+          {/* {isCall && (
+            <HierarchyItem
+              AllListId={AllListId}
+              props={SharewebComponent}
+              type={portfolioType}
+              Call={ClosePopup}
+            ></HierarchyItem>
+          )} */}
         </>
       ) : (
         <div>Project not found</div>

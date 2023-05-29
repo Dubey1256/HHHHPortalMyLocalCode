@@ -107,7 +107,6 @@ const CommentBoxComponent = (commentData: any) => {
         CallBack(FirstFeedBackArray);
     }
     const HtmlEditorCallBack = useCallback((EditorData: any) => {
-
         FirstFeedBackArray[0].Title = EditorData;
         CallBack(FirstFeedBackArray);
     }, [])
@@ -265,10 +264,10 @@ const CommentBoxComponent = (commentData: any) => {
                                         >
                                         </HtmlEditorCard>
                                         {/* <FroalaCommentBox
-                                        EditorValue={obj.Title != undefined ? obj.Title : ''}
-                                        callBack={HtmlEditorCallBack}
-                                    >
-                                    </FroalaCommentBox> */}
+                                            EditorValue={obj.Title != undefined ? obj.Title : ''}
+                                            callBack={HtmlEditorCallBack}
+                                        >
+                                        </FroalaCommentBox> */}
 
                                     </div>
                                 </div>
@@ -300,6 +299,7 @@ const CommentBoxComponent = (commentData: any) => {
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             Context={Context}
                                             isCurrentUserApprover={isCurrentUserApprover}
+                                            isFirstComment = {true}
                                         />
                                     </div>
                                 </div>

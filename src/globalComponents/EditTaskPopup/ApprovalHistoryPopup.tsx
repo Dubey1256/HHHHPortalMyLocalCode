@@ -28,7 +28,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
     return (
         <div>
             <Panel
-                headerText={`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : null} 0${ApprovalPointCurrentIndex + 1}`}
+                headerText={`Approval History For Point - ${ApprovalData.currentArrayIndex != undefined || ApprovalData.currentArrayIndex != null ? ApprovalData.currentArrayIndex + 1 + "." : ''} ${ApprovalPointCurrentIndex + 1}`}
                 isOpen={ApprovalPointHistoryStatus}
                 onDismiss={ApprovalPointPopupClose}
                 isBlocking={ApprovalPointHistoryStatus}
