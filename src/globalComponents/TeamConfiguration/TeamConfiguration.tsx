@@ -125,7 +125,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
         for (let index = 0; index < items.length; index++) {
             let childItem = items[index];
             if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID) {
-                if (this.props.ItemInfo.Services != undefined && this.props.ItemInfo.Services.length > 0) {
+                if (this.props.ItemInfo?.Services != undefined && this.props.ItemInfo?.Services.length > 0) {
                     if (childItem.Role != null && childItem.Role.length > 0 && childItem.Role.join(';').indexOf('Service Teams') > -1) {
                         item.childs.push(childItem);
                     }
@@ -519,7 +519,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                         <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
                                             onDragOver={(e) => e.preventDefault()}>
                                             <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src={this.props.ItemInfo.Services != undefined && this.props.ItemInfo.Services.length > 0 ?
+                                                src={this.props.ItemInfo?.Services != undefined && this.props.ItemInfo?.Services.length > 0 ?
                                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Dustbin-green.png" :
                                                     "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png"
                                                 }

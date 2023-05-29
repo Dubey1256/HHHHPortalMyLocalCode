@@ -1378,4 +1378,3 @@ const SmartInformation = (props: any) => {
 }
 export default SmartInformation;
 
-
