@@ -74,7 +74,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         }
     }
     const addMainRow = () => {
+        // let testTaskIndex = State?.length + 1
         let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
+        // setIndexCount(IndexCount + 1);
         IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
@@ -93,7 +95,9 @@ export default function FroalaCommnetBoxes(textItems: any) {
         setBtnStatus(true);
     }
     const addMainRowInDiv = () => {
+        // let testTaskIndex = State?.length + 1
         let testTaskIndex = UpdatedFeedBackParentArray?.length + 1
+        // setIndexCount(IndexCount + 1);
         IndexCount = IndexCount + 1;
         const object = {
             Completed: "",
@@ -119,6 +123,11 @@ export default function FroalaCommnetBoxes(textItems: any) {
                 tempArray.push(array);
             }
         })
+        // ParentArray = [];
+        // tempArray?.map((tempDataItem: any) => {
+        //     ParentArray.push(tempDataItem);
+        // })
+
         if (tempArray?.length == 0) {
             setBtnStatus(false)
             callBack("delete");
@@ -156,7 +165,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     const obj = { ...State[id], Title: NewTitle };
                     copy[id] = obj;
                     setState(copy);
-                }else{
+                } else {
                     const { id } = e.currentTarget.dataset;
                     let Index = Number(id) + 1;
                     let NewTitle: any = "";
@@ -416,6 +425,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}
+                                            isFirstComment ={false}
                                         />
                                     </div>
                                 </div>
@@ -434,7 +444,6 @@ export default function FroalaCommnetBoxes(textItems: any) {
                     />
                     : null
                 }
-
             </div>
         )
     }

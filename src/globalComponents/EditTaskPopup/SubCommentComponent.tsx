@@ -22,6 +22,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
     const [ApprovalPointUserData, setApprovalPointUserData] = useState<any>([]);
     const [ApprovalPointCurrentIndex, setApprovalPointCurrentIndex] = useState('');
     const currentArrayIndex = SubTextItemsArray.currentIndex
+    const isFirstComment = SubTextItemsArray.isFirstComment
     let ApprovalStatus: any = SubTextItemsArray.ApprovalStatus;
     let SmartLightPercentStatus: any = SubTextItemsArray.SmartLightPercentStatus;
     let SmartLightStatus: any = SubTextItemsArray.SmartLightStatus;
@@ -242,7 +243,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                                                 <span title="Approved" onClick={() => SmartLightUpdateSubChildComment(index, "Approve")} className={obj.isShowLight == "Approve" ? "circlelight br_green pull-left green" : "circlelight br_green pull-left"}>
                                                                 </span>
                                                             </span>
-                                                        </div> 
+                                                        </div>
                                                         {/* : null} */}
                                                     </div>
                                                     : null
@@ -345,7 +346,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                     <ApprovalHistoryPopup
                         ApprovalPointUserData={ApprovalPointUserData}
                         ApprovalPointCurrentIndex={ApprovalPointCurrentIndex}
-                        currentArrayIndex={currentArrayIndex + 1}
+                        currentArrayIndex={isFirstComment ? 0 : currentArrayIndex + 1}
                         ApprovalPointHistoryStatus={ApprovalPointHistoryStatus}
                         callBack={ApprovalHistoryPopupCallBack}
                     />

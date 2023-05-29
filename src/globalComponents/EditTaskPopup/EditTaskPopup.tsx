@@ -9,13 +9,11 @@ import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
-// import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
 import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
-import LinkedComponent from './LinkedComponent';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
@@ -43,12 +41,6 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
 import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
-// import {DatePicker} from 'react-date-picker';
-// import 'react-date-picker/dist/DatePicker.css';
-// import 'react-calendar/dist/Calendar.css';
-// import {CDatePicker} from '@coreui/react';
-// import SiteComposition from "../SiteComposition";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 
@@ -60,7 +52,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
-var tempCategoryData: any;
+var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
@@ -1194,8 +1186,8 @@ const EditTaskPopup = (Items: any) => {
                 setOnlyCompletedStatus(false)
             }
         } else {
-            if (tempCategoryData != undefined) {
-                let CheckTaggedCategory = tempCategoryData.includes(type)
+            // if (tempCategoryData != undefined) {
+                let CheckTaggedCategory = tempCategoryData?.includes(type)
                 if (CheckTaggedCategory == false) {
                     let CheckTaagedCategory: any = true;
                     let category: any = tempCategoryData + ";" + type;
@@ -1243,7 +1235,7 @@ const EditTaskPopup = (Items: any) => {
                         setOnlyCompletedStatus(true)
                     }
                 }
-            }
+            // }
         }
     }
 
@@ -2127,6 +2119,7 @@ const EditTaskPopup = (Items: any) => {
                     smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
                     smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
                     smartMetaCall[0].siteType = EditData.siteType;
+                    smartMetaCall[0].siteUrl = siteUrls;
                 }
                 setLastUpdateTaskData(smartMetaCall[0]);
                 tempShareWebTypeData = [];
@@ -2380,15 +2373,12 @@ const EditTaskPopup = (Items: any) => {
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
-                        // setTaskAssignedTo([]);
-                        // EditData.TaskAssignedUsers = [];
-                        // setTaskTeamMembers([]);
-                        // EditData.Team_x0020_Members = [];
+                       
                     }
                 }
-                if (item.Phone) {
-                    // CategoryChange("Phone", 199);
-                    // CategoryChangeUpdateFunction("false", "Phone", 199)
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
+                   
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -2399,15 +2389,11 @@ const EditTaskPopup = (Items: any) => {
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
-                                // setTaskAssignedTo([]);
-                                // EditData.TaskAssignedUsers = [];
-                                // setTaskTeamMembers([]);
-                                // EditData.Team_x0020_Members = [];
+                                
                             }
                         }
-                        if (item.Phone) {
+                        if (subItem.Phone == true) {
                             PhoneCount = PhoneCount + 1;
-                            // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
                 }
