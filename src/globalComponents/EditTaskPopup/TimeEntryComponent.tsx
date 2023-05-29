@@ -3173,9 +3173,6 @@ function TimeEntryPopup(item: any) {
 
                 </div>
             </Panel>
-
-
-
         </div>
     )
 }
