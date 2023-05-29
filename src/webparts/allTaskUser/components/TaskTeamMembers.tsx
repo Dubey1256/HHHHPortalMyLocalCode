@@ -522,7 +522,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             TimeCategory: taskItem.timeCategory,
             ApproverId: taskItem.approverId,
             IsApprovalMail: taskItem.approvalType,
-            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
+            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems != undefined && this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
             Company: taskItem.company,
             Role: taskItem.roles,
             IsActive: taskItem.isActive,
