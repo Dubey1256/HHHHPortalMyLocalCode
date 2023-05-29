@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as globalCommon from '../globalCommon'
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
 var changeTime: any = 0;
