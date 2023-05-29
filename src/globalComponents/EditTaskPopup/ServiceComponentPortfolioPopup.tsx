@@ -36,6 +36,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
     const setModalIsOpenToFalse = () => {
         Example([], ComponentType, "Close");
+        setModalIsOpen(false);
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
