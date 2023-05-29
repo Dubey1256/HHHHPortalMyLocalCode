@@ -64,7 +64,7 @@ export function IndeterminateCheckbox(
 
 // ReactTable Part end/////
 
-const GlobalCommanTable = ({ columns, data, callBackData, pageName }: any) => {
+const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -126,16 +126,14 @@ const GlobalCommanTable = ({ columns, data, callBackData, pageName }: any) => {
     }, [table?.getRowModel()?.rows])
 
     const CheckDataPrepre = () => {
-        let selectedArray:any=[];
         if (table?.getSelectedRowModel()?.flatRows.length > 0) {
             table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
                 elem.original.Id = elem.original.ID
                 item = elem.original;
-                selectedArray.push(item)
             });
-            callBackData(item,undefined,selectedArray)
+            callBackData(item)
         } else {
-            callBackData(item,undefined,selectedArray)
+            callBackData(item)
         }
         console.log("itrm", item)
     }
@@ -151,7 +149,7 @@ const GlobalCommanTable = ({ columns, data, callBackData, pageName }: any) => {
 
     return (
         <>
-            <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+            <table className="SortingTable table table-hover mb-0" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -194,7 +192,7 @@ const GlobalCommanTable = ({ columns, data, callBackData, pageName }: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : "")))) || pageName=='ProjectOverview' && row.original.Item_x0020_Type=='Project' ? '' :'f-bg' }
+                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
