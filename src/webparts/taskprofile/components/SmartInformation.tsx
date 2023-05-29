@@ -144,7 +144,7 @@ const SmartInformation = (props: any) => {
     const web = new Web(props?.AllListId?.siteUrl);
     // var Data = await web.lists.getByTitle("SmartInformation")
     var Data = await web.lists.getById(props?.AllListId?.SmartInformationListID)
-      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title')
+      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Editor/Name,Editor/Title')
       .expand("InfoType,Author,Editor")
       .get()
     console.log(Data)
@@ -157,7 +157,7 @@ const SmartInformation = (props: any) => {
           Data?.map(async (tagsmartinfo: any) => {
             if(tagsmartinfo.Title=="Only For Me"){
               setFolderCreated(false)
-              MovefolderItemUrl2=`${tagsmartinfo.Id}_.000`
+              MovefolderItemUrl2=`/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
 
@@ -437,11 +437,12 @@ const SmartInformation = (props: any) => {
                 .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${editvalue?.Id}_.000`);
               console.log(movedata);
             }
-            // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "Only For Me") && (editvalue.SelectedFolder == "Memberarea" || editvalue.SelectedFolder == "EDA Only")) {
-            //   let movedata = await web
-            //     .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue.SelectedFolder}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl}/${editvalue?.Id}_.000`);
-            //   console.log(movedata);
-            // }
+            if ((MovefolderItemUrl == "/SmartInformation" || MovefolderItemUrl == "/EDA Only") && (editvalue.SelectedFolder == "Only For Me" || editvalue.SelectedFolder == "EDA Only")) {
+              // MovefolderItemUrl2=""
+              let movedata = await web
+                .getFileByServerRelativeUrl(`${movefolderurl}/${MovefolderItemUrl2}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${""}/${editvalue?.Id}_.000`);
+              console.log(movedata);
+            }
             GetResult();
             handleClose();
           })
@@ -909,7 +910,11 @@ const SmartInformation = (props: any) => {
         ItemRank: EditdocumentsData.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
+        
         SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
+        Item_x0020_Cover:{ "__metadata": { type: 'SP.FieldUrlValue' },
+        'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
+        'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",},
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
@@ -947,7 +952,9 @@ const SmartInformation = (props: any) => {
     setallSetValue({ ...allValue, Title: items })
     setFiltersmartinfo([])
   }
-
+  const imageTabCallBack=React.useCallback((data:any)=>{
+console.log(data)
+  },[])
 
   return (
     <div>
@@ -1323,7 +1330,7 @@ const SmartInformation = (props: any) => {
           <Tab eventKey="IMAGEINFORMATION" title="IMAGEINFORMATION" >
             <div className='border border-top-0 p-2'>
 
-              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} />
+              <ImageTabComponenet EditdocumentsData={EditdocumentsData} AllListId={props.AllListId} Context={props.Context} callBack={imageTabCallBack} />
             </div>
           </Tab>
         </Tabs>
@@ -1377,4 +1384,5 @@ const SmartInformation = (props: any) => {
   )
 }
 export default SmartInformation;
+
 
