@@ -425,6 +425,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                             SmartLightPercentStatus={SmartLightPercentStatus}
                                             isCurrentUserApprover={isCurrentUserApprover}
                                             Context={Context}
+                                            isFirstComment ={false}
                                         />
                                     </div>
                                 </div>
