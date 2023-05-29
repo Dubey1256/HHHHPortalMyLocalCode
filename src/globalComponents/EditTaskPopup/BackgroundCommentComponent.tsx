@@ -124,9 +124,6 @@ const BackgroundCommentComponent = (Props: any) => {
                                     <div className="card-footer d-flex justify-content-between">
                                         <div>
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
-                                            <span className="mx-1">
-                                                <img className="imgAuthor" title={ImageDtl.UserName} src={ImageDtl.UserImage ? ImageDtl.UserImage : ''} />
-                                            </span>
                                         </div>
                                         <div>
 
@@ -160,15 +157,14 @@ const BackgroundCommentComponent = (Props: any) => {
                 {uploadImageContainer ? <FlorarImageUploadComponent callBack={FlorarImageReplaceComponentCallBack} /> : null}
                 <div className="Background_Image_footer d-flex justify-content-between my-1 ">
                     {BackgroundImageData != undefined && BackgroundImageData.length > 0 ?
-                        null :
-                        <span className="hreflink ms-0 ps-0 siteColor" onClick={() => setuploadImageContainer(true)}>Add New Image</span>
-
+                        <span className="hreflink ms-0 ps-0 siteColor" onClick={() => setuploadImageContainer(true)}>Add New Image</span> : null
                     }
+
                 </div>
             </div>
             <div className="Background_Comment col-8 full-width ps-3">
                 <p className="siteColor mb-0">Comments</p>
-                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index:any) => {
+                {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
