@@ -16,6 +16,8 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
+import TeamLeaderHeader from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderHeader';
+import TeamLeaderPieChart from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderPieChart';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -408,8 +410,10 @@ const getComponentasString = function (results: any) {
               <div className="dashboard-content ps-2 full-width">
                 <article className="row">
                <div className="col-md-12">
-                test 
-
+                <TeamLeaderHeader/>
+               </div>
+               <div className="col-md-12">
+                <TeamLeaderPieChart />
                </div>
                 </article>
               </div>

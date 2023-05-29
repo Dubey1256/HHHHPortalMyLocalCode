@@ -167,9 +167,9 @@ const ProjectManagementMain = (props: any) => {
 
         if ((taskUsers.PercentComplete = undefined))
           taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
-        if (taskUsers.Body != undefined) {
-          taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
-        }
+        // if (taskUsers.Body != undefined) {
+        //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
+        // }
 
         let allPortfolios: any[] = [];
         allPortfolios = await getPortfolio("All");
@@ -1538,9 +1538,9 @@ const ProjectManagementMain = (props: any) => {
 
                               {
                                 Masterdata?.Body != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Description</summary>
-                                    <div className="AccordionContent">{Masterdata?.Body}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
                                   </details>
                                 </div>
                                   : ''
@@ -1548,18 +1548,20 @@ const ProjectManagementMain = (props: any) => {
 
                               {
                                 Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Background</summary>
-                                    <div className="AccordionContent">{Masterdata?.Background}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Background}</div> */}
                                   </details>
                                 </div> : ''
                               }
 
                               {
                                 Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="p-0">
                                     <summary>Idea</summary>
-                                    <div className="AccordionContent">{Masterdata?.Idea}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
+                                    {/* <div className="AccordionContent">{Masterdata?.Idea}</div> */}
                                   </details>
                                 </div> : ''
                               }
@@ -1568,7 +1570,7 @@ const ProjectManagementMain = (props: any) => {
                                 Masterdata?.Deliverables != undefined ? <div className="mt-2 p-0 row">
                                   <details className="pe-0">
                                     <summary>Deliverables</summary>
-                                    <div className="AccordionContent">{Masterdata?.Deliverables}</div>
+                                    <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
                                   </details>
                                 </div> : ''
                               }
