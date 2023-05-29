@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { SPFI } from "@pnp/sp";
-// import FlorarImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent'
 import DragDrop from'./FlorarImagetab'
 import { Tabs, Tab, Col, Nav, Row, Button } from 'react-bootstrap';
 import pnp, { sp, Web } from "sp-pnp-js";
@@ -130,16 +129,16 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
               console.log(res);
               let taskItem = {...editData};
               var recentUploadPic={
-                itemCoverUrl :imageURL,
+                Url :imageURL,
                 itemCoverId : res.Id,
                 itemCoverName:uploadedImage.fileName,
                 itemFolderurl:`${props?.Context?._pageContext?._site?.absoluteUrl}/${selectfolder2}`,
                 itemFolderName:selectfolder2
               }
-              taskItem.recentUploadPic=recentUploadPic
+              taskItem.Item_x0020_Cover=recentUploadPic
              
              setEditData(taskItem)
-            
+            props.callBack(taskItem);
          
             }).catch((error:any)=>{
               console.log(error)
@@ -156,13 +155,14 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     // await web.lists.getByTitle("SmartInformation")
     var text: any = "are you sure want to Delete";
     if (confirm(text) == true) {
-      await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/${editData?.recentUploadPic?.itemFolderName}/${editData?.recentUploadPic?.itemCoverName}`)
+      await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/${editData?.Item_x0020_Cover?.itemFolderName}/${editData?.Item_x0020_Cover?.itemCoverName}`)
        .recycle()
         .then((res: any) => {
           console.log(res);
           let taskItem = {...editData};
-          taskItem.recentUploadPic=null;
+          taskItem.Item_x0020_Cover=null;
           setEditData(taskItem)
+          props.callBack(taskItem);
         })
         .catch((err) => {
           console.log(err.message);
@@ -174,7 +174,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
         <>
             <div className='d-flex '>
                 <div className="input-group "><label className=" full-width ">Image Url </label>
-                    <input type="text" className="form-control" placeholder='Serach' value={editData?.recentUploadPic!=null?editData?.recentUploadPic?.itemCoverUrl:""}/>
+                    <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x0020_Cover!=null?editData?.Item_x0020_Cover?.Url:""}/>
                 </div>
 
 
@@ -199,8 +199,8 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                     <Nav.Link eventKey="Images1" onClick={() => changesTabFunction("Images1")}> Images</Nav.Link>
                                 </Nav.Item>
                                <div className='mt-3 mx-4'>
-                               {editData.recentUploadPic!=undefined &&<div><div><img src={editData?.recentUploadPic?.itemCoverUrl}/></div>
-                                    <span><a  href={editData?.recentUploadPic?.itemFolderurl}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--docx' title="docx"></span></a></span>
+                               {editData.Item_x0020_Cover!=undefined &&<div><div><img src={editData?.Item_x0020_Cover?.Url}/></div>
+                                    <span><a  href={editData?.Item_x0020_Cover?.itemFolderurl}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--docx' title="docx"></span></a></span>
                                     </div>}
                                   <ul className='alignCenter list-none'>
                                         <li>
@@ -221,7 +221,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                     </ul>
                                     {/* <span> <a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`}>Open this Document</a></span> */}
                                 </div>
-                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.recentUploadPic?.itemCoverId)}></span>Clear Image</div>
+                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.itemCoverId)}></span>Clear Image</div>
                             </Nav>
                         </Col>
                         <Col sm={9}>
