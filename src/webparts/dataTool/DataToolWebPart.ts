@@ -37,17 +37,42 @@ export default class DataToolWebPart extends BaseClientSideWebPart<IDataToolWebP
   }
 
   protected onInit(): Promise<void> {
-    this._environmentMessage = this._getEnvironmentMessage();
+    return this._getEnvironmentMessage().then(message => {
+      
+      this._environmentMessage = message;
+      pnp.setup({
+        spfxContext: this.context
+       });
+    });
     
-    return super.onInit();
+
   }
 
-  private _getEnvironmentMessage(): string {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams
-      return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+
+  private _getEnvironmentMessage(): Promise<string> {
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
+      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
+        .then((context:any) => {
+          let environmentMessage: string = '';
+          switch (context.app.host.name) {
+            case 'Office': // running in Office
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
+              break;
+            case 'Outlook': // running in Outlook
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
+              break;
+            case 'Teams': // running in Teams
+              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
+              break;
+            default:
+              throw new Error('Unknown host');
+          }
+
+          return environmentMessage;
+        });
     }
 
-    return this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment;
+    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
