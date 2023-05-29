@@ -126,7 +126,7 @@ function Portfolio({SelectedProp}:any) {
   };
   React.useEffect(() => {
     let folderId: any = "";
-     try {
+     try {
 
    var  isShowTimeEntry = SelectedProp.TimeEntry != "" ? JSON.parse(SelectedProp.TimeEntry) : "";
       
@@ -1375,8 +1375,8 @@ function Portfolio({SelectedProp}:any) {
                          siteurl={
                           "${web}"
                         }
-                       listName={"HHHH"}
                          spPageContext={"/sites/HHHH/SP"}
+                         AllListId={SelectedProp} Context={SelectedProp?.Context} taskTitle={item.Title} listName={'Master Tasks'}
                       />
                     
                     );
@@ -1386,7 +1386,7 @@ function Portfolio({SelectedProp}:any) {
                                         <div className='card-header'>
                                             <div className='card-actions float-end'>  <Tooltip ComponentId='324'/></div>
                                             <div className="mb-0 card-title h5">Add & Connect Tool</div>
-                                        </div>
+                                        </div> 
                                         <div className='card-body'>
                                             <div className="border-bottom pb-2"> <a ng-click="TagItems();">
                                                 Click here to add more content

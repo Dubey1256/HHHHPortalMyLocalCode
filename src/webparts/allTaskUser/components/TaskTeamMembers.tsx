@@ -1209,7 +1209,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </>
         );
 
-        return (<div data-is-scollable={true} className="ms-Grid">
+        return (<div data-is-scollable={true} className="ms-Grid  p-0">
             { false && elemControls }
             { elemMemberTaskList }
             { elemNewTaskMember }

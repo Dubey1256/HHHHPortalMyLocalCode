@@ -144,12 +144,20 @@ function CreateTaskComponent(props: any) {
     // };
 
     const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
+        // let saveItem = save;
         if (functionType == "Close") {
             setIsOpenPortfolio(false)
         } else {
             if (Type == "Service") {
                 if (DataItem != undefined && DataItem.length > 0) {
-                    setSave({ ...save, linkedServices: DataItem, portfolioType : "Service" });
+                    // saveItem.linkedServices = DataItem;
+                    // saveItem.portfolioType = "Service";
+                    setSave(prevSave => ({
+                        ...prevSave,
+                        linkedServices: DataItem, 
+                        portfolioType : "Service" 
+                      }));
+                    // setSave({ ...save, linkedServices: DataItem, portfolioType : "Service" });
                     setLinkedComponentData(DataItem);
                     // selectPortfolioType('Service')
                     console.log("Popup component services", DataItem);
@@ -159,7 +167,12 @@ function CreateTaskComponent(props: any) {
             }
             if (Type == "Component") {
                 if (DataItem != undefined && DataItem.length > 0) {
-                    setSave({ ...save, Component: DataItem });
+                    setSave(prevSave => ({
+                        ...prevSave,
+                        Component: DataItem, 
+                        portfolioType : "Component" 
+                      }));
+                    // setSave({ ...save, Component: DataItem });
                     setSmartComponentData(DataItem);
                     // selectPortfolioType('Component');
                     setLinkedComponentData([]);
@@ -169,6 +182,7 @@ function CreateTaskComponent(props: any) {
             }
             setIsOpenPortfolio(false)
         }
+        // setSave(saveItem);
     }, [])
     const DueDate = (item: any) => {
         let date = new Date();
@@ -492,7 +506,7 @@ function CreateTaskComponent(props: any) {
         MetaData = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
             .expand('Author,Editor')
             .get();
@@ -1698,6 +1712,13 @@ function CreateTaskComponent(props: any) {
         }
 
     }
+    const changeTitle = (e: any) => {
+        setSave(prevSave => ({
+            ...prevSave,
+            taskName: e.target.value
+          }));
+
+    }
     //
 
     return (
@@ -1713,7 +1734,7 @@ function CreateTaskComponent(props: any) {
                     </div> : ''}
                     <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
-                        <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => setSave({ ...save, taskName: e.target.value })}></input>
+                        <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => {  changeTitle(e) }}></input>
                     </div>
                     <div className='col-sm-2 p-0 mt-4'>
                         <input

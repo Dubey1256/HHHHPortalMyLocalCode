@@ -1380,16 +1380,16 @@ function ComponentTable(SelectedProp: any) {
                   }
                 });
               }
-              // result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
-              result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
-              if (
-                result.ClientCategory != undefined &&
-                result.ClientCategory.length > 0
-              ) {
-                map(result.Team_x0020_Members, (catego: any) => {
-                  result.ClientCategory.push(catego);
-                });
-              }
+              result["SiteIcon"] = GetIconImageUrl(result.siteType,ContextValue.siteUrl, undefined);
+              // result["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url
+              // if (
+              //   result.ClientCategory != undefined &&
+              //   result.ClientCategory.length > 0
+              // ) {
+              //   map(result.Team_x0020_Members, (catego: any) => {
+              //     result.ClientCategory.push(catego);
+              //   });
+              // }
               if (result.Id === 1441) console.log(result);
               result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
               if (result["Shareweb_x0020_ID"] == undefined) {
@@ -2669,14 +2669,14 @@ function ComponentTable(SelectedProp: any) {
       } else {
         result["Shareweb_x0020_ID"] = "";
       }
-      if (
-        result.ClientCategory != undefined &&
-        result.ClientCategory.length > 0
-      ) {
-        $.each(result.Team_x0020_Members, function (index: any, catego: any) {
-          result.ClientCategory.push(catego);
-        });
-      }
+      // if (
+      //   result.ClientCategory != undefined &&
+      //   result.ClientCategory.length > 0
+      // ) {
+      //   $.each(result.Team_x0020_Members, function (index: any, catego: any) {
+      //     result.ClientCategory.push(catego);
+      //   });
+      // }
       if (result.Item_x0020_Type == "Root Component") {
         result["childs"] =
           result["childs"] != undefined ? result["childs"] : [];
@@ -3547,7 +3547,7 @@ function ComponentTable(SelectedProp: any) {
         setIsComponent(true);
       }
       refreshData();
-      // rerender();
+      rerender();
     }
     if (!isOpenPopup && item.data != undefined) {
       item.data.childs = [];
@@ -3579,9 +3579,9 @@ function ComponentTable(SelectedProp: any) {
       //     checkedList[0].childs.unshift(item.data);
       // else
       array.unshift(item.data);
-      // setData((array) => [...array]);
+      setData((array) => [...array]);
       refreshData();
-      // rerender();
+      rerender();
     }
     setAddModalOpen(false);
   }, []);
@@ -4177,6 +4177,23 @@ function ComponentTable(SelectedProp: any) {
   //         PortfolioLevelNum = 1;
   //     }
   // }
+  const onRenderCustomHeaderMain1 = () => {
+    return (
+      <div className="d-flex full-width pb-1">
+        <div
+          style={{
+            marginRight: "auto",
+            fontSize: "20px",
+            fontWeight: "600",
+            marginLeft: "20px",
+          }}
+        >
+          <span>{`Create Component `}</span>
+        </div>
+        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+      </div>
+    );
+  };
   const onRenderCustomHeaderMain = () => {
     return (
       <div className="d-flex full-width pb-1">
@@ -5681,7 +5698,7 @@ function ComponentTable(SelectedProp: any) {
         ></CreateWS>
       )}
       <Panel
-        headerText={` Create Component `}
+        onRenderHeader={onRenderCustomHeaderMain1}
         type={PanelType.large}
         isOpen={addModalOpen}
         isBlocking={false}
