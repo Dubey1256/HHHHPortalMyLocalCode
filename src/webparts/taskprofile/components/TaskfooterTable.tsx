@@ -4,7 +4,7 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
@@ -123,6 +123,7 @@ function TasksTable(props: any) {
             .get().then((Response: any) => {
                 setTaskUser(Response);
                 console.log(Response);
+                taskUsers=Response
             })
         // taskUsers = Response = await globalCommon.loadTaskUsers();
 
