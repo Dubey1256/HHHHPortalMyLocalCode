@@ -415,7 +415,7 @@ export default function FroalaCommnetBoxes(textItems: any) {
                                     <div>
                                         <Example
                                             SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
-                                            index={obj.taskIndex + 1}
+                                            index={i}
                                             commentId={obj.Id}
                                             currentIndex={i}
                                             callBack={subTextCallBack}

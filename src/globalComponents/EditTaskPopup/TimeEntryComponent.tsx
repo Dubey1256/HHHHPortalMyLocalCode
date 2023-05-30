@@ -2014,7 +2014,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                     <tr className="tdrow">
 
                                                                                                                         <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                            <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                                                                                            <img className="workmember wid29 bdrbox"
                                                                                                                                 title={childinew.AuthorName}
                                                                                                                                 data-toggle="popover"
                                                                                                                                 data-trigger="hover"
@@ -2064,7 +2064,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                                         <tr className="for-c02">
 
                                                                                                                                             <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                                <img className="AssignUserPhoto1  bdrbox"
+                                                                                                                                                <img className="workmember bdrbox"
                                                                                                                                                     title="{subchilds.AuthorName}"
                                                                                                                                                     data-toggle="popover"
                                                                                                                                                     data-trigger="hover"

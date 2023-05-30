@@ -2,6 +2,7 @@ import * as React from "react";
 import { Component } from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
+
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 //import "bootstrap/dist/css/bootstrap.min.css";
@@ -89,7 +90,17 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Return if the item should be filtered in/out
   return itemRank.passed;
 };
+const onRenderCustomHeaderRestructuringTool = () => {
+  return (
+    <>
 
+      <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+      Restructuring Tool
+      </div>
+      <Tooltip ComponentId='454' />
+    </>
+  );
+};
 ///Global Filter Parts//////
 // A debounced input react component
 function DebouncedInput({
@@ -4934,7 +4945,7 @@ function ComponentTable(SelectedProp: any) {
         </div>
       </Panel>
       <Panel
-        headerText={` Restructuring Tool `}
+        onRenderHeader={onRenderCustomHeaderRestructuringTool}
         type={PanelType.medium}
         isOpen={ResturuningOpen}
         isBlocking={false}
