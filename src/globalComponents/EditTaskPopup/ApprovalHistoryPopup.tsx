@@ -42,7 +42,7 @@ const ApprovalHistoryPopup = (ApprovalData: any) => {
                                 <span className="SubTestBorder p-1 me-1">{ApprovalPointCurrentIndex + 1}</span>
                                 <div className="full-width border p-1">
                                     <div>
-                                        {ApprovalPointUserData.ApproverData != undefined && ApprovalPointUserData.ApproverData.length > 0 ? ApprovalPointUserData.ApproverData.map((UserData: any, Index: any) => {
+                                        {ApprovalPointUserData.ApproverData != undefined && ApprovalPointUserData.ApproverData.length > 0 ? ApprovalPointUserData.ApproverData.reverse().map((UserData: any, Index: any) => {
                                             return (
                                                 <>
                                                     {UserData.isShowLight == "Approve" ?

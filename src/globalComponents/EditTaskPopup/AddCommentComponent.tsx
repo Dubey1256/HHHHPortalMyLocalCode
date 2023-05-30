@@ -4,6 +4,8 @@ import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
+import Tooltip from '../Tooltip';
+
 
 const AddCommentComponent = (FbData: any) => {
     const FeedBackData = FbData.Data;
@@ -154,6 +156,19 @@ const AddCommentComponent = (FbData: any) => {
         setApprovalPointHistoryStatus(false)
     }, [])
 
+    const onRenderCustomHeader = () => {
+        return (
+            <div className="d-flex full-width pb-1" >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        {`Update Comment`}
+                    </span>
+                </div>
+                <Tooltip ComponentId='1683' />
+            </div>
+        );
+    }
+
     return (
         <div>
             <div>
@@ -240,7 +255,8 @@ const AddCommentComponent = (FbData: any) => {
                     }
                 </div>
                 <section className="Update-FeedBack-section">
-                    <Panel headerText={`Update Comment`}
+                    <Panel
+                        onRenderHeader={onRenderCustomHeader}
                         isOpen={editPostPanel}
                         onDismiss={editPostCloseFunction}
                         isBlocking={editPostPanel}
@@ -279,7 +295,6 @@ const AddCommentComponent = (FbData: any) => {
                 />
                 : null
             }
-
         </div>
     )
 }
