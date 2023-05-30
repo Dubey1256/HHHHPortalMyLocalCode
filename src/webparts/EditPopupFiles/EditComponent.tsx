@@ -143,11 +143,11 @@ function EditInstitution({ item, SelectD, Calls }: any) {
       }
     }
     if (functionType == "Close") {
-      if (type == "Service") {
+      
         setIsService(false);
-      } else {
+     
         setIsComponent(false);
-      }
+     
     } else {
       if (type == "Component") {
         if (item1 != undefined && item1.length > 0) {
@@ -1785,7 +1785,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="Service"
+                                name="Component"
                                 value={SearchedServiceCompnentKey}
                                 onChange={(e) =>
                                   autoSuggestionsForServiceAndComponent(e)
@@ -1819,7 +1819,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="Component"
+                                name="Service"
                                 value={SearchedServiceCompnentKey}
                                 onChange={(e) =>
                                   autoSuggestionsForServiceAndComponent(e)

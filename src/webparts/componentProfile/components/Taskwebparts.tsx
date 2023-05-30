@@ -3552,9 +3552,10 @@ export default function ComponentTable({ props, NextProp }: any) {
               <>
                 {row?.original?.Author != undefined ? (
                   <>
+                  <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
                   <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
-                 <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
+                 
                   </>
                 ) : (
                   <img

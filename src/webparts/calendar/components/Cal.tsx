@@ -31,6 +31,8 @@ import * as ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
+import Tooltip from "../../../globalComponents/Tooltip";
+//import MoreSlot from "./Slots";
 interface IEventData {
   Event_x002d_Type?: string;
   Location?: string;
@@ -75,9 +77,7 @@ interface IEventData {
 //import { TimePicker } from "@fluentui/react";
 
 const localizer = momentLocalizer(moment);
-let createdBY: any,
-  modofiedBy: any,
-  localArr: any = [];
+let createdBY: any, modofiedBy: any,CTime:any,CDate:any,MTime:any,MDate:any, localArr: any = [];
 let startTime: any,
   //   startDateTime: any,
   eventPass: any = {},
@@ -88,6 +88,7 @@ let startTime: any,
 let maxD = new Date(8640000000000000);
 
 const App = (props: any) => {
+
   const [m, setm]: any = React.useState(false);
   const [events, setEvents]: any = React.useState([]);
   let compareData: any = [];
@@ -136,6 +137,27 @@ const App = (props: any) => {
     ev.preventDefault();
     setShowRecurrenceSeriesInfo(recurChecked);
     setNewRecurrenceEvent(recurChecked);
+  };
+
+
+  // CUstom header
+  const onRenderCustomHeader = () => {
+    return (
+     <>
+        <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+          <span>
+
+            {(props != undefined || props.props != undefined) &&
+              <>
+                <span>{props?.props?.description}</span>
+              </>
+            }
+          </span>
+        </div>
+        <Tooltip ComponentId={977} />
+        </>
+      
+    );
   };
 
   const getEvents = async (): Promise<IEventData[]> => {
@@ -475,7 +497,7 @@ const App = (props: any) => {
     console.log(eventsFormatted,"dadd"  );
     // return;
     let localcomp = [];
-    let startdate: any, enddate: any,createdAt:any;
+    let startdate: any, enddate: any,createdAt:any,modifyAt:any;
     const web = new Web(props.props.siteUrl);
     await web.lists
       .getById(props.props.SmalsusLeaveCalendar)
@@ -511,8 +533,7 @@ const App = (props: any) => {
             startdate.setMinutes(startdate.getMinutes() - 30);
 
             createdAt = new Date(item.Created)
-            createdAt.setHours(createdAt.getHours() - 12);
-            createdAt.setMinutes(createdAt.getMinutes() - 30);
+            modifyAt = new Date(item.Modified)
             
             enddate = new Date(item.EndDate);
             enddate.setHours(enddate.getHours() - 12);
@@ -539,6 +560,8 @@ const App = (props: any) => {
             eventType: item.Event_x002d_Type,
             created: item.Author.Title,
             modify: item.Editor.Title,
+            cTime :createdAt,
+            mTime:modifyAt,
           };
           // const create ={
           //   id:item.Id,
@@ -584,7 +607,7 @@ const App = (props: any) => {
       if(chkstartDate > chkendDate){
         alert("End Date cant fall behind start date")
       }
-      else if(chkstartDate < chkendDate){
+      else if(chkstartDate <= chkendDate){
         {
           if(newRecurrenceEvent) {
             await saveRecurrenceEvent();
@@ -1187,6 +1210,12 @@ const App = (props: any) => {
         setLocation(item.location);
         createdBY = item.created;
         modofiedBy = item.modify;
+        const date1 = moment(item.cTime);
+        CTime = date1.format('HH:mm:ss');
+        CDate=date1.format('DD/MM/YYYY');
+        const date = moment(item.mTime);
+        MTime = date.format('HH:mm:ss');
+        MDate=date.format('DD/MM/YYYY');
         setType(item.eventType);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
@@ -1194,6 +1223,90 @@ const App = (props: any) => {
       }
     });
   };
+
+  console.log(CTime,MTime,"faees")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const Number=()=>{
+//   console.log("hdgawdgawdjkawdjkawb")
+// }
+
+
+
+  // const slotsWithMoreEvents = events.reduce((acc:any, event:any) => {
+  //   const slot = acc.find((slot:any) => slot.start === event.start && slot.end === event.end);
+  //   if (slot) {
+  //     slot.events.push(event);
+  //   } else {
+  //     acc.push({ start: event.start, end: event.end, events: [event] });
+  //   }
+  //   return acc;
+  // }, [] as { start: Date; end: Date; events: Event[] }[]);
+
+  // const components = {
+  //   timeSlotWrapper: ({ children, value }:any) => {
+  //     const slot = slotsWithMoreEvents.find(
+  //       (slot:any) => slot.start === value.start && slot.end === value.end
+  //     );
+
+  //     return slot ? (
+  //       <MoreSlot hiddenEvents={slot.events} />
+  //     ) : (
+  //       <div><button onClick={Number}>{children}</button>
+        
+  //         </div>
+  //     );
+  //   },
+  // };
+
+
+
+
+  const handleShowMore = (events:any , date:any) => {
+    // Perform any actions you need when showing more events
+    console.log('Show more events:', events);
+    console.log('Date:', date);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
   const handleSelectSlot = (slotInfo: any) => {
     // myButton.removeAttribute("onclick");
@@ -1223,33 +1336,9 @@ const App = (props: any) => {
       setIsChecked(false);
       setDisableTime(false);
       maxD = new Date(8640000000000000);
-      // setSelectedTime(startDateTime);
-      // setSelectedTimeEnd(endDateTime);
-      //  setsaveE(newEvent);
-      // saveEvent(newEvent);
-      // setEvents([...events, newEvent]);
-      // const title = window.prompt("Enter event title:");
-
-      // if (title) {
-
-      //   const newEvent = {
-      //     title,
-      //     start: slotInfo.start,
-      //     end: slotInfo.end,
-      //   };
-      //   setEvents([...events, newEvent]);
-      //   console.log(events);
-      // }
+      
     }
-    // (date.getTime() === today.getTime()) {
-    //   console.log("The date is equal to today's date.");
-    // }
-    // else if (date.getTime() < today.getTime()) {
-    //   console.log("The date is in the past.");
-    // }
-    // else {
-    //   console.log("The date is in the future.");
-    // }
+   
   };
   const handleTimeChange = (time: any) => {
     time = time.target.value;
@@ -1292,15 +1381,14 @@ const App = (props: any) => {
     }
   };
 
-  // const endDateSetFunction = (date: any) => {
-  //   if (isChecked == false || allDay == true) {
-  //     setEndDate(startDate);
-  //     maxD = startDate;
-  //     console.log(maxD);
-  //   } else {
-  //     setEndDate(date);
-  //   }
-  // };
+  
+
+
+  
+
+  
+
+
   React.useEffect(() => {
     //void getSPCurrentTimeOffset();
     void getData();
@@ -1316,6 +1404,8 @@ const App = (props: any) => {
           defaultView="month"
           startAccessor="start"
           endAccessor="end"
+          //components={components}
+          onShowMore={handleShowMore}
           defaultDate={moment().toDate()}
           // defaultView={Views.MONTH}
           views={{ month: true, week: false, day: false, agenda: false }}
@@ -1325,7 +1415,7 @@ const App = (props: any) => {
       </div>
 
       <Panel
-        headerText="Leave-S"
+        onRenderHeader={onRenderCustomHeader}
         isOpen={m}
         onDismiss={closem}
         // isFooterAtBottom={true}
@@ -1336,7 +1426,6 @@ const App = (props: any) => {
           <div className="col-md-12">
             <TextField
               label="Title"
-              styles={{ root: { width: "70%" } }}
               value={inputValueName}
               onChange={handleInputChangeName}
             />
@@ -1345,7 +1434,6 @@ const App = (props: any) => {
             <div className="col-md-6">
               <DatePicker
                 label="Start Date"
-                styles={{ root: { width: "70%" } }}
                 minDate={minDate}
                 value={startDate}
                 onSelectDate={(date) => setStartDatefunction(date)}
@@ -1354,8 +1442,8 @@ const App = (props: any) => {
             </div>
           )}
           {!disableTime ? (
-            <div className="col-md-6">
-              <label htmlFor="1">Start Time:</label>
+            <div className="col-md-6  mt-4">
+              <label htmlFor="1" className="w-100">Start Time:</label>
               <input
                 id="1"
                 type="time"
@@ -1371,7 +1459,6 @@ const App = (props: any) => {
             <div className="col-md-6">
               <DatePicker
                 label="End Date"
-                styles={{ root: { width: "70%" } }}
                 value={endDate}
                 minDate={startDate}
                 maxDate={maxD}
@@ -1380,8 +1467,8 @@ const App = (props: any) => {
             </div>
           )}
           {!disableTime ? (
-            <div className="col-md-6">
-              <label htmlFor="2">End Time:</label>
+            <div className="col-md-6  mt-4">
+              <label htmlFor="2" className="w-100">End Time:</label>
               <input
                 id="2"
                 type="time"
@@ -1397,7 +1484,7 @@ const App = (props: any) => {
           <div>
             <label>
               <input
-                type="checkbox"
+                type="checkbox" className="me-1"
                 checked={isChecked}
                 onChange={handleCheckboxChange}
               />
@@ -1407,14 +1494,14 @@ const App = (props: any) => {
           {
             <div>
               {showRecurrence && (
-                <div
+                <div className="bdr-radius"
                   style={{
                     display: "inline-block",
                     verticalAlign: "top",
                     width: "200px",
                   }}
                 >
-                  <Toggle
+                  <Toggle className="rounded-pill"
                     defaultChecked={false}
                     checked={showRecurrenceSeriesInfo}
                     inlineLabel
@@ -1438,7 +1525,6 @@ const App = (props: any) => {
           <div>
             <TextField
               label="Location"
-              styles={{ root: { width: "70%" } }}
               value={location}
               onChange={handleInputChangeLocation}
             />
@@ -1452,7 +1538,6 @@ const App = (props: any) => {
         </form>
 
         <Dropdown
-          styles={{ root: { width: "70%" } }}
           label="Leave Type"
           options={leaveTypes}
           selectedKey={type}
@@ -1470,9 +1555,9 @@ const App = (props: any) => {
         )}
 
         {!disabl ? <PrimaryButton text="Update" onClick={updateElement} /> : ""}
-        {!disabl ? <p>Created By: {createdBY}</p> : ""}
+        {!disabl ? <p>Created By: {createdBY} On {CDate} at  {CTime}</p> : ""}
 
-        {!disabl ? <p>Modified By: {modofiedBy}</p> : ""}
+        {!disabl ? <p>Modified By: {modofiedBy} On {MDate} at {MTime}</p> : ""}
         <br />
         {!disab ? <PrimaryButton text="Submit" onClick={saveEvent} /> : ""}
       </Panel>

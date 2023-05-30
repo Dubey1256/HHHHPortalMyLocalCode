@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Tooltip from '../../globalComponents/Tooltip'
 import * as globalCommon from '../globalCommon'
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
@@ -91,6 +92,50 @@ function TimeEntryPopup(item: any) {
     //     console.log(CurntUserId)
 
     // });
+    const onRenderCustomHeaderAddTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Add Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
+      const onRenderCustomHeaderEditTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Edit Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
+      const onRenderCustomHeaderCopyTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Copy Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
+      const onRenderCustomHeaderEditCategory= () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Edit Category
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
 
     const changeDate = (val: any, Type: any) => {
 
@@ -2094,7 +2139,7 @@ function TimeEntryPopup(item: any) {
 
 
             <Panel
-                headerText="Add Task Time"
+                onRenderHeader={onRenderCustomHeaderAddTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={TaskStatuspopup}
@@ -2357,7 +2402,7 @@ function TimeEntryPopup(item: any) {
             {/* ---------------------------------------------------------------------EditTime--------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
-                headerText="Edit Task Time"
+                onRenderHeader={onRenderCustomHeaderEditTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={TaskStatuspopup2}
@@ -2614,7 +2659,7 @@ function TimeEntryPopup(item: any) {
 
 
             <Panel
-                headerText="Copy Task Time"
+               onRenderHeader={onRenderCustomHeaderCopyTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={CopyTaskpopup}
@@ -2871,7 +2916,7 @@ function TimeEntryPopup(item: any) {
             {/* ----------------------------------------Add Time Popup------------------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
-                headerText="Add Task Time"
+               onRenderHeader={onRenderCustomHeaderAddTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={AddTaskTimepopup}
@@ -3099,7 +3144,7 @@ function TimeEntryPopup(item: any) {
             {/* --------------------------------------------------------------------------Start EDit Category------------------------------------------------------------------------------------------- */}
 
             <Panel
-                headerText="Edit Category"
+                onRenderHeader={onRenderCustomHeaderEditCategory}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={Editcategory}
