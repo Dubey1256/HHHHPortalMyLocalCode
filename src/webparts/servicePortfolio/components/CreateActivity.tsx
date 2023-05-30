@@ -3,7 +3,8 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { Web } from "sp-pnp-js";
 import TeamConfigurationCard from '../../../globalComponents/TeamConfiguration/TeamConfiguration';
 import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponents/FlorarImageUploadComponent';
-import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
+//import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
+import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import * as Moment from 'moment';
 import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
@@ -24,6 +25,7 @@ var ResponsibleTeamIds: any = [];
 var TaskTypeItems: any = [];
 var SharewebTasknewTypeId: any = ''
 var SharewebTasknewType: any = ''
+var FeedBackItem: any = {};
 var SelectedTasks: any = []
 var Task: any = []
 var TeamMemberIds: any = [];
@@ -587,12 +589,14 @@ const CreateActivity = (props: any) => {
             }
         });
     };
+    
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
-        if (EditorData.length > 0) {
+      
+        if (EditorData.length > 8) {
             AllItems.Body = EditorData;
 
             let param: any = Moment(new Date().toLocaleString())
-            var FeedBackItem: any = {};
+          
             FeedBackItem['Title'] = "FeedBackPicture" + param;
             FeedBackItem['FeedBackDescriptions'] = [];
             FeedBackItem.FeedBackDescriptions = [{
@@ -600,11 +604,13 @@ const CreateActivity = (props: any) => {
             }]
             FeedBackItem['ImageDate'] = "" + param;
             FeedBackItem['Completed'] = '';
+           
         }
-        FeedBackItemArray.push(FeedBackItem)
+       
 
     }, [])
     const saveNoteCall = () => {
+        FeedBackItemArray.push(FeedBackItem)
         var TaskprofileId: any = ''
         if (NewArray != undefined && NewArray.length > 0) {
             NewArray.map((NeitemA: any) => {
@@ -784,16 +790,13 @@ const CreateActivity = (props: any) => {
                                 for (var i = 0; i < byteArray.byteLength; i++) {
                                     fileData += String.fromCharCode(byteArray[i]);
                                 }
-                                if (res.data.listId != undefined) {(async () => {
+                                if (res.data.listId != undefined){
                                         let web = new Web(dynamicList?.siteUrl);
-                                        let item = await web.lists.getById(res.data.listId).items.getById(res.data.Id);
+                                        let item =  web.lists.getById(res.data.listId).items.getById(res.data.Id);
                                         item.attachmentFiles.add(fileName, data);
                                         console.log("Attachment added");
-                                        UpdateBasicImageInfoJSON(tempArray,res.data);
-                                       
-                                     
-                                    })
-                                    ().catch(console.log)
+                                        UpdateBasicImageInfoJSON(tempArray,res.data); 
+                                   
                                 }
                         }
                       
@@ -1116,11 +1119,11 @@ const CreateActivity = (props: any) => {
                                     
                                     </div>
                                     <div className='col-sm-7'>
-                                        <FroalaCommentBox
-                                            EditorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
-                                            callBack={HtmlEditorCallBack}
+                                        <HtmlEditorCard
+                                            editorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
+                                            HtmlEditorStateChange={HtmlEditorCallBack}
                                         >
-                                        </FroalaCommentBox>
+                                        </HtmlEditorCard>
                                     </div>
                                 </div>
 

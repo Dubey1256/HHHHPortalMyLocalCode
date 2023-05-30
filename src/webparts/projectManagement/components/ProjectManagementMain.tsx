@@ -1217,7 +1217,7 @@ const ProjectManagementMain = (props: any) => {
               </ul>
             </div>
           </div>
-          <div className="Dashboardsecrtion">
+          <div className="ProjectManagementPage Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
                 {/* <button

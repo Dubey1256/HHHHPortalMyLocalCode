@@ -94,7 +94,11 @@ const EmailComponent = (props: any) => {
         }
 
         <div style={{ marginTop: "11.25pt" }}>
-          <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props.items.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u></div>
+          <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
+        </div>
+        {/* <div style={{ marginTop: "11.25pt" }}>
+            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u>
+          </div> */}
         <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
           <tbody>
             <tr>

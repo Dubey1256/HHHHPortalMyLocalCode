@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
+import * as globalCommon from '../globalCommon'
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
 var changeTime: any = 0;
@@ -2098,7 +2099,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
-                isBlocking={false}
+                isBlocking={TaskStatuspopup}
             >
                 <div className="modal-body border p-3  ">
 
@@ -2248,7 +2249,7 @@ function TimeEntryPopup(item: any) {
                                         </div>
                                         <div className="col-sm-3 ps-0">
                                             <label></label>
-                                            <input className="form-control bg-e9" type="text" value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
+                                            <input className="form-control bg-e9" type="text" readOnly style={{cursor:"not-allowed"}} value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
                                             />
                                         </div>
                                         <div
@@ -2343,16 +2344,16 @@ function TimeEntryPopup(item: any) {
                     </div>
 
                 </div>
-                <div className="modal-footer">
+                <div className="modal-footer mt-1">
+                    <button type="button" className="btn btn btn-default mx-1" onClick={closeTaskStatusUpdatePoup}>
+                        Cancel
+                    </button>
                     <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
                 </div>
             </Panel>
-
-
-
             {/* ---------------------------------------------------------------------EditTime--------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
@@ -2361,7 +2362,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={TaskStatuspopup2}
                 onDismiss={closeTaskStatusUpdatePoup2}
-                isBlocking={false}
+                isBlocking={TaskStatuspopup2}
             >
                 {saveEditTaskTime.map((item: any) => {
                     return (
@@ -2500,7 +2501,7 @@ function TimeEntryPopup(item: any) {
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
                                                             <label></label>
-                                                            <input className="form-control bg-e9" type="text" value={`${(TimeInHours > 0 || TimeInMinutes == undefined) ? TimeInHours : child.TaskTime} Hours`}
+                                                            <input className="form-control bg-e9" type="text" readOnly style={{cursor:"not-allowed"}} value={`${(TimeInHours > 0 || TimeInMinutes == undefined) ? TimeInHours : child.TaskTime} Hours`}
                                                             />
                                                         </div>
                                                         <div
@@ -2618,7 +2619,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={CopyTaskpopup}
                 onDismiss={closeCopyTaskpopup}
-                isBlocking={false}
+                isBlocking={CopyTaskpopup}
             >
                 {saveCopyTaskTime.map((item: any) => {
                     return (
@@ -2757,7 +2758,7 @@ function TimeEntryPopup(item: any) {
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
                                                             <label></label>
-                                                            <input className="form-control bg-e9" type="text" value={`${TimeInHours != 0 ? TimeInHours : child.TaskTime} Hours`}
+                                                            <input className="form-control bg-e9" readOnly style={{cursor:"not-allowed"}} type="text" value={`${TimeInHours != 0 ? TimeInHours : child.TaskTime} Hours`}
                                                                 onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                         </div>
                                                         <div
@@ -2875,7 +2876,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={AddTaskTimepopup}
                 onDismiss={closeAddTaskTimepopup}
-                isBlocking={false}
+                isBlocking={AddTaskTimepopup}
             >
                 <div className="modal-body  border p-3  ">
 
@@ -3103,7 +3104,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={Editcategory}
                 onDismiss={closeEditcategorypopup}
-                isBlocking={false}
+                isBlocking={Editcategory}
             >
                 <div className="modal-body border  p-3  ">
 
@@ -3172,9 +3173,6 @@ function TimeEntryPopup(item: any) {
 
                 </div>
             </Panel>
-
-
-
         </div>
     )
 }

@@ -117,9 +117,9 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
             web = new Web(this.props.Sitel.siteUrl);
         }
         let taskDetails = [];
-        if (this.props.ItemInfo.listId != undefined) {
+        if (this.props.ItemInfo.listId != undefined || this.props?.ItemInfo?.listName != undefined) {
             taskDetails = await web.lists
-                .getById(this.props.ItemInfo.listId)
+                .getById(this.props?.ItemInfo?.listId || this.props?.ItemInfo?.listName)
                 .items
                 .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
@@ -127,7 +127,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                 .get()
         } else {
             taskDetails = await web.lists
-                .getById(this.props.ItemInfo.listName)
+                .getByTitle(this.props?.ItemInfo?.siteType )
                 .items
                 .getById(this.props.ItemInfo.Id)
                 .select("ID", "Title", "AssignedTo/Title", "AssignedTo/Id", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "Component/Id", "Component/Title", "Services/Id", "Services/Title")
