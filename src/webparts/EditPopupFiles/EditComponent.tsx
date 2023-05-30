@@ -1785,7 +1785,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="Service"
+                                name="Component"
                                 value={SearchedServiceCompnentKey}
                                 onChange={(e) =>
                                   autoSuggestionsForServiceAndComponent(e)
@@ -1819,7 +1819,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                               <input
                                 type="text"
                                 className="form-control"
-                                name="Component"
+                                name="Service"
                                 value={SearchedServiceCompnentKey}
                                 onChange={(e) =>
                                   autoSuggestionsForServiceAndComponent(e)

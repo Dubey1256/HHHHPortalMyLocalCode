@@ -268,7 +268,7 @@ function Tooltip(props: any) {
     <>
       <Popup
         trigger={
-          <button type='button' className='Burgermenu'><BiMenu /></button>
+          <button type='button' className='burgerMenu'><BiMenu /></button>
         }
         position="left top"
         on="hover"
