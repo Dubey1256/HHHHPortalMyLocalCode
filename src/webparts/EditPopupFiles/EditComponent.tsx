@@ -143,11 +143,11 @@ function EditInstitution({ item, SelectD, Calls }: any) {
       }
     }
     if (functionType == "Close") {
-      if (type == "Service") {
+      
         setIsService(false);
-      } else {
+     
         setIsComponent(false);
-      }
+     
     } else {
       if (type == "Component") {
         if (item1 != undefined && item1.length > 0) {
