@@ -10,7 +10,7 @@ import CreateTaskComponent from '../../createTask/components/CreateTaskComponent
 
 var siteConfig: any = []
 const CreateTaskFromProject = (props: any) => {
-    const [lgShow, setLgShow] = useState(false);
+    const [lgShow, setLgShow] = useState(true);
     const[isOpenEditPopup,setisOpenEditPopup] = React.useState(false)
     const handleClose = () => {
          setLgShow(false);
@@ -19,9 +19,9 @@ const CreateTaskFromProject = (props: any) => {
         setisOpenEditPopup(true)
     },[])
    
-    const OpenCreateTaskPopup = () => {
-        setLgShow(true)
-    }
+    // const OpenCreateTaskPopup = () => {
+    //     setLgShow(true)
+    // }
    
     const callBack=()=>{
         props?.callBack()

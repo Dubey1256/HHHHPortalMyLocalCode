@@ -1677,7 +1677,7 @@ const TaskDashboard = (props: any) => {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup=groupedUsers;
