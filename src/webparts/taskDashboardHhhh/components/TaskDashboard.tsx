@@ -1677,7 +1677,7 @@ const TaskDashboard = (props: any) => {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup=groupedUsers;
@@ -1842,7 +1842,7 @@ const TaskDashboard = (props: any) => {
             <div className='header-section justify-content-between'>
                 <h2 style={{ color: "#000066", fontWeight: "600" }}>Task Dashboard</h2>
             </div>
-            <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
+            <div className="TaskDashboardPage Dashboardsecrtion" style={{ minHeight: '800px' }}>
                 <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
                     <aside className="sidebar">
                         <button
