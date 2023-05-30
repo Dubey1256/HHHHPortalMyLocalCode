@@ -3695,7 +3695,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="svg__iconbox svg__icon--edit"
+                    className="mt-1 svg__iconbox svg__icon--edit"
                     onClick={(e) => EditComponentPopup(row?.original)}
                   ></span>
                 </a>
@@ -3711,7 +3711,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="svg__iconbox svg__icon--edit"
+                    className="mt-1 svg__iconbox svg__icon--edit"
                     onClick={(e) => EditItemTaskPopup(row?.original)}
                   ></span>
                 </a>
