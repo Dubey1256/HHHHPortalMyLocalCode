@@ -19,8 +19,9 @@ import PageLoader from '../../../globalComponents/pageLoader';
 import TeamLeaderHeader from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderHeader';
 import TeamLeaderPieChart from '../../../globalComponents/TeamLeaderHeaderSection/TeamLeaderPieChart';
 var taskUsers: any = [];
-var userGroups: any = [];
+var AllTeamLeadersGroup: any = [];
 var siteConfig: any = [];
+var isTeamLeader=false;
 var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
@@ -40,7 +41,10 @@ var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 function TeamDashboard(props:any) {
   const [currentUserData, setCurrentUserData]: any = React.useState({});
-  const [groupedUsers, setGroupedUsers] = React.useState([]);
+  const [AllTeamMembers, setAllTeamMembers] = React.useState([]);
+  const [AllTeamLeaders, setAllTeamLeaders] = React.useState([]);
+  const [selectedTeamLeader, setSelectedTeamLeader] = React.useState({});
+  const [showContent, setShowContent] = React.useState(false);
 
 
   React.useEffect(() => {
@@ -79,25 +83,50 @@ function TeamDashboard(props:any) {
 }, []);
 // Current User ,Task User and Grouped User
 const getCurrentUserDetails = async () => {
-  try {
-      currentUserId = props?.props?.pageContext?.legacyPageContext?.userId
-      taskUsers = await loadTaskUsers();
-      taskUsers?.map((item: any) => {
-          item.isAdmin = false;
-          if (currentUserId == item?.AssingedToUser?.Id) {
-              currentUser = item;
-              setCurrentUserData(item);
-          }
-          item.expanded = false;
-          getChilds1(item, taskUsers);
-          userGroups.push(item);
-      })
-      userGroups?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)
-      setGroupedUsers(userGroups);
-      GetMetaData();
-  } catch (error) {
-      console.log(error)
+    try {
+        currentUserId = props?.props?.pageContext?.legacyPageContext?.userId
+        taskUsers = await loadTaskUsers();
+        let TeamLeaders: any=[];
+       
+        taskUsers?.map((item: any) => {
+            item.isAdmin = false;
+              if(item?.TeamLeader!=undefined){
+                  if(!TeamLeaders?.find((obj:any) => obj.Id === item?.TeamLeader?.Id)){
+                      item.TeamLeader.childs=[];
+                      TeamLeaders.push(item.TeamLeader)
+                  }
+                  TeamLeaders?.map((Leader:any)=>{
+                      if(Leader?.Id==item?.TeamLeader?.Id){
+                          Leader.childs.push(item);
+                      }
+                  })
+              }
+            if (currentUserId == item?.AssingedToUser?.Id) {
+                currentUser = item;
+                setCurrentUserData(item);
+            }
+            item.expanded = false;
+        })
+        AllTeamLeadersGroup=TeamLeaders
+        TeamLeaders?.map((Leader:any)=>{
+            if(Leader?.Id==currentUser?.Id){
+                isTeamLeader=true;
+                setSelectedTeamLeader(Leader);
+            }
+        })
+        setShowContent(isTeamLeader)
+        if(isTeamLeader==false){
+          alert("You are not authorized to visit this page.")
+        }
+        
+        GetMetaData();
+    } catch (error) {
+        console.log(error)
+    }
+    console.log(AllTeamLeadersGroup);
+    console.log(selectedTeamLeader);
   }
+const getTeamLeadsMember=(TeamLead:any)=>{
 
 }
 const loadTaskUsers = async () => {
@@ -108,7 +137,7 @@ const loadTaskUsers = async () => {
           taskUser = await web.lists
               .getById(AllListId?.TaskUsertListID)
               .items
-              .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+              .select("Id,UserGroupId,Suffix,Title,Email,TeamLeader/Id,TeamLeader/Title,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=TeamLeader,AssingedToUser,Approver")
               .get();
       }
       catch (error) {
@@ -201,6 +230,7 @@ const GetMetaData = async () => {
 // End Metadata
 // All Sites Task
 const LoadAllSiteTasks = function () {
+
   let AllSiteTasks: any = [];
   let approverTask: any = [];
   let SharewebTask: any = [];
@@ -214,7 +244,7 @@ const LoadAllSiteTasks = function () {
   let web = new Web(AllListId?.siteUrl);
   let arraycount = 0;
   try {
-      if (currentUserId != undefined && siteConfig?.length > 0) {
+      if (currentUserId != undefined && siteConfig?.length > 0&&showContent) {
 
           siteConfig.map(async (config: any) => {
               if (config.Title != "SDC Sites") {
@@ -297,8 +327,8 @@ const LoadAllSiteTasks = function () {
                                           newuserdata["Title"] = user?.Title;
                                           newuserdata["UserId"] = user?.AssingedToUserId;
                                           task["Usertitlename"] = user?.Title;
+                                          task.AllTeamMember.push(newuserdata);
                                       }
-                                      task.AllTeamMember.push(newuserdata);
                                   });
                               });
 
@@ -390,7 +420,8 @@ const getComponentasString = function (results: any) {
 };
 // Region End
   return (
-    <div className="Dashboardsecrtion">
+<>
+{showContent?   <div className="Dashboardsecrtion">
             <div className="dashboard-colm">
               <aside className="sidebar">
                 <section className="sidebar__section sidebar__section--menu">
@@ -419,7 +450,8 @@ const getComponentasString = function (results: any) {
               </div>
              
             </div>
-          </div>
+          </div>:
+          <div>Access Denied</div>        }</>
   )
 }
 
