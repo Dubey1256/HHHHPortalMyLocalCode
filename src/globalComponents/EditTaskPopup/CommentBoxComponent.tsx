@@ -6,7 +6,7 @@ import Example from "./SubCommentComponent";
 import pnp from 'sp-pnp-js';
 import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
-// import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent'
+// import FroalaCommentBox from '../FlorarComponents/FroalaCommentBoxComponent';
 
 const CommentBoxComponent = (commentData: any) => {
     const Context = commentData.Context;
@@ -268,7 +268,6 @@ const CommentBoxComponent = (commentData: any) => {
                                             callBack={HtmlEditorCallBack}
                                         >
                                         </FroalaCommentBox> */}
-
                                     </div>
                                 </div>
                                 <div>
