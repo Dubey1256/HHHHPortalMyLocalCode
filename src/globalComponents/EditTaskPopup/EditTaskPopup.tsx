@@ -2304,6 +2304,7 @@ const EditTaskPopup = (Items: any) => {
     const CommentSectionCallBack = React.useCallback((EditorData: any) => {
         CommentBoxData = EditorData
         BuildFeedBackArray();
+        console.log("First Comment text callback array ====================", CommentBoxData)
 
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
@@ -3110,7 +3111,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="756" />
             </div>
         )
     }
@@ -3122,7 +3123,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1608" />
             </div>
         )
     }
