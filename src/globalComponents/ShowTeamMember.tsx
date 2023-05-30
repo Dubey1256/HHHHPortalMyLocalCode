@@ -87,7 +87,7 @@ function ShowTeamMembers(item: any) {
                     href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew.allMembersEmail}`}
                     target="_blank"
                   >
-                   <span className="svg__iconbox svg__icon--team  "></span>
+                   <span className="svg__iconbox svg__icon--team"></span>
                   </a>
                 </span>
               ) : (
