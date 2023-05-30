@@ -3,6 +3,7 @@ import { Web } from "sp-pnp-js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import Tooltip from '../../../globalComponents/Tooltip'
 const TopNavigation = (dynamicData: any) => {
     var ListId = dynamicData.dynamicData.TopNavigationListID
     const [root, setRoot] = React.useState([])
@@ -103,14 +104,15 @@ const TopNavigation = (dynamicData: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        {`Update TopNavigation`}
-                    </span>
-                </div>
-            </div>
-        );
+      <>
+       <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                  Update TopNavigation
+                  </div>
+                  <Tooltip ComponentId='1810' />
+                  </>
+              );
+
+            
     };
     const UpdateData = async (item: any) => {
         let web = new Web(dynamicData.dynamicData.siteUrl);

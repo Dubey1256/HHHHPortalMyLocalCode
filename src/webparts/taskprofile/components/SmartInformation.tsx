@@ -314,10 +314,11 @@ const SmartInformation = (props: any) => {
         <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
         </div>
-        <Tooltip ComponentId='993' />
+        <Tooltip ComponentId='3299' />
       </>
     );
   };
+  
   //=========panel header for documents upload and edit  ===================
   const onRenderCustomHeaderDocuments = () => {
     return (
@@ -326,7 +327,7 @@ const SmartInformation = (props: any) => {
         <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId='993' />
+        <Tooltip ComponentId='3300' />
       </>
     );
   };
@@ -961,7 +962,7 @@ console.log(data)
       {console.log(masterTaskdetails)}
       <div className='mb-3 card commentsection'>
         <div className='card-header'>
-          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip /></span></div>
+          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip  ComponentId='993'/></span></div>
         </div>
 
         {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
