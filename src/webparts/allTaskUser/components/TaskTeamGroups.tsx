@@ -7,6 +7,7 @@ import { Component } from "react";
 import { ITeamGroupsProps } from "./ITeamGroupsProps";
 import { ITeamGroupsState } from "./ITeamGroupsState";
 import TaskGroupsTable from "./TaskGroupsTable";
+import Tooltip from "../../../globalComponents/Tooltip";
 const controlStyles = {
     root: {
         margin: '10px 5px 20px 0px',
@@ -360,7 +361,29 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         });
     }
 
-   
+    private onRenderCustomHeaderCreateNewGroup= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Create New Group
+            </div>
+            <Tooltip ComponentId='1757' />
+          </>
+        );
+      };
+      
+    private onRenderCustomHeaderUpdateGroup= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Update Group
+            </div>
+            <Tooltip ComponentId='1768' />
+          </>
+        );
+      };
 
     render() {
 
@@ -455,7 +478,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         </div>);
 
         const elemNewTaskGroup = (<Panel
-            headerText="Create New Group"
+            onRenderHeader={ this.onRenderCustomHeaderCreateNewGroup}
             isOpen={this.state.showCreatePanel}
             onDismiss={this.onCancelTask}
             isFooterAtBottom={true}
@@ -511,7 +534,7 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         </div>);
 
         const elemEditTaskGroup = (<Panel
-            headerText="Update Group"
+            onRenderHeader={this.onRenderCustomHeaderUpdateGroup}
             isOpen={this.state.showEditPanel}
             onDismiss={this.onCancelTask}
             isFooterAtBottom={true}

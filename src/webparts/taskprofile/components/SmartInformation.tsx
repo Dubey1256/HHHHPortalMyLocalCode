@@ -189,7 +189,7 @@ const SmartInformation = (props: any) => {
 
         const web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(props?.AllListId?.DocumentsListID)
-          .items.select("Id,Title,Priority_x0020_Rank,Year,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
+          .items.select("Id,Title,Priority_x0020_Rank,Year,Item_x0020_Cover,SharewebTask/Id,SharewebTask/Title,SharewebTask/ItemType,File_x0020_Type,FileLeafRef,FileDirRef,ItemRank,ItemType,Url,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,EncodedAbsUrl")
           .expand("Author,Editor,SharewebTask").filter(`SmartInformation/ID  eq ${items?.Id}`).top(4999)
           .get()
           .then(async (result: any[]) => {
@@ -314,10 +314,11 @@ const SmartInformation = (props: any) => {
         <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {popupEdit ? `Add SmartInformation - ${allValue?.Title}` : `Add SmartInformation - ${taskInfo?.Title}`}
         </div>
-        <Tooltip ComponentId='993' />
+        <Tooltip ComponentId='3299' />
       </>
     );
   };
+  
   //=========panel header for documents upload and edit  ===================
   const onRenderCustomHeaderDocuments = () => {
     return (
@@ -326,7 +327,7 @@ const SmartInformation = (props: any) => {
         <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
           {Editdocpanel ? `Edit Document Metadata - ${EditdocumentsData?.FileLeafRef}` : null}
         </div>
-        <Tooltip ComponentId='993' />
+        <Tooltip ComponentId='3300' />
       </>
     );
   };
@@ -913,8 +914,8 @@ const SmartInformation = (props: any) => {
         
         SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
         Item_x0020_Cover:{ "__metadata": { type: 'SP.FieldUrlValue' },
-        'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
-        'Url': EditdocumentsData?.Url?.Url ? EditdocumentsData?.Url?.Url : "",},
+        'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
+        'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",},
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
@@ -953,7 +954,9 @@ const SmartInformation = (props: any) => {
     setFiltersmartinfo([])
   }
   const imageTabCallBack=React.useCallback((data:any)=>{
+    console.log(EditdocumentsData);
 console.log(data)
+setEditdocumentsData(data);
   },[])
 
   return (
@@ -961,7 +964,7 @@ console.log(data)
       {console.log(masterTaskdetails)}
       <div className='mb-3 card commentsection'>
         <div className='card-header'>
-          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip /></span></div>
+          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip  ComponentId='993'/></span></div>
         </div>
 
         {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {

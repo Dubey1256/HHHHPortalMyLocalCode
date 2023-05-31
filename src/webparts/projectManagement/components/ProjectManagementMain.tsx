@@ -727,8 +727,8 @@ const ProjectManagementMain = (props: any) => {
   //   }
   // };
   //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
-  const createOpenTask=(items:any)=>{
-    setCreateTaskId({ portfolioData: items, portfolioType: 'Component'});
+  const createOpenTask = (items: any) => {
+    setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -763,7 +763,7 @@ const ProjectManagementMain = (props: any) => {
         size: 7,
         canSort: false,
         placeholder: "",
-        id:'PortfolioStructureID',
+        id: 'PortfolioStructureID',
         // header: ({ table }: any) => (
         //   <>
         //     <button className='border-0 bg-Ff'
@@ -796,14 +796,14 @@ const ProjectManagementMain = (props: any) => {
               ) : (
                 ""
               )}{" "}
-             
+
               <> {row?.original?.siteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                   <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> 
+                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
               }
-               <span>{row?.original?.PortfolioStructureID}</span></>
-             
+                <span>{row?.original?.PortfolioStructureID}</span></>
+
               {getValue()}
             </>
           </div>
@@ -824,7 +824,7 @@ const ProjectManagementMain = (props: any) => {
       {
         cell: ({ row }) => (
           <>
-            <span className="hreflink" onClick={()=>createOpenTask(row.original)}>+</span>
+            <span className="hreflink" onClick={() => createOpenTask(row.original)}>+</span>
           </>
         ),
         id: "Title",
@@ -859,21 +859,21 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
 
-          <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
-            <div className="popover__content">
-              <div className="tootltip-title">{row?.original?.Title}
-              </div>
-              <div className="tooltip-body">
-                {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length >0 && 
-            <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-)}
-               
+            <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+              {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
+              <div className="popover__content">
+                <div className="tootltip-title">{row?.original?.Title}
+                </div>
+                <div className="tooltip-body">
+                  {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
+                    <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+                  )}
 
+
+                </div>
               </div>
             </div>
-          </div>
-        </span>
+          </span>
 
         ),
       },
@@ -1064,10 +1064,15 @@ const ProjectManagementMain = (props: any) => {
         Cell: ({ row }: any) => (
           <span>
             {
-             row.original.Services.length >= 1 ? <span className="ms-1 text-success">{row?.original?.DisplayCreateDate} </span> : <span className="ms-1">{row?.original?.DisplayCreateDate} </span>
+              row.original.Services.length >= 1 ? <span className="ms-1 text-success">{row?.original?.DisplayCreateDate} </span> : <span className="ms-1">{row?.original?.DisplayCreateDate} </span>
             }
 
-            {row?.original?.createdImg != undefined ? <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} /> : <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
+            {row?.original?.createdImg != undefined ? <>
+              <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
+                data-interception="off" >
+                <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+              </a>
+            </> : <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
 
           </span>
         ),
@@ -1710,8 +1715,8 @@ const ProjectManagementMain = (props: any) => {
                       itemID={QueryId}
                     />
                   )}
-                </span> 
-                 <span>
+                </span>
+                <span>
                   {(QueryId != undefined && isSmartInfoAvailable) ?
                     <SmartInformation
                       AllListId={AllListId}

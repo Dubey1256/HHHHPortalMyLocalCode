@@ -1,7 +1,7 @@
 import * as React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
-
+import Tooltip from '../Tooltip';
 const ExpndTable = (props: any) => {
   //  Must include id in the table section
   if (props !=undefined && props.prop1 != undefined) {
@@ -52,6 +52,7 @@ const ExpndTable = (props: any) => {
               >
                 Expand Search Result
               </h1>
+              <span><Tooltip ComponentId='3299'/></span>
               <button
                 type="button"
                 className="btn-close"

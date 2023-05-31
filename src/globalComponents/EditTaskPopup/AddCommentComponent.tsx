@@ -61,7 +61,7 @@ const AddCommentComponent = (FbData: any) => {
             }
         })
         setFeedBackArray(tempArray);
-        FbData.callBack(isSubtextComment, tempArray, indexOfDeleteElement);
+        FbData.callBack(isSubtextComment, tempArray, indexOfSubtext);
     }
     const handleChangeInput = (e: any) => {
         setPostTextInput(e.target.value)
@@ -221,8 +221,8 @@ const AddCommentComponent = (FbData: any) => {
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
                                                     <span>
-                                                        <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, 0, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
-                                                        <a className="ps-1" onClick={() => clearComment(true, index, 0)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
+                                                        <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
+                                                        <a className="ps-1" onClick={() => clearComment(true, index, FbData?.index)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
                                                     </span>
                                                 </div>
                                                 <div>
@@ -268,17 +268,17 @@ const AddCommentComponent = (FbData: any) => {
                                 <textarea id="txtUpdateComment" rows={6} onChange={(e) => updateCommentFunction(e, updateComment)} style={{ width: '100%', marginLeft: '3px' }} defaultValue={updateComment ? updateComment.Title : ''}>
                                 </textarea>
                             </div>
-                            <footer className="d-flex justify-content-between ms-3 mx-2">
-                                <div className="d-flex">
+                            <footer className="d-flex justify-content-between ms-3 mx-2 float-end">
+                                {/* <div className="d-flex">
                                     <input type="checkbox" defaultChecked={updateComment ? (updateComment.isApprovalComment ? true : false) : false} className="form-check-input m-0 me-1 mt-1 rounded-0" />
                                     <label className="siteColor">Mark as Approval Comment</label>
-                                </div>
+                                </div> */}
                                 <div>
+                                <button className='btn btn-default mx-1 px-2' onClick={editPostCloseFunction}>
+                                        Cancel
+                                    </button>
                                     <button className="btn btnPrimary" onClick={editPostCloseFunction}>
                                         Save
-                                    </button>
-                                    <button className='btn btn-default mx-1' onClick={editPostCloseFunction}>
-                                        Cancel
                                     </button>
                                 </div>
                             </footer>

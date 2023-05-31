@@ -26,53 +26,55 @@ const BackgroundCommentComponent = (Props: any) => {
         let DataObject: any = {
             data_url: dt,
             file: "Image/jpg",
-            fileName:`Cover_Imgage_${BackgroundImageData?.length+1}_${Props.TaskData.Id}_${Props.TaskData.siteType}.jpg`
+            fileName: `Cover_Imgage_${BackgroundImageData?.length + 1}_${Props.TaskData.Id}_${Props.TaskData.siteType}.jpg`
         }
         let ReplaceImageData = DataObject;
         uploadImageFolder(ReplaceImageData)
     }
-   const uploadImageFolder=(Data:any)=>{
-    var src = Data.data_url?.split(",")[1];
-    var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
-        return c.charCodeAt(0);
-    }));
-    const data: any = byteArray
-    var fileData = '';
-    for (var i = 0; i < byteArray.byteLength; i++) {
-        fileData += String.fromCharCode(byteArray[i]);
-    }
-         
-    const web=new Web(siteUrls);
-    const folder = web.getFolderByServerRelativeUrl(`PublishingImages/Covers`);
-    folder.files.add(Data.fileName, data).then(async(item: any) => {
-        console.log(item)
-        // let hostWebURL = Context.pageContext._site.absoluteUrl.replace(Context.pageContext._site.absoluteUrl,"");
-        let imageURL: string = `${Context._pageContext._web.absoluteUrl.split(Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
-        await web.getFileByServerRelativeUrl(`${Context?._pageContext?._web?.serverRelativeUrl}/PublishingImages/Covers/${Data.fileName}`).getItem()
-     
-        .then(async (res: any) => {
-          console.log(res);
-         
-          let obj={
-            "AdminTab": "Admin",
-             "Id": res.Id,
-             "Url": imageURL,
-             "counter": BackgroundImageData?.length,
-             "UploadeDate": Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY'),
-             "UserName": Context._pageContext._user.displayName,
-             "ImageName": Data.fileName,
-             
-          }
-          console.log(obj)
-         
-        }).catch((error:any)=>{
-            console.log(error)
+    const uploadImageFolder = (Data: any) => {
+        var src = Data.data_url?.split(",")[1];
+        var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+            return c.charCodeAt(0);
+        }));
+        const data: any = byteArray
+        var fileData = '';
+        for (var i = 0; i < byteArray.byteLength; i++) {
+            fileData += String.fromCharCode(byteArray[i]);
+        }
+
+        const web = new Web(siteUrls);
+        const folder = web.getFolderByServerRelativeUrl(`PublishingImages/Covers`);
+        folder.files.add(Data.fileName, data).then(async (item: any) => {
+            console.log(item)
+            // let hostWebURL = Context.pageContext._site.absoluteUrl.replace(Context.pageContext._site.absoluteUrl,"");
+            let imageURL: string = `${Context._pageContext._web.absoluteUrl.split(Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
+            await web.getFileByServerRelativeUrl(`${Context?._pageContext?._web?.serverRelativeUrl}/PublishingImages/Covers/${Data.fileName}`).getItem()
+
+                .then(async (res: any) => {
+                    console.log(res);
+
+                    let obj = {
+                        "AdminTab": "Admin",
+                        "Id": res.Id,
+                        "Url": imageURL,
+                        "counter": BackgroundImageData?.length,
+                        "UploadeDate": Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY'),
+                        "UserName": Context._pageContext._user.displayName,
+                        "ImageName": Data.fileName,
+
+                    }
+                    console.log(obj)
+                    BackgroundImageData.push(obj);
+                    updateCommentFunction(BackgroundImageData, "OffshoreImageUrl")
+
+                }).catch((error: any) => {
+                    console.log(error)
+                })
         })
-    })
-    .catch((error:any)=>{
- console.log(error)
-  })
-   }
+            .catch((error: any) => {
+                console.log(error)
+            })
+    }
     // This is used for Adding Background Comments 
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
@@ -92,7 +94,7 @@ const BackgroundCommentComponent = (Props: any) => {
             BackgroundComments.push(CommentJSON);
             setBackgroundComments(BackgroundComments);
             setBackgroundComment("");
-            updateCommentFunction(BackgroundComments);
+            updateCommentFunction(BackgroundComments, "OffshoreComments");
         } else {
             alert("Please Enter Your Comment First!")
         }
@@ -115,16 +117,24 @@ const BackgroundCommentComponent = (Props: any) => {
         }
 
         setBackgroundComments(tempArray);
-        updateCommentFunction(tempArray);
+        updateCommentFunction(tempArray, "OffshoreComments");
         tempArray = [];
     }
     // This is common function for  Update Commnent on Backend Side 
-    const updateCommentFunction = async (UpdateData: any) => {
+    const updateCommentFunction = async (UpdateData: any, columnName: any) => {
         try {
             let web = new Web(siteUrls);
-            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update({
-                OffshoreComments: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
-            }).then(() => {
+            let tempObject:any= {}
+            if (columnName == "OffshoreComments") {
+                tempObject = {
+                    OffshoreComments : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                }
+            }else{
+                tempObject = {
+                    OffshoreImageUrl : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                }
+            }
+            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update({tempObject}).then(() => {
                 console.log("Background Comment Updated !!!")
             })
         } catch (error) {
@@ -142,7 +152,7 @@ const BackgroundCommentComponent = (Props: any) => {
     const ChangeCommentFunction = () => {
         if (BackgroundComments != undefined && BackgroundComments.length > 0) {
             BackgroundComments[CurrentIndex].Body = UpdateCommentData;
-            updateCommentFunction(BackgroundComments);
+            updateCommentFunction(BackgroundComments, "OffshoreComments");
             setUpdateCommentData("");
         }
         setEditCommentPanel(false);
