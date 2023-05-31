@@ -80,15 +80,25 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
     }
 
     render() {
-        
+       
         const elemTaskTeamMembers = <TaskTeamMembers tasks={this.state.teamMembersTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks} teamGroups={this.state.teamGroupsTasks} taskUsersListId={this.props.taskUsersListId} smartMetadataListId={this.props.smartMetadataListId} imagesLibraryId={this.props.imagesLibraryId} defaultApproverEMail={"deepak@hochhuth-consulting.de"} />;
         const elemTaskTeamGroups = <TaskTeamGroups tasks={this.state.teamGroupsTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks}  taskUsersListId={this.props.taskUsersListId} />;
-
-        const elemPivot = (<Pivot linkFormat={ PivotLinkFormat.tabs } linkSize={ PivotLinkSize.normal }>
+           
+        const elemPivot = (
+            <>
+              <div className='header-section full-width justify-content-between'>
+        <h2 style={{ color: "#000066", fontWeight: "600" }}>TaskUser Management
+            <a data-interception="off" className=' text-end pull-right' target='_blank' href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TaskUser-Management.aspx" style={{ cursor: "pointer", fontSize: "14px" }}>Old TaskUser Management</a>
+        </h2>
+    </div>
+          
+        <Pivot linkFormat={ PivotLinkFormat.tabs } linkSize={ PivotLinkSize.normal }>
+             
             <PivotItem headerText="TEAM MEMBERS">{elemTaskTeamMembers}</PivotItem>
             <PivotItem headerText="TEAM GROUPS">{elemTaskTeamGroups}</PivotItem>
 
-        </Pivot>);
+        </Pivot>
+        </>);
 
         return (<div className="ms-Grid"><div className="ms-Grid-row">{elemPivot}</div></div>);
     }
