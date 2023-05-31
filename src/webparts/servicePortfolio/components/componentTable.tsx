@@ -3706,7 +3706,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="svg__iconbox svg__icon--edit"
+                    className="mt-1 svg__iconbox svg__icon--edit"
                     onClick={(e) => EditComponentPopup(row?.original)}
                   ></span>
                 </a>
@@ -3722,7 +3722,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="svg__iconbox svg__icon--edit"
+                    className="mt-1 svg__iconbox svg__icon--edit"
                     onClick={(e) => EditItemTaskPopup(row?.original)}
                   ></span>
                 </a>
@@ -4592,7 +4592,7 @@ function ComponentTable(SelectedProp: any) {
                     </button>}
 
                     {table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ||
-                      table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows.length === 0 ? <button
+                      table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0 ? <button
                         type="button"
                         className="btn btn-primary"
                         onClick={buttonRestructuring}
