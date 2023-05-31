@@ -3371,7 +3371,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter((user: any) => user.Title === name);
+    const user = AllUsers.filter((user: any) => user.Title == name);
     let Image: any;
     if (user[0]?.Item_x0020_Cover != undefined) {
       Image = user[0].Item_x0020_Cover.Url;
