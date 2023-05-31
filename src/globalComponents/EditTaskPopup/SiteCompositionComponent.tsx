@@ -553,6 +553,26 @@ const SiteCompositionComponent = (Props: any) => {
             </div>
         )
     }
+    const onRenderCustomFooter = () => {
+        return (
+            <footer
+                className={ServicesTaskCheck ? "serviepannelgreena bg-f4 pe-2 py-2 text-end" : "bg-f4 pe-2 py-2 text-end"}
+                style={{ position: "absolute", width: "100%", bottom: "0" }}
+            >
+                <span>
+                    <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >
+                        Manage Smart Taxonomy
+                    </a>
+                </span>
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedClientCategoryData} >
+                    Save
+                </button>
+            </footer>
+        )
+    }
+
+
+
     let TotalPercent: any = 0;
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
@@ -599,9 +619,10 @@ const SiteCompositionComponent = (Props: any) => {
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
+                    <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
                         Overridden
                     </label>
+                
                     {/* <label className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                         Overridden
                         <span className="svg__iconbox svg__icon--info"></span>
@@ -889,8 +910,9 @@ const SiteCompositionComponent = (Props: any) => {
                 onDismiss={closeClientCategoryPopup}
                 isBlocking={ClientCategoryPopupStatus}
                 type={PanelType.medium}
+                onRenderFooter={onRenderCustomFooter}
             >
-                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
+                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
                         <div className="row">
                             <div className="d-flex text-muted pt-3 showCateg">
@@ -915,7 +937,7 @@ const SiteCompositionComponent = (Props: any) => {
                                 </div>
                             </div>
                         </div>
-                        <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
+                        <div className='col-sm-12'>
                             <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label>Include description (info-icons) in search</label>
                             <input className="form-control my-2" type='text' placeholder={`Search ${ClientCategoryPopupSiteName} Client Category`} value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
                             {SearchedClientCategoryData?.length > 0 ? (
@@ -1046,14 +1068,7 @@ const SiteCompositionComponent = (Props: any) => {
                                 : null}
                         </div>
                     </div>
-                    <footer className="float-end mt-1">
-                        <span>
-                            <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
-                        </span>
-                        <button type="button" className="btn btn-primary px-3 mx-1" onClick={saveSelectedClientCategoryData} >
-                            Save
-                        </button>
-                    </footer>
+
                 </div>
             </Panel>
         </div >
