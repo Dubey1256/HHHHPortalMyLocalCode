@@ -1858,7 +1858,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                                               className="hreflink service"
                                               target="_blank"
                                               data-interception="off"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                             >
                                               {com.Title}
                                             </a>
@@ -1894,7 +1894,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
                                               className="hreflink service "
                                               target="_blank"
                                               data-interception="off"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
                                             >
                                               {com.Title}
                                             </a>
