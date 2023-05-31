@@ -234,18 +234,19 @@ const EditTaskPopup = (Items: any) => {
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
-                        // let TempArray: any = [];
-                        // AllProjectBackupArray.map((ProjectData: any) => {
-                        //     if (ProjectData.Id == Data.Id) {
-                        //         ProjectData.Checked = true;
-                        //         setSelectedProject([ProjectData]);
-                        //         TempArray.push(ProjectData);
-                        //     } else {
-                        //         ProjectData.Checked = false;
-                        //         TempArray.push(ProjectData);
-                        //     }
-                        // })
+                        let TempArray: any = [];
+                        AllProjectBackupArray.map((ProjectData: any) => {
+                            if (ProjectData.Id == Data.Id) {
+                                ProjectData.Checked = true;
+                                setSelectedProject([ProjectData]);
+                                TempArray.push(ProjectData);
+                            } else {
+                                ProjectData.Checked = false;
+                                TempArray.push(ProjectData);
+                            }
+                        })
                         setSelectedProject([Data]);
+                        SetAllProjectData(TempArray)
                     }
                     if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
                         let tempArray = JSON.parse(ApproverHistoryData);
@@ -1187,54 +1188,54 @@ const EditTaskPopup = (Items: any) => {
             }
         } else {
             // if (tempCategoryData != undefined) {
-                let CheckTaggedCategory = tempCategoryData?.includes(type)
-                if (CheckTaggedCategory == false) {
-                    let CheckTaagedCategory: any = true;
-                    let category: any = tempCategoryData + ";" + type;
-                    setCategoriesData(category);
-                    tempCategoryData = category;
-                    if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-                        tempShareWebTypeData.map((tempItem: any) => {
-                            if (tempItem.Title == type) {
-                                CheckTaagedCategory = false;
-                            }
-                        })
-                    }
-                    if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
-                        AutoCompleteItemsArray.map((dataItem: any) => {
-                            if (dataItem.Title == type) {
-                                if (CheckTaagedCategory) {
-                                    ShareWebTypeData.push(dataItem);
-                                    tempShareWebTypeData.push(dataItem);
-                                }
-                            }
-                        })
-                    }
-                    // setSearchedCategoryData(tempShareWebTypeData);
-                    if (type == "Phone") {
-                        setPhoneStatus(true)
-                    }
-                    if (type == "Email Notification") {
-                        setEmailStatus(true)
-                    }
-                    if (type == "Immediate") {
-                        setImmediateStatus(true)
-                    }
-                    if (type == "Approval") {
-                        setApprovalStatus(true);
-                        setApproverData(TaskApproverBackupArray);
-                        StatusArray?.map((item: any) => {
-                            if (item.value == 1) {
-                                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                                setPercentCompleteStatus(item.status);
-                                setTaskStatus(item.taskStatusComment);
-                            }
-                        })
-                    }
-                    if (type == "Only Completed") {
-                        setOnlyCompletedStatus(true)
-                    }
+            let CheckTaggedCategory = tempCategoryData?.includes(type)
+            if (CheckTaggedCategory == false) {
+                let CheckTaagedCategory: any = true;
+                let category: any = tempCategoryData + ";" + type;
+                setCategoriesData(category);
+                tempCategoryData = category;
+                if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                    tempShareWebTypeData.map((tempItem: any) => {
+                        if (tempItem.Title == type) {
+                            CheckTaagedCategory = false;
+                        }
+                    })
                 }
+                if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                    AutoCompleteItemsArray.map((dataItem: any) => {
+                        if (dataItem.Title == type) {
+                            if (CheckTaagedCategory) {
+                                ShareWebTypeData.push(dataItem);
+                                tempShareWebTypeData.push(dataItem);
+                            }
+                        }
+                    })
+                }
+                // setSearchedCategoryData(tempShareWebTypeData);
+                if (type == "Phone") {
+                    setPhoneStatus(true)
+                }
+                if (type == "Email Notification") {
+                    setEmailStatus(true)
+                }
+                if (type == "Immediate") {
+                    setImmediateStatus(true)
+                }
+                if (type == "Approval") {
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
+                    StatusArray?.map((item: any) => {
+                        if (item.value == 1) {
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (type == "Only Completed") {
+                    setOnlyCompletedStatus(true)
+                }
+            }
             // }
         }
     }
@@ -2304,6 +2305,7 @@ const EditTaskPopup = (Items: any) => {
     const CommentSectionCallBack = React.useCallback((EditorData: any) => {
         CommentBoxData = EditorData
         BuildFeedBackArray();
+        console.log("First Comment text callback array ====================", CommentBoxData)
 
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
@@ -2373,12 +2375,12 @@ const EditTaskPopup = (Items: any) => {
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
-                       
+
                     }
                 }
                 if (item.Phone == true) {
                     PhoneCount = PhoneCount + 1;
-                   
+
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -2389,7 +2391,7 @@ const EditTaskPopup = (Items: any) => {
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
-                                
+
                             }
                         }
                         if (subItem.Phone == true) {
@@ -3110,7 +3112,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="756" />
             </div>
         )
     }
@@ -3122,7 +3124,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1608" />
             </div>
         )
     }
@@ -3378,7 +3380,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BASICINFORMATION"
                                 aria-selected="true"
                             >
-                                BASIC INFORMATION
+                                {/* BASIC INFORMATION */}
+                                TASK INFORMATION
                             </button>
                             <button
                                 className="nav-link"
@@ -3390,7 +3393,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="NEWTIMESHEET"
                                 aria-selected="false"
                             >
-                                TEAM & TIMESHEET
+                                TASK PLANNING
+                                {/* TEAM & TIMESHEET */}
                             </button>
                             {IsUserFromHHHHTeam ? null : <button
                                 className="nav-link"
@@ -3402,7 +3406,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BACKGROUNDCOMMENT"
                                 aria-selected="false"
                             >
-                                BACKGROUND
+                                REMARKS
+                                {/* BACKGROUND */}
                             </button>}
 
                         </ul>
@@ -5447,54 +5452,56 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
 
-            {/* ********************* this is Project Management Image panel ****************** */}
-            <Panel
-                onRenderHeader={onRenderCustomProjectManagementHeader}
-                isOpen={ProjectManagementPopup}
-                onDismiss={closeProjectManagementPopup}
-                isBlocking={ProjectManagementPopup}
-                type={PanelType.custom}
-                customWidth="1100px"
-                onRenderFooter={customFooterForProjectManagement}
-            >
-                <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                    <div className="modal-body wrapper p-0 mt-2">
-                        <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
-                            <thead className="fixed-Header">
-                                {headerGroups.map((headerGroup: any) => (
-                                    <tr  {...headerGroup.getHeaderGroupProps()}>
-                                        {headerGroup.headers.map((column: any) => (
-                                            <th  {...column.getHeaderProps()}>
-                                                <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
-                                                    {column.render('Header')}
-                                                    {generateSortingIndicator(column)}
-                                                </span>
-                                                <Filter column={column} />
-                                            </th>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </thead>
-
-                            <tbody {...getTableBodyProps()}>
-                                {page.map((row: any) => {
-                                    prepareRow(row)
-                                    return (
-                                        <tr {...row.getRowProps()}  >
-                                            {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                            })}
+            {/* ********************* this is Project Management panel ****************** */}
+            {AllProjectData != undefined && AllProjectData.length > 0 ?
+                <Panel
+                    onRenderHeader={onRenderCustomProjectManagementHeader}
+                    isOpen={ProjectManagementPopup}
+                    onDismiss={closeProjectManagementPopup}
+                    isBlocking={ProjectManagementPopup}
+                    type={PanelType.custom}
+                    customWidth="1100px"
+                    onRenderFooter={customFooterForProjectManagement}
+                >
+                    <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
+                        <div className="modal-body wrapper p-0 mt-2">
+                            <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
+                                <thead className="fixed-Header">
+                                    {headerGroups.map((headerGroup: any) => (
+                                        <tr  {...headerGroup.getHeaderGroupProps()}>
+                                            {headerGroup.headers.map((column: any) => (
+                                                <th  {...column.getHeaderProps()}>
+                                                    <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                                        {column.render('Header')}
+                                                        {generateSortingIndicator(column)}
+                                                    </span>
+                                                    <Filter column={column} />
+                                                </th>
+                                            ))}
                                         </tr>
-                                    )
+                                    ))}
+                                </thead>
 
-                                })}
-                            </tbody>
-                        </Table>
+                                <tbody {...getTableBodyProps()}>
+                                    {page.map((row: any) => {
+                                        prepareRow(row)
+                                        return (
+                                            <tr {...row.getRowProps()}  >
+                                                {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                                })}
+                                            </tr>
+                                        )
+
+                                    })}
+                                </tbody>
+                            </Table>
+                        </div>
+
                     </div>
-
-                </div>
-            </Panel>
-
+                </Panel>
+                : null
+            }
             {/* ********************* this is Approval panel ****************** */}
             <Panel
                 onRenderHeader={onRenderCustomApproverHeader}

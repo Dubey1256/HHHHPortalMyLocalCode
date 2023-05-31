@@ -1214,8 +1214,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       <div className="d-flex align-items-center">
                         {this.state.Result["TeamLeader"] != null && this.state.Result["TeamLeader"].length > 0 && this.state.Result["TeamLeader"]?.map((rcData: any, i: any) => {
                           return <div className="user_Member_img"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off" title={rcData?.Title}>
-                            {rcData.userImage != null && <img className="imgAuthor" src={rcData?.userImage}></img>}
-                            {rcData.userImage == null && <span className="imgAuthor bg-fxdark" >{rcData?.Suffix}</span>}
+                            {rcData.userImage != null && <img className="workmember" src={rcData?.userImage}></img>}
+                            {rcData.userImage == null && <span className="workmember bg-fxdark" >{rcData?.Suffix}</span>}
                           </a>
                           </div>
                         })}
@@ -1225,15 +1225,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length > 0 &&
                           <div className="img  "><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][0]?.Id}&Name=${this.state.Result["TeamMembers"][0]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][0]?.Title}>
-                            {this.state.Result["TeamMembers"][0].userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
-                            {this.state.Result["TeamMembers"][0].userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
+                            {this.state.Result["TeamMembers"][0].userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}`} src={this.state.Result["TeamMembers"][0]?.userImage}></img>}
+                            {this.state.Result["TeamMembers"][0].userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][0].activeimg2}bg-fxdark border bg-e9 p-1 `} >{this.state.Result["TeamMembers"][0]?.Suffix}</span>}
                           </a>
                           </div>
                         }
 
                         {this.state.Result["TeamMembers"] != null && this.state.Result["TeamMembers"].length == 2 && <div className="img mx-2"><a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${this.state.Result["TeamMembers"][1]?.Id}&Name=${this.state.Result["TeamMembers"][1]?.Title}`} target="_blank" data-interception="off" title={this.state.Result["TeamMembers"][1]?.Title}>
-                          {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
-                          {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`imgAuthor ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
+                          {this.state.Result["TeamMembers"][1]?.userImage != null && <img className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}`} src={this.state.Result["TeamMembers"][1]?.userImage}></img>}
+                          {this.state.Result["TeamMembers"][1]?.userImage == null && <span className={`workmember ${this.state.Result["TeamMembers"][1]?.activeimg2}bg-fxdark border bg-e9 p-1`} >{this.state.Result["TeamMembers"][1]?.Suffix}</span>}
                         </a>
                         </div>
                         }
@@ -1246,8 +1246,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                   return <div className=" mb-1 team_Members_Item" style={{ padding: '2px' }}>
                                     <a href={`${this.state.Result["siteUrl"]}/SitePages/TaskDashboard.aspx?UserId=${rcData?.Id}&Name=${rcData?.Title}`} target="_blank" data-interception="off">
 
-                                      {rcData?.userImage != null && <img className={`imgAuthor ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
-                                      {rcData?.userImage == null && <span className={`imgAuthor ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
+                                      {rcData?.userImage != null && <img className={`workmember ${rcData?.activeimg2}`} src={rcData?.userImage}></img>}
+                                      {rcData?.userImage == null && <span className={`workmember ${rcData?.activeimg2}bg-fxdark border bg-e9 p-1`}>{rcData?.Suffix}</span>}
                                      
                                       <span className='mx-2'>{rcData?.Title}</span>
                                     </a>
@@ -1273,7 +1273,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                     {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>1 && this.state.Result["Categories"].includes("Approval")?
                     <span style={{fontSize:"smaller"}}>Pre-Approved by
-                    <img className="imgAuthor" src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverSuffix}></img></span>
+                    <img className="workmember" src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverSuffix}></img></span>
                     // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                     :null}</dd>
                   </dl>
@@ -1296,8 +1296,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       {this.state.Result["Created"] != undefined && this.state.Result["Created"] != null ? moment(this.state.Result["Created"]).format("DD/MM/YYYY") : ""}  <span className='ms-1'>
                         {this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 &&
                           <a title={this.state.Result["Author"][0].Title} >
-                            {this.state.Result["Author"][0].userImage !== "" && <img className="imgAuthor" src={this.state.Result["Author"][0].userImage} ></img>}
-                            {this.state.Result["Author"][0].userImage === "" && <span className="imgAuthor">{this.state.Result["Author"][0].Suffix}</span>}
+                            {this.state.Result["Author"][0].userImage !== "" && <img className="workmember" src={this.state.Result["Author"][0].userImage} ></img>}
+                            {this.state.Result["Author"][0].userImage === "" && <span className="workmember">{this.state.Result["Author"][0].Suffix}</span>}
                           </a>
 
                         }

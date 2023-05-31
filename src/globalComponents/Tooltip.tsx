@@ -229,8 +229,8 @@ function Tooltip(props: any) {
     console.log(query)
     //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
     var vars = query.split("&");
-    Href = window.location.href.toLowerCase().split('?')[0]
-    Href = Href.toLowerCase().split('?')[0]
+    Href = window.location.href.toLowerCase()
+    // Href = Href.toLowerCase().split('?')[0]
     Href = Href.split('#')[0];
     PageUrl = Href.split(currentUrl.toLowerCase())[1];
     // if (PageUrl == '/sitepages/team-portfolio.aspx') {
@@ -268,7 +268,7 @@ function Tooltip(props: any) {
     <>
       <Popup
         trigger={
-          <button type='button' className='Burgermenu'><BiMenu /></button>
+          <button type='button' className='burgerMenu'><BiMenu /></button>
         }
         position="left top"
         on="hover"
@@ -280,16 +280,16 @@ function Tooltip(props: any) {
       >
         {/* {isShown && ( */}
         <div className='dropdown-menu show dropdown-menu-end toolmenu'>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('HHHH Feedback SP')}><FaCommentAlt /> HHHH Feedback SP</a>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('HHHH Bug')}><FaCommentAlt /> HHHH Bug</a>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('HHHH Design')}><FaCommentAlt /> HHHH Design</a>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('HHHH Quick')}><FaCommentAlt /> HHHH Quick</a>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('HHHH Component Page')}><FaCommentAlt /> HHHH Component Page</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Feedback SP')}><FaCommentAlt /> HHHH Feedback SP</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Bug')}><FaCommentAlt /> HHHH Bug</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Design')}><FaCommentAlt /> HHHH Design</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Quick')}><FaCommentAlt /> HHHH Quick</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('HHHH Component Page')}><FaCommentAlt /> HHHH Component Page</a>
 
-          <a href="#" className='dropdown-item' onClick={(e) => feedbackInitial('Call Notes')}><FaCommentAlt /> Call Notes</a>
+          <a className='dropdown-item hreflink' onClick={(e) => feedbackInitial('Call Notes')}><FaCommentAlt /> Call Notes</a>
 
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('Admin Help')}><FaQuestion /> Admin Help</a>
-          <a href="#" className='dropdown-item' onClick={() => feedbackInitial('Help')}><FaQuestion /> Help</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Admin Help')}><FaQuestion /> Admin Help</a>
+          <a className='dropdown-item hreflink' onClick={() => feedbackInitial('Help')}><FaQuestion /> Help</a>
         </div>
 
       </Popup>
