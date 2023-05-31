@@ -129,7 +129,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
               console.log(res);
               let taskItem = {...editData};
               var recentUploadPic={
-                Url :imageURL,
+                Url :`${imageURL}?updated=${res.Id}`,
                 itemCoverId : res.Id,
                 itemCoverName:uploadedImage.fileName,
                 itemFolderurl:`${props?.Context?._pageContext?._site?.absoluteUrl}/${selectfolder2}`,
@@ -200,7 +200,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                 </Nav.Item>
                                <div className='mt-3 mx-4'>
                                {editData.Item_x0020_Cover!=undefined &&<div><div><img src={editData?.Item_x0020_Cover?.Url}/></div>
-                                    <span><a  href={editData?.Item_x0020_Cover?.itemFolderurl}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--docx' title="docx"></span></a></span>
+                                    <span><a  href={editData?.Item_x0020_Cover?.Url}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
                                   <ul className='alignCenter list-none'>
                                         <li>
@@ -221,7 +221,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                     </ul>
                                     {/* <span> <a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`}>Open this Document</a></span> */}
                                 </div>
-                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.itemCoverId)}></span>Clear Image</div>
+                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.Description)}></span>Clear Image</div>
                             </Nav>
                         </Col>
                         <Col sm={9}>
@@ -275,7 +275,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         <Tab eventKey="copy & paste" title="copy & paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
-                                                    <input type="text" className="form-control" placeholder='image Name' />
+                                                    <input type="text" className="form-control"value={props?.EditdocumentsData?.Title} placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
@@ -314,7 +314,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         <Tab eventKey="copy & paste" title="copy & paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
-                                                    <input type="text" className="form-control" placeholder='image Name' />
+                                                    <input type="text" className="form-control"  value={props?.EditdocumentsData?.Title}  placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
                                                     <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
