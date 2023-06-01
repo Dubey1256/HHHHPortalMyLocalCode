@@ -28,7 +28,7 @@ function ShowTeamMembers(item: any) {
         Groups.push(EmpData);
       }
 
-      if (EmpData.ItemType == "User") {
+      if (EmpData.ItemType == "User" && EmpData.Id != 43) {
         UsersData.push(EmpData);
       }
     });
@@ -144,6 +144,7 @@ function ShowTeamMembers(item: any) {
   };
 
   const drop1 = (e: any) => {
+    e.preventDefault();
     const copyListItems = [...teamMembers];
     const copyListItems1 = [...allEmployeeData];
     const dragItemContent =
@@ -196,98 +197,7 @@ function ShowTeamMembers(item: any) {
         </Modal.Header>
         <Modal.Body style={{ height: "300px", overflow: "auto" }}>
 
-        {/* <div className="border col p-2" ng-show="teamUserExpanded">
-                            <div className="taskTeamBox">
-                                {this.state.taskUsers != null && this.state.taskUsers.length > 0 && this.state.taskUsers.map((user: any, index: number) => {
-                                    return <div ui-on-drop="onDropRemoveTeam($event,$data,taskUsers)" className="top-assign ng-scope">
-                                        {user.childs.length > 0 &&
-                                            <div ng-if="user.childs.length >0" className="team ng-scope">
-                                                <label className="BdrBtm">
-                                                    {user.Title}
-                                                </label>
-                                                <div className='d-flex'>
-                                                    {user.childs.map((item: any, i: number) => {
-                                                        return <div className="marginR41 ng-scope">
-                                                            {item.Item_x0020_Cover != undefined && item.AssingedToUser != undefined &&
-                                                                <span>
-                                                                    <div
-                                                                        className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover.Url + "')", backgroundSize: "36px 36px" }}
-                                                                        title={item.AssingedToUser.Title}
-                                                                        draggable
-                                                                        onDragStart={(e) => this.dragStart(e, i, item, 'All')}
-                                                                        onDragOver={(e) => e.preventDefault()} />
-                                                                </span>
-                                                            }
-                                                        </div>
-                                                    })}
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                })
-                                }
-                            </div>
-                            <div className="row">
-                                
-                                <div className="col-sm-7">
-                                    <h6>Team Members</h6>
-                                    <div className="d-flex p-1  UserTimeTabGray">
-                                        <div className="col-sm-5 border-end p-0" >
-                                            <div className="col"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.ResponsibleTeam, 'Team Leaders', this.state.taskUsers,'ResponsibleTeam')}
-                                                onDragOver={(e) => e.preventDefault()}>
-                                                <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{minHeight:"30px", height:'auto'}}>
-                                                        {this.state.ResponsibleTeam != null && this.state.ResponsibleTeam.length > 0 && this.state.ResponsibleTeam.map((image: any, index: number) => {
-                                                            return <div
-                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
-                                                                title={image.Title} draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'ResponsibleTeam')}
-                                                                onDragOver={(e) => e.preventDefault()} />
-                                                        })
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-7 ">
-                                            <div className="col-sm-12"
-                                                onDrop={(e) => this.onDropTeam(e, this.state.TeamMemberUsers, 'Team Members', this.state.taskUsers,'TeamMemberUsers')}
-                                                onDragOver={(e) => e.preventDefault()}>
-                                                <div className="p-1">
-                                                    <div className='d-flex flex-wrap' style={{minHeight:"30px", height:'auto'}}>
-                                                        {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
-                                                            return <div
-                                                                className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover.Url) + "')", backgroundSize: "36px 36px" }}
-                                                                title={image.Title}
-                                                                draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
-                                                                onDragOver={(e) => e.preventDefault()} />
-                                                        })
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                
-                                <div className="col-sm-2">
-                                    <div>
-                                        <div onDrop={(e) => this.onDropRemoveTeam(e, this.state.taskUsers)}
-                                            onDragOver={(e) => e.preventDefault()}>
-                                            <img title="Drag user here to  remove user from team for this Network Activity." className="width-75"
-                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Dustbin.png" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
-
-
-
+       
 
           <div className="col">
             <div className="col bg-ee p-1">
@@ -307,16 +217,17 @@ function ShowTeamMembers(item: any) {
                           <div>
                             {items.Title == "HHHH Team" ? (
                               <span
+                               
+                              >
+                                <img  
                                onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img  
-                                  className="ProirityAssignedUserPhoto"
+                               className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -326,16 +237,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "External Staff" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -345,16 +257,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "Senior Developer Team" ? (
                               <span
+                               
+                              >
+                                <img  
                                onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img  
-                                  className="ProirityAssignedUserPhoto"
+                               className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -364,16 +277,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "Design Team" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -383,16 +297,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "Junior Developer Team" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -402,16 +317,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "QA Team" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem.Title}
                                   src={childItem.Item_x0020_Cover?.Url}
                                 />
@@ -421,16 +337,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "Smalsus Lead Team" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem?.Title}
                                   src={childItem?.Item_x0020_Cover?.Url}
                                 />
@@ -440,16 +357,17 @@ function ShowTeamMembers(item: any) {
                             )}
                             {items.Title == "Ex Staff" ? (
                               <span
+                                
+                              >
+                                <img 
                                 onDragStart={(e) =>
                                   dragStart(e, index, indexes)
                                 }
                                 onDragOver={(e) => e.preventDefault()}
-                                onDragEnd={drop1}
+                               
                                 key={index}
                                 draggable
-                              >
-                                <img 
-                                  className="ProirityAssignedUserPhoto"
+                                className="ProirityAssignedUserPhoto"
                                   title={childItem?.Title}
                                   src={childItem?.Item_x0020_Cover?.Url}
                                 />
@@ -460,7 +378,7 @@ function ShowTeamMembers(item: any) {
                           </div>
                         ))}
                       </div>
-                    </div>{" "}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -468,7 +386,7 @@ function ShowTeamMembers(item: any) {
               <div className="row m-0 mt-3">
                 <div className="col-9">
                   <h6>Selected Team Members</h6>
-                  <div className="d-flex p-1  UserTimeTabGray">
+                  <div className="d-flex p-1  UserTimeTabGray" onDrop={(e)=>drop1(e)}  onDragOver={(e) => e.preventDefault()}>
                     {teamMembers?.map((items: any, index: any) => (
                       <span
                         onDragStart={(e) => dragStart(e, index, index)}
@@ -488,8 +406,8 @@ function ShowTeamMembers(item: any) {
                     ))}
                   </div>
                 </div>
-                <div className="col-3" onDrop={(e)=>drop(e)} onDragOver={(e) => e.preventDefault()}>
-                  <img 
+                <div className="col-3" >
+                  <img  onDrop={(e)=>drop(e)} onDragOver={(e) => e.preventDefault()}
                   title="Drag user here to  remove user from team for this Network Activity."
                     height={"50px"}
                     width={"50px"}
@@ -503,7 +421,7 @@ function ShowTeamMembers(item: any) {
         </Modal.Body>
         <Modal.Footer>
           <Button className="btn-default" onClick={() => setShow(false)}>
-            Close
+            Cancel
           </Button>
           <a
             href={`https://teams.microsoft.com/l/chat/0/0?users=${email}`}
