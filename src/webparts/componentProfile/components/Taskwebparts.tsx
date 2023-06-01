@@ -1520,6 +1520,9 @@ export default function ComponentTable({ props, NextProp }: any) {
 
         }
       }
+      if(props?.Item_x0020_Type == 'Feature' && checkedList.length >= 1  ){
+        setActivityDisable(false)
+      }
     }
     if (checked == false) {
       // itrm.chekBox = false;
@@ -4103,17 +4106,17 @@ export default function ComponentTable({ props, NextProp }: any) {
                             Add Activity-Task
                         </button>
                         :*/}
-            <button
+           <button
               type="button"
               onClick={() => openActivity()}
-              disabled={ActivityDisable}
+              disabled={ActivityDisable || checkedList.length >= 2 }
               className="btn btn-primary"
               title=" Add Activity-Task"
             >
               Add Activity-Task
             </button>
 
-            {(table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" && props.Item_x0020_Type != "Feature") ||
+            {(table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ) ||
                       (table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0) ? <button
                         type="button"
                         className="btn btn-primary"
@@ -4122,7 +4125,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                       Restructure
                     </button> : <button
                       type="button"
-                      disabled={true}
+                      disabled={true || checkedList.length >= 2 }
                       className="btn btn-primary"
                       onClick={buttonRestructuring}
                     >
