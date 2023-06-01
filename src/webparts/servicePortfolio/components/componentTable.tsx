@@ -176,7 +176,7 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [checkData, setcheckData] = React.useState({})
+  const [checkData, setcheckData] = React.useState([])
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
   const [checkCounter, setCheckCounter] = React.useState(true)
 
@@ -1817,7 +1817,8 @@ function ComponentTable(SelectedProp: any) {
         "Item_x0020_Cover",
         "AssingedToUser/Title",
         "AssingedToUser/Id",
-        "UserGroup/Id"
+        "UserGroup/Id",
+        "ItemType"
       )
       // .filter("ItemType eq 'User'")
       .expand("AssingedToUser", "UserGroup")
@@ -3341,12 +3342,12 @@ function ComponentTable(SelectedProp: any) {
 
   //////////CheckBox Item Start/////
 
-  const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+  const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel:any) => {
     if (eTarget == true) {
-      setcheckData(itrm)
+      setcheckData(getSelectedRowModel)
       setShowTeamMemberOnCheck(true)
     } else {
-      setcheckData({})
+      setcheckData([])
       setShowTeamMemberOnCheck(false)
     }
     var Arrays: any = [];
@@ -4763,10 +4764,14 @@ function ComponentTable(SelectedProp: any) {
         }
       });
     }
+
+
+
+
     if (itrm?.Item_x0020_Type == "Component") {
-      onChangeHandler(itrm, "parent", eTarget);
+      onChangeHandler(itrm, "parent", eTarget, table?.getSelectedRowModel()?.flatRows);
     } else {
-      onChangeHandler(itrm, parentDataCopy, eTarget);
+      onChangeHandler(itrm, parentDataCopy, eTarget, table?.getSelectedRowModel()?.flatRows );
     }
   };
 
