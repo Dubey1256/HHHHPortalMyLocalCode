@@ -3371,7 +3371,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter((user: any) => user.Title === name);
+    const user = AllUsers.filter((user: any) => user.Title == name);
     let Image: any;
     if (user[0]?.Item_x0020_Cover != undefined) {
       Image = user[0].Item_x0020_Cover.Url;
@@ -3552,14 +3552,14 @@ export default function ComponentTable({ props, NextProp }: any) {
               <>
                 {row?.original?.Author != undefined ? (
                   <>
-                  <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
-                  <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
+                  <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")} </span>
+                  <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
                  
                   </>
                 ) : (
                   <img
-                    className="AssignUserPhoto"
+                    className="workmember"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
@@ -3627,9 +3627,25 @@ export default function ComponentTable({ props, NextProp }: any) {
           <>
            
               <a> {row?.original?.siteType == "Master Tasks" && (
-                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
+                <span className="mt-1 svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
+                 {row?.original?.siteType === "Master Tasks" &&
+              row?.original?.Title !== "Others" &&
+              row?.original?.isRestructureActive && (
+                <a
+                  href="#"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="auto"
+                  title="Edit"
+                >
+                  <img
+                    className="icon-sites-img"
+                    src={row?.original?.Restructuring}
+                    onClick={(e) => OpenModal(row?.original)}
+                  />
+                </a>
+              )}
                 {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                  <span onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                  <span onClick={(e) => EditItemTaskPopup(row?.original)} className="mt-1 svg__iconbox svg__icon--edit"></span>
                 )}
               </a>
             
