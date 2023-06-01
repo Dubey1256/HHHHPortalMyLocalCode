@@ -208,11 +208,11 @@ function TasksTable(props: any) {
                         }
                     }
                     result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
-                    if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                        result.ClientCategory.forEach((catego: any) => {
-                            result.ClientCategory.push(catego);
-                        })
-                    }
+                    // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    //     result.ClientCategory.forEach((catego: any) => {
+                    //         result.ClientCategory.push(catego);
+                    //     })
+                    // }
                     if (result.Id === 498 || result.Id === 104)
                         console.log(result);
                     result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
