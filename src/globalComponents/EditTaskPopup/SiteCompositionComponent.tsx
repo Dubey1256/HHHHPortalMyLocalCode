@@ -302,18 +302,23 @@ const SiteCompositionComponent = (Props: any) => {
         // setSelectedClientCategory([]);
         setSearchedKey('');
         setClientCategoryPopupStatus(true);
-        BuildIndividualAllDataArray(SiteParentId);
+        BuildIndividualAllDataArray(SiteParentId, SiteName);
     }
 
-    const BuildIndividualAllDataArray = (SiteParentId: any) => {
+    const BuildIndividualAllDataArray = (SiteParentId: any, SiteName: any) => {
         let ParentArray: any = [];
         AutoCompleteItemsArray = [];
         if (AllClientCategoryData != undefined && AllClientCategoryData.length > 0) {
             AllClientCategoryData?.map((ArrayData: any) => {
                 if (ArrayData.ParentId == SiteParentId) {
                     ArrayData.Child = [];
-                    ArrayData.newLabel = ArrayData.siteName + " > " + ArrayData.Title;
-                    ParentArray.push(ArrayData)
+                    if (ArrayData?.siteName == null || ArrayData?.siteName) {
+                        ArrayData.newLabel = SiteName + " > " + ArrayData.Title;
+                        ArrayData.siteName = SiteName
+                    } else {
+                        ArrayData.newLabel = ArrayData.siteName + " > " + ArrayData.Title;
+                    }
+                    ParentArray.push(ArrayData)  
                     AutoCompleteItemsArray.push(ArrayData);
                 }
             })
@@ -323,6 +328,9 @@ const SiteCompositionComponent = (Props: any) => {
                 AllClientCategoryData.map((AllData: any) => {
                     if (parentArray.Id == AllData.ParentId) {
                         AllData.newLabel = parentArray.newLabel + " > " + AllData.Title
+                        if(AllData?.siteName == null || AllData?.siteName == undefined){
+                            AllData.siteName = SiteName;
+                        }
                         parentArray.Child.push(AllData);
                         AutoCompleteItemsArray.push(AllData);
                     }
@@ -353,10 +361,13 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                     })
+                    const finalData = TempArray.filter((val: any, id: any, array: any) => {
+                        return array.indexOf(val) == id;
+                    })
                     if (usedFor == "Popup") {
-                        setSearchedClientCategoryData(TempArray)
+                        setSearchedClientCategoryData(finalData)
                     } else {
-                        setSearchedClientCategoryDataForInput(TempArray)
+                        setSearchedClientCategoryDataForInput(finalData)
                     }
                 }
             } else {
@@ -389,7 +400,7 @@ const SiteCompositionComponent = (Props: any) => {
         }
     }
 
-    const SelectClientCategoryFromAutoSuggestion = (selectedCategory: any) => {
+    const SelectClientCategoryFromAutoSuggestion = (selectedCategory: any, Type: any) => {
         setSearchedKey('');
         setSearchedKeyForEPS("")
         setSearchedKeyForEI("")
@@ -397,11 +408,11 @@ const SiteCompositionComponent = (Props: any) => {
         setSearchedKeyForMigration("")
         setSearchedClientCategoryData([]);
         setSearchedClientCategoryDataForInput([]);
-        SelectedClientCategoryFromDataList(selectedCategory);
+        SelectedClientCategoryFromDataList(selectedCategory, Type);
 
     }
 
-    const SelectedClientCategoryFromDataList = (selectedCategory: any) => {
+    const SelectedClientCategoryFromDataList = (selectedCategory: any, Type: any) => {
         if (ClientCategoryPopupSiteName == "EPS") {
             EPSClientCategory[0] = selectedCategory;
         }
@@ -418,7 +429,9 @@ const SiteCompositionComponent = (Props: any) => {
         // SelectedClientCategoryBackupArray
         setSearchedKey('');
         setSearchedClientCategoryData([]);
-        saveSelectedClientCategoryData();
+        if (Type == "Main") {
+            saveSelectedClientCategoryData();
+        }
         // setSelectedClientCategory(selectedClientCategory);
     }
 
@@ -516,22 +529,22 @@ const SiteCompositionComponent = (Props: any) => {
         let SearchedKey: any = e.target.value;
         setClientCategoryPopupSiteName(siteType);
         if (siteType == "EPS") {
-            BuildIndividualAllDataArray(SiteId);
+            BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
             setSearchedKeyForEPS(SearchedKey);
         }
         if (siteType == "EI") {
-            BuildIndividualAllDataArray(SiteId);
+            BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
             setSearchedKeyForEI(SearchedKey);
         }
         if (siteType == "Education") {
-            BuildIndividualAllDataArray(SiteId);
+            BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
             setSearchedKeyForEducation(SearchedKey);
         }
         if (siteType == "Migration") {
-            BuildIndividualAllDataArray(SiteId);
+            BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
             setSearchedKeyForMigration(SearchedKey);
         }
@@ -553,7 +566,7 @@ const SiteCompositionComponent = (Props: any) => {
             </div>
         )
     }
-    const onRenderCustomFooter = () => {
+    const onRenderFooter = () => {
         return (
             <footer
                 className={ServicesTaskCheck ? "serviepannelgreena bg-f4 pe-2 py-2 text-end" : "bg-f4 pe-2 py-2 text-end"}
@@ -570,8 +583,6 @@ const SiteCompositionComponent = (Props: any) => {
             </footer>
         )
     }
-
-
 
     let TotalPercent: any = 0;
     return (
@@ -622,7 +633,7 @@ const SiteCompositionComponent = (Props: any) => {
                     <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
                         Overridden
                     </label>
-                
+
                     {/* <label className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
                         Overridden
                         <span className="svg__iconbox svg__icon--info"></span>
@@ -732,7 +743,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <ul className="list-group">
                                                                     {SearchedClientCategoryDataForInput.map((item: any) => {
                                                                         return (
-                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Main")} >
                                                                                 <a>{item.newLabel}</a>
                                                                             </li>
                                                                         )
@@ -779,7 +790,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <ul className="list-group">
                                                                     {SearchedClientCategoryDataForInput.map((item: any) => {
                                                                         return (
-                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Main")} >
                                                                                 <a>{item.newLabel}</a>
                                                                             </li>
                                                                         )
@@ -827,7 +838,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <ul className="list-group">
                                                                     {SearchedClientCategoryDataForInput.map((item: any) => {
                                                                         return (
-                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Main")} >
                                                                                 <a>{item.newLabel}</a>
                                                                             </li>
                                                                         )
@@ -875,7 +886,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <ul className="list-group">
                                                                     {SearchedClientCategoryDataForInput.map((item: any) => {
                                                                         return (
-                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                                            <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Main")} >
                                                                                 <a>{item.newLabel}</a>
                                                                             </li>
                                                                         )
@@ -910,7 +921,8 @@ const SiteCompositionComponent = (Props: any) => {
                 onDismiss={closeClientCategoryPopup}
                 isBlocking={ClientCategoryPopupStatus}
                 type={PanelType.medium}
-                onRenderFooter={onRenderCustomFooter}
+                onRenderFooter={onRenderFooter}
+
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
@@ -945,7 +957,7 @@ const SiteCompositionComponent = (Props: any) => {
                                     <ul className="list-group">
                                         {SearchedClientCategoryData.map((item: any) => {
                                             return (
-                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item)} >
+                                                <li className="list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectClientCategoryFromAutoSuggestion(item, "Popup")} >
                                                     <a>{item.newLabel}</a>
                                                 </li>
                                             )
@@ -1020,7 +1032,7 @@ const SiteCompositionComponent = (Props: any) => {
                                         return (
                                             <>
                                                 <li>
-                                                    <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item)} >
+                                                    <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(item, "Popup")} >
                                                         <a>
                                                             {item.Title}
                                                             {item.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -1037,7 +1049,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 <>
                                                                     {child1.Title != null ?
                                                                         <li>
-                                                                            <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1)}>
+                                                                            <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1, "Popup")}>
                                                                                 <a>
                                                                                     {child1.Item_x0020_Cover ?
                                                                                         <img className="flag_icon"
