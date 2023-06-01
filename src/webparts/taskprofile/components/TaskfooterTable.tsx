@@ -208,11 +208,11 @@ function TasksTable(props: any) {
                         }
                     }
                     result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
-                    if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                        result.ClientCategory.forEach((catego: any) => {
-                            result.ClientCategory.push(catego);
-                        })
-                    }
+                    // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    //     result.ClientCategory.forEach((catego: any) => {
+                    //         result.ClientCategory.push(catego);
+                    //     })
+                    // }
                     if (result.Id === 498 || result.Id === 104)
                         console.log(result);
                     result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
@@ -1416,7 +1416,7 @@ function TasksTable(props: any) {
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={`${props?.AllListId?.siteUrl}/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&

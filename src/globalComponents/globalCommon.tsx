@@ -371,7 +371,6 @@ export const hierarchyData= (items:any,MyAllData:any)=>{
       
       
                 })
-                console.log(AllData)
                 items.HierarchyData = AllData
                 //setMasterData(newitems.HierarchyData)
             })
