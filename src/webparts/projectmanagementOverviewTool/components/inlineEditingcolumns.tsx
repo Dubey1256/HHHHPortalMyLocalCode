@@ -5,6 +5,7 @@ import * as Moment from 'moment';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import TeamConfigurationCard from "../../../globalComponents/TeamConfiguration/TeamConfiguration";
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
@@ -781,46 +782,56 @@ const inlineEditingcolumns = (props: any) => {
 
                         <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => openTaskStatusUpdatePopup()}>
                             &nbsp;
-                            {
-                                (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
-                                    <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                    </a> : (props.item.PercentComplete == 5) ?
-                                        <a className='svg__iconbox svg__icon--Acknowledged' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                        </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
-                                            <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                            </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
-                                                <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                </a> : (props.item.PercentComplete > 90) ?
-                                                    <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                    </a> : ''
-
-                            }
-                            {
-                                props?.item?.IsTodaysTask ? <>
+                            {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
+                                {props.item.PercentComplete}
+                            </span> */}
+                            
+                            <div className="popover__wrapper inlineEdit me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                            {props.item.PercentComplete}
+                                <div className="popover__content">
                                     {
-                                        props?.item?.AssignedTo?.map((AssignedUser: any) => {
-                                            return (
-                                                AllTaskUser?.map((user: any) => {
-                                                    if (AssignedUser.Id == user.AssingedToUserId) {
-                                                        return (
-                                                            <a target="_blank"
-                                                                data-interception="off"
-                                                                title={user.Title}
-                                                            >
-                                                                {user?.Item_x0020_Cover?.Url != undefined ?
-                                                                    <img className="workmember" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
-                                                                    <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                                        (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
+                                            <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                            </a> : (props.item.PercentComplete == 5) ?
+                                                <a className='svg__iconbox svg__icon--Acknowledged' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
+                                                    <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                    </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
+                                                        <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                        </a> : (props.item.PercentComplete > 90) ?
+                                                            <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                            </a> : ''
 
-                                                            </a>
-                                                        )
-                                                    }
-
-                                                })
-                                            )
-                                        })
                                     }
-                                </> : ''
-                            }
+                                    {
+                                        props?.item?.IsTodaysTask ? <>
+                                            {
+                                                props?.item?.AssignedTo?.map((AssignedUser: any) => {
+                                                    return (
+                                                        AllTaskUser?.map((user: any) => {
+                                                            if (AssignedUser.Id == user.AssingedToUserId) {
+                                                                return (
+                                                                    <a target="_blank"
+                                                                        data-interception="off"
+                                                                        title={user.Title}
+                                                                    >
+                                                                        {user?.Item_x0020_Cover?.Url != undefined ?
+                                                                             <img className="workmember ms-1" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
+                                                                             <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser ms-1 "></span>}
+
+                                                                    </a>
+                                                                )
+                                                            }
+
+                                                        })
+                                                    )
+                                                })
+                                            }
+                                        </> : ''
+                                    }
+                                </div>
+                            </div>
+
                             {/* {props?.item?.Categories?.includes('Immediate') ?
         <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "} */}
                         </span>
@@ -893,10 +904,10 @@ const inlineEditingcolumns = (props: any) => {
                             <input className="form-control bg-e9" type="text" value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
                             />
                         </div>
-                        
+
                     </div>
                     <div className="row">
-                    <div className="col-sm-12 Time-control-buttons">
+                        <div className="col-sm-12 Time-control-buttons">
                             <div className="pe-0 Quaterly-Time">
                                 <label
                                     className="full_width"></label>
