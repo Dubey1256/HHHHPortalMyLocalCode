@@ -1416,7 +1416,7 @@ function TasksTable(props: any) {
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={`${props?.AllListId?.siteUrl}/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
