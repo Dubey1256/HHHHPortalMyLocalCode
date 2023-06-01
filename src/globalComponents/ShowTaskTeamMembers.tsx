@@ -121,7 +121,7 @@ function ShowTaskTeamMembers(item: any) {
                         data-interception="off"
                         title={rcData.Title}
                       >
-                        <img className="imgAuthor" src={rcData.ItemCover}></img>
+                        <img className="workmember" src={rcData.ItemCover}></img>
                       </a>
                     </span>
                   </>
@@ -142,7 +142,7 @@ function ShowTaskTeamMembers(item: any) {
                   title={ItemNew["AllTeamMembers"][0].Title}
                 >
                   <img
-                    className="imgAuthor activeimg"
+                    className="workmember activeimg"
                     src={ItemNew["AllTeamMembers"][0].ItemCover}
                   ></img>
                 </a>
@@ -179,7 +179,7 @@ function ShowTaskTeamMembers(item: any) {
                                   data-interception="off"
                                 >
                                   <img
-                                    className={` imgAuthor ${rcData.activeimg2}`}
+                                    className={`workmember ${rcData.activeimg2}`}
                                     src={rcData.ItemCover}
                                   ></img>
                                 </a>
@@ -202,11 +202,7 @@ function ShowTaskTeamMembers(item: any) {
                     href={`https://teams.microsoft.com/l/chat/0/0?users=${ItemNew?.allMembersEmail}`}
                     target="_blank"
                   >
-                    <img alt="m-teams"
-                      width="25px"
-                      height="25px"
-                      src={require('../Assets/ICON/Teams-Logo.png')}
-                    />
+                   <span className="svg__iconbox svg__icon--team"></span>
                   </a>
                 </span>
               ) : (

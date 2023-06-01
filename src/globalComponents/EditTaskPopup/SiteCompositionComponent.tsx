@@ -33,7 +33,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [SearchedKeyForEI, setSearchedKeyForEI] = useState('');
     const [SearchedKeyForEducation, setSearchedKeyForEducation] = useState('');
     const [SearchedKeyForMigration, setSearchedKeyForMigration] = useState('');
-    const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(false);
+    const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(true);
     const [SearchedClientCategoryData, setSearchedClientCategoryData] = useState([]);
     const [SearchedClientCategoryDataForInput, setSearchedClientCategoryDataForInput] = useState([]);
     const [selectedClientCategory, setSelectedClientCategory] = useState([]);
@@ -373,10 +373,13 @@ const SiteCompositionComponent = (Props: any) => {
                             })
                         }
                     })
+                    const finalData = TempArray.filter((val: any, id: any, array: any) => {
+                        return array.indexOf(val) == id;
+                    })
                     if (usedFor == "Popup") {
-                        setSearchedClientCategoryData(TempArray)
+                        setSearchedClientCategoryData(finalData)
                     } else {
-                        setSearchedClientCategoryDataForInput(TempArray)
+                        setSearchedClientCategoryDataForInput(finalData)
                     }
                 }
             }
@@ -553,12 +556,6 @@ const SiteCompositionComponent = (Props: any) => {
     let TotalPercent: any = 0;
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-            {console.log("All Category Data in Div ======", AllClientCategoryData)}
-            <div className="row">
-                <a target="_blank " className="text-end siteColor" href={`${siteUrls}/SitePages/TaskUser-Management.aspx`} data-interception="off">
-                    Task User Management
-                </a>
-            </div>
             <div className="col-sm-12 ps-3">
                 <input
                     type="radio"
@@ -602,9 +599,17 @@ const SiteCompositionComponent = (Props: any) => {
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label>
+                    <label title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
                         Overridden
                     </label>
+                    {/* <label className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                        Overridden
+                        <span className="svg__iconbox svg__icon--info"></span>
+                        <span className="popover__content">
+                            if this is checked then it should consider site allocations from Task otherwise from tagged component.
+                        </span>
+
+                    </label> */}
                 </span>
             </div>
             <div className="my-2 ps-3">
@@ -686,11 +691,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                                </> : <input type="text" value={SearchedKeyForEI} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EI", 340)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <a className="bg-white border border-secondary"
@@ -733,11 +738,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                                </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
                                                                     <a className="bg-white border border-secondary"
@@ -780,11 +785,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                                </> : <input type="text" value={SearchedKeyForEducation} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Education", 344)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
 
                                                             {
                                                                 siteData.BtnStatus ?
@@ -828,11 +833,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         )
                                                                     } else {
                                                                         return (
-                                                                            <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />
+                                                                            <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />
                                                                         )
                                                                     }
                                                                 })}
-                                                                </> : <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Client Category" readOnly={siteData.BtnStatus ? false : true} />}
+                                                                </> : <input type="text" value={SearchedKeyForMigration} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "Migration", 569)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
 
                                                             {
                                                                 siteData.BtnStatus ?
@@ -911,8 +916,8 @@ const SiteCompositionComponent = (Props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
-                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label> Search With Description (Info Icons)</label>
-                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
+                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label>Include description (info-icons) in search</label>
+                            <input className="form-control my-2" type='text' placeholder={`Search ${ClientCategoryPopupSiteName} Client Category`} value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
                             {SearchedClientCategoryData?.length > 0 ? (
                                 <div className="SearchTableCategoryComponent">
                                     <ul className="list-group">
@@ -1012,9 +1017,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         <li>
                                                                             <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1)}>
                                                                                 <a>
-                                                                                    {child1.Item_x0020_Cover ? <img className="flag_icon"
-                                                                                        style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                        src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''} /> :
+                                                                                    {child1.Item_x0020_Cover ?
+                                                                                        <img className="flag_icon"
+                                                                                            style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                            src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
+                                                                                        /> :
                                                                                         null}
                                                                                     {child1.Title}
                                                                                     {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">

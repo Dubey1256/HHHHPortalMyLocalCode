@@ -4,7 +4,7 @@ import { ITaskprofileProps } from './ITaskprofileProps';
 import { GlobalConstants } from '../../../globalComponents/LocalCommon';
 import * as globalCommon from '../../../globalComponents/globalCommon';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
+import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup'
 import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryComponent';
 import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
@@ -27,6 +27,7 @@ var Array: any = []
 let taskUsers: any = [];
 let IsShowRestru: any = false;
 let componentDetails: any = '';
+let siteIconAllTask: any = [];
 function TasksTable(props: any) {
     const [data, setData] = React.useState([]);
     const [Isshow, setIsshow] = React.useState(false);
@@ -53,23 +54,30 @@ function TasksTable(props: any) {
 
     const [RestructureChecked, setRestructureChecked] = React.useState([]);
     const [selectedItem, setSelectedItem] = React.useState([]);
-    const [ChengedTitle, setChengedTitle] = React.useState('');     
+    const [ChengedTitle, setChengedTitle] = React.useState('');
+    // const [siteIconAllTask,setSiteIconAllTask]=React.useState([])
     //const [count, setcount] = React.useState(0);
     IsUpdated = props.props.Portfolio_x0020_Type;
-      console.log(props)
+
     const GetSmartmetadata = async () => {
         //  var metadatItem: any = []
         let smartmetaDetails: any = [];
-
+        let AllSiteName: any = [];
         var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
-        smartmetaDetails = await globalCommon.getData(GlobalConstants.SP_SITE_URL, GlobalConstants.SMARTMETADATA_LIST_ID, select);
+        smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
         console.log(smartmetaDetails);
+
         smartmetaDetails.forEach((newtest: any) => {
             newtest.Id = newtest.ID;
             if (newtest.TaxType == 'Sites' && newtest.Title != 'Master Tasks' && newtest.Title != 'SDC Sites') {
                 siteConfig.push(newtest)
             }
+            if (newtest.TaxType == 'Sites' && newtest.Item_x005F_x0020_Cover != undefined) {
+                siteIconAllTask.push(newtest)
+
+            }
         });
+
         // var filter: any = '';
         if (props.props.SharewebTaskType != undefined && props.props.SharewebTaskType != undefined && props.props.SharewebTaskType === 'Activities') {
             filter += '(ParentTask/Id eq ' + props.props.Id + ' ) or '
@@ -85,7 +93,7 @@ function TasksTable(props: any) {
     const loadActivityTasks = async (task: any) => {
         let activity: any = [];
         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=Id eq " + task.ParentTask.Id + ""
-        activity = await globalCommon.getData(GlobalConstants.SP_SITE_URL, task.listId, select)
+        activity = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
         if (activity.length > 0)
             GetComponents(activity[0])
         LoadAllSiteTasks(filter);
@@ -93,7 +101,7 @@ function TasksTable(props: any) {
     const loadWSTasks = async (task: any) => {
 
         var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=ParentTask/Id eq " + task.Id + ""
-        AllWSTasks = await globalCommon.getData(GlobalConstants.SP_SITE_URL, task.listId, select)
+        AllWSTasks = await globalCommon.getData(props?.AllListId?.siteUrl, task.listId, select)
         if (AllWSTasks.length === 0)
             filter += '(ParentTask/Id eq ' + props.props.Id + ' )'
         AllWSTasks.forEach((obj: any, index: any) => {
@@ -103,14 +111,35 @@ function TasksTable(props: any) {
 
         })
         LoadAllSiteTasks(filter);
-        console.log("All task Details ============================",AllWSTasks);
+        console.log(AllWSTasks);
     }
     var Response: any = []
     const getTaskUsers = async () => {
-        taskUsers = Response = await globalCommon.loadTaskUsers();
-        setTaskUser(Response);
-        console.log(Response);
+        let web = new Web(props?.AllListId?.siteUrl);
+        await web.lists
+            .getById(props?.AllListId?.TaskUsertListID)
+            .items
+            .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+            .get().then((Response: any) => {
+                taskUsers = Response
+                setTaskUser(Response);
+                console.log(Response);
+                taskUsers=Response
+            })
+         //taskUsers = Response = await globalCommon.loadTaskUsers();
 
+
+    }
+
+    const GetIconImageUrl = (siteType: any, siteUrl: any, undefined: any) => {
+        let siteIcon = '';
+        siteIconAllTask?.map((items: any) => {
+            if (items?.Title == siteType) {
+                siteIcon = items?.Item_x005F_x0020_Cover?.Url
+                // return siteIcon;
+            }
+        })
+        return siteIcon;
     }
     const handleClose = () => setLgShow(false);
     const LoadAllSiteTasks = async (filter: any) => {
@@ -122,7 +151,7 @@ function TasksTable(props: any) {
         try {
             let AllTasksMatches = [];
             var select = "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id, Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" + filter + ""
-            AllTasksMatches = await globalCommon.getData(GlobalConstants.SP_SITE_URL, props.props.listId, select)
+            AllTasksMatches = await globalCommon.getData(props?.AllListId?.siteUrl, props.props.listId, select)
             console.log(AllTasksMatches);
             Counter++;
             console.log(AllTasksMatches.length);
@@ -135,7 +164,7 @@ function TasksTable(props: any) {
                     item.siteType = props.props.siteType;
                     item.childs = [];
                     item.listId = props.props.listId;
-                    item.siteUrl = GlobalConstants.SP_SITE_URL;
+                    item.siteUrl = props?.AllListId?.siteUrl;
                     if (item.SharewebCategories != undefined) {
                         if (item.SharewebCategories.length > 0) {
                             $.each(item.SharewebCategories, function (ind: any, value: any) {
@@ -178,12 +207,12 @@ function TasksTable(props: any) {
                             })
                         }
                     }
-                    result['SiteIcon'] = globalCommon.GetIconImageUrl(result.siteType, GlobalConstants.MAIN_SITE_URL + '/SP', undefined);
-                    if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
-                        result.ClientCategory.forEach((catego: any) => {
-                            result.ClientCategory.push(catego);
-                        })
-                    }
+                    result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
+                    // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
+                    //     result.ClientCategory.forEach((catego: any) => {
+                    //         result.ClientCategory.push(catego);
+                    //     })
+                    // }
                     if (result.Id === 498 || result.Id === 104)
                         console.log(result);
                     result['Shareweb_x0020_ID'] = globalCommon.getTaskId(result);
@@ -246,10 +275,10 @@ function TasksTable(props: any) {
     }
     const GetComponents = async (Item: any) => {
         var filt = "Id eq " + (Item.Component.length > 0 ? Item.Component[0].Id : Item.Services[0].Id) + "";
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         let compo = [];
         compo = await web.lists
-            .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+            .getById(props?.AllListId?.MasterTaskListID)
             .items
             .select("ID", "Id", "Title", "Mileage", "Portfolio_x0020_Type", "ItemType",
             )
@@ -279,7 +308,7 @@ function TasksTable(props: any) {
         //MeetingItems.push(props)
         getTaskUsers();
 
-        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined &&props.props.Services.length>0 && props.props.Services[0].Id))
+        if ((props.props.Component != undefined && props.props.Component.length > 0) || (props.props.Services != undefined && props.props.Services.length > 0 && props.props.Services[0].Id))
             GetComponents(props.props)
         if (props.props.ParentTask != undefined && props.props.ParentTask.Title != undefined)
             props.props.ParentIcon = IsUpdated != undefined && IsUpdated == 'Service' ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/icon_Activity.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/icon_Activity.png';
@@ -348,7 +377,7 @@ function TasksTable(props: any) {
 
             if (itrm.SharewebTaskType == undefined) {
                 setActivityDisable(false)
-                itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                itrm['siteUrl'] = props?.AllListId?.siteUrl;
                 itrm['listName'] = 'Master Tasks';
                 MeetingItems.push(itrm)
                 //setMeetingItems(itrm);
@@ -785,7 +814,7 @@ function TasksTable(props: any) {
 
         }
 
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(props?.AllListId?.siteUrl);
         await web.lists.getById(checkedList[0].listId).items.getById(checkedList[0].Id).update({
             ParentTaskId: NewArrayBackup[0].Id,
             SharewebTaskTypeId: ChengedTitle === 'Workstream' ? 3 : 2,
@@ -905,7 +934,7 @@ function TasksTable(props: any) {
         }
         else {
             if (props.props.SharewebTaskType == 'Workstream') {
-                props.props['NoteCall']='Task'
+                props.props['NoteCall'] = 'Task'
                 MeetingItems.push(props.props)
                 setMeetingPopup(true)
             }
@@ -1265,12 +1294,12 @@ function TasksTable(props: any) {
                                                                     <td style={{ width: "23%" }}>
                                                                         {/* {item.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" onClick={() => window.open(GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/Portfolio-Profile.aspx?taskId= + ${item.Id}`, '_blank')} */}
                                                                         {item.siteType === "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + item.Id}
+                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item.Id}`}
                                                                         >
                                                                             {item.Title}
                                                                         </a>}
                                                                         {item.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + item.Id + '&Site=' + item.siteType}
+                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item.Id}&Site=${item.siteType}`}
                                                                         >{item.Title}
                                                                         </a>}
                                                                         {item.childs != undefined && item.childs.length > 0 &&
@@ -1328,7 +1357,7 @@ function TasksTable(props: any) {
                                                                                     return (
                                                                                         <span>
                                                                                             {item.Created != null ? moment(item.Created).format('DD/MM/YYYY') : ""}
-                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                            <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                 <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                             </a>
@@ -1347,7 +1376,7 @@ function TasksTable(props: any) {
                                                                         } */}
                                                                     </td>
 
-                                                                    <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                    <td style={{ width: "3%" }}>{item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, item)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                     <td style={{ width: "3%" }}>{item.siteType !== "Master Tasks" && item.Title !== 'Tasks' && item.isRestructureActive && <a href="#" data-bs-toggle="tooltip" data-bs-placement="auto" title="Edit"><img className='icon-sites-img' src={item.Restructuring} onClick={(e) => OpenModal(item)} /></a>}<a>
                                                                         {item.Item_x0020_Type == 'Task' && item.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(item)} />}</a></td>
                                                                 </tr>
@@ -1383,11 +1412,11 @@ function TasksTable(props: any) {
                                                                                             </td>
                                                                                             <td style={{ width: "23%" }}>
                                                                                                 {childitem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childitem.Id + '&Site=' + childitem.siteType}
+                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childitem.Id}&Site=${childitem.siteType}`}
                                                                                                 >{childitem.Title}
                                                                                                 </a>}
                                                                                                 {childitem.childs != undefined && childitem.childs.length > 0 &&
@@ -1441,7 +1470,7 @@ function TasksTable(props: any) {
                                                                                                             return (
                                                                                                                 <span>
                                                                                                                     {childitem.Created != null ? moment(childitem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                    <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                         <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                     </a>
@@ -1460,7 +1489,7 @@ function TasksTable(props: any) {
                                                                                                 {SmartTimes? <SmartTimeTotal props={childitem} CallBackSumSmartTime={CallBackSumSmartTime} /> : null} */}
                                                                                             </td>
 
-                                                                                            <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                            <td style={{ width: "3%" }}>{childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childitem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                             <td style={{ width: "3%" }}><a>
                                                                                                 {childitem.Item_x0020_Type == 'Task' && childitem.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childitem)} />}</a></td>
                                                                                         </tr>
@@ -1507,11 +1536,11 @@ function TasksTable(props: any) {
                                                                                                                     </td>
                                                                                                                     <td style={{ width: "23%" }}>
                                                                                                                         {childinew.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childinew.Id}
+                                                                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childinew.Id}`}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                            href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + childinew.Id + '&Site=' + childinew.siteType}
+                                                                                                                            href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${childinew.Id}&Site=${childinew.siteType}`}
                                                                                                                         >{childinew.Title}
                                                                                                                         </a>}
                                                                                                                         {childinew.childs != undefined && childinew.childs.length > 0 &&
@@ -1576,7 +1605,7 @@ function TasksTable(props: any) {
                                                                                                                                     return (
                                                                                                                                         <span>
                                                                                                                                             {childinew.Created != null ? moment(childinew.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                            <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                            <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                 <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                             </a>
@@ -1590,7 +1619,7 @@ function TasksTable(props: any) {
                                                                                                                     <td style={{ width: "7%" }}>
                                                                                                                     </td>
 
-                                                                                                                    <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><img style={{ width: "22px" }} src={GlobalConstants.MAIN_SITE_URL + "/SP/SiteCollectionImages/ICONS/24/clock-gray.png"}></img></a>}</td>
+                                                                                                                    <td style={{ width: "3%" }}>{childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, childinew)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                     <td style={{ width: "3%" }}><a>
                                                                                                                         {childinew.Item_x0020_Type == 'Task' && childinew.siteType != "Master Tasks" && <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditItemTaskPopup(childinew)} />}</a></td>
                                                                                                                 </tr>
@@ -1633,11 +1662,11 @@ function TasksTable(props: any) {
                                                                                                                                         </td>
                                                                                                                                         <td style={{ width: "23%" }}>
                                                                                                                                             {subchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + subchilditem.Id + '&Site=' + subchilditem.siteType}
+                                                                                                                                                href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${subchilditem.Id}&Site=${subchilditem.siteType}`}
                                                                                                                                             >{subchilditem.Title}
                                                                                                                                             </a>}
                                                                                                                                             {subchilditem.childs != undefined && subchilditem.childs.length > 0 &&
@@ -1694,7 +1723,7 @@ function TasksTable(props: any) {
                                                                                                                                                         return (
                                                                                                                                                             <span>
                                                                                                                                                                 {subchilditem.Created != null ? moment(subchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                                <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                                <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                                     <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                                                 </a>
@@ -1715,7 +1744,7 @@ function TasksTable(props: any) {
                                                                                                                                         </td>
 
 
-                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                        <td style={{ width: "3%" }}>{subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, subchilditem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                                         <td style={{ width: "3%" }}><a>
                                                                                                                                             {subchilditem.Item_x0020_Type == 'Task' && subchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(subchilditem)} />}</a></td>
                                                                                                                                     </tr>
@@ -1758,11 +1787,11 @@ function TasksTable(props: any) {
                                                                                                                                                             </td>
                                                                                                                                                             <td style={{ width: "23%" }}>
                                                                                                                                                                 {nextsubchilditem.siteType == "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Portfolio-Profile.aspx?taskId=" + childitem.Id}
+                                                                                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${childitem.Id}`}
                                                                                                                                                                 >{nextsubchilditem.Title}
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.siteType != "Master Tasks" && <a className="hreflink serviceColor_Active" target='_blank' data-interception="off"
-                                                                                                                                                                    href={GlobalConstants.MAIN_SITE_URL + "/SP/SitePages/Task-Profile.aspx?taskId=" + nextsubchilditem.Id + '&Site=' + nextsubchilditem.siteType}
+                                                                                                                                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${nextsubchilditem.Id}&Site=${nextsubchilditem.siteType}`}
                                                                                                                                                                 >{nextsubchilditem.Title}
                                                                                                                                                                 </a>}
                                                                                                                                                                 {nextsubchilditem.childs != undefined && nextsubchilditem.childs.length > 0 &&
@@ -1819,7 +1848,7 @@ function TasksTable(props: any) {
                                                                                                                                                                             return (
                                                                                                                                                                                 <span>
                                                                                                                                                                                     {nextsubchilditem.Created != null ? moment(nextsubchilditem.Created).format('DD/MM/YYYY') : ""}
-                                                                                                                                                                                    <a target='_blank' data-interception="off" href={GlobalConstants.MAIN_SITE_URL + `/SP/SitePages/TeamLeader-Dashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
+                                                                                                                                                                                    <a target='_blank' data-interception="off" href={`${props?.AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${Creates.AssingedToUser.Id}&Name=${Creates.AssingedToUser.Title}`}>
 
                                                                                                                                                                                         <img className='AssignUserPhoto' title={Creates.Title} src={Creates.Item_x0020_Cover.Description} />
                                                                                                                                                                                     </a>
@@ -1836,7 +1865,7 @@ function TasksTable(props: any) {
                                                                                                                                                                 } */}
                                                                                                                                                             </td>
 
-                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><img style={{ width: "22px" }} src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/clock-gray.png"></img></a>}</td>
+                                                                                                                                                            <td style={{ width: "3%" }}>{nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <a onClick={(e) => EditData(e, nextsubchilditem)}><span className='svg__iconbox svg__icon--clock'></span></a>}</td>
                                                                                                                                                             <td style={{ width: "3%" }}><a>
                                                                                                                                                                 {nextsubchilditem.Item_x0020_Type == 'Task' && nextsubchilditem.siteType != "Master Tasks" && <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif" onClick={(e) => EditItemTaskPopup(nextsubchilditem)} />}</a></td>
                                                                                                                                                         </tr>
@@ -1887,7 +1916,7 @@ function TasksTable(props: any) {
                             <div className='bg-ee p-2 restructurebox'>
                                 <div>
                                     {NewArrayBackup != undefined && NewArrayBackup.length > 0 ? <span>All below selected items will become child of  <img className="icon-sites-img me-1 " src={NewArrayBackup[0].SiteIcon}></img> <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + NewArrayBackup[0].Id}
+                                        href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${NewArrayBackup[0].Id}`}
                                     ><span>{NewArrayBackup[0].Title}</span>
                                     </a>  please click Submit to continue.</span> : ''}
                                 </div>
@@ -1903,7 +1932,7 @@ function TasksTable(props: any) {
                                         if (obj.Title !== 'Tasks') {
                                             return (
                                                 <span> <img className="icon-sites-img me-1 ml20" src={obj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + obj.Id}
+                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${obj.Id}`}
                                                 ><span>{obj.Title}  </span>
                                                 </a>{(OldArrayBackup.length - 1 < index) ? '>' : ''} </span>
                                             )
@@ -1916,13 +1945,13 @@ function TasksTable(props: any) {
                                         return (
                                             <>
                                                 <span> <img className="icon-sites-img me-1 ml20" src={newobj.SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                                    href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + newobj.Id}
+                                                    href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${newobj.Id}`}
                                                 ><span>{newobj.Title}  </span>
                                                 </a>{(NewArrayBackup.length - 1 < indexnew) ? '>' : ''}</span></>
                                         )
                                     })}
                                     <span> <img className="icon-sites-img me-1 ml20" src={RestructureChecked[0].SiteIcon}></img><a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                                        href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + RestructureChecked[0].Id}
+                                        href={`${props?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${RestructureChecked[0].Id}`}
                                     ><span>{RestructureChecked[0].Title}  </span>
                                     </a></span>
                                 </div>
@@ -1940,12 +1969,12 @@ function TasksTable(props: any) {
                     </footer>
                 </Panel>
             }
-            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId}></EditTaskPopup>}
-            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack}AllListId={props.AllListId}></TimeEntryPopup>}
-            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks}AllListId={props.AllListId}></CreateActivity>}
-            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data}SelectedProp={props.AllListId}></CreateWS>}
+            {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context}></EditTaskPopup>}
+            {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
+            {MeetingPopup && <CreateActivity props={MeetingItems[0]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
+            {WSPopup && <CreateWS props={MeetingItems[0]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
             {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
-                <PortfolioStructureCreationCard   CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props}  SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
+                <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
             </Panel>
             }
         </div>

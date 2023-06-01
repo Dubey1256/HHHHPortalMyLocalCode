@@ -10,6 +10,7 @@ import * as pnp from 'sp-pnp-js';
 import { SPHttpClient } from '@microsoft/sp-http';
 import { getSP } from "../../../spservices/pnpjsConfig"
 import TaskUsersTable from "./TaskUsersTable";
+import Tooltip from "../../../globalComponents/Tooltip";
 
 const controlStyles = {
     root: {
@@ -522,7 +523,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             TimeCategory: taskItem.timeCategory,
             ApproverId: taskItem.approverId,
             IsApprovalMail: taskItem.approvalType,
-            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
+            CategoriesItemsJson: (this.state.taskItem.selSmartMetadataItems != undefined && this.state.taskItem.selSmartMetadataItems.length>0) ? JSON.stringify(this.state.taskItem.selSmartMetadataItems) : null,
             Company: taskItem.company,
             Role: taskItem.roles,
             IsActive: taskItem.isActive,
@@ -870,7 +871,30 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             target: null
         });
     }
+    private onRenderCustomHeaderCreateNewUser= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Create New User
+            </div>
+            <Tooltip ComponentId='1757' />
+          </>
+        );
+      };
+      private onRenderCustomHeaderTaskUserManagement= () => {
+        return (
+          <>
+      
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            {`Task-User Management - ${this.state.taskItem.userTitle}`}
+            </div>
+            <Tooltip ComponentId='1767' />
+          </>
+        );
+      };
 
+    
     render() {       
 
         const elemCommandBar = ( false && <CommandBar 
@@ -949,7 +973,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         ></PeoplePicker>);
         
         const elemNewTaskMember = (<Panel
-            headerText="Create New User" 
+            onRenderHeader={ this.onRenderCustomHeaderCreateNewUser} 
             isOpen={this.state.showCreatePanel} 
             onDismiss={this.onCancelTask}
             isFooterAtBottom={true}
@@ -1184,7 +1208,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
         </div></div>);
 
         const elemEditTaskMember = (<Panel
-            headerText={`Task-User Management - ${this.state.taskItem.userTitle}`}
+            onRenderHeader={this.onRenderCustomHeaderTaskUserManagement}
             type={PanelType.large}
             isOpen={this.state.showEditPanel}
             onDismiss = {this.onCancelTask}

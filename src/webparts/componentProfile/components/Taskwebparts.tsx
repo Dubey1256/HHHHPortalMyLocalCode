@@ -3371,7 +3371,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter((user: any) => user.Title === name);
+    const user = AllUsers.filter((user: any) => user.Title == name);
     let Image: any;
     if (user[0]?.Item_x0020_Cover != undefined) {
       Image = user[0].Item_x0020_Cover.Url;
@@ -3425,7 +3425,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                 </span>
               ) : ""}{" "}
-              {row?.original?.Title != 'Others' ? <IndeterminateCheckbox
+              {row?.original?.TitleNew != 'Tasks' ? <IndeterminateCheckbox
                 {...{
                   checked: row.getIsSelected(),
                   indeterminate: row.getIsSomeSelected(),
@@ -3436,7 +3436,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               {row?.original?.SiteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                   <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
               }
               {getValue()}
             </>
@@ -3458,6 +3458,11 @@ export default function ComponentTable({ props, NextProp }: any) {
               >
                 <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
               </a>}
+              {row?.original.TitleNew === "Tasks" ? (
+              <span>{row?.original.TitleNew}</span>
+            ) : (
+              ""
+            )}
               {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
@@ -3547,13 +3552,14 @@ export default function ComponentTable({ props, NextProp }: any) {
               <>
                 {row?.original?.Author != undefined ? (
                   <>
-                  <img className="AssignUserPhoto" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
+                  <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")} </span>
+                  <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
                   />
-                 <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")}</span>
+                 
                   </>
                 ) : (
                   <img
-                    className="AssignUserPhoto"
+                    className="workmember"
                     src="https://hhhhteams.sharepoint.com/sites/HHHH/PublishingImages/Portraits/icon_user.jpg"
                   />
                 )}{" "}
@@ -3621,9 +3627,25 @@ export default function ComponentTable({ props, NextProp }: any) {
           <>
            
               <a> {row?.original?.siteType == "Master Tasks" && (
-                <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
+                <span className="mt-1 svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
+                 {row?.original?.siteType === "Master Tasks" &&
+              row?.original?.Title !== "Others" &&
+              row?.original?.isRestructureActive && (
+                <a
+                  href="#"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="auto"
+                  title="Edit"
+                >
+                  <img
+                    className="icon-sites-img"
+                    src={row?.original?.Restructuring}
+                    onClick={(e) => OpenModal(row?.original)}
+                  />
+                </a>
+              )}
                 {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-                  <span onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
+                  <span onClick={(e) => EditItemTaskPopup(row?.original)} className="mt-1 svg__iconbox svg__icon--edit"></span>
                 )}
               </a>
             

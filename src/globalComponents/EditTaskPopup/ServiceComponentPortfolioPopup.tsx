@@ -19,14 +19,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
-    const [selectedComponent, setSelectedComponent] = React.useState([]);
+    const [selectedComponent, setSelectedComponent] = React.useState('');
     const [AllUsers, setTaskUser] = React.useState([]);
     const [ShowingAllData, setShowingData] = React.useState([])
     const PopupType: any = props?.PopupType;
     let GlobalArray: any = [];
     React.useEffect(() => {
         if (props.smartComponent != undefined && props.smartComponent.length > 0)
-            setSelectedComponent(props?.smartComponent);
+            setSelectedComponent(props?.smartComponent[0]);
         GetComponents();
 
     },
@@ -36,6 +36,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
     const setModalIsOpenToFalse = () => {
         Example([], ComponentType, "Close");
+        setModalIsOpen(false);
     }
     const setModalIsOpenToOK = () => {
         if (props.linkedComponent != undefined && props?.linkedComponent.length == 0)
@@ -57,19 +58,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
         setData(data => ([...data]));
     };
     const GetComponents = async () => {
-        let selectedDataArray:any=[];
-        if(props?.smartComponent!=undefined&&props?.smartComponent?.length>0){
-            selectedDataArray=props?.smartComponent;
-        }
         let PropsObject: any = {
             MasterTaskListID: Dynamic.MasterTaskListID,
             siteUrl: Dynamic.siteUrl,
             ComponentType: ComponentType,
-            TaskUserListId: Dynamic.TaskUsertListID,
-            selectedItems:selectedDataArray
+            TaskUserListId: Dynamic.TaskUsertListID
         }
         GlobalArray = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-        if (GlobalArray?.GroupByData != undefined && GlobalArray?.GroupByData?.length > 0) {
+        if (GlobalArray.GroupByData != undefined && GlobalArray.GroupByData.length > 0) {
             setData(GlobalArray.GroupByData);
             LinkedServicesBackupArray = GlobalArray.GroupByData;
         }
@@ -77,20 +73,14 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     }
 
 
-    const callBackData = React.useCallback((elem: any, ShowingData: any,selectedArray:any) => {
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
         if (selectionType == "Multi") {
-            // if (elem != undefined) {
-            //     const foundObject = MultiSelectedData.find((obj:any) => obj.Id === elem.Id);
-            //     if(foundObject){
-            //         MultiSelectedData.filter((obj:any) => obj.Id !== elem.Id);
-            //     }else{
-            //         MultiSelectedData.push(elem);
-            //     }
-               
-            // } else {
-            //     console.log("elem", elem);
-            // }
-            MultiSelectedData=selectedArray;
+            if (elem != undefined) {
+                MultiSelectedData.push(elem);
+            } else {
+                console.log("elem", elem);
+            }
+
         } else {
             if (elem != undefined) {
                 setCheckBoxData([elem])
@@ -115,7 +105,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         {`Select ${ComponentType}`}
                     </span>
                 </div>
-                <Tooltip ComponentId="1667" />
+                <Tooltip ComponentId={ComponentType == "Service" ? "1667" :"1666"} />
             </div>
         );
     };
@@ -305,7 +295,12 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
     })
 
     return (
-        <Panel type={PanelType.custom} customWidth="1100px" isOpen={modalIsOpen} onDismiss={setModalIsOpenToFalse} onRenderHeader={onRenderCustomHeader}
+        <Panel
+            type={PanelType.custom}
+            customWidth="1100px"
+            isOpen={modalIsOpen}
+            onDismiss={setModalIsOpenToFalse}
+            onRenderHeader={onRenderCustomHeader}
             isBlocking={modalIsOpen}
             onRenderFooter={CustomFooter}
         >

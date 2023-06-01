@@ -9,13 +9,11 @@ import * as globalCommon from "../globalCommon";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/js/dist/modal.js";
-// import ComponentPortPolioPopup from "../../webparts/EditPopupFiles/ComponentPortfolioSelection";
 import ServiceComponentPortfolioPopup from './ServiceComponentPortfolioPopup';
 import axios, { AxiosResponse } from 'axios';
 import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
-import LinkedComponent from './LinkedComponent';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
@@ -43,12 +41,6 @@ import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import EmailComponent from "../EmailComponents";
 import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
-// import {DatePicker} from 'react-date-picker';
-// import 'react-date-picker/dist/DatePicker.css';
-// import 'react-calendar/dist/Calendar.css';
-// import {CDatePicker} from '@coreui/react';
-// import SiteComposition from "../SiteComposition";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 
@@ -60,7 +52,7 @@ var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
-var tempCategoryData: any;
+var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
@@ -160,6 +152,7 @@ const EditTaskPopup = (Items: any) => {
     const [SitesTaggingData, setSitesTaggingData] = React.useState<any>([]);
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
+    const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -201,7 +194,7 @@ const EditTaskPopup = (Items: any) => {
     }
     React.useEffect(() => {
         loadTaskUsers();
-        getCurrentUserDetails();
+        // getCurrentUserDetails();
         GetExtraLookupColumnData();
         getCurrentUserDetails();
         getAllSitesData();
@@ -241,18 +234,19 @@ const EditTaskPopup = (Items: any) => {
                     ApproverData = extraLookupColumnData[0]?.Approver;
                     ClientCategory = extraLookupColumnData[0].ClientCategory
                     if (Data != undefined && Data != null) {
-                        // let TempArray: any = [];
-                        // AllProjectBackupArray.map((ProjectData: any) => {
-                        //     if (ProjectData.Id == Data.Id) {
-                        //         ProjectData.Checked = true;
-                        //         setSelectedProject([ProjectData]);
-                        //         TempArray.push(ProjectData);
-                        //     } else {
-                        //         ProjectData.Checked = false;
-                        //         TempArray.push(ProjectData);
-                        //     }
-                        // })
+                        let TempArray: any = [];
+                        AllProjectBackupArray.map((ProjectData: any) => {
+                            if (ProjectData.Id == Data.Id) {
+                                ProjectData.Checked = true;
+                                setSelectedProject([ProjectData]);
+                                TempArray.push(ProjectData);
+                            } else {
+                                ProjectData.Checked = false;
+                                TempArray.push(ProjectData);
+                            }
+                        })
                         setSelectedProject([Data]);
+                        SetAllProjectData(TempArray)
                     }
                     if (ApproverHistoryData != undefined || ApproverHistoryData != null) {
                         let tempArray = JSON.parse(ApproverHistoryData);
@@ -704,12 +698,14 @@ const EditTaskPopup = (Items: any) => {
                 if (item.Component?.length > 0) {
                     setComponentTaskCheck(true)
                     setSmartComponentData(item.Component);
+                    item.Portfolio_x0020_Type = "Component"
                 } else {
                     setComponentTaskCheck(false)
                 }
                 if (item.Services?.length > 0) {
                     setServicesTaskCheck(true)
                     setSmartServicesData(item.Services);
+                    item.Portfolio_x0020_Type = "Service"
                 } else {
                     setServicesTaskCheck(false)
                 }
@@ -1191,56 +1187,56 @@ const EditTaskPopup = (Items: any) => {
                 setOnlyCompletedStatus(false)
             }
         } else {
-            if (tempCategoryData != undefined) {
-                let CheckTaggedCategory = tempCategoryData.includes(type)
-                if (CheckTaggedCategory == false) {
-                    let CheckTaagedCategory: any = true;
-                    let category: any = tempCategoryData + ";" + type;
-                    setCategoriesData(category);
-                    tempCategoryData = category;
-                    if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-                        tempShareWebTypeData.map((tempItem: any) => {
-                            if (tempItem.Title == type) {
-                                CheckTaagedCategory = false;
+            // if (tempCategoryData != undefined) {
+            let CheckTaggedCategory = tempCategoryData?.includes(type)
+            if (CheckTaggedCategory == false) {
+                let CheckTaagedCategory: any = true;
+                let category: any = tempCategoryData + ";" + type;
+                setCategoriesData(category);
+                tempCategoryData = category;
+                if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
+                    tempShareWebTypeData.map((tempItem: any) => {
+                        if (tempItem.Title == type) {
+                            CheckTaagedCategory = false;
+                        }
+                    })
+                }
+                if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
+                    AutoCompleteItemsArray.map((dataItem: any) => {
+                        if (dataItem.Title == type) {
+                            if (CheckTaagedCategory) {
+                                ShareWebTypeData.push(dataItem);
+                                tempShareWebTypeData.push(dataItem);
                             }
-                        })
-                    }
-                    if (AutoCompleteItemsArray != undefined && AutoCompleteItemsArray.length > 0) {
-                        AutoCompleteItemsArray.map((dataItem: any) => {
-                            if (dataItem.Title == type) {
-                                if (CheckTaagedCategory) {
-                                    ShareWebTypeData.push(dataItem);
-                                    tempShareWebTypeData.push(dataItem);
-                                }
-                            }
-                        })
-                    }
-                    // setSearchedCategoryData(tempShareWebTypeData);
-                    if (type == "Phone") {
-                        setPhoneStatus(true)
-                    }
-                    if (type == "Email Notification") {
-                        setEmailStatus(true)
-                    }
-                    if (type == "Immediate") {
-                        setImmediateStatus(true)
-                    }
-                    if (type == "Approval") {
-                        setApprovalStatus(true);
-                        setApproverData(TaskApproverBackupArray);
-                        StatusArray?.map((item: any) => {
-                            if (item.value == 1) {
-                                setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
-                                setPercentCompleteStatus(item.status);
-                                setTaskStatus(item.taskStatusComment);
-                            }
-                        })
-                    }
-                    if (type == "Only Completed") {
-                        setOnlyCompletedStatus(true)
-                    }
+                        }
+                    })
+                }
+                // setSearchedCategoryData(tempShareWebTypeData);
+                if (type == "Phone") {
+                    setPhoneStatus(true)
+                }
+                if (type == "Email Notification") {
+                    setEmailStatus(true)
+                }
+                if (type == "Immediate") {
+                    setImmediateStatus(true)
+                }
+                if (type == "Approval") {
+                    setApprovalStatus(true);
+                    setApproverData(TaskApproverBackupArray);
+                    StatusArray?.map((item: any) => {
+                        if (item.value == 1) {
+                            setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '1' })
+                            setPercentCompleteStatus(item.status);
+                            setTaskStatus(item.taskStatusComment);
+                        }
+                    })
+                }
+                if (type == "Only Completed") {
+                    setOnlyCompletedStatus(true)
                 }
             }
+            // }
         }
     }
 
@@ -1330,6 +1326,9 @@ const EditTaskPopup = (Items: any) => {
                         temp.push(userData)
                         setCurrentUserData(temp);
                         currentUserBackupArray.push(userData);
+                        if (userData.UserGroupId == 7) {
+                            setIsUserFromHHHHTeam(true);
+                        }
                     }
                 })
             }
@@ -2121,6 +2120,7 @@ const EditTaskPopup = (Items: any) => {
                     smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
                     smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
                     smartMetaCall[0].siteType = EditData.siteType;
+                    smartMetaCall[0].siteUrl = siteUrls;
                 }
                 setLastUpdateTaskData(smartMetaCall[0]);
                 tempShareWebTypeData = [];
@@ -2305,6 +2305,7 @@ const EditTaskPopup = (Items: any) => {
     const CommentSectionCallBack = React.useCallback((EditorData: any) => {
         CommentBoxData = EditorData
         BuildFeedBackArray();
+        console.log("First Comment text callback array ====================", CommentBoxData)
 
     }, [])
     const SubCommentSectionCallBack = React.useCallback((feedBackData: any) => {
@@ -2374,15 +2375,12 @@ const EditTaskPopup = (Items: any) => {
                     if (Status <= 3) {
                         setInputFieldDisable(false)
                         setStatusOnChangeSmartLight(3);
-                        // setTaskAssignedTo([]);
-                        // EditData.TaskAssignedUsers = [];
-                        // setTaskTeamMembers([]);
-                        // EditData.Team_x0020_Members = [];
+
                     }
                 }
-                if (item.Phone) {
-                    // CategoryChange("Phone", 199);
-                    // CategoryChangeUpdateFunction("false", "Phone", 199)
+                if (item.Phone == true) {
+                    PhoneCount = PhoneCount + 1;
+
                 }
                 if (item.Subtext?.length > 0) {
                     item.Subtext.map((subItem: any) => {
@@ -2393,15 +2391,11 @@ const EditTaskPopup = (Items: any) => {
                             if (Status <= 3) {
                                 setInputFieldDisable(false)
                                 setStatusOnChangeSmartLight(3);
-                                // setTaskAssignedTo([]);
-                                // EditData.TaskAssignedUsers = [];
-                                // setTaskTeamMembers([]);
-                                // EditData.Team_x0020_Members = [];
+
                             }
                         }
-                        if (item.Phone) {
+                        if (subItem.Phone == true) {
                             PhoneCount = PhoneCount + 1;
-                            // CategoryChangeUpdateFunction("false", "Phone", 199)
                         }
                     })
                 }
@@ -3118,7 +3112,7 @@ const EditTaskPopup = (Items: any) => {
                         Replace Image
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="756" />
             </div>
         )
     }
@@ -3130,7 +3124,7 @@ const EditTaskPopup = (Items: any) => {
                         Select Project
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1608" />
             </div>
         )
     }
@@ -3375,7 +3369,7 @@ const EditTaskPopup = (Items: any) => {
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <div className="modal-body mb-5">
-                        <ul className="nav nav-tabs" id="myTab" role="tablist">
+                        <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                             <button
                                 className="nav-link active"
                                 id="BASIC-INFORMATION"
@@ -3386,7 +3380,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BASICINFORMATION"
                                 aria-selected="true"
                             >
-                                BASIC INFORMATION
+                                {/* BASIC INFORMATION */}
+                                TASK INFORMATION
                             </button>
                             <button
                                 className="nav-link"
@@ -3398,9 +3393,10 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="NEWTIMESHEET"
                                 aria-selected="false"
                             >
-                                TEAM & TIMESHEET
+                                TASK PLANNING
+                                {/* TEAM & TIMESHEET */}
                             </button>
-                            <button
+                            {IsUserFromHHHHTeam ? null : <button
                                 className="nav-link"
                                 id="BACKGROUND-COMMENT"
                                 data-bs-toggle="tab"
@@ -3410,8 +3406,10 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BACKGROUNDCOMMENT"
                                 aria-selected="false"
                             >
-                                BACKGROUND
-                            </button>
+                                REMARKS
+                                {/* BACKGROUND */}
+                            </button>}
+
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                             <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
@@ -4135,10 +4133,9 @@ const EditTaskPopup = (Items: any) => {
                                                                 <a
                                                                     target="_blank"
                                                                     data-interception="off"
-                                                                    href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                    <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                        data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                    href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                    <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                        style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
@@ -4150,10 +4147,10 @@ const EditTaskPopup = (Items: any) => {
                                         </div>
                                         <div className="col-12 mb-2">
                                             <div className="input-group ">
-                                                <label className="form-label full-width">Estimated Time</label>
+                                                <label className="form-label full-width">Estimated Time In Hours</label>
                                                 <input type="text" className="form-control"
                                                     defaultValue={EditData.EstimatedTime}
-                                                    placeholder="Enter Estimated Time"
+                                                    placeholder="Enter Estimated Time In Hours"
                                                     onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
                                                 />
                                             </div>
@@ -4392,19 +4389,21 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
-                                {
-                                    EditData.Id != null || EditData.Id != undefined ?
-                                        <BackgroundCommentComponent
-                                            CurrentUser={currentUserData}
-                                            TaskData={EditData}
-                                            Context={Context}
-                                            siteUrls={siteUrls}
-                                        />
-                                        : null
-                                }
+                            {IsUserFromHHHHTeam ? null :
+                                <div className="tab-pane " id="BACKGROUNDCOMMENT" role="tabpanel" aria-labelledby="BACKGROUNDCOMMENT">
+                                    {
+                                        EditData.Id != null || EditData.Id != undefined ?
+                                            <BackgroundCommentComponent
+                                                CurrentUser={currentUserData}
+                                                TaskData={EditData}
+                                                Context={Context}
+                                                siteUrls={siteUrls}
+                                            />
+                                            : null
+                                    }
 
-                            </div>
+                                </div>
+                            }
                         </div>
                         {/* </>
                                     )
@@ -5233,10 +5232,9 @@ const EditTaskPopup = (Items: any) => {
                                                                             <a
                                                                                 target="_blank"
                                                                                 data-interception="off"
-                                                                                href={`${Items.Items.siteType}/SitePages/TeamLeader-Dashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                                <img ui-draggable="true" data-bs-toggle="tooltip" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                                    on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                                                                    data-toggle="popover" data-trigger="hover" style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                                href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
+                                                                                <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
+                                                                                    style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
                                                                                     src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                                 />
                                                                             </a>
@@ -5454,54 +5452,56 @@ const EditTaskPopup = (Items: any) => {
                 </div>
             </Panel>
 
-            {/* ********************* this is Project Management Image panel ****************** */}
-            <Panel
-                onRenderHeader={onRenderCustomProjectManagementHeader}
-                isOpen={ProjectManagementPopup}
-                onDismiss={closeProjectManagementPopup}
-                isBlocking={ProjectManagementPopup}
-                type={PanelType.custom}
-                customWidth="1100px"
-                onRenderFooter={customFooterForProjectManagement}
-            >
-                <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
-                    <div className="modal-body wrapper p-0 mt-2">
-                        <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
-                            <thead className="fixed-Header">
-                                {headerGroups.map((headerGroup: any) => (
-                                    <tr  {...headerGroup.getHeaderGroupProps()}>
-                                        {headerGroup.headers.map((column: any) => (
-                                            <th  {...column.getHeaderProps()}>
-                                                <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
-                                                    {column.render('Header')}
-                                                    {generateSortingIndicator(column)}
-                                                </span>
-                                                <Filter column={column} />
-                                            </th>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </thead>
-
-                            <tbody {...getTableBodyProps()}>
-                                {page.map((row: any) => {
-                                    prepareRow(row)
-                                    return (
-                                        <tr {...row.getRowProps()}  >
-                                            {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                            })}
+            {/* ********************* this is Project Management panel ****************** */}
+            {AllProjectData != undefined && AllProjectData.length > 0 ?
+                <Panel
+                    onRenderHeader={onRenderCustomProjectManagementHeader}
+                    isOpen={ProjectManagementPopup}
+                    onDismiss={closeProjectManagementPopup}
+                    isBlocking={ProjectManagementPopup}
+                    type={PanelType.custom}
+                    customWidth="1100px"
+                    onRenderFooter={customFooterForProjectManagement}
+                >
+                    <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
+                        <div className="modal-body wrapper p-0 mt-2">
+                            <Table className="SortingTable table table-hover" bordered hover {...getTableProps()}>
+                                <thead className="fixed-Header">
+                                    {headerGroups.map((headerGroup: any) => (
+                                        <tr  {...headerGroup.getHeaderGroupProps()}>
+                                            {headerGroup.headers.map((column: any) => (
+                                                <th  {...column.getHeaderProps()}>
+                                                    <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
+                                                        {column.render('Header')}
+                                                        {generateSortingIndicator(column)}
+                                                    </span>
+                                                    <Filter column={column} />
+                                                </th>
+                                            ))}
                                         </tr>
-                                    )
+                                    ))}
+                                </thead>
 
-                                })}
-                            </tbody>
-                        </Table>
+                                <tbody {...getTableBodyProps()}>
+                                    {page.map((row: any) => {
+                                        prepareRow(row)
+                                        return (
+                                            <tr {...row.getRowProps()}  >
+                                                {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
+                                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                                })}
+                                            </tr>
+                                        )
+
+                                    })}
+                                </tbody>
+                            </Table>
+                        </div>
+
                     </div>
-
-                </div>
-            </Panel>
-
+                </Panel>
+                : null
+            }
             {/* ********************* this is Approval panel ****************** */}
             <Panel
                 onRenderHeader={onRenderCustomApproverHeader}
