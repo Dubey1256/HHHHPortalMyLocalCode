@@ -80,10 +80,10 @@ export default class AllTaskUserApp extends React.Component<ITaskUserProps, ITas
     }
 
     render() {
-        
+       
         const elemTaskTeamMembers = <TaskTeamMembers tasks={this.state.teamMembersTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks} teamGroups={this.state.teamGroupsTasks} taskUsersListId={this.props.taskUsersListId} smartMetadataListId={this.props.smartMetadataListId} imagesLibraryId={this.props.imagesLibraryId} defaultApproverEMail={"deepak@hochhuth-consulting.de"} />;
         const elemTaskTeamGroups = <TaskTeamGroups tasks={this.state.teamGroupsTasks} spService={this.spService} context={this.props.context} loadTasks={this.loadTasks}  taskUsersListId={this.props.taskUsersListId} />;
-
+           
         const elemPivot = (
             <>
               <div className='header-section full-width justify-content-between'>

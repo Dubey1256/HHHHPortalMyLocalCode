@@ -4,6 +4,8 @@ import { ICreatedByTablesProps } from './ICreatedByTablesProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import Table from './Table';
 import Tabless from './Tabless';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
 
 export default class CreatedByTables extends React.Component<ICreatedByTablesProps, {}> {
   public render(): React.ReactElement<ICreatedByTablesProps> {
@@ -41,7 +43,7 @@ export default class CreatedByTables extends React.Component<ICreatedByTablesPro
       //   </div>
       // </section>
       <section className={`${styles}`}>
-            {/* <Table Items={this.props}  /> */}
+            {/* <Table  /> */}
             <Tabless Items={this.props}  />
            
       </section>

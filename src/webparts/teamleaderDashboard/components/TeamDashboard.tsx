@@ -39,13 +39,14 @@ var AllListId: any = {}
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
+var selectedLead:any={};
 function TeamDashboard(props:any) {
   const [currentUserData, setCurrentUserData]: any = React.useState({});
   const [AllTeamMembers, setAllTeamMembers] = React.useState([]);
   const [AllTeamLeaders, setAllTeamLeaders] = React.useState([]);
   const [selectedTeamLeader, setSelectedTeamLeader] = React.useState({});
   const [showContent, setShowContent] = React.useState(false);
-
+  const [pageLoaderActive, setPageLoader] = React.useState(false)
 
   React.useEffect(() => {
     try {
@@ -109,14 +110,30 @@ const getCurrentUserDetails = async () => {
         })
         AllTeamLeadersGroup=TeamLeaders
         TeamLeaders?.map((Leader:any)=>{
+            Leader?.childs.sort((a: any, b: any) => {
+                const titleA = a.Title.toLowerCase();
+                const titleB = b.Title.toLowerCase();
+          
+                if (titleA < titleB) {
+                    return -1;
+                }
+                if (titleA > titleB) {
+                    return 1;
+                }
+                return 0;
+            });
             if(Leader?.Id==currentUser?.Id){
                 isTeamLeader=true;
+                Leader={...currentUser,...Leader}
+                selectedLead=Leader;
                 setSelectedTeamLeader(Leader);
+                setPageLoader(true);
             }
         })
         setShowContent(isTeamLeader)
         if(isTeamLeader==false){
           alert("You are not authorized to visit this page.")
+          setPageLoader(false);
         }
         
         GetMetaData();
@@ -127,7 +144,43 @@ const getCurrentUserDetails = async () => {
     console.log(selectedTeamLeader);
   }
 const getTeamLeadsMember=(TeamLead:any)=>{
-
+    let completeTeam: any=[];
+    if(TeamLead?.Id!=undefined){
+        completeTeam.push(TeamLead?.AssingedToUser?.Id);
+        if(TeamLead?.childs?.length>0){
+            TeamLead?.childs?.map((child:any)=>{
+                completeTeam.push(child?.AssingedToUser?.Id)
+            }) 
+        }
+    }
+    let teamsTask:any={};
+    console.log(completeTeam);
+    setAllTeamMembers(completeTeam);
+    if(AllTasks?.length>0 && completeTeam?.length>0&& isTeamLeader==true){
+        AllTasks?.map((task:any)=>{
+            let isTeamsTask =false;
+            completeTeam?.map((teamMemberId:any)=>{
+                let userAssigned= task?.AssignedToIds?.includes(teamMemberId);
+                if(userAssigned){
+                    if(teamsTask[teamMemberId]==undefined){
+                        teamsTask[teamMemberId]=[task];
+                    }else{
+                        teamsTask[teamMemberId].push(task);
+                    }
+                }
+                isTeamsTask=userAssigned;
+            })
+            if(isTeamsTask){
+                if(teamsTask["AllTasks"]==undefined){
+                    teamsTask["AllTasks"]=[task];
+                }else{
+                    teamsTask["AllTasks"].push(task);
+                }
+            }
+        })
+    }
+    setPageLoader(false);
+    console.log(teamsTask);
 }
 const loadTaskUsers = async () => {
   let taskUser;
@@ -148,44 +201,7 @@ const loadTaskUsers = async () => {
       alert('Task User List Id not Available')
   }
 }
-const getChilds1 = function (item: any, array: any) {
-  item.childs = [];
 
-  array?.map((childItem: any) => {
-      childItem.selected = false;
-      childItem.UserManagerMail = [];
-      childItem.UserManagerName = ''
-      childItem?.Approver?.map((Approver: any, index: any) => {
-          if (index == 0) {
-
-              childItem.UserManagerName = Approver?.Title;
-          } else {
-              childItem.UserManagerName += ' ,' + Approver?.Title
-          }
-          let Mail = Approver?.Name?.split('|')[2]
-          childItem.UserManagerMail.push(Mail)
-      })
-      if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
-          item.childs.push(childItem);
-          if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
-              currentUser.isAdmin = true;
-              setCurrentUserData(currentUser);
-          }
-      }
-  })
-  item.childs.sort((a: any, b: any) => {
-      const titleA = a.Title.toLowerCase();
-      const titleB = b.Title.toLowerCase();
-
-      if (titleA < titleB) {
-          return -1;
-      }
-      if (titleA > titleB) {
-          return 1;
-      }
-      return 0;
-  });
-}
 // Region end
 // Load Metadata 
 const GetMetaData = async () => {
@@ -332,28 +348,6 @@ const LoadAllSiteTasks = function () {
                                   });
                               });
 
-                              const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
-                              const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
-                              const isEmailNotification = checkUserExistence('Email Notification', task?.SharewebCategories);
-                              const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
-                              if (isCurrentUserApprover && task?.PercentComplete == '1') {
-                                  approverTask.push(task)
-                              }
-                              if (isBottleneckTask) {
-                                  AllBottleNeckTasks.push(task)
-                              }
-                              if (isImmediate) {
-                                  AllImmediates.push(task)
-                              }
-                              if (isEmailNotification) {
-                                  AllEmails.push(task)
-                              }
-                              if (task.ClientActivityJson != undefined) {
-                                  SharewebTask.push(task)
-                              }
-                              if(parseInt(task.Priority_x0020_Rank)>=8&&parseInt(task.Priority_x0020_Rank)<=10){
-                                  AllPriority.push(task);
-                              }
                               AllSiteTasks.push(task)
                           });
                           arraycount++;
@@ -362,6 +356,7 @@ const LoadAllSiteTasks = function () {
                   if (arraycount === currentCount) {
                       AllTasks = AllSiteTasks;
                       backupTaskArray.assignedApproverTasks = approverTask;
+                      getTeamLeadsMember(selectedLead);
                       // setAllPriorityTasks(sortOnCreated(AllPriority))
                       // setAllImmediateTasks(sortOnCreated(AllImmediates));
                       // setAssignedApproverTasks(sortOnCreated(approverTask));
@@ -451,7 +446,9 @@ const getComponentasString = function (results: any) {
              
             </div>
           </div>:
-          <div>Access Denied</div>        }</>
+          <div>Access Denied</div>        }
+          {pageLoaderActive ? <PageLoader /> : ''}
+          </>
   )
 }
 

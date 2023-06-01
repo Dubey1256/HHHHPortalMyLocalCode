@@ -33,7 +33,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [SearchedKeyForEI, setSearchedKeyForEI] = useState('');
     const [SearchedKeyForEducation, setSearchedKeyForEducation] = useState('');
     const [SearchedKeyForMigration, setSearchedKeyForMigration] = useState('');
-    const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(false);
+    const [SearchWithDescriptionStatus, setSearchWithDescriptionStatus] = useState(true);
     const [SearchedClientCategoryData, setSearchedClientCategoryData] = useState([]);
     const [SearchedClientCategoryDataForInput, setSearchedClientCategoryDataForInput] = useState([]);
     const [selectedClientCategory, setSelectedClientCategory] = useState([]);
@@ -549,14 +549,13 @@ const SiteCompositionComponent = (Props: any) => {
                         Select Client Category
                     </span>
                 </div>
-                <Tooltip ComponentId="1683" />
+                <Tooltip ComponentId="1626" />
             </div>
         )
     }
     let TotalPercent: any = 0;
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
-            {console.log("All Category Data in Div ======", AllClientCategoryData)}
             <div className="col-sm-12 ps-3">
                 <input
                     type="radio"
@@ -917,8 +916,8 @@ const SiteCompositionComponent = (Props: any) => {
                             </div>
                         </div>
                         <div className='col-sm-12 categScroll' style={{ height: "auto" }}>
-                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label> Search With Description (Info Icons)</label>
-                            <input className="form-control my-2" type='text' placeholder="Search Name Here!" value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
+                            <input type="checkbox" className="form-check-input me-1 rounded-0" defaultChecked={SearchWithDescriptionStatus} onChange={() => setSearchWithDescriptionStatus(SearchWithDescriptionStatus ? false : true)} /> <label>Include description (info-icons) in search</label>
+                            <input className="form-control my-2" type='text' placeholder={`Search ${ClientCategoryPopupSiteName} Client Category`} value={searchedKey} onChange={(e) => AutoSuggestionForClientCategory(e, "Popup")} />
                             {SearchedClientCategoryData?.length > 0 ? (
                                 <div className="SearchTableCategoryComponent">
                                     <ul className="list-group">
@@ -1018,9 +1017,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                         <li>
                                                                             <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child1)}>
                                                                                 <a>
-                                                                                    {child1.Item_x0020_Cover ? <img className="flag_icon"
-                                                                                        style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
-                                                                                        src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''} /> :
+                                                                                    {child1.Item_x0020_Cover ?
+                                                                                        <img className="flag_icon"
+                                                                                            style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                            src={child1.Item_x0020_Cover ? child1.Item_x0020_Cover.Url : ''}
+                                                                                        /> :
                                                                                         null}
                                                                                     {child1.Title}
                                                                                     {child1.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
