@@ -233,7 +233,7 @@ export default function ProjectOverview(props: any) {
                 id: "PercentComplete",
                 placeholder: "% Complete",
                 header: "",
-                size: 4,
+                size: 3,
             },
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
@@ -310,7 +310,7 @@ export default function ProjectOverview(props: any) {
                 internalHeader: '% Complete',
                 accessor: 'PercentComplete',
                 showSortIcon: true,
-                style: { width: '100px' },
+                style: { width: '55px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
