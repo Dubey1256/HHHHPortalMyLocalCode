@@ -219,9 +219,7 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [globalFilter, setGlobalFilter] = React.useState("");
-  globalFilterHighlited = globalFilter;
-  const [checkData, setcheckData] = React.useState({})
+  const [checkData, setcheckData] = React.useState([])
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
   const [checkCounter, setCheckCounter] = React.useState(true)
 
@@ -261,6 +259,8 @@ function ComponentTable(SelectedProp: any) {
   const [ShowSelectdSmartfilter, setShowSelectdSmartfilter] = React.useState(
     []
   );
+  const [globalFilter, setGlobalFilter] = React.useState("");
+
   const [checked, setchecked] = React.useState([]);
   const [IsUpdated, setIsUpdated] = React.useState("");
   const [tablecontiner, settablecontiner]: any = React.useState("hundred");
@@ -1189,7 +1189,8 @@ function ComponentTable(SelectedProp: any) {
         "Item_x0020_Cover",
         "AssingedToUser/Title",
         "AssingedToUser/Id",
-        "UserGroup/Id"
+        "UserGroup/Id",
+        "ItemType"
       )
       .expand("AssingedToUser", "UserGroup")
       .get();
@@ -2575,12 +2576,12 @@ function ComponentTable(SelectedProp: any) {
 
   //////////CheckBox Item Start/////
 
-  const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+  const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel:any) => {
     if (eTarget == true) {
-      setcheckData(itrm)
+      setcheckData(getSelectedRowModel)
       setShowTeamMemberOnCheck(true)
     } else {
-      setcheckData({})
+      setcheckData([])
       setShowTeamMemberOnCheck(false)
     }
     var Arrays: any = [];
@@ -3823,10 +3824,14 @@ function ComponentTable(SelectedProp: any) {
         }
       });
     }
-    if (itrm?.Item_x0020_Type === "Component") {
-      onChangeHandler(itrm, "parent", eTarget);
+
+
+
+
+    if (itrm?.Item_x0020_Type == "Component") {
+      onChangeHandler(itrm, "parent", eTarget, table?.getSelectedRowModel()?.flatRows);
     } else {
-      onChangeHandler(itrm, parentDataCopy, eTarget);
+      onChangeHandler(itrm, parentDataCopy, eTarget, table?.getSelectedRowModel()?.flatRows );
     }
   };
 
