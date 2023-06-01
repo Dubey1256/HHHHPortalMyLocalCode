@@ -1618,17 +1618,14 @@ function TimeEntryPopup(item: any) {
 
         });
         var Dateee = ''
-        // if(editeddata != undefined){
-        //    var a =  Moment(editeddata).format()
-        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
-        // }
-        // else{
-        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
-        // }
-
-        // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
-        //var DateFormate = new Date(Eyd)
-
+        if (editeddata != undefined) {
+            var a = Moment(editeddata).format()
+            Dateee = Moment(a).format('DD/MM/YYYY')
+        }
+        else {
+            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        }
+        var DateFormate = new Date(Eyd)
         $.each(TaskCate, function (index: any, subItem: any) {
             if (subItem.Id == child.ParentID) {
                 if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
@@ -1647,7 +1644,7 @@ function TimeEntryPopup(item: any) {
                     update['ParentID'] = AddParent;
                     update['TaskTime'] = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
                     update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
+                    update['TaskDate'] = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
                     update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                     subItem.AdditionalTime.push(update)
                     UpdatedData = subItem.AdditionalTime
@@ -2360,7 +2357,7 @@ function TimeEntryPopup(item: any) {
                             <div className="col mb-2">
                                 <div>
                                     <b>
-                                        <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                        <a target="_blank"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                             Manage
                                             Categories
                                         </a>
@@ -2729,7 +2726,7 @@ function TimeEntryPopup(item: any) {
                                                                     value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
                                                                     onChange={handleDatedue}
                                                                     dateFormat="dd/MM/yyyy" />
 
@@ -3185,7 +3182,7 @@ function TimeEntryPopup(item: any) {
 
                             <div className="col mb-2">
                                 <div>
-                                    <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                    <a target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                         Manage
                                         Categories
                                     </a>
