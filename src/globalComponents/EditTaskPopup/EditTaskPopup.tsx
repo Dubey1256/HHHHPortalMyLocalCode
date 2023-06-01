@@ -153,6 +153,8 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
+    const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
+    const [TaskOriginalData, setTaskOriginalData] = React.useState<any>({});
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -378,6 +380,7 @@ const EditTaskPopup = (Items: any) => {
                     .get();
             }
             let statusValue: any
+            setTaskOriginalData(smartMeta[0]);
             smartMeta?.map((item: any) => {
                 let saveImage = []
                 if (item.Categories != null) {
@@ -1261,6 +1264,7 @@ const EditTaskPopup = (Items: any) => {
         siteConfig?.map((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
+                site.isSelected = false;
                 tempArray.push(site);
             }
         })
@@ -2094,7 +2098,6 @@ const EditTaskPopup = (Items: any) => {
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(UpdateDataObject).then(async (res: any) => {
                 let web = new Web(siteUrls);
                 let smartMetaCall: any;
-
                 if (Items.Items.listId != undefined) {
                     smartMetaCall = await web.lists
                         .getById(Items.Items.listId)
@@ -2746,39 +2749,74 @@ const EditTaskPopup = (Items: any) => {
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
-    const CopyAndMovePopupFunction = () => {
-        setCopyAndMoveTaskPopup(true)
+    const CopyAndMovePopupFunction = (Type: any) => {
+        setIsCopyOrMovePanel(Type);
+        setCopyAndMoveTaskPopup(true);
     }
 
     const closeCopyAndMovePopup = () => {
-        setCopyAndMoveTaskPopup(false)
+        setCopyAndMoveTaskPopup(false);
+        setIsCopyOrMovePanel('');
+        let tempArray: any = [];
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((dataItem: any) => {
+                dataItem.isSelected = false;
+                tempArray.push(dataItem);
+            })
+        }
+        setSiteTypes(tempArray)
     }
 
     const selectSiteTypeFunction = (siteData: any) => {
         let tempArray: any = [];
-        SiteTypeBackupArray?.map((siteItem: any) => {
-            if (siteItem.Id == siteData.Id) {
-                siteItem.BtnStatus = true;
-                tempArray.push(siteItem);
-            } else {
-                siteItem.BtnStatus = false;
-                tempArray.push(siteItem);
-            }
-        })
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((siteItem: any) => {
+                if (siteItem.Id == siteData.Id) {
+                    if (siteItem.isSelected) {
+                        siteItem.isSelected = false;
+                    } else {
+                        siteItem.isSelected = true;
+                    }
+                    tempArray.push(siteItem);
+                } else {
+                    if (IsCopyOrMovePanel == "Copy-Task") {
+                        siteItem.isSelected = false;
+                        tempArray.push(siteItem);
+                    } else {
+                        tempArray.push(siteItem);
+                    }
+                }
+            })
+        }
         setSiteTypes(tempArray);
     }
 
-    const copyAndMoveTaskFunction = (FunctionsType: string) => {
-        if (FunctionsType == "Move Task") {
+    const copyAndMoveTaskFunction = async (FunctionsType: any) => {
+        let SelectedSite: any = ''
+        if (SiteTypes != undefined && SiteTypes.length > 0) {
+            SiteTypes.map((dataItem: any) => {
+                if (dataItem.isSelected == true) {
+                    SelectedSite = dataItem.Title
+                }
+            })
+        }
 
+        if (FunctionsType == "Copy-Task") {
+            try {
+                if (SelectedSite.length > 0) {
+                    let web = new Web(siteUrls);
+                    await web.lists.getByTitle(SelectedSite).items.add(TaskOriginalData).then(() => {
+                        console.log("Task Copy Succesfully !!!!!");
+                    })
+                }
+            } catch (error) {
+                console.log("Copy-Task Error :", error);
+            }
         }
         if (FunctionsType == "Move Task") {
 
         }
     }
-
-
-
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3056,7 +3094,7 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setClientTimeData(tempArray);
-        }else{
+        } else {
             setClientTimeData([]);
         }
         if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
@@ -3168,12 +3206,12 @@ const EditTaskPopup = (Items: any) => {
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Copy-Task")}>
                                 Copy
                                 Task
                             </a>
                             <span > | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Move-Task")}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
                                     <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
@@ -5398,7 +5436,7 @@ const EditTaskPopup = (Items: any) => {
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
                                                 return (
-                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.isSelected ? "selectedSite" : "bg-siteColor"}`}>
                                                         <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
                                                             <span className="icon-sites">
                                                                 <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
@@ -5411,7 +5449,9 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3 float-end" onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                    <button className="btn btn-primary px-3 float-end"
+                                        onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                        // onClick={() => copyAndMoveTaskFunction(IsCopyOrMovePanel)}
                                     >
                                         Save
                                     </button>
@@ -5568,8 +5608,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 {child1.Title}
                                                                             </a>
                                                                         </p>
-
-
                                                                     </li> : null
                                                                 }
                                                             </>
