@@ -1520,6 +1520,9 @@ export default function ComponentTable({ props, NextProp }: any) {
 
         }
       }
+      if(props?.Item_x0020_Type == 'Feature' && checkedList.length >= 1  ){
+        setActivityDisable(false)
+      }
     }
     if (checked == false) {
       // itrm.chekBox = false;
@@ -1579,7 +1582,7 @@ export default function ComponentTable({ props, NextProp }: any) {
 
   //     if (itrm.SharewebTaskType == undefined) {
   //       setActivityDisable(false);
-  //       itrm["siteUrl"] = "https://hhhhteams.sharepoint.com/sites/HHHH/SP";
+  //       itrm["siteUrl"] = NextProp?.siteUrl;
   //       itrm["listName"] = "Master Tasks";
   //       MeetingItems.push(itrm);
   //       //setMeetingItems(itrm);
@@ -2524,7 +2527,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       });
     }
 
-    let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+    let web = new Web(NextProp?.siteUrl);
     await web.lists
       .getById(checkedList[0].listId)
       .items.getById(checkedList[0].Id)
@@ -2752,7 +2755,7 @@ export default function ComponentTable({ props, NextProp }: any) {
 
     var item: any = {};
     if (ChengedItemTitl === undefined) {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(NextProp?.siteUrl);
       await web.lists
         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
         .items.getById(checkedList[0].Id)
@@ -2780,7 +2783,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         });
     }
     if (ChengedItemTitl != undefined && ChengedItemTitl != "") {
-      let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+      let web = new Web(NextProp?.siteUrl);
       await web.lists
         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
         .items.getById(checkedList[0].Id)
@@ -4072,7 +4075,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             </span>
           </span>
           <span className="toolbox mx-auto">
-            {checkedList != undefined &&
+          {checkedList != undefined &&
               checkedList.length > 0 &&
               (checkedList[0].Item_x0020_Type === "Feature" ||
                 checkedList[0].Item_x0020_Type === "Task") ? (
@@ -4103,24 +4106,31 @@ export default function ComponentTable({ props, NextProp }: any) {
                             Add Activity-Task
                         </button>
                         :*/}
-            <button
+           <button
               type="button"
               onClick={() => openActivity()}
-              disabled={ActivityDisable}
+              disabled={ActivityDisable || checkedList.length >= 2 }
               className="btn btn-primary"
               title=" Add Activity-Task"
             >
               Add Activity-Task
             </button>
 
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={buttonRestructuring}
-              disabled={props?.Item_x0020_Type == 'Feature'}
-            >
-              Restructure
-            </button>
+            {(table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ) ||
+                      (table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0) ? <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={buttonRestructuring}
+                      >
+                      Restructure
+                    </button> : <button
+                      type="button"
+                      disabled={true || checkedList.length >= 2 }
+                      className="btn btn-primary"
+                      onClick={buttonRestructuring}
+                    >
+                      Restructure
+                    </button>}
             {showTeamMemberOnCheck == true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers}/>: ''}
             <button
               type="button"
