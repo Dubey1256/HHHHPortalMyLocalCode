@@ -994,7 +994,7 @@ const CreateActivity = (props: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Quick Option - ${AllItems?.NoteCall}` }
@@ -1039,13 +1039,13 @@ const CreateActivity = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service'?"serviepannelgreena":""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0?"serviepannelgreena":""}
                 
             >
                 <div className= "modal-body active">
 
 
-                    <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                    <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0 ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
                         <div className='row mt-2 border Create-taskpage'>
                             {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature') &&
                                 <fieldset>
