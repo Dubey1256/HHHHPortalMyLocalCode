@@ -6,7 +6,7 @@ import { BiMenu } from 'react-icons/bi';
 import { Web } from "sp-pnp-js";
 import Feedback from 'react-bootstrap/esm/Feedback';
 import CreateMeetingPopup from './CreateMeetingPopup';
-
+var completeUrl=''
 var PageUrl = ''
 var Test = ''
 var Href = ''
@@ -82,7 +82,7 @@ function Tooltip(props: any) {
             ComponentData=res[0]
           }
         
-        if (Component.Id != undefined) {
+        if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Bug.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
         }
         else {
@@ -113,7 +113,7 @@ function Tooltip(props: any) {
             ComponentData=res[0]
           }
       
-        if (componentID != undefined) {
+        if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Create-Design.aspx?ComponentID=${ComponentData?.Id}` + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
         }
         else {
@@ -143,7 +143,7 @@ function Tooltip(props: any) {
             .get();
             ComponentData=res[0]
           }
-        if (componentID != undefined) {
+        if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateQuickTask.aspx?ComponentID=` + ComponentData?.Id + "&ComponentTitle=" + ComponentData?.Title + "&Siteurl=" + Href);
         }
         else {
@@ -174,7 +174,7 @@ function Tooltip(props: any) {
             ComponentData=res[0]
           }
        
-        if (componentID != undefined) {
+        if (ComponentData?.Id != undefined) {
           window.open(`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${ComponentData?.Id}`);
         }
 
@@ -196,10 +196,10 @@ function Tooltip(props: any) {
           .get();
           ComponentData=res[0];
         console.log(res)
-        if (Component.Id != undefined) {
-          var componentID = Component.Id
-          var componentTitle = Component.Title
-          var PortfolioType = Component.Portfolio_x0020_Type
+        if (ComponentData?.Id != undefined) {
+          var componentID = ComponentData.Id
+          var componentTitle = ComponentData.Title
+          var PortfolioType = ComponentData.Portfolio_x0020_Type
 
         }
         var Component: any = {}
@@ -222,7 +222,8 @@ function Tooltip(props: any) {
   let currentUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP'
 
 
-  const getQueryVariable= async (variable: any)=> {
+ 
+  function getQueryVariable(variable: any) {
 
     var query = window.location.search.substring(1);
 
@@ -232,30 +233,17 @@ function Tooltip(props: any) {
     Href = window.location.href.toLowerCase()
     // Href = Href.toLowerCase().split('?')[0]
     Href = Href.split('#')[0];
-    PageUrl = Href.split(currentUrl.toLowerCase())[1];
-    // if (PageUrl == '/sitepages/team-portfolio.aspx') {
-    //   PageUrl = '/sitepages/component-portfolio.aspx';
-    // }
-
-    //   let res=[];
-    //   const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-    //   if(props?.ComponentId!=undefined){
-    //     res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-    //     .select("Id,Title")
-    //     .filter("Id eq " + props?.ComponentId)
-    //     .get();
-    //     ComponentData=res[0]
-    //   }else{
-    //     res = await web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF').items
-    //     .select("Id,Title")
-    //     .filter("FoundationPageUrl eq '" + PageUrl + "'")
-    //     .get();
-    //     ComponentData=res[0]
-    //   }
-   
-
+    const parts = window.location.href.toLowerCase().split("/");
+    const sitePagesIndex = parts.indexOf("sites");
+    completeUrl = parts.slice(sitePagesIndex).join("/");
+    let foundationUrl: any = completeUrl.toLowerCase().split("/");
+    let foundationPageIndex = foundationUrl.indexOf("sitepages")
+    foundationUrl = foundationUrl.slice(foundationPageIndex).join("/")
+    PageUrl = foundationUrl.toLowerCase().split('?')[0];
+    PageUrl='/'+PageUrl;
+    PageUrl=PageUrl.split('#')[0];
+    console.log(vars)
     return (false);
-
   }
 
   const Call = React.useCallback(() => {
