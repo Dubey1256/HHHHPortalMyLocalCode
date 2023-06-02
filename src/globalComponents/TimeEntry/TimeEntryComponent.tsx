@@ -5,6 +5,7 @@ import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { Web } from "sp-pnp-js";
 import TimeEntryPopup from '../../globalComponents/EditTaskPopup/TimeEntryComponent';
+import Tooltip from '../Tooltip';
 
 function DisplayTimeEntry(item: any) {
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
@@ -415,12 +416,23 @@ function DisplayTimeEntry(item: any) {
         TimeCallBack(false);
         setTimeModalIsOpen(false)
     }
+    const onRenderCustomHeaderTimeEntry = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            {`All Time Entry -${EditTaskItemitle}`}
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
 
     return (
         <div>
 
             <Panel
-               headerText={`  All Time Entry -  ${EditTaskItemitle}`}
+               onRenderHeader={onRenderCustomHeaderTimeEntry}
                 isOpen={modalTimeIsOpen}
                 onDismiss={setModalTimmeIsOpenToFalse}
                 isBlocking={false} 
@@ -431,7 +443,7 @@ function DisplayTimeEntry(item: any) {
                         <div className='modal-body clearfix'>
                             <TimeEntryPopup props={item.props} Context={item.Context}></TimeEntryPopup>
                         </div>
-                        <div className='modal-footer '>
+                        <div className='modal-footer'>
                         <button type="button" className="btn btn-primary" onClick={setModalTimmeIsOpenToFalse}>OK</button>
                             <button type="button" className="btn btn-default" onClick={setModalTimmeIsOpenToFalse}>Cancel</button>
                         </div>

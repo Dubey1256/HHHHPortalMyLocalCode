@@ -640,9 +640,9 @@ const CreateWS = (props: any) => {
         return (
             <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <h2 className='heading'>
+                    <span className='heading'>
                         {`Create Item`}
-                    </h2>
+                    </span>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
             </div>

@@ -875,8 +875,8 @@ const ProjectManagementMain = (props: any) => {
   //   }
   // };
   //React.useEffect(() => {table.getIsAllRowsExpanded(); }, [])
-  const createOpenTask=(items:any)=>{
-    setCreateTaskId({ portfolioData: items, portfolioType: 'Component'});
+  const createOpenTask = (items: any) => {
+    setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
     setisOpenCreateTask(true)
   }
   const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
@@ -911,7 +911,7 @@ const ProjectManagementMain = (props: any) => {
         size: 7,
         canSort: false,
         placeholder: "",
-        id:'PortfolioStructureID',
+        id: 'PortfolioStructureID',
         // header: ({ table }: any) => (
         //   <>
         //     <button className='border-0 bg-Ff'
@@ -944,14 +944,14 @@ const ProjectManagementMain = (props: any) => {
               ) : (
                 ""
               )}{" "}
-             
+
               <> {row?.original?.siteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                   <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> 
+                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
               }
-               <span>{row?.original?.PortfolioStructureID}</span></>
-             
+                <span>{row?.original?.PortfolioStructureID}</span></>
+
               {getValue()}
             </>
           </div>
@@ -972,7 +972,7 @@ const ProjectManagementMain = (props: any) => {
       {
         cell: ({ row }) => (
           <>
-            <span onClick={()=>createOpenTask(row.original)}>+</span>
+            <span onClick={() => createOpenTask(row.original)}>+</span>
           </>
         ),
         id: "Title",
@@ -984,140 +984,114 @@ const ProjectManagementMain = (props: any) => {
     ],
     [data]
   );
-  const columns = React.useMemo(
+  const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        internalHeader: "Task Id",
-        accessor: "Shareweb_x0020_ID",
-        style: { width: "70px" },
-        showSortIcon: false,
-        // Cell: ({ row }: any) => (
-        //   <span>{
-        //     (masterData != undefined && masterData.length>0) &&
-        //     <HierarchyItem
-        //     AllListId={AllListId}
-        //     props={row?.original}
-        //     type={portfolioType}
-        //     MasterListData={masterData}
-        //     Call={ClosePopup}
-        //   ></HierarchyItem>}
-
-        //   </span>
-        // ),
-        Cell: ({ row }: any) => (
+        accessorKey: "Task Id",
+        size: 7,
+        canSort: false,
+        placeholder: "",
+        id: 'TaskId',
+        cell: ({ row }) => (
           <span>
-
             <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
               {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
               <div className="popover__content">
-                <div className="tootltip-title">{row?.original?.Title}
-                </div>
+                <div className="tootltip-title">{row?.original?.Title}</div>
                 <div className="tooltip-body">
-                  {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length >0 && 
-              <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-  )}
-                 
-
+                  {row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 && (
+                    <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+                  )}
                 </div>
               </div>
             </div>
           </span>
-
         ),
       },
       {
-        internalHeader: "Title",
-        accessor: "Title",
-        showSortIcon: true,
-        Cell: ({ row }: any) => (
-
+        cell: ({ row }) => (
           <span className="d-flex">
-            {row.original.Services.length >= 1 ? <a className='hreflink text-success'
-              href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-              data-interception="off"
-              target="_blank"
-            >
-              {row?.values?.Title}
-            </a> :
-              <a className='hreflink'
+            {row.original.Services.length >= 1 ? (
+              <a
+                className="hreflink text-success"
                 href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                 data-interception="off"
                 target="_blank"
               >
-                {row?.values?.Title}
+                {row?.original?.Title}
               </a>
-            }
+            ) : (
+              <a
+                className="hreflink"
+                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                data-interception="off"
+                target="_blank"
+              >
+                {row?.original?.Title}
+              </a>
+            )}
 
-
-
-
-            {
-              row?.original?.Body !== null && <span className="me-1">
+            {row?.original?.Body !== null && (
+              <span className="me-1">
                 <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                  <span className="svg__iconbox svg__icon--info " ></span>
+                  <span className="svg__iconbox svg__icon--info"></span>
                   <div className="popover__content">
                     <span>
-                      <p
-                        dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
-                      ></p>
+                      <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
                     </span>
                   </div>
                 </div>
               </span>
-            }
-
+            )}
           </span>
         ),
+        id: "Title",
+        canSort: true,
+        placeholder: "",
+        size: 15,
       },
       {
-        internalHeader: "Site",
-        accessor: 'siteType',
-        id: "siteIcon", // 'id' is required
-        isSorted: false,
-        showSortIcon: false,
-        style: { width: "65px" },
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
-            <img
-              className="circularImage rounded-circle"
-              src={row?.original?.siteIcon}
-            />
+            <img className="circularImage rounded-circle" src={row?.original?.siteIcon} />
           </span>
         ),
+        id: "Site",
+        canSort: false,
+        placeholder: "",
+        size: 5,
       },
       {
-        internalHeader: "Portfolio",
-        accessor: "PortfolioTitle",
-        showSortIcon: true,
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
-            {
-              row.original.Services.length >= 1 ? <a className='hreflink text-success'
-                data-interception="off"
-                target="blank"
-                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
-              >
-                {row?.original?.portfolio?.Title}
-              </a> : <a className='hreflink'
+            {row.original.Services.length >= 1 ? (
+              <a
+                className="hreflink text-success"
                 data-interception="off"
                 target="blank"
                 href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
               >
                 {row?.original?.portfolio?.Title}
               </a>
-            }
-
+            ) : (
+              <a
+                className="hreflink"
+                data-interception="off"
+                target="blank"
+                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+              >
+                {row?.original?.portfolio?.Title}
+              </a>
+            )}
           </span>
         ),
+        id: "Portfolio",
+        canSort: true,
+        placeholder: "",
+        size: 15,
       },
       {
-        internalHeader: "Priority",
-        isSorted: true,
-        isSortedDesc: true,
-        accessor: "Priority_x0020_Rank",
-        style: { width: "100px" },
-        showSortIcon: true,
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
@@ -1130,14 +1104,13 @@ const ProjectManagementMain = (props: any) => {
             />
           </span>
         ),
+        id: "Priority",
+        canSort: true,
+        placeholder: "",
+        size: 10,
       },
-
       {
-        internalHeader: "Due Date",
-        showSortIcon: true,
-        style: { width: "80px" },
-        accessor: "DueDate",
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <InlineEditingcolumns
             AllListId={AllListId}
             callBack={inlineCallBack}
@@ -1147,15 +1120,14 @@ const ProjectManagementMain = (props: any) => {
             pageName={'ProjectManagment'}
           />
         ),
+        id: "DueDate",
+        canSort: true,
+        placeholder: "",
+        size: 10,
       },
-
       {
-        internalHeader: "% Complete",
-        accessor: "PercentComplete",
-        style: { width: "70px" },
-        showSortIcon: true,
-        Cell: ({ row }: any) => (
-          <span >
+        cell: ({ row }) => (
+          <span>
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
@@ -1166,13 +1138,13 @@ const ProjectManagementMain = (props: any) => {
             />
           </span>
         ),
+        id: "PercentComplete",
+        canSort: true,
+        placeholder: "",
+        size: 10,
       },
       {
-        internalHeader: "Team Members",
-        accessor: "TeamMembersSearch",
-        showSortIcon: true,
-        style: { width: "150px" },
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
@@ -1184,14 +1156,13 @@ const ProjectManagementMain = (props: any) => {
             />
           </span>
         ),
+        id: "TeamMembers",
+        canSort: true,
+        placeholder: "",
+        size: 15,
       },
-
       {
-        internalHeader: "Remarks",
-        accessor: 'Remark',
-        showSortIcon: true,
-        style: { width: "70px" },
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
@@ -1203,32 +1174,42 @@ const ProjectManagementMain = (props: any) => {
             />
           </span>
         ),
+        id: "Remarks",
+        canSort: true,
+        placeholder: "",
+        size: 10,
       },
       {
-        internalHeader: "Created",
-        accessor: "DisplayCreateDate",
-        showSortIcon: true,
-        style: { width: "125px" },
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span>
-            {
-              row.original.Services.length >= 1 ? <span className="ms-1 text-success">{row?.original?.DisplayCreateDate}</span> : <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-            }
+            {row.original.Services.length >= 1 ? (
+              <span className="ms-1 text-success">{row?.original?.DisplayCreateDate} </span>
+            ) : (
+              <span className="ms-1">{row?.original?.DisplayCreateDate} </span>
+            )}
 
-            {row?.original?.createdImg != undefined ? <img title={row?.original?.Author?.Title} className="imgAuthor" src={row?.original?.createdImg} /> : <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>}
-
+            {row?.original?.createdImg != undefined ? (
+              <>
+                <a
+                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                  target="_blank"
+                  data-interception="off"
+                >
+                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                </a>
+              </>
+            ) : (
+              <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>
+            )}
           </span>
         ),
+        id: "Created",
+        canSort: true,
+        placeholder: "",
+        size: 20,
       },
-
-
       {
-        internalHeader: "",
-        id: "Id", // 'id' is required
-        isSorted: false,
-        style: { width: "60px" },
-        showSortIcon: false,
-        Cell: ({ row }: any) => (
+        cell: ({ row }) => (
           <span className="d-flex">
             <span
               title="Edit Task"
@@ -1238,32 +1219,35 @@ const ProjectManagementMain = (props: any) => {
             <span style={{ marginLeft: "6px" }} title="Remove Task" onClick={() => untagTask(row?.original)} className="svg__iconbox svg__icon--cross hreflink"></span>
           </span>
         ),
+        id: "Actions",
+        canSort: false,
+        placeholder: "",
+        size: 10,
       },
-    ],
-    [AllTasks, data, backupAllTasks]
-  );
+    ], [data]);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    gotoPage,
-    setPageSize,
-    state: { pageIndex, pageSize },
-  }: any = useTable(
-    {
-      columns,
-      data,
-      defaultColumn: { Filter: DefaultColumnFilter },
-      initialState: { pageIndex: 0, pageSize: 100000 },
-    },
-    useFilters,
-    useSortBy,
-    useExpanded,
-    usePagination
-  );
+
+  // const {
+  //   getTableProps,
+  //   getTableBodyProps,
+  //   headerGroups,
+  //   page,
+  //   prepareRow,
+  //   gotoPage,
+  //   setPageSize,
+  //   state: { pageIndex, pageSize },
+  // }: any = useTable(
+  //   {
+  //     columns2,
+  //     data,
+  //     defaultColumn: { Filter: DefaultColumnFilter },
+  //     initialState: { pageIndex: 0, pageSize: 100000 },
+  //   },
+  //   useFilters,
+  //   useSortBy,
+  //   useExpanded,
+  //   usePagination
+  // );
   const clearPortfolioFilter = () => {
     let projectData = Masterdata;
     projectData?.smartComponent?.map((item: any, index: any) => {
@@ -1336,14 +1320,7 @@ const ProjectManagementMain = (props: any) => {
     );
   };
 
-  const onChangeInSelect = (event: any) => {
-    setPageSize(Number(event.target.value));
-  };
 
-  const onChangeInInput = (event: any) => {
-    const page = event.target.value ? Number(event.target.value) - 1 : 0;
-    gotoPage(page);
-  };
   return (
     <div>
       {QueryId != "" ? (
@@ -1754,65 +1731,7 @@ const ProjectManagementMain = (props: any) => {
                             )}
 
 
-                            <Table
-                              className="SortingTable"
-                              bordered
-                              hover
-                              {...getTableProps()}
-                            >
-                              <thead className="fixed-Header">
-                                {headerGroups.map((headerGroup: any) => (
-                                  <tr {...headerGroup.getHeaderGroupProps()}>
-                                    {headerGroup.headers.map((column: any) => (
-                                      <th
-                                        {...column.getHeaderProps()}
-                                        style={column?.style}
-                                      >
-                                        <span
-                                          class="Table-SortingIcon"
-                                          style={{ marginTop: "-6px" }}
-                                          {...column.getSortByToggleProps()}
-                                        >
-                                          {column.render("Header")}
-                                          {generateSortingIndicator(column)}
-                                        </span>
-                                        <Filter column={column} />
-                                      </th>
-                                    ))}
-                                  </tr>
-                                ))}
-                              </thead>
-
-                              <tbody {...getTableBodyProps()}>
-                                {page.map((row: any) => {
-                                  prepareRow(row);
-                                  return (
-                                    <tr className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}{...row.getRowProps()}>
-                                      {row.cells.map(
-                                        (cell: {
-                                          getCellProps: () => JSX.IntrinsicAttributes &
-                                            React.ClassAttributes<HTMLTableDataCellElement> &
-                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                          render: (
-                                            arg0: string
-                                          ) =>
-                                            | boolean
-                                            | React.ReactChild
-                                            | React.ReactFragment
-                                            | React.ReactPortal;
-                                        }) => {
-                                          return (
-                                            <td {...cell.getCellProps()}>
-                                              {cell.render("Cell")}
-                                            </td>
-                                          );
-                                        }
-                                      )}
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </Table>
+                            <GlobalCommanTable columns={column2} data={data} callBackData={callBackData} />
                           </div>
 
                         </div>

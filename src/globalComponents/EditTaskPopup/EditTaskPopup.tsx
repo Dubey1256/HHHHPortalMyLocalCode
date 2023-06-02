@@ -153,6 +153,7 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
+    const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -194,9 +195,8 @@ const EditTaskPopup = (Items: any) => {
     }
     React.useEffect(() => {
         loadTaskUsers();
-        // getCurrentUserDetails();
-        GetExtraLookupColumnData();
         getCurrentUserDetails();
+        GetExtraLookupColumnData();
         getAllSitesData();
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
@@ -254,7 +254,6 @@ const EditTaskPopup = (Items: any) => {
                             setApproverHistoryData(tempArray);
                         }
                     }
-
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
@@ -275,7 +274,6 @@ const EditTaskPopup = (Items: any) => {
                         if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
                             setApproverHistoryData(TempApproverHistory);
                         }
-
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
                         let TempArray: any = [];
@@ -283,7 +281,23 @@ const EditTaskPopup = (Items: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
                                     if (ClientData.Id == clientCategoryData.Id) {
+                                        if(clientCategoryData.siteName == null ){
+                                            if(clientCategoryData.ParentID == 340 || clientCategoryData.ParentID == 430){
+                                                ClientData.siteName = "EI";
+                                            }
+                                            if(clientCategoryData.ParentID == 341){
+                                                ClientData.siteName = "EPS";
+                                            }
+                                            if(clientCategoryData.ParentID == 344){
+                                                ClientData.siteName = "Education";
+                                            }
+                                            if(clientCategoryData.ParentID == 569){
+                                                ClientData.siteName = "Migration";
+                                            }
+                                        }else{
                                         ClientData.siteName = clientCategoryData.siteName;
+                                        }
+                                        ClientData.ParentID = clientCategoryData.ParentID;
                                     }
                                 })
                                 TempArray.push(ClientData)
@@ -901,12 +915,27 @@ const EditTaskPopup = (Items: any) => {
                 $.each(AllTaskusers, function (index: any, item: any) {
                     if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EPS';
+                        if (item.siteName == null) {
+                            item.siteName = 'EPS';
+                        }
                     }
                     else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EI';
+                        if (item.siteName == null) {
+                            item.siteName = 'EI';
+                        }
                     }
                     else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
                         item.newTitle = 'Education';
+                        if (item.siteName == null) {
+                            item.siteName = 'Education';
+                        }
+                    }
+                    else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Migration';
+                        if (item.siteName == null) {
+                            item.siteName = 'Migration';
+                        }
                     }
                     else {
                         item.newTitle = item.Title;
@@ -1261,6 +1290,7 @@ const EditTaskPopup = (Items: any) => {
         siteConfig?.map((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
+                site.isSelected = false;
                 tempArray.push(site);
             }
         })
@@ -1799,6 +1829,91 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
+        let DataJSONUpdate: any = await MakeUpdateDataJSON();
+        try {
+            let web = new Web(siteUrls);
+            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate).then(async (res: any) => {
+                let web = new Web(siteUrls);
+                let smartMetaCall: any;
+                if (Items.Items.listId != undefined) {
+                    smartMetaCall = await web.lists
+                        .getById(Items.Items.listId)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.Id}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+                } else {
+                    smartMetaCall = await web.lists
+                        .getById(Items.Items.listName)
+                        .items
+                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+                        .top(5000)
+                        .filter(`Id eq ${Items.Items.Id}`)
+                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
+                        .get();
+
+                }
+                if (smartMetaCall != undefined && smartMetaCall.length > 0) {
+                    smartMetaCall[0].TaskCreatorData = EditData.TaskCreatorData;
+                    smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
+                    smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
+                    smartMetaCall[0].siteType = EditData.siteType;
+                    smartMetaCall[0].siteUrl = siteUrls;
+                }
+                setLastUpdateTaskData(smartMetaCall[0]);
+                tempShareWebTypeData = [];
+                AllMetaData = []
+                taskUsers = []
+                CommentBoxData = []
+                SubCommentBoxData = []
+                updateFeedbackArray = []
+                tempShareWebTypeData = []
+                tempCategoryData = []
+                SiteTypeBackupArray = []
+                currentUserBackupArray = []
+                AutoCompleteItemsArray = []
+                FeedBackBackupArray = []
+                TaskCreatorApproverBackupArray = []
+                TaskApproverBackupArray = []
+                ApproverIds = []
+                if (Items.sendApproverMail != undefined) {
+                    if (Items.sendApproverMail) {
+                        setSendEmailComponentStatus(true)
+                    } else {
+                        setSendEmailComponentStatus(false)
+                    }
+                }
+                if (sendEmailGlobalCount > 0) {
+                    if (sendEmailStatus) {
+                        setSendEmailComponentStatus(false)
+                    } else {
+                        setSendEmailComponentStatus(true)
+                    }
+                }
+                if (
+                    typeFunction != "TimeSheetPopup" &&
+                    Items?.pageName != "TaskDashBoard" &&
+                    Items?.pageName != "ProjectProfile"
+                ) {
+                    Items.Call();
+                }
+
+                if (
+                    Items?.pageName == "TaskDashBoard" ||
+                    Items?.pageName == "ProjectProfile"
+                ) {
+                    Items.Call(DataJSONUpdate);
+                }
+            })
+        } catch (error) {
+            console.log("Error:", error.messages)
+        }
+
+    }
+
+    const MakeUpdateDataJSON = () => {
         var UploadImageArray: any = []
         if (TaskImages != undefined && TaskImages.length > 0) {
             TaskImages?.map((imgItem: any) => {
@@ -1845,23 +1960,6 @@ const EditTaskPopup = (Items: any) => {
             TaskAssignedTo = tempArrayApprover;
             TaskTeamMembers = tempArrayApprover;
         }
-
-        // images?.map((imgDtl: any) => {
-        //     if (imgDtl.dataURL != undefined) {
-        //         var imgUrl = siteUrls + '/Lists/' + EditData.siteType + '/Attachments/' + EditData.Id + '/' + imgDtl.file.name;
-        //     }
-        //     // else {
-        //     //     imgUrl = EditData.Item_x002d_Image != undefined ? EditData.Item_x002d_Image.Url : null;
-        //     // }
-        //     if (imgDtl.file != undefined) {
-        //         item['ImageName'] = imgDtl.file.name
-        //         item['ImageUrl'] = imgUrl
-        //         item['UploadeDate'] = EditData.Created
-        //         item['UserImage'] = EditData.Author?.Title
-        //         item['UserName'] = EditData.Author?.Title
-        //     }
-        //     UploadImage.push(item)
-        // })
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
@@ -1971,21 +2069,12 @@ const EditTaskPopup = (Items: any) => {
                 ApproverIds.push(ApproverInfo.Id);
             })
         }
-        // else {
-        //     if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-        //         EditData.AssignedTo?.map((taskInfo: any) => {
-        //             AssignedToIds.push(taskInfo.Id);
-        //         })
-        //     }
-        // }
+
         if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
             TaskTeamMembers?.map((taskInfo) => {
                 TeamMemberIds.push(taskInfo.Id);
             })
         }
-
-        // (3) Low
-        // (2) Normal
 
         let Priority: any;
         if (EditData.Priority_x0020_Rank) {
@@ -2002,13 +2091,7 @@ const EditTaskPopup = (Items: any) => {
             }
 
         }
-        // else {
-        //     if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
-        //         EditData.Team_x0020_Members?.map((taskInfo: any) => {
-        //             TeamMemberIds.push(taskInfo.Id);
-        //         })
-        //     }
-        // }
+
         if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
             TaskResponsibleTeam?.map((taskInfo) => {
                 ResponsibleTeamIds.push(taskInfo.Id);
@@ -2041,15 +2124,9 @@ const EditTaskPopup = (Items: any) => {
                     ClientCategoryData.push(ClientTimeItems);
                 }
             })
+
         }
 
-        // else {
-        //     if (EditData.Responsible_x0020_Team != undefined && EditData.Responsible_x0020_Team?.length > 0) {
-        //         EditData.Responsible_x0020_Team?.map((taskInfo: any) => {
-        //             ResponsibleTeamIds.push(taskInfo.Id);
-        //         })
-        //     }
-        // }
         let UpdateDataObject: any = {
             IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
             workingThisWeek: (EditData.workingThisWeek ? EditData.workingThisWeek : null),
@@ -2087,90 +2164,7 @@ const EditTaskPopup = (Items: any) => {
             ApproverHistory: ApproverHistoryData?.length > 0 ? JSON.stringify(ApproverHistoryData) : null,
             EstimatedTime: EditData.EstimatedTime ? EditData.EstimatedTime : null
         }
-
-
-        try {
-            let web = new Web(siteUrls);
-            await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(UpdateDataObject).then(async (res: any) => {
-                let web = new Web(siteUrls);
-                let smartMetaCall: any;
-
-                if (Items.Items.listId != undefined) {
-                    smartMetaCall = await web.lists
-                        .getById(Items.Items.listId)
-                        .items
-                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .top(5000)
-                        .filter(`Id eq ${Items.Items.Id}`)
-                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                        .get();
-                } else {
-                    smartMetaCall = await web.lists
-                        .getById(Items.Items.listName)
-                        .items
-                        .select("Id,Title,Priority_x0020_Rank,workingThisWeek,waitForResponse,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
-                        .top(5000)
-                        .filter(`Id eq ${Items.Items.Id}`)
-                        .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-                        .get();
-
-                }
-                if (smartMetaCall != undefined && smartMetaCall.length > 0) {
-                    smartMetaCall[0].TaskCreatorData = EditData.TaskCreatorData;
-                    smartMetaCall[0].TaskApprovers = EditData.TaskApprovers;
-                    smartMetaCall[0].FeedBack = JSON.parse(smartMetaCall[0].FeedBack)
-                    smartMetaCall[0].siteType = EditData.siteType;
-                    smartMetaCall[0].siteUrl = siteUrls;
-                }
-                setLastUpdateTaskData(smartMetaCall[0]);
-                tempShareWebTypeData = [];
-                AllMetaData = []
-                taskUsers = []
-                CommentBoxData = []
-                SubCommentBoxData = []
-                updateFeedbackArray = []
-                tempShareWebTypeData = []
-                tempCategoryData = []
-                SiteTypeBackupArray = []
-                currentUserBackupArray = []
-                AutoCompleteItemsArray = []
-                FeedBackBackupArray = []
-                TaskCreatorApproverBackupArray = []
-                TaskApproverBackupArray = []
-                ApproverIds = []
-                if (Items.sendApproverMail != undefined) {
-                    if (Items.sendApproverMail) {
-                        setSendEmailComponentStatus(true)
-                    } else {
-                        setSendEmailComponentStatus(false)
-                    }
-                }
-                if (sendEmailGlobalCount > 0) {
-                    if (sendEmailStatus) {
-                        setSendEmailComponentStatus(false)
-                    } else {
-                        setSendEmailComponentStatus(true)
-                    }
-                }
-                if (
-                    typeFunction != "TimeSheetPopup" &&
-                    Items?.pageName != "TaskDashBoard" &&
-                    Items?.pageName != "ProjectProfile"
-                ) {
-                    Items.Call();
-                }
-
-                if (
-                    Items?.pageName == "TaskDashBoard" ||
-                    Items?.pageName == "ProjectProfile"
-                ) {
-                    Items.Call(UpdateDataObject);
-                }
-            })
-        } catch (error) {
-            console.log("Error:", error.messages)
-        }
-
+        return UpdateDataObject;
     }
 
     // this is for change priority status function 
@@ -2183,7 +2177,6 @@ const EditTaskPopup = (Items: any) => {
             alert("Priority Status not should be greater than 10");
             setEditData({ ...EditData, Priority_x0020_Rank: 0 })
         }
-
     }
 
     // *************************  This is for workingThisWeek,  IsTodaysTask, and waitForResponse Functions ****************************
@@ -2746,39 +2739,72 @@ const EditTaskPopup = (Items: any) => {
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
-    const CopyAndMovePopupFunction = () => {
-        setCopyAndMoveTaskPopup(true)
+    const CopyAndMovePopupFunction = (Type: any) => {
+        setIsCopyOrMovePanel(Type);
+        setCopyAndMoveTaskPopup(true);
     }
 
     const closeCopyAndMovePopup = () => {
-        setCopyAndMoveTaskPopup(false)
+        setCopyAndMoveTaskPopup(false);
+        setIsCopyOrMovePanel('');
+        let tempArray: any = [];
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((dataItem: any) => {
+                dataItem.isSelected = false;
+                tempArray.push(dataItem);
+            })
+        }
+        setSiteTypes(tempArray)
     }
 
     const selectSiteTypeFunction = (siteData: any) => {
         let tempArray: any = [];
-        SiteTypeBackupArray?.map((siteItem: any) => {
-            if (siteItem.Id == siteData.Id) {
-                siteItem.BtnStatus = true;
-                tempArray.push(siteItem);
-            } else {
-                siteItem.BtnStatus = false;
-                tempArray.push(siteItem);
-            }
-        })
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((siteItem: any) => {
+                if (siteItem.Id == siteData.Id) {
+                    if (siteItem.isSelected) {
+                        siteItem.isSelected = false;
+                    } else {
+                        siteItem.isSelected = true;
+                    }
+                    tempArray.push(siteItem);
+                } else {
+                    siteItem.isSelected = false;
+                    tempArray.push(siteItem);
+                }
+            })
+        }
         setSiteTypes(tempArray);
     }
 
-    const copyAndMoveTaskFunction = (FunctionsType: string) => {
-        if (FunctionsType == "Move Task") {
-
+    const copyAndMoveTaskFunction = async (FunctionsType: any) => {
+        let SelectedSite: any = ''
+        let TaskDataJSON: any = await MakeUpdateDataJSON();;
+        if (SiteTypes != undefined && SiteTypes.length > 0) {
+            SiteTypes.map((dataItem: any) => {
+                if (dataItem.isSelected == true) {
+                    SelectedSite = dataItem.Title
+                }
+            })
         }
-        if (FunctionsType == "Move Task") {
-
+        try {
+            if (SelectedSite.length > 0) {
+                let web = new Web(siteUrls);
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(() => {
+                    if (FunctionsType == "Copy-Task") {
+                        console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
+                    } else {
+                        console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
+                        deleteItemFunction(Items.Items.Id);
+                    }
+                })
+            }
+        } catch (error) {
+            console.log("Copy-Task Error :", error);
         }
+        closeCopyAndMovePopup();
+        Items.Call();
     }
-
-
-
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3055,7 +3081,10 @@ const EditTaskPopup = (Items: any) => {
                     tempArray.push(ClientTimeItems);
                 }
             })
-            setClientTimeData(tempArray);
+            const finalData = tempArray.filter((val: any, id: any, array: any) => {
+                return array.indexOf(val) == id;
+            })
+            setClientTimeData(finalData);
         }
         if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
             setSelectedClientCategory(Data.selectedClientCategory);
@@ -3166,12 +3195,12 @@ const EditTaskPopup = (Items: any) => {
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Copy-Task")}>
                                 Copy
                                 Task
                             </a>
                             <span > | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Move-Task")}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
                                     <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
@@ -3380,8 +3409,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BASICINFORMATION"
                                 aria-selected="true"
                             >
-                                {/* BASIC INFORMATION */}
-                                TASK INFORMATION
+                                BASIC INFORMATION
+                                {/* TASK INFORMATION */}
                             </button>
                             <button
                                 className="nav-link"
@@ -3393,8 +3422,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="NEWTIMESHEET"
                                 aria-selected="false"
                             >
-                                TASK PLANNING
-                                {/* TEAM & TIMESHEET */}
+                                {/* TASK PLANNING */}
+                                TEAM & TIMESHEET
                             </button>
                             {IsUserFromHHHHTeam ? null : <button
                                 className="nav-link"
@@ -3406,8 +3435,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BACKGROUNDCOMMENT"
                                 aria-selected="false"
                             >
-                                REMARKS
-                                {/* BACKGROUND */}
+                                {/* REMARKS */}
+                                BACKGROUND
                             </button>}
 
                         </ul>
@@ -3462,7 +3491,6 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                         />
                                                     </span></div>
-
                                                     <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
@@ -3532,7 +3560,7 @@ const EditTaskPopup = (Items: any) => {
                                                         return (
                                                             <>
                                                                 <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                     <a>
                                                                         <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                         {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
@@ -3546,7 +3574,7 @@ const EditTaskPopup = (Items: any) => {
                                                             return (
                                                                 <>
                                                                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                         <a>
                                                                             <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                             {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
@@ -3658,7 +3686,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
                                                                             <div className="block px-2 py-2 d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                <a style={{ color: "#fff !important" }}>
                                                                                     {type.Title}
                                                                                 </a>
                                                                                 <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -3837,7 +3865,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </li>
                                                         <li className="form-check l-radio">
                                                             <input className="form-check-input" name="radioPriority"
-                                                                type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank >= 0}
+                                                                type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank > 0}
                                                                 onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
                                                             />
                                                             <label className="form-check-label">Low</label>
@@ -5396,7 +5424,7 @@ const EditTaskPopup = (Items: any) => {
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
                                                 return (
-                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.isSelected ? "selectedSite" : "bg-siteColor"}`}>
                                                         <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
                                                             <span className="icon-sites">
                                                                 <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
@@ -5409,7 +5437,9 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3 float-end" onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                    <button className="btn btn-primary px-3 float-end"
+                                        // onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                        onClick={() => copyAndMoveTaskFunction(IsCopyOrMovePanel)}
                                     >
                                         Save
                                     </button>
@@ -5566,8 +5596,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 {child1.Title}
                                                                             </a>
                                                                         </p>
-
-
                                                                     </li> : null
                                                                 }
                                                             </>

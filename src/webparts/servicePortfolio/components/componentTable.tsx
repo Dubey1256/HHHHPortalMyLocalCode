@@ -2,7 +2,6 @@ import * as React from "react";
 import { Component } from "react";
 import * as $ from "jquery";
 import * as Moment from "moment";
-
 //import '../../cssFolder/foundation.scss';
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 //import "bootstrap/dist/css/bootstrap.min.css";
@@ -43,7 +42,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
 import { Column, Table,
   ExpandedState,useReactTable,getCoreRowModel,getFilteredRowModel, getExpandedRowModel, ColumnDef,flexRender, getSortedRowModel,SortingState,
-   ColumnFiltersState, FilterFn, getFacetedUniqueValues,getFacetedRowModel, } from "@tanstack/react-table";
+   ColumnFiltersState, FilterFn, getFacetedUniqueValues,getFacetedRowModel } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
@@ -90,17 +89,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Return if the item should be filtered in/out
   return itemRank.passed;
 };
-const onRenderCustomHeaderRestructuringTool = () => {
-  return (
-    <>
 
-      <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-      Restructuring Tool
-      </div>
-      <Tooltip ComponentId='454' />
-    </>
-  );
-};
 ///Global Filter Parts//////
 // A debounced input react component
 function DebouncedInput({
@@ -195,13 +184,13 @@ function IndeterminateCheckbox({
 
 function ComponentTable(SelectedProp: any) {
   try {
-    if (SelectedProp.SelectedProp != undefined) {
+    if (SelectedProp?.SelectedProp != undefined) {
       SelectedProp.SelectedProp.isShowTimeEntry = JSON.parse(
-        SelectedProp.SelectedProp?.TimeEntry
+        SelectedProp?.SelectedProp?.TimeEntry
       );
 
       SelectedProp.SelectedProp.isShowSiteCompostion = JSON.parse(
-        SelectedProp.SelectedProp?.SiteCompostion
+        SelectedProp?.SelectedProp?.SiteCompostion
       );
     }
   } catch (e) {
@@ -1577,6 +1566,7 @@ function ComponentTable(SelectedProp: any) {
     componentDetails.forEach((result: any) => {
       result.AllTeamName = "";
       if (result.Item_x0020_Type === 'Component') {
+        result.boldRow = 'boldClable'
         result.lableColor = 'f-bg';
       }
       if (result.Item_x0020_Type === 'SubComponent') {
@@ -1653,14 +1643,14 @@ function ComponentTable(SelectedProp: any) {
 
   if (IsUpdated == "") {
     setIsUpdated("Service Portfolio");
-  } else if (IsUpdated != SelectedProp.SelectedProp.dropdownvalue) {
-    setIsUpdated(SelectedProp.SelectedProp.dropdownvalue);
+  } else if (IsUpdated != SelectedProp?.SelectedProp.dropdownvalue) {
+    setIsUpdated(SelectedProp?.SelectedProp.dropdownvalue);
   }
 
   let props = undefined;
   React.useEffect(() => {
     showProgressBar();
-    ContextValue = SelectedProp.SelectedProp;
+    ContextValue = SelectedProp?.SelectedProp;
     setmaidataBackup((maidataBackup) => [...[]]);
     setmaidataBackup((maidataBackup) => [...[]]);
     GetComponents();
@@ -3611,7 +3601,7 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
         cell: ({ row }) => (
           <div>
-            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp.SelectedProp} />
+            <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} Context={SelectedProp?.SelectedProp} />
           </div>
         ),
         id: "TeamLeaderUser",
@@ -3662,7 +3652,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 30,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3690,7 +3680,7 @@ function ComponentTable(SelectedProp: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 30,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3706,7 +3696,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="mt-1 svg__iconbox svg__icon--edit"
+                    className="svg__iconbox svg__icon--edit"
                     onClick={(e) => EditComponentPopup(row?.original)}
                   ></span>
                 </a>
@@ -3722,7 +3712,7 @@ function ComponentTable(SelectedProp: any) {
                   {" "}
                   <span
                     title="Edit"
-                    className="mt-1 svg__iconbox svg__icon--edit"
+                    className="svg__iconbox svg__icon--edit"
                     onClick={(e) => EditItemTaskPopup(row?.original)}
                   ></span>
                 </a>
@@ -4103,7 +4093,7 @@ function ComponentTable(SelectedProp: any) {
                 {ShowSelectdSmartfilter != undefined &&
                   ShowSelectdSmartfilter.length > 0 && (
                     <>
-                      {ShowSelectdSmartfilter.map(function (obj, index) {
+                      {ShowSelectdSmartfilter?.map(function (obj, index) {
                         return (
                           <>
                             {obj.Title}
@@ -4176,7 +4166,7 @@ function ComponentTable(SelectedProp: any) {
               <div className="togglecontent mt-1">
                 <table width="100%" className="indicator_search">
                   <tr>
-                    {filterGroups.map(function (item) {
+                    {filterGroups?.map(function (item) {
                       return (
                         <>
                           <td valign="top">
@@ -4192,7 +4182,7 @@ function ComponentTable(SelectedProp: any) {
                                 </legend>
                               )}
                             </fieldset>
-                            {filterItems.map(function (ItemType, index) {
+                            {filterItems?.map(function (ItemType, index) {
                               return (
                                 <>
                                   {ItemType.Group == item && (
@@ -4273,7 +4263,7 @@ function ComponentTable(SelectedProp: any) {
                                           <span>
                                             {ItemType.show && (
                                               <>
-                                                {ItemType.childs.map(function (
+                                                {ItemType?.childs?.map(function (
                                                   child1: any,
                                                   index: any
                                                 ) {
@@ -4319,7 +4309,7 @@ function ComponentTable(SelectedProp: any) {
                                                           }}
                                                           className="m-0 ps-3 pe-2"
                                                         >
-                                                          {child1.childs.map(
+                                                          {child1?.childs?.map(
                                                             function (
                                                               child2: any
                                                             ) {
@@ -4411,32 +4401,32 @@ function ComponentTable(SelectedProp: any) {
                   <span className="leftsec">
                     <label>
                       Showing {ComponentCopy} of{" "}
-                      {AllCountItems.AllComponentItems.length > 1 ? AllCountItems.AllComponentItems.length - 1 : AllCountItems.AllComponentItems.length} Components
+                      {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
                     </label>
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
                       <label>
                         {SubComponentCopy} of{" "}
-                        {AllCountItems.AllSubComponentItems.length}{" "}
+                        {AllCountItems?.AllSubComponentItems?.length}{" "}
                         SubComponents
                       </label>
                     ) : (
                       <label>
-                        {AllCountItems.AllSubComponentItems.length} of{" "}
-                        {AllCountItems.AllSubComponentItems.length}{" "}
+                        {AllCountItems?.AllSubComponentItems?.length} of{" "}
+                        {AllCountItems?.AllSubComponentItems?.length}{" "}
                         SubComponents
                       </label>
                     )}
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
                       <label>
-                        {FeatureCopy} of {AllCountItems.AllFeaturesItems.length}{" "}
+                        {FeatureCopy} of {AllCountItems?.AllFeaturesItems?.length}{" "}
                         Features
                       </label>
                     ) : (
                       <label>
-                        {AllCountItems.AllFeaturesItems.length} of{" "}
-                        {AllCountItems.AllFeaturesItems.length} Features
+                        {AllCountItems?.AllFeaturesItems?.length} of{" "}
+                        {AllCountItems?.AllFeaturesItems?.length} Features
                       </label>
                     )}
                     <span
@@ -4453,19 +4443,19 @@ function ComponentTable(SelectedProp: any) {
                       >
                         <label>
                           Showing {ComponentCopy} of{" "}
-                          {AllCountItems.AllComponentItems.length > 1 ? AllCountItems.AllComponentItems.length - 1 : AllCountItems.AllComponentItems.length} Components
+                          {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
                         </label>
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
                           <label>
                             {SubComponentCopy} of{" "}
-                            {AllCountItems.AllSubComponentItems.length}{" "}
+                            {AllCountItems?.AllSubComponentItems?.length}{" "}
                             SubComponents
                           </label>
                         ) : (
                           <label>
-                            {AllCountItems.AllSubComponentItems.length} of{" "}
-                            {AllCountItems.AllSubComponentItems.length}{" "}
+                            {AllCountItems?.AllSubComponentItems?.length} of{" "}
+                            {AllCountItems?.AllSubComponentItems?.length}{" "}
                             SubComponents
                           </label>
                         )}
@@ -4473,12 +4463,12 @@ function ComponentTable(SelectedProp: any) {
                         {FilterShowhideShwingData === true ? (
                           <label>
                             {FeatureCopy} of{" "}
-                            {AllCountItems.AllFeaturesItems.length} Features
+                            {AllCountItems?.AllFeaturesItems?.length} Features
                           </label>
                         ) : (
                           <label>
-                            {AllCountItems.AllFeaturesItems.length} of{" "}
-                            {AllCountItems.AllFeaturesItems.length} Features
+                            {AllCountItems?.AllFeaturesItems?.length} of{" "}
+                            {AllCountItems?.AllFeaturesItems?.length} Features
                           </label>
                         )}
 
@@ -4549,12 +4539,12 @@ function ComponentTable(SelectedProp: any) {
                       </button>
                     )} */}
 
-                    {table?.getSelectedRowModel()?.flatRows.length === 1 &&
+                    {table?.getSelectedRowModel()?.flatRows?.length === 1 &&
                       table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Feature" &&
                       table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Activities" &&
                       table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Workstream" &&
                       table?.getSelectedRowModel()?.flatRows[0]?.original?.SharewebTaskType?.Title != "Task" ||
-                      table?.getSelectedRowModel()?.flatRows.length === 0 ? (
+                      table?.getSelectedRowModel()?.flatRows?.length === 0 ? (
                       <button
                         type="button"
                         className="btn btn-primary"
@@ -4591,8 +4581,8 @@ function ComponentTable(SelectedProp: any) {
                       Add Activity-Task
                     </button>}
 
-                    {table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ||
-                      table?.getSelectedRowModel()?.flatRows.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0 ? <button
+                    {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ||
+                      table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0 ? <button
                         type="button"
                         className="btn btn-primary"
                         onClick={buttonRestructuring}
@@ -4630,13 +4620,13 @@ function ComponentTable(SelectedProp: any) {
                   <div className="">
                     <div className="wrapper">
                       <table
-                        className="SortingTable searchCrossIcon  table table-hover"
+                        className="SortingTable searchCrossIcon groupTable  table table-hover"
                         style={{ width: "100%" }}
                       >
                         <thead className="fixed-Header top-0">
-                          {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                              {headerGroup.headers.map((header) => {
+                          {table?.getHeaderGroups()?.map((headerGroup) => (
+                            <tr key={headerGroup?.id}>
+                              {headerGroup?.headers?.map((header) => {
                                 return (
                                   <th
                                     key={header.id}
@@ -4751,7 +4741,7 @@ function ComponentTable(SelectedProp: any) {
                               >
                                 {row.getVisibleCells().map((cell: any) => {
                                   return (
-                                    <td key={cell.id}>
+                                    <td className={row?.original?.boldRow} key={cell.id}>
                                       {flexRender(
                                         cell.column.columnDef.cell,
                                         cell.getContext()
@@ -4777,8 +4767,8 @@ function ComponentTable(SelectedProp: any) {
         <EditTaskPopup
           Items={SharewebTask}
           Call={Call}
-          AllListId={SelectedProp.SelectedProp}
-          context={SelectedProp.SelectedProp.Context}
+          AllListId={SelectedProp?.SelectedProp}
+          context={SelectedProp?.SelectedProp.Context}
         ></EditTaskPopup>
       )}
       {IsComponent && (
@@ -4795,7 +4785,7 @@ function ComponentTable(SelectedProp: any) {
         <TimeEntryPopup
           props={SharewebTimeComponent}
           CallBackTimeEntry={TimeEntryCallBack}
-          Context={SelectedProp.SelectedProp.Context}
+          Context={SelectedProp?.SelectedProp.Context}
         ></TimeEntryPopup>
       )}
       {MeetingPopup && (
@@ -4945,7 +4935,7 @@ function ComponentTable(SelectedProp: any) {
         </div>
       </Panel>
       <Panel
-        onRenderHeader={onRenderCustomHeaderRestructuringTool}
+        headerText={` Restructuring Tool `}
         type={PanelType.medium}
         isOpen={ResturuningOpen}
         isBlocking={false}
@@ -4981,7 +4971,7 @@ function ComponentTable(SelectedProp: any) {
               </div>
               <div>
                 <span> Old: </span>
-                {OldArrayBackup.map(function (obj: any, index) {
+                {OldArrayBackup?.map(function (obj: any, index) {
                   return (
                     <span>
                       <span className="Dyicons ">{obj.SiteIconTitle}</span>
@@ -5004,7 +4994,7 @@ function ComponentTable(SelectedProp: any) {
               </div>
               <div>
                 <span> New: </span>{" "}
-                {NewArrayBackup.map(function (newobj: any, indexnew) {
+                {NewArrayBackup?.map(function (newobj: any, indexnew) {
                   return (
                     <>
                       <span>

@@ -236,7 +236,7 @@ const ProjectManagementMain = (props: any) => {
   // Load All Component And Services
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
-
+    
   }, []);
 
   const getPortfolio = async (type: any) => {
@@ -927,7 +927,7 @@ const ProjectManagementMain = (props: any) => {
         id: "siteIcon", // 'id' is required
         isSorted: false,
         showSortIcon: false,
-        style: { width: "65px" },
+        style: { width: "50px" },
         Cell: ({ row }: any) => (
           <span>
             <img
@@ -1004,7 +1004,7 @@ const ProjectManagementMain = (props: any) => {
       {
         internalHeader: "% Complete",
         accessor: "PercentComplete",
-        style: { width: "70px" },
+        style: { width: "55px" },
         showSortIcon: true,
         Cell: ({ row }: any) => (
           <span >
@@ -1600,7 +1600,7 @@ const ProjectManagementMain = (props: any) => {
                     </section>
                     <div>
                       <div className="row">
-                        <div className="section-event border-top">
+                        <div className="section-event ps-0">
                           <div className="wrapper">
                             {sidebarStatus.sideBarFilter ? (
                               <div className="text-end">

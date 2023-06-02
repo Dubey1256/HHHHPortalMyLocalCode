@@ -1,5 +1,9 @@
 import * as React from 'react'
 import $ from 'jquery';
+import {
+    ColumnDef,
+} from "@tanstack/react-table";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
@@ -12,7 +16,10 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import {
+    FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaChevronDown,
+    FaChevronRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp,
+} from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
@@ -27,6 +34,8 @@ var DataSiteIcon: any = [];
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
+var MasterListData: any = []
+var MyAllData: any = []
 var backupTaskArray: any = {
     AllAssignedTasks: [],
     workingTodayTasks: [],
@@ -41,6 +50,8 @@ var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
+    const [createTaskId, setCreateTaskId] = React.useState({});
+    const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
     const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
     const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
     const [currentView, setCurrentView] = React.useState('Home');
@@ -201,6 +212,9 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'This Month') {
             startingDate.setDate(1);
             formattedDate = startingDate;
+        } else if (startDateOf == 'timesheetQuery') {
+            startingDate.setMonth(startingDate.getMonth() - 1);
+            formattedDate = startingDate;
         }
         return formattedDate;
     }
@@ -211,7 +225,7 @@ const TaskDashboard = (props: any) => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             let taskLists: any = [];
-            let startDate = getStartingDate('This Month').toISOString();
+            let startDate = getStartingDate('timesheetQuery').toISOString();
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
@@ -237,7 +251,7 @@ const TaskDashboard = (props: any) => {
     const loadAllTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
-            let startDate = getStartingDate('This Month').toISOString();
+            let startDate = getStartingDate('timesheetQuery').toISOString();
             let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
@@ -332,7 +346,8 @@ const TaskDashboard = (props: any) => {
 
 
     // All Sites Task
-    const LoadAllSiteTasks = function () {
+    const LoadAllSiteTasks = async function () {
+        await loadAllComponent()
         let AllSiteTasks: any = [];
         let approverTask: any = [];
         let SharewebTask: any = [];
@@ -359,6 +374,7 @@ const TaskDashboard = (props: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
                                     task.AllTeamMember = [];
+                                    task.HierarchyData = [];
                                     task.siteType = config.Title;
                                     task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                                     task.listId = config.listId;
@@ -409,6 +425,7 @@ const TaskDashboard = (props: any) => {
                                             ? Moment(task.Created).format("DD/MM/YYYY")
                                             : "";
                                     task.TeamMembersId = [];
+                                    task.HierarchyData = globalCommon.hierarchyData(task, MyAllData)
                                     taskUsers?.map((user: any) => {
                                         if (user.AssingedToUserId == task.Author.Id) {
                                             task.createdImg = user?.Item_x0020_Cover?.Url;
@@ -501,48 +518,32 @@ const TaskDashboard = (props: any) => {
             console.log(e)
         }
     };
+    const loadAllComponent = async () => {
+
+        let web = new Web(AllListId?.siteUrl);
+        MasterListData = await web.lists
+            .getById(AllListId?.MasterTaskListID)
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .top(4999)
+            .get().then((data) => {
+                console.log(data)
+                data?.forEach((val: any) => {
+                    MyAllData.push(val)
+                })
+
+
+            }).catch((error) => {
+                console.log(error)
+            })
+
+
+    }
     const sortOnCreated = (Array: any) => {
         Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
         return Array;
     }
-    const getChilds1 = function (item: any, array: any) {
-        item.childs = [];
 
-        array?.map((childItem: any) => {
-            childItem.selected = false;
-            childItem.UserManagerMail = [];
-            childItem.UserManagerName = ''
-            childItem?.Approver?.map((Approver: any, index: any) => {
-                if (index == 0) {
-
-                    childItem.UserManagerName = Approver?.Title;
-                } else {
-                    childItem.UserManagerName += ' ,' + Approver?.Title
-                }
-                let Mail = Approver?.Name?.split('|')[2]
-                childItem.UserManagerMail.push(Mail)
-            })
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
-                item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
-                    currentUser.isAdmin = true;
-                    setCurrentUserData(currentUser);
-                }
-            }
-        })
-        item.childs.sort((a: any, b: any) => {
-            const titleA = a.Title.toLowerCase();
-            const titleB = b.Title.toLowerCase();
-
-            if (titleA < titleB) {
-                return -1;
-            }
-            if (titleA > titleB) {
-                return 1;
-            }
-            return 0;
-        });
-    }
 
     //Edit CallBack
     const editTaskCallBack = React.useCallback((item: any) => {
@@ -631,6 +632,95 @@ const TaskDashboard = (props: any) => {
         return workingTodayTask;
     }
     //End
+    const column = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                size: 7,
+                canSort: false,
+                placeholder: "",
+                id: 'PortfolioStructureID',
+                // header: ({ table }: any) => (
+                //   <>
+                //     <button className='border-0 bg-Ff'
+                //       {...{
+                //         onClick: table.getToggleAllRowsExpandedHandler(),
+                //       }}
+                //     >
+                //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                //     </button>{" "}
+                //   </>
+                // ),
+                cell: ({ row, getValue }) => (
+                    <div
+                        style={row.getCanExpand() ? {
+                            paddingLeft: `${row.depth * 5}px`,
+                        } : {
+                            paddingLeft: "18px",
+                        }}
+                    >
+                        <>
+                            {row.getCanExpand() ? (
+                                <span className=' border-0'
+                                    {...{
+                                        onClick: row.getToggleExpandedHandler(),
+                                        style: { cursor: "pointer" },
+                                    }}
+                                >
+                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                </span>
+                            ) : (
+                                ""
+                            )}{" "}
+
+                            <> {row?.original?.siteIcon != undefined ?
+                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                            }
+                                <span>{row?.original?.PortfolioStructureID}</span></>
+
+                            {getValue()}
+                        </>
+                    </div>
+                ),
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row.original.Title}</span>
+                    </>
+                ),
+                id: "Title",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 15,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        {/* <span className="hreflink" onClick={() => createOpenTask(row.original)}>+</span> */}
+                    </>
+                ),
+                id: "Title",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 5,
+            },
+        ],
+        []
+    );
+    const createOpenTask = (items: any) => {
+        setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
+        setisOpenCreateTask(true)
+    }
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+    }, []);
+
     const columns = React.useMemo(
         () => [
             {
@@ -641,9 +731,22 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
 
-                        {row?.original?.Shareweb_x0020_ID}
+                        <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
+                            <div className="popover__content">
+                                <div className="tootltip-title">{row?.original?.Title}
+                                </div>
+                                <div className="tooltip-body">
+                                    {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
+                                        <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+                                    )}
 
+
+                                </div>
+                            </div>
+                        </div>
                     </span>
+
                 ),
             },
             {
@@ -681,7 +784,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '65px' },
+                style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -748,7 +851,7 @@ const TaskDashboard = (props: any) => {
             {
                 internalHeader: "% Complete",
                 accessor: "PercentComplete",
-                style: { width: '70px' },
+                style: { width: '55px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
@@ -858,7 +961,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '65px' },
+                style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -916,7 +1019,7 @@ const TaskDashboard = (props: any) => {
             {
                 internalHeader: "% Complete",
                 accessor: "PercentComplete",
-                style: { width: '70px' },
+                style: { width: '55px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
@@ -1407,7 +1510,7 @@ const TaskDashboard = (props: any) => {
                 taskUser = await web.lists
                     .getById(AllListId?.TaskUsertListID)
                     .items
-                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .get();
             }
             catch (error) {
@@ -1426,7 +1529,42 @@ const TaskDashboard = (props: any) => {
             getChilds1(item, taskUsers);
             Groups.push(item);
         })
+
         setGroupedUsers(Groups);
+    }
+    const getChilds1 = function (item: any, array: any) {
+        item.childs = [];
+
+        array?.map((childItem: any) => {
+            childItem.selected = false;
+            childItem.UserManagerMail = [];
+            childItem.UserManagerName = ''
+            childItem?.Approver?.map((Approver: any, index: any) => {
+                if (index == 0) {
+
+                    childItem.UserManagerName = Approver?.Title;
+                } else {
+                    childItem.UserManagerName += ' ,' + Approver?.Title
+                }
+                let Mail = Approver?.Name?.split('|')[2]
+                childItem.UserManagerMail.push(Mail)
+            })
+            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
+                item.childs.push(childItem);
+            }
+        })
+        item.childs.sort((a: any, b: any) => {
+            const titleA = a.Title.toLowerCase();
+            const titleB = b.Title.toLowerCase();
+
+            if (titleA < titleB) {
+                return -1;
+            }
+            if (titleA > titleB) {
+                return 1;
+            }
+            return 0;
+        });
     }
     // End
 
@@ -1461,7 +1599,7 @@ const TaskDashboard = (props: any) => {
 
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) {
+        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) {
             let todayTasks = workingTodayTasks;
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
@@ -1688,7 +1826,7 @@ const TaskDashboard = (props: any) => {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
@@ -1800,6 +1938,9 @@ const TaskDashboard = (props: any) => {
                 + '<h3>'
                 + 'Thanks And regards'
                 + '</h3>'
+                + '<h3>'
+                + currentUserData?.Title
+                + '</h3>'
             SendEmailFinal(to, subject, sendAllTasks);
 
         }
@@ -1878,7 +2019,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" ?
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" || currentUserData?.Title == "Prashant Kumar" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
@@ -1910,7 +2051,7 @@ const TaskDashboard = (props: any) => {
                         </section>
                         <section className="sidebar__section sidebar__section--menu">
                             {
-                                (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) ?
+                                (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) ?
                                     <>
                                         <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
                                             Drop here to Un-Assign
@@ -2319,7 +2460,7 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                {((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) && isTimeEntry == true) ?
+                                {((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) && isTimeEntry == true) ?
                                     <>
                                         <div>
                                             <span className='m-1'>
