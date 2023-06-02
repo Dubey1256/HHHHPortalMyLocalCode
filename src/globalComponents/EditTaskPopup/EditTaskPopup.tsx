@@ -254,7 +254,6 @@ const EditTaskPopup = (Items: any) => {
                             setApproverHistoryData(tempArray);
                         }
                     }
-
                     if (ApproverData != undefined && ApproverData.length > 0) {
                         setApproverData(ApproverData);
                         TaskApproverBackupArray = ApproverData;
@@ -275,7 +274,6 @@ const EditTaskPopup = (Items: any) => {
                         if (TempApproverHistory != undefined && TempApproverHistory.length > 0) {
                             setApproverHistoryData(TempApproverHistory);
                         }
-
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
                         let TempArray: any = [];
@@ -283,7 +281,23 @@ const EditTaskPopup = (Items: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
                                     if (ClientData.Id == clientCategoryData.Id) {
+                                        if(clientCategoryData.siteName == null ){
+                                            if(clientCategoryData.ParentID == 340 || clientCategoryData.ParentID == 430){
+                                                ClientData.siteName = "EI";
+                                            }
+                                            if(clientCategoryData.ParentID == 341){
+                                                ClientData.siteName = "EPS";
+                                            }
+                                            if(clientCategoryData.ParentID == 344){
+                                                ClientData.siteName = "Education";
+                                            }
+                                            if(clientCategoryData.ParentID == 569){
+                                                ClientData.siteName = "Migration";
+                                            }
+                                        }else{
                                         ClientData.siteName = clientCategoryData.siteName;
+                                        }
+                                        ClientData.ParentID = clientCategoryData.ParentID;
                                     }
                                 })
                                 TempArray.push(ClientData)
@@ -901,12 +915,27 @@ const EditTaskPopup = (Items: any) => {
                 $.each(AllTaskusers, function (index: any, item: any) {
                     if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EPS';
+                        if (item.siteName == null) {
+                            item.siteName = 'EPS';
+                        }
                     }
                     else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EI';
+                        if (item.siteName == null) {
+                            item.siteName = 'EI';
+                        }
                     }
                     else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
                         item.newTitle = 'Education';
+                        if (item.siteName == null) {
+                            item.siteName = 'Education';
+                        }
+                    }
+                    else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
+                        item.newTitle = 'Migration';
+                        if (item.siteName == null) {
+                            item.siteName = 'Migration';
+                        }
                     }
                     else {
                         item.newTitle = item.Title;
@@ -2095,7 +2124,7 @@ const EditTaskPopup = (Items: any) => {
                     ClientCategoryData.push(ClientTimeItems);
                 }
             })
-            
+
         }
 
         let UpdateDataObject: any = {
@@ -3380,8 +3409,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BASICINFORMATION"
                                 aria-selected="true"
                             >
-                                {/* BASIC INFORMATION */}
-                                TASK INFORMATION
+                                BASIC INFORMATION
+                                {/* TASK INFORMATION */}
                             </button>
                             <button
                                 className="nav-link"
@@ -3393,8 +3422,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="NEWTIMESHEET"
                                 aria-selected="false"
                             >
-                                TASK PLANNING
-                                {/* TEAM & TIMESHEET */}
+                                {/* TASK PLANNING */}
+                                TEAM & TIMESHEET
                             </button>
                             {IsUserFromHHHHTeam ? null : <button
                                 className="nav-link"
@@ -3406,8 +3435,8 @@ const EditTaskPopup = (Items: any) => {
                                 aria-controls="BACKGROUNDCOMMENT"
                                 aria-selected="false"
                             >
-                                REMARKS
-                                {/* BACKGROUND */}
+                                {/* REMARKS */}
+                                BACKGROUND
                             </button>}
 
                         </ul>
@@ -3462,7 +3491,6 @@ const EditTaskPopup = (Items: any) => {
                                                         <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                         />
                                                     </span></div>
-
                                                     <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
                                                         defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                         onChange={(e) => setEditData({
