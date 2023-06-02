@@ -216,9 +216,9 @@ export default function ComponentTable({ props, NextProp }: any) {
     } else {
       // Item doesn't exist, add it
       items.Title = item.Title;
-      items.Id = item.Id;
+      items.Id = item?.Id;
       items.Title = item.Title;
-      items.Id = item.Id;
+      items.Id = item?.Id;
       setItems([...items, item]);
     }
   }
@@ -293,7 +293,7 @@ export default function ComponentTable({ props, NextProp }: any) {
     // TaskArray.forEach((activ: any) => {
     //  if (activ.ParentTask?.Id != undefined) {
     let Allworkstream = $.grep(AllTasks, function (type: any) {
-      return type.ParentTask?.Id == item.Id;
+      return type.ParentTask?.Id == item?.Id;
     });
     if (Allworkstream != undefined && Allworkstream.length > 0) {
       Allworkstream.forEach((activ: any) => {
@@ -316,7 +316,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           item.subRows.push(activ);
           activ.subRows = activ.subRows != undefined ? activ.subRows : [];
           let Allworkstream = $.grep(AllTasks, function (type: any) {
-            return type.ParentTask?.Id == activ.Id;
+            return type.ParentTask?.Id == activ?.Id;
           });
           {
             if (Allworkstream != undefined && Allworkstream.length > 0) {
@@ -436,12 +436,12 @@ export default function ComponentTable({ props, NextProp }: any) {
                     );
                 }
                 if (result.Author != undefined) {
-                  if (result.Author.Id != undefined) {
+                  if (result.Author?.Id != undefined) {
                     $.each(TaskUsers, function (index: any, users: any) {
                       if (
-                        result.Author.Id != undefined &&
+                        result.Author?.Id != undefined &&
                         users.AssingedToUser != undefined &&
-                        result.Author.Id == users.AssingedToUser.Id
+                        result.Author?.Id == users.AssingedToUser?.Id
                       ) {
                         users.ItemCover = users.Item_x0020_Cover.Url;
                         result.CreatedDateImg.push(users);
@@ -462,7 +462,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                 //     result.ClientCategory.push(catego);
                 //   });
                 // }
-                if (result.Id === 498 || result.Id === 104) console.log(result);
+                if (result?.Id === 498 || result?.Id === 104) console.log(result);
                 result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
                 if (result["Shareweb_x0020_ID"] == undefined) {
                   result["Shareweb_x0020_ID"] = "";
@@ -477,10 +477,10 @@ export default function ComponentTable({ props, NextProp }: any) {
               });
               if (AllAcivities != undefined && AllAcivities.length > 0) {
                 AllAcivities.forEach((activ: any) => {
-                  if (activ.Id != undefined) {
+                  if (activ?.Id != undefined) {
                     groupbyTasks(AllTasks, activ);
                     AllTasks.forEach((obj: any) => {
-                      if (obj.Id === activ.Id) {
+                      if (obj?.Id === activ?.Id) {
                         obj.show = false;
                         obj.subRows = activ.subRows;
                         obj.childsLength = activ.subRows.length;
@@ -610,7 +610,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   var isItemExistsNew = function (array: any, items: any) {
     var isExists = false;
     $.each(array, function (index: any, item: any) {
-      if (item.Id === items.Id && items.siteType === item.siteType) {
+      if (item?.Id === items?.Id && items.siteType === item.siteType) {
         isExists = true;
         return false;
       }
@@ -821,16 +821,16 @@ export default function ComponentTable({ props, NextProp }: any) {
       props.Item_x0020_Type === "Component"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo.Id === props.Id;
+        return compo?.Id === props?.Id;
       });
       let temp: any = $.grep(componentDetails, function (compo: any) {
-        return compo.Parent?.Id === props.Id;
+        return compo.Parent?.Id === props?.Id;
       });
       array = [...array, ...temp];
       temp.forEach((obj: any) => {
-        if (obj.Id != undefined) {
+        if (obj?.Id != undefined) {
           var temp1: any = $.grep(componentDetails, function (compo: any) {
-            return compo.Parent?.Id === obj.Id;
+            return compo.Parent?.Id === obj?.Id;
           });
           if (temp1 != undefined && temp1.length > 0)
             array = [...array, ...temp1];
@@ -842,10 +842,10 @@ export default function ComponentTable({ props, NextProp }: any) {
       props.Item_x0020_Type === "SubComponent"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo.Id === props.Id;
+        return compo?.Id === props?.Id;
       });
       let temp = $.grep(componentDetails, function (compo: any) {
-        return compo.Parent?.Id === props.Id;
+        return compo.Parent?.Id === props?.Id;
       });
       if (temp != undefined && temp.length > 0) array = [...array, ...temp];
     }
@@ -854,7 +854,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       props.Item_x0020_Type === "Feature"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo.Id === props.Id;
+        return compo?.Id === props?.Id;
       });
     }
 
@@ -871,8 +871,8 @@ export default function ComponentTable({ props, NextProp }: any) {
         if (IsUpdated === "Service" && chunk != undefined && chunk.length > 0) {
           chunk.forEach((obj: any, index: any) => {
             if (chunk.length - 1 === index)
-              filter += "(Services/Id eq " + obj.Id + " )";
-            else filter += "(Services/Id eq " + obj.Id + " ) or ";
+              filter += "(Services/Id eq " + obj?.Id + " )";
+            else filter += "(Services/Id eq " + obj?.Id + " ) or ";
           });
         }
         if (
@@ -882,15 +882,15 @@ export default function ComponentTable({ props, NextProp }: any) {
         ) {
           chunk.forEach((obj: any, index: any) => {
             if (chunk.length - 1 === index)
-              filter += "(Component/Id eq " + obj.Id + " )";
-            else filter += "(Component/Id eq " + obj.Id + " ) or ";
+              filter += "(Component/Id eq " + obj?.Id + " )";
+            else filter += "(Component/Id eq " + obj?.Id + " ) or ";
           });
         }
         if (IsUpdated === "Events" && chunk != undefined && chunk.length > 0) {
           chunk.forEach((obj: any, index: any) => {
             if (chunk.length - 1 === index)
-              filter += "(Events/Id eq " + obj.Id + " )";
-            else filter += "(Events/Id eq " + obj.Id + " ) or ";
+              filter += "(Events/Id eq " + obj?.Id + " )";
+            else filter += "(Events/Id eq " + obj?.Id + " ) or ";
           });
         }
 
@@ -946,7 +946,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       map(Items.results, (index: any, user: any) => {
         $.each(AllUsers, function (index: any, item: any) {
           $.each(AllUsers, function (index: any, item: any) {
-            if (user.Id === item.AssingedToUser?.Id) {
+            if (user?.Id === item.AssingedToUser?.Id) {
               Item.AllTeamName = Item.AllTeamName + item.Title + " ";
             }
           });
@@ -959,7 +959,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   var isItemExistsNew = function (array: any, items: any) {
     var isExists = false;
     $.each(array, function (index: any, item: any) {
-      if (item.Id === items.Id && items.siteType === item.siteType) {
+      if (item?.Id === items?.Id && items.siteType === item.siteType) {
         isExists = true;
         return false;
       }
@@ -973,7 +973,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       $.each(task["Services"], function (index: any, componentItem: any) {
         for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
           let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem.Id == crntItem.Id) {
+          if (componentItem?.Id == crntItem?.Id) {
             if (
               crntItem.PortfolioStructureID != undefined &&
               crntItem.PortfolioStructureID != ""
@@ -1004,7 +1004,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   : GlobalConstants.MAIN_SITE_URL +
                   "/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
               ComponetsData["allComponets"][i]["subRows"].push(task);
-              if (ComponetsData["allComponets"][i].Id === 413)
+              if (ComponetsData["allComponets"][i]?.Id === 413)
                 console.log(ComponetsData["allComponets"][i]["subRows"].length);
             }
             break;
@@ -1016,7 +1016,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       $.each(task["Events"], function (index: any, componentItem: any) {
         for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
           let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem.Id == crntItem.Id) {
+          if (componentItem?.Id == crntItem?.Id) {
             if (
               crntItem.PortfolioStructureID != undefined &&
               crntItem.PortfolioStructureID != ""
@@ -1044,7 +1044,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       $.each(task["Component"], function (index: any, componentItem: any) {
         for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
           let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem.Id == crntItem.Id) {
+          if (componentItem?.Id == crntItem?.Id) {
             if (
               crntItem.PortfolioStructureID != undefined &&
               crntItem.PortfolioStructureID != ""
@@ -1112,12 +1112,12 @@ export default function ComponentTable({ props, NextProp }: any) {
       );
 
       if (result.Author != undefined) {
-        if (result.Author.Id != undefined) {
+        if (result.Author?.Id != undefined) {
           $.each(TaskUsers, function (index: any, users: any) {
             if (
-              result.Author.Id != undefined &&
+              result.Author?.Id != undefined &&
               users.AssingedToUser != undefined &&
-              result.Author.Id == users.AssingedToUser.Id
+              result.Author?.Id == users.AssingedToUser?.Id
             ) {
               users.ItemCover = users.Item_x0020_Cover.Url;
               result.CreatedDateImg.push(users);
@@ -1235,7 +1235,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         $.each(FeatureData, function (index: any, featurecomp: any) {
           if (
             featurecomp.Parent != undefined &&
-            subcomp.Id == featurecomp.Parent.Id
+            subcomp?.Id == featurecomp.Parent?.Id
           ) {
             subcomp.downArrowIcon =
               IsUpdated != undefined && IsUpdated == "Service"
@@ -1272,7 +1272,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           $.each(SubComponentsData, function (index: any, featurecomp: any) {
             if (
               featurecomp.Parent != undefined &&
-              subcomp.Id == featurecomp.Parent.Id
+              subcomp?.Id == featurecomp.Parent?.Id
             ) {
               subcomp.downArrowIcon =
                 IsUpdated != undefined && IsUpdated == "Service"
@@ -1299,7 +1299,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           map(FeatureData, (featurecomp) => {
             if (
               featurecomp.Parent != undefined &&
-              comp.Id === featurecomp.Parent.Id
+              comp?.Id === featurecomp.Parent?.Id
             ) {
               comp.downArrowIcon =
                 IsUpdated != undefined && IsUpdated == "Service"
@@ -1416,7 +1416,7 @@ export default function ComponentTable({ props, NextProp }: any) {
     ComponetsData["allUntaggedTasks"] = [];
     AllTaskData1 = AllTaskData1.concat(TasksItem);
     $.each(AllTaskData1, function (index: any, task: any) {
-      if (task.Id === 3559 || task.Id === 3677) console.log(task);
+      if (task?.Id === 3559 || task?.Id === 3677) console.log(task);
       task.Portfolio_x0020_Type = "Component";
       if (IsUpdated === "Service") {
         if (task["Services"] != undefined && task["Services"].length > 0) {
@@ -1510,7 +1510,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           itrm['siteUrl'] = NextProp?.siteUrl;
           // itrm['listName'] = 'Master Tasks';
           Arrays.push(itrm)
-          itrm['PortfolioId'] = child.Id;
+          itrm['PortfolioId'] = child?.Id;
           childsData.push(itrm)
         }
       }
@@ -1596,7 +1596,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   //         // itrm['siteUrl'] = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
   //         // itrm['listName'] = 'Master Tasks';
   //         Arrays.push(itrm);
-  //         itrm["PortfolioId"] = child.Id;
+  //         itrm["PortfolioId"] = child?.Id;
   //         childsData.push(itrm);
   //       }
   //     }
@@ -1614,7 +1614,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   //   if (checked == false) {
   //     itrm.chekBox = false;
   //     MeetingItems?.forEach((val: any, index: any) => {
-  //       if (val.Id == itrm.Id) {
+  //       if (val?.Id == itrm?.Id) {
   //         MeetingItems.splice(index, 1);
   //       }
   //     });
@@ -1633,7 +1633,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   //   const list = [...checkedList];
   //   var flag = true;
   //   list.forEach((obj: any, index: any) => {
-  //     if (obj.Id != undefined && itrm?.Id != undefined && obj.Id === itrm.Id) {
+  //     if (obj?.Id != undefined && itrm?.Id != undefined && obj?.Id === itrm?.Id) {
   //       flag = false;
   //       list.splice(index, 1);
   //     }
@@ -1661,7 +1661,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   const isItemExists = function (arr: any, Id: any) {
     var isExists = false;
     $.each(arr, function (index: any, item: any) {
-      if (item.Id == Id) {
+      if (item?.Id == Id) {
         isExists = true;
         return false;
       }
@@ -1672,12 +1672,12 @@ export default function ComponentTable({ props, NextProp }: any) {
     $.each(
       TaskTimeSheetCategoriesGrouping,
       function (index: any, categoryTitle: any) {
-        if (categoryTitle.Id == category) {
+        if (categoryTitle?.Id == category) {
           // item.isShow = true;
           if (categoryTitle.Childs.length == 0) {
             categoryTitle.Childs = [];
           }
-          if (!isItemExists(categoryTitle.Childs, item.Id)) {
+          if (!isItemExists(categoryTitle.Childs, item?.Id)) {
             item.show = true;
             categoryTitle.Childs.push(item);
           }
@@ -1754,7 +1754,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         AllItems?.map((comp: any) => {
           comp.flag = true;
           comp.show = false;
-          if (comp.Id == ParentTaskId || comp.ID == ParentTaskId) {
+          if (comp?.Id == ParentTaskId || comp.ID == ParentTaskId) {
             comp.subRows = comp.subRows == undefined ? [] : comp.subRows
             // comp.childs.push(childItem.data)
             CountArray++;
@@ -1764,7 +1764,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             comp?.subRows?.map((subComp: any) => {
               subComp.flag = true;
               subComp.show = false;
-              if (subComp.Id == ParentTaskId || subComp.ID == ParentTaskId) {
+              if (subComp?.Id == ParentTaskId || subComp.ID == ParentTaskId) {
                 subComp.subRows = subComp.subRows == undefined ? [] : subComp.subRows
                 // subComp.childs.push(childItem.data)
                 CountArray++;
@@ -1781,7 +1781,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   }
                   Feat.flag = true;
                   Feat.show = false;
-                  if (Feat.Id == ParentTaskId || Feat.ID == ParentTaskId) {
+                  if (Feat?.Id == ParentTaskId || Feat.ID == ParentTaskId) {
                     CountArray++;
                     // Feat.childs = Feat.childs == undefined ? [] : Feat.childs
                     Feat.subRows = Feat.subRows == undefined ? [] : Feat.subRows
@@ -1799,7 +1799,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                       }
                       Activity.flag = true;
                       Activity.show = false;
-                      if (Activity.Id == ParentTaskId || Activity.ID == ParentTaskId) {
+                      if (Activity?.Id == ParentTaskId || Activity.ID == ParentTaskId) {
                         CountArray++;
                         // Activity.childs = Activity.childs == undefined ? [] : Activity.childs
                         Activity.subRows = Activity.subRows == undefined ? [] : Activity.subRows
@@ -1821,7 +1821,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                           }
                           workst.flag = true;
                           workst.show = false;
-                          if (workst.Id == ParentTaskId || workst.ID == ParentTaskId) {
+                          if (workst?.Id == ParentTaskId || workst.ID == ParentTaskId) {
                             CountArray++;
                             // workst.childs = workst.childs == undefined ? [] : workst.childs
                             workst.subRows = workst.subRows == undefined ? [] : workst.subRows
@@ -1893,13 +1893,13 @@ export default function ComponentTable({ props, NextProp }: any) {
   //       AllItems.forEach((val: any) => {
   //         val.flag = true;
   //         val.show = false;
-  //         if ( val.Id == MainId ||(val.subRows != undefined && val.subRows.length > 0)) {
-  //           if (val.Id == MainId) {
+  //         if ( val?.Id == MainId ||(val.subRows != undefined && val.subRows.length > 0)) {
+  //           if (val?.Id == MainId) {
   //             val.subRows.push(childItem.data);
   //           }
   //           if (val.subRows != undefined && val.subRows.length > 0) {
   //             val.subRows.forEach((type: any) => {
-  //               if (type.Id == MainId) {
+  //               if (type?.Id == MainId) {
   //                 val.flag = true;
   //                 type.subRows.push(childItem.data);
   //               } else {
@@ -1979,9 +1979,9 @@ export default function ComponentTable({ props, NextProp }: any) {
   //     if (AllItems != undefined && AllItems.length > 0) {
   //       AllItems.forEach((comp: any, index: any) => {
   //         if (
-  //           comp.Id != undefined &&
+  //           comp?.Id != undefined &&
   //           item.props.SelectedItem != undefined &&
-  //           comp.Id === item.props.SelectedItem.Id
+  //           comp?.Id === item.props.SelectedItem?.Id
   //         ) {
   //           comp.childsLength = item.props.SelectedItem.subRows.length;
   //           comp.show = comp.show == undefined ? false : comp.show;
@@ -1994,9 +1994,9 @@ export default function ComponentTable({ props, NextProp }: any) {
   //         if (comp.subRows != undefined && comp.subRows.length > 0) {
   //           comp.subRows.forEach((subcomp: any, index: any) => {
   //             if (
-  //               subcomp.Id != undefined &&
+  //               subcomp?.Id != undefined &&
   //               item.props.SelectedItem != undefined &&
-  //               subcomp.Id === item.props.SelectedItem.Id
+  //               subcomp?.Id === item.props.SelectedItem?.Id
   //             ) {
   //               subcomp.childsLength = item.props.SelectedItem.subRows.length;
   //               subcomp.show = subcomp.show == undefined ? false : subcomp.show;
@@ -2071,7 +2071,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         })
         AllItems.forEach((comp: any, index: any) => {
           // comp.downArrowIcon =comp.downArrowIcon;
-          if (comp.Id != undefined && item.props.SelectedItem != undefined && comp.Id === item.props.SelectedItem.Id) {
+          if (comp?.Id != undefined && item.props.SelectedItem != undefined && comp?.Id === item.props.SelectedItem?.Id) {
             comp.childsLength = item.props.SelectedItem.subRows.length;
             comp.show = comp.show == undefined ? false : comp.show
             comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
@@ -2081,7 +2081,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           }
           if (comp.subRows != undefined && comp.subRows.length > 0) {
             comp.subRows.forEach((subcomp: any, index: any) => {
-              if (subcomp.Id != undefined && item.props.SelectedItem != undefined && subcomp.Id === item.props.SelectedItem.Id) {
+              if (subcomp?.Id != undefined && item.props.SelectedItem != undefined && subcomp?.Id === item.props.SelectedItem?.Id) {
                 subcomp.childsLength = item.props.SelectedItem.subRows.length;
                 subcomp.show = subcomp.show == undefined ? false : subcomp.show
                 subcomp.subRows = item.props.SelectedItem.subRows;
@@ -2276,7 +2276,7 @@ export default function ComponentTable({ props, NextProp }: any) {
     ) {
       maidataBackup.forEach((obj) => {
         obj.isRestructureActive = true;
-        if (obj.Id === checkedList[0].Id) obj.isRestructureActive = false;
+        if (obj?.Id === checkedList[0]?.Id) obj.isRestructureActive = false;
         ArrayTest.push(...[obj]);
         if (obj.subRows != undefined && obj.subRows.length > 0) {
           obj.subRows.forEach((sub: any) => {
@@ -2294,13 +2294,13 @@ export default function ComponentTable({ props, NextProp }: any) {
     ) {
       maidataBackup.forEach((obj) => {
         //  obj.isRestructureActive = true;
-        if (obj.Id === checkedList[0].Id) {
+        if (obj?.Id === checkedList[0]?.Id) {
           obj.isRestructureActive = false;
           ArrayTest.push(...[obj]);
         }
         if (obj.subRows != undefined && obj.subRows.length > 0) {
           obj.subRows.forEach((sub: any) => {
-            if (sub.Id === checkedList[0].Id) {
+            if (sub?.Id === checkedList[0]?.Id) {
               obj.isRestructureActive = false;
               ArrayTest.push(...[obj]);
               ArrayTest.push(...[sub]);
@@ -2316,14 +2316,14 @@ export default function ComponentTable({ props, NextProp }: any) {
     ) {
       maidataBackup.forEach((obj) => {
         obj.isRestructureActive = true;
-        if (obj.Id === checkedList[0].Id) {
+        if (obj?.Id === checkedList[0]?.Id) {
           obj.isRestructureActive = false;
         }
 
         if (obj.subRows != undefined && obj.subRows.length > 0) {
           obj.subRows.forEach((sub: any) => {
             sub.isRestructureActive = true;
-            if (sub.Id === checkedList[0].Id) {
+            if (sub?.Id === checkedList[0]?.Id) {
               sub.isRestructureActive = false;
               obj.isRestructureActive = false;
               ArrayTest.push(...[obj]);
@@ -2331,7 +2331,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             }
             if (sub.subRows != undefined && sub.subRows.length > 0) {
               sub.subRows.forEach((newsub: any) => {
-                if (newsub.Id === checkedList[0].Id) {
+                if (newsub?.Id === checkedList[0]?.Id) {
                   ArrayTest.push(...[obj]);
                   ArrayTest.push(...[sub]);
                   ArrayTest.push(...[newsub]);
@@ -2347,7 +2347,7 @@ export default function ComponentTable({ props, NextProp }: any) {
     ) {
       maidataBackup.forEach((obj) => {
         obj.isRestructureActive = true;
-        if (obj.Id === checkedList[0].Id) {
+        if (obj?.Id === checkedList[0]?.Id) {
           ArrayTest.push(...[obj]);
         }
         if (obj.subRows != undefined && obj.subRows.length > 0) {
@@ -2357,7 +2357,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               sub.Item_x0020_Type === "Feature"
             )
               sub.isRestructureActive = true;
-            if (sub.Id === checkedList[0].Id) {
+            if (sub?.Id === checkedList[0]?.Id) {
               ArrayTest.push(...[obj]);
               ArrayTest.push(...[sub]);
               // ArrayTest.push(sub)
@@ -2369,7 +2369,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   subchild.Item_x0020_Type === "Feature"
                 )
                   subchild.isRestructureActive = true;
-                if (subchild.Id === checkedList[0].Id) {
+                if (subchild?.Id === checkedList[0]?.Id) {
                   ArrayTest.push(...[obj]);
                   ArrayTest.push(...[sub]);
                   ArrayTest.push(...[subchild]);
@@ -2380,7 +2380,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   subchild.subRows.length > 0
                 ) {
                   subchild.subRows.forEach((listsubchild: any) => {
-                    if (listsubchild.Id === checkedList[0].Id) {
+                    if (listsubchild?.Id === checkedList[0]?.Id) {
                       ArrayTest.push(...[obj]);
                       ArrayTest.push(...[sub]);
                       ArrayTest.push(...[subchild]);
@@ -2393,7 +2393,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   subchild.subRows.length > 0
                 ) {
                   subchild.subRows.forEach((listsubchild: any) => {
-                    if (listsubchild.Id === checkedList[0].Id) {
+                    if (listsubchild?.Id === checkedList[0]?.Id) {
                       ArrayTest.push(...[obj]);
                       ArrayTest.push(...[sub]);
                       ArrayTest.push(...[subchild]);
@@ -2436,18 +2436,18 @@ export default function ComponentTable({ props, NextProp }: any) {
     var TestArray: any = [];
     setResturuningOpen(true);
     maidataBackup.forEach((obj) => {
-      if (obj.Id === item.Id) TestArray.push(obj);
+      if (obj?.Id === item?.Id) TestArray.push(obj);
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
           sub.isRestructureActive = true;
-          if (sub.Id === item.Id) {
+          if (sub?.Id === item?.Id) {
             //TestArray.push(obj)
             TestArray.push(...[obj]);
             TestArray.push(...[sub]);
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
-              if (newsub.Id === item.Id) {
+              if (newsub?.Id === item?.Id) {
                 TestArray.push(...[obj]);
                 TestArray.push(...[sub]);
                 TestArray.push(...[newsub]);
@@ -2498,17 +2498,17 @@ export default function ComponentTable({ props, NextProp }: any) {
     array.push(item);
     setRestructureChecked((RestructureChecked: any) => [...array]);
     maidataBackup.forEach((obj) => {
-      if (obj.Id === item.Id) {
+      if (obj?.Id === item?.Id) {
         PortfolioLevelNum = obj.subRows.length + 1;
       }
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
-          if (sub.Id === item.Id) {
+          if (sub?.Id === item?.Id) {
             PortfolioLevelNum = sub.subRows.length + 1;
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
-              if (newsub.Id === item.Id) {
+              if (newsub?.Id === item?.Id) {
                 PortfolioLevelNum = newsub.subRows.length + 1;
               }
             });
@@ -2523,14 +2523,14 @@ export default function ComponentTable({ props, NextProp }: any) {
     var Ids: any = [];
     if (NewArrayBackup != undefined && NewArrayBackup.length > 0) {
       NewArrayBackup.forEach((obj, index) => {
-        if (NewArrayBackup.length - 1 === index) Ids.push(obj.Id);
+        if (NewArrayBackup.length - 1 === index) Ids.push(obj?.Id);
       });
     }
 
     let web = new Web(NextProp?.siteUrl);
     await web.lists
       .getById(checkedList[0].listId)
-      .items.getById(checkedList[0].Id)
+      .items.getById(checkedList[0]?.Id)
       .update({
         // EventsId: checkedList[0].Portfolio_x0020_Type === 'Event' ? { "results": Ids } : [],
         //    '__metadata': { 'type': 'SP.Data.'+checkedList[0].siteType+'ListItem' },
@@ -2546,7 +2546,7 @@ export default function ComponentTable({ props, NextProp }: any) {
       .then((res: any) => {
         maidataBackup.forEach((obj, index) => {
           obj.isRestructureActive = false;
-          if (obj.Id === checkedList[0].Id) {
+          if (obj?.Id === checkedList[0]?.Id) {
             maidataBackup.splice(index, 1);
             if (obj.subRows.length === 0) {
               obj.downArrowIcon = "";
@@ -2556,7 +2556,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           if (obj.subRows != undefined && obj.subRows.length > 0) {
             obj.subRows.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === checkedList[0].Id) {
+              if (sub?.Id === checkedList[0]?.Id) {
                 obj.subRows.splice(indexsub, 1);
                 if (sub.subRows.length === 0) {
                   sub.downArrowIcon = "";
@@ -2566,7 +2566,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               if (sub.subRows != undefined && sub.subRows.length > 0) {
                 sub.subRows.forEach((newsub: any, lastIndex: any) => {
                   newsub.isRestructureActive = false;
-                  if (newsub.Id === checkedList[0].Id) {
+                  if (newsub?.Id === checkedList[0]?.Id) {
                     sub.subRows.splice(lastIndex, 1);
                     if (newsub.subRows.length === 0) {
                       newsub.downArrowIcon = "";
@@ -2576,7 +2576,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                   if (newsub.subRows != undefined && newsub.subRows.length > 0) {
                     newsub.subRows.forEach((newsub1: any, lastIndex: any) => {
                       newsub1.isRestructureActive = false;
-                      if (newsub1.Id === checkedList[0].Id) {
+                      if (newsub1?.Id === checkedList[0]?.Id) {
                         newsub1.subRows.splice(lastIndex, 1);
                         if (newsub1.subRows.length === 0) {
                           newsub1.downArrowIcon = "";
@@ -2592,7 +2592,7 @@ export default function ComponentTable({ props, NextProp }: any) {
         });
         let flag = true;
         maidataBackup.forEach((obj, index) => {
-          if (obj.Id === Ids[0]) {
+          if (obj?.Id === Ids[0]) {
             obj.flag = true;
             obj.show = true;
             obj.downArrowIcon =
@@ -2610,7 +2610,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           if (obj.subRows != undefined && obj.subRows.length > 0) {
             obj.subRows.forEach((sub: any, indexsub: any) => {
               sub.isRestructureActive = false;
-              if (sub.Id === Ids[0]) {
+              if (sub?.Id === Ids[0]) {
                 sub.flag = true;
                 sub.show = true;
                 sub.downArrowIcon =
@@ -2627,7 +2627,7 @@ export default function ComponentTable({ props, NextProp }: any) {
               }
               if (sub.subRows != undefined && sub.subRows.length > 0) {
                 sub.subRows.forEach((newsub: any, lastIndex: any) => {
-                  if (newsub.Id === Ids[0]) {
+                  if (newsub?.Id === Ids[0]) {
                     newsub.flag = true;
                     newsub.show = true;
                     newsub.downArrowIcon =
@@ -2700,12 +2700,12 @@ export default function ComponentTable({ props, NextProp }: any) {
       // }
     }
     maidataBackup.forEach((obj) => {
-      if (obj.Id === newItem.Id) {
+      if (obj?.Id === newItem?.Id) {
         PortfolioLevelNum = obj.subRows.length + 1;
       }
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
-          if (sub.Id === newItem.Id) {
+          if (sub?.Id === newItem?.Id) {
             obj.subRows.forEach((leng: any) => {
               if (leng.Item_x0020_Type === newItem.Item_x0020_Type) count++;
             });
@@ -2713,7 +2713,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
-              if (newsub.Id === newItem.Id) {
+              if (newsub?.Id === newItem?.Id) {
                 sub.subRows.forEach((subleng: any) => {
                   if (subleng.Item_x0020_Type === newItem.Item_x0020_Type)
                     count++;
@@ -2758,9 +2758,9 @@ export default function ComponentTable({ props, NextProp }: any) {
       let web = new Web(NextProp?.siteUrl);
       await web.lists
         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-        .items.getById(checkedList[0].Id)
+        .items.getById(checkedList[0]?.Id)
         .update({
-          ParentId: Item.Id,
+          ParentId: Item?.Id,
           PortfolioLevel: PortfolioLevelNum,
           PortfolioStructureID: PortfolioStructureIDs,
         })
@@ -2786,9 +2786,9 @@ export default function ComponentTable({ props, NextProp }: any) {
       let web = new Web(NextProp?.siteUrl);
       await web.lists
         .getById("ec34b38f-0669-480a-910c-f84e92e58adf")
-        .items.getById(checkedList[0].Id)
+        .items.getById(checkedList[0]?.Id)
         .update({
-          ParentId: Item.Id,
+          ParentId: Item?.Id,
           PortfolioLevel: PortfolioLevelNum,
           PortfolioStructureID: PortfolioStructureIDs,
           Item_x0020_Type: ChengedItemTitl,
@@ -2797,7 +2797,7 @@ export default function ComponentTable({ props, NextProp }: any) {
           console.log(res);
           maidataBackup.forEach((obj, index) => {
             obj.isRestructureActive = false;
-            if (obj.Id === checkedList[0].Id) {
+            if (obj?.Id === checkedList[0]?.Id) {
               //  maidataBackup[index].subRows.splice(index, 1)
               checkedList[0].downArrowIcon = obj.downArrowIcon;
               checkedList[0].RightArrowIcon = obj.RightArrowIcon;
@@ -2805,7 +2805,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             if (obj.subRows != undefined && obj.subRows.length > 0) {
               obj.subRows.forEach((sub: any, indexsub: any) => {
                 sub.isRestructureActive = false;
-                if (sub.Id === checkedList[0].Id) {
+                if (sub?.Id === checkedList[0]?.Id) {
                   obj.subRows.splice(indexsub, 1);
                   checkedList[0].downArrowIcon = obj.downArrowIcon;
                   checkedList[0].RightArrowIcon = obj.RightArrowIcon;
@@ -2813,7 +2813,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                 if (sub.subRows != undefined && sub.subRows.length > 0) {
                   sub.subRows.forEach((newsub: any, lastIndex: any) => {
                     newsub.isRestructureActive = false;
-                    if (newsub.Id === checkedList[0].Id) {
+                    if (newsub?.Id === checkedList[0]?.Id) {
                       sub.subRows.splice(lastIndex, 1);
 
                       checkedList[0].downArrowIcon = obj.downArrowIcon;
@@ -3588,7 +3588,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "row?.original?.Id",
         canSort: false,
         placeholder: "",
         header: "",
@@ -3619,7 +3619,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "row?.original?.Id",
         canSort: false,
         placeholder: "",
         header: "",
@@ -3655,7 +3655,7 @@ export default function ComponentTable({ props, NextProp }: any) {
             {getValue()}
           </>
         ),
-        id: "row?.original.Id",
+        id: "row?.original?.Id",
         canSort: false,
         placeholder: "",
         header: "",
@@ -3898,7 +3898,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                         data-interception="off"
                         href={
                           NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                         }
                       >
                         <img
@@ -3930,7 +3930,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                         data-interception="off"
                         href={
                           NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                         }
                       >
                         <img
@@ -3963,7 +3963,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                         data-interception="off"
                         href={
                           NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                         }
                       >
                         <img
@@ -3983,7 +3983,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                           data-interception="off"
                           href={
                             NextProp.siteUrl +
-                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                           }
                         >
                           <img
@@ -4015,7 +4015,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                         data-interception="off"
                         href={
                           GlobalConstants.MAIN_SITE_URL +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                         }
                       >
                         <img
@@ -4035,7 +4035,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                           data-interception="off"
                           href={
                             NextProp.siteUrl +
-                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent.Id}`
+                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
                           }
                         >
                           <img
@@ -4446,7 +4446,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                       className="hreflink serviceColor_Active"
                       href={
                         NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspxHH?taskId=" +
-                        NewArrayBackup[0].Id
+                        NewArrayBackup[0]?.Id
                       }
                     >
                       <span>{NewArrayBackup[0].Title}</span>
@@ -4473,7 +4473,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                         className="hreflink serviceColor_Active"
                         href={
                           NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                          obj.Id
+                          obj?.Id
                         }
                       >
                         <span>{obj.Title} </span>
@@ -4500,7 +4500,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                           className="hreflink serviceColor_Active"
                           href={
                             NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                            newobj.Id
+                            newobj?.Id
                           }
                         >
                           <span>{newobj.Title} </span>
@@ -4522,7 +4522,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                     className="hreflink serviceColor_Active"
                     href={
                       NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" +
-                      RestructureChecked[0].Id
+                      RestructureChecked[0]?.Id
                     }
                   >
                     <span>{RestructureChecked[0].Title} </span>
