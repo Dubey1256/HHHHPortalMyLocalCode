@@ -784,7 +784,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '65px' },
+                style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -961,7 +961,7 @@ const TaskDashboard = (props: any) => {
                 accessor: 'siteType',
                 id: "siteIcon", // 'id' is required
                 showSortIcon: false,
-                style: { width: '65px' },
+                style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
                         {row?.original?.siteIcon != undefined ?
@@ -1826,7 +1826,7 @@ const TaskDashboard = (props: any) => {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
