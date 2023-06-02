@@ -153,6 +153,8 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedServiceCompnentData, setSearchedServiceCompnentData] = React.useState<any>([]);
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
+    const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
+    const [TaskOriginalData, setTaskOriginalData] = React.useState<any>({});
 
     const StatusArray = [
         { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
@@ -378,6 +380,7 @@ const EditTaskPopup = (Items: any) => {
                     .get();
             }
             let statusValue: any
+            setTaskOriginalData(smartMeta[0]);
             smartMeta?.map((item: any) => {
                 let saveImage = []
                 if (item.Categories != null) {
@@ -1261,6 +1264,7 @@ const EditTaskPopup = (Items: any) => {
         siteConfig?.map((site: any) => {
             if (site.Title !== undefined && site.Title !== 'Foundation' && site.Title !== 'Master Tasks' && site.Title !== 'DRR' && site.Title !== "SDC Sites") {
                 site.BtnStatus = false;
+                site.isSelected = false;
                 tempArray.push(site);
             }
         })
@@ -2094,7 +2098,6 @@ const EditTaskPopup = (Items: any) => {
             await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(UpdateDataObject).then(async (res: any) => {
                 let web = new Web(siteUrls);
                 let smartMetaCall: any;
-
                 if (Items.Items.listId != undefined) {
                     smartMetaCall = await web.lists
                         .getById(Items.Items.listId)
@@ -2746,39 +2749,74 @@ const EditTaskPopup = (Items: any) => {
 
     // ***************** this is for the Copy and Move Task Functions ***************
 
-    const CopyAndMovePopupFunction = () => {
-        setCopyAndMoveTaskPopup(true)
+    const CopyAndMovePopupFunction = (Type: any) => {
+        setIsCopyOrMovePanel(Type);
+        setCopyAndMoveTaskPopup(true);
     }
 
     const closeCopyAndMovePopup = () => {
-        setCopyAndMoveTaskPopup(false)
+        setCopyAndMoveTaskPopup(false);
+        setIsCopyOrMovePanel('');
+        let tempArray: any = [];
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((dataItem: any) => {
+                dataItem.isSelected = false;
+                tempArray.push(dataItem);
+            })
+        }
+        setSiteTypes(tempArray)
     }
 
     const selectSiteTypeFunction = (siteData: any) => {
         let tempArray: any = [];
-        SiteTypeBackupArray?.map((siteItem: any) => {
-            if (siteItem.Id == siteData.Id) {
-                siteItem.BtnStatus = true;
-                tempArray.push(siteItem);
-            } else {
-                siteItem.BtnStatus = false;
-                tempArray.push(siteItem);
-            }
-        })
+        if (SiteTypeBackupArray != undefined && SiteTypeBackupArray.length > 0) {
+            SiteTypeBackupArray?.map((siteItem: any) => {
+                if (siteItem.Id == siteData.Id) {
+                    if (siteItem.isSelected) {
+                        siteItem.isSelected = false;
+                    } else {
+                        siteItem.isSelected = true;
+                    }
+                    tempArray.push(siteItem);
+                } else {
+                    if (IsCopyOrMovePanel == "Copy-Task") {
+                        siteItem.isSelected = false;
+                        tempArray.push(siteItem);
+                    } else {
+                        tempArray.push(siteItem);
+                    }
+                }
+            })
+        }
         setSiteTypes(tempArray);
     }
 
-    const copyAndMoveTaskFunction = (FunctionsType: string) => {
-        if (FunctionsType == "Move Task") {
+    const copyAndMoveTaskFunction = async (FunctionsType: any) => {
+        let SelectedSite: any = ''
+        if (SiteTypes != undefined && SiteTypes.length > 0) {
+            SiteTypes.map((dataItem: any) => {
+                if (dataItem.isSelected == true) {
+                    SelectedSite = dataItem.Title
+                }
+            })
+        }
 
+        if (FunctionsType == "Copy-Task") {
+            try {
+                if (SelectedSite.length > 0) {
+                    let web = new Web(siteUrls);
+                    await web.lists.getByTitle(SelectedSite).items.add(TaskOriginalData).then(() => {
+                        console.log("Task Copy Succesfully !!!!!");
+                    })
+                }
+            } catch (error) {
+                console.log("Copy-Task Error :", error);
+            }
         }
         if (FunctionsType == "Move Task") {
 
         }
     }
-
-
-
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3056,6 +3094,8 @@ const EditTaskPopup = (Items: any) => {
                 }
             })
             setClientTimeData(tempArray);
+        } else {
+            setClientTimeData([]);
         }
         if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
             setSelectedClientCategory(Data.selectedClientCategory);
@@ -3166,12 +3206,12 @@ const EditTaskPopup = (Items: any) => {
                                 <span onClick={() => deleteTaskFunction(EditData.ID)}>Delete This Item</span>
                             </a>
                             <span> | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}>
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Copy-Task")}>
                                 Copy
                                 Task
                             </a>
                             <span > | </span>
-                            <a className="hreflink" onClick={CopyAndMovePopupFunction}> Move Task</a> |
+                            <a className="hreflink" onClick={() => CopyAndMovePopupFunction("Move-Task")}> Move Task</a> |
                             <span>
                                 {EditData.ID ?
                                     <VersionHistory taskId={EditData.Id} listId={Items.Items.listId} siteUrls={siteUrls} /> : null}
@@ -3532,7 +3572,7 @@ const EditTaskPopup = (Items: any) => {
                                                         return (
                                                             <>
                                                                 <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                     <a>
                                                                         <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                         {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
@@ -3546,7 +3586,7 @@ const EditTaskPopup = (Items: any) => {
                                                             return (
                                                                 <>
                                                                     <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
                                                                         <a>
                                                                             <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
                                                                             {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
@@ -3658,7 +3698,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                         return (
                                                                             <div className="block px-2 py-2 d-flex my-1 justify-content-between">
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
+                                                                                <a style={{ color: "#fff !important" }}>
                                                                                     {type.Title}
                                                                                 </a>
                                                                                 <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
@@ -5396,7 +5436,7 @@ const EditTaskPopup = (Items: any) => {
                                         {SiteTypes?.map((siteData: any, index: number) => {
                                             if (siteData.Title !== "QA") {
                                                 return (
-                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.BtnStatus ? "selectedSite" : "bg-siteColor"}`}>
+                                                    <li key={siteData.Id} className={`mx-1 p-2 position-relative  text-center  mb-2 ${siteData.isSelected ? "selectedSite" : "bg-siteColor"}`}>
                                                         <a className="text-white text-decoration-none" onClick={() => selectSiteTypeFunction(siteData)} style={{ fontSize: "12px" }}>
                                                             <span className="icon-sites">
                                                                 <img className="icon-sites" src={siteData.Item_x005F_x0020_Cover ? siteData.Item_x005F_x0020_Cover.Url : ""} />
@@ -5409,7 +5449,9 @@ const EditTaskPopup = (Items: any) => {
                                     </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <button className="btn btn-primary px-3 float-end" onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                    <button className="btn btn-primary px-3 float-end"
+                                        onClick={() => alert("We are working on it. This feature will be live soon .....")}
+                                        // onClick={() => copyAndMoveTaskFunction(IsCopyOrMovePanel)}
                                     >
                                         Save
                                     </button>
@@ -5566,8 +5608,6 @@ const EditTaskPopup = (Items: any) => {
                                                                                 {child1.Title}
                                                                             </a>
                                                                         </p>
-
-
                                                                     </li> : null
                                                                 }
                                                             </>
