@@ -217,12 +217,12 @@ const AddCommentComponent = (FbData: any) => {
                                             </div>
                                             <div className="col-11 pe-0 mt-2 ms-1" >
                                                 <div className='d-flex justify-content-between align-items-center'>
-                                                    <span className=" font-weight-normal">
+                                                    <span className="font-weight-normal">
                                                         {commentDtl.AuthorName} - {commentDtl.Created}
                                                     </span>
                                                     <span>
-                                                        <a className="ps-1" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
-                                                        <a className="ps-1" onClick={() => clearComment(true, index, FbData?.index)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
+                                                        <a className="ps-1" title="Edit Comment" onClick={() => openEditModal(commentDtl.Title, index, FbData?.index, false)}><img src={require('../../Assets/ICON/edit_page.svg')} width="25" /></a>
+                                                        <a className="ps-1" title="Delete Comment" onClick={() => clearComment(true, index, FbData?.index)}><img src={require('../../Assets/ICON/cross.svg')} width="25"></img></a>
                                                     </span>
                                                 </div>
                                                 <div>
