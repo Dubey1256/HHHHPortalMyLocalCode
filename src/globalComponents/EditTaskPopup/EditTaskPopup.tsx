@@ -984,17 +984,58 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             })
-            // MainParentArray.Child.map((ParentArray: any) => {
-            //     if (DataItem?.length > 0) {
-            //         DataItem.map((ChildArray: any) => {
-            //             if (ParentArray.Id == ChildArray.ParentID) {
-            //                 ChildArray.siteName = ParentArray.siteName;
-            //                 ChildArray.Child = [];
-            //                 ParentArray.Child.push(ChildArray);
-            //             }
-            //         })
-            //     }
-            // })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (ChildLevelFirst.Child?.length > 0) {
+                            ChildLevelFirst.Child.map((lastChild: any) => {
+                                if (DataItem?.length > 0) {
+                                    DataItem.map((ChildArray: any) => {
+                                        if (lastChild.Id == ChildArray.ParentID) {
+                                            ChildArray.siteName = ParentArray.newTitle;
+                                            ChildArray.Child = [];
+                                            lastChild.Child.push(ChildArray);
+                                        }
+                                    })
+                                }
+                            })
+
+                        }
+
+                    })
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (ChildLevelFirst.Child?.length > 0) {
+                            ChildLevelFirst.Child.map((lastChild: any) => {
+                                if (lastChild.Child?.length > 0) {
+                                    lastChild.Child?.map((endChild: any) => {
+                                        if (DataItem?.length > 0) {
+                                            DataItem.map((ChildArray: any) => {
+                                                if (endChild.Id == ChildArray.ParentID) {
+                                                    ChildArray.siteName = ParentArray.newTitle;
+                                                    ChildArray.Child = [];
+                                                    endChild.Child.push(ChildArray);
+                                                }
+                                            })
+                                        }
+
+                                    })
+                                }
+
+                            })
+
+                        }
+
+                    })
+                }
+            })
         }
         if (MainParentArray?.length > 0) {
             MainParentArray.map((finalItem: any) => {
@@ -1005,7 +1046,13 @@ const EditTaskPopup = (Items: any) => {
                         if (FinalChild.Child?.length > 0) {
                             FinalChild.Child.map((LastChild: any) => {
                                 FinalArray.push(LastChild)
+                                if (LastChild.Child?.length > 0) {
+                                    LastChild.Child?.map((endChild: any) => {
+                                        FinalArray.push(endChild);
+                                    })
+                                }
                             })
+
                         }
                     })
 
