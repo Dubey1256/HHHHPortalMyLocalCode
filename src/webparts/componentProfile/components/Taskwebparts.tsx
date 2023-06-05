@@ -117,7 +117,14 @@ var AllItems: any = [];
 let IsShowRestru: any = false;
 let ChengedTitle: any = "";
 let table: any = {};
-export default function ComponentTable({ props, NextProp }: any) {
+let ParentDs:any;
+let countaa =0;
+let Itemtypes:any;
+export default function ComponentTable({ props, NextProp,Iconssc }: any) {
+  if(countaa == 0 ){
+    ParentDs = props?.Id
+    Itemtypes = props?.Item_x0020_Type
+  }
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -817,14 +824,14 @@ export default function ComponentTable({ props, NextProp }: any) {
     // })
     var array: any = [];
     if (
-      props.Item_x0020_Type != undefined &&
-      props.Item_x0020_Type === "Component"
+      Itemtypes != undefined &&
+      Itemtypes === "Component"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo?.Id === props?.Id;
+        return compo?.Id === ParentDs;
       });
       let temp: any = $.grep(componentDetails, function (compo: any) {
-        return compo.Parent?.Id === props?.Id;
+        return compo.Parent?.Id === ParentDs;
       });
       array = [...array, ...temp];
       temp.forEach((obj: any) => {
@@ -838,23 +845,23 @@ export default function ComponentTable({ props, NextProp }: any) {
       });
     }
     if (
-      props.Item_x0020_Type != undefined &&
-      props.Item_x0020_Type === "SubComponent"
+      Itemtypes != undefined &&
+      Itemtypes === "SubComponent"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo?.Id === props?.Id;
+        return compo?.Id === ParentDs;
       });
       let temp = $.grep(componentDetails, function (compo: any) {
-        return compo.Parent?.Id === props?.Id;
+        return compo.Parent?.Id === ParentDs;
       });
       if (temp != undefined && temp.length > 0) array = [...array, ...temp];
     }
     if (
-      props.Item_x0020_Type != undefined &&
-      props.Item_x0020_Type === "Feature"
+      Itemtypes != undefined &&
+      Itemtypes === "Feature"
     ) {
       array = $.grep(componentDetails, function (compo: any) {
-        return compo?.Id === props?.Id;
+        return compo?.Id === ParentDs;
       });
     }
 
@@ -3374,7 +3381,7 @@ export default function ComponentTable({ props, NextProp }: any) {
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter((user: any) => user.Title == name);
+    const user = AllUsers.filter((user: any) => user.Id == name);
     let Image: any;
     if (user[0]?.Item_x0020_Cover != undefined) {
       Image = user[0].Item_x0020_Cover.Url;
@@ -3556,7 +3563,7 @@ export default function ComponentTable({ props, NextProp }: any) {
                 {row?.original?.Author != undefined ? (
                   <>
                   <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")} </span>
-                  <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
+                  <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Id)}
                   />
                  
                   </>
@@ -3731,9 +3738,59 @@ export default function ComponentTable({ props, NextProp }: any) {
     }
   }, [table.getState().columnFilters]);
 
+// Change the footer table data
 
+ 
+function handleupdatedata(updated:any){
+  ParentDs =updated.Id
+  Itemtypes = updated.ItemType
+ // LoadAllSiteTasks();
+ showProgressBar();
+ getTaskUsers();
+ GetSmartmetadata();
+ //LoadAllSiteTasks();
+ GetComponents();
+ let ids;
 
-
+ Iconssc.forEach((item:any) => {
+  if (item.ItemType === Itemtypes) {
+    item.nextIcon = undefined;
+  }
+});
+ if(updated?.ItemType == 'SubComponent'){
+  Iconssc.map((items:any)=> {
+    if(items?.ItemType == 'Feature'){
+      ids = items.Id;
+    }
+  }
+    
+  )
+ }
+ function spliceObjects(clickedId:any) {
+  const index = Iconssc.findIndex((item:any) => item.Id === clickedId);
+  if (index !== -1) {
+    Iconssc.splice(0, index);
+    Iconssc.splice(1);
+  }
+}
+ if(updated?.ItemType == 'Component'){
+  
+  spliceObjects(ParentDs);
+ }
+ 
+  function spliceById(arr:any, id:any) {
+    const index = arr.findIndex((item:any) => item.Id === id);
+    if (index !== -1) {
+      return arr.splice(index, 1)[0];
+    }
+    return null; // ID not found
+  }
+  spliceById(Iconssc,ids)
+  countaa++;
+}
+React.useEffect(() => {
+  
+}, [Iconssc]);
 
 
   return (
@@ -3746,321 +3803,19 @@ export default function ComponentTable({ props, NextProp }: any) {
             : "app component"
       }
     >
-      {/* Add activity task */}
-      <Modal show={lgShow} aria-labelledby="example-modal-sizes-title-lg">
-        <Modal.Header>
-          <Modal.Title>
-            <h6>Select Client Category</h6>
-          </Modal.Title>
-          <button type="button" className="Close-button" onClick={handleClose}>
-            X
-          </button>
-        </Modal.Header>
-        <Modal.Body className="p-2">
-          <span className="bold">
-            <b>Please select any one Client Category.</b>
-          </span>
-          <div>
-            {selectedCategory.map((item: any) => {
-              return <li onClick={() => handleClick(item)}>{item.Title}</li>;
-            })}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => openActivity()}>
-            Ok
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      {/* End of Add activity task */}
-      {/* After Add activity task */}
-      <Modal show={lgNextShow} aria-labelledby="example-modal-sizes-title-lg">
-        <Modal.Header>
-          <Modal.Title>
-            <h6>Create Task</h6>
-          </Modal.Title>
-          <button
-            type="button"
-            className="Close-button"
-            onClick={handleCloseNext}
-          ></button>
-        </Modal.Header>
-        <Modal.Body className="p-2">
-          <span className="bold">Clear Selection</span>
-          <div>
-            {SomeMetaData1.map((item: any) => {
-              return (
-                <span>
-                  {item.Item_x005F_x0020_Cover != null && (
-                    <img src={item.Item_x005F_x0020_Cover.Url} />
-                  )}
-                  <p onClick={() => setCreateacShow(true)}>{item.Title}</p>
-                </span>
-              );
-            })}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseNext}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      {/* After Add activity task End */}
-      {/* Create task activity popup  */}
-      <Modal show={CreateacShow} aria-labelledby="example-modal-sizes-title-lg">
-        <Modal.Header>
-          <Modal.Title>
-            <h6>Create Quick Option</h6>
-          </Modal.Title>
-          <button
-            type="button"
-            className="Close-button"
-            onClick={handleCreateac}
-          ></button>
-        </Modal.Header>
-        <Modal.Body className="p-2">
-          <span className="bold">Clear Selection</span>
-          <div>
-            {siteConfig != null && (
-              <>
-                {siteConfig.map((site: any) => {
-                  return (
-                    <span>
-                      {site?.Title != undefined &&
-                        site.Title != "Foundation" &&
-                        site.Title != "Master Tasks" &&
-                        site.Title != "Gender" &&
-                        site.Title != "Health" &&
-                        site.Title != "SDC Sites" &&
-                        site.Title != "Offshore Tasks" && (
-                          <>
-                            <img src={site?.Item_x005F_x0020_Cover?.Url} />
-                            <p>{site?.Title}</p>
-                          </>
-                        )}
-                    </span>
-                  );
-                })}
-              </>
-            )}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary">Ok</Button>
-          <Button variant="secondary" onClick={handleCreateac}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      {/* Status popup end here */}
       <div className="Alltable mt-10">
         <div className="tbl-headings">
           <span className="leftsec">
-            <span className="">
-              {props.Portfolio_x0020_Type == "Component" &&
-                props.Item_x0020_Type != "SubComponent" &&
-                props.Item_x0020_Type != "Feature" && (
-                  <>
-                    <img
-                      className="client-icons"
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-              {props.Portfolio_x0020_Type == "Service" &&
-                props.Item_x0020_Type != "SubComponent" &&
-                props.Item_x0020_Type != "Feature" && (
-                  <>
-                    <img
-                      className="client-icons"
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-              {props.Portfolio_x0020_Type == "Component" &&
-                props.Item_x0020_Type == "SubComponent" && (
-                  <>
-                    {props.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={
-                          NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                        }
-                      >
-                        <img
-                          className="client-icons"
-                          src={
-                            GlobalConstants.MAIN_SITE_URL +
-                            "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
-                          }
-                        />
-                      </a>
-                    )}{" "}
-                    {">"}{" "}
-                    <img
-                      className="client-icons"
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-              {props.Portfolio_x0020_Type == "Service" &&
-                props.Item_x0020_Type == "SubComponent" && (
-                  <>
-                    {props.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={
-                          NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                        }
-                      >
-                        <img
-                          className="client-icons"
-                          src={
-                            GlobalConstants.MAIN_SITE_URL +
-                            "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                          }
-                        />
-                      </a>
-                    )}{" "}
-                    {">"}
-                    <img
-                      className="client-icons"
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-
-              {props.Portfolio_x0020_Type == "Component" &&
-                props.Item_x0020_Type == "Feature" && (
-                  <>
-                    {props.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={
-                          NextProp.siteUrl +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                        }
-                      >
-                        <img
-                          className="client-icons"
-                          src={
-                            GlobalConstants.MAIN_SITE_URL +
-                            "/SiteCollectionImages/ICONS/Shareweb/component_icon.png"
-                          }
-                        />
-                      </a>
-                    )}{" "}
-                    {">"}{" "}
-                    {props.Parent.ItemType != undefined &&
-                      props.Parent.ItemType == "SubComponent" && (
-                        <a
-                          target="_blank"
-                          data-interception="off"
-                          href={
-                            NextProp.siteUrl +
-                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                          }
-                        >
-                          <img
-                            className="client-icons"
-                            src={
-                              GlobalConstants.MAIN_SITE_URL +
-                              "/SiteCollectionImages/ICONS/Shareweb/subComponent_icon.png"
-                            }
-                          />
-                        </a>
-                      )}{" "}
-                    {">"}{" "}
-                    <img
-                      className="client-icons"
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Shareweb/feature_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-              {props.Portfolio_x0020_Type == "Service" &&
-                props.Item_x0020_Type == "Feature" && (
-                  <>
-                    {props.Parent != undefined && (
-                      <a
-                        target="_blank"
-                        data-interception="off"
-                        href={
-                          GlobalConstants.MAIN_SITE_URL +
-                          `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                        }
-                      >
-                        <img
-                          className="client-icons"
-                          src={
-                            GlobalConstants.MAIN_SITE_URL +
-                            "/SiteCollectionImages/ICONS/Service_Icons/component_icon.png"
-                          }
-                        />
-                      </a>
-                    )}{" "}
-                    {">"}{" "}
-                    {props.Parent.ItemType != undefined &&
-                      props.Parent.ItemType == "SubComponent" && (
-                        <a
-                          target="_blank"
-                          data-interception="off"
-                          href={
-                            NextProp.siteUrl +
-                            `/SitePages/Portfolio-Profile.aspx?taskId=${props.Parent?.Id}`
-                          }
-                        >
-                          <img
-                            className="client-icons"
-                            title={props.Parent.Title}
-                            src={
-                              GlobalConstants.MAIN_SITE_URL +
-                              "/SiteCollectionImages/ICONS/Service_Icons/subcomponent_icon.png"
-                            }
-                          />
-                        </a>
-                      )}{" "}
-                    {">"}{" "}
-                    <img
-                      className="client-icons"
-                      title={props.Title}
-                      src={
-                        GlobalConstants.MAIN_SITE_URL +
-                        "/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png"
-                      }
-                    />{" "}
-                    <a>{props.Title}</a>
-                  </>
-                )}
-            </span>
+          <span className="">
+        {Iconssc.map((icon:any)=>{
+          return(
+            <>
+           <span className="Dyicons" onClick={()=>handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined?icon?.nextIcon:""}`}</span></>
+           )})}
+           
+            <span>{Iconssc[Iconssc?.length-1]?.Title}</span>
+            
+        </span>
             <span className="g-search">
               <input
                 type="text"

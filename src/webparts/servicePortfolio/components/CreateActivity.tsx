@@ -994,13 +994,15 @@ const CreateActivity = (props: any) => {
     }
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"}>
-                <div className='popupTitle'>
-                    <span>{`Create Quick Option - ${AllItems?.NoteCall}`}</span>
-                    <Tooltip ComponentId={AllItems?.Id} />
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0?"serviepannelgreena d-flex full-width pb-1":"d-flex full-width pb-1"} >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <h2 className='heading'>
+                        {`Create Quick Option - ${AllItems?.NoteCall}` }
+                    </h2>
                 </div>
-                </div>
-                );
+                <Tooltip ComponentId={AllItems?.Id} />
+            </div>
+        );
     };
     const SelectSiteType = () => {
         var mySite: any = []
@@ -1037,51 +1039,51 @@ const CreateActivity = (props: any) => {
                         isOpen={TaskStatuspopup}
                         onDismiss={closeTaskStatusUpdatePoup}
                         isBlocking={false}
-                        className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
+                        className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
 
                     >
                         <div className="modal-body active">
 
 
-                            <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service' ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
-                                <div className='row mt-2 border Create-taskpage'>
-                                    {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature') &&
-                                        <fieldset>
-                                            <legend className="border-bottom fs-6 ">Sites</legend>
-                                            <ul className="quick-actions">
-                                                {siteTypess?.map(function (item: any) {
-                                                    return (
+                    <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0 ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
+                        <div className='row mt-2 border Create-taskpage'>
+                            {(AllItems?.Item_x0020_Type == 'Component' || AllItems?.Item_x0020_Type == 'SubComponent' || AllItems?.Item_x0020_Type == 'Feature') &&
+                                <fieldset>
+                                    <legend className="border-bottom fs-6 ">Sites</legend>
+                                    <ul className="quick-actions">
+                                        {siteTypess?.map(function (item: any) {
+                                            return (
+                                                <>
+                                                    {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
                                                         <>
-                                                            {(item.Title !== undefined && item.Title !== 'Offshore Tasks' && item.Title !== 'Master Tasks' && item.Title !== 'DRR' && item.Title !== 'SDC Sites' && item.Title !== 'QA') &&
-                                                                <>
-                                                                    <li
-                                                                        id={"subcategorytasks" + item.Id} className={item.isSiteSelect ? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
-                                                                        {/*  */}
-                                                                        <a className='text-white text-decoration-none' >
-                                                                            <span className="icon-sites">
-                                                                                <img className="icon-sites"
-                                                                                    src={item.Item_x005F_x0020_Cover?.Url} />
-                                                                            </span>{item.Title}
-                                                                        </a>
-                                                                    </li>
-                                                                </>
-                                                            }
-                                                        </>)
-                                                })}
-                                            </ul>
-                                        </fieldset>
-                                    }
-                                </div>
-                                <div className='row'>
-                                    <div className='col-sm-10'>
-                                        <div className="row">
-                                            <div className="col-sm-10 mb-10 mt-2">
-                                                <label className="full_width"><span style={{ color: "black" }}>
-                                                    Task Name </span> <a id='siteName'
-                                                        onClick={SelectSiteType}> Site Name</a>
-                                                </label>
-                                                <input className="form-control" type="text" placeholder="Enter Task Name"
-                                                    defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
+                                                            <li
+                                                                id={"subcategorytasks" + item.Id} className={item.isSiteSelect ? 'mx-1 p-2 bg-siteColor selectedTaskList text-center mb-2 position-relative' : "mx-1 p-2 position-relative bg-siteColor text-center  mb-2"} onClick={() => setActiveTile("siteType", "siteType", item)} >
+                                                                {/*  */}
+                                                                <a className='text-white text-decoration-none' >
+                                                                    <span className="icon-sites">
+                                                                        <img className="icon-sites"
+                                                                            src={item.Item_x005F_x0020_Cover?.Url} />
+                                                                    </span>{item.Title}
+                                                                </a>
+                                                            </li>
+                                                        </>
+                                                    }
+                                                </>)
+                                        })}
+                                    </ul>
+                                </fieldset>
+                            }
+                        </div>
+                        <div className='row'>
+                            <div className='col-sm-10'>
+                                <div className="row">
+                                    <div className="col-sm-10 mb-10 mt-2">
+                                        <label className="full_width"><span style={{color:"black"}}>
+                                            Task Name </span> <a id='siteName' 
+                                                onClick={SelectSiteType}> Site Name</a>
+                                        </label>
+                                        <input className="form-control" type="text"  placeholder="Enter Task Name"
+                                            defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
                                             </div>
                                             <div className="col-sm-2 mb-10 padL-0 mt-2">

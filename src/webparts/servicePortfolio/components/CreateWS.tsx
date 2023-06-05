@@ -638,9 +638,9 @@ const CreateWS = (props: any) => {
     // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
-                 <div className='popupTitle'>
-                    <span>
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span className='heading'>
                         {`Create Item`}
                     </span>
                 </div>
@@ -857,7 +857,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
@@ -1037,25 +1037,25 @@ const CreateWS = (props: any) => {
 
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                                    <input className="form-check-input me-1" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                                    <input className="form-check-input me-1" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                                    <input className="form-check-input me-1" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority"
+                                    <input className="form-check-input me-1" name="radioPriority2"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
                             </div>
