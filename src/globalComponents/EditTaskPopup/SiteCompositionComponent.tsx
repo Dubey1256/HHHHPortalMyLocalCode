@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import { ImPriceTags } from 'react-icons/im';
 import Tooltip from "../Tooltip";
-import { Suggest } from "@pnp/sp/search";
+import { Web } from "sp-pnp-js";
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
@@ -318,7 +318,7 @@ const SiteCompositionComponent = (Props: any) => {
                     } else {
                         ArrayData.newLabel = ArrayData.siteName + " > " + ArrayData.Title;
                     }
-                    ParentArray.push(ArrayData)  
+                    ParentArray.push(ArrayData)
                     AutoCompleteItemsArray.push(ArrayData);
                 }
             })
@@ -328,7 +328,7 @@ const SiteCompositionComponent = (Props: any) => {
                 AllClientCategoryData.map((AllData: any) => {
                     if (parentArray.Id == AllData.ParentId) {
                         AllData.newLabel = parentArray.newLabel + " > " + AllData.Title
-                        if(AllData?.siteName == null || AllData?.siteName == undefined){
+                        if (AllData?.siteName == null || AllData?.siteName == undefined) {
                             AllData.siteName = SiteName;
                         }
                         parentArray.Child.push(AllData);
@@ -338,6 +338,20 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         setSelectedSiteClientCategoryData(ParentArray);
+    }
+
+    const AddSiteNameInSmartMetaData = async (CatgeoryData: any) => {
+        try {
+            let web = new Web(siteUrls);
+            await web.lists.getById(`${AllListIdData.SmartMetadataListID}`).items.getById(CatgeoryData.Id).update({
+                siteName: CatgeoryData.siteName
+            }).then(()=>{
+                console.log("Site Name Updated");
+            })
+        } catch (error) {
+
+        }
+
     }
 
     const AutoSuggestionForClientCategory = (e: any, usedFor: any) => {
@@ -920,7 +934,8 @@ const SiteCompositionComponent = (Props: any) => {
                 isOpen={ClientCategoryPopupStatus}
                 onDismiss={closeClientCategoryPopup}
                 isBlocking={ClientCategoryPopupStatus}
-                type={PanelType.medium}
+                type={PanelType.custom}
+                customWidth="850px"
                 onRenderFooter={onRenderFooter}
 
             >
