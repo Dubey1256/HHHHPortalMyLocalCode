@@ -13,6 +13,7 @@ import {
   FaSortUp,
   FaSort,
   FaCompressArrowsAlt,
+  FaSearch,
 } from "react-icons/fa";
 import { MdAdd } from "react-icons/Md";
 import Tooltip from "../../../globalComponents/Tooltip";
@@ -46,16 +47,83 @@ import {
   getExpandedRowModel,
   ColumnDef,
   flexRender,
-  getSortedRowModel,
   SortingState,
   ColumnFiltersState,
+  getFacetedRowModel,
+  getSortedRowModel,
+  getFacetedUniqueValues,
+  FilterFn
 } from "@tanstack/react-table";
 // import HighlightableCell from '../../componentPortfolio/components/highlight'
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 
 ///TanstackTable filter And CheckBox 
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
+
+function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500,
+  ...props
+}: {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
+  const [value, setValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value]);
+
+  return (
+    <>
+      {/* <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    /> */}
+      <div className="container-2 mx-1">
+        <span className="icon"><FaSearch /></span>
+        <input type="search" id="search" {...props}
+          value={value}
+          onChange={(e) => setValue(e.target.value)} />
+      </div>
+    </>
+  );
+}
+
+
 function Filter({
   column,
   table,
@@ -101,6 +169,8 @@ function IndeterminateCheckbox(
     />
   );
 }
+
+
 ///Tanstack filter And Check Part End
 
 
@@ -120,6 +190,7 @@ let table: any = {};
 let ParentDs: any;
 let countaa = 0;
 let Itemtypes: any;
+let globalFilterHighlited: any;
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -133,7 +204,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [loaded, setLoaded] = React.useState(true);
   const [color, setColor] = React.useState(false);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  globalFilterHighlited = globalFilter;
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
   const [checkCounter, setCheckCounter] = React.useState(true)
   const [checkData, setcheckData] = React.useState([])
@@ -3461,13 +3533,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             {row?.original?.siteType == "Master Tasks" && row?.original?.Title !== 'Others' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
               href={NextProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID}
             >
-              <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+              <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
             </a>}
             {row?.original?.siteType != "Master Tasks" && row?.original?.Title !== 'Others' &&
               <a className="hreflink serviceColor_Active" target="_blank" data-interception="off"
                 href={NextProp.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteType}
               >
-                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                <HighlightableCell value={getValue()} searchTerm={column.getFilterValue() != undefined ? column.getFilterValue() : globalFilterHighlited} />
               </a>}
             {row?.original.TitleNew === "Tasks" ? (
               <span>{row?.original.TitleNew}</span>
@@ -3674,16 +3746,46 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     [data]
   );
 
+  // const table = useReactTable({
+  //   data,
+  //   columns,
+  //   state: {
+  //     columnFilters,
+  //     expanded,
+  //     sorting,
+  //     rowSelection,
+  //   },
+  //   onColumnFiltersChange: setColumnFilters,
+  //   onSortingChange: setSorting,
+  //   onExpandedChange: setExpanded,
+  //   getSubRows: (row) => row.subRows,
+  //   onRowSelectionChange: setRowSelection,
+  //   getCoreRowModel: getCoreRowModel(),
+  //   getFilteredRowModel: getFilteredRowModel(),
+  //   getExpandedRowModel: getExpandedRowModel(),
+  //   getSortedRowModel: getSortedRowModel(),
+  //   debugTable: true,
+  //   filterFromLeafRows: true,
+  //   enableSubRowSelection: false,
+  //   filterFns: undefined
+  // });/
+
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     state: {
       columnFilters,
+      globalFilter,
       expanded,
       sorting,
       rowSelection,
     },
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     onExpandedChange: setExpanded,
     getSubRows: (row) => row.subRows,
@@ -3692,10 +3794,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     debugTable: true,
+    debugHeaders: true,
+    debugColumns: false,
     filterFromLeafRows: true,
     enableSubRowSelection: false,
-    filterFns: undefined
   });
 
   console.log(".........", table.getSelectedRowModel().flatRows);
@@ -3829,15 +3934,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
             </span>
             <span className="g-search">
-              <input
-                type="text"
-                className="searchbox_height full_width"
-                id="globalSearch"
-                placeholder="search all"
-                onChange={(e) => handleChange1(e, "Title")}
-              />
-              <span className="gsearch-btn" ng-click="SearchAll_Item()">
-                <i className="fa fa-search"></i>
+              <span>
+                <DebouncedInput
+                  value={globalFilter ?? ""}
+                  onChange={(value) => setGlobalFilter(String(value))}
+                  placeholder="Search All..."
+                />
               </span>
             </span>
           </span>
@@ -3914,6 +4016,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               <Tooltip ComponentId="1748" />
             </a>
           </span>
+
         </div>
         <div className="col-sm-12 pad0 smart">
           <div className="">
