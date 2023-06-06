@@ -48,6 +48,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private currentUser: any;
   private oldTaskLink: any;
   private site: any;
+
   count: number = 0;
   countemailbutton: number = 0;
   backGroundComment = false;
@@ -58,6 +59,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     console.log(params.get('taskId'));
     console.log(params.get('Site'));
     this.site = params.get('Site');
+     
     this.oldTaskLink = `${props.siteUrl}/SitePages/Task-Profile-Old.aspx?taskId=` + params.get('taskId') + "&Site=" + params.get('Site');
     this.state = {
       Result: {},
@@ -163,7 +165,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         .getAll(4000);
       this.gAllDataMatches = AllDataMatches;
 
-      TaskIdCSF = (AllDataMatches[0]?.PortfolioStructureID).replace("-", ">");
+      TaskIdCSF = (AllDataMatches[0]?.PortfolioStructureID)?.replace("-", ">");
       console.log(TaskIdCSF);
 
 
@@ -248,8 +250,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .getByTitle(this.state?.listName)
       .items
       .getById(this.state?.itemID)
-      .select("ID", "Title", "Comments","ApproverHistory", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
-      .expand("Team_x0020_Members", "Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
+      .select("ID", "Title", "Comments","ApproverHistory","EstimatedTime", "DueDate","IsTodaysTask", "Approver/Id", "Approver/Title", "ParentTask/Id","Project/Id","Project/Title", "ParentTask/Title", "SmartInformation/Id", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "ClientCategory/Id", "ClientCategory/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified", "Attachments", "AttachmentFiles")
+      .expand("Team_x0020_Members", "Project","Approver", "ParentTask", "SmartInformation", "AssignedTo", "SharewebCategories", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor", "AttachmentFiles")
       .get()
     AllListId = {
       MasterTaskListID: this.props.MasterTaskListID,
@@ -333,6 +335,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Comments: comment != null && comment != undefined ? comment : "",
       Id: taskDetails["ID"],
       ID: taskDetails["ID"],
+      Project:taskDetails["Project"],
+      IsTodaysTask:taskDetails["IsTodaysTask"],
+      EstimatedTime:taskDetails["EstimatedTime"],
       ApproverHistory:taskDetails["ApproverHistory"]!=null?JSON.parse(taskDetails["ApproverHistory"]):"",
       OffshoreComments: OffshoreComments.length > 0 ? OffshoreComments.reverse() : null,
       OffshoreImageUrl: taskDetails["OffshoreImageUrl"] != null && JSON.parse(taskDetails["OffshoreImageUrl"]),
@@ -502,12 +507,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
       })
     })
+    console.log(ClientCategory);
     if (ClientTimeArray != undefined && ClientTimeArray != null) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if (item?.SiteName == items?.SiteName) {
             item.ClientCategory = items?.Title;
           }
+
         })
       })
     }
@@ -1129,13 +1136,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-{breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined &&breadcrumbitem.Subchild == undefined&&
-<li>
-<a ><span>{this.state.Result['Title']}</span>
- </a>
-</li>
-
-}
+                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined &&breadcrumbitem.Subchild == undefined&&
+                      <li>
+                        <a >
+                          <span>{this.state.Result['Title']}</span>
+                        </a>
+                      </li>
+                    }
                   </>
                 })
 
@@ -1176,7 +1183,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Task Id</dt>
                     <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
+                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
 
                     </dd>
 
@@ -1198,6 +1205,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                     <dd className='bg-Ff text-break'>{this.state.Result["Categories"]}</dd>
                   </dl>
+                  <dl>
+                    <dt className='bg-Fa'>Estimated Time</dt>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]} </span>
+                     </dd>
+                   </dl>
                   {isShowTimeEntry && <dl>
                     <dt className='bg-Fa'>SmartTime Total</dt>
                     <dd className='bg-Ff'>
@@ -1277,7 +1289,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                     :null}</dd>
                   </dl>
-
+                  <dl>
+                    <dt className='bg-Fa'>Working Today</dt>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"]!=null?this.state.Result["IsTodaysTask"]:""} </span>
+                     </dd>
+                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Item Rank</dt>
                     <dd className='bg-Ff'>{this.state.Result["ItemRank"]}</dd>
@@ -1290,6 +1306,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dt className='bg-Fa'>Priority</dt>
                     <dd className='bg-Ff'>{this.state.Result["Priority"]}</dd>
                   </dl>
+                  
                   <dl>
                     <dt className='bg-Fa'>Created</dt>
                     <dd className='bg-Ff'>
@@ -1327,6 +1344,12 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                     </dd>
                   </dl>
+                  <dl>
+                    <dt className='bg-Fa'>Project</dt>
+                    <dd className='bg-Ff full-width'>
+                    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
+                      </dd>
+                   </dl>
                   {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
