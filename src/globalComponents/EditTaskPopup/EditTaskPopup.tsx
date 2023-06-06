@@ -280,27 +280,28 @@ const EditTaskPopup = (Items: any) => {
                         ClientCategory.map((ClientData: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
-                                    if (ClientData.Id == clientCategoryData.Id) {
-                                        if(clientCategoryData.siteName == null ){
-                                            if(clientCategoryData.ParentID == 340 || clientCategoryData.ParentID == 430){
-                                                ClientData.siteName = "EI";
-                                            }
-                                            if(clientCategoryData.ParentID == 341){
-                                                ClientData.siteName = "EPS";
-                                            }
-                                            if(clientCategoryData.ParentID == 344){
-                                                ClientData.siteName = "Education";
-                                            }
-                                            if(clientCategoryData.ParentID == 569){
-                                                ClientData.siteName = "Migration";
-                                            }
-                                        }else{
+                                    if (ClientData.Id == clientCategoryData.ID) {
+                                        // if (clientCategoryData.siteName == null) {
+                                        //     if (clientCategoryData.ParentID == 340 || clientCategoryData.ParentID == 430) {
+                                        //         ClientData.siteName = "EI";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 341) {
+                                        //         ClientData.siteName = "EPS";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 344) {
+                                        //         ClientData.siteName = "Education";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 569) {
+                                        //         ClientData.siteName = "Migration";
+                                        //     }
+                                        // } else {
                                         ClientData.siteName = clientCategoryData.siteName;
-                                        }
+                                        // }
                                         ClientData.ParentID = clientCategoryData.ParentID;
+                                        TempArray.push(ClientData)
                                     }
                                 })
-                                TempArray.push(ClientData)
+
                             }
                         })
                         setSelectedClientCategory(TempArray);
@@ -915,27 +916,15 @@ const EditTaskPopup = (Items: any) => {
                 $.each(AllTaskusers, function (index: any, item: any) {
                     if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EPS';
-                        if (item.siteName == null) {
-                            item.siteName = 'EPS';
-                        }
                     }
                     else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
                         item.newTitle = 'EI';
-                        if (item.siteName == null) {
-                            item.siteName = 'EI';
-                        }
                     }
                     else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
                         item.newTitle = 'Education';
-                        if (item.siteName == null) {
-                            item.siteName = 'Education';
-                        }
                     }
                     else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
                         item.newTitle = 'Migration';
-                        if (item.siteName == null) {
-                            item.siteName = 'Migration';
-                        }
                     }
                     else {
                         item.newTitle = item.Title;
@@ -944,7 +933,8 @@ const EditTaskPopup = (Items: any) => {
                 })
                 if (SmartTaxonomy == "Client Category") {
                     setAllClientCategoryData(AllMetaData);
-                    AllClientCategoryDataBackup = AllMetaData;
+                    // AllClientCategoryDataBackup = AllMetaData;
+                    BuildClieantCategoryAllDataArray(AllMetaData);
                 }
             },
             error: function (error: any) {
@@ -952,6 +942,80 @@ const EditTaskPopup = (Items: any) => {
             }
         })
     };
+
+    const BuildClieantCategoryAllDataArray = (DataItem: any) => {
+        let MainParentArray: any = [];
+        let FinalArray: any = [];
+        if (DataItem != undefined && DataItem.length > 0) {
+            DataItem.map((Item: any) => {
+                if (Item.ParentID == 0) {
+                    Item.Child = [];
+                    MainParentArray.push(Item);
+                }
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (DataItem?.length > 0) {
+                    DataItem.map((ChildArray: any) => {
+                        if (ParentArray.Id == ChildArray.ParentID) {
+                            ChildArray.siteName = ParentArray.newTitle;
+                            ChildArray.Child = [];
+                            ParentArray.Child.push(ChildArray);
+                        }
+                    })
+                }
+
+            })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((ParentArray: any) => {
+                if (ParentArray?.Child?.length > 0) {
+                    ParentArray?.Child.map((ChildLevelFirst: any) => {
+                        if (DataItem?.length > 0) {
+                            DataItem.map((ChildArray: any) => {
+                                if (ChildLevelFirst.Id == ChildArray.ParentID) {
+                                    ChildArray.siteName = ParentArray.newTitle;
+                                    ChildArray.Child = [];
+                                    ChildLevelFirst.Child.push(ChildArray);
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+            // MainParentArray.Child.map((ParentArray: any) => {
+            //     if (DataItem?.length > 0) {
+            //         DataItem.map((ChildArray: any) => {
+            //             if (ParentArray.Id == ChildArray.ParentID) {
+            //                 ChildArray.siteName = ParentArray.siteName;
+            //                 ChildArray.Child = [];
+            //                 ParentArray.Child.push(ChildArray);
+            //             }
+            //         })
+            //     }
+            // })
+        }
+        if (MainParentArray?.length > 0) {
+            MainParentArray.map((finalItem: any) => {
+                FinalArray.push(finalItem);
+                if (finalItem.Child?.length > 0) {
+                    finalItem.Child.map((FinalChild: any) => {
+                        FinalArray.push(FinalChild);
+                        if (FinalChild.Child?.length > 0) {
+                            FinalChild.Child.map((LastChild: any) => {
+                                FinalArray.push(LastChild)
+                            })
+                        }
+                    })
+
+                }
+            })
+        }
+        AllClientCategoryDataBackup = FinalArray;
+    }
+
+
     var AutoCompleteItems: any = [];
     const loadAllCategoryData = function (SmartTaxonomy: any) {
         var AllTaskusers = []
@@ -3097,8 +3161,6 @@ const EditTaskPopup = (Items: any) => {
         console.log("Site Composition final Call back Data =========", Data);
     }, [])
 
-
-
     // This is for the Background Comment section Functions 
 
 
@@ -3131,8 +3193,6 @@ const EditTaskPopup = (Items: any) => {
             </div>
         );
     };
-
-
     const onRenderCustomReplaceImageHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>

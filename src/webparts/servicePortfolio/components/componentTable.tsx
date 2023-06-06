@@ -40,9 +40,11 @@ import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from "../../../globalComponents/Tooltip";
-import { Column, Table,
-  ExpandedState,useReactTable,getCoreRowModel,getFilteredRowModel, getExpandedRowModel, ColumnDef,flexRender, getSortedRowModel,SortingState,
-   ColumnFiltersState, FilterFn, getFacetedUniqueValues,getFacetedRowModel } from "@tanstack/react-table";
+import {
+  Column, Table,
+  ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
+  ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
+} from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
@@ -210,8 +212,9 @@ function ComponentTable(SelectedProp: any) {
   );
   const [globalFilter, setGlobalFilter] = React.useState("");
   globalFilterHighlited = globalFilter;
-  const [checkData, setcheckData] = React.useState({})
+  const [checkData, setcheckData] = React.useState([])
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+  const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
   const [checkCounter, setCheckCounter] = React.useState(true)
 
   const [maidataBackup, setmaidataBackup] = React.useState([]);
@@ -1178,7 +1181,8 @@ function ComponentTable(SelectedProp: any) {
         "Item_x0020_Cover",
         "AssingedToUser/Title",
         "AssingedToUser/Id",
-        "UserGroup/Id"
+        "UserGroup/Id",
+        "ItemType"
       )
       .expand("AssingedToUser", "UserGroup")
       .get();
@@ -2565,12 +2569,12 @@ function ComponentTable(SelectedProp: any) {
 
   //////////CheckBox Item Start/////
 
-  const onChangeHandler = (itrm: any, child: any, eTarget: any) => {
+  const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel: any) => {
     if (eTarget == true) {
-      setcheckData(itrm)
+      setcheckData(getSelectedRowModel)
       setShowTeamMemberOnCheck(true)
     } else {
-      setcheckData({})
+      setcheckData([])
       setShowTeamMemberOnCheck(false)
     }
     var Arrays: any = [];
@@ -3539,6 +3543,7 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "ID",
         header: "",
         size: 130,
+        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.Title,
@@ -3584,6 +3589,7 @@ function ComponentTable(SelectedProp: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
+        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3596,6 +3602,7 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "Client Category",
         header: "",
         size: 100,
+        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -3608,24 +3615,28 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "Team",
         header: "",
         size: 131,
+        resetColumnFilters: false,
       },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
         size: 42,
+        resetColumnFilters: false,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
         size: 42,
+        resetColumnFilters: false,
       },
       {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
         size: 100,
+        resetColumnFilters: false,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3775,34 +3786,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-        // parentData = elem?.parentRow;
-        // parentDataCopy = elem?.parentRow?.original
-        parentDataCopy = elem?.getParentRows()[0]?.original;
-        // if (parentData != undefined && parentData?.parentRow != undefined) {
+          // parentData = elem?.parentRow;
+          // parentDataCopy = elem?.parentRow?.original
+          parentDataCopy = elem?.getParentRows()[0]?.original;
+          // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //   parentData = elem?.parentRow?.parentRow
-        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+          //   parentData = elem?.parentRow?.parentRow
+          //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        // }
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3814,9 +3825,9 @@ function ComponentTable(SelectedProp: any) {
       });
     }
     if (itrm?.Item_x0020_Type === "Component") {
-      onChangeHandler(itrm, "parent", eTarget);
+      onChangeHandler(itrm, "parent", eTarget, table?.getSelectedRowModel()?.flatRows);
     } else {
-      onChangeHandler(itrm, parentDataCopy, eTarget);
+      onChangeHandler(itrm, parentDataCopy, eTarget, table?.getSelectedRowModel()?.flatRows);
     }
   };
 
@@ -3972,9 +3983,14 @@ function ComponentTable(SelectedProp: any) {
   //   forceExpanded = [];
   // }, [table.getState().columnFilters, table.getState().globalFilter]);
 
+  const ShowTeamFunc = () => {
+    setShowTeamPopup(true)
+  }
 
-
-
+  const showTaskTeamCAllBack = React.useCallback(() => {
+    setShowTeamPopup(false)
+    setRowSelection({});
+  }, []);
 
   return (
     <div
@@ -4580,7 +4596,6 @@ function ComponentTable(SelectedProp: any) {
                     >
                       Add Activity-Task
                     </button>}
-
                     {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ||
                       table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0 ? <button
                         type="button"
@@ -4596,8 +4611,7 @@ function ComponentTable(SelectedProp: any) {
                     >
                       Restructure
                     </button>}
-
-                    {showTeamMemberOnCheck === true ? <ShowTeamMembers props={checkData} TaskUsers={AllUsers} /> : ''}
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
 
                     <a className="brush" onClick={clearSearch}>
                       <FaPaintBrush />
@@ -4631,9 +4645,9 @@ function ComponentTable(SelectedProp: any) {
                                   <th
                                     key={header.id}
                                     colSpan={header.colSpan}
-                                    style={header.id != 'Title' ?{
+                                    style={header.id != 'Title' ? {
                                       width: header.column.columnDef.size + "px",
-                                    }:{}}
+                                    } : {}}
                                   >
                                     {header.isPlaceholder ? null : (
                                       <div
@@ -4762,6 +4776,8 @@ function ComponentTable(SelectedProp: any) {
           </section>
         </div>
       </section>
+
+      {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllUsers} /> : ''}
 
       {IsTask && (
         <EditTaskPopup

@@ -23,7 +23,7 @@ let Folderdatas: any = [];
 let AssignTeamMember: any = [];
 let ContextValue: any = {};
 
-
+let Iconpps:any = []
 function getQueryVariable(variable:any)
 {
         let query = window.location.search.substring(1);
@@ -384,6 +384,57 @@ function Portfolio({SelectedProp}:any) {
   function handleuffixLeave() {
     setShowBlock(false);
   }
+
+  if(ParentData[0]?.Parent?.ItemType == 'Component' && data[0].Item_x0020_Type == 'Feature'){
+    Iconpps = [
+    {
+      ItemType : 'Component',
+      Id : ParentData[0]?.Parent?.Id,
+      Title:ParentData[0]?.Parent?.Title,
+      Icon : 'C',
+      nextIcon:'>'
+    },{
+      ItemType : 'SubComponent',
+      Id : ParentData[0]?.Id,
+      Title:ParentData[0]?.Title,
+      Icon : 'S',
+      nextIcon: '>'
+    },{
+      ItemType : 'Feature',
+      Id : data[0]?.Id,
+      Title:data[0]?.Title,
+      Icon : 'F'
+    }
+   ]
+}
+if(data[0]?.Parent?.ItemType == 'Component' && data[0].Item_x0020_Type == 'SubComponent'){
+ Iconpps = [
+  {
+    ItemType : 'Component',
+    Id : data[0]?.Parent.Id,
+    Title:data[0]?.Parent.Title,
+    Icon : 'C',
+    nextIcon:'>'
+  },{
+    ItemType : 'SubComponent',
+    Id : data[0]?.Id,
+    Title:data[0]?.Title,
+    Icon : 'S'
+  }
+ ]
+}
+if(data[0]?.Item_x0020_Type == 'Component'){
+Iconpps = [
+ {
+   ItemType : 'Component',
+   Id : data[0]?.Id,
+   Title:data[0]?.Title,
+   Icon : 'C',
+   
+ }
+]
+}
+
 
   return (
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -1510,7 +1561,7 @@ function Portfolio({SelectedProp}:any) {
           <section className="TableSection">
            
             {data.map((item) => (
-              <ComponentTable props={item} NextProp={ContextValue} />
+              <ComponentTable props={item} NextProp={ContextValue} Iconssc= {Iconpps}/>
             ))}
           </section>
         </div>

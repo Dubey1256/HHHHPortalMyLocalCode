@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { IProjectManagementProps } from './IProjectManagementProps';
 import { escape } from '@microsoft/sp-lodash-subset';
- import ProjectManagementMain from './ProjectManagementMain';
-//import ProjectManagementMain from './ProjectManagementMain (4)';
+import ProjectManagementMain from './ProjectManagementMain';
+// import ProjectManagementMain from './ProjectManagementMain (4)';
 // import TaggedPortfolio from './TaggedPortfolio';
 
 
