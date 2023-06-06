@@ -143,6 +143,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
+                resetColumnFilters: false,
                 size:4,
                 header: ({ table }: any) => (
                     <>
@@ -196,6 +197,7 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "siteType",
                 placeholder: "Site",
+                resetColumnFilters: false,
                 header: "",
                 size: 4,
             },
@@ -220,6 +222,7 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "Title",
                 placeholder: "Title",
+                resetColumnFilters: false,
                 header: "",
             },
             {
@@ -233,6 +236,7 @@ export default function ProjectOverview(props: any) {
                 id: "PercentComplete",
                 placeholder: "% Complete",
                 header: "",
+                resetColumnFilters: false,
                 size: 3,
             },
             {
@@ -245,6 +249,7 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
+                resetColumnFilters: false,
                 header: "",
                 size: 4,
             },
@@ -258,6 +263,7 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",
+                resetColumnFilters: false,
                 header: "",
                 size: 11,
             },
@@ -275,6 +281,7 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                resetColumnFilters: false,
                 size: 8,
             },
             {
@@ -289,6 +296,7 @@ export default function ProjectOverview(props: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                resetColumnFilters: false,
                 size: 3,
             }
         ],
