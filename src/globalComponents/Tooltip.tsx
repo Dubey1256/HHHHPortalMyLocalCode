@@ -230,7 +230,7 @@ function Tooltip(props: any) {
     console.log(query)
     //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
     var vars = query.split("&");
-    Href = window.location.href.toLowerCase()
+    Href = window.location.href;
     // Href = Href.toLowerCase().split('?')[0]
     Href = Href.split('#')[0];
     const parts = window.location.href.toLowerCase().split("/");
