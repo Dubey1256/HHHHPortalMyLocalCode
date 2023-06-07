@@ -494,7 +494,7 @@ const EditTaskPopup = (Items: any) => {
                     item.PercentComplete = statusValue;
                     if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
                         setTaskStatus("In Progress");
-                        setPercentCompleteStatus(`${statusValue}% In Progress`);
+                        setPercentCompleteStatus(`${Number(statusValue).toFixed(0)}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
 
                     } else {
@@ -1586,7 +1586,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
                     setTaskStatus("In Progress");
-                    setPercentCompleteStatus(`${StatusInput}% In Progress`);
+                    setPercentCompleteStatus(`${Number(StatusInput).toFixed(0)}% In Progress`);
                     setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
                     EditData.IsTodaysTask = false;
                 } else {
@@ -4189,7 +4189,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
-                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
