@@ -785,25 +785,8 @@ const inlineEditingcolumns = (props: any) => {
                             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
-                            
-                            <div className="popover__wrapper inlineEdit me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                            {props.item.PercentComplete}
-                                <div className="popover__content">
-                                    {
-                                        (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
-                                            <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                            </a> : (props.item.PercentComplete == 5) ?
-                                                <a className='svg__iconbox svg__icon--Acknowledged' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
-                                                    <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                    </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
-                                                        <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                        </a> : (props.item.PercentComplete > 90) ?
-                                                            <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
-                                                            </a> : ''
-
-                                    }
-                                    {
+                            <span title={getPercentCompleteTitle(props?.item?.PercentComplete)}>{props.item.PercentComplete} </span> 
+                            {
                                         props?.item?.IsTodaysTask ? <>
                                             {
                                                 props?.item?.AssignedTo?.map((AssignedUser: any) => {
@@ -829,8 +812,26 @@ const inlineEditingcolumns = (props: any) => {
                                             }
                                         </> : ''
                                     }
+                            {/* <div className="popover__wrapper inlineEdit me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                            {props.item.PercentComplete}
+                                <div className="popover__content">
+                                    {
+                                        (props.item.PercentComplete > 0 && props.item.PercentComplete <= 4) ?
+                                            <a className='svg__iconbox svg__icon--Ellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                            </a> : (props.item.PercentComplete == 5) ?
+                                                <a className='svg__iconbox svg__icon--Acknowledged' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                </a> : (props.item.PercentComplete >= 10 && props.item.PercentComplete <= 70) ?
+                                                    <a className='svg__iconbox svg__icon--halfellipse' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                    </a> : (props.item.PercentComplete >= 80 && props.item.PercentComplete <= 90) ?
+                                                        <a className='svg__iconbox svg__icon--UnderReview' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                        </a> : (props.item.PercentComplete > 90) ?
+                                                            <a className='svg__iconbox svg__icon--Completed' title={getPercentCompleteTitle(props?.item?.PercentComplete)}>
+                                                            </a> : ''
+
+                                    }
+                                   
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* {props?.item?.Categories?.includes('Immediate') ?
         <a style={{ marginRight: '5px' }} title="Immediate"><img src={require("../../../Assets/ICON/alert.svg")} /> </a> : " "} */}

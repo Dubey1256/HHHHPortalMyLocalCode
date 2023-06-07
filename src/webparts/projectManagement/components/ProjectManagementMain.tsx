@@ -862,7 +862,7 @@ const ProjectManagementMain = (props: any) => {
       {
         header: ({ table }: any) => (
           <>
-            <IndeterminateCheckbox className="mx-1 "
+            <IndeterminateCheckbox className=" "
               {...{
                 checked: table.getIsAllRowsSelected(),
                 indeterminate: table.getIsSomeRowsSelected(),
@@ -1019,7 +1019,7 @@ const ProjectManagementMain = (props: any) => {
         header: ""
       },
       {
-        accessorFn: (row) => row?.Priority,
+        accessorFn: (row) => row?.Priority_x0020_Rank,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
@@ -1155,7 +1155,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         placeholder: "Created",
         header: "",
-        size: 15,
+        size: 20,
       },
       {
         cell: ({ row }) => (
@@ -1658,7 +1658,7 @@ const ProjectManagementMain = (props: any) => {
                     <div>
                       <div className="row">
                         <div className="section-event ps-0">
-                          <div className="wrapper">
+                          <div className="wrapper project-management-Table">
                             {sidebarStatus.sideBarFilter ? (
                               <div className="text-end">
                                 <a onClick={() => clearPortfolioFilter()}>
