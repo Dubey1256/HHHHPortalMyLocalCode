@@ -12,11 +12,12 @@ function ShowTeamMembers(item: any) {
   const [teamMembers, setTeamMembers]: any = React.useState([]);
   const [show, setShow] = React.useState(true);
   const [allEmployeeData, setAllEmployeeData]: any = React.useState([]);
+  // const rerender = React.useReducer(() => ({}), {})[1];
   // const [employees, setEmployees]: any = React.useState();
   var BackupArray: any = [];
   React.useEffect(() => {
     getTeamMembers();
-  }, []);
+  }, [item]);
 
   function getTeamMembers() {
 
@@ -37,7 +38,7 @@ function ShowTeamMembers(item: any) {
     if (UsersData?.length > 0 && Groups?.length > 0) {
       Groups?.map((groupData: any, index: any) => {
         UsersData?.map((userData: any) => {
-          if (groupData?.Id == userData?.UserGroup?.Id) {
+          if (groupData?.Id == (userData?.UserGroup?.Id || userData?.UserGroupId)) {
             userData.NewLabel = groupData?.Title + " > " + userData?.Title;
             groupData.Child.push(userData);
           }
@@ -107,7 +108,8 @@ function ShowTeamMembers(item: any) {
     setEmail(ab);
     setAllEmployeeData(Groups);
     setTeamMembers(uniqueAuthors);
-
+    // rerender()
+  
   };
 
   const dragStart = (e: any, position: any, index: any) => {
