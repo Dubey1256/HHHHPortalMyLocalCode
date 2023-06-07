@@ -512,7 +512,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if (item?.SiteName == items?.SiteName) {
-            item.ClientCategory = items?.Title;
+            if(item.ClientCategory==undefined){
+              item.ClientCategory=[];
+              item.ClientCategory.push(items);
+            }else{
+              item.ClientCategory.push(items)
+            }
+          
           }
 
         })
@@ -1368,7 +1374,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                     {Number(cltime?.ClienTimeDescription).toFixed(2)}%
                                   </span>
                                 }
-                                {cltime.ClientCategory != undefined || cltime.ClientCategory != null ? <span>{cltime.ClientCategory}</span> : null}
+                                {cltime.ClientCategory != undefined && cltime.ClientCategory.length>0 ?cltime.ClientCategory?.map((clientcat:any)=>{
+                                return(
+                                 <span>{clientcat.Title}</span>
+                                )
+                                }) : null}
                               </li>
                             })}
                           </ul>
