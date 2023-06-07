@@ -5,6 +5,7 @@ import pnp, { Web, SearchQuery, SearchResults } from "sp-pnp-js";
 import { Modal } from '@fluentui/react';
 import * as moment from "moment-timezone";
 import EmailComponenet from './emailComponent';
+import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 // import * as moment from "moment-timezone";
 var sunchildcomment: any;
@@ -210,12 +211,15 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
   }
 
   private clearComment(isSubtextComment: any, indexOfDeleteElement: any, indexOfSubtext: any) {
-    if (isSubtextComment) {
-      this.props.feedback["Subtext"][indexOfSubtext]?.Comments?.splice(indexOfDeleteElement, 1)
-    } else {
-      this.props.feedback["Comments"]?.splice(indexOfDeleteElement, 1);
+    if (confirm("Are you sure, you want to delete this?")) {
+      if (isSubtextComment) {
+        this.props.feedback["Subtext"][indexOfSubtext]?.Comments?.splice(indexOfDeleteElement, 1)
+      } else {
+        this.props.feedback["Comments"]?.splice(indexOfDeleteElement, 1);
+      }
+      this.props.onPost();
     }
-    this.props.onPost();
+    
   }
 
   private openEditModal(comment: any, indexOfUpdateElement: any, indexOfSubtext: any, isSubtextComment: any) {
@@ -502,7 +506,7 @@ private approvalcallback(){
                   </span>
                   {this.state?.fbData['ApproverData']!=undefined && this.state?.fbData?.ApproverData.length>0 &&<span className='px-3'>
                     <a  onClick={()=>this.ShowApprovalHistory(this.state?.fbData)}>Pre-approved by -</a>
-                    <img  className="imgAuthor"src={this.state?.fbData?.ApproverData[this.state?.fbData?.ApproverData?.length-1]?.ImageUrl}></img> 
+                    <img  className="workmember"src={this.state?.fbData?.ApproverData[this.state?.fbData?.ApproverData?.length-1]?.ImageUrl}></img> 
                     </span>}
                 </span>
                 
@@ -553,7 +557,7 @@ private approvalcallback(){
                 {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments']?.map((fbComment: any, k: any) => {
                   return <div className={fbComment.isShowLight!=undefined && fbComment.isApprovalComment?`col d-flex add_cmnt my-1 ${fbComment.isShowLight}`:"col d-flex add_cmnt my-1"}>
                     <div className="col-1 p-0">
-                      <img className="AssignUserPhoto1" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                      <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                         fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                     </div>
                     <div className="col-11 pe-0" >
@@ -581,7 +585,7 @@ private approvalcallback(){
               <textarea id="txtComment" onChange={(e) => this.handleInputChange(e)} className="form-control full-width" ></textarea>
             </div>
 
-            <div className="col-sm-1 full-width mt-2 ps-1  " style={{ display: this.state.showcomment }}>
+            <div className="col-sm-1 full-width mt-2 ps-1 text-end " style={{ display: this.state.showcomment }}>
               <button type="button" className={this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id?"btn-primary mt-4 postbtn px-3":"btn-primary postbtn px-3"} onClick={() => this.PostButtonClick()}>Post</button>
             </div>
           </div>
@@ -605,7 +609,7 @@ private approvalcallback(){
                     </span>
                   {fbSubData.ApproverData!=undefined && fbSubData.ApproverData.length>0 &&<span className='px-3'>
                     <a  onClick={()=>this.ShowApprovalHistory(fbSubData)}>Pre-approved by -</a>
-                    <img  className="imgAuthor"src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length-1]?.ImageUrl}></img> 
+                    <img  className="workmember"src={fbSubData?.ApproverData[fbSubData?.ApproverData?.length-1]?.ImageUrl}></img> 
                     </span>}
                   </span>
                   : null
@@ -652,7 +656,7 @@ private approvalcallback(){
                   {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                     return <div className={fbComment?.isShowLight!=undefined && fbComment.isApprovalComment?`col-sm-12 d-flex mb-2 add_cmnt my-1 ${fbComment?.isShowLight}`:"col-sm-12 d-flex mb-2 add_cmnt my-1 "}>
                       <div className="col-sm-1 padL-0 wid35">
-                        <img className="AssignUserPhoto1" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
+                        <img className="workmember" src={fbComment?.AuthorImage != undefined && fbComment?.AuthorImage != '' ?
                           fbComment.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
                       </div>
                       <div className="col-sm-11 pad0" key={k}>
@@ -679,7 +683,7 @@ private approvalcallback(){
                 <textarea id="txtCommentSubtext" onChange={(e) => this.handleInputChange(e)}  className="form-control full-width" ></textarea>
               </div>
 
-              <div className="col-sm-1 mt-2 ps-1 full-width" style={{ display: this.state.showcomment_subtext }}>
+              <div className="col-sm-1 mt-2 ps-1 full-width text-end  " style={{ display: this.state.showcomment_subtext }}>
                 <button type="button" className={this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id?"btn-primary mt-4 postbtn px-3":"btn-primary postbtn px-3"} onClick={() => this.SubtextPostButtonClick(j)}>Post</button>
               </div>
             </div> : null}
@@ -690,6 +694,7 @@ private approvalcallback(){
 
           <div className="modal-header mb-1">
             <h5 className="modal-title">Update Comment</h5>
+           <span className='mx-1'> <Tooltip ComponentId='1683' /></span>
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={(e) => this.CloseModal(e)}></button>
           </div>
           <div className="modal-body">
