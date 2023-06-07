@@ -42,6 +42,7 @@ export default function ProjectOverview(props: any) {
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [searchedNameData, setSearchedDataName] = React.useState([]);
     const [data, setData] = React.useState([]);
+    const [flatData, setFlatData] = React.useState([]);
     const [AllTasks, setAllTasks]: any = React.useState([]);
     const [passdata, setpassdata] = React.useState("");
     const [AllSiteTasks, setAllSiteTasks]: any = React.useState([]);
@@ -143,7 +144,9 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
-                size:4,
+                resetColumnFilters: false,
+                resetSorting: false,
+                size: 4,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -186,16 +189,18 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.siteType,
                 cell: ({ row, getValue }) => (
-                 <>{
-                    row?.original?.siteType !== "Master Tasks" ?
-                    <span>
-                    {row?.original?.siteIcon != undefined ?
-                        <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
-                </span>:''
-                 }</>
+                    <>{
+                        row?.original?.siteType !== "Master Tasks" ?
+                            <span>
+                                {row?.original?.siteIcon != undefined ?
+                                    <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
+                            </span> : ''
+                    }</>
                 ),
                 id: "siteType",
                 placeholder: "Site",
+                resetColumnFilters: false,
+                resetSorting: false,
                 header: "",
                 size: 4,
             },
@@ -220,6 +225,8 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: "Title",
                 placeholder: "Title",
+                resetColumnFilters: false,
+                resetSorting: false,
                 header: "",
             },
             {
@@ -233,6 +240,8 @@ export default function ProjectOverview(props: any) {
                 id: "PercentComplete",
                 placeholder: "% Complete",
                 header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
                 size: 3,
             },
             {
@@ -245,6 +254,8 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
+                resetColumnFilters: false,
+                resetSorting: false,
                 header: "",
                 size: 4,
             },
@@ -258,6 +269,8 @@ export default function ProjectOverview(props: any) {
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",
+                resetColumnFilters: false,
+                resetSorting: false,
                 header: "",
                 size: 11,
             },
@@ -275,10 +288,12 @@ export default function ProjectOverview(props: any) {
                 id: 'DisplayDueDate',
                 placeholder: "Due Date",
                 header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
                 size: 8,
             },
             {
-             
+
                 cell: ({ row }) => (
                     <>
                         {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
@@ -289,11 +304,181 @@ export default function ProjectOverview(props: any) {
                 canSort: false,
                 placeholder: "",
                 header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
                 size: 3,
             }
         ],
         [data]
     );
+
+    function IndeterminateCheckbox({
+        indeterminate,
+        className = "",
+        ...rest
+    }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
+        const ref = React.useRef<HTMLInputElement>(null!);
+        React.useEffect(() => {
+            if (typeof indeterminate === "boolean") {
+                ref.current.indeterminate = !rest.checked && indeterminate;
+            }
+        }, [ref, indeterminate]);
+        return (
+            <input
+                type="checkbox"
+                ref={ref}
+                className={className + "  cursor-pointer form-check-input rounded-0"}
+                {...rest}
+            />
+        );
+    }
+
+    const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                header: ({ table }: any) => (
+                    <>
+                        <IndeterminateCheckbox className=" "
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />{" "}
+                    </>
+                ),
+                cell: ({ row, getValue }) => (
+                    <>
+                        <span className="d-flex">
+                            {row?.original?.Title != "Others" ? (
+                                <IndeterminateCheckbox
+                                    {...{
+                                        checked: row.getIsSelected(),
+                                        indeterminate: row.getIsSomeSelected(),
+                                        onChange: row.getToggleSelectedHandler(),
+                                    }}
+                                />
+                            ) : (
+                                ""
+                            )}
+
+                            {getValue()}
+                        </span>
+                    </>
+                ),
+                accessorKey: "",
+                id: "row?.original.Id",
+                resetColumnFilters: false,
+                resetSorting: false,
+                canSort: false,
+                placeholder: "",
+                size: 5,
+
+            },
+            {
+                accessorFn: (row) => row?.Title,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
+                    </span>
+                ),
+                id: "Title",
+                placeholder: "Title",
+                resetColumnFilters: false,
+                resetSorting: false,
+                header: "",
+            },
+            {
+                accessorFn: (row) => row?.PercentComplete,
+                Cell: ({ row }: any) => (
+                    <span>
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                    </span>
+                ),
+                id: "PercentComplete",
+                placeholder: "% Complete",
+                header: "",
+                resetSorting: false,
+                resetColumnFilters: false,
+                size: 5,
+            },
+            {
+                accessorFn: (row) => row?.Priority_x0020_Rank,
+                cell: ({ row }) => (
+                    <span>
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+
+                    </span>
+                ),
+                id: "Priority_x0020_Rank",
+                placeholder: "Priority",
+                resetColumnFilters: false,
+                size: 5,
+                resetSorting: false,
+                header: ""
+            },
+            {
+                accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
+                cell: ({ row }) => (
+                    <span>
+                        <InlineEditingcolumns
+                            AllListId={AllListId}
+                            callBack={CallBack}
+                            columnName='Team'
+                            item={row?.original}
+                            TaskUsers={AllTaskUser}
+                            pageName={'ProjectManagment'}
+                        />
+                    </span>
+                ),
+                id: 'TeamMembers',
+                canSort: false,
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "TeamMembers",
+                header: "",
+                size: 15,
+            },
+            {
+                accessorFn: (row) => row?.DueDate,
+                cell: ({ row }) => (
+                    <InlineEditingcolumns
+                        AllListId={AllListId}
+                        callBack={CallBack}
+                        columnName='DueDate'
+                        item={row?.original}
+                        TaskUsers={AllTaskUser}
+                        pageName={'ProjectManagment'}
+                    />
+                ),
+                id: 'DueDate',
+                resetColumnFilters: false,
+                resetSorting: false,
+                placeholder: "Due Date",
+                header: "",
+                size: 10,
+            },
+            {
+                Cell: ({ row }: any) => (
+                    <>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                    </>
+                ),
+                id: 'Actions',
+                accessorKey: "",
+                canSort: false,
+                resetSorting: false,
+                resetColumnFilters: false,
+                placeholder: "",
+                size: 5,
+
+            },
+        ],
+        [data]
+    );
+
+
+
     const reactColumns = React.useMemo(
         () => [
             {
@@ -372,34 +557,14 @@ export default function ProjectOverview(props: any) {
 
 
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        prepareRow,
-        gotoPage,
-        setPageSize,
-        state: { pageIndex, pageSize },
-    }: any = useTable(
-        {
-            columns: reactColumns,
-            data,
-            defaultColumn: { Filter: DefaultColumnFilter },
-            initialState: { pageIndex: 0, pageSize: 150000 },
-        },
-        useFilters,
-        useSortBy,
-        useExpanded,
-        usePagination
-    );
+
     //Inline Editing Callback
     const inlineEditingCall = (item: any) => {
-        page?.map((tasks: any) => {
-            if (tasks.Id == item.Id) {
-                tasks = item;
-            }
-        })
+        // page?.map((tasks: any) => {
+        //     if (tasks.Id == item.Id) {
+        //         tasks = item;
+        //     }
+        // })
     }
     const EditPopup = React.useCallback((item: any) => {
         setisOpenEditPopup(true);
@@ -432,6 +597,7 @@ export default function ProjectOverview(props: any) {
             //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
             //         Alltask.push(item)
             //     }
+            setFlatData([...Alltask])
             Alltask.map((items: any) => {
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.siteUrl = AllListId?.siteUrl;
@@ -450,7 +616,7 @@ export default function ProjectOverview(props: any) {
                         })
                     })
                 }
-                items['Shareweb_x0020_ID']='P'+items.Id
+                items['Shareweb_x0020_ID'] = 'P' + items.Id
                 items['subRows'] = [];
                 allSitesTasks?.map((task: any) => {
                     if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
@@ -488,7 +654,6 @@ export default function ProjectOverview(props: any) {
     }, []);
 
     const CallBack = React.useCallback(() => {
-        console.log(page);
         GetMasterData()
     }, [])
     const getComponentasString = function (results: any) {
@@ -498,7 +663,7 @@ export default function ProjectOverview(props: any) {
         });
         return component;
     };
-   
+
     const LoadAllSiteTasks = function () {
         if (siteConfig?.length > 0) {
             try {
@@ -611,7 +776,7 @@ export default function ProjectOverview(props: any) {
         <>
             <div>
                 <div className="col-sm-12 pad0 smart">
-                    <div className="section-event">
+                    <div className="section-event project-overview-Table">
                         <div >
                             <div className='header-section justify-content-between'>
                                 <h2 style={{ color: "#000066", fontWeight: "600" }}>Project Management Overview</h2>
@@ -619,46 +784,17 @@ export default function ProjectOverview(props: any) {
                                     {GroupedDisplayTable ? <a className="hreflink" onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
                                 </div>
                             </div>
-
                             {GroupedDisplayTable ?
                                 <div className="Alltable p-2">
-                                    <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} pageName={"ProjectOverview"} />
+                                    <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverview"} />
                                 </div>
                                 : ""}
-
-
                             <div>
-                                {!GroupedDisplayTable ? <Table className="SortingTable" bordered hover {...getTableProps()}>
-                                    <thead className="fixed-Header">
-                                        {headerGroups.map((headerGroup: any) => (
-                                            <tr  {...headerGroup.getHeaderGroupProps()}>
-                                                {headerGroup.headers.map((column: any) => (
-                                                    <th  {...column.getHeaderProps()} style={column?.style}>
-                                                        <span class="Table-SortingIcon" style={{ marginTop: '-6px' }} {...column.getSortByToggleProps()} >
-                                                            {column.render('Header')}
-                                                            {generateSortingIndicator(column)}
-                                                        </span>
-                                                        <Filter  column={column} />
-                                                    </th>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </thead>
+                                {!GroupedDisplayTable ?
 
-                                    <tbody {...getTableBodyProps()}>
-                                        {page?.map((row: any) => {
-                                            prepareRow(row)
-                                            return (
-                                                <tr {...row.getRowProps()}  >
-                                                    {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLTableDataCellElement> & React.TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }) => {
-                                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                                    })}
-                                                </tr>
-                                            )
-
-                                        })}
-                                    </tbody>
-                                </Table> : ''}
+                                    <div className="Alltable p-2">
+                                        <GlobalCommanTable columns={column2} data={flatData} callBackData={callBackData}  pageName={"ProjectOverview"} />
+                                    </div> : ''}
                             </div>
                         </div>
                     </div>

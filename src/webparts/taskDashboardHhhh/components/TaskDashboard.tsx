@@ -212,10 +212,16 @@ const TaskDashboard = (props: any) => {
         } else if (startDateOf == 'This Month') {
             startingDate.setDate(1);
             formattedDate = startingDate;
-        } else if (startDateOf == 'timesheetQuery') {
-            startingDate.setMonth(startingDate.getMonth() - 1);
-            formattedDate = startingDate;
+        } else if (startDateOf == 'Last Month') {
+            const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+            const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+            formattedDate = startingDateOfLastMonth;
+        }else if (startDateOf == 'Last Week') {
+            const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+            const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+            formattedDate = startingDateOfLastWeek;
         }
+
         return formattedDate;
     }
     //End
@@ -225,7 +231,7 @@ const TaskDashboard = (props: any) => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
             let taskLists: any = [];
-            let startDate = getStartingDate('timesheetQuery').toISOString();
+            let startDate = getStartingDate('Last Month').toISOString();
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
@@ -251,7 +257,7 @@ const TaskDashboard = (props: any) => {
     const loadAllTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
-            let startDate = getStartingDate('timesheetQuery').toISOString();
+            let startDate = getStartingDate('Last Month').toISOString();
             let taskLists: any = [];
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
             taskLists = JSON.parse(timesheetListConfig[0]?.Description)
@@ -1826,7 +1832,7 @@ const TaskDashboard = (props: any) => {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de","jyoti.prasad@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
@@ -2144,7 +2150,7 @@ const TaskDashboard = (props: any) => {
                                         }</summary>
                                     <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsToday()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsToday()}>
                                                 <thead className="fixed-Header">
                                                     {headerGroupsToday?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2214,7 +2220,7 @@ const TaskDashboard = (props: any) => {
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {thisWeekTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsWeek()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsWeek()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsWeek?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2282,7 +2288,7 @@ const TaskDashboard = (props: any) => {
                                     <summary>  Immediate Tasks {'(' + pageImmediate?.length + ')'} </summary>
                                     <div className='AccordionContent mx-height'  >
                                         {UserImmediateTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsImmediate()}>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsImmediate()}>
                                                 <thead className="fixed-Header">
                                                     {headerGroupsImmediate?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2354,7 +2360,7 @@ const TaskDashboard = (props: any) => {
                                     <div className='AccordionContent mx-height' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                                <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAll()} >
+                                                <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsAll()} >
                                                     <thead className="fixed-Header">
                                                         {headerGroupsAll?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2462,18 +2468,27 @@ const TaskDashboard = (props: any) => {
                                 </details>
                                 {((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) && isTimeEntry == true) ?
                                     <>
-                                        <div>
-                                            <span className='m-1'>
-                                                <input className='me-1' type="radio" value="Male" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday</span>
-                                            <span className='m-1'>
-                                                <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
-                                            </span>
-                                            <span className='m-1'>
-                                                <input className='me-1' type="radio" value="Other" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
-                                            </span>
-                                            <span className='m-1'>
-                                                <input className='me-1' type="radio" value="Female" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
-                                            </span>
+                                        <div className='workrTimeReport'>
+                                            <dl>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="Yesterday" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday
+                                                </dt>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="Today" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
+                                            </dt>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="This Week" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
+                                            </dt>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="Last Week" name="date" checked={selectedTimeReport == 'Last Week'} onClick={() => currentUserTimeEntry('Last Week')} /> Last Week
+                                            </dt>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
+                                            </dt>
+                                            <dt className='form-check l-radio'>
+                                                <input className='form-check-input' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
+                                            </dt>
+                                            </dl>
                                         </div>
                                         <details>
                                             {timeEntryTotal > 1 ?
@@ -2489,9 +2504,9 @@ const TaskDashboard = (props: any) => {
                                                 </summary>
                                             }
 
-                                            <div className='AccordionContent mx-height'  >
+                                            <div className='AccordionContent mx-height timeEntryReport'  >
                                                 {weeklyTimeReport?.length > 0 ?
-                                                    <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
+                                                    <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsApprover()}>
                                                         <thead className="fixed-Header">
                                                             {headerGroupsTimeReport?.map((headerGroup: any) => (
                                                                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2571,7 +2586,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                     {AllBottleNeck?.length > 0 ?
                                         <>
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllBottle()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsAllBottle()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllBottle?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2687,7 +2702,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                     {AllSitesTask?.length > 0 ?
                                         <>
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllSite()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsAllSite()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllSite?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2802,7 +2817,7 @@ const TaskDashboard = (props: any) => {
                                         <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
                                     </div>
                                     {assignedApproverTasks?.length > 0 ?
-                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsApprover()}>
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsApprover()}>
                                             <thead className="fixed-Header">
                                                 {headerGroupsApprover?.map((headerGroup: any) => (
                                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -2919,7 +2934,7 @@ const TaskDashboard = (props: any) => {
                                         <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
                                     </div>
                                     {AllPriorityTasks?.length > 0 ?
-                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsAllPriority()}>
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover  {...getTablePropsAllPriority()}>
                                             <thead className="fixed-Header">
                                                 {headerGroupsAllPriority?.map((headerGroup: any) => (
                                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -3037,7 +3052,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                     {sharewebTasks?.length > 0 ?
                                         <>
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllSite()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllSite()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsSharewebTask?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -3153,7 +3168,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                     {AllImmediateTasks?.length > 0 ?
                                         <>
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllImmediate()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsAllImmediate()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllImmediate?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -3269,7 +3284,7 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                     {AllEmailTasks?.length > 0 ?
                                         <>
-                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover {...getTablePropsAllEmail()} >
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"}  hover {...getTablePropsAllEmail()} >
                                                 <thead className="fixed-Header">
                                                     {headerGroupsAllEmail?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
