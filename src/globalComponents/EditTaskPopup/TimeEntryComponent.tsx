@@ -1,17 +1,22 @@
 
 import * as React from 'react';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { Web } from "sp-pnp-js";
+import { sp, Web } from "sp-pnp-js";
 import * as $ from 'jquery';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 import * as Moment from 'moment';
+import { IFolderAddResult } from "@pnp/sp/folders";
+import { spfi } from "@pnp/sp";
+import "@pnp/sp/webs";
+import "@pnp/sp/folders";
 import pnp, { PermissionKind } from "sp-pnp-js";
 import { parseISO, format } from 'date-fns';
+import "@pnp/sp/lists";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Tooltip from '../../globalComponents/Tooltip'
+import Tooltip from '../Tooltip';
 import * as globalCommon from '../globalCommon'
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
@@ -21,14 +26,30 @@ var Category: any = '';
 var NewCategoryId: any = ''
 var Eyd = ''
 var changeEdited = '';
+var CurrentUserTitle = ''
 var Categoryy = '';
 var CategoryyID: any = ''
 var TaskCate: any = []
+var TimeSheetlistId = ''
+var TimeSheets: any = []
+var MigrationListId = ''
+var siteUrl = ''
+var listName = ''
+var RelativeUrl: any = ''
+var CurrentSiteUrl: any = ''
+var AllTimeEntry: any = [];
 var AllUsers: any = [];
+var TimesheetConfiguration: any = []
 var isShowCate: any = ''
 var change: any = new Date()
+
+const SP = spfi();
+
 function TimeEntryPopup(item: any) {
     CurntUserId = item.Context.pageContext._legacyPageContext.userId
+    CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
+    RelativeUrl = item.Context.pageContext.web.serverRelativeUrl
+    CurrentSiteUrl = item.Context.pageContext.web.absoluteUrl
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [date, setDate] = React.useState(undefined);
     const [showCat, setshowCat] = React.useState('')
@@ -75,7 +96,7 @@ function TimeEntryPopup(item: any) {
     var smartTermName = "Task" + item.props.siteType;
 
     const GetTaskUsers = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(`${siteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
@@ -83,59 +104,31 @@ function TimeEntryPopup(item: any) {
             .top(4999)
             .get();
         AllUsers = taskUsers;
+        if(AllTimeEntry.length == 0){
+            await getAllTime()
+        }
+      
         EditData(item.props);
         //console.log(this.taskUsers);
 
+    }
+    const getAllTime=async ()=>{
+        var newItem:any=[]
+        let web = new Web(`${siteUrl}`);
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getByTitle(listName)
+            .items
+            .select("Id,Title")
+            .getAll(4999);
+            AllTimeEntry = taskUsers;
+           
     }
     // pnp.sp.web.currentUser.get().then(result => {
     //     CurntUserId = result.Id;
     //     console.log(CurntUserId)
 
     // });
-    const onRenderCustomHeaderAddTaskTime = () => {
-        return (
-          <>
-    
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Add Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
-        );
-      };
-      const onRenderCustomHeaderEditTaskTime = () => {
-        return (
-          <>
-    
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Edit Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
-        );
-      };
-      const onRenderCustomHeaderCopyTaskTime = () => {
-        return (
-          <>
-    
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Copy Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
-        );
-      };
-      const onRenderCustomHeaderEditCategory= () => {
-        return (
-          <>
-    
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Edit Category
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
-        );
-      };
 
     const changeDate = (val: any, Type: any) => {
 
@@ -408,6 +401,7 @@ function TimeEntryPopup(item: any) {
 
     }
     const openTaskStatusUpdatePoup = () => {
+        getAllTime();
         AllUsers.forEach((val: any) => {
             TimeSheet.forEach((time: any) => {
                 if (val.AssingedToUserId == CurntUserId) {
@@ -579,33 +573,30 @@ function TimeEntryPopup(item: any) {
 
 
     const GetTimeSheet = async () => {
-        var TimeSheets: any = []
+        var TimeSheet: any = []
+        var newArray: any = []
+       const web = new Web(`${CurrentSiteUrl}`);
 
-        const web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-        const res = await web.lists.getById('01A34938-8C7E-4EA6-A003-CEE649E8C67A').items
-            .select("Id,Title,TaxType").top(4999).get();
+        const res = await web.lists.getByTitle('SmartMetadata').items
+            .select("Id,Title,TaxType,Parent/Id,Parent/Title").expand("Parent").top(4999).get();
         console.log(res)
-        // res.map((item: any) => {
-        //     if (item.TaxType === "TimesheetCategories") {
-        //         TimeSheets.push(item)
+        res.map((item: any) => {
+            if (item.TaxType === "TimesheetCategories") {
+                TimeSheet.push(item)
 
-        //     }
+            }
 
-        // })
-        //  TimeSheets.map((val: any,index:any) => {
-        //     TimeSheets.map((ite: any,index:any) => {
+        })
+        TimeSheet.forEach((val: any) => {
+          
+                if ((val.Title == 'Design' || val.Title == 'Design' || val.Title == 'Development' || val.Title == 'Investigation' || val.Title == 'QA' || val.Title == 'Support' || val.Title == 'Verification' || val.Title == 'Coordination' || val.Title == 'Implementation' || val.Title == 'Conception' || val.Title == 'Preparation') && val.Parent?.Title == 'Components') {
+                    newArray.push(val)
+                }
+           
+           
+            setTimeSheets(newArray)
+        })
 
-        //         if (val.Title == ite.Title) {
-        //             TimeSheets.splice(index, 1)
-        //         }
-
-        //     })
-        //     })
-        TimeSheets.push({ "TaxType": "TimesheetCategories", "Title": "Design", "Id": 300, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Development", "Id": 299, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Investigation", "Id": 296, "isShow": false },
-            { "TaxType": "TimesheetCategories", "Title": "QA", "Id": 301, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Support", "Id": 310, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Verification", "Id": 297, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Coordination", "Id": 298, "isShow": false },
-            { "TaxType": "TimesheetCategories", "Title": "Implementation", "Id": 302, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Conception", "Id": 335, "isShow": false }, { "TaxType": "TimesheetCategories", "Title": "Preparation", "Id": 315, "isShow": false });
-        setTimeSheets(TimeSheets)
 
     }
     const selectCategories = (e: any, Title: any) => {
@@ -628,7 +619,7 @@ function TimeEntryPopup(item: any) {
 
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(`${siteUrl}`);
         let MetaData = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
@@ -636,6 +627,24 @@ function TimeEntryPopup(item: any) {
             .top(4999)
             .get();
         AllMetadata = MetaData;
+        AllMetadata.forEach((itemss: any) => {
+            if (itemss.Title == item.props.siteType && itemss.TaxType == 'Sites') {
+                TimesheetConfiguration = JSON.parse(itemss.Configurations)
+
+            }
+        })
+        TimesheetConfiguration?.forEach((val: any) => {
+            if (val.taskSites != 'Migration' || val.taskSites != 'ALAKDigital') {
+                TimeSheetlistId = val.TimesheetListId;
+                siteUrl = val.siteUrl
+                listName = val.TimesheetListName
+            }
+            else {
+                MigrationListId = val.TimesheetListId;
+                siteUrl = val.siteUrl
+                listName = val.TimesheetListName
+            }
+        })
         await GetTaskUsers();
 
     }
@@ -1003,13 +1012,14 @@ function TimeEntryPopup(item: any) {
 
         if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
 
-            var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
+            //var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
+            var allurls = [{ 'Url': `${CurrentSiteUrl}/_api/web/lists/getById('${MigrationListId}')/items?$select=${select}` }]
 
         }
         else {
-            var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
+            //var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('464FB776-E4B3-404C-8261-7D3C50FF343F')/items?$select=" + select + "" },
+            var allurls = [{ 'Url': `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}` }]
 
-            ]
         }
         $.each(allurls, async function (index: any, item: any) {
             await $.ajax({
@@ -1024,7 +1034,7 @@ function TimeEntryPopup(item: any) {
 
                 },
 
-                success: function (data) {
+                success: function (data: { d: { results: string | any[]; }; }) {
                     count++;
                     if (data.d.results != undefined && data.d.results.length > 0) {
 
@@ -1033,25 +1043,11 @@ function TimeEntryPopup(item: any) {
                     }
 
                     if (allurls.length === count) {
-                        // if (AllTimeSpentDetails != undefined && AllTimeSpentDetails > 0) {
-
-                        //     AllTimeSpentDetails.map((val:any)=>{
-                        //     if(val.AuthorId===CurntUserId){
-                        //         AllTimeSpentDetails.push(val)
-                        //     }
-                        //     })
-
-                        // }
-                        //  var AllTimeSpentDetails = data.d.results;
                         let TotalPercentage = 0
                         let TotalHours = 0;
                         let totletimeparentcount = 0;
                         //  let totletimeparentcount = 0;
                         let AllAvailableTitle = [];
-                        // TaskTimeSheetCategoriesGrouping.map((val:any)=>{
-                        //     (!isItemExists(TaskTimeSheetCategoriesGrouping, val.Id))
-
-                        // })
 
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
@@ -1098,18 +1094,18 @@ function TimeEntryPopup(item: any) {
                                 update['TaskDate'] = Moment(Datee).format('DD/MM/YYYY');
                                 update['Description'] = newData.Description
                                 item.AdditionalTime.push(update)
-                                let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+                                let web = new Web(`${siteUrl}`);
 
                                 if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
 
-                                    var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+                                    var ListId = MigrationListId
 
                                 }
                                 else {
-                                    var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+                                    var ListId = TimeSheetlistId
                                 }
 
-                                await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(NewParentId).update({
+                                await web.lists.getById(ListId).items.getById(NewParentId).update({
 
 
                                     AdditionalTimeEntry: JSON.stringify(item.AdditionalTime),
@@ -1235,6 +1231,60 @@ function TimeEntryPopup(item: any) {
     }
 
 
+    // const deleteTaskTime = async (childinew: any) => {
+    //     var UpdatedData: any = []
+    //     var deleteConfirmation = confirm("Are you sure, you want to delete this?")
+    //     if (deleteConfirmation) {
+
+    //         $.each(TaskCate, function (index: any, subItem: any) {
+    //             if (subItem.Id == childinew.ParentID) {
+    //                 if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
+    //                     $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
+    //                         if (NewsubItem.ParentID == childinew.ParentID) {
+    //                             if (NewsubItem.ID === childinew.ID)
+    //                                 subItem.AdditionalTime.splice(index, 1)
+
+    //                         }
+
+    //                     })
+    //                     UpdatedData = subItem.AdditionalTime
+
+    //                 }
+    //             }
+
+    //         })
+
+
+
+    //         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+
+    //             var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+
+    //         }
+    //         else {
+    //             var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+    //         }
+    //         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+    //         await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childinew.ParentID).update({
+
+
+    //             AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+    //         }).then((res: any) => {
+
+    //             console.log(res);
+
+
+    //         })
+    //         setupdateData(updateData + 5)
+    //     }
+    //     else {
+    //         console.log("Select Item")
+    //     }
+
+    // }
+
     const deleteTaskTime = async (childinew: any) => {
         var UpdatedData: any = []
         var deleteConfirmation = confirm("Are you sure, you want to delete this?")
@@ -1257,38 +1307,88 @@ function TimeEntryPopup(item: any) {
                 }
 
             })
+        }
 
 
+        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+            var ListId = MigrationListId
 
-                var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
-
-            }
-            else {
-                var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
-            }
-            let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-
-            await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/Smalsus/Santosh Kumar").getById(childinew.ParentID).update({
-
-
-                AdditionalTimeEntry: JSON.stringify(UpdatedData),
-
-            }).then((res: any) => {
-
-                console.log(res);
-
-
-            })
-            setupdateData(updateData + 5)
         }
         else {
-            console.log("Select Item")
+            var ListId = TimeSheetlistId
         }
+        let web = new Web(`${siteUrl}`);
+
+        await web.lists.getById(ListId).items.getById(childinew.ParentID).update({
+
+
+            AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+        }).then((res: any) => {
+
+            console.log(res);
+
+
+        })
+        setupdateData(updateData + 5)
 
     }
 
+    // const UpdateAdditionaltime = async (child: any) => {
+    //     var Dateee = ''
+    //     if (editeddata != undefined) {
+    //         var a = Moment(editeddata).format()
+    //         Dateee = Moment(a).format('DD/MM/YYYY')
+    //     }
+    //     else {
+    //         Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+    //     }
+
+    //     var DateFormate = new Date(Eyd)
+    //     var UpdatedData: any = []
+    //     $.each(saveEditTaskTime, function (index: any, update: any) {
+    //         $.each(update.AdditionalTime, function (index: any, updateitem: any) {
+    //             if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
+
+    //                 updateitem.Id = child.ID;
+    //                 updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
+    //                 updateitem.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
+    //                 updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
+
+    //                 updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
+
+
+    //             }
+    //             UpdatedData.push(updateitem)
+    //         })
+    //     });
+    //     setTaskStatuspopup2(false)
+    //     if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+
+    //         var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+
+
+    //     }
+    //     else {
+    //         var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+
+    //     }
+    //     let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+
+    //     await web.lists.getById(ListId).items.getById(child.ParentID).update({
+
+    //         AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+    //     }).then((res: any) => {
+
+    //         console.log(res);
+
+    //         closeTaskStatusUpdatePoup2();
+
+    //     })
+
+    // }
     const UpdateAdditionaltime = async (child: any) => {
         var Dateee = ''
         if (editeddata != undefined) {
@@ -1320,15 +1420,15 @@ function TimeEntryPopup(item: any) {
         setTaskStatuspopup2(false)
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            var ListId = MigrationListId
 
 
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            var ListId = TimeSheetlistId
 
         }
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(`${siteUrl}`);
 
         await web.lists.getById(ListId).items.getById(child.ParentID).update({
 
@@ -1348,29 +1448,25 @@ function TimeEntryPopup(item: any) {
     var smartTermId = ''
     var mainParentId: any = ''
     var mainParentTitle: any = ''
-    const saveTimeSpent = async () => {
-        closeTaskStatusUpdatePoup();
-        var UpdatedData: any = {}
-        smartTermId = "Task" + item.props.siteType + "Id";
-        showProgressBar();
-
-        var AddedData: any = []
-
-        if (checkCategories == undefined && checkCategories == undefined) {
-            alert("please select category or Title");
-            return false;
-        }
-
-        $.each(AllUsers, function (index: any, taskUser: any) {
-            if (taskUser.AssingedToUserId == CurntUserId) {
-                UpdatedData['AuthorName'] = taskUser.Title;
-                UpdatedData['Company'] = taskUser.Company;
-                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-            }
-
-        });
-
-
+    var LetestFolderID: any = ''
+    function getItemTypeForListName(name: any) {
+        return "SP.Data." + name.charAt(0).toUpperCase() + name.split(" ").join("").slice(1) + "ListItem";
+    }
+    const GetOrCreateFolder = async (folderName: any, UpdatedData: any, SiteUrl: any, ListId: any) => {
+        const list = sp.web.lists.getByTitle(ListId);
+        const folderNames = `${UpdatedData.Company}/${folderName}`;
+        await list.items.add({
+            FileSystemObjectType: 1,
+            ContentTypeId: '0x0120',
+        }).then(async (res) => {
+            const lists = sp.web.lists.getByTitle(ListId);
+           await lists.items.getById(res.data.Id).update({
+                Title: folderName,
+                FileLeafRef: folderNames
+            }).then((res) => {
+                console.log(res)
+            })
+        })
         var TimeInHours: any = changeTime / 60;
         TimeInHours = TimeInHours.toFixed(2);
 
@@ -1388,24 +1484,201 @@ function TimeEntryPopup(item: any) {
 
 
 
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-
-
-
+        let web = new Web(`${CurrentSiteUrl}`);
 
 
         //-------------Post Method------------------------------------------------------------
 
         //let folderUri: string = '/Smalsus'
+
         let folderUri: string = `/${UpdatedData.Company}`
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
-            var listUri: string = '/sites/HHHH/SP/Lists/TasksTimesheet2';
-            var listName = 'TasksTimesheet2'
+            var listNames = listName
+            var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
+
         }
         else {
-            var listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
-            var listName = 'TaskTimeSheetListNew'
+            var listNames = listName
+            var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
+
         }
+        let itemMetadataAdded = {
+            'Title':newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
+            [smartTermId]: item.props.Id,
+            'CategoryId': Category,
+            // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
+        };
+
+        let newdata = await web.lists.getByTitle(listNames)
+            .items
+            .add({ ...itemMetadataAdded });
+        console.log(newdata)
+
+        let movedata = await web
+            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+        console.log(movedata);
+        mainParentId = newdata.data.Id;
+        mainParentTitle = newdata.data.Title;
+        createItemforNewUser(LetestFolderID);
+
+    }
+    const saveOldUserTask = async (UpdatedData: any) => {
+        var Available = false;
+        var TimeInHours: any = changeTime / 60;
+        TimeInHours = TimeInHours.toFixed(2);
+
+
+
+        if (AllTimeSpentDetails == undefined) {
+            var AllTimeSpentDetails: any = []
+        }
+
+        TimeSheet.map((items: any) => {
+            if (items.Title == checkCategories) {
+                Category = items.Id
+            }
+        })
+
+
+
+        let web = new Web(`${CurrentSiteUrl}`);
+
+if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
+    AllTimeEntry.forEach(async (ite:any)=>{
+        if(ite.Title == UpdatedData.AuthorName){
+             Available = true;
+            let folderUri: string = `/${UpdatedData.Company}`
+            if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+                var listNames = listName
+                var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
+    
+            }
+            else {
+                var listNames = listName
+                var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
+    
+            }
+            let itemMetadataAdded = {
+                'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
+                [smartTermId]: item.props.Id,
+                'CategoryId': Category,
+                // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
+            };
+    
+            let newdata = await web.lists.getByTitle(listNames)
+                .items
+                .add({ ...itemMetadataAdded });
+            console.log(newdata)
+    
+            let movedata = await web
+                .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+                .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+            console.log(movedata);
+            mainParentId = newdata.data.Id;
+            mainParentTitle = newdata.data.Title;
+            createItemMainList();
+        }
+       
+           
+
+        
+    })
+}
+if(Available == false){
+    GetOrCreateFolder(CurrentUserTitle, UpdatedData, CurrentSiteUrl, listName)
+}
+    }
+
+
+    const CreateTaskUser = async () => {
+        var TimeInHours: any = changeTime / 60;
+        TimeInHours = TimeInHours.toFixed(2);
+
+
+
+        if (AllTimeSpentDetails == undefined) {
+            var AllTimeSpentDetails: any = []
+        }
+
+        TimeSheet.map((items: any) => {
+            if (items.Title == checkCategories) {
+                Category = items.Id
+            }
+        })
+       // GetOrCreateFolder(CurrentUserTitle, 'Santosh Kumar', CurrentSiteUrl, listName)
+
+        // let web = new Web(`${CurrentSiteUrl}`);
+        // await web.lists.getByTitle('Task Users').items.add({
+        //     Title: CurrentUserTitle,
+        //     AssingedToUserId: CurntUserId
+        // })
+        //     .then(async (res: any) => {
+              
+        //         var folderName = `${CurrentSiteUrl}/Lists/${listName}`
+                
+        //     })
+    }
+
+
+    const saveTimeSpent = async () => {
+        closeTaskStatusUpdatePoup();
+        var UpdatedData: any = {}
+        smartTermId = "Task" + item.props.siteType + "Id";
+        showProgressBar();
+
+        var AddedData: any = []
+
+        if (checkCategories == undefined && checkCategories == undefined) {
+            alert("please select category or Title");
+            return false;
+        }
+        var count: any = 0;
+        $.each(AllUsers, async function (index: any, taskUser: any) {
+            count++
+            if (taskUser.AssingedToUserId != null && taskUser.AssingedToUserId == CurntUserId) {
+                UpdatedData['AuthorName'] = taskUser.Title;
+                UpdatedData['Company'] = taskUser.Company;
+                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+                await saveOldUserTask(UpdatedData)
+
+            }
+
+        });
+        if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
+
+           alert("Please Add user on Task User Management")
+
+        }
+
+
+
+        //--------------------------------End Post----------------------------------------------------------------
+
+    }
+    const createItemMainList = async () => {
+        var UpdatedData: any = {}
+        $.each(AllUsers, function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId == CurntUserId) {
+                UpdatedData['AuthorName'] = taskUser.Title;
+                UpdatedData['Company'] = taskUser.Company;
+                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+            }
+
+        });
+        let web = new Web(`${CurrentSiteUrl}`);
+        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+            var listUri: string = `${RelativeUrl}/Lists/${listName}`;
+            //var listName = 'TasksTimesheet2'
+        }
+        else {
+            var listUri: string = `${RelativeUrl}/Lists/${listName}`;
+            //var listName = 'TaskTimeSheetListNew'
+        }
+
+        // let folderUri: string = '/Smalsus/Santosh Kumar';
+        let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
+        // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
         let itemMetadataAdded = {
             'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1421,16 +1694,22 @@ function TimeEntryPopup(item: any) {
             .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
             .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
         console.log(movedata);
-        mainParentId = newdata.data.Id;
-        mainParentTitle = newdata.data.Title;
-        createItemMainList();
-
-        //--------------------------------End Post----------------------------------------------------------------
-
+        NewParentId = newdata.data.Id;
+        NewParentTitle = newdata.data.Title;
+        NewCategoryId = newdata.data.CategoryId;
+        EditData(item.props);
     }
-    const createItemMainList = async () => {
+    const createItemforNewUser = async (LetestFolderID: any) => {
+        let web = new Web(`${siteUrl}`);
+        let taskUsers = [];
+        taskUsers = await web.lists
+            .getByTitle('Task Users')
+            .items
+            .top(4999)
+            .get();
+
         var UpdatedData: any = {}
-        $.each(AllUsers, function (index: any, taskUser: any) {
+        $.each(taskUsers, function (index: any, taskUser: any) {
             if (taskUser.AssingedToUserId == CurntUserId) {
                 UpdatedData['AuthorName'] = taskUser.Title;
                 UpdatedData['Company'] = taskUser.Company;
@@ -1438,14 +1717,14 @@ function TimeEntryPopup(item: any) {
             }
 
         });
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        //  let web = new Web(`${CurrentSiteUrl}`);
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
-            var listUri: string = '/sites/HHHH/SP/Lists/TasksTimesheet2';
-            var listName = 'TasksTimesheet2'
+            var listUri: string = `${RelativeUrl}/Lists/${listName}`;
+            //var listName = 'TasksTimesheet2'
         }
         else {
-            var listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
-            var listName = 'TaskTimeSheetListNew'
+            var listUri: string = `${RelativeUrl}/Lists/${listName}`;
+            //var listName = 'TaskTimeSheetListNew'
         }
 
         // let folderUri: string = '/Smalsus/Santosh Kumar';
@@ -1492,7 +1771,7 @@ function TimeEntryPopup(item: any) {
 
 
 
-        $.each(TaskCate, async function (index: any, items: any) {
+        $.each(TaskCate, async function (index: any,items:any) {
 
             if (items.TimesheetTitle.Id != undefined && items.TimesheetTitle.Id == ParentId) {
                 if (items.AdditionalTime.length > 0 && items.AdditionalTime != undefined) {
@@ -1540,19 +1819,17 @@ function TimeEntryPopup(item: any) {
 
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            var ListId = MigrationListId
 
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            var ListId = TimeSheetlistId
         }
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(`${CurrentSiteUrl}`);
 
         await web.lists.getById(ListId)
-            .items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew/" + UpdatedData.Company + "/" + UpdatedData.Author).getById(AddParentId)
+            .items.getById(AddParentId)
             .update({
-
-
 
                 AdditionalTimeEntry: JSON.stringify(UpdatedData),
 
@@ -1560,7 +1837,6 @@ function TimeEntryPopup(item: any) {
                 console.log(res);
 
                 closeAddTaskTimepopup();
-
                 setupdateData(updateData + 1)
                 //setAdditionalTime({ ...AdditionalTime })
 
@@ -1575,25 +1851,18 @@ function TimeEntryPopup(item: any) {
         confirm("Are you sure, you want to delete this?")
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            var ListId = MigrationListId
 
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            var ListId = TimeSheetlistId
         }
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(`${CurrentSiteUrl}`);
         await web.lists.getById(ListId).items.getById(val.Id).delete()
-            .then(i => {
+            .then((i: any) => {
                 console.log(i);
-
             });
-        TaskCate.forEach((item: any, index: any) => {
-            if (item.Id == val.Id) {
-                TaskCate.splice(index, 1)
-            }
-        })
-        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
-        setupdateData(updateData + 1)
+        setupdateData(updateData + 5)
 
     }
 
@@ -1618,14 +1887,17 @@ function TimeEntryPopup(item: any) {
 
         });
         var Dateee = ''
-        if (editeddata != undefined) {
-            var a = Moment(editeddata).format()
-            Dateee = Moment(a).format('DD/MM/YYYY')
-        }
-        else {
-            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
-        }
-        var DateFormate = new Date(Eyd)
+        // if(editeddata != undefined){
+        //    var a =  Moment(editeddata).format()
+        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
+        // }
+        // else{
+        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
+        // }
+
+        // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        //var DateFormate = new Date(Eyd)
+
         $.each(TaskCate, function (index: any, subItem: any) {
             if (subItem.Id == child.ParentID) {
                 if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
@@ -1644,26 +1916,25 @@ function TimeEntryPopup(item: any) {
                     update['ParentID'] = AddParent;
                     update['TaskTime'] = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
                     update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-                    update['TaskDate'] = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
+                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
                     update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                     subItem.AdditionalTime.push(update)
                     UpdatedData = subItem.AdditionalTime
                 }
             }
         })
-
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            var ListId = MigrationListId
 
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            var ListId = TimeSheetlistId
         }
         setCopyTaskpopup(false)
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(`${CurrentSiteUrl}`);
 
-        await web.lists.getById(ListId).items.filter("FileDirRef eq '/sites/HHHH/SP/Lists/TaskTimeSheetListNew" + UpdatedData.AuthorName + "/" + UpdatedData.Company).getById(AddParent).update({
+        await web.lists.getById(ListId).items.getById(AddParent).update({
 
 
             // TaskDate:postData.TaskDate,
@@ -1694,14 +1965,14 @@ function TimeEntryPopup(item: any) {
                 Category = items.Id
             }
         })
-        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+        let web = new Web(`${CurrentSiteUrl}`);
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = '9ed5c649-3b4e-42db-a186-778ba43c5c93'
+            var ListId = MigrationListId
 
         }
         else {
-            var ListId = '464fb776-e4b3-404c-8261-7d3c50ff343f'
+            var ListId = TimeSheetlistId
         }
 
         await web.lists.getById(ListId).items.getById(CategoryyID).update({
@@ -1719,6 +1990,50 @@ function TimeEntryPopup(item: any) {
 
         })
     }
+    const onRenderCustomHeaderAddTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Add Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+     };
+     const onRenderCustomHeaderEditTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Edit Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
+      const onRenderCustomHeaderCopyTaskTime = () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Copy Task Time
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
+      const onRenderCustomHeaderEditCategory= () => {
+        return (
+          <>
+    
+            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            Edit Category
+            </div>
+            <Tooltip ComponentId='1753' />
+          </>
+        );
+      };
 
     const changeTimeFunction = (e: any, type: any) => {
 
@@ -2010,13 +2325,21 @@ function TimeEntryPopup(item: any) {
                                                                                                                 <table className="table m-0" style={{ width: "100%" }}>
                                                                                                                     <tr className="tdrow">
 
-                                                                                                                        <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                            <img className="workmember wid29 bdrbox"
-                                                                                                                                title={childinew.AuthorName}
-                                                                                                                                data-toggle="popover"
-                                                                                                                                data-trigger="hover"
-                                                                                                                                src={childinew.AuthorImage}></img>
-                                                                                                                            <span className="ml5"> {childinew.AuthorName}</span>
+                                                                                                                        <td colSpan={2} style={{ width: "22%" }}>{
+                                                                                                                            (childinew.AuthorImage != '' && childinew.AuthorImage != null) ?
+                                                                                                                                <>
+
+                                                                                                                                    <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                                                                                                        title={childinew.AuthorName}
+                                                                                                                                        data-toggle="popover"
+                                                                                                                                        data-trigger="hover"
+                                                                                                                                        src={childinew.AuthorImage}></img>
+                                                                                                                                    <span className="ml5"> {childinew.AuthorName}</span>
+                                                                                                                                </> : <> <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                                                                                                    title={childinew.AuthorName}
+                                                                                                                                    data-toggle="popover"
+                                                                                                                                    data-trigger="hover"
+                                                                                                                                    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"></img><span className="ml5"> {childinew.AuthorName}</span></>}
                                                                                                                         </td>
 
                                                                                                                         <td style={{ width: "15%" }}>
@@ -2061,7 +2384,7 @@ function TimeEntryPopup(item: any) {
                                                                                                                                         <tr className="for-c02">
 
                                                                                                                                             <td colSpan={2} style={{ width: "22%" }}>
-                                                                                                                                                <img className="workmember bdrbox"
+                                                                                                                                                <img className="AssignUserPhoto1  bdrbox"
                                                                                                                                                     title="{subchilds.AuthorName}"
                                                                                                                                                     data-toggle="popover"
                                                                                                                                                     data-trigger="hover"
@@ -2141,7 +2464,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
-                isBlocking={TaskStatuspopup}
+                isBlocking={false}
             >
                 <div className="modal-body border p-3  ">
 
@@ -2291,7 +2614,7 @@ function TimeEntryPopup(item: any) {
                                         </div>
                                         <div className="col-sm-3 ps-0">
                                             <label></label>
-                                            <input className="form-control bg-e9" type="text" readOnly style={{cursor:"not-allowed"}} value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
+                                            <input className="form-control bg-e9" type="text" value={`${TimeInHours > 0 ? TimeInHours : 0}  Hours`}
                                             />
                                         </div>
                                         <div
@@ -2357,7 +2680,7 @@ function TimeEntryPopup(item: any) {
                             <div className="col mb-2">
                                 <div>
                                     <b>
-                                        <a target="_blank"  href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                        <a target="_blank" href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                             Manage
                                             Categories
                                         </a>
@@ -2386,25 +2709,25 @@ function TimeEntryPopup(item: any) {
                     </div>
 
                 </div>
-                <div className="modal-footer mt-1">
-                    <button type="button" className="btn btn btn-default mx-1" onClick={closeTaskStatusUpdatePoup}>
-                        Cancel
-                    </button>
+                <div className="modal-footer">
                     <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
 
                 </div>
             </Panel>
+
+
+
             {/* ---------------------------------------------------------------------EditTime--------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
-                onRenderHeader={onRenderCustomHeaderEditTaskTime}
+               onRenderHeader={onRenderCustomHeaderEditTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={TaskStatuspopup2}
                 onDismiss={closeTaskStatusUpdatePoup2}
-                isBlocking={TaskStatuspopup2}
+                isBlocking={false}
             >
                 {saveEditTaskTime.map((item: any) => {
                     return (
@@ -2543,7 +2866,7 @@ function TimeEntryPopup(item: any) {
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
                                                             <label></label>
-                                                            <input className="form-control bg-e9" type="text" readOnly style={{cursor:"not-allowed"}} value={`${(TimeInHours > 0 || TimeInMinutes == undefined) ? TimeInHours : child.TaskTime} Hours`}
+                                                            <input className="form-control bg-e9" type="text" value={`${(TimeInHours > 0 || TimeInMinutes == undefined) ? TimeInHours : child.TaskTime} Hours`}
                                                             />
                                                         </div>
                                                         <div
@@ -2656,12 +2979,12 @@ function TimeEntryPopup(item: any) {
 
 
             <Panel
-               onRenderHeader={onRenderCustomHeaderCopyTaskTime}
+                onRenderHeader={onRenderCustomHeaderCopyTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={CopyTaskpopup}
                 onDismiss={closeCopyTaskpopup}
-                isBlocking={CopyTaskpopup}
+                isBlocking={false}
             >
                 {saveCopyTaskTime.map((item: any) => {
                     return (
@@ -2726,7 +3049,7 @@ function TimeEntryPopup(item: any) {
                                                                     value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
+                                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
                                                                     onChange={handleDatedue}
                                                                     dateFormat="dd/MM/yyyy" />
 
@@ -2800,7 +3123,7 @@ function TimeEntryPopup(item: any) {
                                                         </div>
                                                         <div className="col-sm-3 ps-0">
                                                             <label></label>
-                                                            <input className="form-control bg-e9" readOnly style={{cursor:"not-allowed"}} type="text" value={`${TimeInHours != 0 ? TimeInHours : child.TaskTime} Hours`}
+                                                            <input className="form-control bg-e9" type="text" value={`${TimeInHours != 0 ? TimeInHours : child.TaskTime} Hours`}
                                                                 onChange={(e) => setPostData({ ...postData, TaskTime: e.target.value })} />
                                                         </div>
                                                         <div
@@ -2918,7 +3241,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={AddTaskTimepopup}
                 onDismiss={closeAddTaskTimepopup}
-                isBlocking={AddTaskTimepopup}
+                isBlocking={false}
             >
                 <div className="modal-body  border p-3  ">
 
@@ -3146,7 +3469,7 @@ function TimeEntryPopup(item: any) {
                 customWidth="850px"
                 isOpen={Editcategory}
                 onDismiss={closeEditcategorypopup}
-                isBlocking={Editcategory}
+                isBlocking={false}
             >
                 <div className="modal-body border  p-3  ">
 
@@ -3182,7 +3505,7 @@ function TimeEntryPopup(item: any) {
 
                             <div className="col mb-2">
                                 <div>
-                                    <a target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/SmartMetadata.aspx?TabName=Timesheet">
+                                    <a target="_blank" ng-href="{{pageContext}}/SitePages/SmartMetadata.aspx?TabName=Timesheet">
                                         Manage
                                         Categories
                                     </a>
@@ -3215,6 +3538,9 @@ function TimeEntryPopup(item: any) {
 
                 </div>
             </Panel>
+
+
+
         </div>
     )
 }
