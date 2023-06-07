@@ -39,11 +39,12 @@ import HighlightableCell from '../../../globalComponents/GroupByReactTableCompon
 
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 var AllTasks: any = [];
+let AllTasksRendar: any = [];
 let siteConfig: any = [];
 var IsUpdated: any = '';
 var MeetingItems: any = []
 let AllWSTasks = [];
-var allworkstreamTasks: any = []
+let allworkstreamTasks: any = []
 var filter: any = '';
 var Array: any = []
 let taskUsers: any = [];
@@ -99,6 +100,8 @@ function TasksTable(props: any) {
   const [loaded, setLoaded] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const refreshData = () => setData(() => AllTasksRendar);
+  const rerender = React.useReducer(() => ({}), {})[1];
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -274,7 +277,7 @@ function TasksTable(props: any) {
           if (result.Short_x0020_Description_x0020_On != undefined) {
             result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
           }
-         
+
           result['SiteIcon'] = GetIconImageUrl(result.siteType, props?.AllListId?.siteUrl, undefined);
           // if (result.ClientCategory != undefined && result.ClientCategory.length > 0) {
           //   result.ClientCategory.forEach((catego: any) => {
@@ -318,11 +321,11 @@ function TasksTable(props: any) {
         }
 
         var temp: any = {};
-        temp.Title = 'Tasks';
-        temp.childs = allParentTasks;
-        temp.subRows = allParentTasks
-        temp.childsLength = allParentTasks.length;
-        temp.subRowsLength = allParentTasks.length
+        // temp.Title = 'Tasks';
+        // temp.childs = allParentTasks;
+        // temp.subRows = allParentTasks
+        // temp.childsLength = allParentTasks.length;
+        // temp.subRowsLength = allParentTasks.length
         temp.flag = true;
         temp.show = true;
         temp.PercentComplete = '';
@@ -332,8 +335,11 @@ function TasksTable(props: any) {
         temp.DueDate = '';
         if (allworkstreamTasks === undefined)
           allworkstreamTasks = [];
-        if (temp.childs.length > 0 || temp.subRows.length > 0)
-          allworkstreamTasks = allworkstreamTasks.concat(temp);
+        if (allParentTasks.length > 0)
+          allParentTasks?.map((items) => {
+            allworkstreamTasks.push(items);
+          })
+          AllTasksRendar = AllTasksRendar.concat(allworkstreamTasks)
         setData(allworkstreamTasks);
         setmaidataBackup(allworkstreamTasks)
         //  }
@@ -406,12 +412,12 @@ function TasksTable(props: any) {
   }
   const Call = React.useCallback((childItem: any) => {
     setIsTask(false);
+    setRowSelection({});
     setMeetingPopup(false);
     setWSPopup(false);
-    // refreshData()
-    MeetingItems?.forEach((val: any): any => {
-      val.chekBox = false;
-    })
+    // MeetingItems?.forEach((val: any): any => {
+    //   val.chekBox = false;
+    // })
     MeetingItems = []
     var MainId: any = ''
     if (childItem != undefined) {
@@ -424,16 +430,23 @@ function TasksTable(props: any) {
       if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
         MainId = childItem.data.ComponentId[0]
       }
-      allworkstreamTasks.push(childItem.data)
-
-
-
-      setData(allworkstreamTasks)
-      setCount(count + 1)
+     if(AllTasksRendar!=undefined&&AllTasksRendar.length>0){
+      AllTasksRendar?.map((items:any)=>{
+        if(items.chekBox){
+          items?.subRows?.push(childItem.data)
+        }
+      })
+     }else{
+      AllTasksRendar?.push(childItem.data)
+     }
       
-    }
+    
 
+      refreshData();
+   
+    }
   }, []);
+
   const TimeEntryCallBack = React.useCallback((item1) => {
     setIsTimeEntry(false);
   }, []);
@@ -780,7 +793,7 @@ function TasksTable(props: any) {
     })
   }
   const openActivity = () => {
-    if (checkData != undefined && checkData!=null) {
+    if (checkData != undefined && checkData != null) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
         setMeetingPopup(true)
@@ -804,11 +817,11 @@ function TasksTable(props: any) {
 
   // ===========REACT TABLE ==========
   const onChangeHandler = (itrm: any, child: any, e: any) => {
-   
+
     let checked = e
     if (checked == true) {
       setcheckData(itrm)
-    
+
       itrm.chekBox = true
 
       if (itrm.SharewebTaskType == undefined) {
@@ -874,10 +887,8 @@ function TasksTable(props: any) {
     // })
     //  setCheckedList(checkedList)
     setCheckedList(checkedList => (list));
-    if (list.length === 0)
-      clearreacture();
-
-
+    // if (list.length === 0)
+    //   clearreacture();
   };
   const findUserByName = (Id: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId == Id);
@@ -942,7 +953,7 @@ function TasksTable(props: any) {
               {row?.original?.SiteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
                   <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                {/* </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> */}
+                  {/* </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</> */}
                 </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>T</div> : ""}</>
               }
               {getValue()}
@@ -996,7 +1007,7 @@ function TasksTable(props: any) {
         cell: ({ row }) => (
           <>
             <ShowClintCatogory clintData={row?.original} AllMetadata={smartmetaDetails} />
-          
+
           </>
         ),
         id: 'ClientCategory',
@@ -1207,7 +1218,7 @@ function TasksTable(props: any) {
         onChangeHandler(itrm, props, eTarget);
       }
     } else {
- 
+
       setcheckData(null)
       //   setShowTeamMemberOnCheck(false)
     }
@@ -1263,7 +1274,7 @@ function TasksTable(props: any) {
               Add Workstream-Task
             </button>
             <button type="button"
-              className="btn btn-primary" disabled={table?.getSelectedRowModel()?.flatRows.length===0||table?.getSelectedRowModel()?.flatRows.length>1?true:false }
+              className="btn btn-primary" disabled={table?.getSelectedRowModel()?.flatRows.length === 0 || table?.getSelectedRowModel()?.flatRows.length > 1 ? true : false}
               onClick={buttonRestructuring}>
               Restructure
             </button>
@@ -1328,7 +1339,7 @@ function TasksTable(props: any) {
                   <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
                     hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
 
-                  {table?.getRowModel()?.rows?.map((row: any) => {
+                  {table.getRowModel().rows.map((row: any) => {
                     return (
                       <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
                         key={row.id}>
@@ -1413,10 +1424,10 @@ function TasksTable(props: any) {
         </Panel>
       }
 
-      {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context}pageName={"TaskFooterTable"}></EditTaskPopup>}
+      {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
       {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
-      {MeetingPopup && <CreateActivity props={MeetingItems[MeetingItems.length-1]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
-      {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length-1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
+      {MeetingPopup && <CreateActivity props={MeetingItems[MeetingItems.length - 1]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
+      {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>
