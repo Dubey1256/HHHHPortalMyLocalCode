@@ -546,6 +546,7 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
   const GetMetaData = async () => {
+    await loadAllComponent()
     if (AllListId?.SmartMetadataListID != undefined) {
       try {
         let web = new Web(props?.siteUrl);
@@ -576,6 +577,7 @@ const ProjectManagementMain = (props: any) => {
       alert('Smart Metadata List Id not present')
       siteConfig = [];
     }
+
   };
 
   const EditPopup = React.useCallback((item: any) => {
@@ -612,33 +614,7 @@ const ProjectManagementMain = (props: any) => {
     setSharewebComponent(item);
     // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  const loadAdminConfigurations = async () => {
-    if (AllListId?.AdminConfigrationListID != undefined) {
-      var CurrentSiteType = "";
-      let web = new Web(props?.siteUrl);
-      await web.lists
-        .getById(AllListId.AdminConfigrationListID)
-        .items.select(
-          "Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'"
-        )
-        .top(4999)
-        .get()
-        .then(
-          (response) => {
-            var SmartFavoritesConfig = [];
-            $.each(response, function (index: any, smart: any) {
-              if (smart.Configurations != undefined) {
-                DataSiteIcon = JSON.parse(smart.Configurations);
-              }
-            });
-          },
-          function (error) { }
-        );
-    } else {
-      alert('Admin Configration List Id not present')
-      DataSiteIcon = [];
-    }
-  };
+ 
   const tagAndCreateCallBack = React.useCallback(() => {
     LoadAllSiteTasks();
   }, []);
@@ -658,8 +634,7 @@ const ProjectManagementMain = (props: any) => {
     // setData(backupAllTasks);
   }, []);
   const LoadAllSiteTasks = async function () {
-    await loadAllComponent()
-    loadAdminConfigurations();
+    
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -984,84 +959,156 @@ const ProjectManagementMain = (props: any) => {
     ],
     [data]
   );
+
+  function IndeterminateCheckbox({
+    indeterminate,
+    className = "",
+    ...rest
+  }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
+    const ref = React.useRef<HTMLInputElement>(null!);
+    React.useEffect(() => {
+      if (typeof indeterminate === "boolean") {
+        ref.current.indeterminate = !rest.checked && indeterminate;
+      }
+    }, [ref, indeterminate]);
+    return (
+      <input
+        type="checkbox"
+        ref={ref}
+        className={className + "  cursor-pointer form-check-input rounded-0"}
+        {...rest}
+      />
+    );
+  }
+
   const column2 = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "Task Id",
-        size: 7,
-        canSort: false,
-        placeholder: "",
-        id: 'TaskId',
-        cell: ({ row }) => (
-          <span>
-            <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-              {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
-              <div className="popover__content">
-                <div className="tootltip-title">{row?.original?.Title}</div>
-                <div className="tooltip-body">
-                  {row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 && (
-                    <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-                  )}
-                </div>
-              </div>
-            </div>
-          </span>
+        header: ({ table }: any) => (
+          <>
+            <IndeterminateCheckbox className="mx-1 "
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />{" "}
+          </>
         ),
-      },
-      {
-        cell: ({ row }) => (
-          <span className="d-flex">
-            {row.original.Services.length >= 1 ? (
-              <a
-                className="hreflink text-success"
-                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                data-interception="off"
-                target="_blank"
-              >
-                {row?.original?.Title}
-              </a>
-            ) : (
-              <a
-                className="hreflink"
-                href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                data-interception="off"
-                target="_blank"
-              >
-                {row?.original?.Title}
-              </a>
-            )}
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              {row?.original?.Title != "Others" ? (
+                <IndeterminateCheckbox
+                  {...{
+                    checked: row.getIsSelected(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                />
+              ) : (
+                ""
+              )}
 
-            {row?.original?.Body !== null && (
-              <span className="me-1">
-                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                  <span className="svg__iconbox svg__icon--info"></span>
-                  <div className="popover__content">
-                    <span>
-                      <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
-                    </span>
-                  </div>
-                </div>
-              </span>
-            )}
-          </span>
+              {getValue()}
+            </span>
+          </>
         ),
-        id: "Title",
-        canSort: true,
-        placeholder: "",
-        size: 15,
-      },
-      {
-        cell: ({ row }) => (
-          <span>
-            <img className="circularImage rounded-circle" src={row?.original?.siteIcon} />
-          </span>
-        ),
-        id: "Site",
+        accessorKey: "",
+        id: "row?.original.Id",
+        resetColumnFilters: false,
         canSort: false,
         placeholder: "",
         size: 5,
+
       },
       {
+        accessorKey: "Shareweb_x0020_ID",
+        placeholder: "ID",
+        header: "",
+        resetColumnFilters: false,
+        size: 10,
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
+                {row.original.Services.length >= 1 ? (
+                  <span className='text-success'>{row?.original?.Shareweb_x0020_ID}</span>
+                ) : (
+                  <span>{row?.original?.Shareweb_x0020_ID}</span>
+                )}
+                {row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
+                <div className='popover__content'>
+                  <div className='tootltip-title'>{row?.original?.Title}</div>
+                  <div className='tooltip-body'>
+                      <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+                  </div>
+                </div>}
+              </div>
+            </span>
+          </>
+        ),
+      },
+      {
+        accessorFn: (row) => row?.Title,
+        cell: ({ row, column, getValue }) => (
+          <>
+            <span className='d-flex'>
+              {row.original.Services.length >= 1 ? (
+                <a
+                  className="hreflink text-success"
+                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+              ) : (
+                <a
+                  className="hreflink"
+                  href={`${props?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                  data-interception="off"
+                  target="_blank"
+                >
+                  {row?.original?.Title}
+                </a>
+              )}
+
+              {row?.original?.Body !== null && (
+                <span className='me-1'>
+                  <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
+                    <span className='svg__iconbox svg__icon--info'></span>
+                    <div className='popover__content'>
+                      <span>
+                        <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
+                      </span>
+                    </div>
+                  </div>
+                </span>
+              )}
+            </span>
+          </>
+        ),
+        id: "Title",
+        placeholder: "Title",
+        resetColumnFilters: false,
+        header: "",
+      },
+      {
+        accessorFn: (row) => row?.Site,
+        cell: ({ row }) => (
+          <span>
+            <img className='circularImage rounded-circle' src={row?.original?.siteIcon} />
+          </span>
+        ),
+        id: "Site",
+        placeholder: "Site",
+        header: "",
+        resetColumnFilters: false,
+        size: 5,
+      },
+      {
+        accessorFn: (row) => row?.Portfolio,
         cell: ({ row }) => (
           <span>
             {row.original.Services.length >= 1 ? (
@@ -1086,145 +1133,170 @@ const ProjectManagementMain = (props: any) => {
           </span>
         ),
         id: "Portfolio",
-        canSort: true,
-        placeholder: "",
-        size: 15,
+        placeholder: "Portfolio",
+        resetColumnFilters: false,
+        header: ""
       },
       {
+        accessorFn: (row) => row?.Priority,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
-              type="Task"
+              type='Task'
               callBack={inlineCallBack}
-              columnName="Priority"
+              columnName='Priority'
               item={row?.original}
               TaskUsers={AllUser}
               pageName={'ProjectManagment'}
             />
           </span>
         ),
-        id: "Priority",
-        canSort: true,
-        placeholder: "",
-        size: 10,
+        placeholder: "Priority",
+        id: 'Priority',
+        header: "",
+        resetColumnFilters: false,
+        size: 5,
       },
       {
+        accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
           <InlineEditingcolumns
             AllListId={AllListId}
             callBack={inlineCallBack}
-            columnName="DueDate"
+            columnName='DueDate'
             item={row?.original}
             TaskUsers={AllUser}
             pageName={'ProjectManagment'}
           />
         ),
-        id: "DueDate",
-        canSort: true,
-        placeholder: "",
+        id: 'DueDate',
+        resetColumnFilters: false,
+        placeholder: "Due Date",
+        header: "",
         size: 10,
       },
       {
+        accessorFn: (row) => row?.PercentComplete,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
-              columnName="PercentComplete"
+              columnName='PercentComplete'
               item={row?.original}
               TaskUsers={AllUser}
               pageName={'ProjectManagment'}
             />
           </span>
         ),
-        id: "PercentComplete",
-        canSort: true,
-        placeholder: "",
-        size: 10,
+        id: 'PercentComplete',
+        placeholder: "% Complete",
+        resetColumnFilters: false,
+        header: "",
+        size: 5,
       },
       {
+        accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
-              columnName="Team"
+              columnName='Team'
               item={row?.original}
               TaskUsers={AllUser}
               pageName={'ProjectManagment'}
             />
           </span>
         ),
-        id: "TeamMembers",
-        canSort: true,
-        placeholder: "",
+        id: 'TeamMembers',
+        canSort: false,
+        resetColumnFilters: false,
+        placeholder: "TeamMembers",
+        header: "",
         size: 15,
       },
       {
+        accessorFn: (row) => row?.Remark,
         cell: ({ row }) => (
           <span>
             <InlineEditingcolumns
               AllListId={AllListId}
               callBack={inlineCallBack}
-              columnName="Remark"
+              columnName='Remark'
               item={row?.original}
               TaskUsers={AllUser}
               pageName={'ProjectManagment'}
             />
           </span>
         ),
-        id: "Remarks",
-        canSort: true,
-        placeholder: "",
+        id: 'Remarks',
+        canSort: false,
+        placeholder: "Remarks",
+        header: "",
         size: 10,
       },
       {
+        accessorFn: (row) => row?.Created,
         cell: ({ row }) => (
           <span>
             {row.original.Services.length >= 1 ? (
-              <span className="ms-1 text-success">{row?.original?.DisplayCreateDate} </span>
+              <span className='ms-1 text-success'>{row?.original?.DisplayCreateDate} </span>
             ) : (
-              <span className="ms-1">{row?.original?.DisplayCreateDate} </span>
+              <span className='ms-1'>{row?.original?.DisplayCreateDate} </span>
             )}
-
+    
             {row?.original?.createdImg != undefined ? (
               <>
-                <a
-                  href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
-                  target="_blank"
-                  data-interception="off"
-                >
-                  <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
-                </a>
+                   <a
+                    href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`}
+                    target="_blank"
+                    data-interception="off"
+                  >
+                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                  </a>
               </>
             ) : (
-              <span className="svg__iconbox svg__icon--defaultUser" title={row?.original?.Author?.Title}></span>
+              <span className='svg__iconbox svg__icon--defaultUser' title={row?.original?.Author?.Title}></span>
             )}
           </span>
         ),
-        id: "Created",
-        canSort: true,
-        placeholder: "",
-        size: 20,
+        id: 'Created',
+        canSort: false,
+        resetColumnFilters: false,
+        placeholder: "Created",
+        header: "",
+        size: 15,
       },
-      {
+      { 
         cell: ({ row }) => (
-          <span className="d-flex">
+          <span className='d-flex'>
             <span
-              title="Edit Task"
+              title='Edit Task'
               onClick={() => EditPopup(row?.original)}
-              className="svg__iconbox svg__icon--edit hreflink"
+              className='svg__iconbox svg__icon--edit hreflink'
             ></span>
-            <span style={{ marginLeft: "6px" }} title="Remove Task" onClick={() => untagTask(row?.original)} className="svg__iconbox svg__icon--cross hreflink"></span>
+            <span
+              style={{ marginLeft: '6px' }}
+              title='Remove Task'
+              onClick={() => untagTask(row?.original)}
+              className='svg__iconbox svg__icon--cross hreflink'
+            ></span>
           </span>
         ),
-        id: "Actions",
+        id: 'Actions',
+        accessorKey: "",
         canSort: false,
+        resetColumnFilters: false,
         placeholder: "",
-        size: 10,
+        size: 5,
+
       },
-    ], [data]);
+    ],
+    [data]
+  );
+
 
 
   // const {

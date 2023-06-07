@@ -2004,18 +2004,27 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (
+                    Items?.pageName == "TaskDashBoard" ||
+                    Items?.pageName == "ProjectProfile"||
+                    Items?.pageName =="TaskFooterTable"
+                ) {
+                    if(Items?.pageName =="TaskFooterTable"){
+                     let dataEditor:any= {}
+                     dataEditor.data=smartMetaCall[0]
+                     dataEditor.data.editpopup=true;
+                     dataEditor.data.Shareweb_x0020_ID=EditData.TaskId 
+                     dataEditor.data.listId= Items.Items.listId
+                     dataEditor.data.FeedBack= JSON.stringify(dataEditor.data.FeedBack)
+                    Items.Call(dataEditor) 
+                    }
+                    Items.Call(DataJSONUpdate);
+                }
+                if (
                     typeFunction != "TimeSheetPopup" &&
                     Items?.pageName != "TaskDashBoard" &&
                     Items?.pageName != "ProjectProfile"
                 ) {
                     Items.Call();
-                }
-
-                if (
-                    Items?.pageName == "TaskDashBoard" ||
-                    Items?.pageName == "ProjectProfile"
-                ) {
-                    Items.Call(DataJSONUpdate);
                 }
             })
         } catch (error) {
@@ -2064,8 +2073,8 @@ const EditTaskPopup = (Items: any) => {
             }
             StatusArray?.map((item: any) => {
                 if (PrecentStatus == item.value) {
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
+                    setPercentCompleteStatus(item?.status);
+                    setTaskStatus(item?.taskStatusComment);
                 }
             })
             TaskAssignedTo = tempArrayApprover;
@@ -2074,7 +2083,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
-                let message = JSON.parse(EditData.FeedBack);
+                let message = JSON.parse(EditData?.FeedBack);
                 let feedbackArray: any = [];
                 if (message != null) {
                     feedbackArray = message[0]?.FeedBackDescriptions
@@ -2108,7 +2117,7 @@ const EditTaskPopup = (Items: any) => {
                 if (SubCommentBoxData == "delete") {
                     result = CommentBoxData;
                 } else {
-                    let message = JSON.parse(EditData.FeedBack);
+                    let message = JSON.parse(EditData?.FeedBack);
                     if (message != null) {
                         let feedbackArray = message[0]?.FeedBackDescriptions;
                         feedbackArray?.map((array: any, index: number) => {
@@ -2133,7 +2142,7 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
-            updateFeedbackArray = JSON.parse(EditData.FeedBack);
+            updateFeedbackArray = JSON.parse(EditData?.FeedBack);
         }
         FeedBackBackupArray = [];
         if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
