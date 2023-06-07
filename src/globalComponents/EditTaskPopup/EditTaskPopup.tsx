@@ -2004,17 +2004,19 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (
-                    typeFunction != "TimeSheetPopup" &&
-                    Items?.pageName != "TaskDashBoard" &&
-                    Items?.pageName != "ProjectProfile"
-                ) {
-                    Items.Call();
-                }
-
-                if (
                     Items?.pageName == "TaskDashBoard" ||
-                    Items?.pageName == "ProjectProfile"
+                    Items?.pageName == "ProjectProfile"||
+                    Items?.pageName =="TaskFooterTable"
                 ) {
+                    if(Items?.pageName =="TaskFooterTable"){
+                     let dataEditor:any= {}
+                     dataEditor.data=smartMetaCall[0]
+                     dataEditor.data.editpopup=true;
+                     dataEditor.data.Shareweb_x0020_ID=EditData.TaskId 
+                     dataEditor.data.listId= Items.Items.listId
+                     dataEditor.data.FeedBack= JSON.stringify(dataEditor.data.FeedBack)
+                    Items.Call(dataEditor) 
+                    }
                     Items.Call(DataJSONUpdate);
                 }
             })
