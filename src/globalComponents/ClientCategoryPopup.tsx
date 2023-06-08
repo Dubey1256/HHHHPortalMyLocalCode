@@ -19,6 +19,7 @@ const ClientCategoryPupup=(props:any)=>{
     },[])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
+        props.Call();
        // NewArray = []
        // setSelect([])
        // item.closePopupCallBack();
@@ -76,12 +77,10 @@ const ClientCategoryPupup=(props:any)=>{
 
     const customHeader = () => {
         return (
-            <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        Select Category
-                    </span>
-                </div>
+            <div className={props.props.Services.length>0?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+                <div    style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+              <h2 className="heading">Select -Client Category</h2>
+                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
         )
@@ -175,7 +174,7 @@ const ClientCategoryPupup=(props:any)=>{
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={false}
                 onRenderFooter={customFooter}
-                className={props?.props?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
+                className={props?.props?.Portfolio_x0020_Type == 'Service'||props.props.Services.length>0 ? "serviepannelgreena" : ""}
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">
@@ -251,10 +250,11 @@ const ClientCategoryPupup=(props:any)=>{
                                     {select.map((val: any) => {
                                         return (
                                             <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
+                                               
+                                                    {/* <a className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a> */}
+                                                      <a  className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)">  {val.Title}<span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteSelectedCat(val)}></span></a>
+                                                      
                                             </>
                                         )
                                     })}

@@ -71,6 +71,7 @@ var GlobalServiceAndComponentData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
+    AllListIdData.listId=Items.Items.listId
     Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -281,7 +282,20 @@ const EditTaskPopup = (Items: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
                                     if (ClientData.Id == clientCategoryData.ID) {
-                                      
+                                        // if (clientCategoryData.siteName == null) {
+                                        //     if (clientCategoryData.ParentID == 340 || clientCategoryData.ParentID == 430) {
+                                        //         ClientData.siteName = "EI";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 341) {
+                                        //         ClientData.siteName = "EPS";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 344) {
+                                        //         ClientData.siteName = "Education";
+                                        //     }
+                                        //     if (clientCategoryData.ParentID == 569) {
+                                        //         ClientData.siteName = "Migration";
+                                        //     }
+                                        // } else {
                                         ClientData.siteName = clientCategoryData.siteName;
                                         // }
                                         ClientData.ParentID = clientCategoryData.ParentID;
@@ -494,7 +508,7 @@ const EditTaskPopup = (Items: any) => {
                     item.PercentComplete = statusValue;
                     if (statusValue < 70 && statusValue > 10 || statusValue < 80 && statusValue > 70) {
                         setTaskStatus("In Progress");
-                        setPercentCompleteStatus(`${Number(statusValue).toFixed(0)}% In Progress`);
+                        setPercentCompleteStatus(`${statusValue}% In Progress`);
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: `${statusValue}` })
 
                     } else {
@@ -971,58 +985,17 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
             })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (ParentArray?.Child?.length > 0) {
-                    ParentArray?.Child.map((ChildLevelFirst: any) => {
-                        if (ChildLevelFirst.Child?.length > 0) {
-                            ChildLevelFirst.Child.map((lastChild: any) => {
-                                if (DataItem?.length > 0) {
-                                    DataItem.map((ChildArray: any) => {
-                                        if (lastChild.Id == ChildArray.ParentID) {
-                                            ChildArray.siteName = ParentArray.newTitle;
-                                            ChildArray.Child = [];
-                                            lastChild.Child.push(ChildArray);
-                                        }
-                                    })
-                                }
-                            })
-
-                        }
-
-                    })
-                }
-            })
-        }
-        if (MainParentArray?.length > 0) {
-            MainParentArray.map((ParentArray: any) => {
-                if (ParentArray?.Child?.length > 0) {
-                    ParentArray?.Child.map((ChildLevelFirst: any) => {
-                        if (ChildLevelFirst.Child?.length > 0) {
-                            ChildLevelFirst.Child.map((lastChild: any) => {
-                                if (lastChild.Child?.length > 0) {
-                                    lastChild.Child?.map((endChild: any) => {
-                                        if (DataItem?.length > 0) {
-                                            DataItem.map((ChildArray: any) => {
-                                                if (endChild.Id == ChildArray.ParentID) {
-                                                    ChildArray.siteName = ParentArray.newTitle;
-                                                    ChildArray.Child = [];
-                                                    endChild.Child.push(ChildArray);
-                                                }
-                                            })
-                                        }
-
-                                    })
-                                }
-
-                            })
-
-                        }
-
-                    })
-                }
-            })
+            // MainParentArray.Child.map((ParentArray: any) => {
+            //     if (DataItem?.length > 0) {
+            //         DataItem.map((ChildArray: any) => {
+            //             if (ParentArray.Id == ChildArray.ParentID) {
+            //                 ChildArray.siteName = ParentArray.siteName;
+            //                 ChildArray.Child = [];
+            //                 ParentArray.Child.push(ChildArray);
+            //             }
+            //         })
+            //     }
+            // })
         }
         if (MainParentArray?.length > 0) {
             MainParentArray.map((finalItem: any) => {
@@ -1033,13 +1006,7 @@ const EditTaskPopup = (Items: any) => {
                         if (FinalChild.Child?.length > 0) {
                             FinalChild.Child.map((LastChild: any) => {
                                 FinalArray.push(LastChild)
-                                if (LastChild.Child?.length > 0) {
-                                    LastChild.Child?.map((endChild: any) => {
-                                        FinalArray.push(endChild);
-                                    })
-                                }
                             })
-
                         }
                     })
 
@@ -1586,7 +1553,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
                     setTaskStatus("In Progress");
-                    setPercentCompleteStatus(`${Number(StatusInput).toFixed(0)}% In Progress`);
+                    setPercentCompleteStatus(`${StatusInput}% In Progress`);
                     setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusInput })
                     EditData.IsTodaysTask = false;
                 } else {
@@ -1992,19 +1959,26 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (
                     Items?.pageName == "TaskDashBoard" ||
-                    Items?.pageName == "ProjectProfile" ||
-                    Items?.pageName == "TaskFooterTable"
+                    Items?.pageName == "ProjectProfile"||
+                    Items?.pageName =="TaskFooterTable"
                 ) {
-                    if (Items?.pageName == "TaskFooterTable") {
-                        let dataEditor: any = {}
-                        dataEditor.data = smartMetaCall[0]
-                        dataEditor.data.editpopup = true;
-                        dataEditor.data.Shareweb_x0020_ID = EditData.TaskId
-                        dataEditor.data.listId = Items.Items.listId
-                        dataEditor.data.FeedBack = JSON.stringify(dataEditor.data.FeedBack)
-                        Items.Call(dataEditor)
+                    if(Items?.pageName =="TaskFooterTable"){
+                     let dataEditor:any= {}
+                     dataEditor.data=smartMetaCall[0]
+                     dataEditor.data.editpopup=true;
+                     dataEditor.data.Shareweb_x0020_ID=EditData.TaskId 
+                     dataEditor.data.listId= Items.Items.listId
+                     dataEditor.data.FeedBack= JSON.stringify(dataEditor.data.FeedBack)
+                    Items.Call(dataEditor) 
                     }
                     Items.Call(DataJSONUpdate);
+                }
+                if (
+                    typeFunction != "TimeSheetPopup" &&
+                    Items?.pageName != "TaskDashBoard" &&
+                    Items?.pageName != "ProjectProfile"
+                ) {
+                    Items.Call();
                 }
             })
         } catch (error) {
@@ -2053,8 +2027,8 @@ const EditTaskPopup = (Items: any) => {
             }
             StatusArray?.map((item: any) => {
                 if (PrecentStatus == item.value) {
-                    setPercentCompleteStatus(item.status);
-                    setTaskStatus(item.taskStatusComment);
+                    setPercentCompleteStatus(item?.status);
+                    setTaskStatus(item?.taskStatusComment);
                 }
             })
             TaskAssignedTo = tempArrayApprover;
@@ -2063,7 +2037,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (CommentBoxData?.length > 0 || SubCommentBoxData?.length > 0) {
             if (CommentBoxData?.length == 0 && SubCommentBoxData?.length > 0) {
-                let message = JSON.parse(EditData.FeedBack);
+                let message = JSON.parse(EditData?.FeedBack);
                 let feedbackArray: any = [];
                 if (message != null) {
                     feedbackArray = message[0]?.FeedBackDescriptions
@@ -2097,7 +2071,7 @@ const EditTaskPopup = (Items: any) => {
                 if (SubCommentBoxData == "delete") {
                     result = CommentBoxData;
                 } else {
-                    let message = JSON.parse(EditData.FeedBack);
+                    let message = JSON.parse(EditData?.FeedBack);
                     if (message != null) {
                         let feedbackArray = message[0]?.FeedBackDescriptions;
                         feedbackArray?.map((array: any, index: number) => {
@@ -2122,7 +2096,7 @@ const EditTaskPopup = (Items: any) => {
                 updateFeedbackArray[0].FeedBackDescriptions = result;
             }
         } else {
-            updateFeedbackArray = JSON.parse(EditData.FeedBack);
+            updateFeedbackArray = JSON.parse(EditData?.FeedBack);
         }
         FeedBackBackupArray = [];
         if (tempShareWebTypeData != undefined && tempShareWebTypeData?.length > 0) {
@@ -4169,15 +4143,15 @@ const EditTaskPopup = (Items: any) => {
                                                                                     </span>
                                                                                 }
                                                                                 {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ?
-                                                                                    <div>
+                                                                                    <>
                                                                                         {SiteDtls.ClientCategory?.map((ClData: any) => {
                                                                                             return (
-                                                                                                <p className="mx-2 mb-0">
+                                                                                                <span className="mx-2">
                                                                                                     {ClData.Title}
-                                                                                                </p>
+                                                                                                </span>
                                                                                             )
                                                                                         })}
-                                                                                    </div>
+                                                                                    </>
                                                                                     : null
                                                                                 }
                                                                             </li>
@@ -4199,7 +4173,7 @@ const EditTaskPopup = (Items: any) => {
                                             <div className="input-group">
                                                 <label className="form-label full-width">Status</label>
                                                 <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
-                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
+                                                    defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                     onChange={(e) => StatusAutoSuggestion(e)} />
                                                 <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
@@ -4292,7 +4266,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls}itemID={ Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -4684,9 +4658,7 @@ const EditTaskPopup = (Items: any) => {
                         <button className="nav-link active" id="IMAGE-INFORMATION" data-bs-toggle="tab" data-bs-target="#IMAGEINFORMATION" type="button" role="tab" aria-controls="IMAGEINFORMATION" aria-selected="true">
                             BASIC INFORMATION
                         </button>
-                        <button className="nav-link" id="IMAGE-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#IMAGETIMESHEET" type="button" role="tab" aria-controls="IMAGETIMESHEET" aria-selected="false">
-                           TEAM & TIMESHEET
-                        </button>
+                        <button className="nav-link" id="IMAGE-TIME-SHEET" data-bs-toggle="tab" data-bs-target="#IMAGETIMESHEET" type="button" role="tab" aria-controls="IMAGETIMESHEET" aria-selected="false">TIMESHEET</button>
                     </ul>
                     <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
                         <div className="tab-pane show active" id="IMAGEINFORMATION" role="tabpanel" aria-labelledby="IMAGEINFORMATION">
@@ -4710,7 +4682,6 @@ const EditTaskPopup = (Items: any) => {
                                                                             onChange={(e) => changeStatus(e, "workingThisWeek")} />
                                                                         <label className="form-check-label">Working This Week?</label>
                                                                     </span>
-
                                                                     <span className="form-check">
                                                                         <input className="form-check-input rounded-0" type="checkbox"
                                                                             checked={EditData.IsTodaysTask}
@@ -4727,12 +4698,8 @@ const EditTaskPopup = (Items: any) => {
                                                     <div className="mx-0 row  ">
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
-                                                                {/* <CDatePicker date={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}/> */}
-                                                                {/* <DatePicker value={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : null} onChange={(date) => setEditData({
-                                                        ...EditData, StartDate: date
-                                                    })} /> */}
                                                                 <label className="form-label full-width" >Start Date</label>
-                                                                <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
+                                                                <input type="date" className="form-control start-date" max="9999-12-31" min="2000-01-01"
                                                                     defaultValue={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, StartDate: e.target.value
@@ -4746,7 +4713,8 @@ const EditTaskPopup = (Items: any) => {
                                                                     <input type="checkbox" className="form-check-input rounded-0 ms-2"
                                                                     />
                                                                 </span></div>
-                                                                <input type="date" className="form-control" placeholder="Enter Due Date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
+
+                                                                <input type="date" className="form-control due-date" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.DueDate ? Moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, DueDate: e.target.value
@@ -4756,8 +4724,9 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col-6 ps-0 mt-2">
                                                             <div className="input-group ">
-                                                                <label className="form-label full-width" > Completed Date </label>
-                                                                <input type="date" className="form-control" max="9999-12-31" min={EditData.Created ? Moment(EditData.Created).format("YYYY-MM-DD") : ""}
+                                                                <label className="form-label full-width"
+                                                                >Completed Date</label>
+                                                                <input type="date" className="form-control complete-Date " max="9999-12-31" min={EditData.StartDate ? Moment(EditData.StartDate).format("YYYY-MM-DD") : ''}
                                                                     defaultValue={EditData.CompletedDate ? Moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
                                                                     onChange={(e) => setEditData({
                                                                         ...EditData, CompletedDate: e.target.value
@@ -4768,7 +4737,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col-6 ps-0 pe-0 mt-2">
                                                             <div className="input-group">
                                                                 <label className="form-label full-width">Item Rank</label>
-                                                                <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setEditData({ ...EditData, ItemRank: e.target.value })}>
+                                                                <select className="form-select" defaultValue={EditData.ItemRank} onChange={(e) => setItemRank(e.target.value)}>
                                                                     {ItemRankArray.map(function (h: any, i: any) {
                                                                         return (
                                                                             <option key={i} selected={EditData.ItemRank == h.rank} value={h.rank} >{h.rankTitle}</option>
@@ -4782,104 +4751,85 @@ const EditTaskPopup = (Items: any) => {
                                                         <div className="col ps-0">
                                                             <div className="input-group mb-2">
                                                                 <label className="full-width">
-                                                                    <span className="form-check form-check-inline mb-0 l-radio">
+                                                                    <span className="form-check l-radio form-check-inline mb-0">
                                                                         <input type="radio" id="Components"
                                                                             name="Portfolios" checked={ComponentTaskCheck}
-                                                                            onClick={(e) => ChangeComponentStatus(e, "Component")}
                                                                             title="Component"
 
-                                                                            className="form-check-input" />
+                                                                            className="form-check-input " />
                                                                         <label className="form-check-label mb-0">Component</label>
                                                                     </span>
-                                                                    <span className="form-check form-check-inline mb-0 l-radio">
+                                                                    <span className="form-check l-radio form-check-inline mb-0">
                                                                         <input type="radio" id="Services"
                                                                             name="Portfolios" value="Services"
                                                                             title="Services"
                                                                             checked={ServicesTaskCheck}
-                                                                            onClick={(e) => ChangeComponentStatus(e, "Service")}
                                                                             className="form-check-input" />
                                                                         <label className="form-check-label mb-0">Services</label>
                                                                     </span>
                                                                 </label>
-                                                                {smartComponentData?.length > 0 && ComponentTaskCheck || smartServicesData?.length > 0 && ServicesTaskCheck ? null :
+                                                                {smartComponentData?.length > 0 || smartServicesData?.length > 0 ? null :
                                                                     <>
                                                                         <input type="text"
                                                                             className="form-control"
-                                                                            value={SearchedServiceCompnentKey}
-                                                                            onChange={(e) => autoSuggestionsForServiceAndComponent(e)}
-                                                                            placeholder="Select Componets / Service And Search Here"
+                                                                            id="{{PortfoliosID}}" autoComplete="off"
                                                                         />
                                                                     </>
                                                                 }
                                                                 {smartComponentData.length > 0 && ComponentTaskCheck ? smartComponentData?.map((com: any) => {
                                                                     return (
                                                                         <>
-                                                                            <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                            <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
+                                                                                <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                 <a>
-                                                                                    <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                    {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+
+                                                                                    <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                                 </a>
                                                                             </div>
                                                                         </>
                                                                     )
-                                                                }) : null}
+                                                                }) : <>
+                                                                    <input type="text"
+                                                                        className="form-control"
+                                                                        id="{{PortfoliosID}}" autoComplete="off"
+                                                                    />
+                                                                </>}
                                                                 {
                                                                     smartServicesData?.length > 0 && ServicesTaskCheck ? smartServicesData?.map((com: any) => {
                                                                         return (
                                                                             <>
-                                                                                <div className="d-flex justify-content-between block px-2 py-1" style={{ width: "88%" }}>
-                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}>{com.Title}</a>
+                                                                                <div className="block d-flex justify-content-between px-2 py-1" style={{ width: "88%" }}>
+                                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                                                     <a>
-                                                                                        <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                        {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                                                                        <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
+                                                                                        </svg>
                                                                                     </a>
                                                                                 </div>
                                                                             </>
                                                                         )
-                                                                    }) : null
+                                                                    }) : <>
+                                                                        <input type="text"
+                                                                            className="form-control"
+                                                                            id="{{PortfoliosID}}" autoComplete="off"
+                                                                        />
+                                                                    </>
                                                                 }
-
                                                                 <span className="input-group-text">
-                                                                    {ComponentTaskCheck ?
-                                                                        <span title="Component Popup" onClick={() => EditComponent(EditData, 'Component')} className="svg__iconbox svg__icon--editBox"></span>
-                                                                        // <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                                        : null}
-
-                                                                    {ServicesTaskCheck ?
-                                                                        <span title="Service Popup" onClick={(e) => EditLinkedServices(EditData, 'Services')} className="svg__iconbox svg__icon--editBox"></span>
-                                                                        // <svg onClick={(e) => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> 
-                                                                        : null}
-                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                        <span title="Component/Service Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}
-                                                                            className="svg__iconbox svg__icon--editBox"></span>
-                                                                        // <svg onClick={(e) => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                                        : null}
+                                                                    {ComponentTaskCheck ? <svg onClick={() => EditComponent(EditData, 'Component')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
+                                                                    {ServicesTaskCheck ? <svg onClick={() => EditLinkedServices(EditData, 'Services')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
+                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ? <svg onClick={() => alert("Please select anyone from Portfolio/Services")} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> : null}
 
                                                                 </span>
                                                             </div>
-                                                            {SearchedServiceCompnentData?.length > 0 ? (
-                                                                <div className="SmartTableOnTaskPopup">
-                                                                    <ul className="list-group">
-                                                                        {SearchedServiceCompnentData.map((Item: any) => {
-                                                                            return (
-                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={Item.id} onClick={() => setSelectedServiceAndCompnentData(Item)} >
-                                                                                    <a>{Item.NewLeble}</a>
-                                                                                </li>
-                                                                            )
-                                                                        }
-                                                                        )}
-                                                                    </ul>
-                                                                </div>) : null}
                                                             <div className="input-group mb-2">
                                                                 <label className="form-label full-width">
                                                                     Categories
                                                                 </label>
+
                                                                 <input type="text" className="form-control"
                                                                     id="txtCategories" placeholder="Search Category Here" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
-                                                                <span className="input-group-text" title="Smart Category Popup" onClick={(e) => EditComponentPicker(EditData, 'Categories')}>
-                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
-                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                <span className="input-group-text">
+                                                                    <svg onClick={(e) => EditComponentPicker(EditData, 'Categories')} xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                                                 </span>
                                                             </div>
                                                             {SearchedCategoryData?.length > 0 ? (
@@ -4941,11 +4891,11 @@ const EditTaskPopup = (Items: any) => {
                                                                                 if (type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Immediate" && type.Title != "Approval" && type.Title != "Email" && type.Title != "Only Completed") {
                                                                                     return (
                                                                                         <div className="block px-2 py-2 d-flex my-1 justify-content-between">
-                                                                                            <a style={{ color: "#fff !important" }}>
+                                                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?${EditData.Id}`}>
                                                                                                 {type.Title}
                                                                                             </a>
-                                                                                            <span onClick={() => removeCategoryItem(type.Title, type.Id)} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                            {/* <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                                                                            <svg onClick={() => removeCategoryItem(type.Title, type.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+
                                                                                         </div>
                                                                                     )
                                                                                 }
@@ -4968,160 +4918,83 @@ const EditTaskPopup = (Items: any) => {
                                                                 </div>
                                                                 <div className="col ps-4">
                                                                     <ul className="p-0 mt-1">
-                                                                        <li className="form-check l-radio">
-                                                                            <input className="form-check-input"
-                                                                                name="ApprovalLevel"
+                                                                        <li
+                                                                            className="form-check l-radio">
+                                                                            <label>Normal Approval</label>
+                                                                            <input
                                                                                 type="radio"
-                                                                            />
-                                                                            <label className="form-check-label">Normal Approval</label>
+                                                                                name="ApprovalLevel"
+                                                                                className="form-check-input" />
                                                                         </li>
                                                                         <li
                                                                             className="form-check l-radio">
                                                                             <label> Complex Approval</label>
                                                                             <input
                                                                                 type="radio"
-                                                                                className="form-check-input"
-                                                                                name="ApprovalLevel" />
+                                                                                name="ApprovalLevel"
+                                                                                className="form-check-input" />
                                                                         </li>
                                                                         <li
                                                                             className="form-check l-radio">
-                                                                            <label>Quick Approval</label>
+                                                                            <label> Quick Approval</label>
                                                                             <input
                                                                                 type="radio"
-                                                                                className="form-check-input"
-                                                                                name="ApprovalLevel" />
+                                                                                name="ApprovalLevel"
+                                                                                className="form-check-input " />
                                                                         </li>
                                                                     </ul>
                                                                 </div>
                                                                 {ApprovalStatus ?
                                                                     <div>
-                                                                        <div className="col-12">
-                                                                            <div className="input-group">
-                                                                                <input type="text"
-                                                                                    className="form-control"
-                                                                                    placeholder="Search Approver's Name Here"
-                                                                                    value={ApproverSearchKey}
-                                                                                    onChange={(e) => autoSuggestionsForApprover(e, "OnTaskPopup")}
-                                                                                />
-                                                                                <span className="input-group-text" onClick={OpenApproverPopupFunction} title="Approver Data Popup">
-                                                                                    <span className="svg__iconbox svg__icon--editBox"></span>
+                                                                        {ApproverData?.map((Approver: any, index: number) => {
+                                                                            return (
+                                                                                <div className="block px-2 py-1 d-flex my-1 justify-content-between">
+                                                                                    {/* href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?${EditData.Id}`} */}
+                                                                                    <div>
+                                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
+                                                                                            {Approver.Title}
+                                                                                        </a>
 
-                                                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
-
-                                                                                </span>
-                                                                            </div>
-                                                                            {ApproverSearchedData?.length > 0 ? (
-                                                                                <div className="SmartTableOnTaskPopup">
-                                                                                    <ul className="list-group">
-                                                                                        {ApproverSearchedData.map((item: any) => {
-                                                                                            return (
-                                                                                                <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => SelectApproverFromAutoSuggestion(item)} >
-                                                                                                    <a>{item.NewLabel}</a>
-                                                                                                </li>
-                                                                                            )
-                                                                                        }
-                                                                                        )}
-                                                                                    </ul>
-                                                                                </div>) : null}
-
-                                                                            {ApproverData != undefined && ApproverData.length > 0 ?
-                                                                                <div>
-                                                                                    {ApproverData.map((Approver: any, index: number) => {
-                                                                                        return (
-                                                                                            <div className="block mt-1 px-2 py-2">
-                                                                                                <div className="d-flex justify-content-between">
-                                                                                                    <a className="hreflink " target="_blank" data-interception="off" >
-                                                                                                        {Approver.Title}
-                                                                                                    </a>
-                                                                                                    <span onClick={() => setApproverData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                                    {/* <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
-                                                                                    </svg> */}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        )
-                                                                                    })}
-                                                                                </div> : null}
-                                                                        </div>
-                                                                        <div className="Approval-History-section my-2">
-                                                                            {ApproverHistoryData != undefined && ApproverHistoryData.length > 1 ?
-                                                                                <div>
-                                                                                    {ApproverHistoryData.map((HistoryData: any, index: any) => {
-                                                                                        if (index < ApproverHistoryData.length - 1) {
-                                                                                            return (
-                                                                                                <div className="d-flex full-width justify-content-between">
-                                                                                                    <div className="d-flex">
-                                                                                                        Approved by-
-                                                                                                        <span className="siteColor mx-1">{HistoryData.ApproverName}</span>
-                                                                                                    </div>
-                                                                                                    <div>
-                                                                                                        <span>{HistoryData.ApprovedDate}</span>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            )
-                                                                                        }
-                                                                                    })}
+                                                                                        <svg onClick={() => setApproverData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+                                                                                    </div>
+                                                                                    {index == 0 ? <span className="float-end " onClick={OpenApproverPopupFunction} >
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                                                    </span> : null}
                                                                                 </div>
-                                                                                : null
-                                                                            }
-                                                                        </div>
-                                                                    </div>
-                                                                    : null
+                                                                            )
+                                                                        })}
+                                                                    </div> : null
                                                                 }
 
-                                                                {/* {ApprovalStatus ?
-                                                        <div className="input-group-text p-0">
-                                                            {ApproverData?.map((Approver: any, index: number) => {
-                                                                return (
-                                                                    <div className="block d-flex full-width justify-content-between">
-                                                                       
-
-                                                                        <a style={{ color: "#fff !important" }} target="_blank" data-interception="off">
-                                                                            {Approver.Title}
-                                                                        </a>
-
-                                                                        <svg onClick={() => removeApproverFunction(Approver.Title, Approver.Id)} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
-
-                                                                        {index == 0 ?
-                                                                            <span className="input-group-text">
-                                                                                <svg onClick={OpenApproverPopupFunction} xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
-                                                                            </span>
-                                                                            : null}
-                                                                    </div>
-                                                                )
-                                                            })}
-                                                        </div> : null
-                                                    } */}
                                                             </div>
                                                         </div>
                                                         <div className="col-6 ps-0 pe-0 pt-4">
                                                             <div>
                                                                 <div className="input-group">
                                                                     <input type="text" className="form-control"
-                                                                        placeholder="Enter Priority"
-                                                                        value={EditData.Priority_x0020_Rank ? EditData.Priority_x0020_Rank : ''}
-                                                                        onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                                        placeholder="Enters Priority" defaultValue={PriorityStatus ? PriorityStatus : ''}
                                                                     />
                                                                 </div>
                                                                 <ul className="p-0 mt-1">
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input"
                                                                             name="radioPriority" type="radio"
-                                                                            checked={EditData.Priority_x0020_Rank <= 10 && EditData.Priority_x0020_Rank >= 8}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 8 })}
+                                                                            value="(1) High" checked={PriorityStatus === "(1) High"}
+
                                                                         />
                                                                         <label className="form-check-label">High</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.Priority_x0020_Rank <= 7 && EditData.Priority_x0020_Rank >= 4}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 4 })}
+                                                                            type="radio" value="(2) Normal"
+                                                                            checked={PriorityStatus === "(2) Normal"}
                                                                         />
                                                                         <label className="form-check-label">Normal</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input className="form-check-input" name="radioPriority"
-                                                                            type="radio" checked={EditData.Priority_x0020_Rank <= 3 && EditData.Priority_x0020_Rank > 0}
-                                                                            onChange={() => setEditData({ ...EditData, Priority_x0020_Rank: 1 })}
+                                                                            type="radio" value="(3) Low"
+                                                                            checked={PriorityStatus === "(3) Low"}
                                                                         />
                                                                         <label className="form-check-label">Low</label>
                                                                     </li>
@@ -5134,31 +5007,99 @@ const EditTaskPopup = (Items: any) => {
                                                                     />
                                                                 </div>
                                                             </div>
+                                                            <div className="col-12 mb-2">
+                                                                {ComponentTaskCheck ?
+                                                                    <div className="input-group">
+                                                                        <label className="form-label full-width">
+                                                                            Linked Service
+                                                                        </label>
+                                                                        {
+                                                                            smartServicesData?.length > 0 ? <div>
+                                                                                {smartServicesData?.map((com: any) => {
+                                                                                    return (
+                                                                                        <>
+                                                                                            <div className="d-flex block px-2 py-1">
+
+                                                                                                <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                    {com.Title}
+                                                                                                </a>
+
+                                                                                                <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+
+                                                                                            </div>
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </div> :
+                                                                                <input type="text"
+                                                                                    className="form-control"
+                                                                                />
+                                                                        }
+                                                                        <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+
+                                                                        </span>
+                                                                    </div> : null}
+                                                                {ServicesTaskCheck ? <div className="input-group">
+                                                                    <label className="form-label full-width">
+                                                                        Linked Component
+                                                                    </label>
+                                                                    {
+                                                                        smartComponentData?.length > 0 ? <div>
+                                                                            {smartComponentData?.map((com: any) => {
+                                                                                return (
+                                                                                    <>
+                                                                                        <div className="d-flex block px-2 py-1">
+
+                                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                                                {com.Title}
+                                                                                            </a>
+
+                                                                                            <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
+
+                                                                                        </div>
+                                                                                    </>
+                                                                                )
+                                                                            })}
+                                                                        </div> :
+                                                                            <input type="text"
+                                                                                className="form-control"
+                                                                            />
+                                                                    }
+                                                                    <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                                    </span>
+                                                                </div> : null}
+
+                                                            </div>
+
                                                             <div className="col-12" title="Relevant Portfolio Items">
                                                                 <div className="input-group">
                                                                     <label className="form-label full-width "> Linked Component Task </label>
-                                                                    <input type="text" readOnly
+                                                                    <input type="text"
                                                                         className="form-control "
-                                                                    />
-                                                                    <span className="input-group-text" title="Linked Component Task Popup" onClick={(e) => alert("We are working on It. This Feature Will Be Live Soon...")}>
-                                                                        <span className="svg__iconbox svg__icon--editBox"></span>
-                                                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                        readOnly
+                                                                        autoComplete="off" />
+                                                                    <span className="input-group-text">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                                        </svg>
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="col-12 mb-2 mt-2">
+                                                            <div className="col-12 mb-2">
                                                                 {ComponentTaskCheck ?
-                                                                    <div>
+                                                                    <div >
                                                                         <div className="input-group">
                                                                             <label className="form-label full-width">
                                                                                 Linked Service
                                                                             </label>
                                                                             <input type="text"
-                                                                                className="form-control"
+                                                                                className="form-control "
                                                                             />
-                                                                            <span className="input-group-text" title="Linked Service Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                                <span className="svg__iconbox svg__icon--editBox"></span>
-                                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                            <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+
                                                                             </span>
                                                                         </div>
                                                                         {
@@ -5172,8 +5113,7 @@ const EditTaskPopup = (Items: any) => {
                                                                                                         {com.Title}
                                                                                                     </a>
                                                                                                     <a>
-                                                                                                        <span onClick={() => setSmartServicesData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                                        {/* <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                                                                                        <svg onClick={() => setSmartServicesData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                                                     </a>
                                                                                                 </div>
                                                                                             </div>
@@ -5192,9 +5132,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input type="text"
                                                                             className="form-control "
                                                                         />
-                                                                        <span className="input-group-text" title="Linked Component Popup" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
-                                                                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                                        <span className="input-group-text" onClick={(e) => alert("We Are Working On This Feature. It Will Be Live Soon...")}>
+
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
                                                                         </span>
                                                                     </div>
 
@@ -5204,13 +5144,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                 return (
                                                                                     <div>
                                                                                         <div className="d-flex justify-content-between block px-2 py-2 mt-1">
-
                                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`${Items.Items.siteType}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                                                 {com.Title}
                                                                                             </a>
                                                                                             <a>
-                                                                                                <span onClick={() => setSmartComponentData([])} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                                                                {/* <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg> */}
+                                                                                                <svg onClick={() => setSmartComponentData([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none">
+                                                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" />
+                                                                                                </svg>
                                                                                             </a>
                                                                                         </div>
                                                                                     </div>
@@ -5219,7 +5159,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         </div> :
                                                                             null
                                                                     }
+
                                                                 </div> : null}
+
                                                             </div>
                                                             <div className="col-12">
                                                                 <div className="input-group">
@@ -5232,19 +5174,9 @@ const EditTaskPopup = (Items: any) => {
                                                                         value={ProjectSearchKey}
                                                                         onChange={(e) => autoSuggestionsForProject(e)}
                                                                     />
-                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ?
-                                                                        <span className="input-group-text" title="Project Popup" onClick={(e) => alert("Please select anyone from Portfolio/Services")}>
-                                                                            <span className="svg__iconbox svg__icon--editBox"></span>
-                                                                            {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" />
-                                                                </svg> */}
-                                                                        </span>
-
-                                                                        : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
-                                                                            <span className="svg__iconbox svg__icon--editBox">
-                                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
-                                                                            </span>
-                                                                        </span>}
+                                                                    {ComponentTaskCheck == false && ServicesTaskCheck == false ? <span className="input-group-text" onClick={(e) => alert("Please select anyone from Portfolio/Services")}> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg></span> : <span className="input-group-text" onClick={() => setProjectManagementPopup(true)} title="Project Items Popup" >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg>
+                                                                    </span>}
                                                                 </div>
                                                                 {SearchedProjectData?.length > 0 ? (
                                                                     <div className="SmartTableOnTaskPopup">
@@ -5268,11 +5200,13 @@ const EditTaskPopup = (Items: any) => {
                                                                                         <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                             {ProjectData.Title}
                                                                                         </a>
+
                                                                                         <svg onClick={() => setSelectedProject([])} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M31.2312 14.9798C27.3953 18.8187 24.1662 21.9596 24.0553 21.9596C23.9445 21.9596 20.7598 18.8632 16.9783 15.0787C13.1967 11.2942 9.96283 8.19785 9.79199 8.19785C9.40405 8.19785 8.20673 9.41088 8.20673 9.80398C8.20673 9.96394 11.3017 13.1902 15.0844 16.9734C18.8672 20.7567 21.9621 23.9419 21.9621 24.0516C21.9621 24.1612 18.8207 27.3951 14.9812 31.2374L8 38.2237L8.90447 39.1119L9.80893 40L16.8822 32.9255L23.9556 25.851L30.9838 32.8802C34.8495 36.7464 38.1055 39.9096 38.2198 39.9096C38.4742 39.9096 39.9039 38.4689 39.9039 38.2126C39.9039 38.1111 36.7428 34.8607 32.8791 30.9897L25.8543 23.9512L32.9271 16.8731L40 9.79501L39.1029 8.8975L38.2056 8L31.2312 14.9798Z" fill="#fff" /></svg>
                                                                                     </div>
                                                                                 </div>
                                                                             )
                                                                         })}
+
                                                                     </div> : null}
                                                             </div>
                                                         </div>
@@ -5282,7 +5216,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <label className="form-label full-width ">Relevant URL</label>
                                                             <input type="text" className="form-control" defaultValue={EditData.component_x0020_link != null ? EditData.Relevant_Url : ''} placeholder="Url" onChange={(e) => setEditData({ ...EditData, Relevant_Url: e.target.value })}
                                                             />
-                                                            <span className={EditData.component_x0020_link != null ? "input-group-text" : "input-group-text Disabled-Link"}>
+                                                            <span className={EditData.component_x0020_link != null ? "input-group-text " : "input-group-text Disabled-Link"}>
                                                                 <a target="_blank" href={EditData.component_x0020_link != null ? EditData.component_x0020_link.Url : ''} data-interception="off"
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 48 48" fill="none">
@@ -5293,9 +5227,8 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                     </div>
                                                 </div>
-
                                                 <div className="col-md-3">
-                                                    {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 && AllListIdData.isShowSiteCompostion ?
+                                                    {AllListIdData.isShowSiteCompostion ?
                                                         <div className="Sitecomposition">
                                                             <div className='dropdown'>
                                                                 <a className="sitebutton bg-fxdark" style={{ cursor: "pointer" }} onClick={() => setComposition(composition ? false : true)}>
@@ -5307,7 +5240,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             {EditData.siteCompositionData != undefined && EditData.siteCompositionData.length > 0 ?
                                                                                 <>
                                                                                     {EditData.siteCompositionData?.map((SiteDtls: any, i: any) => {
-                                                                                        return <li className="Sitelist">
+                                                                                        return (<li className="Sitelist">
                                                                                             <span className="ms-2">
                                                                                                 <img style={{ width: "22px" }} src={SiteDtls.siteIcons} />
                                                                                             </span>
@@ -5317,47 +5250,38 @@ const EditTaskPopup = (Items: any) => {
                                                                                                     {Number(SiteDtls.ClienTimeDescription).toFixed(2)}%
                                                                                                 </span>
                                                                                             }
-                                                                                            {SiteDtls.ClientCategory != undefined && SiteDtls.ClientCategory.length > 0 ?
-                                                                                                <div>
-                                                                                                    {SiteDtls.ClientCategory?.map((ClData: any) => {
-                                                                                                        return (
-                                                                                                            <p className="mx-2 mb-0">
-                                                                                                                {ClData.Title}
-                                                                                                            </p>
-                                                                                                        )
-                                                                                                    })}
-                                                                                                </div>
-                                                                                                : null
-                                                                                            }
-                                                                                        </li>
+                                                                                        </li>)
                                                                                     })}
                                                                                 </> : null
                                                                             }
+
                                                                         </ul>
                                                                     </div> : null
                                                                 }
-                                                                <div className="bg-e9 border-1 p-2">
-                                                                    <label className="siteColor">Total Time</label>
-                                                                    {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
-                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        : null}
+                                                            <div className="bg-e9 border-1 p-2">
+                                                                <label className="siteColor">Total Time</label>
+                                                                {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
+                                                            </div>
+
+                                                        </div> : null}
 
                                                     <div className="col mt-2">
                                                         <div className="input-group">
                                                             <label className="form-label full-width">Status</label>
-                                                            <input type="text" maxLength={3} placeholder="% Complete" disabled={InputFieldDisable} className="form-control px-2"
+                                                            <input type="text" placeholder="% Complete" className="form-control px-2" disabled={InputFieldDisable}
                                                                 defaultValue={PercentCompleteCheck ? (EditData.PercentComplete != undefined ? EditData.PercentComplete : null) : (UpdateTaskInfo.PercentCompleteStatus ? UpdateTaskInfo.PercentCompleteStatus : null)}
                                                                 onChange={(e) => StatusAutoSuggestion(e)} />
-                                                            <span className="input-group-text" title="Status Popup" onClick={() => openTaskStatusUpdatePopup(EditData)}>
-                                                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
-                                                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                                                            <span className="input-group-text" onClick={() => openTaskStatusUpdatePopup(EditData)}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 48 48" fill="none">
+                                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                                                </svg>
                                                             </span>
+
                                                             {PercentCompleteStatus?.length > 0 ?
-                                                                <span className="full-width l-radio">
-                                                                    <input type='radio' className="form-check-input my-2" checked />
-                                                                    <label className="ps-2 pt-1">
+                                                                <span className="full-width">
+                                                                    <input type='radio' className="my-2" checked />
+                                                                    <label className="ps-2">
                                                                         {PercentCompleteStatus}
                                                                     </label>
                                                                 </span> : null}
@@ -5368,31 +5292,31 @@ const EditTaskPopup = (Items: any) => {
                                                             <div>
                                                                 <div className="input-group">
                                                                     <label className="form-label full-width ">Time</label>
-                                                                    <input type="text" maxLength={3} className="form-control" placeholder="Time"
-                                                                        defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} onChange={(e) => setEditData({ ...EditData, Mileage: e.target.value })} />
+                                                                    <input type="text" className="form-control" placeholder="Time"
+                                                                        defaultValue={EditData.Mileage != null ? EditData.Mileage : ""} />
                                                                 </div>
                                                                 <ul className="p-0 mt-1">
                                                                     <li className="form-check l-radio">
                                                                         <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false} type="radio"
+                                                                            checked={EditData.Mileage === '15'} type="radio"
                                                                             onChange={(e) => setEditData({ ...EditData, Mileage: '15' })}
-                                                                            defaultChecked={EditData.Mileage <= 15 && EditData.Mileage > 0 ? true : false}
+                                                                            defaultChecked={EditData.Mileage == "15" ? true : false}
                                                                         />
                                                                         <label className="form-check-label">Very Quick</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false} type="radio"
+                                                                            checked={EditData.Mileage === '60'} type="radio"
                                                                             onChange={(e) => setEditData({ ...EditData, Mileage: '60' })}
-                                                                            defaultChecked={EditData.Mileage <= 60 && EditData.Mileage > 15 ? true : false}
+                                                                            defaultChecked={EditData.Mileage == "60"}
                                                                         />
                                                                         <label className="form-check-label">Quick</label>
                                                                     </li>
                                                                     <li className="form-check l-radio">
                                                                         <input name="radioTime" className="form-check-input"
-                                                                            checked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false} type="radio"
+                                                                            checked={EditData.Mileage === '240'} type="radio"
                                                                             onChange={(e) => setEditData({ ...EditData, Mileage: '240' })}
-                                                                            defaultChecked={EditData.Mileage <= 240 && EditData.Mileage > 60 ? true : false}
+                                                                            defaultChecked={EditData.Mileage == "240"}
                                                                         />
                                                                         <label className="form-check-label">Medium</label>
                                                                     </li>
@@ -5400,7 +5324,7 @@ const EditTaskPopup = (Items: any) => {
                                                                         <input name="radioTime" className="form-check-input"
                                                                             checked={EditData.Mileage === '480'} type="radio"
                                                                             onChange={(e) => setEditData({ ...EditData, Mileage: '480' })}
-                                                                            defaultChecked={EditData.Mileage <= 480 && EditData.Mileage > 240 ? true : false}
+                                                                            defaultChecked={EditData.Mileage == "480"}
                                                                         />
                                                                         <label className="form-check-label">Long</label>
                                                                     </li>
@@ -5428,20 +5352,10 @@ const EditTaskPopup = (Items: any) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 mb-2">
-                                                        <div className="input-group ">
-                                                            <label className="form-label full-width">Estimated Time In Hours</label>
-                                                            <input type="text" className="form-control"
-                                                                defaultValue={EditData.EstimatedTime}
-                                                                placeholder="Enter Estimated Time In Hours"
-                                                                onChange={(e) => setEditData({ ...EditData, EstimatedTime: Number(e.target.value) })}
-                                                            />
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">
@@ -5452,6 +5366,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 onChange={(e) => changeStatus(e, "waitForResponse")}
                                                             />
                                                         </span>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -5513,26 +5428,21 @@ const EditTaskPopup = (Items: any) => {
                                     border: "2px solid #ccc"
                                 }}>
                                     <div>
-                                        {EditData.Id != null ? <>
+                                        {EditData.Title != null ? <>
                                             <CommentBoxComponent
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
-                                                SmartLightPercentStatus={SmartLightPercentStatus}
-                                                Context={Context}
                                             />
-                                            <Example
-                                                textItems={EditData.FeedBackArray}
+                                            <Example textItems={EditData.FeedBackArray}
                                                 callBack={SubCommentSectionCallBack}
                                                 allUsers={taskUsers}
                                                 ItemId={EditData.Id}
                                                 SiteUrl={EditData.component_x0020_link}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
-                                                SmartLightPercentStatus={SmartLightPercentStatus}
-                                                Context={Context}
                                             />
                                         </>
                                             : null}

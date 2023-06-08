@@ -339,6 +339,7 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
+        
     }, []);
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
@@ -1209,12 +1210,13 @@ const CreateActivity = (props: any) => {
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
                                                         <>
-                                                            <div className="d-flex block full-width p-2 mb-1">
+                                                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
                                                                 <div>
-                                                                    <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                    <a className="hreflink " target="_blank" style={{color: "#ffffff !important"}} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
-                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
+                                                                    <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() =>  setLinkedComponentData([])}> </span> 
+                                                                    {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
                                                                 </div>
                                                             </div>
                                                         </>
@@ -1230,26 +1232,26 @@ const CreateActivity = (props: any) => {
                                     </div>
                                 }
 
-                                <div className="col-sm-11  inner-tabb">
-                                    <div>
+                                <div className="col-sm-12  inner-tabb">
+                                    
                                         {smartComponentData ? smartComponentData?.map((com: any) => {
                                             return (
-                                                <>
-                                                    <div className="d-flex Component-container-edit-task mb-1" style={com.Services.length>0 ?{ width: "81%",backgroundColor:"green" }:{width: "81%"}}>
+                                              
+                                                    <div className="block d-flex justify-content-between mb-1" >
                                                        
-                                                        <a className='Portfolio-Title' style={{color: "#fff !important"}} target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                        <a className='Portfolio-Title'  target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
                                                      
                                                         <a className='text-end'>
-                                                            <span className='svg__iconbox svg__icon--cross' onClick={() => setSmartComponentData([])}></span>
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => setSmartComponentData([])}></span>
                                                             {/* <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} /> */}
                                                         </a>
                                                     </div>
-                                                </>
+                                            
                                             )
                                         }) : null}
 
 
-                                    </div>
+                                    
                                 </div>
 
 
@@ -1327,11 +1329,12 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                        <div className="d-flex block full-width p-2 mb-1">
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
                                                             <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" />
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
                                                         </div>
                                                     }
                                                 </>
@@ -1366,11 +1369,12 @@ const CreateActivity = (props: any) => {
                                                 <>
                                                     {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
 
-                                                        <div className="d-flex block full-width p-2 mb-1">
-                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                            <a  target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
                                                                 {type.Title}
                                                             </a>
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() =>  deleteClientCategories(type.Id)}> </span> 
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" /> */}
                                                         </div>
                                                     }
                                                 </>
@@ -1412,7 +1416,7 @@ const CreateActivity = (props: any) => {
             </Panel>
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
+            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} closePopupCallBack={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>
     )
