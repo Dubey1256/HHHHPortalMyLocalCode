@@ -12,7 +12,7 @@ var AutoCompleteItemsArray: any = [];
 var SelectedCategoryBackupArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-    const isServiceTask: any = item.isServiceTask;
+    const isServiceTask: any = item.isServiceTask!=undefined?item.isServiceTask:item?.props.Services?.length>0?true:false;
     const AllListIdData: any = item.AllListId;
     const siteUrls: any = item.AllListId.siteUrl;
     const selectedCategoryData: any = item.selectedCategoryData;
@@ -23,7 +23,7 @@ const Picker = (item: any) => {
     const [value, setValue] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [searchedData, setSearchedData] = React.useState([]);
-    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(true);
+    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(false);
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
     }
@@ -347,8 +347,8 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label>Include description (info-icons) in search</label>
-                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search Category" />
+                                    <input type="checkbox" onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label> Search With Description (Info Icons)</label>
+                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
@@ -486,7 +486,7 @@ const Picker = (item: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 text-end pe-2 py-2" : "fixed-bottom bg-f4 text-end pe-2 py-2"}>
+                    <footer className={isServiceTask ? "serviepannelgreena float-end" : "float-end"}>
                         <span>
                             <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                         </span>
