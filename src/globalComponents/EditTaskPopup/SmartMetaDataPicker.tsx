@@ -12,7 +12,7 @@ var AutoCompleteItemsArray: any = [];
 var SelectedCategoryBackupArray: any = [];
 const Picker = (item: any) => {
     const usedFor = item.usedFor;
-    const isServiceTask: any = item.isServiceTask;
+    const isServiceTask: any = item.isServiceTask!=undefined?item.isServiceTask:item?.props.Services?.length>0?true:false;
     const AllListIdData: any = item.AllListId;
     const siteUrls: any = item.AllListId.siteUrl;
     const selectedCategoryData: any = item.selectedCategoryData;
@@ -273,9 +273,7 @@ const Picker = (item: any) => {
         return (
             <div className={isServiceTask ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        Select Category
-                    </span>
+                <h2 className="heading">Select Category</h2>
                 </div>
                 <Tooltip ComponentId="1626" />
             </div>

@@ -51,6 +51,7 @@ let taskUsers: any = [];
 let IsShowRestru: any = false;
 let componentDetails: any = '';
 let siteIconAllTask: any = [];
+let finalData: any = [];
 
 function IndeterminateCheckbox(
   {
@@ -100,13 +101,12 @@ function TasksTable(props: any) {
   const [loaded, setLoaded] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
-  const refreshData = () => setData(() => AllTasksRendar);
-  const rerender = React.useReducer(() => ({}), {})[1];
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [data, setData] = React.useState([]);
-
+  finalData = data;
+  const refreshData = () => setData(() => finalData);
   const [checkedList, setCheckedList] = React.useState([]);
   const [AllUsers, setTaskUser] = React.useState([]);
   const [IsTask, setIsTask] = React.useState(false);
@@ -267,7 +267,7 @@ function TasksTable(props: any) {
           result.TeamLeaderUserTitle = ''
           //  result.AllTeamMembers = []
           result.Display = 'none'
-          result.DueDate = moment(result.DueDate).format('DD/MM/YYYY')
+          result.DueDate = result.DueDate
 
           if (result.DueDate == 'Invalid date' || '') {
             result.DueDate = result.DueDate.replaceAll("Invalid date", "")
@@ -339,7 +339,7 @@ function TasksTable(props: any) {
           allParentTasks?.map((items) => {
             allworkstreamTasks.push(items);
           })
-          AllTasksRendar = AllTasksRendar.concat(allworkstreamTasks)
+        // AllTasksRendar = AllTasksRendar.concat(allworkstreamTasks)
         setData(allworkstreamTasks);
         setmaidataBackup(allworkstreamTasks)
         //  }
@@ -410,19 +410,23 @@ function TasksTable(props: any) {
     setIsTimeEntry(true);
     setSharewebTimeComponent(item);
   }
+
+  //=================== callback function to all the poup handle ================
   const Call = React.useCallback((childItem: any) => {
+    AllTasksRendar = [];
     setIsTask(false);
     setRowSelection({});
     setMeetingPopup(false);
     setWSPopup(false);
-    // MeetingItems?.forEach((val: any): any => {
-    //   val.chekBox = false;
-    // })
     MeetingItems = []
     var MainId: any = ''
-    if (childItem != undefined) {
+    let ParentTaskId: any;
+    if (childItem != undefined && childItem.data?.ItmesDelete==undefined) {
+      
+      childItem.data.Item_x0020_Type = "Task";
       childItem.data['flag'] = true;
-      childItem.data['TitleNew'] = childItem.data.Title;
+      // childItem.data['SiteIcon']= GetIconImageUrl(childItem.data.siteType,childItem.data.siteUrl,undefined)
+      // childItem.data['TitleNew'] = childItem.data.Title;
       childItem.data['SharewebTaskType'] = { Title: 'Workstream' }
       if (childItem.data.ServicesId != undefined && childItem.data.ServicesId.length > 0) {
         MainId = childItem.data.ServicesId[0]
@@ -430,21 +434,75 @@ function TasksTable(props: any) {
       if (childItem.data.ComponentId != undefined && childItem.data.ComponentId.length > 0) {
         MainId = childItem.data.ComponentId[0]
       }
-     if(AllTasksRendar!=undefined&&AllTasksRendar.length>0){
-      AllTasksRendar?.map((items:any)=>{
-        if(items.chekBox){
-          items?.subRows?.push(childItem.data)
+      if (childItem.data.ParentTaskId != undefined && childItem.data.ParentTaskId != "") {
+        ParentTaskId = childItem.data.ParentTaskId;
+      }
+      // ==========create ws and task======================== 
+      let grouping:any = true;
+      if(childItem.data?.editpopup==undefined&&childItem.data?.ItmesDelete==undefined){
+        finalData?.map((elem: any) => {
+          if (elem?.Id === ParentTaskId || elem.ID === ParentTaskId) {
+            elem.subRows = elem.subRows == undefined ? [] : elem.subRows
+            elem.subRows.push(childItem.data)
+            grouping = false;
+          }
+        })
+        if (grouping === true) {
+          AllTasksRendar?.push(childItem.data)
+          finalData = finalData.concat(AllTasksRendar)
+        }
+        else if(grouping === false){
+          AllTasksRendar = AllTasksRendar?.concat(finalData)
+          finalData=[];
+          finalData = finalData?.concat(AllTasksRendar)
+        }
+      }
+
+      //============ update the data to Edit task popup==================
+
+      if(childItem.data?.editpopup!=undefined&&childItem.data?.editpopup==true&&childItem.data?.ItmesDelete==undefined){
+        finalData?.map((ele:any,index:any)=>{
+          if(ele.subRows!=undefined&&ele.subRows.length>0){
+            ele.subRows?.map((sub:any,subindex:any)=>{
+              if(sub.Id==childItem.data.Id){
+                finalData[index].subRows.splice(subindex, 1,childItem.data);
+              }
+            })
+          }
+          if(ele.Id==childItem.data.Id){
+            finalData.splice(index, 1,childItem.data);
+          }
+        })
+        AllTasksRendar = AllTasksRendar?.concat(finalData)
+        finalData=[];
+        finalData = finalData?.concat(AllTasksRendar)
+       }
+      
+
+      console.log(finalData)
+      refreshData();
+    }
+     // ===============Delete the data to Edit task popup====================
+
+     if(childItem.data?.ItmesDelete==true){
+      finalData?.map((ele:any,index:any)=>{
+        if(ele.subRows!=undefined&&ele.subRows.length>0){
+          ele.subRows?.map((sub:any,subindex:any)=>{
+            if(sub.Id==childItem.data.Id){
+              finalData[index].subRows.splice(subindex, 1);
+            }
+          })
+        }
+        if(ele.Id==childItem.data.Id){
+          finalData.splice(index, 1);
         }
       })
-     }else{
-      AllTasksRendar?.push(childItem.data)
-     }
-      
-    
-
+      AllTasksRendar = AllTasksRendar?.concat(finalData)
+      finalData=[];
+      finalData = finalData?.concat(AllTasksRendar)  
+      console.log(finalData)
       refreshData();
-   
-    }
+     }
   }, []);
 
   const TimeEntryCallBack = React.useCallback((item1) => {
@@ -817,7 +875,6 @@ function TasksTable(props: any) {
 
   // ===========REACT TABLE ==========
   const onChangeHandler = (itrm: any, child: any, e: any) => {
-
     let checked = e
     if (checked == true) {
       setcheckData(itrm)
@@ -880,12 +937,11 @@ function TasksTable(props: any) {
     }
     if (flag)
       list.push(itrm);
-
     console.log(list);
     // list?.forEach((items:any)=>{
     //     checkedList.push(items)
     // })
-    //  setCheckedList(checkedList)
+   
     setCheckedList(checkedList => (list));
     // if (list.length === 0)
     //   clearreacture();
@@ -1046,7 +1102,7 @@ function TasksTable(props: any) {
             {row?.original?.DueDate == null ? (""
             ) : (
               <>
-                <span>{row?.original?.DueDate}</span>
+                <span>{moment(row?.original?.DueDate).format("DD/MM/YYYY")}</span>
               </>
             )
             }
@@ -1139,8 +1195,6 @@ function TasksTable(props: any) {
       {
         cell: ({ row, getValue }) => (
           <>
-
-
             <a>
               {/* {row?.original?.siteType == "Master Tasks" && row?.original?.Item_x0020_Type == 'Task' && (
                 <span className="svg__iconbox svg__icon--edit" onClick={(e) => EditData(e, row?.original)}> </span>)} */}
@@ -1150,7 +1204,6 @@ function TasksTable(props: any) {
                 <span onClick={(e) => EditItemTaskPopup(row?.original)} className="svg__iconbox svg__icon--edit"></span>
               )}
             </a>
-
             {getValue()}
           </>
         ),
@@ -1187,16 +1240,11 @@ function TasksTable(props: any) {
     enableSubRowSelection: false,
     filterFns: undefined
   });
+
   React.useEffect(() => {
     CheckDataPrepre()
   }, [table?.getSelectedRowModel()?.flatRows.length])
-  React.useEffect(() => {
-    if (table.getState().columnFilters.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
-    }
-  }, [table?.getState().columnFilters]);
+
   const CheckDataPrepre = () => {
     if (table?.getSelectedRowModel()?.flatRows.length) {
       let eTarget = false;
@@ -1270,7 +1318,7 @@ function TasksTable(props: any) {
             <button type="button"
               className="btn btn-primary"
               onClick={() => openActivity()}
-              disabled={checkData?.SharewebTaskType?.Title == "Task" ? true : false}>
+              disabled={checkData?.SharewebTaskType?.Title === "Task" ? true : false}>
               Add Workstream-Task
             </button>
             <button type="button"
@@ -1341,7 +1389,7 @@ function TasksTable(props: any) {
 
                   {table.getRowModel().rows.map((row: any) => {
                     return (
-                      <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                      <tr
                         key={row.id}>
                         {row.getVisibleCells().map((cell: any) => {
                           return (

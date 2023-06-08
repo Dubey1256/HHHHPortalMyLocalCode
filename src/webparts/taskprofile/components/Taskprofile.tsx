@@ -1142,7 +1142,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined &&breadcrumbitem.Subchild == undefined&&
+                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined ||breadcrumbitem.Subchild==undefined &&breadcrumbitem.Subchild == undefined&&
                       <li>
                         <a >
                           <span>{this.state.Result['Title']}</span>
@@ -1213,7 +1213,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0} </span>
                      </dd>
                    </dl>
                   {isShowTimeEntry && <dl>
@@ -1291,13 +1291,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     <dd className='bg-Ff'>{this.state.Result["Status"]}<br></br>
                     {this.state.Result["ApproverHistory"]!=undefined && this.state.Result["ApproverHistory"].length>1 && this.state.Result["Categories"].includes("Approval")?
                     <span style={{fontSize:"smaller"}}>Pre-Approved by
-                    <img className="workmember" src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1]?.ApproverSuffix}></img></span>
+                    <img className="workmember"  title={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-2].Title} src={this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-2]?.ApproverImage?this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-2]?.ApproverImage:this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-2]?.ApproverSuffix}></img></span>
                     // {this.state.Result["ApproverHistory"][this.state.Result.ApproverHistory.length-1].Title}
                     :null}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Working Today</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"]!=null?this.state.Result["IsTodaysTask"]:""} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["IsTodaysTask"]?"Yes":"No"} </span>
                      </dd>
                    </dl>
                   <dl>
@@ -1306,7 +1306,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>% Complete</dt>
-                    <dd className='bg-Ff'>{this.state.Result["PercentComplete"]}</dd>
+                    <dd className='bg-Ff'>{this.state.Result["PercentComplete"]!=undefined?this.state.Result["PercentComplete"].toFixed(0):0}</dd>
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Priority</dt>
