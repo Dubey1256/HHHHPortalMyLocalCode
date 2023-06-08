@@ -23,7 +23,7 @@ const Picker = (item: any) => {
     const [value, setValue] = React.useState("");
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [searchedData, setSearchedData] = React.useState([]);
-    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(false);
+    const [isSearchWithDesciptions, setIsSearchWithDesciptions] = React.useState(true);
     const openPopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(true)
     }
@@ -273,9 +273,7 @@ const Picker = (item: any) => {
         return (
             <div className={isServiceTask ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        Select Category
-                    </span>
+                <h2 className="heading">Select Category</h2>
                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
@@ -347,8 +345,8 @@ const Picker = (item: any) => {
                         <div className="mb-3">
                             <div className="mb-2 col-sm-12 p-0">
                                 <div>
-                                    <input type="checkbox" onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label> Search With Description (Info Icons)</label>
-                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search here" />
+                                    <input type="checkbox" defaultChecked={isSearchWithDesciptions} onChange={() => setIsSearchWithDesciptions(isSearchWithDesciptions ? false : true)} className="form-check-input me-1 rounded-0" /> <label>Include description (info-icons) in search</label>
+                                    <input type="text" className="form-control  searchbox_height" value={value} onChange={onChange} placeholder="Search Category" />
                                     {searchedData?.length > 0 ? (
                                         <div className="SearchTableCategoryComponent">
                                             <ul className="list-group">
@@ -486,7 +484,7 @@ const Picker = (item: any) => {
                             </ul>
                         </div>
                     </div>
-                    <footer className={isServiceTask ? "serviepannelgreena float-end" : "float-end"}>
+                    <footer className={isServiceTask ? "serviepannelgreena fixed-bottom bg-f4 text-end pe-2 py-2" : "fixed-bottom bg-f4 text-end pe-2 py-2"}>
                         <span>
                             <a className="siteColor mx-1" target="_blank" data-interception="off" href={`${siteUrls}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                         </span>
