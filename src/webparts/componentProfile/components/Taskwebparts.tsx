@@ -3546,6 +3546,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
     } else {
       setcheckData([])
+      setCheckedList([]);
       setShowTeamMemberOnCheck(false)
     }
 
@@ -3917,7 +3918,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Task")}>
+                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -3928,7 +3929,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -3939,7 +3940,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
                       </span>
@@ -3947,7 +3948,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
                       </span>
@@ -3970,7 +3971,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               ) : (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Implementation")}>
+                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -3981,7 +3982,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Development")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
