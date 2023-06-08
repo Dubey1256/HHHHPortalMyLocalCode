@@ -1650,7 +1650,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     })
     setData(data => ([...maidataBackup]));
     setCheckedList(checkedList => ([...list]));
-    rerender();
   };
 
   // const onChangeHandler = (itrm: any, child: any, e: any) => {

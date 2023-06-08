@@ -597,7 +597,7 @@ export default function ProjectOverview(props: any) {
             //     if (item.Item_x0020_Type != null && item.Item_x0020_Type == "Project") {
             //         Alltask.push(item)
             //     }
-            setFlatData([...Alltask])
+            
             Alltask.map((items: any) => {
                 items.PercentComplete = (items.PercentComplete * 100).toFixed(0);
                 items.siteUrl = AllListId?.siteUrl;
@@ -624,6 +624,15 @@ export default function ProjectOverview(props: any) {
                     }
                 })
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
+            })
+            setFlatData([...Alltask])
+            Alltask.map((items: any) => {
+                items['subRows'] = [];
+                allSitesTasks?.map((task: any) => {
+                    if (task?.IsTodaysTask == true && task?.Project?.Id == items?.Id) {
+                        items['subRows'].push(task);
+                    }
+                })
             })
             // })
             setAllTasks(Alltask);
@@ -686,7 +695,7 @@ export default function ProjectOverview(props: any) {
                         .get();
                     arraycount++;
                     smartmeta.map((items: any) => {
-
+                        items.Item_x0020_Type='tasks';
                         items.AllTeamMember = [];
                         items.siteType = config.Title;
                         items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');

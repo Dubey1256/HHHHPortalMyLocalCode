@@ -64,7 +64,7 @@ export function IndeterminateCheckbox(
 
 // ReactTable Part end/////
 
-const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
+const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -192,7 +192,7 @@ const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                            <tr className={pageName=='ProjectOverview'?(row.original.Item_x0020_Type == "tasks"? "a-bg" : ""):(row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : "")))))}
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
