@@ -5355,7 +5355,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items.Items.Id} />
+                                                        <CommentCard siteUrl={siteUrls} userDisplayName={Items.Items.userDisplayName} listName={Items.Items.siteType} itemID={Items?.Items?.Id} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">
@@ -5365,8 +5365,7 @@ const EditTaskPopup = (Items: any) => {
                                                                 value={EditData.waitForResponse}
                                                                 onChange={(e) => changeStatus(e, "waitForResponse")}
                                                             />
-                                                        </span>
-
+                                                        </span>  
                                                     </div>
                                                 </div>
                                             </div>

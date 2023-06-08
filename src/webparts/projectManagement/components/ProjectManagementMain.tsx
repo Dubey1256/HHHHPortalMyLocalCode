@@ -896,8 +896,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         canSort: false,
         placeholder: "",
-        size: 5,
-
+        size: 35
       },
       {
         accessorKey: "Shareweb_x0020_ID",
@@ -905,7 +904,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting:false,
-        size: 10,
+        size: 70,
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
@@ -985,7 +984,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetSorting:false,
         resetColumnFilters: false,
-        size: 5,
+        size: 50
       },
       {
         accessorFn: (row) => row?.Portfolio,
@@ -1038,7 +1037,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting:false,
-        size: 5,
+        size: 100
       },
       {
         accessorFn: (row) => row?.DueDate,
@@ -1057,7 +1056,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         placeholder: "Due Date",
         header: "",
-        size: 10,
+        size: 80
       },
       {
         accessorFn: (row) => row?.PercentComplete,
@@ -1078,7 +1077,7 @@ const ProjectManagementMain = (props: any) => {
         resetColumnFilters: false,
         resetSorting:false,
         header: "",
-        size: 5,
+        size: 55
       },
       {
         accessorFn: (row) => row?.TeamMembers?.map((elem: any) => elem.Title).join('-'),
@@ -1100,7 +1099,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         placeholder: "TeamMembers",
         header: "",
-        size: 15,
+        size: 152
       },
       {
         accessorFn: (row) => row?.Remark,
@@ -1122,7 +1121,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         placeholder: "Remarks",
         header: "",
-        size: 10,
+        size: 125
       },
       {
         accessorFn: (row) => row?.Created,
@@ -1155,7 +1154,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         placeholder: "Created",
         header: "",
-        size: 20,
+        size: 125
       },
       {
         cell: ({ row }) => (
@@ -1179,8 +1178,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting:false,
         resetColumnFilters: false,
         placeholder: "",
-        size: 5,
-
+        size: 35
       },
     ],
     [data]
