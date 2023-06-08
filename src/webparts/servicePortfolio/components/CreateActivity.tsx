@@ -36,17 +36,17 @@ var BackupCat: any = "";
 var FeedBackItemArray: any = [];
 var NewArray: any = [];
 var feedbackArray: any = [];
-var dynamicList: any = {}
+var dynamicList:any={}
 var SiteTypeBackupArray: any = [];
-var counts = 0
-var isModelChange = false
-var TaskImagess: any = []
+var counts=0
+var isModelChange= false
+var TaskImagess:any=[]
 const defaultContent = "";
-let defaultfile = [];
+let defaultfile =[];
 const CreateActivity = (props: any) => {
-    if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
+    if(props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined){
         dynamicList = props.SelectedProp.SelectedProp;
-    } else {
+    }else{
         dynamicList = props.SelectedProp;
     }
     if (props != undefined) {
@@ -59,7 +59,7 @@ const CreateActivity = (props: any) => {
 
         console.log(props)
     }
-    const [TaskImages, setTaskImages] = React.useState([])
+    const [TaskImages,setTaskImages] = React.useState([])
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
     const [date, setDate] = React.useState(undefined);
     const [siteTypess, setSiteType] = React.useState([]);
@@ -86,15 +86,15 @@ const CreateActivity = (props: any) => {
     const [count, setCount] = React.useState(0);
     var [isActive, setIsActive] = React.useState({ siteType: false, });
     const [save, setSave] = React.useState({ Title: '', siteType: [], linkedServices: [], recentClick: undefined, DueDate: undefined, taskCategory: '' })
-    const [post, setPost] = React.useState({ Title: '' })
-
+    const [post, setPost] = React.useState({ Title: ''})
+   
 
     var CheckCategory: any = []
     CheckCategory.push({ "TaxType": "Categories", "Title": "Phone", "Id": 199, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Email Notification", "Id": 276, "ParentId": 225 }, { "TaxType": "Categories", "Title": "Approval", "Id": 227, "ParentId": 225 },
         { "TaxType": "Categories", "Title": "Immediate", "Id": 228, "parentId": 225 });
 
 
-
+  
     React.useEffect(() => {
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
@@ -102,20 +102,20 @@ const CreateActivity = (props: any) => {
             })
         }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
-            if (AllItems?.Portfolio_x0020_Type == 'Component' || (AllItems.Component != undefined && AllItems.Component.length > 0)) {
+            if (AllItems?.Portfolio_x0020_Type == 'Component'|| (AllItems.Component != undefined && AllItems.Component.length >0)) {
                 smartComponentData.push(AllItems);
             }
             smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-
-            if (AllItems?.Portfolio_x0020_Type == 'Service' || (AllItems.Service != undefined && AllItems.Service.length > 0)) {
+    
+            if (AllItems?.Portfolio_x0020_Type == 'Service' || (AllItems.Service != undefined && AllItems.Service.length >0) ) {
                 linkedComponentData.push(AllItems);
             }
             linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-
+    
             linkedComponentData = linkedComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
@@ -127,7 +127,7 @@ const CreateActivity = (props: any) => {
             if (AllItems?.Component != undefined && AllItems?.Component?.length > 0) {
                 smartComponentData.push(AllItems);
             }
-
+    
             if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
                 linkedComponentData.push(AllItems);
             }
@@ -137,11 +137,11 @@ const CreateActivity = (props: any) => {
             smartComponentData = smartComponentData?.filter((val: any, id: any, array: any) => {
                 return array.indexOf(val) == id;
             })
-
+    
         }
         GetSmartMetadata();
     }, [linkedComponentData])
-
+ 
 
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
@@ -175,33 +175,33 @@ const CreateActivity = (props: any) => {
                 }
             })
 
-            if (AllItems.listId != undefined) {
-                let web = new Web(dynamicList.siteUrl);
-                let componentDetails = [];
-                componentDetails = await web.lists
-                    .getById(AllItems.listId)
-                    .items
-                    .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
-                    .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                    .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
-                    .orderBy("Created", false)
-                    .top(4999)
-                    .get()
-                console.log(componentDetails)
-                if (componentDetails?.length == 0) {
-                    WorstreamLatestId = 1;
-                } else {
-                    WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
-                }
-                getTasktype();
+            if(AllItems.listId != undefined){
+            let web = new Web(dynamicList.siteUrl);
+            let componentDetails = [];
+            componentDetails = await web.lists
+                .getById(AllItems.listId)
+                .items
+                .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
+                .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + AllItems?.Id + "'"))
+                .orderBy("Created", false)
+                .top(4999)
+                .get()
+            console.log(componentDetails)
+            if (componentDetails?.length == 0) {
+                WorstreamLatestId = 1;
+            } else {
+                WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
             }
+            getTasktype();
         }
-
+        }
+      
 
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
 
-
+       
     }
     const getTasktype = async () => {
         if (AllItems?.NoteCall == 'Task') {
@@ -258,9 +258,9 @@ const CreateActivity = (props: any) => {
             }
         })
         setSiteType(tempArray);
-
+      
         getActivitiesDetails(value)
-
+      
         setSave({ ...save, recentClick: isActiveItem })
     };
     const Call = React.useCallback((item1: any, type: any) => {
@@ -339,6 +339,7 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
+        
     }, []);
     const EditComponentPicker = (item: any) => {
         setIsComponentPicker(true);
@@ -366,7 +367,7 @@ const CreateActivity = (props: any) => {
         imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
         placeholderText: "Copy & Paste Image Here!",
         key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
-
+    
         events: {
             "image.beforeUpload": function (files: any, arg1: any, arg2: any) {
                 defaultfile = files;
@@ -389,12 +390,12 @@ const CreateActivity = (props: any) => {
                         var base64String: any = reader.result;
                         console.log('Base64 String - ', base64String);
                         ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
-
+    
                     }
                     if (ImageRawData.length > 0) {
-                        imageArrayUpdateFunction(ImageRawData);
+                      imageArrayUpdateFunction(ImageRawData);
                     }
-
+    
                 }
                 editor.popups.hideAll();
                 return false;
@@ -415,7 +416,7 @@ const CreateActivity = (props: any) => {
     //     imageAllowedTypes: ["jpeg", "jpg", "png", "gif"],
     //     placeholderText: "Copy & Paste Image Here!",
     //     key: 'nB3B2F2A1C2F2E1rA1C7A6D6E1D4G3E1C10C6eUd1QBRVCDLPAZMBQ==',
-
+    
     //     events: {
     //         "image.beforeUpload": function (defaultfile: any, arg1: any, arg2: any) {
     //             // defaultfile = files;
@@ -439,36 +440,36 @@ const CreateActivity = (props: any) => {
     //                     var base64String: any = reader.result;
     //                     console.log('Base64 String - ', base64String);
     //                     ImageRawData = base64String.substring(base64String.indexOf(', ') + 1)
-
+    
     //                 }
     //                 if (ImageRawData.length > 0) {
     //                   imageArrayUpdateFunction(ImageRawData);
     //                 }
-
+    
     //             }
     //             editor.popups.hideAll();
     //             return false;
     //         }
     //     }
     // };
-    const copyImage = (dt: any) => {
-
-        let DataObject = {
-            data_url: dt,
-            file: "Image/jpg"
-        }
-        let arrayIndex: any = TaskImages?.length
-        TaskImagess.push(DataObject)
-        setTaskImages(TaskImagess)
-
-
+    const copyImage=(dt:any)=>{
+       
+            let DataObject = {
+                data_url: dt,
+                file: "Image/jpg"
+            }
+            let arrayIndex: any = TaskImages?.length
+            TaskImagess.push(DataObject)
+            setTaskImages(TaskImagess)
+        
+       
     }
-    const imageArrayUpdateFunction = (ImageData: any) => {
-        let tempArray = ImageData.toString();
-        let data1 = tempArray.split('"')
-        copyImage(data1[1]);
-    }
-    const FlorarImageUploadComponentCallBack = (dt: any) => {
+   const  imageArrayUpdateFunction = (ImageData: any) => {
+    let tempArray = ImageData.toString();
+    let data1 = tempArray.split('"')
+    copyImage(data1[1]);
+}
+    const FlorarImageUploadComponentCallBack = (dt:any) => {
         copyImage(dt)
     }
     const deleteCategories = (id: any) => {
@@ -507,8 +508,8 @@ const CreateActivity = (props: any) => {
     }
     var LatestTaskNumber: any = ''
     var SharewebID: any = ''
-
-    const getActivitiesDetails = async (item: any) => {
+   
+    const getActivitiesDetails =  async(item: any) => {
         console.log(item)
         let web = new Web(dynamicList.siteUrl);
         let componentDetails = [];
@@ -571,9 +572,9 @@ const CreateActivity = (props: any) => {
                 }
             }
         })
-
-
-
+    
+    
+    
 
     }
     const closeTaskStatusUpdatePoup = (res: any) => {
@@ -589,14 +590,14 @@ const CreateActivity = (props: any) => {
             }
         });
     };
-
+    
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
-
+      
         if (EditorData.length > 8) {
             AllItems.Body = EditorData;
 
             let param: any = Moment(new Date().toLocaleString())
-
+          
             FeedBackItem['Title'] = "FeedBackPicture" + param;
             FeedBackItem['FeedBackDescriptions'] = [];
             FeedBackItem.FeedBackDescriptions = [{
@@ -604,9 +605,9 @@ const CreateActivity = (props: any) => {
             }]
             FeedBackItem['ImageDate'] = "" + param;
             FeedBackItem['Completed'] = '';
-
+           
         }
-
+       
 
     }, [])
     const saveNoteCall = () => {
@@ -649,10 +650,10 @@ const CreateActivity = (props: any) => {
 
         // })
         if (linkedComponentData.length == 0) {
-            if (portfolioId != '') {
+            if(portfolioId != ''){
                 RelevantPortfolioIds.push(portfolioId)
             }
-
+            
         }
         if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
             linkedComponentData?.map((com: any) => {
@@ -751,7 +752,7 @@ const CreateActivity = (props: any) => {
                         res.data['listId'] = value?.listId
                         res.data['SharewebTaskType'] = { Title: 'Activities' }
                         res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
-                            res.data['siteType'] = value.siteName
+                        res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
 
@@ -759,7 +760,7 @@ const CreateActivity = (props: any) => {
                         let fileName: any = '';
                         let tempArray: any = [];
                         // let SiteUrl = SiteUrl;
-                        if (TaskImages != undefined && TaskImages.length > 0) {
+                        if(TaskImages != undefined && TaskImages.length>0){
                             TaskImages?.map(async (imgItem: any, index: number) => {
                                 if (imgItem.data_url != undefined && imgItem.file != undefined) {
                                     let date = new Date()
@@ -768,39 +769,39 @@ const CreateActivity = (props: any) => {
                                     let ImgArray = {
                                         ImageName: fileName,
                                         UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
-                                        imageDataUrl: dynamicList?.siteUrl + '/Lists/' + res.data.siteType + '/Attachments/' + res?.data.Id + '/' + fileName,
+                                        imageDataUrl:dynamicList?.siteUrl + '/Lists/' + res.data.siteType + '/Attachments/' + res?.data.Id + '/' + fileName,
                                         ImageUrl: imgItem.data_url,
                                         //UserImage: res.AuthotImage != null ? res.data.AuthotImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                                        // UserName: res.AuthotName != null ? res.AuthotName : res.AuthotName,
+                                       // UserName: res.AuthotName != null ? res.AuthotName : res.AuthotName,
                                         // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
                                         // UserName: "Test Dev",
                                     };
                                     tempArray.push(ImgArray);
                                 }
-                            })
-                            tempArray?.map((tempItem: any) => {
-                                tempItem.Checked = false
-                            })
-                            var src = TaskImages[0].data_url?.split(",")[1];
-                            var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
-                                return c.charCodeAt(0);
-                            }));
-                            const data: any = byteArray
-                            var fileData = '';
-                            for (var i = 0; i < byteArray.byteLength; i++) {
-                                fileData += String.fromCharCode(byteArray[i]);
-                            }
-                            if (res.data.listId != undefined) {
-                                let web = new Web(dynamicList?.siteUrl);
-                                let item = web.lists.getById(res.data.listId).items.getById(res.data.Id);
-                                item.attachmentFiles.add(fileName, data);
-                                console.log("Attachment added");
-                                UpdateBasicImageInfoJSON(tempArray, res.data);
-
-                            }
+                                })
+                                tempArray?.map((tempItem: any) => {
+                                    tempItem.Checked = false
+                                })
+                                var src = TaskImages[0].data_url?.split(",")[1];
+                                var byteArray = new Uint8Array(atob(src)?.split("")?.map(function (c) {
+                                    return c.charCodeAt(0);
+                                }));
+                                const data: any = byteArray
+                                var fileData = '';
+                                for (var i = 0; i < byteArray.byteLength; i++) {
+                                    fileData += String.fromCharCode(byteArray[i]);
+                                }
+                                if (res.data.listId != undefined){
+                                        let web = new Web(dynamicList?.siteUrl);
+                                        let item =  web.lists.getById(res.data.listId).items.getById(res.data.Id);
+                                        item.attachmentFiles.add(fileName, data);
+                                        console.log("Attachment added");
+                                        UpdateBasicImageInfoJSON(tempArray,res.data); 
+                                   
+                                }
                         }
-
-
+                      
+                        
                         console.log(res);
                         closeTaskStatusUpdatePoup(res);
                         console.log(res);
@@ -838,17 +839,17 @@ const CreateActivity = (props: any) => {
                         if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
                             SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if (AllItems.SharewebTaskLevel1No == undefined) {
-                            WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
+                        if(AllItems.SharewebTaskLevel1No == undefined){
+                            WorstreamLatestId  = AllItems?.SharewebTaskLevel1No;
                         }
-
+                       
                         let web = new Web(dynamicList.siteUrl);
                         await web.lists.getById(value.listId).items.add({
                             Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
                             ComponentId: { "results": Component },
                             Categories: categoriesItem ? categoriesItem : null,
                             Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                            // DueDate: date != undefined ? new Date(date).toDateString() : date,
+                           // DueDate: date != undefined ? new Date(date).toDateString() : date,
                             DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
                             ServicesId: { "results": RelevantPortfolioIds },
                             SharewebCategoriesId: { "results": CategoryID },
@@ -869,10 +870,14 @@ const CreateActivity = (props: any) => {
                             res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
                             res.data['SharewebTaskType'] = { Title: 'Task' }
                             res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
-                                res.data['Shareweb_x0020_ID'] = SharewebID
+                            res.data['Shareweb_x0020_ID'] = SharewebID
                             res.data['siteType'] = value?.siteName
-
-
+                            res.data.Created=new Date();
+                            res.data.Author={
+                                Id: res?.data?.AuthorId
+                            }
+                            res.data.listId=value.listId
+                            
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
@@ -886,33 +891,33 @@ const CreateActivity = (props: any) => {
 
 
     }
-    const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
-        var UploadImageArray: any = []
-        if (tempArray != undefined && tempArray.length > 0) {
-            tempArray?.map((imgItem: any) => {
-                if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
-                    let tempObject: any = {
-                        ImageName: imgItem.ImageName,
-                        ImageUrl: imgItem.imageDataUrl,
-                        UploadeDate: imgItem.UploadeDate,
-                        // UserName: imgItem.UserName,
-                        // UserImage: imgItem.UserImage
-                    }
-                    UploadImageArray.push(tempObject)
-                } else {
-                    UploadImageArray.push(imgItem);
+  const UpdateBasicImageInfoJSON=async (tempArray:any,item:any)=>{
+    var UploadImageArray: any = []
+    if (tempArray != undefined && tempArray.length > 0) {
+        tempArray?.map((imgItem: any) => {
+            if (imgItem.imageDataUrl != undefined && imgItem.imageDataUrl != null) {
+                let tempObject: any = {
+                    ImageName: imgItem.ImageName,
+                    ImageUrl: imgItem.imageDataUrl,
+                    UploadeDate: imgItem.UploadeDate,
+                   // UserName: imgItem.UserName,
+                   // UserImage: imgItem.UserImage
                 }
-            })
-        }
-        if (UploadImageArray != undefined && UploadImageArray.length > 0) {
-            try {
-                let web = new Web(dynamicList?.siteUrl);
-                await web.lists.getById(item.listId).items.getById(item.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
-            } catch (error) {
-                console.log("Error Message :", error);
+                UploadImageArray.push(tempObject)
+            } else {
+                UploadImageArray.push(imgItem);
             }
+        })
+    }
+    if (UploadImageArray != undefined && UploadImageArray.length > 0) {
+        try {
+            let web = new Web(dynamicList?.siteUrl);
+            await web.lists.getById(item.listId).items.getById(item.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+        } catch (error) {
+            console.log("Error Message :", error);
         }
     }
+  }
     const DDComponentCallBack = (dt: any) => {
         // setTeamConfig(dt)
         setisDropItem(dt.isDrop)
@@ -1007,16 +1012,16 @@ const CreateActivity = (props: any) => {
     const SelectSiteType = () => {
         var mySite: any = []
         siteTypess.forEach((value: any) => {
-                    value.selectSiteName = true;
+            value.selectSiteName = true;
         })
-                setSite('Site Name')
-                setCount(count+1)
+        setSite('Site Name')
+        setCount(count+1)
     }
-                let ArrayImage: any[]=[]
+    let ArrayImage: any[]=[]
     const onModelChange = (model: any) => {
-                    isModelChange = true;
-                let edData = model;
-                let imgArray = model.split("=")
+        isModelChange=true;
+        let edData = model;
+        let imgArray = model.split("=")
        
         imgArray?.map((data: any, index: any) => {
             if (imgArray?.length > 8) {
@@ -1026,23 +1031,23 @@ const CreateActivity = (props: any) => {
             }
 
         })
-                let elem = document.createElement("img");
-                elem.innerHTML = edData;
-                imageArrayUpdateFunction(ArrayImage);
+        let elem = document.createElement("img");
+        elem.innerHTML = edData;
+        imageArrayUpdateFunction(ArrayImage);
     };
-                return (
-                <>
-                    <Panel
-                        onRenderHeader={onRenderCustomHeaderMain}
-                        type={PanelType.custom}
-                        customWidth="1348px"
-                        isOpen={TaskStatuspopup}
-                        onDismiss={closeTaskStatusUpdatePoup}
-                        isBlocking={false}
-                        className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
-
-                    >
-                        <div className="modal-body active">
+    return (
+        <>
+            <Panel
+                onRenderHeader={onRenderCustomHeaderMain}
+                type={PanelType.custom}
+                customWidth="1348px"
+                isOpen={TaskStatuspopup}
+                onDismiss={closeTaskStatusUpdatePoup}
+                isBlocking={false}
+                className={AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0?"serviepannelgreena":""}
+                
+            >
+                <div className= "modal-body active">
 
 
                     <div className={AllItems?.Portfolio_x0020_Type == 'Events' ? 'app component clearfix eventpannelorange' : (AllItems?.Portfolio_x0020_Type == 'Service'||AllItems?.Services?.length>0 ? 'app component clearfix serviepannelgreena' : 'app component clearfix')}>
@@ -1085,52 +1090,52 @@ const CreateActivity = (props: any) => {
                                         <input className="form-control" type="text"  placeholder="Enter Task Name"
                                             defaultValue={`${AllItems?.Title}${site}`} onChange={(e) => setPost({ ...post, Title: e.target.value })} />
 
-                                            </div>
-                                            <div className="col-sm-2 mb-10 padL-0 mt-2">
-                                                <label>Due Date</label>
-                                                <input type="date" className="form-control"
-                                                    defaultValue={Moment(date).format("DD/MM/YYYY")}
-                                                    onChange={handleDatedue}
-
-
-
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className='row mt-2'>
-
-                                            <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>
-
-                                        </div>
-                                        <div className='row'>
-                                            <div className='col-sm-5'>
-
-                                                {/* <FroalaImageUploadComponent 
-                                         callBack={copyImage} /> */}
-                                                <div className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">
-                                                    <Froala
-                                                        model={defaultContent}
-                                                        onModelChange={isModelChange == false ? onModelChange : undefined}
-                                                        tag="textarea"
-                                                        config={isModelChange == false ? froalaEditorConfig : undefined}
-                                                    ></Froala>
-
-                                                </div>
-
-                                            </div>
-                                            <div className='col-sm-7'>
-                                                <HtmlEditorCard
-                                                    editorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
-                                                    HtmlEditorStateChange={HtmlEditorCallBack}
-                                                >
-                                                </HtmlEditorCard>
-                                            </div>
-                                        </div>
-
                                     </div>
+                                    <div className="col-sm-2 mb-10 padL-0 mt-2">
+                                        <label>Due Date</label>
+                                        <input type="date" className="form-control"
+                                            defaultValue={Moment(date).format("DD/MM/YYYY")}
+                                            onChange={handleDatedue}
+                                            
 
-                                    <div className='col-sm-2'>
-                                        {/* {AllItems.Portfolio_x0020_Type == 'Component'
+
+                                        />
+                                    </div>
+                                </div>
+                                <div className='row mt-2'>
+
+                                    <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList}  parentCallback={DDComponentCallBack}></TeamConfigurationCard>
+
+                                </div>
+                                <div className='row'>
+                                    <div className='col-sm-5'>
+                                   
+                                        {/* <FroalaImageUploadComponent 
+                                         callBack={copyImage} /> */}
+                                          <div className="Florar-Editor-Image-Upload-Container" id="uploadImageFroalaEditor">
+                <Froala
+                    model={defaultContent}
+                    onModelChange={isModelChange==false?onModelChange:undefined}
+                    tag="textarea"
+                    config={isModelChange==false?froalaEditorConfig:undefined}
+                ></Froala>
+               
+            </div>
+                                    
+                                    </div>
+                                    <div className='col-sm-7'>
+                                        <HtmlEditorCard
+                                            editorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
+                                            HtmlEditorStateChange={HtmlEditorCallBack}
+                                        >
+                                        </HtmlEditorCard>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div className='col-sm-2'>
+                                {/* {AllItems.Portfolio_x0020_Type == 'Component'
                                 &&
                                 <div className="col-sm-12 padL-0 PadR0">
                                     <div ng-show="smartComponent.length==0" className="col-sm-12 mb-10 padL-0 input-group">
@@ -1167,248 +1172,254 @@ const CreateActivity = (props: any) => {
                                 </div>} */}
 
 
-                                        {AllItems?.Portfolio_x0020_Type == 'Service' &&
-                                            <div className="input-group">
-                                                <label className="form-label full-width">
-                                                    Component Portfolio
-                                                </label>
-                                                <input type="text"
-                                                    className="form-control" />
-                                                <span className="input-group-text">
-                                                    <svg onClick={(e) => EditComponent(AllItems)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                                    <div className="input-group">
+                                        <label className="form-label full-width">
+                                            Component Portfolio
+                                        </label>
+                                        <input type="text"
+                                            className="form-control" />
+                                        <span className="input-group-text">
+                                            <svg onClick={(e) => EditComponent(AllItems)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
 
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                    </svg>
-                                                </span>
-                                            </div>
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                }
+                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
+                                    <div className="input-group">
+                                        <label className="form-label full-width">
+                                            Service Portfolio
+                                        </label>
+                                        <input type="text"
+                                            className="form-control" />
+                                        <span className="input-group-text">
+                                            <svg onClick={(e) => EditComponent(AllItems)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                }
+                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                                    <div className="input-group">
+
+                                        {
+                                            linkedComponentData?.length > 0 ? <div>
+                                                {linkedComponentData?.map((com: any) => {
+                                                    return (
+                                                        <>
+                                                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                                <div>
+                                                                    <a className="hreflink " target="_blank" style={{color: "#ffffff !important"}} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
+                                                                        {com.Title}
+                                                                    </a>
+                                                                    <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() =>  setLinkedComponentData([])}> </span> 
+                                                                    {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )
+                                                })}
+                                            </div> : null
+
                                         }
-                                        {AllItems?.Portfolio_x0020_Type == 'Component' &&
-                                            <div className="input-group">
-                                                <label className="form-label full-width">
-                                                    Service Portfolio
-                                                </label>
-                                                <input type="text"
-                                                    className="form-control" />
-                                                <span className="input-group-text">
-                                                    <svg onClick={(e) => EditComponent(AllItems)} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-
-                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z" fill="#333333" />
-                                                    </svg>
-                                                </span>
-                                            </div>
-                                        }
-                                        {AllItems?.Portfolio_x0020_Type == 'Service' &&
-                                            <div className="input-group">
-
-                                                {
-                                                    linkedComponentData?.length > 0 ? <div>
-                                                        {linkedComponentData?.map((com: any) => {
-                                                            return (
-                                                                <>
-                                                                    <div className="d-flex block full-width p-2 mb-1">
-                                                                        <div>
-                                                                            <a className="hreflink " target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
-                                                                                {com.Title}
-                                                                            </a>
-                                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} />
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            )
-                                                        })}
-                                                    </div> : null
-
-                                                }
-                                                {/* <span className="input-group-text">
+                                        {/* <span className="input-group-text">
                                                             <img src="https://hhhhteams.sharepoint.com/_layouts/images/edititem.gif"
                                                                 onClick={(e) => EditComponent(EditData, 'Component')} />
                                                         </span> */}
-                                            </div>
-                                        }
+                                    </div>
+                                }
 
-                                        <div className="col-sm-11  inner-tabb">
-                                            <div>
-                                                {smartComponentData ? smartComponentData?.map((com: any) => {
-                                                    return (
-                                                        <>
-                                                            <div className="d-flex Component-container-edit-task mb-1" style={{ width: "81%" }}>
-                                                                <a style={{ color: "#fff !important" }} target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
-                                                                <a>
-                                                                    <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} />
-                                                                </a>
-                                                            </div>
-                                                        </>
-                                                    )
-                                                }) : null}
-
-
-                                            </div>
-                                        </div>
-
-
-                                        <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                            <fieldset>
-                                                <label>Priority</label>
-                                                <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                                    defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                                <div className="mt-2">
-                                                    <label>
-                                                        <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                            type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)}
-                                                        />High
-                                                    </label>
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                            type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)}
-                                                        />Normal
-                                                    </label>
-                                                </div>
-                                                <div className="">
-                                                    <label>
-                                                        <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                            type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                                    </label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-
-                                        <div className="row mt-2">
-                                            <div className="col-sm-12">
-                                                <div className="col-sm-12 padding-0 input-group">
-                                                    <label className="full_width">Categories</label>
-                                                    <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
-
-                                                    <span className="input-group-text">
-
-                                                        <a className="hreflink" title="Edit Categories">
-
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                                onClick={() => EditComponentPicker(AllItems)} />
+                                <div className="col-sm-12  inner-tabb">
+                                    
+                                        {smartComponentData ? smartComponentData?.map((com: any) => {
+                                            return (
+                                              
+                                                    <div className="block d-flex justify-content-between mb-1" >
+                                                       
+                                                        <a className='Portfolio-Title'  target="_blank" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>{com.Title}</a>
+                                                     
+                                                        <a className='text-end'>
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => setSmartComponentData([])}></span>
+                                                            {/* <img className="mx-2" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setSmartComponentData([])} /> */}
                                                         </a>
-                                                    </span>
-                                                </div>
-                                            </div>
+                                                    </div>
+                                            
+                                            )
+                                        }) : null}
 
 
+                                    
+                                </div>
 
+
+                                <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
+                                    <fieldset>
+                                        <label>Priority</label>
+                                        <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
+                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
+                                        <div className="mt-2">
+                                            <label>
+                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
+                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)}
+                                                />High
+                                            </label>
                                         </div>
-
-                                        <div className="row">
-                                            <div className="col-sm-12 mt-2">
-                                                {CheckCategory?.map((item: any) => {
-                                                    return (
-                                                        <>
-                                                            <div
-                                                                className="col-sm-12 padL-0 checkbox">
-                                                                <input type="checkbox"
-                                                                    onClick={() => checkCat(item.Title)} />
-                                                                <span style={{ marginLeft: "20px" }}> {item.Title}</span>
-                                                            </div>
-                                                        </>
-                                                    )
-                                                })}
-                                            </div>
-
-
+                                        <div className="">
+                                            <label>
+                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
+                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)}
+                                                />Normal
+                                            </label>
                                         </div>
-                                        {CategoriesData != undefined ?
-                                            <div>
-                                                {CategoriesData?.map((type: any, index: number) => {
-                                                    return (
-                                                        <>
-                                                            {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
-
-                                                                <div className="d-flex block full-width p-2 mb-1">
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
-                                                                        {type.Title}
-                                                                    </a>
-                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" />
-                                                                </div>
-                                                            }
-                                                        </>
-                                                    )
-                                                })}
-                                            </div> : null
-                                        }
-                                        <div className="row mt-2">
-                                            <div className="col-sm-12">
-                                                <div className="col-sm-12 padding-0 input-group">
-                                                    <label className="full_width">Client Category</label>
-                                                    <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
-
-                                                    <span className="input-group-text">
-
-                                                        <a className="hreflink" title="Edit Categories">
-
-                                                            <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
-                                                                onClick={() => EditClientCategory(AllItems)} />
-                                                        </a>
-                                                    </span>
-                                                </div>
-                                            </div>
-
-
-
+                                        <div className="">
+                                            <label>
+                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
+                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
+                                            </label>
                                         </div>
-                                        {(ClientCategoriesData != undefined && ClientCategoriesData?.length > 0) ?
-                                            <div>
-                                                {ClientCategoriesData?.map((type: any, index: number) => {
-                                                    return (
-                                                        <>
-                                                            {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+                                    </fieldset>
+                                </div>
 
-                                                                <div className="d-flex block full-width p-2 mb-1">
-                                                                    <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
-                                                                        {type.Title}
-                                                                    </a>
-                                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" />
-                                                                </div>
-                                                            }
-                                                        </>
-                                                    )
-                                                })}
-                                            </div> : null
-                                        }
+                                <div className="row mt-2">
+                                    <div className="col-sm-12">
+                                        <div className="col-sm-12 padding-0 input-group">
+                                            <label className="full_width">Categories</label>
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
+
+                                            <span className="input-group-text">
+
+                                                <a className="hreflink" title="Edit Categories">
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                        onClick={() => EditComponentPicker(AllItems)} />
+                                                </a>
+                                            </span>
+                                        </div>
                                     </div>
 
+
+
                                 </div>
+
+                                <div className="row">
+                                    <div className="col-sm-12 mt-2">
+                                        {CheckCategory?.map((item: any) => {
+                                            return (
+                                                <>
+                                                    <div
+                                                        className="col-sm-12 padL-0 checkbox">
+                                                        <input type="checkbox"
+                                                            onClick={() => checkCat(item.Title)} />
+                                                        <span style={{ marginLeft: "20px" }}> {item.Title}</span>
+                                                    </div>
+                                                </>
+                                            )
+                                        })}
+                                    </div>
+
+
+                                </div>
+                                {CategoriesData != undefined ?
+                                    <div>
+                                        {CategoriesData?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                            <a style={{ color: "#fff !important" }} target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
+                                                                {type.Title}
+                                                            </a>
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteCategories(type?.Id)}></span>
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteCategories(type?.Id)} className="p-1" /> */}
+                                                        </div>
+                                                    }
+                                                </>
+                                            )
+                                        })}
+                                    </div> : null
+                                }
+                                <div className="row mt-2">
+                                    <div className="col-sm-12">
+                                        <div className="col-sm-12 padding-0 input-group">
+                                            <label className="full_width">Client Category</label>
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" />
+
+                                            <span className="input-group-text">
+
+                                                <a className="hreflink" title="Edit Categories">
+
+                                                    <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/15/images/EMMCopyTerm.png"
+                                                        onClick={() => EditClientCategory(AllItems)} />
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                {(ClientCategoriesData != undefined && ClientCategoriesData?.length > 0) ?
+                                    <div>
+                                        {ClientCategoriesData?.map((type: any, index: number) => {
+                                            return (
+                                                <>
+                                                    {(type.Title != "Phone" && type.Title != "Email Notification" && type.Title != "Approval" && type.Title != "Immediate") &&
+
+                                                        <div className="block d-flex full-width justify-content-between mb-1 p-2">
+                                                            <a  target="_blank" data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?${AllItems?.Id}`}>
+                                                                {type.Title}
+                                                            </a>
+                                                            <span  className='bg-light svg__iconbox svg__icon--cross' onClick={() =>  deleteClientCategories(type.Id)}> </span> 
+                                                            {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => deleteClientCategories(type.Id)} className="p-1" /> */}
+                                                        </div>
+                                                    }
+                                                </>
+                                            )
+                                        })}
+                                    </div> : null
+                                }
                             </div>
 
-
                         </div>
+                    </div>
 
 
-                        <div className="modal-footer">
-                            {
-                                siteTypess?.map((site: any) => {
-                                    if (site.IscreateTask == true) {
-                                        return (
-                                            <span className='ms-2'>
-                                                <img className="client-icons"
-                                                    src={site?.Item_x005F_x0020_Cover?.Url} />
-                                            </span>
-                                        )
-                                    }
-                                })
+                </div>
+
+
+                <div className="modal-footer">
+                    {
+                        siteTypess?.map((site: any) => {
+                            if (site.IscreateTask == true) {
+                                return (
+                                    <span className='ms-2'>
+                                        <img className="client-icons"
+                                            src={site?.Item_x005F_x0020_Cover?.Url} />
+                                    </span>
+                                )
                             }
-                            <button type="button" className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
-                                Submit
-                            </button>
-                            <button type="button" className="btn btn-default m-2" onClick={() => closeTaskStatusUpdatePoup('item')}>
-                                Cancel
-                            </button>
+                        })
+                    }
+                    <button type="button" className="btn btn-primary m-2" onClick={() => saveNoteCall()}>
+                        Submit
+                    </button>
+                    <button type="button" className="btn btn-default m-2" onClick={() => closeTaskStatusUpdatePoup('item')}>
+                        Cancel
+                    </button>
 
-                        </div>
+                </div>
 
-                    </Panel>
-                    {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
-                    {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>}
-                    {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
-                    {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
-                </>
-                )
+            </Panel>
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>}
+            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} closePopupCallBack={Call}></Picker>}
+            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
+        </>
+    )
 }
 
-                export default CreateActivity;
+export default CreateActivity;

@@ -71,6 +71,7 @@ var GlobalServiceAndComponentData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
+    AllListIdData.listId=Items.Items.listId
     Items.Items.Id = Items.Items.ID;
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
@@ -2359,6 +2360,16 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
+            if(Items?.pageName =="TaskFooterTable"){
+                var ItmesDelete:any={
+                    data:{
+                        Id:itemId,
+                        ItmesDelete:true
+                    }
+                 }
+            
+                Items.Call(ItmesDelete); 
+            }
             Items.Call();
             console.log("Your post has been deleted successfully");
         } catch (error) {
@@ -4255,7 +4266,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls}itemID={ Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">

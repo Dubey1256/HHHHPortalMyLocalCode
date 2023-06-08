@@ -634,16 +634,16 @@ function TimeEntryPopup(item: any) {
             }
         })
         TimesheetConfiguration?.forEach((val: any) => {
-            if (val.taskSites != 'Migration' || val.taskSites != 'ALAKDigital') {
+           
                 TimeSheetlistId = val.TimesheetListId;
                 siteUrl = val.siteUrl
                 listName = val.TimesheetListName
-            }
-            else {
-                MigrationListId = val.TimesheetListId;
-                siteUrl = val.siteUrl
-                listName = val.TimesheetListName
-            }
+            
+            // else {
+            //     MigrationListId = val.TimesheetListId;
+            //     siteUrl = val.siteUrl
+            //     listName = val.TimesheetListName
+            // }
         })
         await GetTaskUsers();
 
@@ -1013,7 +1013,7 @@ function TimeEntryPopup(item: any) {
         if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
 
             //var allurls = [{ 'Url': "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select + "" }]
-            var allurls = [{ 'Url': `${CurrentSiteUrl}/_api/web/lists/getById('${MigrationListId}')/items?$select=${select}` }]
+            var allurls = [{ 'Url': `${CurrentSiteUrl}/_api/web/lists/getById('${TimeSheetlistId}')/items?$select=${select}` }]
 
         }
         else {
@@ -1098,7 +1098,7 @@ function TimeEntryPopup(item: any) {
 
                                 if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
 
-                                    var ListId = MigrationListId
+                                    var ListId = TimeSheetlistId
 
                                 }
                                 else {
@@ -1312,7 +1312,7 @@ function TimeEntryPopup(item: any) {
 
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = MigrationListId
+            var ListId = TimeSheetlistId
 
         }
         else {
@@ -1420,7 +1420,7 @@ function TimeEntryPopup(item: any) {
         setTaskStatuspopup2(false)
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = MigrationListId
+            var ListId = TimeSheetlistId
 
 
         }
@@ -1669,16 +1669,16 @@ if(Available == false){
         let web = new Web(`${CurrentSiteUrl}`);
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-            //var listName = 'TasksTimesheet2'
+          
         }
         else {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-            //var listName = 'TaskTimeSheetListNew'
+           
         }
 
-        // let folderUri: string = '/Smalsus/Santosh Kumar';
+       
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
-        // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
+       
         let itemMetadataAdded = {
             'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1717,19 +1717,19 @@ if(Available == false){
             }
 
         });
-        //  let web = new Web(`${CurrentSiteUrl}`);
+      
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-            //var listName = 'TasksTimesheet2'
+           
         }
         else {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-            //var listName = 'TaskTimeSheetListNew'
+          
         }
 
-        // let folderUri: string = '/Smalsus/Santosh Kumar';
+       
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
-        // let listUri: string = '/sites/HHHH/SP/Lists/TaskTimeSheetListNew';
+       
         let itemMetadataAdded = {
             'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1819,7 +1819,7 @@ if(Available == false){
 
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = MigrationListId
+            var ListId = TimeSheetlistId
 
         }
         else {
@@ -1848,21 +1848,17 @@ if(Available == false){
 
     const deleteCategory = async (val: any) => {
 
-        confirm("Are you sure, you want to delete this?")
-        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
-
-            var ListId = MigrationListId
-
-        }
-        else {
+       var deleteConfirmation =  confirm("Are you sure, you want to delete this?")
             var ListId = TimeSheetlistId
-        }
+            if (deleteConfirmation) {
+
         let web = new Web(`${CurrentSiteUrl}`);
         await web.lists.getById(ListId).items.getById(val.Id).delete()
             .then((i: any) => {
                 console.log(i);
             });
         setupdateData(updateData + 5)
+            }
 
     }
 
@@ -1887,16 +1883,14 @@ if(Available == false){
 
         });
         var Dateee = ''
-        // if(editeddata != undefined){
-        //    var a =  Moment(editeddata).format()
-        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
-        // }
-        // else{
-        //     Dateee = Moment(changeDates).format('DD/MM/YYYY')
-        // }
-
-        // var Dateee = Moment(changeEdited).format('DD/MM/YYYY')
-        //var DateFormate = new Date(Eyd)
+        if (editeddata != undefined) {
+            var a = Moment(editeddata).format()
+            Dateee = Moment(a).format('DD/MM/YYYY')
+        }
+        else {
+            Dateee = Moment(changeEdited).format('DD/MM/YYYY')
+        }
+        var DateFormate = new Date(Eyd)
 
         $.each(TaskCate, function (index: any, subItem: any) {
             if (subItem.Id == child.ParentID) {
@@ -1916,7 +1910,7 @@ if(Available == false){
                     update['ParentID'] = AddParent;
                     update['TaskTime'] = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
                     update['TaskTimeInMin'] = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
+                    update['TaskDate'] = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
                     update['Description'] = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
                     subItem.AdditionalTime.push(update)
                     UpdatedData = subItem.AdditionalTime
@@ -1925,7 +1919,7 @@ if(Available == false){
         })
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = MigrationListId
+            var ListId = TimeSheetlistId
 
         }
         else {
@@ -1968,7 +1962,7 @@ if(Available == false){
         let web = new Web(`${CurrentSiteUrl}`);
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = MigrationListId
+            var ListId = TimeSheetlistId
 
         }
         else {
@@ -3049,7 +3043,7 @@ if(Available == false){
                                                                     value={Moment(changeDates).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
                                                                     onChange={handleDatedue}
                                                                     dateFormat="dd/MM/yyyy" />
 

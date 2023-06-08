@@ -325,6 +325,7 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (ParentArray != undefined && ParentArray.length > 0) {
             ParentArray.map((parentArray: any) => {
+                parentArray.Child = [];
                 AllClientCategoryData.map((AllData: any) => {
                     if (parentArray.Id == AllData.ParentId) {
                         AllData.newLabel = parentArray.newLabel + " > " + AllData.Title
@@ -337,22 +338,41 @@ const SiteCompositionComponent = (Props: any) => {
                 })
             })
         }
+        if (ParentArray != undefined && ParentArray.length > 0) {
+            ParentArray.map((parentArray: any) => {
+                if (parentArray.Child?.length > 0) {
+                    parentArray.Child?.map((childData: any) => {
+                        childData.Child = []
+                        AllClientCategoryData.map((AllData: any) => {
+                            if (childData.Id == AllData.ParentId) {
+                                AllData.newLabel = childData.newLabel + " > " + AllData.Title
+                                if (AllData?.siteName == null || AllData?.siteName == undefined) {
+                                    AllData.siteName = SiteName;
+                                }
+                                childData.Child.push(AllData);
+                                AutoCompleteItemsArray.push(AllData);
+                            }
+                        })
+                    })
+                }
+            })
+        }
         setSelectedSiteClientCategoryData(ParentArray);
     }
 
-    const AddSiteNameInSmartMetaData = async (CatgeoryData: any) => {
-        try {
-            let web = new Web(siteUrls);
-            await web.lists.getById(`${AllListIdData.SmartMetadataListID}`).items.getById(CatgeoryData.Id).update({
-                siteName: CatgeoryData.siteName
-            }).then(()=>{
-                console.log("Site Name Updated");
-            })
-        } catch (error) {
+    // const AddSiteNameInSmartMetaData = async (CatgeoryData: any) => {
+    //     try {
+    //         let web = new Web(siteUrls);
+    //         await web.lists.getById(`${AllListIdData.SmartMetadataListID}`).items.getById(CatgeoryData.Id).update({
+    //             siteName: CatgeoryData.siteName
+    //         }).then(() => {
+    //             console.log("Site Name Updated");
+    //         })
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
+    // }
 
     const AutoSuggestionForClientCategory = (e: any, usedFor: any) => {
         let SearchedKey: any = e.target.value;
@@ -937,7 +957,6 @@ const SiteCompositionComponent = (Props: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onRenderFooter={onRenderFooter}
-
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
                     <div className="">
@@ -1081,6 +1100,35 @@ const SiteCompositionComponent = (Props: any) => {
                                                                                     </div> : null}
                                                                                 </a>
                                                                             </p>
+                                                                            <ul className="sub-menu clr">
+                                                                                {child1.Child?.map(function (child2: any) {
+                                                                                    return (
+                                                                                        <>
+                                                                                            {child2.Title != null ?
+                                                                                                <li>
+                                                                                                    <p className='mb-0 hreflink' onClick={() => SelectedClientCategoryFromDataList(child2, "Popup")}>
+                                                                                                        <a>
+                                                                                                            {child2.Item_x0020_Cover ?
+                                                                                                                <img className="flag_icon"
+                                                                                                                    style={{ height: "20px", borderRadius: "10px", border: "1px solid #000069" }}
+                                                                                                                    src={child2.Item_x0020_Cover ? child2.Item_x0020_Cover.Url : ''}
+                                                                                                                /> :
+                                                                                                                null}
+                                                                                                            {child2.Title}
+                                                                                                            {child2.Description1 ? <div className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                                                                                                <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/infoIcon.png" />
+                                                                                                                <div className="popover__content">
+                                                                                                                    <span>{child2.Description1}</span>
+                                                                                                                </div>
+                                                                                                            </div> : null}
+                                                                                                        </a>
+                                                                                                    </p>
+                                                                                                </li> : null
+                                                                                            }
+                                                                                        </>
+                                                                                    )
+                                                                                })}
+                                                                            </ul>
                                                                         </li> : null
                                                                     }
                                                                 </>
