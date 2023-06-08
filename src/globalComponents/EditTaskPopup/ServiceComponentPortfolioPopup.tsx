@@ -129,7 +129,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
-                size: 15,
+                size: 100,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -207,7 +207,6 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: "Title",
                 placeholder: "Title",
                 header: "",
-                size: 27,
             },
             {
                 accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -223,37 +222,25 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                 id: 'ClientCategory',
                 placeholder: "Client Category",
                 header: "",
-                size: 15,
-            },
-            {
-                accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
-                cell: ({ row }) => (
-                    <div>
-                        <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
-                    </div>
-                ),
-                id: 'TeamLeaderUser',
-                placeholder: "Team",
-                header: "",
-                size: 15,
+                size: 200,
             },
             {
                 accessorKey: "PercentComplete",
                 placeholder: "Status",
                 header: "",
-                size: 7,
+                size: 70,
             },
             {
                 accessorKey: "ItemRank",
                 placeholder: "Item Rank",
                 header: "",
-                size: 7,
+                size: 60,
             },
             {
                 accessorKey: "DueDate",
                 placeholder: "Due Date",
                 header: "",
-                size: 9,
+                size: 90,
             },
         ],
         [data]
