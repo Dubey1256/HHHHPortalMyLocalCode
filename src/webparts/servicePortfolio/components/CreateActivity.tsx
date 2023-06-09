@@ -264,6 +264,9 @@ const CreateActivity = (props: any) => {
         setSave({ ...save, recentClick: isActiveItem })
     };
     const Call = React.useCallback((item1: any, type: any) => {
+         setIsComponentPicker(false);
+        setIsComponent(false);
+        setIsClientPopup(false);
         if (type == "SmartComponent") {
             var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
@@ -336,9 +339,7 @@ const CreateActivity = (props: any) => {
             })
             //   setUpdate(update+2)
         }
-        setIsComponentPicker(false);
-        setIsComponent(false);
-        setIsClientPopup(false);
+       
         
     }, []);
     const EditComponentPicker = (item: any) => {
@@ -1416,7 +1417,7 @@ const CreateActivity = (props: any) => {
             </Panel>
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></LinkedComponent>}
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList}  Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} closePopupCallBack={Call}></Picker>}
+            {IsComponentPicker && <Picker props={SharewebCategory} AllListId={dynamicList} Call={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
         </>
     )
