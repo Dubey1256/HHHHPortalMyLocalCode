@@ -512,7 +512,7 @@ const EditTaskPopup = (Items: any) => {
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
                     }
 
-                    if (statusValue <= 3 && ApprovalStatusGlobal) {
+                    if (statusValue < 3 && ApprovalStatusGlobal) {
                         ChangeTaskUserStatus = false;
                     } else {
                         ChangeTaskUserStatus = true;
