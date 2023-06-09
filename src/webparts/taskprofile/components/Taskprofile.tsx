@@ -1213,7 +1213,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0}Hours </span>
                      </dd>
                    </dl>
                   {isShowTimeEntry && <dl>
