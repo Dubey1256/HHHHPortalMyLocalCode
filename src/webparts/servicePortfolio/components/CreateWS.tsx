@@ -376,6 +376,7 @@ const CreateWS = (props: any) => {
                 res.data.Author={
                     Id: res?.data?.AuthorId
                 }
+                res.Item_x0020_Type=""
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -391,6 +392,7 @@ const CreateWS = (props: any) => {
                 res.data.Author={
                     Id: res?.data?.AuthorId
                 }
+                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -594,6 +596,7 @@ const CreateWS = (props: any) => {
                 res.data.Author={
                     Id: res?.data?.AuthorId
                 }
+                res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })
         }

@@ -776,14 +776,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     })
     this.GetResult();
   }
-  private async approvalcallbackfeedback() {
-    // this.showhideapproval();
+  // private async approvalcallbackfeedback() {
+  //   // this.showhideapproval();
 
-    this.setState({
-      sendMail: false,
-      emailStatus: ""
-    })
-  }
+  //   this.setState({
+  //     sendMail: false,
+  //     emailStatus: ""
+  //   })
+  // }
   private ConvertLocalTOServerDate(LocalDateTime: any, dtformat: any) {
     if (dtformat == undefined || dtformat == '')
       dtformat = "DD/MM/YYYY";
@@ -1213,7 +1213,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0} </span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0}Hours </span>
                      </dd>
                    </dl>
                   {isShowTimeEntry && <dl>
@@ -1465,7 +1465,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               }
                               return <TaskFeedbackCard feedback={fbData} index={i + 1}
                                 onPost={() => { this.onPost() }}
-                                approvalcallbacktask={() => { this.approvalcallbackfeedback() }}
+                                // approvalcallbacktask={() => { this.approvalcallbackfeedback() }}
                                 fullfeedback={this.state.Result["FeedBack"]}
                                 CurrentUser={this.currentUser != undefined && this.currentUser?.length > 0 ? this.currentUser : userdisplay}
                                 ApprovalStatus={this.state.ApprovalStatus}
