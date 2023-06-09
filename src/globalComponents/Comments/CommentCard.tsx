@@ -35,6 +35,7 @@ export interface ICommentCardState {
   Result: any;
   listName: string;
   itemID: number;
+  listId:any
   CommenttoPost: string;
   updateComment: boolean;
   isModalOpen: boolean;
@@ -64,7 +65,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       Result: {},
       listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
       itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
-
+      listId:props.AllListId.listId,
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
@@ -94,13 +95,24 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
-    taskDetails = await web.lists
+    if(this.state.listName!=undefined && this.state.listName!=null && this.state.listName!=""){
+      taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
       .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
       .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
       .get()
+    }else{
+      taskDetails = await web.lists
+      .getById(this.state.listId)
+      .items
+      .getById(this.state.itemID)
+      .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+      .get()
+    }
+    
 
     await this.GetTaskUsers();
     console.log("this is result function")

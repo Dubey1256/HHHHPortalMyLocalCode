@@ -1,10 +1,7 @@
 import * as React from "react";
 import * as $ from "jquery";
-import Modal from "react-bootstrap/Modal";
 import * as Moment from "moment";
-import Button from "react-bootstrap/Button";
 import { map } from "jquery";
-// import { Modal } from 'office-ui-fabric-react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   FaChevronRight,
@@ -15,13 +12,9 @@ import {
   FaCompressArrowsAlt,
   FaSearch,
 } from "react-icons/fa";
-import { MdAdd } from "react-icons/Md";
 import Tooltip from "../../../globalComponents/Tooltip";
-import Dropdown from "react-bootstrap/Dropdown";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
-import { create } from "lodash";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
-// import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import { GlobalConstants } from "../../../globalComponents/LocalCommon";
@@ -29,13 +22,11 @@ import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import PortfolioStructureCreationCard from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
-// import SmartTimeTotal from '../../taskprofile/components/SmartTimeTotal';
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-import { RiDeleteBin6Line, RiH6 } from "react-icons/ri";
-import { Item } from "@pnp/sp/items";
+
 
 import {
   Column,
@@ -179,9 +170,7 @@ var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
-var MainMeetingItems: any = [];
 var childsData: any = [];
-var array: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
 let IsShowRestru: any = false;
@@ -1650,7 +1639,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     })
     setData(data => ([...maidataBackup]));
     setCheckedList(checkedList => ([...list]));
-    rerender();
   };
 
   // const onChangeHandler = (itrm: any, child: any, e: any) => {
@@ -1844,6 +1832,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             // comp.childs.push(childItem.data)
             CountArray++;
             comp.subRows.push(childItem.data)
+            comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
+
           }
           if (comp.subRows != undefined && comp.subRows.length > 0) {
             comp?.subRows?.map((subComp: any) => {
@@ -1854,6 +1844,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 // subComp.childs.push(childItem.data)
                 CountArray++;
                 subComp.subRows.push(childItem.data)
+                
+                subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
               }
 
 
@@ -1872,6 +1864,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     Feat.subRows = Feat.subRows == undefined ? [] : Feat.subRows
                     // Feat.childs.push(childItem.data)
                     Feat.subRows.push(childItem.data)
+                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
                   }
 
 
@@ -3200,262 +3193,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     SmartFilters: any;
   }[];
   console.log(siteConfig);
-  var SomeMetaData1 = [
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 15,
-      Title: "MileStone",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: [],
-      },
-      SortOrder: 2,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: null,
-      ID: 15,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(105)",
-        etag: '"4"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 105,
-      Title: "Development",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png",
-      },
-      SmartFilters: null,
-      SortOrder: 3,
-      TaxType: "Category",
-      Selectable: true,
-      ParentID: 0,
-      SmartSuggestions: null,
-      ID: 105,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(282)",
-        etag: '"1"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 282,
-      Title: "Implementation",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1:
-        "This should be tagged if a task is for applying an already developed component/subcomponent/feature.",
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description: "/SiteCollectionImages/ICONS/Shareweb/Implementation.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png",
-      },
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: false,
-      ID: 282,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/;Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(11)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 11,
-      Title: "Bug",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png",
-      },
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: ["MetaSearch", "Dashboard"],
-      },
-      SortOrder: 2,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: null,
-      ID: 11,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(96)",
-        etag: '"5"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 96,
-      Title: "Feedback",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png",
-      },
-      SmartFilters: null,
-      SortOrder: 2,
-      TaxType: null,
-      Selectable: true,
-      ParentID: 0,
-      SmartSuggestions: false,
-      ID: 96,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(191)",
-        etag: '"3"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 191,
-      Title: "Improvement",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1:
-        "Use this task category for any improvements of EXISTING features",
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png",
-      },
-      SmartFilters: null,
-      SortOrder: 12,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 24,
-      SmartSuggestions: false,
-      ID: 191,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(12)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 12,
-      Title: "Design",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: {
-        __metadata: { type: "SP.FieldUrlValue" },
-        Description:
-          "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png",
-        Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png",
-      },
-      SmartFilters: {
-        __metadata: { type: "Collection(Edm.String)" },
-        results: ["MetaSearch", "Dashboard"],
-      },
-      SortOrder: 4,
-      TaxType: "Categories",
-      Selectable: true,
-      ParentID: 165,
-      SmartSuggestions: null,
-      ID: 12,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(100)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 100,
-      Title: "Activity",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: null,
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: null,
-      Selectable: true,
-      ParentID: null,
-      SmartSuggestions: null,
-      ID: 100,
-    },
-    {
-      __metadata: {
-        id: "Web/Lists(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)",
-        uri: "https://hhhhteams.sharepoint.com/sites/HHHH/_api/Web/Lists;(guid'5ea288be-344d-4c69-9fb3-5d01b23dda25')/Items(281)",
-        etag: '"13"',
-        type: "SP.Data.SmartMetadataListItem",
-      },
-      Id: 281,
-      Title: "Task",
-      siteName: null,
-      siteUrl: null,
-      listId: null,
-      Description1: null,
-      IsVisible: true,
-      Item_x005F_x0020_Cover: null,
-      SmartFilters: null,
-      SortOrder: 4,
-      TaxType: null,
-      Selectable: true,
-      ParentID: null,
-      SmartSuggestions: null,
-      ID: 281,
-    },
-  ] as unknown as {
-    siteName: any;
-    siteUrl: any;
-    listId: any;
-    Description1: any;
-    results: any[];
-    SmartSuggestions: any;
-    SmartFilters: any;
-  }[];
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
@@ -3809,6 +3546,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
     } else {
       setcheckData([])
+      setCheckedList([]);
       setShowTeamMemberOnCheck(false)
     }
 
@@ -4180,7 +3918,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Task")}>
+                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -4191,7 +3929,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -4202,7 +3940,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
                       </span>
@@ -4210,7 +3948,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Task")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
                       </span>
@@ -4233,7 +3971,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               ) : (
                 <ul className="quick-actions">
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Implementation")}>
+                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
@@ -4244,7 +3982,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Development")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites">
                         <img
                           className="icon-sites"
