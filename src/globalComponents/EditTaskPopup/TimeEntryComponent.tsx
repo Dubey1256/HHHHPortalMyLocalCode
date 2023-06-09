@@ -1622,7 +1622,7 @@ if(Available == false){
 
 
     const saveTimeSpent = async () => {
-        closeTaskStatusUpdatePoup();
+       
         var UpdatedData: any = {}
         smartTermId = "Task" + item.props.siteType + "Id";
         showProgressBar();
@@ -1634,6 +1634,7 @@ if(Available == false){
             return false;
         }
         else {
+             closeTaskStatusUpdatePoup();
             var count: any = 0;
             $.each(AllUsers, async function (index: any, taskUser: any) {
                 count++
