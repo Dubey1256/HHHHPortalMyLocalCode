@@ -562,6 +562,7 @@ const SiteCompositionComponent = (Props: any) => {
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
         let SearchedKey: any = e.target.value;
         setClientCategoryPopupSiteName(siteType);
+        setSearchWithDescriptionStatus(false)
         if (siteType == "EPS") {
             BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");

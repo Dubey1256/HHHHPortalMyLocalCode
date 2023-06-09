@@ -1633,23 +1633,26 @@ if(Available == false){
             alert("please select category or Title");
             return false;
         }
-        var count: any = 0;
-        $.each(AllUsers, async function (index: any, taskUser: any) {
-            count++
-            if (taskUser.AssingedToUserId != null && taskUser.AssingedToUserId == CurntUserId) {
-                UpdatedData['AuthorName'] = taskUser.Title;
-                UpdatedData['Company'] = taskUser.Company;
-                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-                await saveOldUserTask(UpdatedData)
-
+        else {
+            var count: any = 0;
+            $.each(AllUsers, async function (index: any, taskUser: any) {
+                count++
+                if (taskUser.AssingedToUserId != null && taskUser.AssingedToUserId == CurntUserId) {
+                    UpdatedData['AuthorName'] = taskUser.Title;
+                    UpdatedData['Company'] = taskUser.Company;
+                    UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+                    await saveOldUserTask(UpdatedData)
+    
+                }
+    
+            });
+            if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
+    
+               alert("Please Add user on Task User Management")
+    
             }
-
-        });
-        if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
-
-           alert("Please Add user on Task User Management")
-
         }
+        
 
 
 
