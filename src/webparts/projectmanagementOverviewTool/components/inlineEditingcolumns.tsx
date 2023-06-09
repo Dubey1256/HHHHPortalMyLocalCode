@@ -80,7 +80,7 @@ const inlineEditingcolumns = (props: any) => {
         setTaskResponsibleTeam(props?.item?.Responsible_x0020_Team)
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
-        setFeedback(props.item.Remark);
+        setFeedback(props?.item?.Remark);
         if (props?.item?.PercentComplete != undefined) {
             props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
         }
@@ -609,7 +609,7 @@ const inlineEditingcolumns = (props: any) => {
 
     }
     const closeTaskDueDate = () => {
-        setDueDate({ ...dueDate, editPopup: false, editDate: props.item.DisplayDueDate })
+        setDueDate({ ...dueDate, editPopup: false, editDate: props?.item?.DisplayDueDate })
     }
 
 
@@ -767,12 +767,12 @@ const inlineEditingcolumns = (props: any) => {
             }
             {props?.columnName == 'Remark' ?
                 <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setRemark(true)}>
-                    &nbsp;{props.item.Remark}</span></>
+                    &nbsp;{props?.item?.Remark}</span></>
                 : ""
             }
             {props?.columnName == 'EstimatedTime' ?
                 <>  <span style={{ display: "block", width: "100%", height: "100%" }} className={ServicesTaskCheck && props?.pageName !== 'ProjectOverView' ? "serviepannelgreena align-content-center d-flex gap-1" : "align-content-center d-flex gap-1"} onClick={() => setUpdateEstimatedTime(true)}>
-                    &nbsp;{props.item.EstimatedTime}</span></>
+                    &nbsp;{props?.item?.EstimatedTime}</span></>
                 : ""
             }
 
@@ -785,7 +785,7 @@ const inlineEditingcolumns = (props: any) => {
                             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
-                            <span title={getPercentCompleteTitle(props?.item?.PercentComplete)}>{props.item.PercentComplete} </span> 
+                            <span title={getPercentCompleteTitle(props?.item?.PercentComplete)}>{props?.item?.PercentComplete} </span> 
                             {
                                         props?.item?.IsTodaysTask ? <>
                                             {

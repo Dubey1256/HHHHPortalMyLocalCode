@@ -371,7 +371,12 @@ const CreateWS = (props: any) => {
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
                 res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data['Shareweb_x0020_ID'] = SharewebID,
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.Item_x0020_Type=""
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -383,6 +388,11 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -582,6 +592,11 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
+                res.data.Created=new Date();
+                res.data.Author={
+                    Id: res?.data?.AuthorId
+                }
+                res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -640,9 +655,9 @@ const CreateWS = (props: any) => {
         return (
             <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className='heading'>
+                    <h2 className='heading'>
                         {`Create Item`}
-                    </span>
+                    </h2>
                 </div>
                 <Tooltip ComponentId={AllItems?.Id} />
             </div>
