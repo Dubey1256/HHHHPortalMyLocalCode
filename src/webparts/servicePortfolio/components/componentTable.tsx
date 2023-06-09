@@ -1544,7 +1544,7 @@ function ComponentTable(SelectedProp: any) {
         "Team_x0020_Members/Title",
         "ClientCategory/Id",
         "ClientCategory/Title",
-        'ClientCategory/Color_x0020_Tag',
+        // 'ClientCategory/Color_x0020_Tag',
         "Responsible_x0020_Team/Id",
         "Responsible_x0020_Team/Title"
       )
@@ -1804,9 +1804,11 @@ function ComponentTable(SelectedProp: any) {
               task.isService = true;
               task.Portfolio_x0020_Type = "Events";
             }
-            if (ComponetsData["allComponets"][i]["childs"] == undefined)
+            if (ComponetsData["allComponets"][i]["childs"] == undefined){
               ComponetsData["allComponets"][i]["childs"] = [];
-            ComponetsData["allComponets"][i]["subRows"] = [];
+              ComponetsData["allComponets"][i]["subRows"] = [];
+            }
+             
             if (
               !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
             ) {
@@ -1844,9 +1846,10 @@ function ComponentTable(SelectedProp: any) {
               task.isService = true;
               task.Portfolio_x0020_Type = "Component";
             }
-            if (ComponetsData["allComponets"][i]["childs"] == undefined)
+            if (ComponetsData["allComponets"][i]["childs"] == undefined){
               ComponetsData["allComponets"][i]["childs"] = [];
-            ComponetsData["allComponets"][i]["subRows"] = [];
+              ComponetsData["allComponets"][i]["subRows"] = [];
+            }
             if (
               !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
             ) {

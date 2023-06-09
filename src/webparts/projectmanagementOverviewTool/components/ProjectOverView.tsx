@@ -146,7 +146,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 4,
+                size: 80,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -161,27 +161,27 @@ export default function ProjectOverview(props: any) {
                 ),
                 cell: ({ row, getValue }) => (
                     <div
-                        style={row.getCanExpand() ? {
-                            paddingLeft: `${row.depth * 5}px`,
+                        style={row?.getCanExpand() ? {
+                            paddingLeft: `${row?.depth * 5}px`,
                         } : {
                             paddingLeft: "18px",
                         }}
                     >
                         <>
-                            {row.getCanExpand() ? (
+                            {row?.getCanExpand() ? (
                                 <span className=' border-0'
                                     {...{
-                                        onClick: row.getToggleExpandedHandler(),
+                                        onClick: row?.getToggleExpandedHandler(),
                                         style: { cursor: "pointer" },
                                     }}
                                 >
-                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                                 </span>
                             ) : (
                                 ""
                             )}{" "}
 
-                            {row.original.Shareweb_x0020_ID}
+                            {row?.original.Shareweb_x0020_ID}
                         </>
                     </div>
                 ),
@@ -202,7 +202,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 4,
+                size: 60,
             },
             {
                 accessorFn: (row) => row?.Title,
@@ -233,7 +233,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
                     </span>
 
                 ),
@@ -242,13 +242,13 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 3,
+                size: 55,
             },
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
                     </span>
                 ),
@@ -257,7 +257,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 4,
+                size: 100,
             },
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
@@ -272,7 +272,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 header: "",
-                size: 11,
+                size: 155,
             },
             {
                 accessorFn: (row) => row?.DisplayDueDate,
@@ -290,7 +290,7 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 8,
+                size: 100,
             },
             {
 
@@ -306,7 +306,7 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 3,
+                size: 35,
             }
         ],
         [data]
@@ -353,9 +353,9 @@ export default function ProjectOverview(props: any) {
                             {row?.original?.Title != "Others" ? (
                                 <IndeterminateCheckbox
                                     {...{
-                                        checked: row.getIsSelected(),
-                                        indeterminate: row.getIsSomeSelected(),
-                                        onChange: row.getToggleSelectedHandler(),
+                                        checked: row?.getIsSelected(),
+                                        indeterminate: row?.getIsSomeSelected(),
+                                        onChange: row?.getToggleSelectedHandler(),
                                     }}
                                 />
                             ) : (
@@ -372,15 +372,16 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 canSort: false,
                 placeholder: "",
-                size: 5,
+                size: 35,
 
             },
             {
                 accessorFn: (row) => row?.Title,
-                Cell: ({ row }: any) => (
-                    <span>
-                        <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.values?.Title}</a>
-                    </span>
+                cell: ({ row, getValue }) => (
+                    <>
+                      <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> 
+                    </>
+
                 ),
                 id: "Title",
                 placeholder: "Title",
@@ -392,7 +393,7 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.PercentComplete,
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
                     </span>
                 ),
                 id: "PercentComplete",
@@ -400,20 +401,20 @@ export default function ProjectOverview(props: any) {
                 header: "",
                 resetSorting: false,
                 resetColumnFilters: false,
-                size: 5,
+                size: 55,
             },
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectManagment'} />
 
                     </span>
                 ),
                 id: "Priority_x0020_Rank",
                 placeholder: "Priority",
                 resetColumnFilters: false,
-                size: 5,
+                size: 100,
                 resetSorting: false,
                 header: ""
             },
@@ -437,7 +438,7 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 placeholder: "TeamMembers",
                 header: "",
-                size: 15,
+                size: 152,
             },
             {
                 accessorFn: (row) => row?.DueDate,
@@ -456,12 +457,12 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 placeholder: "Due Date",
                 header: "",
-                size: 10,
+                size: 100,
             },
             {
                 Cell: ({ row }: any) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                      <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>
                     </>
                 ),
                 id: 'Actions',
@@ -470,7 +471,7 @@ export default function ProjectOverview(props: any) {
                 resetSorting: false,
                 resetColumnFilters: false,
                 placeholder: "",
-                size: 5,
+                size: 35,
 
             },
         ],
@@ -498,7 +499,7 @@ export default function ProjectOverview(props: any) {
                 style: { width: '55px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
                     </span>
                 ),
             },
@@ -509,7 +510,7 @@ export default function ProjectOverview(props: any) {
                 style: { width: '100px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row.original} pageName={'ProjectOverView'} />
+                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
                     </span>
                 ),

@@ -155,7 +155,7 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
+                                    <th key={header.id} colSpan={header.colSpan} style={ header.column.columnDef.size!=undefined &&  header.column.columnDef.size!=150 ? { width: header.column.columnDef.size + "px" }:{}}>
                                         {header.isPlaceholder ? null : (
                                             <div className='position-relative' style={{ display: "flex" }}>
                                                 {flexRender(
@@ -196,7 +196,9 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
-                                        <td key={cell.id}>
+                                        <td key={cell.id}
+                                       
+                                        >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()

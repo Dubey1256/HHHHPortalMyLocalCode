@@ -187,7 +187,7 @@ function Portfolio({SelectedProp}:any) {
               item.Item_x0020_Type == "Feature"
             ) {
               ParentId = item.Parent.Id;
-              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('EC34B38F-0669-480A-910C-F84E92E58ADF')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
+              let urln = `https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/lists/getbyid('${ContextValue.MasterTaskListID}')/items?$select=Id,Parent/Id,Title,Parent/Title,Parent/ItemType&$expand=Parent&$filter=Id eq ${ParentId}`;
               $.ajax({
                 url: urln,
                 method: "GET",
@@ -1449,7 +1449,7 @@ Iconpps = [
                     );
                   })}
                   {data.map((item: any) => {
-                    return <Sitecomposition props={item} />;
+                    return <Sitecomposition props={item} sites={ContextValue} />;
                   })}
                 </div>
               </div>
