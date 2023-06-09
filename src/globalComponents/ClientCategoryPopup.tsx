@@ -174,7 +174,7 @@ const ClientCategoryPupup=(props:any)=>{
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={false}
                 onRenderFooter={customFooter}
-                className={props?.props?.Portfolio_x0020_Type == 'Service'||props.props.Services.length>0 ? "serviepannelgreena" : ""}
+                className={props?.props?.Portfolio_x0020_Type == 'Service'||props?.props?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">
