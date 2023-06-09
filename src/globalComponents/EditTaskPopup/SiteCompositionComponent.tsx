@@ -10,7 +10,7 @@ var SelectedClientCategoryBackupArray: any = [];
 var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
-    var ClientTime = Props.ClientTime;
+    var ClientTime = Props.ClientTime != undefined ? Props.ClientTime :[];
     var SitesTaggingData: any = Props.SitesTaggingData
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
@@ -369,9 +369,7 @@ const SiteCompositionComponent = (Props: any) => {
     //             console.log("Site Name Updated");
     //         })
     //     } catch (error) {
-
     //     }
-
     // }
 
     const AutoSuggestionForClientCategory = (e: any, usedFor: any) => {
@@ -562,6 +560,8 @@ const SiteCompositionComponent = (Props: any) => {
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
         let SearchedKey: any = e.target.value;
         setClientCategoryPopupSiteName(siteType);
+        setSearchWithDescriptionStatus(false);
+
         if (siteType == "EPS") {
             BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
@@ -727,9 +727,9 @@ const SiteCompositionComponent = (Props: any) => {
                                                         <input
                                                             type="number" min="1"
                                                             defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1"
+                                                            className="form-control p-1"  style={{width:"30%"}}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed" }}
+                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed",width:"30%" }}
                                                         />}</>
                                                 }
                                             </td>
