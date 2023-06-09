@@ -129,7 +129,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
             {
                 accessorKey: "PortfolioStructureID",
                 placeholder: "ID",
-                size: 100,
+                size: 175,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
