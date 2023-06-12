@@ -2005,6 +2005,8 @@ const EditTaskPopup = (Items: any) => {
                         Items.Call(dataEditor)
                     }
                     Items.Call(DataJSONUpdate);
+                }else{
+                    Items.Call();
                 }
             })
         } catch (error) {
@@ -5813,3 +5815,7 @@ export default React.memo(EditTaskPopup);
 
 // step-2B :
 // <EditTaskPopup Items={Items} ></EditTaskPopup>
+
+
+
+
