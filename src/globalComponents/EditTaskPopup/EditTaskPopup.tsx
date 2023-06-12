@@ -512,7 +512,7 @@ const EditTaskPopup = (Items: any) => {
                         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: '0' })
                     }
 
-                    if (statusValue <= 3 && ApprovalStatusGlobal) {
+                    if (statusValue <= 2 && ApprovalStatusGlobal) {
                         ChangeTaskUserStatus = false;
                     } else {
                         ChangeTaskUserStatus = true;
@@ -1690,7 +1690,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput != 2) {
                     setInputFieldDisable(false)
                 }
-                if (StatusInput <= 3 && ApprovalStatusGlobal) {
+                if (StatusInput <= 2 && ApprovalStatusGlobal) {
                     ChangeTaskUserStatus = false;
                 } else {
                     ChangeTaskUserStatus = true;
@@ -2005,6 +2005,8 @@ const EditTaskPopup = (Items: any) => {
                         Items.Call(dataEditor)
                     }
                     Items.Call(DataJSONUpdate);
+                }else{
+                    Items.Call();
                 }
             })
         } catch (error) {
@@ -5813,3 +5815,7 @@ export default React.memo(EditTaskPopup);
 
 // step-2B :
 // <EditTaskPopup Items={Items} ></EditTaskPopup>
+
+
+
+

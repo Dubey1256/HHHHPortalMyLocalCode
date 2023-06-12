@@ -19,6 +19,47 @@ export const pageContext = async () => {
     return result;
 
 }
+
+
+export const PopHoverBasedOnTaskId = (item: any) => {
+    if(item?.original?.subRows?.length > 0 ){
+        delete item?.original?.subRows;
+    }
+    //    let structur= item?.original?.Title;
+    //     let structureId=item?.original?.Shareweb_x0020_ID
+       let structur= [item?.original];
+       let finalArray:any=[];
+        try {
+            // let parent = item?.parentRow;
+            // while(parent){
+            //     structur=parent?.original?.Title+' > '+structur;
+            //     structureId=parent?.original?.structureId+'-'+ structureId;
+            //     parent=parent?.parentRow;
+            // }
+             let parent = item?.getParentRow();
+            while(parent){
+                structur.push(parent?.original);
+                parent=parent?.getParentRow();
+            }
+            structur.reverse;
+            let finalStructure=structur[0]
+            for (let i = structur.length - 1; i > 0; i--) {
+                const currentObject = structur[i];
+                const previousObject = structur[i - 1];
+                currentObject.subRows=[];
+                currentObject.subRows.push(previousObject);
+              }
+        } catch (error) {
+            
+        }
+    // let finalResult ='';
+    //     if(structur!=undefined&&structureId!=undefined){
+    //         finalResult=structureId+' : '+structur
+    //     }
+        return finalArray = structur?.slice(-1);
+    }
+
+
 export const hierarchyData= (items:any,MyAllData:any)=>{
     var MasterListData:any=[]
     var ChildData:any=[]
