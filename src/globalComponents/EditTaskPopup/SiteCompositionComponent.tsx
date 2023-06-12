@@ -727,9 +727,9 @@ const SiteCompositionComponent = (Props: any) => {
                                                         <input
                                                             type="number" min="1"
                                                             defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1"  style={{width:"30%"}}
+                                                            className="form-control p-1"  style={{width:"100%"}}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed",width:"30%" }}
+                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed",width:"100%" }}
                                                         />}</>
                                                 }
                                             </td>
