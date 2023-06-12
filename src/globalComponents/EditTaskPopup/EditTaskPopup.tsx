@@ -2005,6 +2005,8 @@ const EditTaskPopup = (Items: any) => {
                         Items.Call(dataEditor)
                     }
                     Items.Call(DataJSONUpdate);
+                }else{
+                    Items.Call();
                 }
             })
         } catch (error) {
