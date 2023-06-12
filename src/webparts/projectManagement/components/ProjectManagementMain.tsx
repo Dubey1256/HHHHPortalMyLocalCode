@@ -467,7 +467,7 @@ const ProjectManagementMain = (props: any) => {
       return updatedTasks;
     });
   }, []);
-  
+
   const LoadAllSiteTasks = async function () {
     await loadAllComponent()
     if (siteConfig?.length > 0) {
@@ -483,16 +483,13 @@ const ProjectManagementMain = (props: any) => {
           let smartmeta = [];
           smartmeta = await web.lists
             .getById(config.listId)
-            .items.select(
-              "Id,StartDate,DueDate,Title,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,Created,Body,IsTodaysTask,Categories,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ComponentId,ServicesId,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title,Remark"
-            )
+            .items 
+            .select("Id,Title,Priority_x0020_Rank,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
+            .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
             .orderBy("Priority_x0020_Rank", false)
-            .expand(
-              "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType"
-            )
-            .get();
+           .get();
           arraycount++;
           smartmeta.map((items: any) => {
 
@@ -894,7 +891,7 @@ const ProjectManagementMain = (props: any) => {
         accessorKey: "",
         id: "row?.original.Id",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         canSort: false,
         placeholder: "",
         size: 35
@@ -904,7 +901,7 @@ const ProjectManagementMain = (props: any) => {
         placeholder: "Task Id",
         header: "",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         size: 70,
         cell: ({ row, getValue }) => (
           <>
@@ -970,7 +967,7 @@ const ProjectManagementMain = (props: any) => {
         id: "Title",
         placeholder: "Title",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         header: "",
       },
       {
@@ -983,7 +980,7 @@ const ProjectManagementMain = (props: any) => {
         id: "Site",
         placeholder: "Site",
         header: "",
-        resetSorting:false,
+        resetSorting: false,
         resetColumnFilters: false,
         size: 50
       },
@@ -1015,7 +1012,7 @@ const ProjectManagementMain = (props: any) => {
         id: "Portfolio",
         placeholder: "Portfolio",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         header: ""
       },
       {
@@ -1037,7 +1034,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Priority',
         header: "",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         size: 100
       },
       {
@@ -1054,7 +1051,7 @@ const ProjectManagementMain = (props: any) => {
         ),
         id: 'DueDate',
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         placeholder: "Due Date",
         header: "",
         size: 80
@@ -1076,7 +1073,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'PercentComplete',
         placeholder: "% Complete",
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         header: "",
         size: 55
       },
@@ -1097,7 +1094,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'TeamMembers',
         canSort: false,
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
         size: 152
@@ -1119,7 +1116,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Remarks',
         canSort: false,
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         placeholder: "Remarks",
         header: "",
         size: 125
@@ -1152,7 +1149,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Created',
         canSort: false,
         resetColumnFilters: false,
-        resetSorting:false,
+        resetSorting: false,
         placeholder: "Created",
         header: "",
         size: 125
@@ -1176,7 +1173,7 @@ const ProjectManagementMain = (props: any) => {
         id: 'Actions',
         accessorKey: "",
         canSort: false,
-        resetSorting:false,
+        resetSorting: false,
         resetColumnFilters: false,
         placeholder: "",
         size: 35
