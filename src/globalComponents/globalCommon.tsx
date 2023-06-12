@@ -36,10 +36,10 @@ export const PopHoverBasedOnTaskId = (item: any) => {
             //     structureId=parent?.original?.structureId+'-'+ structureId;
             //     parent=parent?.parentRow;
             // }
-             let parent = item?.parentRow;
+             let parent = item?.getParentRow();
             while(parent){
                 structur.push(parent?.original);
-                parent=parent?.parentRow;
+                parent=parent?.getParentRow();
             }
             structur.reverse;
             let finalStructure=structur[0]

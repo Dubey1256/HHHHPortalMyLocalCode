@@ -1816,9 +1816,10 @@ function ComponentTable(SelectedProp: any) {
               task.isService = true;
               task.Portfolio_x0020_Type = "Events";
             }
-            if (ComponetsData["allComponets"][i]["childs"] == undefined)
+            if (ComponetsData["allComponets"][i]["childs"] == undefined) {
               ComponetsData["allComponets"][i]["childs"] = [];
-            ComponetsData["allComponets"][i]["subRows"] = [];
+              ComponetsData["allComponets"][i]["subRows"] = [];
+            }
             if (
               !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
             ) {
@@ -1856,9 +1857,10 @@ function ComponentTable(SelectedProp: any) {
               task.isService = true;
               task.Portfolio_x0020_Type = "Component";
             }
-            if (ComponetsData["allComponets"][i]["childs"] == undefined)
+            if (ComponetsData["allComponets"][i]["childs"] == undefined){
               ComponetsData["allComponets"][i]["childs"] = [];
-            ComponetsData["allComponets"][i]["subRows"] = [];
+              ComponetsData["allComponets"][i]["subRows"] = [];
+            }
             if (
               !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
             ) {
@@ -3696,8 +3698,8 @@ function ComponentTable(SelectedProp: any) {
             {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
-              <span className='ms-1'>{row?.original?.subRows?.length ? '('+ row?.original?.subRows?.length +')': "" }</span> : ''}
-              {/* {<span className='ms-1'>{'(' + row?.original?.ChlidLenghtVal + ')'}</span> : ''} */}
+              <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+            {/* {<span className='ms-1'>{'(' + row?.original?.ChlidLenghtVal + ')'}</span> : ''} */}
 
             {row?.original?.Short_x0020_Description_x0020_On != null && (
               <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
