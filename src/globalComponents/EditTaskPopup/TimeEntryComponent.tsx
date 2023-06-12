@@ -96,7 +96,7 @@ function TimeEntryPopup(item: any) {
     var smartTermName = "Task" + item.props.siteType;
 
     const GetTaskUsers = async () => {
-        let web = new Web(`${siteUrl}`);
+        let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
@@ -114,7 +114,7 @@ function TimeEntryPopup(item: any) {
     }
     const getAllTime=async ()=>{
         var newItem:any=[]
-        let web = new Web(`${siteUrl}`);
+        let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
@@ -619,7 +619,7 @@ function TimeEntryPopup(item: any) {
 
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
-        let web = new Web(`${siteUrl}`);
+        let web = new Web(`${CurrentSiteUrl}`);
         let MetaData = [];
         MetaData = await web.lists
             .getByTitle('SmartMetadata')
@@ -1094,7 +1094,7 @@ function TimeEntryPopup(item: any) {
                                 update['TaskDate'] = Moment(Datee).format('DD/MM/YYYY');
                                 update['Description'] = newData.Description
                                 item.AdditionalTime.push(update)
-                                let web = new Web(`${siteUrl}`);
+                                let web = new Web(`${CurrentSiteUrl}`);
 
                                 if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
 
@@ -1318,7 +1318,7 @@ function TimeEntryPopup(item: any) {
         else {
             var ListId = TimeSheetlistId
         }
-        let web = new Web(`${siteUrl}`);
+        let web = new Web(`${CurrentSiteUrl}`);
 
         await web.lists.getById(ListId).items.getById(childinew.ParentID).update({
 
@@ -1622,7 +1622,7 @@ if(Available == false){
 
 
     const saveTimeSpent = async () => {
-        closeTaskStatusUpdatePoup();
+       
         var UpdatedData: any = {}
         smartTermId = "Task" + item.props.siteType + "Id";
         showProgressBar();
@@ -1633,23 +1633,27 @@ if(Available == false){
             alert("please select category or Title");
             return false;
         }
-        var count: any = 0;
-        $.each(AllUsers, async function (index: any, taskUser: any) {
-            count++
-            if (taskUser.AssingedToUserId != null && taskUser.AssingedToUserId == CurntUserId) {
-                UpdatedData['AuthorName'] = taskUser.Title;
-                UpdatedData['Company'] = taskUser.Company;
-                UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
-                await saveOldUserTask(UpdatedData)
-
+        else {
+             closeTaskStatusUpdatePoup();
+            var count: any = 0;
+            $.each(AllUsers, async function (index: any, taskUser: any) {
+                count++
+                if (taskUser.AssingedToUserId != null && taskUser.AssingedToUserId == CurntUserId) {
+                    UpdatedData['AuthorName'] = taskUser.Title;
+                    UpdatedData['Company'] = taskUser.Company;
+                    UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
+                    await saveOldUserTask(UpdatedData)
+    
+                }
+    
+            });
+            if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
+    
+               alert("Please Add user on Task User Management")
+    
             }
-
-        });
-        if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
-
-           alert("Please Add user on Task User Management")
-
         }
+        
 
 
 
@@ -1700,7 +1704,7 @@ if(Available == false){
         EditData(item.props);
     }
     const createItemforNewUser = async (LetestFolderID: any) => {
-        let web = new Web(`${siteUrl}`);
+        let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle('Task Users')
@@ -2202,7 +2206,7 @@ if(Available == false){
                         <div className="col-sm-12 p-0 smart">
                             <div className="section-event">
                                 <div className="wrapper">
-                                    <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
+                                    <table className="table table-hover TimeSheet" id="EmpTable" style={{ width: "100%" }}>
                                         <thead>
                                             <tr>
                                                 <th style={{ width: "2%" }}>
@@ -2292,7 +2296,7 @@ if(Available == false){
                                                                                                 </td>
 
                                                                                                 <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit mt-1" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross mt-1" onClick={() => deleteCategory(childitem)}></span></span>
+                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross" onClick={() => deleteCategory(childitem)}></span></span>
 
                                                                                                 </td>
                                                                                                 <td style={{ width: "8%" }}>

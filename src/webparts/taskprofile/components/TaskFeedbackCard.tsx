@@ -17,7 +17,7 @@ export interface ITaskFeedbackProps {
   feedback: any;
   index: 0;
   onPost: () => void;
-  approvalcallbacktask: () => any;
+  // approvalcallbacktask: () => any;
   CurrentUser: any;
   ApprovalStatus: boolean;
   // SiteTaskListID:any
@@ -287,6 +287,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     let doc = parser.parseFromString(str, 'text/html');
     return doc.body;
   }
+  //================ checkMailfunction===========
+
   private async checkforMail(allfeedback:any,item:any,tempData:any){
     var countApprove=0;
     var countreject=0;
@@ -332,6 +334,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       }
     }
   }
+
+  //===========here we have to changes the percentages==============
   private async changepercentageStatus(percentageStatus:any,pervious:any,countApprove:any){
     console.log(percentageStatus)
     console.log(pervious)
@@ -481,10 +485,12 @@ this.setState({
 //   })
 // },[])
 private approvalcallback(){
-  this.props.approvalcallbacktask();
+  // this.props.approvalcallbacktask();
+  this.props.onPost();
  this.setState({
    emailcomponentopen:false,
     });
+
    }
   public render(): React.ReactElement<ITaskFeedbackProps> {
     return (

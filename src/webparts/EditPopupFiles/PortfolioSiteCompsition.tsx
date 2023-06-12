@@ -150,7 +150,7 @@ const SiteCompositionComponent = (Props: any) => {
                         let TempArray: any = [];
                         if (ClientTimeData != undefined && ClientTimeData.length > 0) {
                             ClientTimeData.map((Data: any) => {
-                                if (Data.SiteName != DataItem.Title) {
+                                if (Data.Title != DataItem.Title) {
                                     TempArray.push(Data)
                                 }
                             })
@@ -220,30 +220,7 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
         }
-        // if (Type == "Protected") {
-        //     const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Protected: true }
-        //     SiteCompositionSettings[0] = object;
-        //     if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
-        //         ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
-        //         setIsPortfolioComposition(true);
-        //         setProportionalStatus(true);
-        //         setCheckBoxStatus(true);
-        //         onChangeCompositionSetting()
-        //     } else {
-        //         setIsPortfolioComposition(false);
-        //         setCheckBoxStatus(false);
-        //         setClientTimeData([])
-        //     }
-        //     // if (ClientTime != undefined && ClientTime.length > 0) {
-        //     //     setIsPortfolioComposition(true);
-        //     //     setProportionalStatus(true);
-        //     //     setCheckBoxStatus(true);
-        //     // } else {
-        //     //     setIsPortfolioComposition(false);
-        //     //     setCheckBoxStatus(false);
-        //     // }
-        //     // setCheckBoxStatus(true);
-        // }
+       
         if (Type == "Protected") {
             let object: any;
             if (SiteCompositionSettings[0].localSiteComposition == true) {
@@ -264,24 +241,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     }
 
-    // const onChangeCompositionSetting = () => {
-    //     let TempArray: any = [];
-    //     if (BackupSiteTypeData != undefined && BackupSiteTypeData.length > 0) {
-    //         BackupSiteTypeData?.map((data: any) => {
-    //             ClientTimeData?.map((ClientItem: any) => {
-    //                 if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
-    //                     "DA E+E" && data.Title == "ALAKDigital")) {
-    //                     data.ClienTimeDescription = ClientItem.ClienTimeDescription;
-    //                     data.BtnStatus = true
-    //                 }
-    //             })
-    //             TempArray.push(data);
-    //         })
-    //         setSiteTypes(TempArray)
-    //         setSelectedSiteCount(ClientTimeData?.length)
-    //     }
-    // }
-
+  
     //    ************** this is for Client Category Popup Functions **************
 
 
@@ -545,9 +505,7 @@ const SiteCompositionComponent = (Props: any) => {
         }
 
         try {
-            console.log("Final Updated SiteTaggingFinalData =====", SitesTaggingData);
-            console.log("Final Updated SiteSettingsFinalData =====", SiteCompositionSettingData);
-            console.log("Final Updated ClientCategoryData =====", ClientCategoryData);
+           
             let web = new Web(AllListIdData.siteUrl);
             await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
                 Sitestagging: JSON.stringify(SiteTaggingJSON),
@@ -811,7 +769,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {siteData.BtnStatus ?
                                                     <div className="d-flex" style={{ width: "85%" }}>
                                                         {siteData.readOnly == false ? <input type="date" className="border-secondary form-control p-0 py-1"
-                                                            defaultValue={siteData.Date != undefined ? Moment(siteData.Date).subtract(10, 'days').calendar() : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} style={{ cursor: "not-allowed" }} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
+                                                            defaultValue={siteData.Date != undefined ? Moment(siteData.Date).subtract(10, 'days').calendar() : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
                                                         <a className="bg-white border border-secondary" onClick={(e) => ChangeDateManuallyFunction(e, siteData.Title, "readOnlyStatus")}
                                                         >
                                                             {siteData.readOnly == true ? <span className="border svg__icon--editBox svg__iconbox"></span> : <span className="border svg__icon--cross svg__iconbox"></span>}

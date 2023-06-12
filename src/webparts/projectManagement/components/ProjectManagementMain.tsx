@@ -456,17 +456,18 @@ const ProjectManagementMain = (props: any) => {
     setisOpenCreateTask(false)
   }, []);
   const inlineCallBack = React.useCallback((item: any) => {
-    LoadAllSiteTasks();
-    // const tasks = backupAllTasks;
-    // tasks?.map((task: any, index: any) => {
-    //   if (task.Id == item.Id && task.siteType == item.siteType) {
-    //     backupAllTasks[index] = { ...task, ...item };
-    //   }
-    // })
-    // backupAllTasks = tasks;
-    // setAllTasks(backupAllTasks);
-    // setData(backupAllTasks);
+    setAllTasks(prevTasks => {
+      const updatedTasks = prevTasks.map((task: any) => {
+        if (task.Id === item.Id && task.siteType === item.siteType) {
+          return { ...task, ...item };
+        }
+        return task;
+      });
+      setData(updatedTasks);
+      return updatedTasks;
+    });
   }, []);
+  
   const LoadAllSiteTasks = async function () {
     await loadAllComponent()
     if (siteConfig?.length > 0) {
