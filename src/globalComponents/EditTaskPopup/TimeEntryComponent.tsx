@@ -1307,7 +1307,7 @@ function TimeEntryPopup(item: any) {
                 }
 
             })
-        }
+        
 
 
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
@@ -1331,7 +1331,9 @@ function TimeEntryPopup(item: any) {
 
 
         })
+    
         setupdateData(updateData + 5)
+    }
 
     }
 
