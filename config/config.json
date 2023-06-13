@@ -10,6 +10,14 @@
         }
       ]
     },
+    "smart-connect-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/smartConnect/SmartConnectWebPart.js",
+          "manifest": "./src/webparts/smartConnect/SmartConnectWebPart.manifest.json"
+        }
+      ]
+    },
     "data-tool-web-part": {
       "components": [
         {
@@ -295,6 +303,7 @@
   },
   "localizedResources": {
     "ServicePortfolioWebPartStrings": "lib/webparts/servicePortfolio/loc/{locale}.js",
+    "SmartConnectWebPartStrings": "lib/webparts/smartConnect/loc/{locale}.js",
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",

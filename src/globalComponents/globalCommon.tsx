@@ -450,7 +450,7 @@ export const hierarchyData= (items:any,MyAllData:any)=>{
             
             //  finalData = AllData.filter((val: any, id: any, array: any) => {
 
-            //     return array.indexOf(val) == id;
+            //     return array.indexOf(val) == id;
             // })
         }
     }
@@ -1725,4 +1725,30 @@ const AllTaskUsers = async (siteUrl: any, ListId: any) => {
         return (error);
     }
     return taskUser;
+}
+
+export const ArrayCopy = async (array: any) => {
+
+    let MainArray = [];
+
+    if (array != undefined && array.length != undefined) {
+
+        MainArray = parseJSON(JSON.stringify(array));
+
+    }
+
+    return MainArray;
+
+}
+
+export const getParameterByName = async (name: any) => {
+
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+
+        results = regex.exec(location.search);
+
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+
 }
