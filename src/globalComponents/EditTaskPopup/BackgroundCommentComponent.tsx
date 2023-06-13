@@ -170,8 +170,6 @@ const BackgroundCommentComponent = (Props: any) => {
                                     </div>
                                     <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                         <img src={ImageDtl.Url ? ImageDtl.Url : ''}
-                                            // onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
-                                            // onMouseOut={(e) => MouseOutImageFunction(e)}
                                             className="border card-img-top my-1" />
                                     </a>
 
@@ -180,18 +178,9 @@ const BackgroundCommentComponent = (Props: any) => {
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                         </div>
                                         <div>
-
-                                            {/* <span
-                                                // onClick={() => openReplaceImagePopup(index)}
-                                                title="Replace image"
-                                            >
-                                                <TbReplace />
-                                            </span> */}
                                             <span className="mx-1" title="Delete"
                                                 onClick={() => alert("We are working on it. This feature will be live soon ....")}
-
                                             ><RiDeleteBin6Line /> | </span>
-
                                             <span title="Open Image In Another Tab">
                                                 <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                                     <HiOutlineArrowTopRightOnSquare />
@@ -233,13 +222,11 @@ const BackgroundCommentComponent = (Props: any) => {
                                     <span>
                                         <a className="ps-1"
                                             onClick={() => openEditModal(Index, dataItem.Body)}
-                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                         </a>
                                         <a className="ps-1"
                                             onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)}
-                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/cross.svg')} width="25">
                                             </img>
