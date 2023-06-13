@@ -104,9 +104,9 @@ function TimeEntryPopup(item: any) {
             .top(4999)
             .get();
         AllUsers = taskUsers;
-        if(AllTimeEntry.length == 0){
-            await getAllTime()
-        }
+        // if(AllTimeEntry.length == 0){
+        //     await getAllTime()
+        // }
       
         EditData(item.props);
         //console.log(this.taskUsers);
@@ -1703,6 +1703,7 @@ if(Available == false){
         NewParentId = newdata.data.Id;
         NewParentTitle = newdata.data.Title;
         NewCategoryId = newdata.data.CategoryId;
+        AllTimeEntry=[]
         EditData(item.props);
     }
     const createItemforNewUser = async (LetestFolderID: any) => {
@@ -1746,7 +1747,7 @@ if(Available == false){
             .items
             .add({ ...itemMetadataAdded });
         console.log(newdata)
-
+        AllTimeEntry=[]
         let movedata = await web
             .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
             .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
