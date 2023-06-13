@@ -885,9 +885,7 @@ export default function ProjectOverview(props: any) {
                                 });
                             }
                         });
-                        if (items?.AssignedTo?.length > 0) {
                             AllTask.push(items);
-                        }
                     });
                     let setCount = siteConfig?.length
                     if (arraycount === setCount) {
