@@ -224,6 +224,34 @@ const TaskDashboard = (props: any) => {
 
         return formattedDate;
     }
+    function getEndingDate(startDateOf: any): Date {
+        const endingDate = new Date();
+        let formattedDate = endingDate;
+
+        if (startDateOf === 'This Week') {
+            endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Today') {
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Yesterday') {
+            endingDate.setDate(endingDate.getDate() - 1);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'This Month') {
+            endingDate.setMonth(endingDate.getMonth() + 1, 0);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Last Month') {
+            const lastMonth = new Date(endingDate.getFullYear(), endingDate.getMonth() - 1);
+            endingDate.setDate(0);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Last Week') {
+            const lastWeek = new Date(endingDate.getFullYear(), endingDate.getMonth(), endingDate.getDate() - 7);
+            endingDate.setDate(lastWeek.getDate() - lastWeek.getDay() + 7);
+            formattedDate = endingDate;
+        }
+
+        return formattedDate;
+    }
+
     //End
 
     //Load This Week Time Entry 
@@ -300,7 +328,9 @@ const TaskDashboard = (props: any) => {
         let totalTime = 0;
         setSelectedTimeReport(start)
         let startDate = getStartingDate(start);
+        let endDate = getEndingDate(start);
         startDate = new Date(startDate.setHours(0, 0, 0, 0));
+        endDate = new Date(endDate.setHours(0, 0, 0, 0));
         let weekTimeEntries: any = [];
         AllTaskTimeEntries?.map((timeEntry: any) => {
             if (timeEntry?.AdditionalTimeEntry != undefined) {
@@ -309,32 +339,44 @@ const TaskDashboard = (props: any) => {
                     let [day, month, year] = filledTime?.TaskDate?.split('/')
                     const timeFillDate = new Date(+year, +month - 1, +day)
                     if (filledTime?.AuthorId == currentUserId) {
-                        if (start == 'Today' || start == 'Yesterday') {
-                            if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
-                                let data = { ...timeEntry?.taskDetails[0] };
-                                if (data == '' || data == undefined)
-                                    data = {};
-                                totalTime += parseFloat(filledTime?.TaskTime);
-                                data.TaskTime = filledTime?.TaskTime;
-                                data.timeDate = filledTime?.TaskDate;
-                                data.Description = filledTime?.Description
-                                data.timeFillDate = timeFillDate;
-                                weekTimeEntries.push(data);
-                            }
+                        // if (start == 'Today' || start == 'Yesterday') {
+                        //     if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
+                        //         let data = { ...timeEntry?.taskDetails[0] };
+                        //         if (data == '' || data == undefined)
+                        //             data = {};
+                        //         totalTime += parseFloat(filledTime?.TaskTime);
+                        //         data.TaskTime = filledTime?.TaskTime;
+                        //         data.timeDate = filledTime?.TaskDate;
+                        //         data.Description = filledTime?.Description
+                        //         data.timeFillDate = timeFillDate;
+                        //         weekTimeEntries.push(data);
+                        //     }
 
-                        } else {
-                            if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
-                                let data = { ...timeEntry?.taskDetails[0] };
-                                if (data == '' || data == undefined)
-                                    data = {};
-                                totalTime += parseFloat(filledTime?.TaskTime);
-                                data.TaskTime = filledTime?.TaskTime;
-                                data.timeDate = filledTime?.TaskDate;
-                                data.Description = filledTime?.Description
-                                data.timeFillDate = timeFillDate;
-                                weekTimeEntries.push(data);
-                            }
+                        // } else  if (start == 'Last Month' || start == 'Last Week'){
+                        //     if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
+                        //         let data = { ...timeEntry?.taskDetails[0] };
+                        //         if (data == '' || data == undefined)
+                        //             data = {};
+                        //         totalTime += parseFloat(filledTime?.TaskTime);
+                        //         data.TaskTime = filledTime?.TaskTime;
+                        //         data.timeDate = filledTime?.TaskDate;
+                        //         data.Description = filledTime?.Description
+                        //         data.timeFillDate = timeFillDate;
+                        //         weekTimeEntries.push(data);
+                        //     }
+                        // }else {
+                        if (timeFillDate >= startDate && timeFillDate <= endDate && timeEntry?.taskDetails[0] != undefined) {
+                            let data = { ...timeEntry?.taskDetails[0] };
+                            if (data == '' || data == undefined)
+                                data = {};
+                            totalTime += parseFloat(filledTime?.TaskTime);
+                            data.TaskTime = filledTime?.TaskTime;
+                            data.timeDate = filledTime?.TaskDate;
+                            data.Description = filledTime?.Description
+                            data.timeFillDate = timeFillDate;
+                            weekTimeEntries.push(data);
                         }
+                        // }
                     }
 
                 })
@@ -346,6 +388,54 @@ const TaskDashboard = (props: any) => {
         setWeeklyTimeReport(weekTimeEntries)
         setTimeEntryTotal(totalTime);
         weekTimeEntry = weekTimeEntries;
+    }
+    const currentUserTimeEntryCalculation = () => {
+        let todaysTimeTotal = 0;
+        let thisMonthTimeTotal = 0;
+        let thisWeekTimeTotal = 0;
+        let allTimeCategoryTime = {
+            today: 0,
+            thisWeek: 0,
+            thisMonth: 0
+        }
+        let timesheetDistribution = ['Today', 'This Week', 'This Month']
+        timesheetDistribution?.map((start: any) => {
+            let startDate = getStartingDate(start);
+            startDate = new Date(startDate.setHours(0, 0, 0, 0));
+            let endDate = getEndingDate(start);
+            endDate = new Date(endDate.setHours(0, 0, 0, 0));
+            AllTaskTimeEntries?.map((timeEntry: any) => {
+                if (timeEntry?.AdditionalTimeEntry != undefined) {
+                    let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
+                    AdditionalTime?.map((filledTime: any) => {
+                        let [day, month, year] = filledTime?.TaskDate?.split('/')
+                        const timeFillDate = new Date(+year, +month - 1, +day)
+                        if (filledTime?.AuthorId == currentUserId) {
+                            if (start == 'Today') {
+                                if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
+                                    todaysTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            } else if (start == 'This Week') {
+                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
+                                    thisMonthTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            } else if (start == 'This Month') {
+                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
+                                    thisWeekTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            }
+                        }
+
+                    })
+                }
+            })
+        });
+        allTimeCategoryTime = {
+            today: todaysTimeTotal,
+            thisWeek: thisMonthTimeTotal,
+            thisMonth: thisWeekTimeTotal
+        }
+        return allTimeCategoryTime;
     }
 
     //End 
@@ -1719,6 +1809,7 @@ const TaskDashboard = (props: any) => {
         let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
         if (confirmation) {
             if (input == 'today working tasks') {
+               
                 var subject = currentLoginUser + '-Today Working Tasks';
                 tasksCopy?.map((item: any) => {
                     let teamUsers: any = [];
@@ -1784,7 +1875,7 @@ const TaskDashboard = (props: any) => {
         }
         if (input == 'today time entries') {
             var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
-
+            let timeSheetData = currentUserTimeEntryCalculation();
             weeklyTimeReport.map((item: any) => {
                 if (item?.Categories == undefined || item.Categories == '')
                     item.Categories = '';
@@ -1800,25 +1891,41 @@ const TaskDashboard = (props: any) => {
 
             });
             body =
-                '<h2>'
+                
+                '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">' 
+                +'<thead>' 
+                +'<tr>' 
+                +'<th bgcolor="#f5f5f5" style="line-height:24px;font-size:15px;padding:15px;width:5%" colspan="3">'
+                +'<h2>'
                 + currentLoginUser + '- Today Time Entries'
                 + '</h2>'
+                +'</th>' 
+                +'</tr>' 
+                +'</thead>' 
+                +'<tbody>' 
+                +'<tr>' 
+                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="33%">Today' + '<br>' + timeSheetData.today + '</td>' 
+                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="34%">This Week' + '<br>' + timeSheetData.thisWeek + '</td>' 
+                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="33%">This Month' + '<br>' + timeSheetData.thisMonth + '</td>' 
+                +'</tr>' 
+                +'</tbody>' 
+                +'</table >' 
                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                 + '<thead>'
                 + '<tr>'
                 + '<th bgcolor="#f5f5f5" style="line-height:24px;font-size:15px;padding:15px;width:5%">'
                 + 'Site'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
                 + 'Task ID'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
                 + 'Title'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:4%" bgcolor="#f5f5f5">'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
                 + 'Time'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:55%" bgcolor="#f5f5f5">'
+                + '<th style="line-height:24px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
                 + 'Description'
                 + '</th>'
                 + '</tr>'
@@ -1829,6 +1936,7 @@ const TaskDashboard = (props: any) => {
                 + '</tr>'
                 + '</tbody>'
                 + '</table>'
+                + '<p>' + 'Click here to open the Complete time entry'+'<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=` + currentUserId + '</span>' + '</a>' + '</p>' 
                 + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '</span>' + '</a>' + '</p>'
             body = body.replaceAll('>,<', '><')
         }
@@ -1855,7 +1963,8 @@ const TaskDashboard = (props: any) => {
             //Array of string for To of Email  
             To: to,
             AdditionalHeaders: {
-                "content-type": "text/html"
+                "content-type": "text/html",
+                'Reply-To': 'abhishek.tiwari@smalsus.com'
             },
         }).then(() => {
             console.log("Email Sent!");
