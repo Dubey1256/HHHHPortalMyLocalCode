@@ -2658,8 +2658,8 @@ function ComponentTable(SelectedProp: any) {
         });
       }
     });
-    // setData((data) => [...maidataBackup]);
-    // setCheckedList((checkedList) => [...list]);
+    setData((data) => [...maidataBackup]);
+    setCheckedList((checkedList) => [...list]);
   };
 
   let isOpenPopup = false;
