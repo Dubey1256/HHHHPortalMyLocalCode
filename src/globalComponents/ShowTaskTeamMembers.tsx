@@ -157,14 +157,14 @@ function ShowTaskTeamMembers(item: any) {
                 onMouseOver={(e) => handleSuffixHover(ItemNew)}
                 onMouseLeave={(e) => handleuffixLeave(ItemNew)}
               >
-                 +{ItemNew?.AllTeamMembers?.slice(2)?.length}
+                 +{ItemNew?.AllTeamMembers?.slice(1)?.length}
                 <span
                   className="tooltiptext"
                   style={{ display: Display, padding: "10px" }}
                 >
                   <div>
                     {ItemNew["AllTeamMembers"]
-                      .slice(2)
+                      .slice(1)
                       .map((rcData: any, i: any) => {
                         return (
                           <>
