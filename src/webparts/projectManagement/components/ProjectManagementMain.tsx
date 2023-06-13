@@ -519,7 +519,7 @@ const ProjectManagementMain = (props: any) => {
               items.PortfolioTitle = items?.Services[0]?.Title;
               items["Portfoliotype"] = "Service";
             }
-            items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+            items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
 
             items.TeamMembersSearch = "";
             if (items.AssignedTo != undefined) {
@@ -795,9 +795,9 @@ const ProjectManagementMain = (props: any) => {
                 ""
               )}{" "}
 
-              <> {row?.original?.siteIcon != undefined ?
+              <> {row?.original?.SiteIcon != undefined ?
                 <a className="hreflink" title="Show All Child" data-toggle="modal">
-                  <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                  <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
               }
                 <span>{row?.original?.PortfolioStructureID}</span></>
@@ -974,7 +974,7 @@ const ProjectManagementMain = (props: any) => {
         accessorFn: (row) => row?.Site,
         cell: ({ row }) => (
           <span>
-            <img className='circularImage rounded-circle' src={row?.original?.siteIcon} />
+            <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
           </span>
         ),
         id: "Site",

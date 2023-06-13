@@ -4294,7 +4294,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} itemID={ Items.Items.Id} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -4445,6 +4445,7 @@ const EditTaskPopup = (Items: any) => {
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
+                                                itemID={ Items.Items.Id}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
