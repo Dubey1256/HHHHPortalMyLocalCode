@@ -78,17 +78,17 @@ const BackgroundCommentComponent = (Props: any) => {
     // This is used for Adding Background Comments 
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
-            let CurrentUserData: any
+            let CurrentUser: any
             if (currentUserData?.length > 0) {
-                CurrentUserData = currentUserData[0];
+                CurrentUser = currentUserData[0];
             }
             let CommentJSON = {
-                AuthorId: CurrentUserData.AssingedToUserId,
+                AuthorId: CurrentUser?.AssingedToUserId != undefined ? CurrentUser?.AssingedToUserId : 0,
                 editable: false,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Body: BackgroundComment,
-                AuthorImage: CurrentUserData.Item_x0020_Cover != null ? CurrentUserData.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                AuthorName: CurrentUserData.Title != undefined ? CurrentUserData.Title : Context.pageContext._user.displayName,
+                AuthorImage: CurrentUser.Item_x0020_Cover != null ? CurrentUser.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorName: CurrentUser.Title != undefined ? CurrentUser.Title : Context.pageContext._user.displayName,
                 ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
             BackgroundComments.push(CommentJSON);
@@ -124,17 +124,17 @@ const BackgroundCommentComponent = (Props: any) => {
     const updateCommentFunction = async (UpdateData: any, columnName: any) => {
         try {
             let web = new Web(siteUrls);
-            let tempObject:any= {}
+            let tempObject: any = {}
             if (columnName == "OffshoreComments") {
                 tempObject = {
-                    OffshoreComments : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                    OffshoreComments: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
                 }
-            }else{
+            } else {
                 tempObject = {
-                    OffshoreImageUrl : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                    OffshoreImageUrl: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
                 }
             }
-            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update({tempObject}).then(() => {
+            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update(tempObject).then(() => {
                 console.log("Background Comment Updated !!!")
             })
         } catch (error) {
@@ -170,8 +170,6 @@ const BackgroundCommentComponent = (Props: any) => {
                                     </div>
                                     <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                         <img src={ImageDtl.Url ? ImageDtl.Url : ''}
-                                            // onMouseOver={(e) => MouseHoverImageFunction(e, ImageDtl)}
-                                            // onMouseOut={(e) => MouseOutImageFunction(e)}
                                             className="border card-img-top my-1" />
                                     </a>
 
@@ -180,18 +178,9 @@ const BackgroundCommentComponent = (Props: any) => {
                                             <span className="fw-semibold">{ImageDtl.UploadeDate ? ImageDtl.UploadeDate : ''}</span>
                                         </div>
                                         <div>
-
-                                            {/* <span
-                                                // onClick={() => openReplaceImagePopup(index)}
-                                                title="Replace image"
-                                            >
-                                                <TbReplace />
-                                            </span> */}
                                             <span className="mx-1" title="Delete"
                                                 onClick={() => alert("We are working on it. This feature will be live soon ....")}
-
                                             ><RiDeleteBin6Line /> | </span>
-
                                             <span title="Open Image In Another Tab">
                                                 <a href={ImageDtl.Url} target="_blank" data-interception="off">
                                                     <HiOutlineArrowTopRightOnSquare />
@@ -233,13 +222,11 @@ const BackgroundCommentComponent = (Props: any) => {
                                     <span>
                                         <a className="ps-1"
                                             onClick={() => openEditModal(Index, dataItem.Body)}
-                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
                                         </a>
                                         <a className="ps-1"
                                             onClick={() => DeleteBackgroundCommentFunction(dataItem.ID, dataItem.Body)}
-                                        // onClick={() => alert("We are working on it. This feature will be live soon ....")}
                                         >
                                             <img src={require('../../Assets/ICON/cross.svg')} width="25">
                                             </img>
