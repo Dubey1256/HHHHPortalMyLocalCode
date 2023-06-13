@@ -64,7 +64,7 @@ export function IndeterminateCheckbox(
 
 // ReactTable Part end/////
 
-const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
+const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -149,13 +149,13 @@ const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
 
     return (
         <>
-            <table className="SortingTable table table-hover" style={{ width: "100%" }}>
+            <table className="SortingTable table table-hover mb-0" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
+                                    <th key={header.id} colSpan={header.colSpan} style={ header.column.columnDef.size!=undefined &&  header.column.columnDef.size!=150 ? { width: header.column.columnDef.size + "px" }:{}}>
                                         {header.isPlaceholder ? null : (
                                             <div className='position-relative' style={{ display: "flex" }}>
                                                 {flexRender(
@@ -192,11 +192,13 @@ const GlobalCommanTable = ({ columns, data, callBackData }: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                            <tr className={pageName=='ProjectOverviewGrouped'?(row.original.Item_x0020_Type == "tasks"? "a-bg" : ""):(row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : "")))))}
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
-                                        <td key={cell.id}>
+                                        <td key={cell.id}
+                                       
+                                        >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
