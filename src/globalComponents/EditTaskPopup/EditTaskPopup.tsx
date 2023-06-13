@@ -1452,6 +1452,9 @@ const EditTaskPopup = (Items: any) => {
                     if (userData.AssingedToUserId == currentUserId) {
                         let temp: any = [];
                         temp.push(userData)
+                        let CreentUserDataObject:any ={
+
+                        }
                         setCurrentUserData(temp);
                         currentUserBackupArray.push(userData);
                         if (userData.UserGroupId == 7) {
@@ -2594,16 +2597,18 @@ const EditTaskPopup = (Items: any) => {
                 let date = new Date()
                 let timeStamp = date.getTime();
                 let imageIndex = index + 1
-                fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg"
+                fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg";
+                let currentUserDataObject:any ;
+                if(currentUserData != null && currentUserData.length > 0){
+                    currentUserDataObject = currentUserData[0];
+                }
                 let ImgArray = {
                     ImageName: fileName,
                     UploadeDate: Moment(new Date()).format("DD/MM/YYYY"),
                     imageDataUrl: SiteUrl + '/Lists/' + Items.Items.siteType + '/Attachments/' + EditData?.Id + '/' + fileName,
                     ImageUrl: imgItem.data_url,
-                    UserImage: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                    UserName: currentUserData != null && currentUserData.length > 0 ? currentUserData[0].Title : Items.context.pageContext._user.displayName,
-                    // UserImage: 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/PublishingImages/Portraits/Samir%20Gayatri.jpg?updated=194315',
-                    // UserName: "Test Dev",
+                    UserImage: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                    UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
                 };
                 tempArray.push(ImgArray);
             } else {
