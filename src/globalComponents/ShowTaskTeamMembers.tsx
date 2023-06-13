@@ -157,7 +157,7 @@ function ShowTaskTeamMembers(item: any) {
                 onMouseOver={(e) => handleSuffixHover(ItemNew)}
                 onMouseLeave={(e) => handleuffixLeave(ItemNew)}
               >
-                +{ItemNew["AllTeamMembers"].length - 1}
+                 +{ItemNew?.AllTeamMembers?.slice(1)?.length}
                 <span
                   className="tooltiptext"
                   style={{ display: Display, padding: "10px" }}
