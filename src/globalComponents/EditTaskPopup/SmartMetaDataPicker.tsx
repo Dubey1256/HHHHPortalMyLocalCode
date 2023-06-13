@@ -50,6 +50,12 @@ const Picker = (item: any) => {
             NewArray = []
             SelectedCategoryBackupArray = [];
             setSelect([])
+        }
+        else if(usedFor=="Task-Footertable"){
+             item?.Call(select, "Category-Task-Footertable")
+            NewArray = []
+            SelectedCategoryBackupArray = [];
+            setSelect([])
         } else {
             item.props.categories = [];
             item.props.smartCategories = [];
@@ -128,7 +134,7 @@ const Picker = (item: any) => {
     }
 
     const selectPickerData = (item: any) => {
-        if (usedFor == "Task-Popup") {
+        if (usedFor == "Task-Popup"||usedFor=="Task-Footertable") {
             let tempArray: any = [];
             let checkDataExistCount = 0;
             if (SelectedCategoryBackupArray != undefined && SelectedCategoryBackupArray.length > 0) {
