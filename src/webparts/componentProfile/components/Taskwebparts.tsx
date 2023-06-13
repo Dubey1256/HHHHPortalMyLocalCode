@@ -1157,7 +1157,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     var FeatureData: any = [];
 
     $.each(ComponetsData["allComponets"], function (index: any, result: any) {
-      // result.AllTeamMembers = result.AllTeamMembers != undefined ? result.AllTeamMembers : [];
+      result.TeamLeaderUser = result.TeamLeaderUser === undefined ? [] : result.TeamLeaderUser;
       // result.TeamLeader = result.TeamLeader != undefined ? result.TeamLeader : []
       result.CreatedDateImg = [];
       result.childsLength = 0;
@@ -1179,6 +1179,68 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         GlobalConstants.MAIN_SITE_URL + "/SP",
         undefined
       );
+
+      if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
+        $.each(result.AssignedTo, function (index: any, Assig: any) {
+          if (Assig.Id != undefined) {
+            $.each(Response, function (index: any, users: any) {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                result.TeamLeaderUser.push(users);
+                result.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        result.Team_x0020_Members != undefined &&
+        result.Team_x0020_Members.length > 0
+      ) {
+        $.each(result.Team_x0020_Members, function (index: any, Assig: any) {
+          if (Assig.Id != undefined) {
+            $.each(TaskUsers, function (index: any, users: any) {
+              if (
+                Assig.Id != undefined &&
+                users.AssingedToUser != undefined &&
+                Assig.Id == users.AssingedToUser.Id
+              ) {
+                users.ItemCover = users.Item_x0020_Cover;
+                result.TeamLeaderUser.push(users);
+                result.AllTeamName += users.Title + ";";
+              }
+            });
+          }
+        });
+      }
+      if (
+        result.Responsible_x0020_Team != undefined &&
+        result.Responsible_x0020_Team.length > 0
+      ) {
+        $.each(
+          result.Responsible_x0020_Team,
+          function (index: any, Assig: any) {
+            if (Assig.Id != undefined) {
+              $.each(TaskUsers, function (index: any, users: any) {
+                if (
+                  Assig.Id != undefined &&
+                  users.AssingedToUser != undefined &&
+                  Assig.Id == users.AssingedToUser.Id
+                ) {
+                  users.ItemCover = users.Item_x0020_Cover;
+                  result.TeamLeaderUser.push(users);
+                  result.AllTeamName += users.Title + ";";
+                }
+              });
+            }
+          }
+        );
+      }
+
 
       if (result.Author != undefined) {
         if (result.Author?.Id != undefined) {
@@ -3327,7 +3389,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 8,
       },
       {
-        accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
+        accessorFn: (row) => row?.TeamLeaderUser?.map((elem: any) => elem.Title).join("-"),
         cell: ({ row }) => (
           <div>
             <ShowTaskTeamMembers key={row?.original?.Id} props={row?.original} TaskUsers={AllUsers} />
@@ -3351,7 +3413,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 3,
       },
       {
-        accessorFn: (row) => row?.DueDate,
+        accessorFn: (row) => row?.DueDate ? Moment(row?.original?.DueDate).format("DD/MM/YYYY") :"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.DueDate == null ? (""
@@ -3369,7 +3431,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 4,
       },
       {
-        accessorFn: (row) => row?.Created,
+        accessorFn: (row) => row?.Created ? Moment(row?.original?.Created).format("DD/MM/YYYY"):"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.Created == null ? (""

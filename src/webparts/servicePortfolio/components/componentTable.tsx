@@ -22,6 +22,8 @@ import {
   FaMinus,
   FaPlus,
   FaCompressArrowsAlt,
+  FaWindowClose,
+  FaRegWindowClose,
 } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
@@ -53,6 +55,7 @@ import Loader from "react-loader";
 import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
+import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
 var filt: any = "";
 var siteConfig: any = [];
 var ComponentsDataCopy: any = [];
@@ -69,7 +72,8 @@ let AllWorkStreamData: any = [];
 let RemoveDuplicateTime: any = [];
 let forceExpanded: any = [];
 let globalFilterHighlited: any;
-
+let showPopHover: any;
+let popHoverDataGroup: any = []
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -210,12 +214,15 @@ function ComponentTable(SelectedProp: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [popHoverData, setPopHoverData] = React.useState([])
   const [globalFilter, setGlobalFilter] = React.useState("");
   globalFilterHighlited = globalFilter;
   const [checkData, setcheckData] = React.useState([])
   const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
   const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
   const [checkCounter, setCheckCounter] = React.useState(true)
+  const [createTaskId, setCreateTaskId] = React.useState({});
+  const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
 
   const [maidataBackup, setmaidataBackup] = React.useState([]);
   const [search, setSearch]: [string, (search: string) => void] =
@@ -958,6 +965,7 @@ function ComponentTable(SelectedProp: any) {
             item.isDrafted = false;
             item.flag = true;
             item.TitleNew = item.Title;
+            // item.HierarchyData = globalCommon.hierarchyData(item, usePopHoverDataSend)
             item.siteType = config.Title;
             item.childs = [];
             item.listId = config.listId;
@@ -1747,43 +1755,47 @@ function ComponentTable(SelectedProp: any) {
     task.isService = false;
     if (IsUpdated === "Service Portfolio") {
       $.each(task["Services"], function (index: any, componentItem: any) {
-        for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
-          let crntItem = ComponetsData["allComponets"][i];
-          if (componentItem?.Id == crntItem?.Id) {
-            if (
-              crntItem.PortfolioStructureID != undefined &&
-              crntItem.PortfolioStructureID != ""
-            ) {
-              task.PortfolioStructureID = crntItem.PortfolioStructureID;
-              task.ShowTooltipSharewebId =
-                crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+        if (ComponetsData["allComponets"]?.length != undefined && ComponetsData != undefined) {
+
+          for (var i = 0; i < ComponetsData["allComponets"].length; i++) {
+            let crntItem = ComponetsData["allComponets"][i];
+            if (componentItem?.Id == crntItem?.Id) {
+              if (
+                crntItem.PortfolioStructureID != undefined &&
+                crntItem.PortfolioStructureID != ""
+              ) {
+                task.PortfolioStructureID = crntItem.PortfolioStructureID;
+                task.ShowTooltipSharewebId =
+                  crntItem.PortfolioStructureID + "-" + task.Shareweb_x0020_ID;
+              }
+              if (crntItem.Portfolio_x0020_Type == "Service") {
+                task.isService = true;
+                task.Portfolio_x0020_Type = "Service";
+              }
+              if (ComponetsData["allComponets"][i]["childs"] === undefined) {
+                ComponetsData["allComponets"][i]["childs"] = [];
+                ComponetsData["allComponets"][i]["subRows"] = [];
+              }
+              if (
+                !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
+              ) {
+                ComponetsData["allComponets"][i].downArrowIcon =
+                  IsUpdated != undefined && IsUpdated == "Service Portfolio"
+                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
+                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
+                ComponetsData["allComponets"][i].RightArrowIcon =
+                  IsUpdated != undefined && IsUpdated == "Service Portfolio"
+                    ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
+                    : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
+                ComponetsData["allComponets"][i]["childs"].push(task);
+                ComponetsData["allComponets"][i]["subRows"].push(task);
+                if (ComponetsData["allComponets"][i].Id === 413)
+                  console.log(ComponetsData["allComponets"][i]["childs"].length);
+              }
+              break;
             }
-            if (crntItem.Portfolio_x0020_Type == "Service") {
-              task.isService = true;
-              task.Portfolio_x0020_Type = "Service";
-            }
-            if (ComponetsData["allComponets"][i]["childs"] === undefined) {
-              ComponetsData["allComponets"][i]["childs"] = [];
-              ComponetsData["allComponets"][i]["subRows"] = [];
-            }
-            if (
-              !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
-            ) {
-              ComponetsData["allComponets"][i].downArrowIcon =
-                IsUpdated != undefined && IsUpdated == "Service Portfolio"
-                  ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png"
-                  : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/list-icon.png";
-              ComponetsData["allComponets"][i].RightArrowIcon =
-                IsUpdated != undefined && IsUpdated == "Service Portfolio"
-                  ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png"
-                  : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
-              ComponetsData["allComponets"][i]["childs"].push(task);
-              ComponetsData["allComponets"][i]["subRows"].push(task);
-              if (ComponetsData["allComponets"][i].Id === 413)
-                console.log(ComponetsData["allComponets"][i]["childs"].length);
-            }
-            break;
           }
+
         }
       });
     }
@@ -1804,11 +1816,10 @@ function ComponentTable(SelectedProp: any) {
               task.isService = true;
               task.Portfolio_x0020_Type = "Events";
             }
-            if (ComponetsData["allComponets"][i]["childs"] == undefined){
+            if (ComponetsData["allComponets"][i]["childs"] == undefined) {
               ComponetsData["allComponets"][i]["childs"] = [];
               ComponetsData["allComponets"][i]["subRows"] = [];
             }
-             
             if (
               !isItemExistsNew(ComponetsData["allComponets"][i]["childs"], task)
             ) {
@@ -2647,8 +2658,8 @@ function ComponentTable(SelectedProp: any) {
         });
       }
     });
-    setData((data) => [...maidataBackup]);
-    setCheckedList((checkedList) => [...list]);
+    // setData((data) => [...maidataBackup]);
+    // setCheckedList((checkedList) => [...list]);
   };
 
   let isOpenPopup = false;
@@ -3384,7 +3395,101 @@ function ComponentTable(SelectedProp: any) {
   };
 
   ///react table start function//////
+  /////////////////////PopHover Structure ID///////////////////////////////
+  const column = React.useMemo<ColumnDef<any, unknown>[]>(
+    () => [
+      {
+        accessorKey: "",
+        size: 7,
+        canSort: false,
+        placeholder: "",
+        id: 'Shareweb_x0020_ID',
+        // header: ({ table }: any) => (
+        //   <>
+        //     <button className='border-0 bg-Ff'
+        //       {...{
+        //         onClick: table.getToggleAllRowsExpandedHandler(),
+        //       }}
+        //     >
+        //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+        //     </button>{" "}
+        //   </>
+        // ),
+        cell: ({ row, getValue }) => (
+          <div
+            style={row.getCanExpand() ? {
+              paddingLeft: `${row.depth * 5}px`,
+            } : {
+              paddingLeft: "18px",
+            }}
+          >
+            <>
+              {row.getCanExpand() ? (
+                <span className=' border-0'
+                  {...{
+                    onClick: row.getToggleExpandedHandler(),
+                    style: { cursor: "pointer" },
+                  }}
+                >
+                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                </span>
+              ) : (
+                ""
+              )}{" "}
 
+              <> {row?.original?.siteIcon != undefined ?
+                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                  <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
+                <span>{row?.original?.Shareweb_x0020_ID}</span>
+              </>
+              {getValue()}
+            </>
+          </div>
+        ),
+      },
+      {
+        cell: ({ row }) => (
+          <>
+            <span>{row.original.Title}</span>
+          </>
+        ),
+        id: "Title",
+        canSort: false,
+        placeholder: "",
+        header: "",
+        size: 15,
+      }
+    ],
+    [data]
+  );
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+  }, []);
+
+  const handleSuffixHover = (item: any) => {
+    if (item != undefined) {
+      popHoverDataGroup = globalCommon.PopHoverBasedOnTaskId(item)
+
+    }
+    if (popHoverDataGroup != undefined && popHoverDataGroup?.length > 0) {
+      setPopHoverData((popHoverData) => popHoverDataGroup);
+      showPopHover = "block"
+    }
+    // setDisplay("block");
+  };
+
+  const handleuffixLeave = (item: any) => {
+    popHoverDataGroup = [];
+    setPopHoverData([])
+    // setDisplay("none");
+    showPopHover = "none"
+  };
+
+
+
+  /////////////////////PopHover Structure ID End///////////////////////////////
+  /////////////////////Table Column Start///////////////////////////////
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
@@ -3542,12 +3647,34 @@ function ComponentTable(SelectedProp: any) {
         size: 145,
       },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorFn: (row) => row?.Shareweb_x0020_ID,
+        cell: ({ row }) => (
+          <>
+            <div className="tooltipSec popover__wrapper me-1">
+              <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
+              <div className="popover__content" style={{ display: showPopHover }}>
+                <div>
+                  <div className="tootltip-title">{row?.original?.Title}</div>
+                  <button className="toolClose" onClick={(e) => handleuffixLeave(row)}><div className="popHoverCross">×</div></button>
+                </div>
+                <div className="tooltip-body">
+                  {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
+                </div>
+              </div>
+            </div>
+          </>
+        ),
+        id: "Shareweb_x0020_ID",
         placeholder: "ID",
         header: "",
         size: 130,
-        resetColumnFilters: false,
       },
+      // {
+      //   accessorKey: "Shareweb_x0020_ID",
+      //   placeholder: "ID",
+      //   header: "",
+      //   size: 130,
+      // },
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -3571,8 +3698,8 @@ function ComponentTable(SelectedProp: any) {
             {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
-              <span className='ms-1'>{row?.original?.subRows?.length ? '('+ row?.original?.subRows?.length +')': "" }</span> : ''}
-
+              <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
+            {/* {<span className='ms-1'>{'(' + row?.original?.ChlidLenghtVal + ')'}</span> : ''} */}
 
             {row?.original?.Short_x0020_Description_x0020_On != null && (
               <span className="popover__wrapper ms-1" data-bs-toggle="tooltip" data-bs-placement="auto" >
@@ -3593,7 +3720,6 @@ function ComponentTable(SelectedProp: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3606,7 +3732,6 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "Client Category",
         header: "",
         size: 100,
-        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((val: any) => val.Title).join("-"),
@@ -3619,28 +3744,24 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "Team",
         header: "",
         size: 131,
-        resetColumnFilters: false,
       },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
         size: 42,
-        resetColumnFilters: false,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
         size: 42,
-        resetColumnFilters: false,
       },
       {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
         size: 100,
-        resetColumnFilters: false,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3744,6 +3865,8 @@ function ComponentTable(SelectedProp: any) {
     ],
     [data]
   );
+
+  /////////////////////Table Column End///////////////////////////////
   const table = useReactTable({
     data,
     columns,
@@ -3790,34 +3913,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-          // parentData = elem?.parentRow;
-          // parentDataCopy = elem?.parentRow?.original
-          parentDataCopy = elem?.getParentRows()[0]?.original;
-          // if (parentData != undefined && parentData?.parentRow != undefined) {
+        // parentData = elem?.parentRow;
+        // parentDataCopy = elem?.parentRow?.original
+        parentDataCopy = elem?.getParentRows()[0]?.original;
+        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //   parentData = elem?.parentRow?.parentRow
-          //   parentDataCopy = elem?.parentRow?.parentRow?.original
+        //   parentData = elem?.parentRow?.parentRow
+        //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          // }
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3847,7 +3970,9 @@ function ComponentTable(SelectedProp: any) {
   let workstrim = 0;
   let task = 0;
   data.map((Com) => {
+    // Com.ChlidLenghtVal = Com?.subRows?.length ? Com?.subRows?.length : 0;
     Com?.subRows?.map((Sub: any) => {
+      // Sub.ChlidLenghtVal = Sub?.subRows?.length ? Sub?.subRows?.length : 0;
       if (Sub?.SharewebTaskType?.Title == "Activities") {
         activity = activity + 1;
       }
@@ -3859,6 +3984,7 @@ function ComponentTable(SelectedProp: any) {
       }
 
       Sub?.subRows?.map((feat: any) => {
+        // feat.ChlidLenghtVal = feat?.subRows?.length ? feat?.subRows?.length : 0;
         if (feat?.SharewebTaskType?.Title == "Activities") {
           activity = activity + 1;
         }
@@ -3869,6 +3995,8 @@ function ComponentTable(SelectedProp: any) {
           task = task + 1;
         }
         feat?.subRows?.map((acti: any) => {
+
+          // acti.ChlidLenghtVal = acti?.subRows?.length ? acti?.subRows?.length : 0;
           if (acti?.SharewebTaskType?.Title == "Activities") {
             activity = activity + 1;
           }
@@ -3879,6 +4007,7 @@ function ComponentTable(SelectedProp: any) {
             task = task + 1;
           }
           acti?.subRows?.map((works: any) => {
+            // works.ChlidLenghtVal = works?.subRows?.length ? works?.subRows?.length : 0;
             if (works?.SharewebTaskType?.Title == "Activities") {
               activity = activity + 1;
             }
@@ -3889,6 +4018,7 @@ function ComponentTable(SelectedProp: any) {
               task = task + 1;
             }
             works?.subRows?.map((taskss: any) => {
+              // taskss.ChlidLenghtVal = taskss?.subRows?.length ? taskss?.subRows?.length : 0;
               if (taskss?.SharewebTaskType?.Title == "Activities") {
                 activity = activity + 1;
               }
