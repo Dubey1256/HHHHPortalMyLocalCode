@@ -78,17 +78,17 @@ const BackgroundCommentComponent = (Props: any) => {
     // This is used for Adding Background Comments 
     const AddBackgroundCommentFunction = async () => {
         if (BackgroundComment.length > 0) {
-            let CurrentUserData: any
+            let CurrentUser: any
             if (currentUserData?.length > 0) {
-                CurrentUserData = currentUserData[0];
+                CurrentUser = currentUserData[0];
             }
             let CommentJSON = {
-                AuthorId: CurrentUserData.AssingedToUserId,
+                AuthorId: CurrentUser?.AssingedToUserId != undefined ? CurrentUser?.AssingedToUserId : 0,
                 editable: false,
                 Created: Moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'),
                 Body: BackgroundComment,
-                AuthorImage: CurrentUserData.Item_x0020_Cover != null ? CurrentUserData.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
-                AuthorName: CurrentUserData.Title != undefined ? CurrentUserData.Title : Context.pageContext._user.displayName,
+                AuthorImage: CurrentUser.Item_x0020_Cover != null ? CurrentUser.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
+                AuthorName: CurrentUser.Title != undefined ? CurrentUser.Title : Context.pageContext._user.displayName,
                 ID: (BackgroundComments != undefined ? BackgroundComments?.length + 1 : 0)
             }
             BackgroundComments.push(CommentJSON);
@@ -124,17 +124,17 @@ const BackgroundCommentComponent = (Props: any) => {
     const updateCommentFunction = async (UpdateData: any, columnName: any) => {
         try {
             let web = new Web(siteUrls);
-            let tempObject:any= {}
+            let tempObject: any = {}
             if (columnName == "OffshoreComments") {
                 tempObject = {
-                    OffshoreComments : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                    OffshoreComments: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
                 }
-            }else{
+            } else {
                 tempObject = {
-                    OffshoreImageUrl : UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
+                    OffshoreImageUrl: UpdateData != undefined && UpdateData.length > 0 ? JSON.stringify(UpdateData) : null
                 }
             }
-            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update({tempObject}).then(() => {
+            await web.lists.getById(Props.TaskData.listId).items.getById(Props.TaskData.Id).update(tempObject).then(() => {
                 console.log("Background Comment Updated !!!")
             })
         } catch (error) {
