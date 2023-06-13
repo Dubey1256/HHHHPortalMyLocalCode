@@ -1307,7 +1307,7 @@ function TimeEntryPopup(item: any) {
                 }
 
             })
-        }
+        
 
 
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
@@ -1331,7 +1331,9 @@ function TimeEntryPopup(item: any) {
 
 
         })
+    
         setupdateData(updateData + 5)
+    }
 
     }
 
@@ -2360,7 +2362,7 @@ if(Available == false){
                                                                                                                             <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(childitem, childinew)}></span>
 
                                                                                                                         </a></td>
-                                                                                                                        <td style={{ width: "2%" }}>  <a title="Copy" className="hreflink">
+                                                                                                                        <td style={{ width: "2%" }}>  <a title="Delete" className="hreflink">
                                                                                                                             <span className="mt-1 svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(childinew)}></span>
 
                                                                                                                         </a></td>

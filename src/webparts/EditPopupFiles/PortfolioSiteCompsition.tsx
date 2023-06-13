@@ -14,7 +14,7 @@ var SiteSettingsFinalData: any = [];
 var SiteClientCatgeoryFinalData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
-    var ClientTime = Props.ClientTime != undefined ? Props.ClientTime : [];
+    // var ClientTime = Props.ClientTime != undefined ? Props.ClientTime : [];
     var SitesTaggingData: any = Props.SitesTaggingData;
     var ItemId = Props.ItemId;
     const isPortfolioConncted = Props.isPortfolioConncted;
@@ -27,9 +27,9 @@ const SiteCompositionComponent = (Props: any) => {
     const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Protected: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
-    const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length);
+    const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
     const [ProportionalStatus, setProportionalStatus] = useState(true);
-    let [ClientTimeData, setClientTimeData] = useState<any>([]);
+    let [ClientTimeData, setClientTimeData] = useState<any>(Props.ClientTime != undefined ? Props.ClientTime : []);
     const [ClientCategoryPopupStatus, setClientCategoryPopupStatus] = useState(false);
     const [AllClientCategoryData, setAllClientCategoryData] = useState([]);
     const [SelectedSiteClientCategoryData, setSelectedSiteClientCategoryData] = useState([]);
@@ -62,7 +62,7 @@ const SiteCompositionComponent = (Props: any) => {
         let tempData: any = [];
         let tempData2: any = [];
         BackupSiteTypeData = []
-        setClientTimeData(ClientTime);
+        // setClientTimeData(ClientTime);
         loadAllCategoryData();
         if (SelectedClientCategoryFromProps != undefined && SelectedClientCategoryFromProps.length > 0) {
             setSelectedClientCategory(SelectedClientCategoryFromProps);
@@ -90,8 +90,8 @@ const SiteCompositionComponent = (Props: any) => {
             })
             if (tempData != undefined && tempData.length > 0) {
                 tempData?.map((data: any) => {
-                    if (ClientTime?.length > 0) {
-                        ClientTime?.map((ClientItem: any) => {
+                    if (ClientTimeData?.length > 0) {
+                        ClientTimeData?.map((ClientItem: any) => {
                             if (ClientItem.Title == data.Title || (ClientItem.Title ==
                                 "DA E+E" && data.Title == "ALAKDigital")) {
                                 data.ClienTimeDescription = ClientItem.ClienTimeDescription;
@@ -102,7 +102,7 @@ const SiteCompositionComponent = (Props: any) => {
                         })
                         tempData2.push(data);
                         BackupSiteTypeData.push(data);
-                    }else{
+                    } else {
                         data.ClienTimeDescription = 0;
                         data.BtnStatus = false;
                         data.Date = '';
@@ -163,7 +163,7 @@ const SiteCompositionComponent = (Props: any) => {
                         setClientTimeData(tempDataForRemove);
                         SiteCompositionObject.ClientTime = tempDataForRemove;
                         SiteTaggingFinalData = tempDataForRemove;
-                        ClientTime = tempDataForRemove;
+                        // ClientTime = tempDataForRemove;
                         // callBack(SiteCompositionObject);
                     } else {
                         DataItem.BtnStatus = true
@@ -171,15 +171,16 @@ const SiteCompositionComponent = (Props: any) => {
                         DataItem.readOnly = true
                         setSelectedSiteCount(selectedSiteCount + 1);
                         const object = {
-                            SiteName: DataItem.Title,
+                            // SiteName: DataItem.Title,
+                            Title:DataItem.Title,
                             ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
                             localSiteComposition: true,
                             siteIcons: DataItem.Item_x005F_x0020_Cover?.Url,
                             Date: DataItem.Date
                         }
-                        ClientTime.push(object);
+                        ClientTimeData.push(object);
                         let tempData: any = [];
-                        ClientTime?.map((TimeData: any) => {
+                        ClientTimeData?.map((TimeData: any) => {
                             TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
                             tempData.push(TimeData);
                         })
@@ -203,7 +204,7 @@ const SiteCompositionComponent = (Props: any) => {
             SiteCompositionSettings[0] = object;
             setProportionalStatus(true);
             let tempData: any = [];
-            ClientTime?.map((TimeData: any) => {
+            ClientTimeData?.map((TimeData: any) => {
                 TimeData.ClienTimeDescription = (100 / (selectedSiteCount)).toFixed(1);
                 tempData.push(TimeData);
             })
@@ -220,7 +221,30 @@ const SiteCompositionComponent = (Props: any) => {
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
         }
-       
+        // if (Type == "Protected") {
+        //     const object = { ...SiteCompositionSettings[0], Proportional: false, Manual: false, Protected: true }
+        //     SiteCompositionSettings[0] = object;
+        //     if (SitesTaggingData != undefined && SitesTaggingData.length > 0 || ClientTime != undefined && ClientTime.length > 0) {
+        //         ClientTimeData = SitesTaggingData != undefined ? SitesTaggingData : ClientTime;
+        //         setIsPortfolioComposition(true);
+        //         setProportionalStatus(true);
+        //         setCheckBoxStatus(true);
+        //         onChangeCompositionSetting()
+        //     } else {
+        //         setIsPortfolioComposition(false);
+        //         setCheckBoxStatus(false);
+        //         setClientTimeData([])
+        //     }
+        //     // if (ClientTime != undefined && ClientTime.length > 0) {
+        //     //     setIsPortfolioComposition(true);
+        //     //     setProportionalStatus(true);
+        //     //     setCheckBoxStatus(true);
+        //     // } else {
+        //     //     setIsPortfolioComposition(false);
+        //     //     setCheckBoxStatus(false);
+        //     // }
+        //     // setCheckBoxStatus(true);
+        // }
         if (Type == "Protected") {
             let object: any;
             if (SiteCompositionSettings[0].localSiteComposition == true) {
@@ -241,7 +265,24 @@ const SiteCompositionComponent = (Props: any) => {
 
     }
 
-  
+    // const onChangeCompositionSetting = () => {
+    //     let TempArray: any = [];
+    //     if (BackupSiteTypeData != undefined && BackupSiteTypeData.length > 0) {
+    //         BackupSiteTypeData?.map((data: any) => {
+    //             ClientTimeData?.map((ClientItem: any) => {
+    //                 if (ClientItem.SiteName == data.Title || (ClientItem.SiteName ==
+    //                     "DA E+E" && data.Title == "ALAKDigital")) {
+    //                     data.ClienTimeDescription = ClientItem.ClienTimeDescription;
+    //                     data.BtnStatus = true
+    //                 }
+    //             })
+    //             TempArray.push(data);
+    //         })
+    //         setSiteTypes(TempArray)
+    //         setSelectedSiteCount(ClientTimeData?.length)
+    //     }
+    // }
+
     //    ************** this is for Client Category Popup Functions **************
 
 
@@ -458,7 +499,7 @@ const SiteCompositionComponent = (Props: any) => {
         if (SiteTaggingFinalData?.length > 0) {
             SitesTaggingData = SiteTaggingFinalData
         } else {
-            SitesTaggingData = ClientTime;
+            SitesTaggingData = ClientTimeData;
         }
         if (SiteClientCatgeoryFinalData?.length > 0) {
             ClientCategoryData = SiteClientCatgeoryFinalData
@@ -475,7 +516,7 @@ const SiteCompositionComponent = (Props: any) => {
                 ClientCategoryIDs.push(dataItem.Id);
             })
 
-        }else{
+        } else {
             ClientCategoryIDs = [];
         }
 
@@ -494,7 +535,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Selected: true,
                         Date: ClientTimeItems.Date,
                         Available: true,
-                        SiteImages:ClientTimeItems.siteIcons
+                        SiteImages: ClientTimeItems.siteIcons
                     }
                     SiteTaggingJSON.push(newObject);
                 } else {
@@ -505,12 +546,14 @@ const SiteCompositionComponent = (Props: any) => {
         }
 
         try {
-           
+            console.log("Final Updated SiteTaggingFinalData =====", SitesTaggingData);
+            console.log("Final Updated SiteSettingsFinalData =====", SiteCompositionSettingData);
+            console.log("Final Updated ClientCategoryData =====", ClientCategoryData);
             let web = new Web(AllListIdData.siteUrl);
             await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                Sitestagging: JSON.stringify(SiteTaggingJSON),
+                Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
                 ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : SiteCompositionSettings,
+                SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : JSON.stringify(SiteCompositionSettings),
             }).then(() => {
                 console.log("Site Composition Updated !!!");
                 alert("save successfully !!!");
@@ -556,7 +599,6 @@ const SiteCompositionComponent = (Props: any) => {
                 } else {
                     TempArray.push(SiteData);
                 }
-
             })
         }
         setSiteTypes(TempArray);
@@ -769,7 +811,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {siteData.BtnStatus ?
                                                     <div className="d-flex" style={{ width: "85%" }}>
                                                         {siteData.readOnly == false ? <input type="date" className="border-secondary form-control p-0 py-1"
-                                                            defaultValue={siteData.Date != undefined ? Moment(siteData.Date).subtract(10, 'days').calendar() : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
+                                                            defaultValue={siteData.Date != undefined ? Moment(siteData.Date).subtract(10, 'days').calendar() : ""} onChange={(e) => ChangeDateManuallyFunction(e, siteData.Title, "ChangeDate")} style={{ cursor: "not-allowed" }} /> : <span className="form-control border-secondary p-0 px-2">{siteData.Date ? siteData.Date : ''}</span>}
                                                         <a className="bg-white border border-secondary" onClick={(e) => ChangeDateManuallyFunction(e, siteData.Title, "readOnlyStatus")}
                                                         >
                                                             {siteData.readOnly == true ? <span className="border svg__icon--editBox svg__iconbox"></span> : <span className="border svg__icon--cross svg__iconbox"></span>}

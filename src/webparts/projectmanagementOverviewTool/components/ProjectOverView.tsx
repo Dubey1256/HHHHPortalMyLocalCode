@@ -197,8 +197,8 @@ export default function ProjectOverview(props: any) {
                     <>{
                         row?.original?.siteType !== "Master Tasks" ?
                             <span>
-                                {row?.original?.siteIcon != undefined ?
-                                    <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
+                                {row?.original?.SiteIcon != undefined ?
+                                    <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
                             </span> : ''
                     }</>
                 ),
@@ -835,7 +835,7 @@ export default function ProjectOverview(props: any) {
                             items.PortfolioTitle = items?.Services[0]?.Title;
                             items["Portfoliotype"] = "Service";
                         }
-                        items["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                        items["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                         if (items?.Project?.Title != undefined) {
                             items["ProjectTitle"] = items?.Project?.Title;
                             items["ProjectPriority"] = items?.Project?.Priority_x0020_Rank;
@@ -885,9 +885,7 @@ export default function ProjectOverview(props: any) {
                                 });
                             }
                         });
-                        if (items?.AssignedTo?.length > 0) {
                             AllTask.push(items);
-                        }
                     });
                     let setCount = siteConfig?.length
                     if (arraycount === setCount) {

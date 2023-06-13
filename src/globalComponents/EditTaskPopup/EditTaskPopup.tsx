@@ -1606,6 +1606,7 @@ const EditTaskPopup = (Items: any) => {
                         setWorkingMember(143);
                     }
                     EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
                     EditData.CompletedDate = undefined;
                     StatusArray?.map((item: any) => {
                         if (StatusInput == item.value) {
@@ -1653,6 +1654,7 @@ const EditTaskPopup = (Items: any) => {
                 if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
                     setWorkingMember(9);
                     EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
                     StatusArray?.map((item: any) => {
                         if (StatusInput == item.value) {
                             setPercentCompleteStatus(item.status);
@@ -1662,6 +1664,7 @@ const EditTaskPopup = (Items: any) => {
                 }
                 if (StatusInput == 90) {
                     EditData.IsTodaysTask = false;
+                    EditData.workingThisWeek = false;
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
@@ -1766,6 +1769,7 @@ const EditTaskPopup = (Items: any) => {
         if (StatusData.value == 80) {
             // let tempArray: any = [];
             EditData.IsTodaysTask = false;
+            EditData.workingThisWeek = false;
             if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
                 setWorkingMemberFromTeam(EditData.Team_x0020_Members, "QA", 143);
             } else {
@@ -1811,6 +1815,7 @@ const EditTaskPopup = (Items: any) => {
 
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
             EditData.IsTodaysTask = false;
+            EditData.workingThisWeek = false;
             setWorkingMember(9);
             StatusArray?.map((item: any) => {
                 if (StatusData.value == item.value) {
@@ -1821,6 +1826,7 @@ const EditTaskPopup = (Items: any) => {
         }
         if (StatusData.value == 90) {
             EditData.IsTodaysTask = false;
+            EditData.workingThisWeek = false;
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
@@ -4294,7 +4300,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} itemID={ Items.Items.Id} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -4445,6 +4451,7 @@ const EditTaskPopup = (Items: any) => {
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
+                                                itemID={ Items.Items.Id}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
@@ -5815,7 +5822,3 @@ export default React.memo(EditTaskPopup);
 
 // step-2B :
 // <EditTaskPopup Items={Items} ></EditTaskPopup>
-
-
-
-
