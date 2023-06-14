@@ -7,6 +7,7 @@ import * as Moment from 'moment';
 import ApprovalHistoryPopup from "./ApprovalHistoryPopup";
 
 export default function subCommentComponent(SubTextItemsArray: any) {
+    console.log("Subtext all data =======", SubTextItemsArray)
     const SubTextItems = SubTextItemsArray.SubTextItemsArray;
     const callBack = SubTextItemsArray.callBack
     const Context = SubTextItemsArray.Context;
