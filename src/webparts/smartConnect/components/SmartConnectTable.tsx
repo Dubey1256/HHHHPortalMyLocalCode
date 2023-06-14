@@ -382,7 +382,7 @@ function SmartConnectTable(SelectedProp: any) {
                 item.com_titleId = item.Services.split(';#')[0];
             }
             if (item.ItemRank != undefined) {
-                item.ItemRank = item.ItemRank.split('.')[0];
+                item.ItemRank = item.ItemRank;
             }
             if (item.SharewebTaskLevel1No != undefined) {
                 item.SharewebTaskLevel1No = item.SharewebTaskLevel1No;
