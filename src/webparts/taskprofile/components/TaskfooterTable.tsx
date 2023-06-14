@@ -484,7 +484,7 @@ function TasksTable(props: any) {
     }
      // ===============Delete the data to Edit task popup====================
 
-     if(childItem.data?.ItmesDelete==true){
+     if(childItem?.data?.ItmesDelete==true){
       finalData?.map((ele:any,index:any)=>{
         if(ele.subRows!=undefined&&ele.subRows.length>0){
           ele.subRows?.map((sub:any,subindex:any)=>{

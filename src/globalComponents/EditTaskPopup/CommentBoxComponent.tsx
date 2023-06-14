@@ -288,7 +288,7 @@ const CommentBoxComponent = (commentData: any) => {
                                     <div>
                                         <Example
                                             SubTextItemsArray={obj.Subtext ? obj.Subtext : []}
-                                            index={1}
+                                            index={0}
                                             commentId={obj.Id}
                                             callBack={subTextCallBack}
                                             currentIndex={0}
