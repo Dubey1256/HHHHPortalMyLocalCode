@@ -228,7 +228,7 @@ export default function subCommentComponent(SubTextItemsArray: any) {
                                 >
                                     <div className="Task-panel alignCenter justify-content-between">
                                         <div className="alignCenter">
-                                            <span className="me-1">{`${SubTextItemsArray.index ? SubTextItemsArray.index : 0}.${index + 1}`}</span>
+                                            <span className="me-1">{`${SubTextItemsArray.index + 1}.${index + 1}`}</span>
                                             <div className="d-flex">
                                                 {ApprovalStatus ?
                                                     <div>
