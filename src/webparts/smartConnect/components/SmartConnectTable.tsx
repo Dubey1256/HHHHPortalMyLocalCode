@@ -11,10 +11,10 @@ import { FaChevronDown, FaChevronRight, FaCompressArrowsAlt } from 'react-icons/
 import GlobalCommanTable, { IndeterminateCheckbox } from '../../../globalComponents/GlobalCommanTable';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
+import PortfolioTable from './PortfolioTable';
 const SitesConfig: any = [];
 const allitems: any = [];
 const SelectedProp: any = '';
-var Pageurlshareweb: any = '';
 var MainSite: any = '';
 var Mainportfolio: any = '';
 var ListNameQuery: any = ''
@@ -26,38 +26,37 @@ var taskUsers: any = [];
 var copyAllitemsdata: any = [];
 var AllTimeSpentDetails: any = [];
 var SharewebTitle: any = '';
-var CompnentId: any = '';
 var componentTitle: any = "";
 var Finalcomponent: any = "";
+let Pageurls: any = "";
+let CompnentId: any = "";
 var AllDataOfTask: any = undefined;
 function SmartConnectTable(SelectedProp: any) {
     const [allitemsData, setAllitemsData] = React.useState([])
     const [AllMetadata, setMetadata] = React.useState([])
     const [AllUsers, setTaskUser] = React.useState([]);
-
+    //const [Pageurlshareweb, setPageurlshareweb] = React.useState('');
+    // const [CompnentId, setCompnentId] = React.useState('');
 
     const [AllTimeSheetData, setAllTimeSheetData] = React.useState([]);
     //  const params = new URLSearchParams(window.location.search);
     (async () => {
         ListNameQuery = await Promise.all([globalCommon.getParameterByName('Site')]);
-        MainSite = Mainsiteitem = ListNameQuery = ListNameQuery[0]
+        if (ListNameQuery[0] != "" && ListNameQuery.length > 0)
+            MainSite = Mainsiteitem = ListNameQuery = ListNameQuery[0]
     })();
     (async () => {
         Mainportfolio = await Promise.all([globalCommon.getParameterByName('PortfolioType')]);
-        Mainportfolio = Mainportfolio[0]
+        if (Mainportfolio[0] != "" && Mainportfolio.length > 0)
+            Mainportfolio = Mainportfolio[0]
     })();
     (async () => {
         SharewebTitle = await Promise.all([globalCommon.getParameterByName('Title')]);
-        SharewebTitle = SharewebTitle[0]
+        if (SharewebTitle[0] != "" && SharewebTitle.length > 0)
+            SharewebTitle = SharewebTitle[0]
     })();
-    (async () => {
-        CompnentId = await Promise.all([globalCommon.getParameterByName('ComponentId')]);
-        CompnentId = CompnentId[0]
-    })();
-    (async () => {
-        Pageurlshareweb = await Promise.all([globalCommon.getParameterByName('PageUrl')]);
-            Pageurlshareweb = Pageurlshareweb[0]
-    })();
+
+
     const LoadComponentsone = async () => {
         var query = "";
         let web = new Web(SelectedProp.siteUrl);
@@ -356,17 +355,18 @@ function SmartConnectTable(SelectedProp: any) {
         // allitems= [];
         var newSite: any = SiteType;
         var Pageurl = TaskId;
-        var columns = ['ID', 'Id', 'Title', 'DueDate', 'ClientActivity', 'ClientCategory', 'Shareweb_x0020_ID', 'PercentComplete', 'Author', 'Editor', 'Modified', 'Created', 'Services', 'SharewebTaskType', 'ItemRank', 'ItemRank', 'ParentTask', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'ClientCategory', 'ServicePortfolio'];
+        var columns = ['ID', 'Id', 'Title', 'DueDate', 'ClientActivity', 'ClientCategory', 'Shareweb_x0020_ID', 'PercentComplete', 'Author', 'Editor', 'Modified', 'Created', 'Services/Title','Services/Id', 'SharewebTaskType', 'ItemRank', 'ItemRank', 'ParentTask', 'SharewebTaskLevel1No', 'SharewebTaskLevel2No', 'ClientCategory', 'ServicePortfolio'];
         var orderBy = "ItemRank";
         var whereClause = "<View><Query><Where><And><Contains><FieldRef Name='ClientActivity'  /><Value Type='Note'>" + Pageurl + "</Value></Contains><Contains><FieldRef Name='ClientActivity'/><Value Type='Note'>" + newSite + "</Value></Contains></And></Where></Query></View>";
         var listItem = SitesConfig.filter((site: any) => site.Title.toLowerCase() === Mainsiteitem.toLowerCase()) //SharewebCommonFactoryService.getListIdByListName(MainSite, GlobalConstants.CURRENT_SITE_TYPE);
-      
+
         const web = new Web(SelectedProp.siteUrl);
         let result: any = [];
         // try {
         result = await web.lists
             .getById(listItem[0].listId)
             .select('ID', 'Id', 'Title')
+            .expand("Services","ClientCategory")
             .getItemsByCAMLQuery({ ViewXml: whereClause })
 
         result.forEach((item: any) => {
@@ -377,12 +377,20 @@ function SmartConnectTable(SelectedProp: any) {
             // item.siteTypeLocal = MainSiteLocal;
             item.SiteType = SiteType;
             item.Id = item.ID;
-            if (item.Services != undefined) {
-                item.com_title = item.Services.split(';#')[1];
-                item.com_titleId = item.Services.split(';#')[0];
+            if (item.ServicesId != undefined) {
+                let Item :any ={};
+                item.Services =[];
+                item.ServicesId.forEach((Ids:any) =>{
+                    let returnItem = AllComponetsData.filter((obj:any) =>obj.Id ===Ids)
+                    if(returnItem !=undefined && returnItem.length >0){
+                        Item.Title = returnItem[0].Title;
+                        Item.Id = returnItem[0].Id;
+                        item.Services.push(Item)
+                    }
+                })
             }
             if (item.ItemRank != undefined) {
-                item.ItemRank = item.ItemRank.split('.')[0];
+                item.ItemRank = item.ItemRank;
             }
             if (item.SharewebTaskLevel1No != undefined) {
                 item.SharewebTaskLevel1No = item.SharewebTaskLevel1No;
@@ -413,19 +421,19 @@ function SmartConnectTable(SelectedProp: any) {
                 item.SharewebTaskType = newitem;
             }
             item.SmartTime = "";
-            if (item.Services != undefined && item.Services != "") {
+            // if (item.Services != undefined && item.Services != "") {
 
-                var servId = item.Services.split(';#')[0];
-                var servTitle = item.Services.split('#')[1];
-                var serv: any = {};
-                serv.Id = servId;
-                serv.Title = servTitle;
-                item.Services = {};
-                item.Services.results = [];
-                item.Services.results.push(serv);
+            //     var servId = item.Services.split(';#')[0];
+            //     var servTitle = item.Services.split('#')[1];
+            //     var serv: any = {};
+            //     serv.Id = servId;
+            //     serv.Title = servTitle;
+            //     item.Services = {};
+            //     item.Services.results = [];
+            //     item.Services.results.push(serv);
 
 
-            }
+            // }
             if (item.ClientCategory != undefined && item.ClientCategory != "") {
 
                 var cliId = item.ClientCategory.split(';#')[0];
@@ -999,8 +1007,8 @@ function SmartConnectTable(SelectedProp: any) {
                 i['Shareweb_x0020_ID'] = '';
             }
             i['isNewItem'] = false;
-            if (i.SharewebCategories.results.length > 0) {
-                i.SharewebCategories.results.forEach((item: any) => {
+            if (i.SharewebCategories.length > 0) {
+                i.SharewebCategories.forEach((item: any) => {
                     if (item.Id == 290) {
                         i['isNewItem'] = true;
                     }
@@ -1135,7 +1143,7 @@ function SmartConnectTable(SelectedProp: any) {
             newtest.Id = newtest.ID;
             if (newtest.Title == "SDC Sites" || newtest.Title == "DRR" || newtest.Title == "Foundation" || newtest.Title == "Small Projects" || newtest.Title == "Offshore Tasks" || newtest.Title == "Health" || newtest.Title == "Shareweb Old" || newtest.Title == "Master Tasks")
                 newtest.DataLoadNew = false;
-            else if (newtest.TaxType == 'Sites' && MainSite !=undefined &&  (newtest.Title.toLowerCase() == MainSite.toLowerCase()))
+            else if (newtest.TaxType == 'Sites' && MainSite != undefined && (newtest.Title.toLowerCase() == MainSite.toLowerCase()))
                 SitesConfig.push(newtest)
 
             if (newtest.ParentID == 0 && newtest.TaxType == 'Client Category') {
@@ -1147,8 +1155,8 @@ function SmartConnectTable(SelectedProp: any) {
             }
 
         });
-        if (Pageurlshareweb != "" && MainSite != "") {
-            Getportfolioid(Pageurlshareweb, MainSite, Mainportfolio);
+        if (Pageurls != "" && MainSite != "") {
+            Getportfolioid(Pageurls, MainSite, Mainportfolio);
             // Sharewebselectionopen();
         }
         // GetAllTaskTime();
@@ -1156,6 +1164,18 @@ function SmartConnectTable(SelectedProp: any) {
     React.useEffect(() => {
         SelectedProp = SelectedProp.SelectedProp;
         // LoadAllTimeSheetData12();
+        (async () => {
+            let Pageurlshareweb1 = await Promise.all([globalCommon.getParameterByName('PageUrl')]);
+            if (Pageurlshareweb1[0] != "" && Pageurlshareweb1.length > 0)
+                //  setPageurlshareweb(Pageurlshareweb => Pageurlshareweb1[0])
+                Pageurls = Pageurlshareweb1[0];
+        })();
+        (async () => {
+            let Compnent = await Promise.all([globalCommon.getParameterByName('Component')]);
+            if (Compnent[0] != "" && Compnent.length > 0)
+                CompnentId = Compnent[0]
+        })();
+        LoadComponents();
         GetSmartmetadata();
         getTaskUsers();
     }, [])
@@ -1286,7 +1306,7 @@ function SmartConnectTable(SelectedProp: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, column, getValue }) => (
                     <>
-                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={SelectedProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.newSite + ""} >
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={SelectedProp.SelectedProp.siteUrl + "/SitePages/Task-Profile.aspx?taskId=" + row?.original?.ID + "&Site=" + row?.original?.siteName + ""} >
                             <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
                         </a>
                     </>
@@ -1306,6 +1326,23 @@ function SmartConnectTable(SelectedProp: any) {
                 placeholder: "Client Category",
                 header: "",
                 size: 100,
+            },
+            {
+                accessorFn: (row) => row?.Services?.map((elem: any) => elem.Title).join("-"),
+                cell: ({ row, getValue }) => (
+                    <>
+                     {row?.original?.Services?.map((element:any)=>{
+                        return(
+                            <><a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={SelectedProp.SelectedProp.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + element.Id+""} >
+                           {element.Title} </a>{getValue} </>
+                        )
+                     })} 
+                    </>
+                ),
+                placeholder: "Services",
+                header: "",
+                id: "Services",
+                size: 42,
             },
             {
                 accessorKey: "PercentComplete",
@@ -1349,39 +1386,45 @@ function SmartConnectTable(SelectedProp: any) {
 
     return (
 
-        <div>
-            <section className="TableContentSection taskprofilepagegreen">
-                <div className="container-fluid">
-                    <section className="TableSection">
-                        <div className="container p-0">
-                            <div className="Alltable mt-2">
-                                <div className="tbl-headings bg-white">
-                                    <span className="leftsec">
-                                        <span><FaChevronRight /></span>
-                                        <label> Already Linked with Page</label>
-                                        <span>
-                                            <span><div className="container-2 mx-1">
-                                                <span className="icon">
-                                                    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path></svg>
-                                                </span>
-                                                <input type="search" id="search" placeholder="Search All..." value="" /></div></span>
+        <div className='serviepannelgreena'>
+            {/* {Pageurls != '' && */}
+                <section className="TableContentSection taskprofilepagegreen">
+                    <div className="ps-3">Shareweb URL: {Pageurls != '' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={Pageurls} >{Pageurls}</a>} - Component: {CompnentId && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Portfolio-Profile.aspx?taskId=" + CompnentId} >Key Profile Page</a>}</div>
+                    <div className="container-fluid">
+                        <section className="TableSection">
+                            <div className="container p-0">
+                                <div className="Alltable mt-2">
+                                    <div className="tbl-headings bg-white">
+                                        <span className="leftsec">
+                                            <span><FaChevronRight /></span>
+                                            <label> Already Linked with Page</label>
+                                            <span>
+                                                <span><div className="container-2 mx-1">
+                                                    <span className="icon">
+                                                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path></svg>
+                                                    </span>
+                                                    <input type="search" id="search" placeholder="Search All..." value="" /></div></span>
+                                            </span>
                                         </span>
-                                    </span>
-                                </div>
-                                {allitemsData &&
-                                    <div className="col-sm-12 p-0 smart">
-                                        <div className="wrapper">
-                                            <GlobalCommanTable columns={columns} data={allitemsData} callBackData={callBackData} />
-                                        </div>
                                     </div>
-                                }
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
+                                    {allitemsData.length &&
+                                        <div className="col-sm-12 p-0 smart">
+                                            <div >
+                                                <GlobalCommanTable columns={columns} data={allitemsData} callBackData={callBackData} />
+                                            </div>
+                                        </div>
+                                    }
 
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    {SelectedProp?.SelectedProp &&
+                        <div className="col-sm-12 p-0 smart"><PortfolioTable SelectedProp={SelectedProp.SelectedProp} /></div>
+                    }
+                </section>
+            {/* } */}
 
 
 

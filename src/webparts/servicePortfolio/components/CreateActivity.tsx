@@ -783,7 +783,7 @@ const CreateActivity = (props: any) => {
                             res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
-
+                         var MyData = res.data
 
                         let fileName: any = '';
                         let tempArray: any = [];
@@ -822,9 +822,11 @@ const CreateActivity = (props: any) => {
                             if (res.data.listId != undefined) {
                                 let web = new Web(dynamicList?.siteUrl);
                                 let item = web.lists.getById(res.data.listId).items.getById(res.data.Id);
-                                item.attachmentFiles.add(fileName, data);
-                                console.log("Attachment added");
-                                UpdateBasicImageInfoJSON(tempArray, res.data);
+                                item.attachmentFiles.add(fileName, data).then((res)=>{
+                                    console.log("Attachment added");
+                                    UpdateBasicImageInfoJSON(tempArray, MyData);
+                                })
+                            
 
                             }
                         }
@@ -1524,7 +1526,7 @@ const CreateActivity = (props: any) => {
                                     <fieldset>
                                         <label>Priority</label>
                                         <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
+                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} maxLength={1}/>
                                         <div className="mt-2">
                                             <label>
                                                 <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
