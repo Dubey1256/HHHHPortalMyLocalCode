@@ -298,17 +298,17 @@ const EmailComponenet = (props: any) => {
                         props.items["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                         props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                           return <>
-                            <tr style={{ background: "#ccc" }}>
-                              <td>
+                            <tr>
+                              <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
                                 <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                               </td>
-                              <td><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                              <td style={fbData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:fbData?.isShowLight=="Approve"?{ background: "##00800024;",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
                                 {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
                                   return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                     <div style={{ marginBottom: '3.75pt' }}>
-                                      <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment?.AuthorName} - {fbComment?.Created}<u></u><u></u></span></p>
+                                      <p style={{ marginLeft: '1.5pt' }}>comment by<span>{fbComment?.AuthorName} - {fbComment?.Created}<u></u><u></u></span></p>
                                     </div>
-                                    <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                    <p style={{ marginLeft: '1.5pt' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                   </div>
 
                                 })}
@@ -316,17 +316,17 @@ const EmailComponenet = (props: any) => {
                             </tr>
                             {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                               return <>
-                                <tr style={{ background: "#ccc" }}>
-                                  <td>
+                                <tr >
+                                  <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
                                     <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
                                   </td>
-                                  <td><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                  <td style={fbData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
                                     {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                       return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                         <div style={{ marginBottom: '3.75pt' }}>
-                                          <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}<u></u><u></u></span></p>
+                                          <p style={{ marginLeft: '1.5pt' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>comment by {fbSubComment?.AuthorName} - {fbSubComment?.Created}<u></u><u></u></span></p>
                                         </div>
-                                        <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                        <p style={{ marginLeft: '1.5pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
                                       </div>
 
                                     })}
