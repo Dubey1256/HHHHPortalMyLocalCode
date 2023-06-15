@@ -17,6 +17,7 @@ export default class SmartConnect extends React.Component<ISmartConnectProps, {}
       TaskUsertListID,
       SmartMetadataListID,
       MasterTaskListID,
+      siteUrl,
     } = this.props;
     return (
       <div>
