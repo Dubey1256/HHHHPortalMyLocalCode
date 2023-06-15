@@ -783,7 +783,50 @@ const CreateActivity = (props: any) => {
                             res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
-                         var MyData = res.data
+                        res.data.ClientCategory = []
+                        res.data.AssignedTo = []
+                        res.data.Responsible_x0020_Team = []
+                        var MyData = res.data;
+                        res.data.Team_x0020_Members = []
+                        if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                            res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                   if(User?.AssingedToUser?.Id == teamUser){
+                                        res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                                    }
+                                })
+                              
+                            })
+                        }
+                        if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                            res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                   if(User?.AssingedToUser?.Id == teamUser){
+                                        res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                                    }
+                                })
+                                
+                            })
+                        }
+                        if (res?.data?.AssignedToId?.length > 0) {
+                            res.data?.AssignedToId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                   if(User?.AssingedToUser?.Id == teamUser){
+                                        res.data.AssignedTo.push(User?.AssingedToUser)
+                                    }
+                                })
+                                
+                            })
+                        }
+                        if (res?.data?.ClientCategoryId?.length > 0) {
+                            res.data?.ClientCategoryId?.map((category: any) => {
+                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                if (elementFound) {
+                                    res.data.ClientCategory.push(elementFound[0]);
+                                }
+                            })
+                        }
+                        res.data.Clientcategories = res.data.ClientCategory;
 
                         let fileName: any = '';
                         let tempArray: any = [];
@@ -896,29 +939,68 @@ const CreateActivity = (props: any) => {
                             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
 
                         }).then((res: any) => {
-                            res.data.ParentTaskId = AllItems.Id
-                            res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
-                            res.data['SharewebTaskType'] = { Title: 'Task' }
-                            res.data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
-                                res.data['Shareweb_x0020_ID'] = SharewebID
-                            res.data['siteType'] = value?.siteName
-                            res.data.Created = new Date();
-                            res.data.Author = {
+                            let data = res.data;
+                            data.ParentTaskId = AllItems.Id
+                            data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                            data['SharewebTaskType'] = { Title: 'Task' }
+                            data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
+                                data['Shareweb_x0020_ID'] = SharewebID
+                            data['siteType'] = value?.siteName
+                            data.Created = new Date();
+                            data.Author = {
                                 Id: res?.data?.AuthorId
                             }
-                            res.data.listId = value.listId
-
+                            data.listId = value.listId
+                            data.AssignedTo = []
+                        data.Responsible_x0020_Team = []
+                        data.Team_x0020_Members = []
+                        if (data?.Team_x0020_MembersId?.length > 0) {
+                            data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                    if(User?.AssingedToUser?.Id == teamUser){
+                                        data.Team_x0020_Members.push(User?.AssingedToUser)
+                                    }
+                                })
+                            })
+                        }
+                        if (data?.Responsible_x0020_TeamId?.length > 0) {
+                            data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                    if(User?.AssingedToUser?.Id == teamUser){
+                                        data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                                    }
+                                })
+                              
+                            })
+                        }
+                        if (data?.AssignedToId?.length > 0) {
+                            data?.AssignedToId?.map((teamUser: any) => {
+                                let elementFound = props?.TaskUsers?.filter((User: any) => {
+                                    if(User?.AssingedToUser?.Id == teamUser){
+                                        data.AssignedTo.push(User?.AssingedToUser)
+                                    }
+                                })
+                             
+                            })
+                        }
+                            data.ClientCategory = []
+                            if (data?.ClientCategoryId?.length > 0) {
+                                data?.ClientCategoryId?.map((category: any) => {
+                                    let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                    if (elementFound) {
+                                        data.ClientCategory.push(elementFound[0]);
+                                    }
+                                })
+                            }
+                            data.Clientcategories = data.ClientCategory;
+                            res.data = data;
                             console.log(res);
                             closeTaskStatusUpdatePoup(res);
                         })
                     }
                 }
-
-
             }
         })
-
-
 
     }
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
@@ -1526,7 +1608,7 @@ const CreateActivity = (props: any) => {
                                     <fieldset>
                                         <label>Priority</label>
                                         <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} maxLength={1}/>
+                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} maxLength={2}/>
                                         <div className="mt-2">
                                             <label>
                                                 <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
