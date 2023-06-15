@@ -66,11 +66,12 @@ export function IndeterminateCheckbox(
 
 const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [TableProperty, setTableProperty] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
 
 
-    const table = useReactTable({
+    const table:any = useReactTable({
         data,
         columns,
         state: {
@@ -93,6 +94,7 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
     });
 
     React.useEffect(() => {
+        setTableProperty(table);
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     let item: any;
@@ -122,7 +124,7 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
             })
         }
         let ShowingData={ComponentCopy:ComponentCopy,SubComponentCopy:SubComponentCopy,FeatureCopy:FeatureCopy,FilterShowhideShwingData:FilterShowhideShwingData}
-        callBackData(item, ShowingData)
+        callBackData(item, TableProperty, ShowingData)
     }, [table?.getRowModel()?.rows])
 
     const CheckDataPrepre = () => {
@@ -131,9 +133,9 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
                 elem.original.Id = elem.original.ID
                 item = elem.original;
             });
-            callBackData(item)
+            callBackData(item,TableProperty,setRowSelection)
         } else {
-            callBackData(item)
+            callBackData(item,TableProperty,setRowSelection)
         }
         console.log("itrm", item)
     }
@@ -151,9 +153,9 @@ const GlobalCommanTable = ({ columns, data, callBackData ,pageName}: any) => {
         <>
             <table className="SortingTable table table-hover mb-0" style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
-                    {table.getHeaderGroups().map((headerGroup) => (
+                    {table.getHeaderGroups().map((headerGroup:any) => (
                         <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
+                            {headerGroup.headers.map((header:any) => {
                                 return (
                                     <th key={header.id} colSpan={header.colSpan} style={ header.column.columnDef.size!=undefined &&  header.column.columnDef.size!=150 ? { width: header.column.columnDef.size + "px" }:{}}>
                                         {header.isPlaceholder ? null : (

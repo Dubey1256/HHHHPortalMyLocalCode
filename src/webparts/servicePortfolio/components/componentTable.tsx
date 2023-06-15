@@ -71,7 +71,7 @@ let globalFilterHighlited: any;
 let showPopHover: any;
 let popHoverDataGroup: any = []
 let Renderarray: any = [];
-let AllDataRender:any=[];
+let AllDataRender: any = [];
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -223,9 +223,9 @@ function ComponentTable(SelectedProp: any) {
   const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
 
   const [maidataBackup, setmaidataBackup] = React.useState([]);
-  const [search, setSearch]: [string, (search: string) => void] =React.useState("");
+  const [search, setSearch]: [string, (search: string) => void] = React.useState("");
   const [data, setData] = React.useState([]);
-  Renderarray=data;
+  Renderarray = data;
   const refreshDataTaskLable = () => setData(() => Renderarray);
   const [Title, setTitle] = React.useState();
   const [ComponentsData, setComponentsData] = React.useState([]);
@@ -346,7 +346,7 @@ function ComponentTable(SelectedProp: any) {
         }
         if (
           checkedList[0].Portfolio_x0020_Type === "Service" &&
-          checkedList[0].SharewebTaskType === undefined 
+          checkedList[0].SharewebTaskType === undefined
           // &&
           // checkedList[0] === undefined
         ) {
@@ -355,7 +355,7 @@ function ComponentTable(SelectedProp: any) {
         }
         if (
           checkedList[0].Portfolio_x0020_Type === "Component" &&
-          checkedList[0].SharewebTaskType === undefined 
+          checkedList[0].SharewebTaskType === undefined
           // &&
           // checkedList[0] == undefined
         ) {
@@ -1229,7 +1229,7 @@ function ComponentTable(SelectedProp: any) {
       // .filter("TaxType eq 'Client Category'")
       .expand("Parent")
       .get();
-      setAllClientCategory(smartmetaDetails?.filter((metadata:any)=>metadata?.TaxType=='Client Category'));
+    setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
     console.log(smartmetaDetails);
     setMetadata(smartmetaDetails);
 
@@ -2371,7 +2371,7 @@ function ComponentTable(SelectedProp: any) {
   };
 
   const Call = React.useCallback((childItem: any) => {
-    AllDataRender= []
+    AllDataRender = []
     setRowSelection({});
     closeTaskStatusUpdatePoup2();
     setIsComponent(false);
@@ -2533,8 +2533,8 @@ function ComponentTable(SelectedProp: any) {
           }
         });
         AllDataRender = AllDataRender?.concat(array);
-        Renderarray=[];
-        Renderarray=Renderarray.concat(AllDataRender);
+        Renderarray = [];
+        Renderarray = Renderarray.concat(AllDataRender);
         // setData((array) => array);
         refreshDataTaskLable();
         // rerender();
@@ -2633,60 +2633,6 @@ function ComponentTable(SelectedProp: any) {
 
 
 
-
-  const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel: any) => {
-    if (eTarget == true) {
-      setcheckData(getSelectedRowModel)
-      setShowTeamMemberOnCheck(true)
-    } else {
-      setcheckData([])
-      setShowTeamMemberOnCheck(false)
-    }
-    var Arrays: any = [];
-    const checked = eTarget;
-    if (checked == true) {
-      if (itrm.SharewebTaskType === undefined) {
-        setActivityDisable(false);
-        itrm["siteUrl"] = ContextValue?.siteUrl;
-        itrm["listName"] = "Master Tasks";
-        checkedList.push(itrm);
-      }
-      if (itrm.SharewebTaskType != undefined) {
-        if (
-          itrm?.SharewebTaskType?.Title === "Activities" || itrm.SharewebTaskType.Title === "Workstream") {
-          setActivityDisable(false);
-          itrm["siteUrl"] = ContextValue?.siteUrl;
-          // Arrays.push(itrm);
-          itrm["PortfolioId"] = child.Id;
-          childsData.push(itrm);
-        }
-      }
-      if (itrm?.SharewebTaskType != undefined) {
-        if (itrm?.SharewebTaskType?.Title == "Task") {
-          setActivityDisable(true);
-        }
-      }
-    }
-
-    // let list: any = [];
-    // var flag = true;
-    // if (flag) list.push(itrm);
-    // maidataBackup?.forEach((obj, index) => {
-    //   obj.isRestructureActive = false;
-    //   if (obj.childs != undefined && obj?.childs?.length > 0) {
-    //     obj?.childs?.forEach((sub: any, indexsub: any) => {
-    //       sub.isRestructureActive = false;
-    //       if (sub.childs != undefined && sub.childs.length > 0) {
-    //         sub?.childs?.forEach((newsub: any, lastIndex: any) => {
-    //           newsub.isRestructureActive = false;
-    //         });
-    //       }
-    //     });
-    //   }
-    // });
-    // setData((data) => [...maidataBackup]);
-    // setCheckedList((checkedList) => [...list]);
-  };
 
 
 
@@ -3392,95 +3338,95 @@ function ComponentTable(SelectedProp: any) {
 
   ///react table start function//////
   /////////////////////PopHover Structure ID///////////////////////////////
-  const column = React.useMemo<ColumnDef<any, unknown>[]>(
-    () => [
-      {
-        accessorKey: "",
-        size: 7,
-        canSort: false,
-        placeholder: "",
-        id: 'Shareweb_x0020_ID',
-        // header: ({ table }: any) => (
-        //   <>
-        //     <button className='border-0 bg-Ff'
-        //       {...{
-        //         onClick: table.getToggleAllRowsExpandedHandler(),
-        //       }}
-        //     >
-        //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-        //     </button>{" "}
-        //   </>
-        // ),
-        cell: ({ row, getValue }) => (
-          <div
-            style={row.getCanExpand() ? {
-              paddingLeft: `${row.depth * 5}px`,
-            } : {
-              paddingLeft: "18px",
-            }}
-          >
-            <>
-              {row.getCanExpand() ? (
-                <span className=' border-0'
-                  {...{
-                    onClick: row.getToggleExpandedHandler(),
-                    style: { cursor: "pointer" },
-                  }}
-                >
-                  {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                </span>
-              ) : (
-                ""
-              )}{" "}
+  // const column = React.useMemo<ColumnDef<any, unknown>[]>(
+  //   () => [
+  //     {
+  //       accessorKey: "",
+  //       size: 7,
+  //       canSort: false,
+  //       placeholder: "",
+  //       id: 'Shareweb_x0020_ID',
+  //       // header: ({ table }: any) => (
+  //       //   <>
+  //       //     <button className='border-0 bg-Ff'
+  //       //       {...{
+  //       //         onClick: table.getToggleAllRowsExpandedHandler(),
+  //       //       }}
+  //       //     >
+  //       //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+  //       //     </button>{" "}
+  //       //   </>
+  //       // ),
+  //       cell: ({ row, getValue }) => (
+  //         <div
+  //           style={row.getCanExpand() ? {
+  //             paddingLeft: `${row.depth * 5}px`,
+  //           } : {
+  //             paddingLeft: "18px",
+  //           }}
+  //         >
+  //           <>
+  //             {row.getCanExpand() ? (
+  //               <span className=' border-0'
+  //                 {...{
+  //                   onClick: row.getToggleExpandedHandler(),
+  //                   style: { cursor: "pointer" },
+  //                 }}
+  //               >
+  //                 {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+  //               </span>
+  //             ) : (
+  //               ""
+  //             )}{" "}
 
-              <> {row?.original?.siteIcon != undefined ?
-                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                  <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
-                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
-                <span>{row?.original?.Shareweb_x0020_ID}</span>
-              </>
-              {getValue()}
-            </>
-          </div>
-        ),
-      },
-      {
-        cell: ({ row }) => (
-          <>
-            <span>{row.original.Title}</span>
-          </>
-        ),
-        id: "Title",
-        canSort: false,
-        placeholder: "",
-        header: "",
-        size: 15,
-      }
-    ],
-    [data]
-  );
-  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+  //             <> {row?.original?.siteIcon != undefined ?
+  //               <a className="hreflink" title="Show All Child" data-toggle="modal">
+  //                 <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+  //               </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
+  //               <span>{row?.original?.Shareweb_x0020_ID}</span>
+  //             </>
+  //             {getValue()}
+  //           </>
+  //         </div>
+  //       ),
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span>{row.original.Title}</span>
+  //         </>
+  //       ),
+  //       id: "Title",
+  //       canSort: false,
+  //       placeholder: "",
+  //       header: "",
+  //       size: 15,
+  //     }
+  //   ],
+  //   [data]
+  // );
+  // const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
-  }, []);
+  // }, []);
 
-  const handleSuffixHover = (item: any) => {
-    if (item != undefined) {
-      popHoverDataGroup = globalCommon.PopHoverBasedOnTaskId(item)
+  // const handleSuffixHover = (item: any) => {
+  //   if (item != undefined) {
+  //     popHoverDataGroup = globalCommon.PopHoverBasedOnTaskId(item)
 
-    }
-    if (popHoverDataGroup != undefined && popHoverDataGroup?.length > 0) {
-      setPopHoverData((popHoverData) => popHoverDataGroup);
-      showPopHover = "block"
-    }
-    // setDisplay("block");
-  };
+  //   }
+  //   if (popHoverDataGroup != undefined && popHoverDataGroup?.length > 0) {
+  //     setPopHoverData((popHoverData) => popHoverDataGroup);
+  //     showPopHover = "block"
+  //   }
+  //   // setDisplay("block");
+  // };
 
-  const handleuffixLeave = (item: any) => {
-    popHoverDataGroup = [];
-    setPopHoverData([])
-    // setDisplay("none");
-    showPopHover = "none"
-  };
+  // const handleuffixLeave = (item: any) => {
+  //   popHoverDataGroup = [];
+  //   setPopHoverData([])
+  //   // setDisplay("none");
+  //   showPopHover = "none"
+  // };
 
 
 
@@ -3642,28 +3588,35 @@ function ComponentTable(SelectedProp: any) {
         placeholder: "",
         size: 145,
       },
+      // {
+      //   accessorFn: (row) => row?.Shareweb_x0020_ID,
+      //   cell: ({ row }) => (
+      //     <>
+      //       <div className="tooltipSec popover__wrapper me-1">
+      //         <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
+      //         <div className="popover__content" style={{ display: showPopHover }}>
+      //           <div>
+      //             <div className="tootltip-title">{row?.original?.Title}</div>
+      //             <button className="toolClose" onClick={(e) => handleuffixLeave(row)}><div className="popHoverCross">×</div></button>
+      //           </div>
+      //           <div className="tooltip-body">
+      //             {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
+      //           </div>
+      //         </div>
+      //       </div>
+      //     </>
+      //   ),
+      //   id: "Shareweb_x0020_ID",
+      //   placeholder: "ID",
+      //   header: "",
+      //   size: 130,
+      // },
       {
-        accessorFn: (row) => row?.Shareweb_x0020_ID,
-        cell: ({ row }) => (
-          <>
-            <div className="tooltipSec popover__wrapper me-1">
-              <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
-              <div className="popover__content" style={{ display: showPopHover }}>
-                <div>
-                  <div className="tootltip-title">{row?.original?.Title}</div>
-                  <button className="toolClose" onClick={(e) => handleuffixLeave(row)}><div className="popHoverCross">×</div></button>
-                </div>
-                <div className="tooltip-body">
-                  {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
-                </div>
-              </div>
-            </div>
-          </>
-        ),
-        id: "Shareweb_x0020_ID",
+        accessorKey: "Shareweb_x0020_ID",
         placeholder: "ID",
         header: "",
         size: 130,
+        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.Title,
@@ -3902,34 +3855,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-        // parentData = elem?.parentRow;
-        // parentDataCopy = elem?.parentRow?.original
-        parentDataCopy = elem?.getParentRows()[0]?.original;
-        // if (parentData != undefined && parentData?.parentRow != undefined) {
+          // parentData = elem?.parentRow;
+          // parentDataCopy = elem?.parentRow?.original
+          parentDataCopy = elem?.getParentRows()[0]?.original;
+          // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //   parentData = elem?.parentRow?.parentRow
-        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+          //   parentData = elem?.parentRow?.parentRow
+          //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        // }
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;

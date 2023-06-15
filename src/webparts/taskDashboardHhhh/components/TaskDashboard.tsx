@@ -159,32 +159,7 @@ const TaskDashboard = (props: any) => {
         displayDate.month = displayDate.fullDate.toLocaleString('en-GB', { month: 'long' });
         today = displayDate;
     }
-    const loadAdminConfigurations = async () => {
-        if (AllListId?.AdminConfigrationListID != undefined) {
-            try {
-                var CurrentSiteType = "";
-                let web = new Web(AllListId?.siteUrl)
-                await web.lists
-                    .getById(AllListId?.AdminConfigrationListID)
-                    .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
-                    .top(4999)
-                    .get().then((response) => {
-                        var SmartFavoritesConfig = [];
-                        $.each(response, function (index: any, smart: any) {
-                            if (smart.Configurations != undefined) {
-                                DataSiteIcon = JSON.parse(smart.Configurations);
-                            }
-                        });
-                    },
-                        function (error) { }
-                    );
-            } catch (e) {
-                console.log(e)
-            }
-        } else {
-            alert("Admin Configration List Id not present")
-        }
-    };
+
 
     //Item Exist 
     const checkUserExistence = (item: any, Array: any) => {
@@ -491,7 +466,7 @@ const TaskDashboard = (props: any) => {
                                         task.PortfolioTitle = task?.Services[0]?.Title;
                                         task["Portfoliotype"] = "Service";
                                     }
-                                    task["siteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                                    task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
                                     task.componentString =
                                         task.Component != undefined &&
@@ -623,7 +598,6 @@ const TaskDashboard = (props: any) => {
             .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
             .top(4999)
             .get().then((data) => {
-                console.log(data)
                 data?.forEach((val: any) => {
                     MyAllData.push(val)
                 })
@@ -647,7 +621,6 @@ const TaskDashboard = (props: any) => {
         inlineCallBack(item)
     }, []);
     const inlineCallBack = React.useCallback((item: any) => {
-        console.log(pageAll)
         AllTasks?.map((task: any, index: any) => {
             if (task?.Id == item?.Id && task?.siteType == item?.siteType) {
                 AllTasks[index] = { ...task, ...item };
@@ -783,9 +756,9 @@ const TaskDashboard = (props: any) => {
                                 ""
                             )}{" "}
 
-                            <> {row?.original?.siteIcon != undefined ?
+                            <> {row?.original?.SiteIcon != undefined ?
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
                             }
                                 <span>{row?.original?.PortfolioStructureID}</span></>
@@ -892,13 +865,13 @@ const TaskDashboard = (props: any) => {
             {
                 internalHeader: "Site",
                 accessor: 'siteType',
-                id: "siteIcon", // 'id' is required
+                id: "SiteIcon", // 'id' is required
                 showSortIcon: false,
                 style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        {row?.original?.siteIcon != undefined ?
-                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
+                        {row?.original?.SiteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
                     </span>
                 ),
             },
@@ -1069,13 +1042,13 @@ const TaskDashboard = (props: any) => {
             {
                 internalHeader: "Site",
                 accessor: 'siteType',
-                id: "siteIcon", // 'id' is required
+                id: "SiteIcon", // 'id' is required
                 showSortIcon: false,
                 style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        {row?.original?.siteIcon != undefined ?
-                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.siteIcon} /> : ''}
+                        {row?.original?.SiteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
                     </span>
                 ),
             },
@@ -1809,7 +1782,7 @@ const TaskDashboard = (props: any) => {
         let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
         if (confirmation) {
             if (input == 'today working tasks') {
-               
+
                 var subject = currentLoginUser + '-Today Working Tasks';
                 tasksCopy?.map((item: any) => {
                     let teamUsers: any = [];
@@ -1882,50 +1855,56 @@ const TaskDashboard = (props: any) => {
 
                 text =
                     '<tr>'
-                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.siteType + '</td>'
-                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item?.Shareweb_x0020_ID + '</td>'
-                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
-                    + '<td style="line-height:24px;font-size:13px;padding:15px;width:4%">' + item?.TaskTime + '</td>'
-                    + '<td style="line-height:24px;font-size:13px;padding:15px;width:55%">' + item?.Description + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.siteType + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.Shareweb_x0020_ID + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.TaskTime + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.Description + '</td>'
                 body1.push(text);
 
             });
             body =
-                
-                '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">' 
-                +'<thead>' 
-                +'<tr>' 
-                +'<th bgcolor="#f5f5f5" style="line-height:24px;font-size:15px;padding:15px;width:5%" colspan="3">'
-                +'<h2>'
-                + currentLoginUser + '- Today Time Entries'
-                + '</h2>'
-                +'</th>' 
-                +'</tr>' 
-                +'</thead>' 
-                +'<tbody>' 
-                +'<tr>' 
-                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="33%">Today' + '<br>' + timeSheetData.today + '</td>' 
-                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="34%">This Week' + '<br>' + timeSheetData.thisWeek + '</td>' 
-                +'<td style="line-height:24px;font-size:13px;padding:15px;" width="33%">This Month' + '<br>' + timeSheetData.thisMonth + '</td>' 
-                +'</tr>' 
-                +'</tbody>' 
-                +'</table >' 
-                + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                `
+            <table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
+            <thead>
+            <tr>
+            <th colspan="3" bgcolor="#eee" style="font-size:22px; padding:10px;"> Time report </th> 
+            </tr>
+            <tr>
+            <th colspan="3" align="center" valign="middle" style="font-size:18px; padding:10px;">
+            <p style="margin-top:0px; margin-bottom:5px">${currentLoginUser}</p>
+            </th>
+            </tr>
+            </thead>
+            <tbody style="border:1px solid #eee;">
+            <tr>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">Today</th>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This week</th>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;"><strong>This Month</strong></th>
+            </tr>
+            <tr>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.today} Hour</th>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisWeek} Hour</th>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisMonth} Hour</th>
+            </tr>
+            </tbody>
+            </table> `
+                + '<table style="border: 1px solid #ccc; margin-top:5px;" border="0" cellspacing="0" cellpadding="0" width="100%">'
                 + '<thead>'
                 + '<tr>'
-                + '<th bgcolor="#f5f5f5" style="line-height:24px;font-size:15px;padding:15px;width:5%">'
+                + '<th align="left"  bgcolor="#f5f5f5" style="line-height:18px;font-size:15px;padding:15px;width:5%">'
                 + 'Site'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
                 + 'Task ID'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
                 + 'Title'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
                 + 'Time'
                 + '</th>'
-                + '<th style="line-height:24px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
                 + 'Description'
                 + '</th>'
                 + '</tr>'
@@ -1936,8 +1915,8 @@ const TaskDashboard = (props: any) => {
                 + '</tr>'
                 + '</tbody>'
                 + '</table>'
-                + '<p>' + 'Click here to open the Complete time entry'+'<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=` + currentUserId + '</span>' + '</a>' + '</p>' 
-                + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '</span>' + '</a>' + '</p>'
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}` + '>Click here to open the Complete time entry' + '</a>' + '</p>'
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '>' + 'Click here to open Task Dashboard of ' + currentLoginUser + '</a>' + '</p>'
             body = body.replaceAll('>,<', '><')
         }
 
@@ -1972,6 +1951,9 @@ const TaskDashboard = (props: any) => {
         }).catch((err) => {
             console.log(err.message);
         });
+
+
+
     }
     const sendAllWorkingTodayTasks = () => {
 
@@ -2170,7 +2152,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
