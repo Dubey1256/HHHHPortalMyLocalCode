@@ -32,6 +32,7 @@ export interface ITaskprofileState {
   isOpenEditPopup: boolean;
   isTimeEntry: boolean,
   emailStatus: String,
+  countfeedback: any ,
   sendMail: boolean,
   showPopup: any;
 
@@ -50,6 +51,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   private site: any;
 
   count: number = 0;
+
   countemailbutton: number = 0;
   backGroundComment = false;
   this: any;
@@ -75,6 +77,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       isopenversionHistory: false,
       isTimeEntry: false,
       emailStatus: "",
+      countfeedback:0,
       // TaskIdHover:"",
       sendMail: false,
       showPopup: 'none',
@@ -732,7 +735,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   private CallBack() {
     this.setState({
-      isOpenEditPopup: false
+      isOpenEditPopup: false,
+      countfeedback: this.state.countfeedback+1
     })
     this.GetResult();
   }
@@ -1142,7 +1146,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined ||breadcrumbitem.Subchild==undefined &&breadcrumbitem.Subchild == undefined&&
+                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined ||breadcrumbitem.Subchild==undefined || breadcrumbitem.Subchild == undefined||breadcrumbitem. Parentitem!=undefined && 
                       <li>
                         <a >
                           <span>{this.state.Result['Title']}</span>
@@ -1450,7 +1454,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                        this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != '' &&
+                        this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != ''&& this.state.countfeedback>=0 &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             let userdisplay: any = [];
@@ -1460,10 +1464,13 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                               try {
                                 if (fbData?.Title != undefined) {
                                   fbData.Title = fbData?.Title?.replace(/\n/g, '<br/>');
+                                  
                                 }
                               } catch (e) {
                               }
-                              return <TaskFeedbackCard feedback={fbData} index={i + 1}
+                              return (
+                                <>
+                              <TaskFeedbackCard feedback={...fbData} index={i + 1}
                                 onPost={() => { this.onPost() }}
                                 // approvalcallbacktask={() => { this.approvalcallbackfeedback() }}
                                 fullfeedback={this.state.Result["FeedBack"]}
@@ -1475,6 +1482,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                               >
                               </TaskFeedbackCard>
+
+                              {console.log("You")}
+                              </>
+                              )
+                              
                             }
                           })}
                         </div>
@@ -1571,9 +1583,10 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             {/* {this.state.Result?.Portfolio_x0020_Type!=undefined &&<TaskWebparts props={this.state.Result}/>} */}
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
-                <div>Created <span >{this.ConvertLocalTOServerDate(this.state.Result['Creation'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
+                
+                <div>Created <span >{moment(this.state.Result['Creation']).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                 </div>
-                <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY HH:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
+                <div>Last modified <span >{moment(this.state.Result['Modified']).tz("Europe/Berlin").format('DD MMM YYYY HH:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
                   <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                 </div>
               </div>
