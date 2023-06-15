@@ -354,7 +354,7 @@ const CreateWS = (props: any) => {
             Priority: AllItems.Priority,
             Body: AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+            DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
             SharewebTaskTypeId: SharewebTasknewTypeId,
             Shareweb_x0020_ID: SharewebID,
             SharewebTaskLevel2No: WorstreamLatestId,
@@ -369,14 +369,42 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
-                    res.data['siteType'] = AllItems.siteType
-                res.data['Shareweb_x0020_ID'] = SharewebID,
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+                      
+                    })
                 }
-                res.Item_x0020_Type=""
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+                        
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+                        
+                    })
+                }
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
+                    res.data['siteType'] = AllItems.siteType
+                res.data['Shareweb_x0020_ID'] = SharewebID
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -385,14 +413,9 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
-                }
-                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -574,7 +597,7 @@ const CreateWS = (props: any) => {
                 SharewebTaskTypeId: SharewebTasknewTypeId,
                 Body: AllItems.Description,
                 // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy"): '',
+                DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
                 Shareweb_x0020_ID: SharewebID,
                 Priority: AllItems.Priority,
                 //SharewebTaskLevel2No: WorstreamLatestId,
@@ -588,15 +611,43 @@ const CreateWS = (props: any) => {
                 res.data['SiteIcon'] = AllItems.SiteIcon
                 res.data['listId'] = AllItems.listId
                 res.data['SharewebTaskType'] = { Title: 'Workstream' }
+                res.data.AssignedTo = []
+                res.data.Responsible_x0020_Team = []
+                res.data.Team_x0020_Members = []
+                if (res?.data?.Team_x0020_MembersId?.length > 0) {
+                    res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.Team_x0020_Members.push(User?.AssingedToUser)
+                            }
+                        })
+                      
+                    })
+                }
+                if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
+                    res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
+                            }
+                        })
+                        
+                    })
+                }
+                if (res?.data?.AssignedToId?.length > 0) {
+                    res.data?.AssignedToId?.map((teamUser: any) => {
+                        let elementFound = props?.TaskUsers?.filter((User: any) => {
+                           if(User?.AssingedToUser?.Id == teamUser){
+                                res.data.AssignedTo.push(User?.AssingedToUser)
+                            }
+                        })
+                        
+                    })
+                }
                 // res.DueDate = NewDate != '' && NewDate != undefined ? NewDate : undefined,
-                res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
+                res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.Created=new Date();
-                res.data.Author={
-                    Id: res?.data?.AuthorId
-                }
-                res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })
         }
@@ -653,7 +704,7 @@ const CreateWS = (props: any) => {
     // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -701,20 +752,20 @@ const CreateWS = (props: any) => {
         if (item == 'Today') {
             setMyDate({ ...myDate, editDate: dates, selectDateName: item });
         }
-         if (item == 'Tomorrow') {
+        if (item == 'Tomorrow') {
             setMyDate({ ...myDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item })
         }
-         if (item == 'This Week') {
+        if (item == 'This Week') {
             setMyDate({ ...myDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
-         if (item == 'This Month') {
+        if (item == 'This Month') {
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);
-            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item  });
+            setMyDate({ ...myDate, editDate: lastDay, selectDateName: item });
         }
     }
 
-    React.useEffect(()=>{
-        if(myDate?.editDate == undefined || myDate.editDate == null){
+    React.useEffect(() => {
+        if (myDate?.editDate == undefined || myDate.editDate == null) {
             let dates = new Date();
             setMyDate({ ...myDate, editDate: dates, selectDateName: "Today" });
         }
@@ -723,7 +774,7 @@ const CreateWS = (props: any) => {
     const AddchildItem = () => {
         setShowChildData(true)
         setInputFields([...inputFields, {
-            Title:'',
+            Title: '',
             ItemRank: '',
             Priority: '',
             DueDate: '',
@@ -872,7 +923,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
@@ -1052,25 +1103,25 @@ const CreateWS = (props: any) => {
 
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Today'} onClick={(e: any) => SelectDate('Today')} />Today
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'Tomorrow'} onClick={(e: any) => SelectDate('Tomorrow')} />Tomorrow
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Week'} onClick={(e: any) => SelectDate('This Week')} />This Week
                                 </label>
                             </div>
                             <div className="">
                                 <label>
-                                    <input className="form-check-input me-1" name="radioPriority2"
+                                    <input className="form-check-input me-1" name="radioPriority"
                                         type="radio" value="(3) Low" checked={myDate.selectDateName == 'This Month'} onClick={(e: any) => SelectDate('This Month')} />This Month
                                 </label>
                             </div>
@@ -1080,7 +1131,7 @@ const CreateWS = (props: any) => {
 
                     </div>
                     <div className='row mt-2'>
-                      {AllItems!=undefined && dynamicList!=undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
+                        {AllItems != undefined && dynamicList != undefined && <TeamConfigurationCard ItemInfo={AllItems} AllListId={dynamicList} parentCallback={DDComponentCallBack}></TeamConfigurationCard>}
                     </div>
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
@@ -1097,13 +1148,13 @@ const CreateWS = (props: any) => {
                             const { Priority, DueDate, ItemRank, Description } = data;
                             return (
                                 <div>
-                                      
-                                      <div className="col-sm-8 pad0">
-                            <label className="full-width"></label>
-                            <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title"  onChange={(e: any) => AllItems.Title = e.target.value}
-                            />
-                        </div>
+
+                                    <div className="col-sm-8 pad0">
+                                        <label className="full-width"></label>
+                                        <input className="full-width" type="text"
+                                            placeholder="Enter Child Item Title" onChange={(e: any) => AllItems.Title = e.target.value}
+                                        />
+                                    </div>
                                     <div className="row my-3" key={index}>
                                         <div className="col-sm-4">
                                             <fieldset>

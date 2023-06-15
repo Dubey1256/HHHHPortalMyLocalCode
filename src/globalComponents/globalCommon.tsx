@@ -22,12 +22,13 @@ export const pageContext = async () => {
 
 
 export const PopHoverBasedOnTaskId = (item: any) => {
-    if(item?.original?.subRows?.length > 0 ){
-        delete item?.original?.subRows;
+    let returnObj={...item}
+    if(returnObj?.original?.subRows?.length > 0 ){
+        delete returnObj?.original?.subRows;
     }
     //    let structur= item?.original?.Title;
     //     let structureId=item?.original?.Shareweb_x0020_ID
-       let structur= [item?.original];
+       let structur= [returnObj?.original];
        let finalArray:any=[];
         try {
             // let parent = item?.parentRow;
@@ -36,7 +37,7 @@ export const PopHoverBasedOnTaskId = (item: any) => {
             //     structureId=parent?.original?.structureId+'-'+ structureId;
             //     parent=parent?.parentRow;
             // }
-             let parent = item?.getParentRow();
+             let parent = returnObj?.getParentRow();
             while(parent){
                 structur.push(parent?.original);
                 parent=parent?.getParentRow();
@@ -450,7 +451,7 @@ export const hierarchyData= (items:any,MyAllData:any)=>{
             
             //  finalData = AllData.filter((val: any, id: any, array: any) => {
 
-            //     return array.indexOf(val) == id;
+            //     return array.indexOf(val) == id;
             // })
         }
     }
@@ -1725,4 +1726,30 @@ const AllTaskUsers = async (siteUrl: any, ListId: any) => {
         return (error);
     }
     return taskUser;
+}
+
+export const ArrayCopy = async (array: any) => {
+
+    let MainArray = [];
+
+    if (array != undefined && array.length != undefined) {
+
+        MainArray = parseJSON(JSON.stringify(array));
+
+    }
+
+    return MainArray;
+
+}
+
+export const getParameterByName = async (name: any) => {
+
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+
+        results = regex.exec(location.search);
+
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+
 }

@@ -159,7 +159,7 @@ const TaskDashboard = (props: any) => {
         displayDate.month = displayDate.fullDate.toLocaleString('en-GB', { month: 'long' });
         today = displayDate;
     }
-  
+
 
     //Item Exist 
     const checkUserExistence = (item: any, Array: any) => {
@@ -1953,7 +1953,7 @@ const TaskDashboard = (props: any) => {
         });
 
 
-        
+
     }
     const sendAllWorkingTodayTasks = () => {
 
@@ -2152,7 +2152,7 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
-                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek" || currentUserData?.Title == "Prashant Kumar" ?
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}

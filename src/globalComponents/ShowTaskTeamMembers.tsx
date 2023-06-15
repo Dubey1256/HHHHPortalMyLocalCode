@@ -195,7 +195,7 @@ function ShowTaskTeamMembers(item: any) {
             ) : (
               ""
             )}
-            {item?.Context?.dropdownvalue != 'Service Portfolio' && item?.Context?.dropdownvalue != 'Component Portfolio' && item?.Context?.dropdownvalue != 'Events Portfolio' ?<div>
+            {/* {item?.ShowTeamsIcon != false ? <div>
               {ItemNew?.allMembersEmail != null ? (
                 <span style={{ marginLeft: '5px' }} >
                   <a
@@ -208,7 +208,7 @@ function ShowTaskTeamMembers(item: any) {
               ) : (
                 ""
               )}
-            </div>:''}
+            </div>:''} */}
           </div>
         ) : (
           ""
