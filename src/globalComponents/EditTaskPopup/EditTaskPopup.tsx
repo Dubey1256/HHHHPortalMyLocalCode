@@ -197,9 +197,9 @@ const EditTaskPopup = (Items: any) => {
     }
     React.useEffect(() => {
         loadTaskUsers();
-        getCurrentUserDetails();
         GetExtraLookupColumnData();
         getAllSitesData();
+        // getCurrentUserDetails();
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
         GetMasterData();
@@ -1413,6 +1413,7 @@ const EditTaskPopup = (Items: any) => {
     var count = 0;
     const loadTaskUsers = async () => {
         var AllTaskUsers: any = []
+        let currentUserId = Context.pageContext._legacyPageContext.userId
         axios.get(`${siteUrls}/_api/web/lists/getbyid('${AllListIdData?.TaskUsertListID}')/items?$select=Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver&$orderby=SortOrder asc,Title asc`)
             .then((response: AxiosResponse) => {
                 taskUsers = response.data.value;
@@ -1431,6 +1432,17 @@ const EditTaskPopup = (Items: any) => {
                         }
                         AllTaskUsers.push(user);
                     }
+                    if (user.AssingedToUserId == currentUserId) {
+                        let temp: any = [];
+                        temp.push(user)
+                        setCurrentUserData(temp);
+                        console.log("Current User Details =======", user)
+                        currentUserBackupArray.push(user);
+                        if (user.UserGroupId == 7) {
+                            setIsUserFromHHHHTeam(true);
+                        }
+                    }
+                    
                 });
                 if (AllMetaData != undefined && AllMetaData?.length > 0) {
                     GetSelectedTaskDetails();
@@ -1443,28 +1455,27 @@ const EditTaskPopup = (Items: any) => {
 
     // **************** this is for Getting current user Data ************* 
 
-    const getCurrentUserDetails = async () => {
-        let currentUserId: number;
-        await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
-        if (currentUserId != undefined) {
-            if (taskUsers != null && taskUsers?.length > 0) {
-                taskUsers?.map((userData: any) => {
-                    if (userData.AssingedToUserId == currentUserId) {
-                        let temp: any = [];
-                        temp.push(userData)
-                        let CreentUserDataObject:any ={
-
-                        }
-                        setCurrentUserData(temp);
-                        currentUserBackupArray.push(userData);
-                        if (userData.UserGroupId == 7) {
-                            setIsUserFromHHHHTeam(true);
-                        }
-                    }
-                })
-            }
-        }
-    }
+    // const getCurrentUserDetails = async () => {
+    //     console.log("This is getting current your details functions =======================")
+    //     let currentUserId = Context.pageContext._legacyPageContext.userId
+    //     // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+    //     if (currentUserId != undefined) {
+    //         if (taskUsers != null && taskUsers?.length > 0) {
+    //             taskUsers?.map((userData: any) => {
+    //                 if (userData.AssingedToUserId == currentUserId) {
+    //                     let temp: any = [];
+    //                     temp.push(userData)
+    //                     setCurrentUserData(temp);
+    //                     console.log("Current User Details =======", userData)
+    //                     currentUserBackupArray.push(userData);
+    //                     if (userData.UserGroupId == 7) {
+    //                         setIsUserFromHHHHTeam(true);
+    //                     }
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
 
     // ********** this is for Getting All  Employees Data For Approval Function and Approval Popup  *******************
 
@@ -2599,8 +2610,8 @@ const EditTaskPopup = (Items: any) => {
                 let imageIndex = index + 1
                 fileName = 'Image' + imageIndex + "-" + EditData.Title + " " + EditData.Title + timeStamp + ".jpg";
                 let currentUserDataObject:any ;
-                if(currentUserData != null && currentUserData.length > 0){
-                    currentUserDataObject = currentUserData[0];
+                if(currentUserBackupArray != null && currentUserBackupArray.length > 0){
+                    currentUserDataObject = currentUserBackupArray[0];
                 }
                 let ImgArray = {
                     ImageName: fileName,
@@ -3051,14 +3062,6 @@ const EditTaskPopup = (Items: any) => {
         headerGroups,
         page,
         prepareRow,
-        visibleColumns,
-        canPreviousPage,
-        canNextPage,
-        pageOptions,
-        pageCount,
-        gotoPage,
-        nextPage,
-        previousPage,
         setPageSize,
         state: { pageIndex, pageSize },
     }: any = useTable(
@@ -4305,7 +4308,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} itemID={ Items.Items.Id} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -4456,7 +4459,6 @@ const EditTaskPopup = (Items: any) => {
                                                 data={EditData.FeedBackArray}
                                                 callBack={CommentSectionCallBack}
                                                 allUsers={taskUsers}
-                                                itemID={ Items.Items.Id}
                                                 ApprovalStatus={ApprovalStatus}
                                                 SmartLightStatus={SmartLightStatus}
                                                 SmartLightPercentStatus={SmartLightPercentStatus}
