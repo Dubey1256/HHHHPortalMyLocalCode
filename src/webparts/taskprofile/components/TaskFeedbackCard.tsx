@@ -428,7 +428,7 @@ private async changeTrafficLigth  (index:any,item:any){
    });
   
    console.log(this.state?.fbData);
-    await this.onPost("trafficlight",index-1,null);
+    await this.onPost("trafficlight",index-1,null,tempData);
     if(this.props.fullfeedback!=undefined){
       await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,item,tempData);
       
@@ -465,7 +465,7 @@ private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status
      emailComponentstatus:status
   });
   console.log(this.state.emailcomponentopen)
-  await this.onPost("trafficlightSubtext",parentindex-1,subchileindex);
+  await this.onPost("trafficlightSubtext",parentindex-1,subchileindex,tempData);
   
   if(this.props.fullfeedback!=undefined){
   await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,status,tempData?.Subtext[subchileindex]);
@@ -473,19 +473,19 @@ private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status
    }
   }
 
-private async onPost (trafficlight:any,parentindex:any,subchileindex:any){
+private async onPost (trafficlight:any,parentindex:any,subchileindex:any,tempData:any){
  let fullfeedbackbackup:any=this.props?.fullfeedback
 if(trafficlight=="trafficlight"){
   fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
   if(indexfeedback===parentindex){
-    fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,this.state.fbData);
+    fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
   }
   })
 }
 if(trafficlight=="trafficlightSubtext"){
   fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
     if(indexfeedback===parentindex){
-     fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,this.state.fbData);
+     fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
     }
     })
 }
