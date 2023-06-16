@@ -256,15 +256,16 @@ function Tooltip(props: any) {
     <>
       <Popup
         trigger={
-          <button type='button' className='burgerMenu'><BiMenu /></button>
+          <button type='button' className='burgerMenu'><span className="svg__iconbox svg__icon--burgerMenu"></span></button>
         }
         position="left top"
         on="hover"
         closeOnDocumentClick
         mouseLeaveDelay={300}
         mouseEnterDelay={0}
-        contentStyle={{ padding: '0px', border: '1px' }}
+        // contentStyle={{ padding: '0px', border: '1px' }}
         arrow={false}
+        className='feedbackpanel'
       >
         {/* {isShown && ( */}
         <div className='dropdown-menu show dropdown-menu-end toolmenu'>
