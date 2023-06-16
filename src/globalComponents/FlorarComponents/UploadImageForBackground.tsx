@@ -16,6 +16,7 @@ export interface ITeamConfigurationProps {
 const froalaEditorConfig = {
     heightMin: 230,
     heightMax: 500,
+    // width:250,
     pastePlain: true,
     wordPasteModal: false,
     listAdvancedTypes: false,
@@ -30,11 +31,14 @@ const froalaEditorConfig = {
         "image.beforeUpload": function (files: any, arg1: any, arg2: any) {
             var editor = this;
             if (files.length) {
+                // Create a File Reader.
                 var reader = new FileReader();
+                // Set the reader to insert images when they are loaded.
                 reader.onload = (e) => {
                     var result = e.target.result;
                     editor.image.insert(result, null, null, editor.image.get());
                 };
+                // Read image as base64.
                 reader.readAsDataURL(files[0]);
                 let data = files[0]
                 var reader = new FileReader();
@@ -90,5 +94,4 @@ export default class App extends React.Component<ITeamConfigurationProps> {
         let elem = document.createElement("img");
         elem.innerHTML = edData;
     };
-   
 }

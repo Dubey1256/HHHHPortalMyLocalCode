@@ -34,6 +34,7 @@ var TimeSheetlistId = ''
 var TimeSheets: any = []
 var MigrationListId = ''
 var siteUrl = ''
+var PortfolioType = ''
 var listName = ''
 var RelativeUrl: any = ''
 var CurrentSiteUrl: any = ''
@@ -46,6 +47,7 @@ var change: any = new Date()
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
+    PortfolioType = item.props.Portfolio_x0020_Type
     CurntUserId = item.Context.pageContext._legacyPageContext.userId
     CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
     RelativeUrl = item.Context.pageContext.web.serverRelativeUrl
@@ -56,7 +58,7 @@ function TimeEntryPopup(item: any) {
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
-    const [disabled, setDisabled] = React.useState(false);
+    const [flatview, setFlatview] = React.useState(false);
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [open, setOpen] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -66,8 +68,9 @@ function TimeEntryPopup(item: any) {
     const [CopyTaskpopup, setCopyTaskpopup] = React.useState(false);
     const [AddTaskTimepopup, setAddTaskTimepopup] = React.useState(false);
     const [TimeSheet, setTimeSheets] = React.useState([])
-    const [changeDates, setchangeDates] = React.useState(Moment().format())
-    //const [changeDates, setchangeDates] = React.useState(new Date())
+   // const [myDatee, setMyDatee] = React.useState(Moment().format())
+    const [myDatee, setMyDatee] = React.useState<any>(new Date())
+    //const [myDatee, setMyDatee] = React.useState(new Date())
     const [changeTimeAdd, setchangeTimeAdd] = React.useState()
     const [AdditionalTime, setAdditionalTime] = React.useState([])
     const [count, setCount] = React.useState(1)
@@ -86,7 +89,7 @@ function TimeEntryPopup(item: any) {
     const [checkCategories, setcheckCategories] = React.useState()
     const [updateData, setupdateData] = React.useState(0)
     const [updateData2, setupdateData2] = React.useState(0)
-    const [editeddata, setediteddata] = React.useState('')
+    const [editeddata, setediteddata] = React.useState<any>('')
     const [editTime, seteditTime] = React.useState('')
     const [year, setYear] = React.useState(1)
     const [years, setYears] = React.useState(1)
@@ -119,8 +122,8 @@ function TimeEntryPopup(item: any) {
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .select("Id,Title")
-            .getAll(4999);
+            .filter(`Title eq '${CurrentUserTitle}'`)
+            .getAll();
             AllTimeEntry = taskUsers;
            
     }
@@ -137,12 +140,18 @@ function TimeEntryPopup(item: any) {
             setCount(count + 1)
             var dateeee = change != undefined && change != '' ? change : ''
             change = (Moment(dateeee).add(1, 'days').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(1, 'days').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
+              
+              
+
             }
 
 
@@ -151,12 +160,17 @@ function TimeEntryPopup(item: any) {
         if (val === 'month') {
             setMonth(month + 1)
             change = (Moment(change).add(1, 'months').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            //setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(1, 'months').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+                //setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
 
             }
         }
@@ -165,12 +179,17 @@ function TimeEntryPopup(item: any) {
         if (val === 'Year') {
             setYear(year + 1)
             change = (Moment(change).add(1, 'years').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
+           // setMyDatee(change)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(1, 'years').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+               // setediteddata(editaskk)
+               var inputDate = new Date(editaskk)
+               setediteddata(inputDate)
 
             }
         }
@@ -193,36 +212,45 @@ function TimeEntryPopup(item: any) {
             // setCount(count - 1)
             var dateeee = change != undefined && change != '' ? change : ''
             change = (Moment(dateeee).add(-1, 'days').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(-1, 'days').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
             }
         }
         if (val === 'month') {
             // setMonth(month - 1)
             change = (Moment(change).add(-1, 'months').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(-1, 'months').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
 
             }
         }
         if (val === 'year') {
             //setYear(year - 1)
             change = (Moment(change).add(-1, 'years').format())
-            setchangeDates(change)
+            setMyDatee(change)
+            var inputDate = new Date(change)
+            setMyDatee(inputDate)
 
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(-1, 'years').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-                setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
 
             }
         }
@@ -400,8 +428,8 @@ function TimeEntryPopup(item: any) {
         //    }
 
     }
-    const openTaskStatusUpdatePoup = () => {
-        getAllTime();
+    const openTaskStatusUpdatePoup = async() => {
+      
         AllUsers.forEach((val: any) => {
             TimeSheet.forEach((time: any) => {
                 if (val.AssingedToUserId == CurntUserId) {
@@ -415,6 +443,7 @@ function TimeEntryPopup(item: any) {
             })
         })
         setTaskStatuspopup(true)
+        await getAllTime();
     }
     const Editcategorypopup = (child: any) => {
         var array: any = []
@@ -436,7 +465,8 @@ function TimeEntryPopup(item: any) {
         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
-        setediteddata(Eyd)
+        var inputDate:any = new Date(Eyd)
+        setediteddata(inputDate)
         var Array: any = []
         var Childitem: any = []
         Array.push(childitem)
@@ -465,7 +495,9 @@ function TimeEntryPopup(item: any) {
         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
-        setediteddata(Eyd)
+        var inputDate:any = new Date(Eyd)
+        setediteddata(inputDate)
+        //setediteddata(Eyd)
         var Array: any = []
         var Childitem: any = []
         setTaskStatuspopup2(true)
@@ -483,14 +515,14 @@ function TimeEntryPopup(item: any) {
         setTimeInHours(0)
         setNewData(undefined)
         setTimeInMinutes(0)
-        setchangeDates(undefined)
+        setMyDatee(undefined)
         setediteddata(undefined)
         changeTime = 0;
         setCount(1)
         change = Moment().format()
         setMonth(1)
         setYear(1)
-        setchangeDates(Moment().format(''))
+        setMyDatee(new Date())
     }
     const closeCopyTaskpopup = () => {
         setCopyTaskpopup(false)
@@ -503,8 +535,8 @@ function TimeEntryPopup(item: any) {
         setMonth(1)
         setYear(1)
         changeTime = 0;
-        setchangeDates(Moment().format(''))
-        setchangeDates(undefined)
+        //setMyDatee(undefined)
+        setMyDatee(new Date())
         setPostData(undefined)
     }
     const closeAddTaskTimepopup = () => {
@@ -518,8 +550,8 @@ function TimeEntryPopup(item: any) {
         setMonth(1)
         setYear(1)
         changeTime = 0;
-        setchangeDates(Moment().format(''))
-        setchangeDates(undefined)
+        setMyDatee(new Date())
+        //setMyDatee(undefined)
         setPostData(undefined)
     }
     const closeTaskStatusUpdatePoup2 = () => {
@@ -528,14 +560,14 @@ function TimeEntryPopup(item: any) {
         setediteddata(undefined)
         setNewData(undefined)
         setTimeInHours(0)
-        setchangeDates(undefined)
+        setMyDatee(undefined)
         change = Moment().format()
         setTimeInMinutes(0)
         setCount(1)
         setMonth(1)
         setYear(1)
         changeTime = 0;
-        setchangeDates(Moment().format())
+        setMyDatee(new Date())
         setediteddata(undefined)
     }
     const changeTimesDec = (items: any) => {
@@ -615,7 +647,7 @@ function TimeEntryPopup(item: any) {
     // React.useEffect(() => {
     //     changeDate((e: any) => e);
 
-    // }, [changeDates,TaskCate])
+    // }, [myDatee,TaskCate])
 
     var AllMetadata: [] = [];
     const GetSmartMetadata = async () => {
@@ -1073,7 +1105,7 @@ function TimeEntryPopup(item: any) {
                                     }
 
                                 });
-                                var Datee: any = new Date(changeDates)
+                                var Datee: any = new Date(myDatee)
                                 if (Datee == 'Invalid Date') {
                                     Datee = Moment().format()
                                 }
@@ -1587,7 +1619,7 @@ if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
         
     })
 }
-if(Available == false){
+if(AllTimeEntry.length == 0 && Available == false){
     GetOrCreateFolder(CurrentUserTitle, UpdatedData, CurrentSiteUrl, listName)
 }
     }
@@ -1747,7 +1779,6 @@ if(Available == false){
             .items
             .add({ ...itemMetadataAdded });
         console.log(newdata)
-        AllTimeEntry=[]
         let movedata = await web
             .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
             .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
@@ -1797,7 +1828,7 @@ if(Available == false){
                     update['ParentID'] = AddParentId;
                     update['TaskTime'] = TimeInHours;
                     update['TaskTimeInMin'] = TimeInMinutes;
-                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
+                    update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
                     update['Description'] = postData.Description
                     items.AdditionalTime.push(update)
                     UpdatedData = items.AdditionalTime
@@ -1812,7 +1843,7 @@ if(Available == false){
                     update['ParentID'] = items.Id;
                     update['TaskTime'] = TimeInHours;
                     update['TaskTimeInMin'] = TimeInMinutes;
-                    update['TaskDate'] = Moment(changeDates).format('DD/MM/YYYY');
+                    update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
                     update['Description'] = postData.Description
                     items.AdditionalTime.push(update)
                     UpdatedData = items.AdditionalTime
@@ -2083,8 +2114,8 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+                //setMyDatee(finalDate)
+                setediteddata(change)
             }
             if (type == '15thdate') {
                 var a1 = date.split("/");
@@ -2092,8 +2123,8 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+               // setMyDatee(finalDate)
+                setediteddata(change)
             }
             if (type == '1Jandate') {
                 var a1 = date.split("/");
@@ -2102,8 +2133,8 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+                //setMyDatee(finalDate)
+                setediteddata(change)
             }
             if (type == 'Today') {
                 var newStartDate: any = Moment().format("DD/MM/YYYY")
@@ -2111,8 +2142,8 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+                //setMyDatee(finalDate)
+                setediteddata(change)
             }
         }
         if (Popup == 'Add') {
@@ -2124,8 +2155,10 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+               // setMyDatee(finalDate)
+                //setediteddata(finalDate)
+               // var inputDate = new Date(a1)
+                setMyDatee(change)
             }
             if (type == '15thdate') {
 
@@ -2135,8 +2168,10 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 let finalDate: any = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+               // setMyDatee(finalDate)
+               // setediteddata(finalDate)
+               // var inputDate = new Date(a1)
+                setMyDatee(change)
             }
             if (type == '1Jandate') {
 
@@ -2147,8 +2182,10 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+                //setMyDatee(finalDate)
+                //setediteddata(finalDate)
+               // var inputDate = new Date(a1)
+                setMyDatee(change)
             }
             if (type == 'Today') {
                 var newStartDate: any = Moment().format("DD/MM/YYYY")
@@ -2156,8 +2193,10 @@ if(Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-                setchangeDates(finalDate)
-                setediteddata(finalDate)
+                //setMyDatee(finalDate)
+                //setediteddata(finalDate)
+                //var inputDate = new Date(a1)
+                setMyDatee(change)
             }
         }
 
@@ -2171,10 +2210,11 @@ if(Available == false){
     }
     const handleDatedue = (date: any) => {
         change = new window.Date(date)
-        var NewDate = new window.Date(date).toString()
-        var FinalDate = moment(NewDate).format("ddd, DD MMM yyyy")
-        setchangeDates(FinalDate)
-        setediteddata(FinalDate)
+        var NewDate:any = new window.Date(date)
+       // var FinalDate = moment(NewDate).format("ddd, DD MMM yyyy")
+        setMyDatee(NewDate)
+        //setMyDatee(NewDate)
+        setediteddata(NewDate)
     }
     const handleOnBlur = (event: any) => {
         setNewData({ ...newData, TaskDate: event.target.value })
@@ -2183,20 +2223,28 @@ if(Available == false){
         Date.toLocaleString(), []);
 
     return (
-        <div>
-            <div className="container mt-0 p-0">
+        <div className={PortfolioType=='Service'?'serviepannelgreena':''}>
+            <div>
                 <div className="col-sm-12 p-0">
                     <span ng-if="Item!=undefined">
 
                     </span>
                     <div className="col-sm-12 p-0 mt-10">
-                        <div className="col-sm-12 ps-0 pr-5 TimeTabBox">
+                        <div className="col-sm-12 ps-0 pr-5 TimeTabBox mt-2">
                             <a className="hreflink pull-right mt-1 mr-0" onClick={openTaskStatusUpdatePoup}>
 
                                 + Add Time in New Structure
                             </a>
+                            <div>
+                            <input type = "checkbox" className="hreflink pull-Left mt-1 me-1" onChange={()=>setFlatview(!flatview)}/>
+
+                              FlatView
+                            
 
                         </div>
+
+                        </div>
+                       
 
                     </div>
                 </div>
@@ -2286,33 +2334,37 @@ if(Available == false){
                                                                         return (
 
                                                                             <>
+                                                                            {
+                                                                                flatview == false &&
                                                                                 <tr >
 
-                                                                                    <td className="p-0" colSpan={9}>
-                                                                                        <table className="table m-0" style={{ width: "100%" }}>
-                                                                                            <tr className="for-c02">
-                                                                                                <td style={{ width: "2%" }}>
+                                                                                <td className="p-0" colSpan={9}>
+                                                                                    <table className="table m-0" style={{ width: "100%" }}>
+                                                                                        <tr className="for-c02 AddTime">
+                                                                                            <td style={{ width: "2%" }}>
 
-                                                                                                    <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Downarrowicon-green.png" />
-                                                                                                        : <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Rightarrowicon-green.png" />}
-                                                                                                    </div>
-                                                                                                </td>
+                                                                                                <div className="sign" onClick={() => handleTimeOpen(childitem)}>{childitem.AdditionalTime.length > 0 && childitem.show ? <span className='svg__iconbox svg__icon--GroupDown '></span>
+                                                                                                    :<span className='svg__iconbox svg__icon--GroupRight '></span>}
+                                                                                                </div>
+                                                                                            </td>
 
-                                                                                                <td colSpan={6} style={{ width: "90%" }}>
-                                                                                                    <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross" onClick={() => deleteCategory(childitem)}></span></span>
+                                                                                            <td colSpan={6} style={{ width: "90%" }}>
+                                                                                                <span className='d-flex'>{item.Title} - {childitem.Title}    <span className="svg__iconbox svg__icon--edit" onClick={() => Editcategorypopup(childitem)}></span>    <span className="svg__iconbox svg__icon--cross" onClick={() => deleteCategory(childitem)}></span></span>
 
-                                                                                                </td>
-                                                                                                <td style={{ width: "8%" }}>
-                                                                                                    <button type="button" className="btn btn-primary me-1 d-flex " onClick={() => openAddTasktimepopup(childitem)} >
-                                                                                                        Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
+                                                                                            </td>
+                                                                                            <td style={{ width: "7.7%" }}>
+                                                                                                <button type="button" className="btn btn-primary me-1 d-flex " onClick={() => openAddTasktimepopup(childitem)} >
+                                                                                                    Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
 
-                                                                                                    </button>
-                                                                                                </td>
+                                                                                                </button>
+                                                                                            </td>
 
-                                                                                            </tr>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                            }
+                                                                               
 
                                                                                 {childitem.AdditionalTime != undefined && childitem.show && childitem.AdditionalTime.length > 0 && (
                                                                                     <>
@@ -2364,7 +2416,7 @@ if(Available == false){
 
                                                                                                                         </a></td>
                                                                                                                         <td style={{ width: "2%" }}>  <a title="Delete" className="hreflink">
-                                                                                                                            <span className="mt-1 svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(childinew)}></span>
+                                                                                                                            <span className="svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(childinew)}></span>
 
                                                                                                                         </a></td>
                                                                                                                     </tr>
@@ -2415,7 +2467,7 @@ if(Available == false){
                                                                                                                                                 </a></td>
                                                                                                                                             <td style={{ width: "2%" }}><a title="Copy" className="hreflink"
                                                                                                                                             >
-                                                                                                                                                <span className="mt-1 svg__icon--trash  svg__iconbox"></span>
+                                                                                                                                                <span className="svg__icon--trash  svg__iconbox"></span>
 
                                                                                                                                             </a></td>
                                                                                                                                         </tr>
@@ -2467,7 +2519,7 @@ if(Available == false){
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className="modal-body border p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
                     <div className='row'>
                         <div className="col-sm-9 border-end" >
@@ -2501,17 +2553,17 @@ if(Available == false){
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'firstdate', 'Add')}>1st</span>
+                                                        onClick={() => changeDatetodayQuickly(myDatee, 'firstdate', 'Add')}>1st</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '15thdate', 'Add')}>15th</span>
+                                                        onClick={() => changeDatetodayQuickly(myDatee, '15thdate', 'Add')}>15th</span>
                                                     | <span className="href"
 
                                                         id="selectedYear"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, '1Jandate', 'Add')}>
+                                                        onClick={() => changeDatetodayQuickly(myDatee, '1Jandate', 'Add')}>
                                                         1
                                                         Jan
                                                     </span>
@@ -2520,20 +2572,20 @@ if(Available == false){
 
                                                         id="selectedToday"
 
-                                                        onClick={() => changeDatetodayQuickly(changeDates, 'Today', 'Add')}>Today</span>
+                                                        onClick={() => changeDatetodayQuickly(myDatee, 'Today', 'Add')}>Today</span>
                                                 </div>
                                                 <label className="full_width">
                                                     Date
 
                                                 </label>
-                                                {/* <DatePicker selected={date}  value={Moment(changeDates).format("ddd, DD MMM yyyy")} 
+                                                {/* <DatePicker selected={date}  value={Moment(myDatee).format("ddd, DD MMM yyyy")} 
                                                  minDate={new Date("ddd, DD MMM yyyy")}
                                                  maxDate={new Date("ddd, DD MMM yyyy")}
                                                  onChange={date => setDate(date)} />     */}
                                                 <DatePicker className="form-control"
-                                                    value={Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                    selected={myDatee}
                                                     onChange={handleDatedue}
-                                                    dateFormat="dd/MM/yyyy"
+                                                    dateFormat="EEE, dd MMM yyyy"
 
                                                 />
                                                 {/* <DatePicker
@@ -2542,7 +2594,7 @@ if(Available == false){
 
                                                     styles={{ root: { width: "70%" } }}
 
-                                                    value={date == undefined || date == null?Moment(changeDates).format("ddd, DD MMM yyyy")}
+                                                    value={date == undefined || date == null?Moment(myDatee).format("ddd, DD MMM yyyy")}
 
                                                     onSelectDate={(date) => setDate(date)}
 
@@ -2710,7 +2762,7 @@ if(Available == false){
                     </div>
 
                 </div>
-                <div className="modal-footer">
+                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
@@ -2734,7 +2786,7 @@ if(Available == false){
                     return (
                         <>
 
-                            <div className="modal-body border p-3">
+                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
                                 <div className="col">
 
                                     <div className="form-group mb-2">
@@ -2793,9 +2845,10 @@ if(Available == false){
                                                                     value={editeddata}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
-                                                                    onChange={handleDatedue}
-                                                                    dateFormat="dd/MM/yyyy"
+                                                                     selected={editeddata}
+                                                                     onChange={handleDatedue}
+                                                                     dateFormat="EEE, dd MMM yyyy"
+                 
 
                                                                 />
 
@@ -2929,7 +2982,7 @@ if(Available == false){
                                                                 Created
                                                                 <span>{child.TaskTimeCreatedDate}</span>
                                                                 by <span
-                                                                    className="siteColor">{child.AuthorTitle}</span>
+                                                                    className="siteColor">{child.EditorTitle}</span>
                                                             </div>
                                                             <div className="text-left">
                                                                 Last modified
@@ -2991,7 +3044,7 @@ if(Available == false){
                     return (
                         <>
 
-                            <div className="modal-body border p-3">
+                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
                                 <div className="col">
 
                                     <div className="form-group mb-2">
@@ -3047,12 +3100,12 @@ if(Available == false){
                                                                     ng-required="true"
                                                                     placeholder="DD/MM/YYYY"
                                                                     ng-model="AdditionalnewDate"
-                                                                    value={Moment(changeDates).format('ddd, DD MMM yyyy')}
+                                                                    value={Moment(myDatee).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                    value={Moment(editeddata).format("ddd, DD MMM yyyy")}
-                                                                    onChange={handleDatedue}
-                                                                    dateFormat="dd/MM/yyyy" />
+                                                                 selected={editeddata}
+                                                                 onChange={handleDatedue}
+                                                                 dateFormat="EEE, dd MMM yyyy"/>
 
                                                             </div>
                                                         </div>
@@ -3188,7 +3241,7 @@ if(Available == false){
                                                                 Created
                                                                 <span>{child.TaskTimeCreatedDate}</span>
                                                                 by <span
-                                                                    className="siteColor">{child.AuthorTitle}</span>
+                                                                    className="siteColor">{child.EditorTitle}</span>
                                                             </div>
                                                             <div className="text-left">
                                                                 Last modified
@@ -3244,7 +3297,7 @@ if(Available == false){
                 onDismiss={closeAddTaskTimepopup}
                 isBlocking={false}
             >
-                <div className="modal-body  border p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
 
 
@@ -3258,17 +3311,17 @@ if(Available == false){
 
                                                 id="selectedYear"
 
-                                                onClick={() => changeDatetodayQuickly(changeDates, 'firstdate', 'Add')}>1st</span>
+                                                onClick={() => changeDatetodayQuickly(myDatee, 'firstdate', 'Add')}>1st</span>
                                             | <span className="href"
 
                                                 id="selectedYear"
 
-                                                onClick={() => changeDatetodayQuickly(changeDates, '15thdate', 'Add')}>15th</span>
+                                                onClick={() => changeDatetodayQuickly(myDatee, '15thdate', 'Add')}>15th</span>
                                             | <span className="href"
 
                                                 id="selectedYear"
 
-                                                onClick={() => changeDatetodayQuickly(changeDates, '1Jandate', 'Add')}>
+                                                onClick={() => changeDatetodayQuickly(myDatee, '1Jandate', 'Add')}>
                                                 1
                                                 Jan
                                             </span>
@@ -3277,7 +3330,7 @@ if(Available == false){
 
                                                 id="selectedToday"
 
-                                                onClick={() => changeDatetodayQuickly(changeDates, 'Today', 'Add')}>Today</span>
+                                                onClick={() => changeDatetodayQuickly(myDatee, 'Today', 'Add')}>Today</span>
                                         </div>
                                         <label className="full_width">
                                             Date
@@ -3290,12 +3343,12 @@ if(Available == false){
                                             ng-required="true"
                                             placeholder="DD/MM/YYYY"
 
-                                            value={Moment(changeDates).format('ddd, DD MMM yyyy')}
+                                            value={Moment(myDatee).format('ddd, DD MMM yyyy')}
                                             onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} /> */}
                                         <DatePicker className="form-control"
-                                            value={Moment(changeDates).format("ddd, DD MMM yyyy")}
-                                            onChange={handleDatedue}
-                                            dateFormat="dd/MM/yyyy" />
+                                           selected={myDatee}
+                                           onChange={handleDatedue}
+                                           dateFormat="EEE, dd MMM yyyy" />
 
                                     </div>
                                 </div>
@@ -3472,12 +3525,12 @@ if(Available == false){
                 onDismiss={closeEditcategorypopup}
                 isBlocking={false}
             >
-                <div className="modal-body border  p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
                     <div className='row'>
                         {categoryData?.map((item) => {
                             return (
-                                <div className="col-sm-9 border-end" >
+                                <div className="col-sm-9 border-end">
                                     <div className='mb-3'>
                                         <div className=" form-group">
                                             <label>Selected Category</label>
@@ -3532,7 +3585,7 @@ if(Available == false){
                     </div>
 
                 </div>
-                <div className="modal-footer mt-2">
+                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" onClick={updateCategory}>
                         Submit
                     </button>
@@ -3548,6 +3601,6 @@ if(Available == false){
 
 export default TimeEntryPopup;
 
-function changeDates(arg0: any): any {
+function myDatee(arg0: any): any {
     throw new Error('Function not implemented.');
 }

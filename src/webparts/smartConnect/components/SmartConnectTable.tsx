@@ -31,6 +31,7 @@ var Finalcomponent: any = "";
 let Pageurls: any = "";
 let CompnentId: any = "";
 var AllDataOfTask: any = undefined;
+let params:any='';
 function SmartConnectTable(SelectedProp: any) {
     const [allitemsData, setAllitemsData] = React.useState([])
     const [AllMetadata, setMetadata] = React.useState([])
@@ -1164,6 +1165,7 @@ function SmartConnectTable(SelectedProp: any) {
     React.useEffect(() => {
         SelectedProp = SelectedProp.SelectedProp;
         // LoadAllTimeSheetData12();
+        params = new URLSearchParams(window.location.href);
         (async () => {
             let Pageurlshareweb1 = await Promise.all([globalCommon.getParameterByName('PageUrl')]);
             if (Pageurlshareweb1[0] != "" && Pageurlshareweb1.length > 0)
@@ -1389,7 +1391,7 @@ function SmartConnectTable(SelectedProp: any) {
         <div className='serviepannelgreena'>
             {/* {Pageurls != '' && */}
                 <section className="TableContentSection taskprofilepagegreen">
-                    <div className="ps-3">Shareweb URL: {Pageurls != '' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={Pageurls} >{Pageurls}</a>} - Component: {CompnentId && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Portfolio-Profile.aspx?taskId=" + CompnentId} >Key Profile Page</a>}</div>
+                <div className="ps-3"><span>Shareweb URL: {Pageurls != '' && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={Pageurls} >{Pageurls}</a>} - Component: {CompnentId && <a data-interception="off" target="_blank" className="hreflink serviceColor_Active" href={"https://hhhhteams.sharepoint.com/sites/HHHH/sp/SitePages/Portfolio-Profile.aspx?taskId=" + CompnentId} >Key Profile Page</a>}</span><span><a data-interception="off" target="_blank" className="hreflink me-3 pull-right serviceColor_Active" href={params}>Old Smart Shareweb Page</a></span></div>
                     <div className="container-fluid">
                         <section className="TableSection">
                             <div className="container p-0">
