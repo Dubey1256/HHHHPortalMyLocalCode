@@ -30,6 +30,8 @@ export interface ITaskFeedbackState {
   showcomment: string;
   showcomment_subtext: string;
   fbData: any;
+
+  percentage:any;
   index: number;
   CommenttoPost: string;
   isModalOpen: boolean;
@@ -57,6 +59,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       showcomment_subtext: 'none',
       fbData: this.props.feedback,
       index: this.props.index,
+      percentage:this.props.Result.PercentComplete,
+     
       CommenttoPost: '',
       isModalOpen: false,
       emailcomponentopen:false,
@@ -326,11 +330,28 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           }
         })
       }
-      await this.changepercentageStatus(item,tempData,countApprove,);
+      if( this.state.percentage<5){
+        await this.changepercentageStatus(item,tempData,countApprove,);
+      }
+     
       if(isShowLight>NotisShowLight){
-         countemailbutton=1;
+        if(item=="Reject"){
+          countemailbutton=0;
+          this.setState({
+            emailcomponentopen:true,
+          }
+         
+          )
+        }else{
+          countemailbutton=1;
+        }
+         
       }else{
         countemailbutton=0;
+        this.setState({
+          emailcomponentopen:true,
+        })
+       
       }
     }
   }
@@ -340,7 +361,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     console.log(percentageStatus)
     console.log(pervious)
     console.log(countApprove)
-    
+ 
     if((countApprove==0&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
       changespercentage=true;
     }
@@ -365,13 +386,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
    
       const web = new Web( this.props.Result.siteUrl);
       await web.lists.getByTitle(this.props.Result.listName)
-      // await web.lists.getById(this.props.SiteTaskListID)
+     
       .items.getById(this.props.Result.Id).update({
         PercentComplete: percentageComplete,
         Status:taskStatus,
       }).then((res:any)=>{
        console.log(res);
-      //  this.props.approvalcallbacktask();
+     
        })
      .catch((err:any) => {
        console.log(err.message);
@@ -384,80 +405,113 @@ private async changeTrafficLigth  (index:any,item:any){
   console.log(item);
   if(  this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id){
     let tempData:any=this.state?.fbData;
-
-    if(this.props.fullfeedback!=undefined){
-      await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,item,tempData);
-      
-   }
-    //await this.changepercentageStatus(item,tempData);
-   var approvalDataHistory={
+    var approvalDataHistory={
       ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'), 
       Id: this.props.CurrentUser[0].Id,
        ImageUrl: this.props.CurrentUser[0].userImage,
         Title: this.props.CurrentUser[0].Title,
        isShowLight: item
    }
-    tempData.isShowLight = item;
-    if(tempData.ApproverData!=undefined &&  tempData.ApproverData.length>0){
+   tempData.isShowLight = item;
+   if(tempData.ApproverData!=undefined &&  tempData.ApproverData.length>0){
 
-      tempData.ApproverData.push(approvalDataHistory);
-    }else{
-      tempData.ApproverData=[];
-      tempData.ApproverData .push(approvalDataHistory)
-    }
-    console.log(tempData);
+     tempData.ApproverData.push(approvalDataHistory);
+   }else{
+     tempData.ApproverData=[];
+     tempData.ApproverData .push(approvalDataHistory)
+   }
+   console.log(tempData);
+ 
+   this.setState({
+       fbData: tempData,
+       index: index,
+      
+       emailComponentstatus:item
+   });
   
-    this.setState({
-        fbData: tempData,
-        index: index,
-        emailcomponentopen:true,
-        emailComponentstatus:item
-    });
-   
-    console.log(this.state?.fbData);
-    this.props.onPost();
-    }
+   console.log(this.state?.fbData);
+    await this.onPost("trafficlight",index-1,null,tempData);
+    if(this.props.fullfeedback!=undefined){
+      await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,item,tempData);
+      
+   }
+   }
 }
-
 private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status:any){
-console.log(parentindex);
-console.log(subchileindex);
-console.log(status);
-if(  this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id){
-let tempData:any=this.state?.fbData;
+  console.log(parentindex);
+  console.log(subchileindex);
+  console.log(status);
+  if(  this.props?.Approver?.Id==this.props?.CurrentUser[0]?.Id){
+  let tempData:any=this.state?.fbData;
+  var approvalDataHistory={
+    ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'), 
+    Id: this.props.CurrentUser[0].Id,
+     ImageUrl: this.props.CurrentUser[0].userImage,
+      Title: this.props.CurrentUser[0].Title,
+     isShowLight: status
+  }
+  tempData.Subtext[subchileindex].isShowLight = status;
+  if(tempData.Subtext[subchileindex].ApproverData!=undefined &&  tempData.Subtext[subchileindex].ApproverData.length>0){
+  
+    tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory);
+  }else{
+    tempData.Subtext[subchileindex].ApproverData=[];
+    tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
+  }
+  
+  console.log(tempData);
+  this.setState({
+   fbData: tempData,
+     index: parentindex,
+   
+     emailComponentstatus:status
+  });
+  console.log(this.state.emailcomponentopen)
+  await this.onPost("trafficlightSubtext",parentindex-1,subchileindex,tempData);
+  
+  if(this.props.fullfeedback!=undefined){
+  await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,status,tempData?.Subtext[subchileindex]);
+  }
+   }
+  }
+
+private async onPost (trafficlight:any,parentindex:any,subchileindex:any,tempData:any){
+ let fullfeedbackbackup:any=this.props?.fullfeedback
+if(trafficlight=="trafficlight"){
+  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
+  if(indexfeedback===parentindex){
+    fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
+  }
+  })
+}
+if(trafficlight=="trafficlightSubtext"){
+  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
+    if(indexfeedback===parentindex){
+     fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
+    }
+    })
+}
+console.log(fullfeedbackbackup)
+
+  let web = new Web(this.props.Result.siteUrl);
+   await web.lists
+    .getByTitle(this.props.Result.listName)
+    
+    .items
+    .getById(this.props.Result.Id)
+    .update({
+      FeedBack: JSON.stringify(fullfeedbackbackup)
+    }).then((data:any)=>{
+   console.log(data)
+   this.props.Result.FeedBack=fullfeedbackbackup
+  
+    }).catch((error:any)=>{
+   console.log(error)
+    });
 
 
-if(this.props.fullfeedback!=undefined){
-await this.checkforMail(this.props?.fullfeedback[0]?.FeedBackDescriptions,status,tempData?.Subtext[subchileindex]);
-}
- // await this.changepercentageStatus(status,tempData?.Subtext[subchileindex]);
- var approvalDataHistory={
-  ApprovalDate: moment(new Date()).tz("Europe/Berlin").format('DD MMM YYYY HH:mm'), 
-  Id: this.props.CurrentUser[0].Id,
-   ImageUrl: this.props.CurrentUser[0].userImage,
-    Title: this.props.CurrentUser[0].Title,
-   isShowLight: status
-}
-tempData.Subtext[subchileindex].isShowLight = status;
-if(tempData.Subtext[subchileindex].ApproverData!=undefined &&  tempData.Subtext[subchileindex].ApproverData.length>0){
-
-  tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory);
-}else{
-  tempData.Subtext[subchileindex].ApproverData=[];
-  tempData.Subtext[subchileindex].ApproverData.push(approvalDataHistory)
 }
 
-console.log(tempData);
-this.setState({
- fbData: tempData,
-   index: parentindex,
-   emailcomponentopen:true,
-   emailComponentstatus:status
-});
-console.log(this.state.emailcomponentopen)
-this.props.onPost();
-}
-}
 private ShowApprovalHistory(items:any){
 console.log("this is a Approval function cxall ",items)
 this.setState({
@@ -485,9 +539,7 @@ this.setState({
 //   })
 // },[])
 private approvalcallback(){
-  // this.props.approvalcallbacktask();
-  this.props.onPost();
- this.setState({
+  this.setState({
    emailcomponentopen:false,
     });
 

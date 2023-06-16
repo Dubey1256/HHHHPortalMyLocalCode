@@ -1,5 +1,5 @@
 import * as React from "react";
-import FlorarImageUploadComponent from '../FlorarComponents/FlorarImageUploadComponent';
+import FlorarImageUploadComponent from '../FlorarComponents/UploadImageForBackground';
 import { useState, useCallback } from 'react';
 import * as Moment from 'moment';
 import { Panel, PanelType } from 'office-ui-fabric-react';

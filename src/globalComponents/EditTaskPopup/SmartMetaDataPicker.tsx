@@ -38,11 +38,19 @@ const Picker = (item: any) => {
     }, [])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
+        if(usedFor=="Task-Footertable"){
+            item?.Call(selectedCategoryData, "Category-Task-Footertable")
+           NewArray = []
+           SelectedCategoryBackupArray = [];
+           setSelect([])
+       }else{
         NewArray = []
         setSelect([])
         item?.Call()
         item?.closePopupCallBack();
         SelectedCategoryBackupArray = [];
+       }
+       
     }
     const saveCategories = () => {
         if (usedFor == "Task-Popup") {
