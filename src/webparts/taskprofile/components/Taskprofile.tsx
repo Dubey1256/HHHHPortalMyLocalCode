@@ -467,7 +467,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       .expand('AssingedToUser')
       .get();
     taskUsers?.map((item: any, index: any) => {
-      if (this.props.Context?._pageContext?._user?.loginName === item?.Email && item?.Company == "Smalsus") {
+      if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
         this.backGroundComment = true;
       }
     })
