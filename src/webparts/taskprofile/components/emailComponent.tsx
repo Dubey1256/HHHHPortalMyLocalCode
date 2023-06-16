@@ -4,6 +4,7 @@ import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Web } from 'sp-pnp-js';
+import moment from 'moment';
 
 let percentage = 1;
 const EmailComponenet = (props: any) => {
@@ -189,19 +190,25 @@ const EmailComponenet = (props: any) => {
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["StartDate"]}</span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{ moment(props.items["StartDate"]).tz("Europe/Berlin").format('DD MMM YYYY')}
+                         </span><u></u><u></u></p>
                         </td>
                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["CompletedDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                          { moment(props.items["CompletedDate"]).tz("Europe/Berlin").format('DD MMM YYYY')}
+                            </span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                         <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["DueDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                          { moment(props.items["DueDate"]).tz("Europe/Berlin").format('DD MMM YYYY')}
+                            {/* {props.items["DueDate"]} */}
+                            </span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
@@ -227,7 +234,10 @@ const EmailComponenet = (props: any) => {
                           <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
                         </td>
                         <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.items["Created"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                          { moment(props.items["Created"]).tz("Europe/Berlin").format('DD MMM YYYY')}
+                            {/* {props.items["Created"]} */}
+                            </span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         </td>
                       </tr>
                       <tr>
@@ -302,7 +312,7 @@ const EmailComponenet = (props: any) => {
                               <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
                                 <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
                               </td>
-                              <td style={fbData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:fbData?.isShowLight=="Approve"?{ background: "##00800024;",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                              <td style={(fbData?.isShowLight=="Reject")?({ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}):(fbData?.isShowLight=="Approve")?({ background: "#00800024",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }):({ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" })}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
                                 {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
                                   return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
                                     <div style={{ marginBottom: '3.75pt' }}>
