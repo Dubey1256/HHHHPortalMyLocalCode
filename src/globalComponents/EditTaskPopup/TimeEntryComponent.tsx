@@ -34,6 +34,7 @@ var TimeSheetlistId = ''
 var TimeSheets: any = []
 var MigrationListId = ''
 var siteUrl = ''
+var PortfolioType = ''
 var listName = ''
 var RelativeUrl: any = ''
 var CurrentSiteUrl: any = ''
@@ -46,6 +47,7 @@ var change: any = new Date()
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
+    PortfolioType = item.props.Portfolio_x0020_Type
     CurntUserId = item.Context.pageContext._legacyPageContext.userId
     CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
     RelativeUrl = item.Context.pageContext.web.serverRelativeUrl
@@ -2221,7 +2223,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         Date.toLocaleString(), []);
 
     return (
-        <div>
+        <div className={PortfolioType=='Service'?'serviepannelgreena':''}>
             <div>
                 <div className="col-sm-12 p-0">
                     <span ng-if="Item!=undefined">
@@ -2517,7 +2519,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className="modal-body border p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
                     <div className='row'>
                         <div className="col-sm-9 border-end" >
@@ -2760,7 +2762,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     </div>
 
                 </div>
-                <div className="modal-footer">
+                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
@@ -2784,7 +2786,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     return (
                         <>
 
-                            <div className="modal-body border p-3">
+                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
                                 <div className="col">
 
                                     <div className="form-group mb-2">
@@ -2980,7 +2982,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                                 Created
                                                                 <span>{child.TaskTimeCreatedDate}</span>
                                                                 by <span
-                                                                    className="siteColor">{child.AuthorTitle}</span>
+                                                                    className="siteColor">{child.EditorTitle}</span>
                                                             </div>
                                                             <div className="text-left">
                                                                 Last modified
@@ -3042,7 +3044,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     return (
                         <>
 
-                            <div className="modal-body border p-3">
+                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
                                 <div className="col">
 
                                     <div className="form-group mb-2">
@@ -3295,7 +3297,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 onDismiss={closeAddTaskTimepopup}
                 isBlocking={false}
             >
-                <div className="modal-body  border p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
 
 
@@ -3523,12 +3525,12 @@ if(AllTimeEntry.length == 0 && Available == false){
                 onDismiss={closeEditcategorypopup}
                 isBlocking={false}
             >
-                <div className="modal-body border  p-3  ">
+                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
 
                     <div className='row'>
                         {categoryData?.map((item) => {
                             return (
-                                <div className="col-sm-9 border-end" >
+                                <div className="col-sm-9 border-end">
                                     <div className='mb-3'>
                                         <div className=" form-group">
                                             <label>Selected Category</label>
@@ -3583,7 +3585,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     </div>
 
                 </div>
-                <div className="modal-footer mt-2">
+                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" onClick={updateCategory}>
                         Submit
                     </button>
