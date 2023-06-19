@@ -1325,7 +1325,17 @@ const CreateActivity = (props: any) => {
     //     }
     // }
 
+ // this is for change priority status function 
 
+ const ChangePriorityStatusFunction = (e: any) => {
+    let value = e.target.value;
+    if (Number(value) <= 10) {
+        setselectPriority(e.target.value )
+    } else {
+        alert("Priority Status not should be greater than 10");
+        setselectPriority( '0' )
+    }
+}
 
     return (
         <>
@@ -1548,7 +1558,7 @@ const CreateActivity = (props: any) => {
 
 
                                 <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                    <fieldset>
+                                    {/* <fieldset>
                                         <label>Priority</label>
                                         <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
                                             defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
@@ -1572,7 +1582,40 @@ const CreateActivity = (props: any) => {
                                                     type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
                                             </label>
                                         </div>
-                                    </fieldset>
+                                    </fieldset> */}
+                                     <div>
+                                                    <div className="input-group">
+                                                        <input type="text" className="form-control"
+                                                            placeholder="Enter Priority"
+                                                            value={selectPriority ? selectPriority : ''}
+                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
+                                                        />
+                                                    </div>
+                                                    <ul className="p-0 mt-1">
+                                                        <li className="form-check l-radio">
+                                                            <input className="form-check-input"
+                                                                name="radioPriority" type="radio"
+                                                                checked={Number(selectPriority)<= 10 && Number(selectPriority)>= 8}
+                                                                onChange={() =>  setselectPriority( '8' )}
+                                                            />
+                                                            <label className="form-check-label">High</label>
+                                                        </li>
+                                                        <li className="form-check l-radio">
+                                                            <input className="form-check-input" name="radioPriority"
+                                                                type="radio" checked={Number(selectPriority)<= 7 && Number(selectPriority) >= 4}
+                                                                onChange={() => setselectPriority('4')}
+                                                            />
+                                                            <label className="form-check-label">Normal</label>
+                                                        </li>
+                                                        <li className="form-check l-radio">
+                                                            <input className="form-check-input" name="radioPriority"
+                                                                type="radio" checked={Number(selectPriority) <= 3 && Number(selectPriority) > 0}
+                                                                onChange={() => setselectPriority( '1')}
+                                                            />
+                                                            <label className="form-check-label">Low</label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                 </div>
 
                                 <div className="row mt-2">

@@ -2408,7 +2408,21 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
-            Items.Call();
+            if(Items?.pageName =="TaskFooterTable"){
+                var ItmesDelete:any={
+                    data:{
+                        Id:itemId,
+                        ItmesDelete:true
+                    }
+                 }
+            
+                Items.Call(ItmesDelete); 
+            }
+            else{
+                Items.Call();
+            }
+
+           
             console.log("Your post has been deleted successfully");
         } catch (error) {
             console.log("Error:", error.message);

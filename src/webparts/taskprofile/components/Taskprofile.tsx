@@ -1146,7 +1146,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined ||breadcrumbitem.Subchild==undefined || breadcrumbitem.Subchild == undefined||breadcrumbitem. Parentitem!=undefined && 
+                    {breadcrumbitem.ParentTask != undefined  && 
                       <li>
                         <a >
                           <span>{this.state.Result['Title']}</span>
