@@ -113,7 +113,7 @@ function TasksTable(props: any) {
   const [SharewebTask, setSharewebTask] = React.useState('');
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
-
+  const [AllClientCategory, setAllClientCategory] = React.useState([])
   const [count, setCount] = React.useState(0);
 
   const [ActivityDisable, setActivityDisable] = React.useState(false);
@@ -143,6 +143,7 @@ function TasksTable(props: any) {
     let AllSiteName: any = [];
     var select: any = 'Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent'
     smartmetaDetails = await globalCommon.getData(props?.AllListId?.siteUrl, props?.AllListId?.SmartMetadataListID, select);
+    setAllClientCategory(smartmetaDetails?.filter((metadata: any) => metadata?.TaxType == 'Client Category'));
     console.log(smartmetaDetails);
     setsmartmetaDetails(smartmetaDetails)
 
@@ -1474,7 +1475,14 @@ function TasksTable(props: any) {
 
       {IsTask && <EditTaskPopup Items={SharewebTask} Call={Call} AllListId={props.AllListId} context={props.Context} pageName={"TaskFooterTable"}></EditTaskPopup>}
       {IsTimeEntry && <TimeEntryPopup props={SharewebTimeComponent} CallBackTimeEntry={TimeEntryCallBack} AllListId={props.AllListId} TimeEntryPopup Context={props.Context}></TimeEntryPopup>}
-      {MeetingPopup && <CreateActivity props={MeetingItems[MeetingItems.length - 1]} Call={Call} LoadAllSiteTasks={LoadAllSiteTasks} SelectedProp={props.AllListId}></CreateActivity>}
+      {MeetingPopup && 
+      <CreateActivity props={MeetingItems[MeetingItems.length - 1]} 
+      Call={Call}
+      TaskUsers={AllUsers}
+      AllClientCategory={AllClientCategory}
+       LoadAllSiteTasks={LoadAllSiteTasks}
+        SelectedProp={props.AllListId}>
+        </CreateActivity>}
       {WSPopup && <CreateWS props={MeetingItems[MeetingItems.length - 1]} Call={Call} data={data} SelectedProp={props.AllListId}></CreateWS>}
       {addModalOpen && <Panel headerText={` Create Component `} type={PanelType.medium} isOpen={addModalOpen} isBlocking={false} onDismiss={CloseCall}>
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
