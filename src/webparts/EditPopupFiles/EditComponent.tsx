@@ -3087,7 +3087,7 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                               ItemId={item.Id}
                               siteUrls={RequireData.siteUrl}
                               SiteTypes={SiteTypes}
-                              ClientTime={EditData.siteCompositionData}
+                              ClientTime={EditData.siteCompositionData != undefined ? EditData.siteCompositionData : []}
                               SiteCompositionSettings={EditData.SiteCompositionSettings}
                               // SmartTotalTimeData={SmartTotalTimeData}
                               currentListName={EditData.siteType}
