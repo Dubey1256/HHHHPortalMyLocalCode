@@ -49,10 +49,8 @@ const BackgroundCommentComponent = (Props: any) => {
             // let hostWebURL = Context.pageContext._site.absoluteUrl.replace(Context.pageContext._site.absoluteUrl,"");
             let imageURL: string = `${Context._pageContext._web.absoluteUrl.split(Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
             await web.getFileByServerRelativeUrl(`${Context?._pageContext?._web?.serverRelativeUrl}/PublishingImages/Covers/${Data.fileName}`).getItem()
-
                 .then(async (res: any) => {
                     console.log(res);
-
                     let obj = {
                         "AdminTab": "Admin",
                         "Id": res.Id,
@@ -115,7 +113,6 @@ const BackgroundCommentComponent = (Props: any) => {
                 }
             })
         }
-
         setBackgroundComments(tempArray);
         updateCommentFunction(tempArray, "OffshoreComments");
         tempArray = [];
@@ -211,8 +208,11 @@ const BackgroundCommentComponent = (Props: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
-                                <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
-                                    dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                <img 
+                                    // style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} 
+                                    src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
+                                    dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} 
+                                    />
                             </div>
                             <div className="col-11 pe-0 mt-2 ms-1" >
                                 <div className='d-flex justify-content-between align-items-center'>
@@ -240,13 +240,16 @@ const BackgroundCommentComponent = (Props: any) => {
                         </div>
                     )
                 }) :
-                    <div className="commented-data-sections my-2 p-1" style={{ width: "100%", height: "150px", border: "2px dotted #ccc" }}>
+                    <div
+                        className="commented-data-sections my-2 p-1"
+                        // style={{ width: "100%", height: "150px", border: "2px dotted #ccc" }}
+                    >
                         There is no comments
                     </div>
                 }
                 <div className="enter-comment-data-section">
                     <textarea
-                        style={{ width: "100%", height: "100px", border: "2px solid #ccc" }}
+                        // style={{ width: "100%", height: "100px", border: "2px solid #ccc" }}
                         value={BackgroundComment}
                         onChange={(e) => setBackgroundComment(e.target.value)}
                         placeholder="Enter Your Comment Here"
@@ -266,13 +269,15 @@ const BackgroundCommentComponent = (Props: any) => {
                     customWidth="500px"
                 >
                     <div className="parentDiv">
-                        <div style={{ width: '99%', marginTop: '2%', padding: '2%' }}>
+                        <div 
+                        // style={{ width: '99%', marginTop: '2%', padding: '2%' }}
+                        >
                             <textarea
                                 id="txtUpdateComment"
                                 rows={6}
                                 defaultValue={UpdateCommentData}
                                 onChange={(e) => setUpdateCommentData(e.target.value)}
-                                style={{ width: '100%', marginLeft: '3px' }}
+                                // style={{ width: '100%', marginLeft: '3px' }}
                             >
                             </textarea>
                         </div>
