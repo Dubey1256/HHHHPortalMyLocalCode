@@ -1742,7 +1742,7 @@ const CreateActivity = (props: any) => {
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>}
             {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} usedFor="Task-Footertable" AllListId={dynamicList} Call={Call}></Picker>}
-            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} Call={Call}></ClientCategoryPupup>}
+            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory}selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
         </>
     )
 }
