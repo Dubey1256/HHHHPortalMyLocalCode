@@ -617,6 +617,7 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
             SiteCompositionObject.ClientTime = ClientTimeTemp;
+             SiteTaggingFinalData = ClientTimeTemp;
         }
         // callBack(SiteCompositionObject);
     }

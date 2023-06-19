@@ -72,6 +72,7 @@ let showPopHover: any;
 let popHoverDataGroup: any = []
 let Renderarray: any = [];
 let AllDataRender: any = [];
+let forceExpanded: any = [];
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -122,11 +123,6 @@ function DebouncedInput({
 
   return (
     <>
-      {/* <input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    /> */}
       <div className="container-2 mx-1">
         <span className="icon"><FaSearch /></span>
         <input type="search" id="search" {...props}
@@ -200,7 +196,7 @@ function ComponentTable(SelectedProp: any) {
   } catch (e) {
     console.log(e);
   }
-
+  // const [selectedDuration, setSelectedDuration] = React.useState("All Words");
   const [Display, setDisplay] = React.useState("none");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -2556,95 +2552,6 @@ function ComponentTable(SelectedProp: any) {
     setSharewebTask(item);
   };
 
-  //////////CheckBox Item Start/////
-
-  // const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel: any) => {
-  //   if (eTarget == true) {
-  //     setcheckData(getSelectedRowModel)
-  //     setShowTeamMemberOnCheck(true)
-  //   } else {
-  //     setcheckData([])
-  //     setShowTeamMemberOnCheck(false)
-  //   }
-  //   var Arrays: any = [];
-  //   const checked = eTarget;
-  //   if (checked == true) {
-  //     if (itrm.SharewebTaskType == undefined) {
-  //       setActivityDisable(false);
-  //       itrm["siteUrl"] = ContextValue?.siteUrl;
-  //       itrm["listName"] = "Master Tasks";
-  //       checkedList.push(itrm);
-  //     }
-  //     if (itrm.SharewebTaskType != undefined) {
-  //       if (
-  //         itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
-  //         setActivityDisable(false);
-  //         itrm["siteUrl"] = ContextValue?.siteUrl;
-  //         Arrays.push(itrm);
-  //         itrm["PortfolioId"] = child.Id;
-  //         childsData.push(itrm);
-  //       }
-  //     }
-  //     if (itrm?.SharewebTaskType != undefined) {
-  //       if (itrm?.SharewebTaskType?.Title == "Task") {
-  //         setActivityDisable(true);
-  //       }
-  //     }
-  //   }
-  //   if (checked == false) {
-  //     checkedList?.forEach((val: any, index: any) => {
-  //       checkedList = [];
-  //     });
-  //     if (checkedList.length == 0) {
-  //       setActivityDisable(true);
-  //     }
-  //     $("#ClientCategoryPopup").hide();
-  //   }
-
-  //   let list: any = [];
-  //   var flag = true;
-  //   list?.forEach((obj: any, index: any) => {
-  //     if (
-  //       obj?.Id != undefined &&
-  //       itrm?.Id != undefined &&
-  //       obj?.Id === itrm?.Id
-  //     ) {
-  //       flag = false;
-  //       list = [];
-  //     }
-  //   });
-  //   if (flag) list.push(itrm);
-  //   maidataBackup?.forEach((obj, index) => {
-  //     obj.isRestructureActive = false;
-  //     if (obj.childs != undefined && obj?.childs?.length > 0) {
-  //       obj?.childs?.forEach((sub: any, indexsub: any) => {
-  //         sub.isRestructureActive = false;
-  //         if (sub.childs != undefined && sub.childs.length > 0) {
-  //           sub?.childs?.forEach((newsub: any, lastIndex: any) => {
-  //             newsub.isRestructureActive = false;
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  //   // setData((data) => [...maidataBackup]);
-  //   // setCheckedList((checkedList) => [...list]);
-  // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3662,6 +3569,7 @@ function ComponentTable(SelectedProp: any) {
         ),
         id: "Title",
         placeholder: "Title",
+        resetColumnFilters: false,
         header: "",
       },
       {
@@ -3674,6 +3582,7 @@ function ComponentTable(SelectedProp: any) {
         id: "ClientCategory",
         placeholder: "Client Category",
         header: "",
+        resetColumnFilters: false,
         size: 100,
       },
       {
@@ -3685,6 +3594,7 @@ function ComponentTable(SelectedProp: any) {
         ),
         id: "TeamLeaderUser",
         placeholder: "Team",
+        resetColumnFilters: false,
         header: "",
         size: 131,
       },
@@ -3692,18 +3602,21 @@ function ComponentTable(SelectedProp: any) {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
+        resetColumnFilters: false,
         size: 42,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
+        resetColumnFilters: false,
         size: 42,
       },
       {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
+        resetColumnFilters: false,
         size: 100,
       },
       {
@@ -3855,34 +3768,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-          // parentData = elem?.parentRow;
-          // parentDataCopy = elem?.parentRow?.original
-          parentDataCopy = elem?.getParentRows()[0]?.original;
-          // if (parentData != undefined && parentData?.parentRow != undefined) {
+        // parentData = elem?.parentRow;
+        // parentDataCopy = elem?.parentRow?.original
+        parentDataCopy = elem?.getParentRows()[0]?.original;
+        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //   parentData = elem?.parentRow?.parentRow
-          //   parentDataCopy = elem?.parentRow?.parentRow?.original
+        //   parentData = elem?.parentRow?.parentRow
+        //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          // }
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3932,36 +3845,15 @@ function ComponentTable(SelectedProp: any) {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  const openTaskAndPortfolioMulti = () => {
+    checkData?.map((item:any)=>{
+      if(item?.original?.siteType === "Master Tasks"){
+        window.open(`${ContextValue?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`,'_blank')
+      }else{
+        window.open(`${ContextValue?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`,'_blank')
+      }
+    })
+  }
 
   let activity = 0;
   let workstrim = 0;
@@ -4649,9 +4541,17 @@ function ComponentTable(SelectedProp: any) {
                       <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
-                        placeholder="Search All..."
-                      />
+                        placeholder="Search All..." />
                     </span>
+                    {/* <span>
+                      <span>
+                        <select className="" style={{ height: '30px' }} aria-label="Default select example" value={selectedDuration} onChange={(e) => setSelectedDuration((e.target.value))}>
+                          <option selected>All Words</option>
+                          <option value="1">Any Words</option>
+                          <option value="2">Exact Phrase</option>
+                        </select>
+                      </span>
+                    </span> */}
 
                   </span>
                   <span className="toolbox mx-auto">
@@ -4711,6 +4611,10 @@ function ComponentTable(SelectedProp: any) {
                     >
                       Restructure
                     </button>}
+
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 &&<span>
+                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span>}
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
 
                     <a className="brush" onClick={clearSearch}>

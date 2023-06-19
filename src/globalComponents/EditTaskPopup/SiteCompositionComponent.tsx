@@ -551,6 +551,8 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
             SiteCompositionObject.ClientTime = ClientTimeTemp;
+            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
         callBack(SiteCompositionObject);
     }
