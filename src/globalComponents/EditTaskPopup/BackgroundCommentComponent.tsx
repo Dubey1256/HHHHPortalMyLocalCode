@@ -208,8 +208,11 @@ const BackgroundCommentComponent = (Props: any) => {
                     return (
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
-                                <img style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
-                                    dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} />
+                                <img 
+                                    // style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} 
+                                    src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
+                                    dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} 
+                                    />
                             </div>
                             <div className="col-11 pe-0 mt-2 ms-1" >
                                 <div className='d-flex justify-content-between align-items-center'>
