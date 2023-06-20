@@ -1953,7 +1953,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (SiteCompositionPrecentageCheck == true) {
-            alert("Site Composition Should be 100%")
+             alert("site composition allocation should not be more than 100%");
         } else {
             try {
                 let web = new Web(siteUrls);
