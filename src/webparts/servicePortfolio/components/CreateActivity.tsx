@@ -21,6 +21,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
+let ShowCategoryDatabackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -45,7 +46,6 @@ var isModelChange = false
 var TaskImagess: any = []
 const defaultContent = "";
 let defaultfile = [];
-let ShowCategoryDatabackup: any = [];
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -278,7 +278,6 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
-        setSearchedCategoryData([]);
         if (type == "SmartComponent") {
             var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
@@ -297,36 +296,20 @@ const CreateActivity = (props: any) => {
                 title.Title = item1.categories;
                 item1.categories.map((itenn: any) => {
                     if (!isItemExists(CategoriesData, itenn.Id)) {
-
                         CategoriesData.push(itenn);
                     }
 
                 })
                 item1.SharewebCategories?.map((itenn: any) => {
-
                     CategoriesData.push(itenn)
                 })
 
                 setCategoriesData(CategoriesData)
+
+
             }
         }
-        if (type =="Category-Task-Footertable") {
-
-            setPhoneStatus(false)
-            setEmailStatus(false)
-            setImmediateStatus(false)
-            setApprovalStatus(false)
-
-            if (item1 != undefined && item1.length > 0) {
-                item1?.map((itenn: any) => {
-                    selectedCategoryTrue(itenn.Title)
-
-                })
-
-                setCategoriesData(item1)
-            }
-        }
-        if (type =="ClientCategory") {
+        if (type == "ClientCategory") {
             var Data: any = []
             if (item1 != undefined && item1.Clientcategories != "") {
                 var title: any = {};
@@ -342,7 +325,7 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        if (type =="LinkedComponent") {
+        if (type == "LinkedComponent") {
             let ServiceData: any = []
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
@@ -784,7 +767,6 @@ const CreateActivity = (props: any) => {
                             res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
-
                         res.data.ClientCategory = []
                         res.data.AssignedTo = []
                         res.data.Responsible_x0020_Team = []
@@ -968,7 +950,6 @@ const CreateActivity = (props: any) => {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-
                             })
                         }
                         if (data?.AssignedToId?.length > 0) {
@@ -978,7 +959,6 @@ const CreateActivity = (props: any) => {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-
                             })
                         }
                             data.ClientCategory = []
@@ -997,12 +977,8 @@ const CreateActivity = (props: any) => {
                         })
                     }
                 }
-
-
             }
         })
-
-
 
     }
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
@@ -1199,12 +1175,6 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
-                    TaxonomyItems?.map((items: any) => {
-                        if (items.Title == "Actions") {
-                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
-                        }
-                    })
-
                 }
             },
             error: function (error: any) {
@@ -1385,15 +1355,19 @@ const CreateActivity = (props: any) => {
     //             tempShareWebTypeData.push(dataType);
     //         }
     //     })
-    //     if (tempArray2 != undefined && tempArray2.length > 0) {
-    //         tempArray2.map((itemData: any) => {
-    //             tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
-    //         })
+
+    //     if (usedFor == "For-Panel") {
+    //         setShareWebTypeData(selectCategoryData);
+    //         tempShareWebTypeData = selectCategoryData;
     //     }
-    //     setCategoriesData(tempString);
-    //     tempCategoryData = tempString;
-    //     setShareWebTypeData(tempArray2);
+    //     if (usedFor == "For-Auto-Search") {
+    //         setShareWebTypeData(tempShareWebTypeData);
+    //         setSearchedCategoryData([])
+    //         setCategorySearchKey("");
+    //     }
     // }
+
+
 
     return (
         <>
@@ -1680,8 +1654,8 @@ const CreateActivity = (props: any) => {
                                     <div className="col-sm-12">
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Categories</label>
-                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
-
+                                            {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} />
                                             <span className="input-group-text">
 
                                                 <a className="hreflink" title="Edit Categories">
@@ -1701,7 +1675,7 @@ const CreateActivity = (props: any) => {
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -1710,7 +1684,7 @@ const CreateActivity = (props: any) => {
                                         </ul>
                                     </div>) : null}
 
-                                {/* <div className="row">
+                                <div className="row">
                                     <div className="col-sm-12 mt-2">
                                         {CheckCategory?.map((item: any) => {
                                             return (
@@ -1727,53 +1701,6 @@ const CreateActivity = (props: any) => {
                                     </div>
 
 
-                                </div> */}
-                                <div className="col">
-                                    <div className="col">
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                name="Phone"
-                                                type="checkbox" checked={PhoneStatus}
-                                                value={`${PhoneStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
-                                            />
-                                            <label className="form-check-label">Phone</label>
-                                        </div>
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={EmailStatus}
-                                                value={`${EmailStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
-                                            />
-                                            <label>Email Notification</label>
-
-                                        </div>
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={ImmediateStatus}
-                                                value={`${ImmediateStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
-                                            <label>Immediate</label>
-                                        </div>
-
-                                    </div>
-                                    <div className="form-check ">
-                                        <label className="full-width">Approval</label>
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input rounded-0"
-                                            name="Approval"
-                                            checked={ApprovalStatus}
-                                            value={`${ApprovalStatus}`}
-                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
-
-                                        />
-                                    </div>
                                 </div>
                                 {CategoriesData != undefined ?
                                     <div>
