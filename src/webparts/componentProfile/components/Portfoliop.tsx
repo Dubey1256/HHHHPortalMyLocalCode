@@ -98,7 +98,7 @@ function Portfolio({SelectedProp}:any) {
   const handleOpen6 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showm = !item.showb;
+    item.showb = !item.showb;
     setdatamb((datamb) => [...datamb]);
   };
   const handleOpen7 = (item: any) => {
@@ -1152,11 +1152,12 @@ Iconpps = [
                                     >
                                       <p className="m-0">
                                         {data.map((item) => (
-                                          <a>{item.Background}</a>
+                                          <>{item.Background}</>
                                         ))}
                                       </p>
                                     </div>
                                   )}
+                                   
                                 </div>
                               </div>
                             </div>

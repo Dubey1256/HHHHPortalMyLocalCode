@@ -3614,6 +3614,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   }
 
+
+  const openTaskAndPortfolioMulti = () => {
+    checkData?.map((item:any)=>{
+      if(item?.original?.siteType === "Master Tasks"){
+        window.open(`${NextProp?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`,'_blank')
+      }else{
+        window.open(`${NextProp?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`,'_blank')
+      }
+    })
+  }
+
   React.useEffect(() => {
     if (table.getState().columnFilters.length) {
       setExpanded(true);
@@ -3704,7 +3715,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {Iconssc.map((icon: any) => {
                 return (
                   <>
-                    <span className="Dyicons" onClick={() => handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined ? icon?.nextIcon : ""}`}</span></>
+                    <span className="Dyicons" title={icon?.Title} onClick={() => handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined ? icon?.nextIcon : ""}`}</span></>
                 )
               })}
 
@@ -3778,6 +3789,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             >
               Restructure
             </button>}
+            {table?.getSelectedRowModel()?.flatRows?.length > 0 &&<span>
+                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span>}
             {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
 
             <button
