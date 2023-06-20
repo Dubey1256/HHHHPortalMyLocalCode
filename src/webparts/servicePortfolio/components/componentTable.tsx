@@ -6,12 +6,9 @@ import * as Moment from "moment";
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 //import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  FaAngleDown,
-  FaAngleUp,
   FaPrint,
   FaFileExcel,
   FaPaintBrush,
-  FaEdit,
   FaSearch,
   FaSort,
   FaSortDown,
@@ -22,8 +19,6 @@ import {
   FaMinus,
   FaPlus,
   FaCompressArrowsAlt,
-  FaWindowClose,
-  FaRegWindowClose,
 } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
@@ -52,7 +47,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
@@ -196,7 +190,7 @@ function ComponentTable(SelectedProp: any) {
   } catch (e) {
     console.log(e);
   }
-  // const [selectedDuration, setSelectedDuration] = React.useState("All Words");
+  const [selectedSearchDuration, setSelectedSearchDuration] = React.useState("All Words");
   const [Display, setDisplay] = React.useState("none");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -237,11 +231,7 @@ function ComponentTable(SelectedProp: any) {
   // const [table, setTable] = React.useState(data);
   const [WSPopup, setWSPopup] = React.useState(false);
   const [AllUsers, setTaskUser] = React.useState([]);
-  const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
-  const [show, setShow] = React.useState(false);
-  const [showChild, setShowChild] = React.useState(false);
-  const [showSubChild, setShowSubChild] = React.useState(false);
   const [state, setState] = React.useState([]);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
@@ -366,7 +356,7 @@ function ComponentTable(SelectedProp: any) {
     ) {
       if (checkedList[0].SharewebTaskType.Title == "Activities") {
         setWSPopup(true);
-        checkedList.push(checkedList[0]);
+        // checkedList.push(checkedList[0]);
         //setMeetingItems(childsData)
       }
     }
@@ -993,9 +983,7 @@ function ComponentTable(SelectedProp: any) {
               if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result.DueDate.replaceAll("Invalid date", "");
               }
-              result.PercentComplete = (result.PercentComplete * 100).toFixed(
-                0
-              );
+              result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
               result.chekbox = false;
               if (result.Short_x0020_Description_x0020_On != undefined) {
                 result.Short_x0020_Description_x0020_On =
@@ -2267,7 +2255,7 @@ function ComponentTable(SelectedProp: any) {
     temp.childs = [];
     temp.childsLength = 0;
     temp.flag = true;
-    temp.PercentComplete = "";
+    temp.PercentComplete ="";
     temp.ItemRank = "";
     temp.DueDate = "";
     // ComponetsData['allComponets'][i]['childs']
@@ -2285,7 +2273,9 @@ function ComponentTable(SelectedProp: any) {
         temp.childs.push(task);
       }
     });
-
+    if(temp?.childs?.length>0){
+      temp.childs = temp?.childs?.filter((ele:any, ind:any) => ind === temp?.childs?.findIndex((elem:any) => elem.ID === ele.ID));
+    }
     ComponetsData["allComponets"].push(temp);
     bindData();
   };
@@ -2423,6 +2413,8 @@ function ComponentTable(SelectedProp: any) {
           if (comp.Id == MainId || comp.ID == MainId) {
             comp.childs.push(childItem.data);
             comp.subRows.push(childItem.data);
+            comp.subRows = comp?.subRows?.filter((ele:any, ind:any) => ind === comp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+
           }
 
           if (comp.subRows != undefined && comp.subRows.length > 0) {
@@ -2432,6 +2424,7 @@ function ComponentTable(SelectedProp: any) {
               if (subComp.Id == MainId || subComp.ID == MainId) {
                 subComp.childs.push(childItem.data);
                 subComp.subRows.push(childItem.data);
+                subComp.subRows = subComp?.subRows?.filter((ele:any, ind:any) => ind === subComp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
 
               }
 
@@ -2455,8 +2448,7 @@ function ComponentTable(SelectedProp: any) {
                       Feat.subRows == undefined ? [] : Feat.subRows;
                     Feat.childs.push(childItem.data);
                     Feat.subRows.push(childItem.data);
-
-                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                    Feat.subRows = Feat?.subRows?.filter((ele:any, ind:any) => ind === Feat?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                   }
 
                   if (Feat.subRows != undefined && Feat.subRows.length > 0) {
@@ -2486,7 +2478,8 @@ function ComponentTable(SelectedProp: any) {
                         // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
                         //     return array.indexOf(val) == id;
                         // })
-                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                        // Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                        Activity.subRows = Activity?.subRows?.filter((ele:any, ind:any) => ind === Activity?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                       }
 
                       if (
@@ -2516,8 +2509,8 @@ function ComponentTable(SelectedProp: any) {
                               workst.subRows == undefined ? [] : workst.subRows;
                             workst.childs.push(childItem.data);
                             workst.subRows.push(childItem.data);
-                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID)
-                            );
+                            // workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                            workst.subRows = workst?.subRows?.filter((ele:any, ind:any) => ind === workst?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                           }
                         });
                       }
@@ -3432,7 +3425,7 @@ function ComponentTable(SelectedProp: any) {
 
 
               {/* ////////// Plush Icons////// */}
-              {/* <span>
+              <span>
                 {((row.getCanExpand() &&
                   row.subRows?.length !== row.original.subRows?.length) ||
                   !row.getCanExpand() ||
@@ -3484,7 +3477,7 @@ function ComponentTable(SelectedProp: any) {
                 ) : (
                   ""
                 )}{" "}
-              </span> */}
+              </span>
               {getValue()}
             </span>
           </>
@@ -3846,11 +3839,11 @@ function ComponentTable(SelectedProp: any) {
   };
 
   const openTaskAndPortfolioMulti = () => {
-    checkData?.map((item:any)=>{
-      if(item?.original?.siteType === "Master Tasks"){
-        window.open(`${ContextValue?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`,'_blank')
-      }else{
-        window.open(`${ContextValue?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`,'_blank')
+    checkData?.map((item: any) => {
+      if (item?.original?.siteType === "Master Tasks") {
+        window.open(`${ContextValue?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+      } else {
+        window.open(`${ContextValue?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
       }
     })
   }
@@ -3859,6 +3852,8 @@ function ComponentTable(SelectedProp: any) {
   let workstrim = 0;
   let task = 0;
   data.map((Com) => {
+    
+
     Com?.subRows?.map((Sub: any) => {
       if (Sub?.SharewebTaskType?.Title == "Activities") {
         activity = activity + 1;
@@ -3965,39 +3960,39 @@ function ComponentTable(SelectedProp: any) {
     });
   }
 
-  React.useEffect(() => {
-    if (table.getState()?.globalFilter?.length > 0) {
-      setExpanded(true);
-    } else {
-      setExpanded({})
-    }
-  }, [table.getState().globalFilter]);
-
-  React.useEffect(() => {
-    if (table.getState().columnFilters.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
-    }
-  }, [table.getState().columnFilters]);
+  // React.useEffect(() => {
+  //   if (table.getState()?.globalFilter?.length > 0) {
+  //     setExpanded(true);
+  //   } else {
+  //     setExpanded({})
+  //   }
+  // }, [table.getState().globalFilter]);
 
   // React.useEffect(() => {
-  //   if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
-  //     const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
-  //       (acc: any, cur: any) => {
-  //         if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
-  //           acc[cur] = true;
-  //         }
-  //         return acc;
-  //       },
-  //       {}
-  //     );
-  //     setExpanded(allKeys);
+  //   if (table.getState().columnFilters.length) {
+  //     setExpanded(true);
   //   } else {
   //     setExpanded({});
   //   }
-  //   forceExpanded = [];
-  // }, [table.getState().columnFilters, table.getState().globalFilter]);
+  // }, [table.getState().columnFilters]);
+
+  React.useEffect(() => {
+    if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
+      const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+        (acc: any, cur: any) => {
+          if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
+            acc[cur] = true;
+          }
+          return acc;
+        },
+        {}
+      );
+      setExpanded(allKeys);
+    } else {
+      setExpanded({});
+    }
+    forceExpanded = [];
+  }, [table.getState().columnFilters, table.getState().globalFilter]);
 
   const ShowTeamFunc = () => {
     setShowTeamPopup(true)
@@ -4543,15 +4538,15 @@ function ComponentTable(SelectedProp: any) {
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                     </span>
-                    {/* <span>
+                    <span>
                       <span>
-                        <select className="" style={{ height: '30px' }} aria-label="Default select example" value={selectedDuration} onChange={(e) => setSelectedDuration((e.target.value))}>
+                        <select className="" style={{ height: '30px' }} aria-label="Default select example" value={selectedSearchDuration} onChange={(e) => setSelectedSearchDuration((e.target.value))}>
                           <option selected>All Words</option>
                           <option value="1">Any Words</option>
                           <option value="2">Exact Phrase</option>
                         </select>
                       </span>
-                    </span> */}
+                    </span>
 
                   </span>
                   <span className="toolbox mx-auto">
@@ -4612,7 +4607,7 @@ function ComponentTable(SelectedProp: any) {
                       Restructure
                     </button>}
 
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 &&<span>
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 && <span>
                       <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span>}
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}

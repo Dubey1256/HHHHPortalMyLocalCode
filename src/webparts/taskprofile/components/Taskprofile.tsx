@@ -734,6 +734,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private CallBack() {
+    ClientTimeArray=[];
     this.setState({
       isOpenEditPopup: false,
       countfeedback: this.state.countfeedback+1
@@ -1146,7 +1147,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-                    {breadcrumbitem.ParentTask != undefined  && 
+                    {breadcrumbitem.ParentTask == undefined  && 
                       <li>
                         <a >
                           <span>{this.state.Result['Title']}</span>

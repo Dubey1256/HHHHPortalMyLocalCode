@@ -21,6 +21,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
+let ShowCategoryDatabackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -45,7 +46,6 @@ var isModelChange = false
 var TaskImagess: any = []
 const defaultContent = "";
 let defaultfile = [];
-let ShowCategoryDatabackup: any = [];
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -968,7 +968,6 @@ const CreateActivity = (props: any) => {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-
                             })
                         }
                         if (data?.AssignedToId?.length > 0) {
@@ -978,7 +977,6 @@ const CreateActivity = (props: any) => {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-
                             })
                         }
                             data.ClientCategory = []
@@ -1385,15 +1383,13 @@ const CreateActivity = (props: any) => {
     //             tempShareWebTypeData.push(dataType);
     //         }
     //     })
-    //     if (tempArray2 != undefined && tempArray2.length > 0) {
-    //         tempArray2.map((itemData: any) => {
-    //             tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
-    //         })
-    //     }
-    //     setCategoriesData(tempString);
-    //     tempCategoryData = tempString;
-    //     setShareWebTypeData(tempArray2);
-    // }
+
+        setIsComponentPicker(false);
+        let data: any = CategoriesData
+        data = data.concat(selectCategoryData)
+        setCategoriesData(CategoriesData => [...data])
+
+
 
     return (
         <>
