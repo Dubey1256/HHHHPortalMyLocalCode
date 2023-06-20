@@ -811,30 +811,30 @@ function TimeEntryPopup(item: any) {
             }
         });
 
+    var newArray=[]
 
+        $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
 
-        // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-
-        //     if (items.Childs != undefined && items.Childs.length > 0) {
-        //         $.each(items.Childs, function (index: any, child: any) {
-        //             if (child.TimesheetTitle.Id == undefined) {
-        //                 child.AdditionalTime.sort(datecomp);
-        //               console.log(child.AdditionalTime)
-        //               child.AdditionalTime = child.AdditionalTime.reverse()
+            if (items.Childs != undefined && items.Childs.length > 0) {
+                $.each(items.Childs, function (index: any, child: any) {
+                    if (child.TimesheetTitle.Id == undefined) {
+                        newArray =  child.AdditionalTime.sort(datecomp);
+                        console.log(newArray)
+                      //child.AdditionalTime = child.AdditionalTime.reverse()
 
                                 
-        //             }
+                    }
 
-        //         })
+                })
 
-        //     }
+            }
 
 
 
 
           
 
-        // });
+        });
         console.log(TaskTimeSheetCategoriesGrouping)
         // setAdditionalTime(AdditionalTimes)
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
@@ -924,10 +924,10 @@ function TimeEntryPopup(item: any) {
     function datecomp(d1: any, d2: any) {
         var a1 = d1.TaskDate.split("/");
         var a2 = d2.TaskDate.split("/");
-        // a1 = a1[2] + a1[0] + a1[1];
-        // a2 = a2[2] + a2[0] + a2[1];
-        a1 = a1[1] + a1[0] + a1[2];
-        a2 = a2[1] + a2[0] + a2[2];
+        a1 = a1[2] + a1[1] + a1[0];
+         a2 = a2[2] + a2[1] + a2[0];
+       // a1 = a1[1] + a1[0] + a1[2];
+        //a2 = a2[1] + a2[0] + a2[2];
         //var a1:any= new Date(d1.TaskDate)
         //var a2:any= new Date(d2.TaskDate)
         //var b1:any = Moment(a1).format()
@@ -1252,23 +1252,45 @@ function TimeEntryPopup(item: any) {
         // setData(data => ([...data]));
 
     };
-    const sortBy = () => {
+    const sortBy = (Type:any) => {
+        var copy:any=[]
+        AllTimeSpentDetails?.forEach((val:any)=>{
+        val?.AdditionalTime.forEach((item:any)=>{
+            copy.push(item)
+        })
+        })
 
-        // const copy = data
+        
+        copy.sort((a:any, b:any) => (a.Type > b.Type) ? 1 : -1);
+        AllTimeSpentDetails?.forEach((val:any)=>{
+            val.AdditionalTime=[]
+            copy.forEach((item:any)=>{
+                val.AdditionalTime.push(item)
+            })
+            })
 
-        // copy.sort((a, b) => (a.Title > b.Title) ? 1 : -1);
-
-        // setTable(copy)
+            setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
 
     }
-    const sortByDng = () => {
+    const sortByDng = (Type:any) => {
 
-        // const copy = data
+        var copy:any=[]
+        AllTimeSpentDetails?.forEach((val:any)=>{
+            val?.AdditionalTime.forEach((item:any)=>{
+                copy.push(item)
+            })
+        })
 
-        // copy.sort((a, b) => (a.Title > b.Title) ? -1 : 1);
 
-        // setTable(copy)
+      copy.sort((a:any, b:any) => (a.Type < b.Type) ? 1 : -1);
+      AllTimeSpentDetails?.forEach((val:any)=>{
+        val.AdditionalTime=[]
+        copy.forEach((item:any)=>{
+            val.AdditionalTime.push(item)
+        })
+        }) 
 
+        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
     }
 
 
@@ -1374,7 +1396,7 @@ function TimeEntryPopup(item: any) {
         })
     
         setupdateData(updateData + 5)
-    }
+       }
 
     }
 
@@ -1588,7 +1610,7 @@ function TimeEntryPopup(item: any) {
         let web = new Web(`${CurrentSiteUrl}`);
 
 if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
-    AllTimeEntry.forEach(async (ite:any)=>{
+    AllTimeEntry.forEach((ite:any)=>{
         if(ite.Title == UpdatedData.AuthorName){
              Available = true;
             let folderUri: string = `/${UpdatedData.Company}`
@@ -1609,18 +1631,24 @@ if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
                 // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
             };
     
-            let newdata = await web.lists.getByTitle(listNames)
+            let newdata =  web.lists.getByTitle(listNames)
                 .items
-                .add({ ...itemMetadataAdded });
-            console.log(newdata)
+                .add({ ...itemMetadataAdded }).then((res:any)=>{
+                    console.log(newdata)
+                    let movedata =  web
+                    .getFileByServerRelativeUrl(`${listUri}/${res.data.Id}_.000`)
+                    .moveTo(`${listUri}${folderUri}/${res.data.Id}_.000`).then((res:any)=>{
+                        console.log(movedata);
+                        mainParentId = res.data.Id;
+                        mainParentTitle = res.data.Title;
+                        createItemMainList();
+                    });
+              
+                });
+           
     
-            let movedata = await web
-                .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
-                .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
-            console.log(movedata);
-            mainParentId = newdata.data.Id;
-            mainParentTitle = newdata.data.Title;
-            createItemMainList();
+           
+          
         }
        
            
@@ -2230,8 +2258,67 @@ if(AllTimeEntry.length == 0 && Available == false){
     const handleOnBlur = (event: any) => {
         setNewData({ ...newData, TaskDate: event.target.value })
     }
-    const formatDate = React.useCallback((Date) =>
-        Date.toLocaleString(), []);
+
+    var FlatviewData:any=[]
+    var Childs:any=[]
+
+   const FlatView=()=>{
+//     var newArray:any=[]
+//    var Time:any ={}
+//    var Times:any ={}
+//    Time['Time'] = ""
+//    Times['Times'] = "TimeSheet"
+//    Childs.push(Time)
+//    Childs.AdditionalTime = []
+//    FlatviewData.push(Times)
+//    FlatviewData.forEach((itee:any)=>{
+//     itee.Childs=[{"Title":"TimeSheet","AdditionalTime":[]}]
+    
+//    })
+  
+   
+//     AllTimeSpentDetails?.forEach((val:any)=>{
+//     val.AdditionalTime?.forEach((haa:any)=>{
+//         Childs.push(haa)
+//     })
+//     })
+//     Childs?.forEach((items:any)=>{
+//         FlatviewData?.forEach((vall:any)=>{
+//             vall.Childs.push(items)
+//             newArray =  items.AdditionalTime.sort(datecomp);
+//             items.AdditionalTime=[]
+//         })
+//     })
+//     FlatviewData.forEach((value:any)=>{
+//         value.Childs.forEach((newiTem:any)=>{
+//             newArray.forEach((valll:any)=>{
+//                 newiTem.AdditionalTime.push(valll)
+//             })
+//         })
+//     })
+ // copy.sort((a:any, b:any) => (a.TaskDate > b.TaskDate) ? -1 : 1);
+  
+//   Childs.forEach((val:any)=>{
+//     val.AdditionalTime=[]
+//     copy.forEach((item:any)=>{
+//         val.AdditionalTime.push(item)
+//     })
+//     }) 
+   
+   
+    // FlatviewData.forEach((item:any)=>{
+    //     item.Childs?.forEach((val:any)=>{
+    //         newArray?.forEach((naa:any)=>{
+    //             val.AdditionalTime.push(naa)
+    //         })
+          
+    //     })
+    // })
+  
+    setFlatview(!flatview)
+   // setTimeSheet(FlatviewData);
+   // setTimeSheet(FlatviewData => ([...FlatviewData]));
+   }
 
     return (
         <div className={PortfolioType=='Service'?'serviepannelgreena':''}>
@@ -2247,7 +2334,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                                 + Add Time in New Structure
                             </a>
                             <div>
-                            <input type = "checkbox" className="hreflink pull-Left mt-1 me-1" onChange={()=>setFlatview(!flatview)}/>
+                            <input type = "checkbox" className="hreflink pull-Left mt-1 me-1" onClick={()=>FlatView()}/>
 
                               FlatView
                             
@@ -2280,8 +2367,8 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                             onChange={event => handleChange(event, 'Time')} />
 
                                                         <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                            <span className="up" onClick={()=>sortBy('Name')}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={()=>sortByDng('Name')}>< FaAngleDown /></span>
                                                         </span>
 
 
@@ -2293,8 +2380,8 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                             title="Client Category" className="full_width searchbox_height"
                                                             onChange={event => handleChange(event, 'Date')} />
                                                         <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                            <span className="up" onClick={()=>sortBy('Date')}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={()=>sortByDng('Date')}>< FaAngleDown /></span>
                                                         </span>
                                                     </div>
                                                 </th>
@@ -2304,8 +2391,8 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                             title="Client Category" className="full_width searchbox_height"
                                                             onChange={event => handleChange(event, 'Time')} />
                                                         <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                            <span className="up" onClick={()=>sortBy('Time')}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={()=>sortByDng('Time')}>< FaAngleDown /></span>
                                                         </span>
 
                                                     </div>
@@ -2316,8 +2403,8 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                             title="Client Category" className="full_width searchbox_height"
                                                             onChange={event => handleChange(event, 'Description')} />
                                                         <span className="sorticon">
-                                                            <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                            <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
+                                                            <span className="up" onClick={()=>sortBy('Description')}>< FaAngleUp /></span>
+                                                            <span className="down" onClick={()=>sortByDng('Description')}>< FaAngleDown /></span>
                                                         </span>
 
                                                     </div>
