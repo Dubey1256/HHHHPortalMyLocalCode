@@ -7,6 +7,12 @@ import * as moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "moment-timezone";
 import { v4 as uuidv4 } from "uuid";
+import EmailComponenet from "./email";
+import { SPHttpClient } from "@microsoft/sp-http";
+import {
+  PeoplePicker,
+  PrincipalType,
+} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
@@ -32,6 +38,7 @@ import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
 import Tooltip from "../../../globalComponents/Tooltip";
+import { Modal } from "react-bootstrap";
 //import MoreSlot from "./Slots";
 interface IEventData {
   Event_x002d_Type?: string;
@@ -101,7 +108,7 @@ const App = (props: any) => {
   // const [name, setName]:any = React.useState('');
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
-  // const [reason, setReason]:any = React.useState('');
+   const [chkName, setChkName]:any = React.useState('');
   const [type, setType]: any = React.useState("");
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
@@ -114,13 +121,19 @@ const App = (props: any) => {
   const [location, setLocation]: any = React.useState();
   //const [saveE, setsaveE]:any = React.useState([]);
   //let saveE:any=[]
+  const [email, setEmail]: any = React.useState(false);
+  const [todayEvent, setTodayEvent]: any = React.useState(false);
+const [peopleName,setPeopleName]:any =React.useState([]);
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
-
+  const [selectedPeople, setSelectedPeople] = React.useState<any[]>([]);
   const [showRecurrence, setshowRecurrence] = React.useState(false);
-  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
-    React.useState(false);
+  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =    React.useState(false);
+  const [peoplePickerShow, setPeoplePickerShow] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [showM, setShowM] = React.useState([]);
+
   const [newRecurrenceEvent, setNewRecurrenceEvent] = React.useState(false);
   const [editRecurrenceEvent, setEditRecurrenceEvent] = React.useState(false);
   const [returnedRecurrenceInfo, setReturnedRecurrenceInfo] =
@@ -143,7 +156,7 @@ const App = (props: any) => {
     setShowRecurrenceSeriesInfo(recurChecked);
     setNewRecurrenceEvent(recurChecked);
   };
-
+  console.log("props", props);
   // CUstom header
   const onRenderCustomHeader = () => {
     return (
@@ -350,6 +363,8 @@ const App = (props: any) => {
   const leaveTypes = [
     { key: "Event", text: "Event" },
     { key: "Training", text: "Training " },
+    { key: "Planned Leave", text: "Planned" },
+    { key: "Un-Planned", text: "Un-Planned" },
   ];
 
   const openm = () => {
@@ -382,20 +397,7 @@ const App = (props: any) => {
 
   const ConvertLocalTOServerDateToSave = (date: any, Time: any) => {
     if (date != undefined && date != "") {
-      // let partsDate = date.split("/");
-      // let dateValue = partsDate[1] + "/" + partsDate[0] + "/" + partsDate[2];
-      // const [hour, minute] = Time.split(":");
-      // const [day, month, year] = date.split("/");
-      // const dateObj = new Date(
-      //   `${month}/${day}/${year} ${hour}:${minute}:00 GMT+0530`
-      // );
-      // const ISTDate = new Date(dateObj.getTime());
-      // console.log(ISTDate);
-
-      //date = new Date(date);
-
-      // const formattedDater = date.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' });
-      // console.log(formattedDater);
+      
       const dateString = date;
       const dateObj = moment(dateString, "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
       const formattedDater = dateObj.format("ddd MMM DD YYYY");
@@ -405,70 +407,11 @@ const App = (props: any) => {
       return formattedDater;
     } else return "";
   };
-  // const ConvertLocalTOServerDateToSavestart = (date: any, Time: any) => {
-  //   if (date != undefined && date != "") {
-  //     let partsDate = date.split("/");
-  //     let dateValue = partsDate[1] + "/" + partsDate[0] + "/" + partsDate[2];
-  //     const [hour, minute] = Time.split(":");
-  //     const [day, month, year] = date.split("/");
-  //     const dateObj = new Date(
-  //       `${month}/${day}/${year} ${hour}:${minute}:00 GMT+0530`
-  //     );
-  //     const ISTDate = new Date(dateObj.getTime() );
-  //     console.log(ISTDate);
 
-  //     date = new Date(dateValue);
-  //     //if (Time != undefined && Time != '')
-  //     // date.setHours(parseInt(Time.split(':')[0]), parseInt(Time.split(':')[1]), parseInt(Time.split(':')[2]))
-  //     console.log(date.toDateString());
-  //     return ISTDate;
-  //   } else return "";
-  // };
-
-  // const ConvertLocalTOServerDate = (LocalDateTime:any, dtformat:any) =>{
-  //   if (dtformat == undefined || dtformat == "") dtformat = "DD/MM/YYYY"; // below logic works fine in all condition
-
-  //   if (LocalDateTime != "") {
-  //     let serverDateTime;
-  //     let vLocalDateTime = new Date(LocalDateTime);
-  //     console.log(vLocalDateTime);
-  //     //var offsetObj = GetServerOffset();
-  //     //var IANATimeZoneName = GetIANATimeZoneName();
-  //     let mDateTime = moment(LocalDateTime);
-  //     serverDateTime = mDateTime.tz("Europe/Berlin").format(dtformat);
-  //     // 5am PDT //serverDateTime = mDateTime.tz('America/Los_Angeles').format(dtformat);
-  //     // 5am PDT
-  //     return serverDateTime;
-  //   }
-  //   return "";
-  // };
-
-  //console.log("saveE",saveE);
 
   let offset: any;
 
-  // const getSPCurrentTimeOffset = (): Promise<void> => {
-  //   return $.ajax({
-  //     url:
-  //       "https://hhhhteams.sharepoint.com/sites/HHHH/SP" +
-  //       "/_api/web/RegionalSettings/TimeZone",
-  //     method: "GET",
-  //     headers: { Accept: "application/json; odata=verbose" },
-  //   }).then((data) => {
-  //     offset =
-  //       -(
-  //         data.d.Information.Bias +
-  //         data.d.Information.StandardBias +
-  //         data.d.Information.DaylightBias
-  //       ) / 60.0;
-  //     // if (GlobalConstants.SP_SITE_TYPE == 'gmbh' || GlobalConstants.SP_SITE_TYPE == '')
-  //     offset = offset - 1;
-  //   });
-  // };
-
-  // try {
-  //   void getSPCurrentTimeOffset();
-  // } catch (e) {}
+ 
 
   const convertDateTimeOffset = (Date: any): string | undefined => {
     let ConvertDateOffset: string | undefined;
@@ -516,6 +459,7 @@ const App = (props: any) => {
       .get()
       .then((dataaa: any[]) => {
         console.log("datata", dataaa);
+        setChkName(dataaa);
         compareData = dataaa;
         // dataaa.EventDate
         let localArray: any = [];
@@ -607,7 +551,7 @@ const App = (props: any) => {
         });
     }
   };
-
+const [details,setDetails]:any=React.useState([])
   const saveEvent = async () => {
     if (inputValueName.length > 0) {
       const chkstartDate = new Date(startDate);
@@ -626,6 +570,7 @@ const App = (props: any) => {
             return;
           }
           const newEvent = {
+            name:peopleName,
             title: inputValueName,
             start: startDate,
             end: endDate,
@@ -634,8 +579,12 @@ const App = (props: any) => {
             loc: location,
           };
 
+          setDetails(newEvent);
+
           let eventData = {
             Title: newEvent.title,
+
+            Name:newEvent.name,
 
             Location: newEvent.loc,
 
@@ -1161,6 +1110,7 @@ const App = (props: any) => {
 
   const handleDateClick = async (event: any) => {
     setshowRecurrence(false);
+    setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
     setEditRecurrenceEvent(false);
 
@@ -1232,39 +1182,8 @@ const App = (props: any) => {
 
   console.log(CTime, MTime, "faees");
 
-  // const Number=()=>{
-  //   console.log("hdgawdgawdjkawdjkawb")
-  // }
-
-  // const slotsWithMoreEvents = events.reduce((acc:any, event:any) => {
-  //   const slot = acc.find((slot:any) => slot.start === event.start && slot.end === event.end);
-  //   if (slot) {
-  //     slot.events.push(event);
-  //   } else {
-  //     acc.push({ start: event.start, end: event.end, events: [event] });
-  //   }
-  //   return acc;
-  // }, [] as { start: Date; end: Date; events: Event[] }[]);
-
-  // const components = {
-  //   timeSlotWrapper: ({ children, value }:any) => {
-  //     const slot = slotsWithMoreEvents.find(
-  //       (slot:any) => slot.start === value.start && slot.end === value.end
-  //     );
-
-  //     return slot ? (
-  //       <MoreSlot hiddenEvents={slot.events} />
-  //     ) : (
-  //       <div><button onClick={Number}>{children}</button>
-
-  //         </div>
-  //     );
-  //   },
-  // };
-
   const handleSelectSlot = (slotInfo: any) => {
-    // myButton.removeAttribute("onclick");
-    //saveE=slotInfo;
+    setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
     setNewRecurrenceEvent(false);
@@ -1336,59 +1255,117 @@ const App = (props: any) => {
 
   React.useEffect(() => {
     //void getSPCurrentTimeOffset();
-
+    setSelectedPeople(initialPeople);
     void getData();
   }, []);
 
+  const initialPeople: any = [
+    {
+      id: "1",
+      text: "John Doe",
+      secondaryText: "johndoe@example.com",
+      tertiaryText: "",
+      optionalText: "",
+    },
+    {
+      id: "2",
+      text: "Jane Smith",
+      secondaryText: "janesmith@example.com",
+      tertiaryText: "",
+      optionalText: "",
+    },
+    {
+      id: "3",
+      text: "Bob Johnson",
+      secondaryText: "bobjohnson@example.com",
+      tertiaryText: "",
+      optionalText: "",
+    },
+  ];
 
-  const handleNavigate = (date: Date, view: any) => {
-    // Handle calendar navigation events
-    // console.log("Navigate clicked");
-    // console.log("Date:", date);
-    // console.log("View:", view);
-    // var slotinfo2={
-    //         start:date,
-    //         end:date
-    //       }
-          
-    //       handleSelectSlot(slotinfo2);
+  // const people = (people:any) => {
+  //   console.log("people")
+  // };
+
+  const getUserInfo = async (userMail: string) => {
+    const userEndPoint: any = `${props.props.context.pageContext.web.absoluteUrl}/_api/Web/EnsureUser`;
+
+    const userData: string = JSON.stringify({
+      logonName: userMail,
+    });
+
+    const userReqData = {
+      body: userData,
+    };
+
+    const resUserInfo = await props.props.context.spHttpClient.post(
+      userEndPoint,
+      SPHttpClient.configurations.v1,
+      userReqData
+    );
+    const userInfo = await resUserInfo.json();
+
+    return userInfo;
   };
 
-  // const handleShowMore = () => {
-    
-  //     // var slotinfo2={
-  //     //   start:date,
-  //     //   end:date
-  //     // }
-      
-  //     // handleSelectSlot(slotinfo2);
-  //     console.log("clicked");
-      
-  // };
-  React.useEffect(() => {
-    const handleClick = (event:any) => {
-      if (event.target.classList.contains('rbc-day-slot-number')) {
-        const dateStr = event.target.getAttribute('data-date');
-        const date = new Date(dateStr);
-        // Handle the click event on the number here
-        console.log('Clicked date:', date);
-      }
-    };
+  const people = async (people: any) => {
+    let userId: number = undefined;
+    let userTitle: string = undefined;
+    let userSuffix: string = undefined;
 
-    document.addEventListener('click', handleClick);
+    if (people.length > 0) {
+      let userMail = people[0].id.split("|")[2];
+      let userInfo = await getUserInfo(userMail);
+      userId = userInfo.Id;
+      userTitle = userInfo.Title;
+      userSuffix = userTitle
+        .split(" ")
+        .map((i) => i.charAt(0))
+        .join("");
+    }
+    setPeopleName(userTitle)
+  };
 
-    return () => {
-      document.removeEventListener('click', handleClick);
-    };
-  }, []);
+  const handleShowMore = (event: any) => {
+    // console.log
+
+    // handleSelectSlot(slotinfo2);
+    console.log("clicked", event);
+    setShowM(event);
+    openModal();
+  };
+
+  
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+  
+  const emailComp = () => {
+    const currentDate = new Date();
+    var eData:any=[]
+    const currentDayEvents = events.filter(
+      (event: { start: moment.MomentInput }) =>
+        moment(event.start).isSame(currentDate, "day")
+    );
+    const currentDayEvents2 = chkName.filter(
+      (event: { start: moment.MomentInput }) =>
+        moment(event.start).isSame(currentDate, "day")
+    );
+    console.log("newevents",currentDayEvents2);
+    setTodayEvent(currentDayEvents);
+    setEmail(true);
+  };
 
   return (
     <div>
-      <div style={{ height: "500pt" }} >
+      <div style={{ height: "500pt" }}>
+        <button onClick={emailComp}>Email</button>
         <Calendar
-          events
-          ={events}
-          
+          events={events}
           selectable
           onSelectSlot={handleSelectSlot}
           defaultView="month"
@@ -1399,13 +1376,37 @@ const App = (props: any) => {
           //  onNavigate={handleNavigate}
           defaultDate={moment().toDate()}
           // defaultView={Views.MONTH}
-           showAllEvents={true}
+          onShowMore={handleShowMore}
           views={{ month: true, week: false, day: false, agenda: true }}
           localizer={localizer}
           onSelectEvent={handleDateClick}
-          
         />
       </div>
+
+      {email ? (
+        <EmailComponenet Context={props.props.context} data={todayEvent} data1={peopleName} data2={details} />
+      ) : null}
+
+      {isOpen && (
+        <Modal 
+        isopen={isOpen} 
+        onClose={closeModal}>
+          {/* Add the content of your modal */}
+          {/* <h2>Modal Content</h2>
+          <p>This is the content of the modal.</p> */}
+          <table>
+            <tbody>
+              {showM?.map((item, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{item.title}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Modal>
+      )}
 
       <Panel
         onRenderHeader={onRenderCustomHeader}
@@ -1416,6 +1417,23 @@ const App = (props: any) => {
         closeButtonAriaLabel="Close"
       >
         <form className="row g-3">
+          {peoplePickerShow ? (
+            <div>
+            <PeoplePicker
+              context={props.props.context}
+              principalTypes={[PrincipalType.User]}
+              personSelectionLimit={1}
+              titleText="Select People"
+              resolveDelay={1000}
+              onChange={people}
+              showtooltip={true}
+              required={true}
+              defaultSelectedUsers={initialPeople}
+            ></PeoplePicker>
+          </div>
+            
+          ) : ("")}
+           
           <div className="col-md-12">
             <TextField
               label="Title"
@@ -1477,7 +1495,6 @@ const App = (props: any) => {
           ) : (
             ""
           )}
-
           <div>
             <label>
               <input
@@ -1528,7 +1545,13 @@ const App = (props: any) => {
               value={location}
               onChange={handleInputChangeLocation}
             />
-          </div>
+          </div>{" "}
+          <Dropdown
+            label="Leave Type"
+            options={leaveTypes}
+            selectedKey={type}
+            onChange={(e, option) => setType(option.key)}
+          />
           <div className="col-md-12">
             <ReactQuill
               value={inputValueReason}
@@ -1537,12 +1560,6 @@ const App = (props: any) => {
           </div>
         </form>
 
-        <Dropdown
-          label="Leave Type"
-          options={leaveTypes}
-          selectedKey={type}
-          onChange={(e, option) => setType(option.key)}
-        />
         <br />
         {!disabl ? (
           <PrimaryButton
