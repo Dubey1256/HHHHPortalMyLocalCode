@@ -10,7 +10,7 @@ export default function Sitecomposition({ props }: any) {
   const handleOpen3 = (item: any) => {
     setIsActive((current: any) => !current);
     setIsActive(true);
-    item.showk = item.showk = item.showk == true ? false : true;
+    item.showk = !item.showk 
     setdatak((datak) => [...datak]);
   };
   var myarray: any = [];
@@ -23,7 +23,7 @@ export default function Sitecomposition({ props }: any) {
     if (myarray.length != 0) {
       myarray[0].map((items: any) => {
         if (items.SiteImages != undefined && items.SiteImages != "") {
-          items.SiteImages = items.SiteImages.replace(
+          items.SiteImages = items?.SiteImages?.replace(
             "https://www.hochhuth-consulting.de",
             "https://hhhhteams.sharepoint.com/sites/HHHH"
           );
@@ -32,7 +32,7 @@ export default function Sitecomposition({ props }: any) {
       });
     }
 
-    if (item.ClientCategory.results.length != 0) {
+    if (item?.ClientCategory?.results.length != 0) {
       item.ClientCategory.results.map((terms: any) => {
         //     if(myarray2.length!=0 && myarray2[0].title==terms.title){
         //                ""

@@ -751,10 +751,29 @@ function TimeEntryPopup(item: any) {
 
 
                     }
+                   
                 })
             }
         })
+        AllTimeSpentDetails?.forEach((val:any)=>{
+            if(val.TimesheetTitle.Id == undefined){
+                val.AdditionalTime=[]
+                 AllTimeSpentDetails?.forEach((itemss:any)=>{
+                if(itemss.TimesheetTitle.Id == val.Id){
+                    if(itemss.AdditionalTime != undefined){
+                        itemss.AdditionalTime.forEach((item:any)=>{
+                         val.AdditionalTime.push(item)
+                            
+                        })
+                    }
+                }
+            })
+                }
+           
+            
 
+        })
+       
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted === false });
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.AdditionalTime.length === 0) {
@@ -778,6 +797,7 @@ function TimeEntryPopup(item: any) {
                 })
             }
         })
+       
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.Category.Title === undefined)
                 checkCategory(items, 319);
@@ -797,23 +817,12 @@ function TimeEntryPopup(item: any) {
 
         //     if (items.Childs != undefined && items.Childs.length > 0) {
         //         $.each(items.Childs, function (index: any, child: any) {
-        //             if (child.TimesheetTitle.Id != undefined) {
-        //                 if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
-        //                     $.each(child.AdditionalTime, function (index: any, Subchild: any) {
-        //                         if (Subchild != undefined && (!isItemExists(AdditionalTime, Subchild.ID))) {
+        //             if (child.TimesheetTitle.Id == undefined) {
+        //                 child.AdditionalTime.sort(datecomp);
+        //               console.log(child.AdditionalTime)
+        //               child.AdditionalTime = child.AdditionalTime.reverse()
 
-        //                             AdditionalTimes.push(Subchild)
-        //                             //  AdditionalTimes.sort(datecomp);
-        //                             console.log(AdditionalTimes)
-
-
-        //                         }
-
-
-        //                     })
-
-
-        //                 }
+                                
         //             }
 
         //         })
@@ -823,7 +832,7 @@ function TimeEntryPopup(item: any) {
 
 
 
-        //     //AdditionalTimes= AdditionalTimes.reverse()
+          
 
         // });
         console.log(TaskTimeSheetCategoriesGrouping)
@@ -912,19 +921,19 @@ function TimeEntryPopup(item: any) {
         item.CallBackTimeEntry();
 
     }
-    // function datecomp(d1: any, d2: any) {
-    //     var a1 = d1.TaskDate.split("/");
-    //     var a2 = d2.TaskDate.split("/");
-    //     // a1 = a1[2] + a1[0] + a1[1];
-    //     // a2 = a2[2] + a2[0] + a2[1];
-    //     a1 = a1[1] + a1[0] + a1[2];
-    //     a2 = a2[1] + a2[0] + a2[2];
-    //     //var a1:any= new Date(d1.TaskDate)
-    //     //var a2:any= new Date(d2.TaskDate)
-    //     //var b1:any = Moment(a1).format()
-    //     //var b2:any = Moment(a1).format()
-    //     return a2 - a1;
-    // }
+    function datecomp(d1: any, d2: any) {
+        var a1 = d1.TaskDate.split("/");
+        var a2 = d2.TaskDate.split("/");
+        // a1 = a1[2] + a1[0] + a1[1];
+        // a2 = a2[2] + a2[0] + a2[1];
+        a1 = a1[1] + a1[0] + a1[2];
+        a2 = a2[1] + a2[0] + a2[2];
+        //var a1:any= new Date(d1.TaskDate)
+        //var a2:any= new Date(d2.TaskDate)
+        //var b1:any = Moment(a1).format()
+        //var b2:any = Moment(a1).format()
+        return a2 - a1;
+    }
 
 
     function getDateForTimeEntry(newDate: any, items: any) {
@@ -1824,6 +1833,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     update['AuthorId'] = CurntUserId;
                     update['AuthorImage'] = CurrentUser.AuthorImage;
                     update['ID'] = timeSpentId.ID + 1;
+                    update['Id'] = timeSpentId.ID + 1;
                     update['MainParentId'] = AddMainParentId;
                     update['ParentID'] = AddParentId;
                     update['TaskTime'] = TimeInHours;
@@ -1839,6 +1849,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     update['AuthorImage'] = CurrentUser.AuthorImage;
                     update['AuthorId'] = CurntUserId
                     update['ID'] = 0;
+                    update['Id'] = 0;
                     update['MainParentId'] = items.TimesheetTitle.Id;
                     update['ParentID'] = items.Id;
                     update['TaskTime'] = TimeInHours;
@@ -2026,7 +2037,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         return (
           <>
     
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Add Task Time
             </div>
             <Tooltip ComponentId='1753' />
@@ -2037,7 +2048,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         return (
           <>
     
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Edit Task Time
             </div>
             <Tooltip ComponentId='1753' />
@@ -2048,7 +2059,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         return (
           <>
     
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Copy Task Time
             </div>
             <Tooltip ComponentId='1753' />
@@ -2059,7 +2070,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         return (
           <>
     
-            <div className='ps-4' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
             Edit Category
             </div>
             <Tooltip ComponentId='1753' />
