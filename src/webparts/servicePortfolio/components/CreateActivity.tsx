@@ -19,6 +19,7 @@ import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
 
 import Froala from "react-froala-wysiwyg";
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
 let AutoCompleteItemsArray: any = [];
 var AssignedToIds: any = [];
@@ -44,6 +45,7 @@ var isModelChange = false
 var TaskImagess: any = []
 const defaultContent = "";
 let defaultfile = [];
+let ShowCategoryDatabackup: any = [];
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -70,6 +72,10 @@ const CreateActivity = (props: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState('');
     const [checkedCat, setcheckedCat] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
+    const [PhoneStatus, setPhoneStatus] = React.useState(false);
+    const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
+    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [selectPriority, setselectPriority] = React.useState('');
     const [Priorityy, setPriorityy] = React.useState(false);
@@ -272,6 +278,7 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
+        setSearchedCategoryData([]);
         if (type == "SmartComponent") {
             var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
@@ -290,20 +297,36 @@ const CreateActivity = (props: any) => {
                 title.Title = item1.categories;
                 item1.categories.map((itenn: any) => {
                     if (!isItemExists(CategoriesData, itenn.Id)) {
+
                         CategoriesData.push(itenn);
                     }
 
                 })
                 item1.SharewebCategories?.map((itenn: any) => {
+
                     CategoriesData.push(itenn)
                 })
 
                 setCategoriesData(CategoriesData)
-
-
             }
         }
-        if (type == "ClientCategory") {
+        if (type =="Category-Task-Footertable") {
+
+            setPhoneStatus(false)
+            setEmailStatus(false)
+            setImmediateStatus(false)
+            setApprovalStatus(false)
+
+            if (item1 != undefined && item1.length > 0) {
+                item1?.map((itenn: any) => {
+                    selectedCategoryTrue(itenn.Title)
+
+                })
+
+                setCategoriesData(item1)
+            }
+        }
+        if (type =="ClientCategory") {
             var Data: any = []
             if (item1 != undefined && item1.Clientcategories != "") {
                 var title: any = {};
@@ -319,7 +342,7 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        if (type == "LinkedComponent") {
+        if (type =="LinkedComponent") {
             let ServiceData: any = []
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
@@ -761,6 +784,7 @@ const CreateActivity = (props: any) => {
                             res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
+
                         res.data.ClientCategory = []
                         res.data.AssignedTo = []
                         res.data.Responsible_x0020_Team = []
@@ -772,7 +796,7 @@ const CreateActivity = (props: any) => {
                                         res.data.Team_x0020_Members.push(User?.AssingedToUser)
                                     }
                                 })
-                              
+
                             })
                         }
                         if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
@@ -782,7 +806,7 @@ const CreateActivity = (props: any) => {
                                         res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-                                
+
                             })
                         }
                         if (res?.data?.AssignedToId?.length > 0) {
@@ -792,7 +816,7 @@ const CreateActivity = (props: any) => {
                                         res.data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-                                
+
                             })
                         }
                         if (res?.data?.ClientCategoryId?.length > 0) {
@@ -804,7 +828,6 @@ const CreateActivity = (props: any) => {
                             })
                         }
                         res.data.Clientcategories = res.data.ClientCategory;
-
                         let fileName: any = '';
                         let tempArray: any = [];
                         // let SiteUrl = SiteUrl;
@@ -924,7 +947,7 @@ const CreateActivity = (props: any) => {
                             data.Created = new Date();
                             data.Author = {
                                 Id: res?.data?.AuthorId
-                            }
+                            }                 
                             data.listId = value.listId
                             data.AssignedTo = []
                         data.Responsible_x0020_Team = []
@@ -945,7 +968,7 @@ const CreateActivity = (props: any) => {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-                              
+
                             })
                         }
                         if (data?.AssignedToId?.length > 0) {
@@ -955,7 +978,7 @@ const CreateActivity = (props: any) => {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-                             
+
                             })
                         }
                             data.ClientCategory = []
@@ -974,8 +997,12 @@ const CreateActivity = (props: any) => {
                         })
                     }
                 }
+
+
             }
         })
+
+
 
     }
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
@@ -1172,6 +1199,12 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
+                    TaxonomyItems?.map((items: any) => {
+                        if (items.Title == "Actions") {
+                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+                        }
+                    })
+
                 }
             },
             error: function (error: any) {
@@ -1248,86 +1281,89 @@ const CreateActivity = (props: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
-    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-    //     setIsComponentPicker(false);
-    //     let TempArray: any = [];
-    //     selectCategoryData.map((existingData: any) => {
-    //         let elementFoundCount: any = 0;
-    //         if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-    //             tempShareWebTypeData.map((currentData: any) => {
-    //                 if (existingData.Title == currentData.Title) {
-    //                     elementFoundCount++;
-    //                 }
-    //             })
-    //         }
-    //         if (elementFoundCount == 0) {
-    //             let category: any;
-    //             if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-    //                 selectCategoryData.map((categoryData: any) => {
-    //                     if (usedFor == "For-Auto-Search") {
-    //                         tempShareWebTypeData.push(categoryData);
-    //                     }
-    //                     TempArray.push(categoryData)
-    //                     let isExists: any = 0;
-    //                     if (tempCategoryData != undefined) {
-    //                         isExists = tempCategoryData.search(categoryData.Title);
-    //                     } else {
-    //                         category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
-    //                     }
-    //                     if (isExists < 0) {
-    //                         category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
-    //                     }
-    //                 })
-    //             }
-    //             setCategoriesData(category);
-    //             let phoneCheck = category.search("Phone");
-    //             let emailCheck = category.search("Email");
-    //             let ImmediateCheck = category.search("Immediate");
-    //             let ApprovalCheck = category.search("Approval");
-    //             let OnlyCompletedCheck = category.search("Only Completed");
-    //             if (phoneCheck >= 0) {
-    //                 setPhoneStatus(true)
-    //             } else {
-    //                 setPhoneStatus(false)
-    //             }
-    //             if (emailCheck >= 0) {
-    //                 setEmailStatus(true)
-    //             } else {
-    //                 setEmailStatus(false)
-    //             }
-    //             if (ImmediateCheck >= 0) {
-    //                 setImmediateStatus(true)
-    //             } else {
-    //                 setImmediateStatus(false)
-    //             }
-    //             if (ApprovalCheck >= 0) {
-    //                 setApprovalStatus(true);
-    //                 setApproverData(TaskApproverBackupArray);
-    //             } else {
-    //                 setApprovalStatus(false)
-    //             }
-    //             if (OnlyCompletedCheck >= 0) {
-    //                 setOnlyCompletedStatus(true);
-    //             } else {
-    //                 setOnlyCompletedStatus(false);
-    //             }
-    //         }
-    //     })
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setCategorySearchKey("");
+        console.log(selectCategoryData)
+        selectedCategoryTrue(selectCategoryData[0].Title)
 
-    //     if (usedFor == "For-Panel") {
-    //         setShareWebTypeData(selectCategoryData);
-    //         tempShareWebTypeData = selectCategoryData;
-    //     }
-    //     if (usedFor == "For-Auto-Search") {
-    //         setShareWebTypeData(tempShareWebTypeData);
-    //         setSearchedCategoryData([])
-    //         setCategorySearchKey("");
-    //     }
-    // }
+        setIsComponentPicker(false);
+        let data: any = CategoriesData
+        data = data.concat(selectCategoryData)
+        setCategoriesData(CategoriesData => [...data])
 
- // this is for change priority status function 
 
- const ChangePriorityStatusFunction = (e: any) => {
+        setSearchedCategoryData([]);
+
+        // setCategoriesData(data)
+    }
+    // ==============CHANGE Category function==============
+    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+        let statusValue: any = e.currentTarget.checked;
+        let type: any = typeValue;
+        let Id: any = IdValue;
+        if (statusValue) {
+
+            selectedCategoryTrue(type)
+            console.log(ShowCategoryDatabackup)
+            let array: any = [];
+
+            array = array.concat(CategoriesData);
+            ShowCategoryDatabackup.map((items: any) => {
+                if (items.Title == type) {
+                    array.push(items)
+                }
+            })
+
+            setCategoriesData(CategoriesData => [...array])
+        }
+        if (statusValue == false) {
+
+            selectedCategoryFalse(type)
+            console.log(ShowCategoryDatabackup)
+            let array: any = [];
+
+            array = array.concat(CategoriesData);
+            array?.map((item: any, index: any) => {
+
+                if (item.Title == type) {
+                    array.splice(index, 1);
+                }
+            })
+            setCategoriesData(CategoriesData => [...array])
+        }
+
+
+    }
+
+    const selectedCategoryFalse = (type: any) => {
+        if (type == "Phone") {
+            setPhoneStatus(false)
+        }
+        if (type == "Email Notification") {
+            setEmailStatus(false)
+        }
+        if (type == "Immediate") {
+            setImmediateStatus(false)
+        }
+        if (type == "Approval") {
+            setApprovalStatus(false)
+        }
+    }
+    const selectedCategoryTrue = (type: any) => {
+        if (type == "Phone") {
+            setPhoneStatus(true)
+        }
+        if (type == "Email Notification") {
+            setEmailStatus(true)
+        }
+        if (type == "Immediate") {
+            setImmediateStatus(true)
+        }
+        if (type == "Approval") {
+            setApprovalStatus(true)
+        }
+    }
+     const ChangePriorityStatusFunction = (e: any) => {
     let value = e.target.value;
     if (Number(value) <= 10) {
         setselectPriority(e.target.value )
@@ -1336,6 +1372,28 @@ const CreateActivity = (props: any) => {
         setselectPriority( '0' )
     }
 }
+    // ################ this is for Smart category change and remove function #############
+
+    //   const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
+    //     let tempString: any;
+
+    //     let tempArray2: any = [];
+    //     tempShareWebTypeData = [];
+    //     ShareWebTypeData?.map((dataType: any) => {
+    //         if (dataType.Id != TypeId) {
+    //             tempArray2.push(dataType)
+    //             tempShareWebTypeData.push(dataType);
+    //         }
+    //     })
+    //     if (tempArray2 != undefined && tempArray2.length > 0) {
+    //         tempArray2.map((itemData: any) => {
+    //             tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
+    //         })
+    //     }
+    //     setCategoriesData(tempString);
+    //     tempCategoryData = tempString;
+    //     setShareWebTypeData(tempArray2);
+    // }
 
     return (
         <>
@@ -1583,7 +1641,7 @@ const CreateActivity = (props: any) => {
                                             </label>
                                         </div>
                                     </fieldset> */}
-                                     <div>
+                                    <div>
                                                     <div className="input-group">
                                                         <input type="text" className="form-control"
                                                             placeholder="Enter Priority"
@@ -1622,8 +1680,8 @@ const CreateActivity = (props: any) => {
                                     <div className="col-sm-12">
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Categories</label>
-                                            {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
-                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} />
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
+
                                             <span className="input-group-text">
 
                                                 <a className="hreflink" title="Edit Categories">
@@ -1643,7 +1701,7 @@ const CreateActivity = (props: any) => {
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  >
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -1652,7 +1710,7 @@ const CreateActivity = (props: any) => {
                                         </ul>
                                     </div>) : null}
 
-                                <div className="row">
+                                {/* <div className="row">
                                     <div className="col-sm-12 mt-2">
                                         {CheckCategory?.map((item: any) => {
                                             return (
@@ -1669,6 +1727,53 @@ const CreateActivity = (props: any) => {
                                     </div>
 
 
+                                </div> */}
+                                <div className="col">
+                                    <div className="col">
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                name="Phone"
+                                                type="checkbox" checked={PhoneStatus}
+                                                value={`${PhoneStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                            />
+                                            <label className="form-check-label">Phone</label>
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={EmailStatus}
+                                                value={`${EmailStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+                                            />
+                                            <label>Email Notification</label>
+
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={ImmediateStatus}
+                                                value={`${ImmediateStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                            <label>Immediate</label>
+                                        </div>
+
+                                    </div>
+                                    <div className="form-check ">
+                                        <label className="full-width">Approval</label>
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input rounded-0"
+                                            name="Approval"
+                                            checked={ApprovalStatus}
+                                            value={`${ApprovalStatus}`}
+                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
+
+                                        />
+                                    </div>
                                 </div>
                                 {CategoriesData != undefined ?
                                     <div>
@@ -1762,9 +1867,26 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} AllListId={dynamicList} Call={Call}></Picker>}
+            {IsComponent && AllItems?.Services.length > 0 &&
+                <ServiceComponentPortfolioPopup
+                    props={SharewebComponent}
+                    Dynamic={dynamicList}
+                    Call={Call}
+                    ComponentType={"Service"}
+                />
+            }
+            {IsComponent && AllItems?.Component.length > 0 &&
+                <ServiceComponentPortfolioPopup
+                    props={SharewebComponent}
+                    Dynamic={dynamicList}
+                    Call={Call}
+                    ComponentType={"Component"}
+
+                />
+            }
+            {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>} */}
+            {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} usedFor="Task-Footertable" AllListId={dynamicList} Call={Call}></Picker>}
             {IsClientPopup && <ClientCategoryPupup props={SharewebCategory}selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
         </>
     )
