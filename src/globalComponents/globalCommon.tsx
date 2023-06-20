@@ -575,7 +575,7 @@ export const getTaskId = (item: any) => {
                     Shareweb_x0020_ID = 'EA' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
                 }
             }
-            if (item.Component.length == 0 || item.Component == undefined && item.Services.length == 0 || item.Services == undefined && item.Events == undefined) {
+            if ((item.Component.length == 0 || item.Component == undefined) && (item.Services.length == 0 || item.Services == undefined) && item.Events == undefined) {
                 Shareweb_x0020_ID = 'A' + item.SharewebTaskLevel1No + '-W' + item.SharewebTaskLevel2No;
             }
             if (item.SharewebTaskType.Title == 'Step')

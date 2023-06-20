@@ -58,14 +58,29 @@ const SmartTimeTotalFunctionOnTaskPopup = (item: any) => {
                     let FinalTotalTime: any = 0;
                     if (tempArray.length > 0) {
                         tempArray.map((tempItem: any) => {
-                            if (typeof (tempItem.TaskTimeInMin) == 'string') {
-                                let timeValue = Number(tempItem.TaskTimeInMin);
-                                if (timeValue > 0) {
-                                    TotalTimeData = TotalTimeData + timeValue;
+                            if (tempItem.TaskTimeInMin != undefined || tempItem.TaskTimeInMin != null) {
+                                if (typeof (tempItem.TaskTimeInMin) == 'string') {
+                                    let timeValue = Number(tempItem.TaskTimeInMin);
+                                    if (timeValue > 0) {
+                                        TotalTimeData = TotalTimeData + timeValue;
+                                    }
+                                } else {
+                                    if (tempItem.TaskTimeInMin > 0) {
+                                        TotalTimeData = TotalTimeData + tempItem.TaskTimeInMin;
+                                    }
                                 }
-                            } else {
-                                if (tempItem.TaskTimeInMin > 0) {
-                                    TotalTimeData = TotalTimeData + tempItem.TaskTimeInMin;
+                            }else{
+                                if (typeof (tempItem.TaskTime) == 'string') {
+                                    let timeValue = Number(tempItem.TaskTime);
+                                    if (timeValue > 0) {
+                                        let timeInMinute = timeValue * 60;
+                                        TotalTimeData = TotalTimeData + timeInMinute;
+                                    }
+                                } else {
+                                    if (tempItem.TaskTime > 0) {
+                                        let tempTImeInMinute:any = tempItem.TaskTime * 60
+                                        TotalTimeData = TotalTimeData + tempTImeInMinute;
+                                    }
                                 }
                             }
                         })

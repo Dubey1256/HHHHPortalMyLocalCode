@@ -591,8 +591,8 @@ const SiteCompositionComponent = (Props: any) => {
 
     const ChangeTimeManuallyFunction = (e: any, SiteName: any) => {
         let TempArray: any = [];
-        if (BackupSiteTypeData != undefined && BackupSiteTypeData) {
-            BackupSiteTypeData?.map((SiteData: any) => {
+        if (SiteTypes != undefined && SiteTypes) {
+            SiteTypes?.map((SiteData: any) => {
                 if (SiteData.Title == SiteName) {
                     SiteData.ClienTimeDescription = e.target.value;
                     TempArray.push(SiteData);
@@ -607,16 +607,17 @@ const SiteCompositionComponent = (Props: any) => {
             TempArray?.map((TempData: any) => {
                 if (TempData.BtnStatus) {
                     const object = {
-                        SiteName: TempData.Title,
                         ClienTimeDescription: TempData.ClienTimeDescription,
+                        Title: TempData.Title,
                         localSiteComposition: true,
-                        siteIcons: TempData.Item_x005F_x0020_Cover,
+                        siteIcons: TempData.Item_x005F_x0020_Cover?.Url,
                         Date: TempData.Date
                     }
                     ClientTimeTemp.push(object)
                 }
             })
             SiteCompositionObject.ClientTime = ClientTimeTemp;
+            SiteTaggingFinalData = ClientTimeTemp;
         }
         // callBack(SiteCompositionObject);
     }
