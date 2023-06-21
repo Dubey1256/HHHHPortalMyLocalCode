@@ -188,6 +188,9 @@ let AllAvailableTitle: any = [];
         AllTimeSpentDetails = [];
         EditData(item.props);
     }
+    const ComponentCallBack = (dt: any) => {
+       console.log(dt)
+    }
     return (
         <>
 
@@ -230,7 +233,7 @@ let AllAvailableTitle: any = [];
                         </table>
                     </div> </div>
             </span>
-            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }} /> : ''}
+            {isTimeEntry ? <TimeEntry data={item?.props} context={item.Context} Context={item.Context} isopen={isTimeEntry} CallBackTimesheet={() => { CallBackTimesheet() }}  parentCallback={ComponentCallBack}/> : ''}
         </>
     )
 }

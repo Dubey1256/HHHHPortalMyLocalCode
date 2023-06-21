@@ -13,6 +13,8 @@ import EditInstituton from "../../EditPopupFiles/EditComponent";
 import ComponentTable from "./Taskwebparts";
 import Sitecomposition from "../../../globalComponents/SiteComposition";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
+import { spfi } from "@pnp/sp/presets/all";
+const sp = spfi();
 
 let TeamMembers: any = [];
 let AssigntoMembers: any = [];
@@ -24,6 +26,9 @@ let AssignTeamMember: any = [];
 let ContextValue: any = {};
 
 let Iconpps:any = []
+let componentDetails:any = [];
+let filterdata:any=[];
+let  imageArray:any=[];
 function getQueryVariable(variable:any)
 {
         let query = window.location.search.substring(1);
@@ -57,6 +62,7 @@ function Portfolio({SelectedProp}:any) {
   const [datatech, setdatatech] = React.useState([]);
   const [dataQues, setdataQues] = React.useState([]);
   const [dataHelp, setdataHelp] = React.useState([]);
+  const [Projecto, setProjecto] = React.useState(true);
   const [FolderData, SetFolderData] = React.useState([]);
   const [IsComponent, setIsComponent] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
@@ -125,6 +131,17 @@ function Portfolio({SelectedProp}:any) {
     item.showHelp = !item.showHelp;
     setdataHelp((dataHelp) => [...dataHelp]);
   };
+  const  showhideprojects = () =>{
+
+    if (Projecto) {
+     setProjecto(false)
+    } else {
+
+      setProjecto(true)
+
+    }
+
+  }
   React.useEffect(() => {
     let folderId: any = "";
     
@@ -159,6 +176,13 @@ function Portfolio({SelectedProp}:any) {
         success: function (data) {
           response = response.concat(data.d.results);
           response.map((item: any) => {
+            item.AssignedTo = item.AssignedTo.results === undefined ? [] : item.AssignedTo.results;
+
+            item.Team_x0020_Members = item.Team_x0020_Members.results === undefined ? [] : item.Team_x0020_Members.results;
+
+            item.siteUrl = ContextValue.siteUrl;;
+
+            item.listId = ContextValue.MasterTaskListID;
             item.show= true
             item.showl=true
             item.shows=true
@@ -236,6 +260,10 @@ function Portfolio({SelectedProp}:any) {
                 success: function (data) {
                   if (data != undefined) {
                     data.d.results.forEach(function (item: any) {
+                      item.AssignedTo = item.AssignedTo.results === undefined ? [] : item.AssignedTo.results;
+
+                      item.Team_x0020_Members = item.Team_x0020_Members.results === undefined ? [] : item.Team_x0020_Members.results;
+          
                       if (item.ItemType == "Question")
                         AllQuestion.unshift(item);
                       else if (item.ItemType == "Help") AllHelp.unshift(item);
@@ -264,9 +292,135 @@ function Portfolio({SelectedProp}:any) {
         },
       });
     }
-  
+  // Get Project Data 
+  let getMasterTaskListTasks = async function () {
+    let web =new Web(ContextValue?.siteUrl);
+   
+    componentDetails = await web.lists
+      .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+      .items.select(
+        "ComponentPortfolio/Id",
+        "ComponentPortfolio/Title",
+        "ServicePortfolio/Id",
+        "ServicePortfolio/Title",
+        "SiteCompositionSettings",
+        "PortfolioStructureID",
+        "ItemRank",
+        "ShortDescriptionVerified",
+        "Portfolio_x0020_Type",
+        "BackgroundVerified",
+        "descriptionVerified",
+        "Synonyms",
+        "BasicImageInfo",
+        "Deliverable_x002d_Synonyms",
+        "OffshoreComments",
+        "OffshoreImageUrl",
+        "HelpInformationVerified",
+        "IdeaVerified",
+        "TechnicalExplanationsVerified",
+        "Deliverables",
+        "DeliverablesVerified",
+        "ValueAddedVerified",
+        "CompletedDate",
+        "Idea",
+        "ValueAdded",
+        "TechnicalExplanations",
+        "Item_x0020_Type",
+        "Sitestagging",
+        "Package",
+        "Short_x0020_Description_x0020_On",
+        "Short_x0020_Description_x0020__x",
+        "Short_x0020_description_x0020__x0",
+        "Admin_x0020_Notes",
+        "AdminStatus",
+        "Background",
+        "Help_x0020_Information",
+        "SharewebComponent/Id",
+        "SharewebCategories/Id",
+        "SharewebCategories/Title",
+        "Priority_x0020_Rank",
+        "Reference_x0020_Item_x0020_Json",
+        "Team_x0020_Members/Title",
+        "Team_x0020_Members/Name",
+        "Component/Id",
+        "Component/Title",
+        "Component/ItemType",
+        "Team_x0020_Members/Id",
+        "Item_x002d_Image",
+        "component_x0020_link",
+        "IsTodaysTask",
+        "AssignedTo/Title",
+        "AssignedTo/Name",
+        "AssignedTo/Id",
+        "AttachmentFiles/FileName",
+        "FileLeafRef",
+        "FeedBack",
+        "Title",
+        "Id",
+        "PercentComplete",
+        "Company",
+        "StartDate",
+        "DueDate",
+        "Comments",
+        "Categories",
+        "Status",
+        "WebpartId",
+        "Body",
+        "Mileage",
+        "PercentComplete",
+        "Attachments",
+        "Priority",
+        "Created",
+        "Modified",
+        "Author/Id",
+        "Author/Title",
+        "Editor/Id",
+        "Editor/Title",
+        "ClientCategory/Id",
+        "ClientCategory/Title",
+        "Responsible_x0020_Team/Id",
+        "Responsible_x0020_Team/Title",
+        "Parent/Id",
+        "Parent/Title",
+        "Parent/ItemType"
+      )
+
+      .expand(
+        "ClientCategory",
+        "AssignedTo",
+        "Component",
+        "ComponentPortfolio",
+        "ServicePortfolio",
+        "AttachmentFiles",
+        "Author",
+        "Editor",
+        "Team_x0020_Members",
+        "SharewebComponent",
+        "SharewebCategories",
+        "Responsible_x0020_Team",
+        "Parent"
+      )
+      .filter("Item_x0020_Type  eq 'Project'").top(4000)
+      .get();
+
+// Project Data for HHHH Project Management
+componentDetails.map((num:any)=> {
+
+let num2;
+if(num.Component != undefined){
+  num.Component.map((compID:any)=>{
+                               if(compID.Id == ID){
+                                
+                               num2=num;
+                               filterdata.push(num2)
+                               }
+                             
+});  
+}} );
+  };
     GetListItems();
     getTaskUser();
+    getMasterTaskListTasks();
     open();
     
   }, []);
@@ -317,9 +471,9 @@ function Portfolio({SelectedProp}:any) {
     }
     // Set the page titile
     document.title = `${item.Portfolio_x0020_Type}-${item.Title}`;
-    if (item.Team_x0020_Members.results != undefined) {
+    if (item.Team_x0020_Members != undefined) {
       AllTaskuser.map((users) => {
-        item.Team_x0020_Members.results.map((members: any) => {
+        item.Team_x0020_Members.map((members: any) => {
           if (members.Id != undefined) {
             if (users.AssingedToUserId == members.Id) {
               TeamMembers.push(users);
@@ -329,9 +483,9 @@ function Portfolio({SelectedProp}:any) {
       });
       
     }
-    if (item.AssignedTo.results != undefined) {
+    if (item.AssignedTo != undefined) {
       AllTaskuser.map((users) => {
-        item.AssignedTo.results.map((members: any) => {
+        item.AssignedTo.map((members: any) => {
           if (users.AssingedToUserId == members.Id) {
             AssigntoMembers.push(users);
           }
@@ -446,6 +600,13 @@ Iconpps = [
 ]
 }
 
+// Basic Image
+if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
+  imageArray = JSON.parse(data[0]?.BasicImageInfo);
+ 
+ }
+  
+//  basic image End
 
   return (
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -845,6 +1006,55 @@ Iconpps = [
                   <section className="row  accordionbox">
                     <div className="accordion  pe-1 overflow-hidden">
                    
+ {/* Project Management Box */}
+                   
+                      
+ {filterdata?.length !== 0 && (
+                            <div className="card shadow-none  mb-2">
+                              <div
+                                className="accordion-item border-0"
+                                id="t_draggable1"
+                              >
+                                <div
+                                  className="card-header p-0 border-bottom-0 "
+                                  onClick={() => showhideprojects()}
+                                >
+                                  <button
+                                    className="accordion-button btn btn-link text-decoration-none d-block w-100 py-2 px-1 border-0 text-start rounded-0 shadow-none"
+                                    data-bs-toggle="collapse"
+                                  >
+                                    <span className="fw-medium font-sans-serif text-900">
+                                      <span className="sign">
+                                      {Projecto ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}
+                                      </span>{" "}
+                                      HHHH Project Management
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="accordion-collapse collapse show" style={{ display: Projecto ? 'block' : 'none' }}>
+                                  {Projecto && (
+                                    <>                                
+                                         {filterdata?.map((item:any) => (
+                                    <div
+                                      className="accordion-body pt-1"
+                                      id="testDiv1"
+                                    >
+                            
+                                     <a href={SelectedProp.siteUrl + "/SitePages/Project-Management.aspx?ProjectId=" +item?.Id }  data-interception="off"
+                      target="_blank">{item?.Title}</a>
+                      
+                                    </div>
+                                    ))}
+                                    </>
+
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}{" "}
+                       
+                      {/* Project Management Box End */}
+                   {/* Description */}
                       {data.map((item) => (
                         <>
                           {item.Body !== null && (
@@ -1460,8 +1670,8 @@ Iconpps = [
                       </>
                     );
                   })}
-                  {data.map((item: any) => {
-                    return <Sitecomposition props={item} sites={ContextValue} />;
+                 {data.map((item: any) => {
+                    return <Sitecomposition props={item} sitedata={SelectedProp} />;
                   })}
                 </div>
               </div>
@@ -1479,7 +1689,23 @@ Iconpps = [
                             src={item.Item_x002d_Image.Url}
                           />
                         </div>
-                      )}
+                      )
+                     
+                      
+                      }
+                       {(imageArray != undefined && imageArray[0]?.ImageName && item?.BasicImageInfo != undefined ) && (
+                       <div>
+                          <img
+                            alt={imageArray[0]?.ImageName}
+                            style={{ width: "280px", height: "145px" }}
+                            src={imageArray[0]?.ImageUrl}
+                          />
+                          <p>{imageArray[0]?.UploadeDate} {imageArray[0]?.UserName}</p>
+                        </div>
+                         )
+                     
+                      
+                        }
                     </>
                   );
                 })}
