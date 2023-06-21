@@ -50,6 +50,7 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
+// import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 var filt: any = "";
 var siteConfig: any = [];
 var ComponentsDataCopy: any = [];
@@ -1078,6 +1079,7 @@ function ComponentTable(SelectedProp: any) {
             AllWorkStreamData = AllTasks?.filter(
               (elem: any) => elem?.SharewebTaskType?.Title == "Workstream"
             );
+
             AllActivitysData?.forEach((elem: any) => {
               elem.childs = [];
               elem.subRows = [];
@@ -1085,7 +1087,7 @@ function ComponentTable(SelectedProp: any) {
                 if (elem.Id === task.Id) {
                   task.isTagged = false;
                 }
-                if (elem?.ID == task?.ParentTask?.Id) {
+                if (elem?.ID == task?.ParentTask?.Id && elem?.siteType === task?.siteType) {
                   task.isTagged = false;
                   elem.childs.push(task);
                   elem.subRows.push(task);
@@ -1100,7 +1102,7 @@ function ComponentTable(SelectedProp: any) {
                   if (val.Id === task.Id) {
                     task.isTagged = false;
                   }
-                  if (val?.ID == task?.ParentTask?.Id) {
+                  if (val?.ID == task?.ParentTask?.Id && val?.siteType === task?.siteType) {
                     task.isTagged = false;
                     val.childs.push(task);
                     val.subRows.push(task);
@@ -2255,7 +2257,7 @@ function ComponentTable(SelectedProp: any) {
     temp.childs = [];
     temp.childsLength = 0;
     temp.flag = true;
-    temp.PercentComplete ="";
+    temp.PercentComplete = "";
     temp.ItemRank = "";
     temp.DueDate = "";
     // ComponetsData['allComponets'][i]['childs']
@@ -2273,8 +2275,8 @@ function ComponentTable(SelectedProp: any) {
         temp.childs.push(task);
       }
     });
-    if(temp?.childs?.length>0){
-      temp.childs = temp?.childs?.filter((ele:any, ind:any) => ind === temp?.childs?.findIndex((elem:any) => elem.ID === ele.ID));
+    if (temp?.childs?.length > 0) {
+      temp.childs = temp?.childs?.filter((ele: any, ind: any) => ind === temp?.childs?.findIndex((elem: any) => elem.ID === ele.ID));
     }
     ComponetsData["allComponets"].push(temp);
     bindData();
@@ -2413,7 +2415,7 @@ function ComponentTable(SelectedProp: any) {
           if (comp.Id == MainId || comp.ID == MainId) {
             comp.childs.push(childItem.data);
             comp.subRows.push(childItem.data);
-            comp.subRows = comp?.subRows?.filter((ele:any, ind:any) => ind === comp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+            comp.subRows = comp?.subRows?.filter((ele: any, ind: any) => ind === comp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
 
           }
 
@@ -2424,7 +2426,7 @@ function ComponentTable(SelectedProp: any) {
               if (subComp.Id == MainId || subComp.ID == MainId) {
                 subComp.childs.push(childItem.data);
                 subComp.subRows.push(childItem.data);
-                subComp.subRows = subComp?.subRows?.filter((ele:any, ind:any) => ind === subComp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+                subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
 
               }
 
@@ -2448,7 +2450,7 @@ function ComponentTable(SelectedProp: any) {
                       Feat.subRows == undefined ? [] : Feat.subRows;
                     Feat.childs.push(childItem.data);
                     Feat.subRows.push(childItem.data);
-                    Feat.subRows = Feat?.subRows?.filter((ele:any, ind:any) => ind === Feat?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
                   }
 
                   if (Feat.subRows != undefined && Feat.subRows.length > 0) {
@@ -2479,7 +2481,7 @@ function ComponentTable(SelectedProp: any) {
                         //     return array.indexOf(val) == id;
                         // })
                         // Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
-                        Activity.subRows = Activity?.subRows?.filter((ele:any, ind:any) => ind === Activity?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
                       }
 
                       if (
@@ -2510,7 +2512,7 @@ function ComponentTable(SelectedProp: any) {
                             workst.childs.push(childItem.data);
                             workst.subRows.push(childItem.data);
                             // workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
-                            workst.subRows = workst?.subRows?.filter((ele:any, ind:any) => ind === workst?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: any) => elem.ID === ele.ID));
                           }
                         });
                       }
@@ -3490,9 +3492,9 @@ function ComponentTable(SelectedProp: any) {
       },
       // {
       //   accessorFn: (row) => row?.Shareweb_x0020_ID,
-      //   cell: ({ row }) => (
+      //   cell: ({ row, getValue }) => (
       //     <>
-      //       <div className="tooltipSec popover__wrapper me-1">
+      //       {/* <div className="tooltipSec popover__wrapper me-1">
       //         <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
       //         <div className="popover__content" style={{ display: showPopHover }}>
       //           <div>
@@ -3503,7 +3505,8 @@ function ComponentTable(SelectedProp: any) {
       //             {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
       //           </div>
       //         </div>
-      //       </div>
+      //       </div> */}
+      //       <ReactPopperTooltip ShareWebId={getValue()} row={row} />
       //     </>
       //   ),
       //   id: "Shareweb_x0020_ID",
@@ -3761,34 +3764,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-        // parentData = elem?.parentRow;
-        // parentDataCopy = elem?.parentRow?.original
-        parentDataCopy = elem?.getParentRows()[0]?.original;
-        // if (parentData != undefined && parentData?.parentRow != undefined) {
+          // parentData = elem?.parentRow;
+          // parentDataCopy = elem?.parentRow?.original
+          parentDataCopy = elem?.getParentRows()[0]?.original;
+          // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //   parentData = elem?.parentRow?.parentRow
-        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+          //   parentData = elem?.parentRow?.parentRow
+          //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        // }
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3852,7 +3855,7 @@ function ComponentTable(SelectedProp: any) {
   let workstrim = 0;
   let task = 0;
   data.map((Com) => {
-    
+
 
     Com?.subRows?.map((Sub: any) => {
       if (Sub?.SharewebTaskType?.Title == "Activities") {
@@ -4546,7 +4549,7 @@ function ComponentTable(SelectedProp: any) {
                           <option value="2">Exact Phrase</option>
                         </select>
                       </span>
-                    </span>
+                    </span> */}
 
                   </span>
                   <span className="toolbox mx-auto">
@@ -4607,10 +4610,12 @@ function ComponentTable(SelectedProp: any) {
                       Restructure
                     </button>}
 
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 && <span>
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
                       <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span>}
-                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
+                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
 
                     <a className="brush" onClick={clearSearch}>
                       <FaPaintBrush />
