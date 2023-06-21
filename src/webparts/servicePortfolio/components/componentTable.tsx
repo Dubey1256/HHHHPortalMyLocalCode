@@ -4546,7 +4546,7 @@ function ComponentTable(SelectedProp: any) {
                           <option value="2">Exact Phrase</option>
                         </select>
                       </span>
-                    </span> */}
+                    </span>
 
                   </span>
                   <span className="toolbox mx-auto">
