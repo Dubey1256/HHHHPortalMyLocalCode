@@ -304,7 +304,7 @@ function Portfolio({SelectedProp}:any) {
     let web =new Web(ContextValue?.siteUrl);
    
     componentDetails = await web.lists
-      .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+      .getById(ContextValue.MasterTaskListID)
       .items.select(
         "ComponentPortfolio/Id",
         "ComponentPortfolio/Title",
