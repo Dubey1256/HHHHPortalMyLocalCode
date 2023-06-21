@@ -29,6 +29,7 @@ var changeEdited = '';
 var CurrentUserTitle = ''
 var Categoryy = '';
 var CategoryyID: any = ''
+var timesheetMoveData:any =[]
 var TaskCate: any = []
 var TimeSheetlistId = ''
 var TimeSheets: any = []
@@ -836,7 +837,7 @@ function TimeEntryPopup(item: any) {
 
         });
         console.log(TaskTimeSheetCategoriesGrouping)
-        // setAdditionalTime(AdditionalTimes)
+       item?.parentCallback(timesheetMoveData);
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
         // var mainArray: any = []
         // var sortedCars: any = []
@@ -1047,8 +1048,9 @@ function TimeEntryPopup(item: any) {
         else {
 
             var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
+            var linkedSite = "Task" + items.siteType
         }
-        var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
+        var select = `Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle,${linkedSite}&$filter= ${filteres}`;
         var count = 0;
 
         if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
@@ -1089,7 +1091,9 @@ function TimeEntryPopup(item: any) {
                         let totletimeparentcount = 0;
                         //  let totletimeparentcount = 0;
                         let AllAvailableTitle = [];
-
+                       AllTimeSpentDetails.forEach((items:any)=>{
+                        timesheetMoveData.push(items)
+                       })
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
                             item.Item_x005F_x0020_Cover = undefined;
@@ -1289,7 +1293,7 @@ function TimeEntryPopup(item: any) {
             val.AdditionalTime.push(item)
         })
         }) 
-
+ 
         setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
     }
 
@@ -1643,12 +1647,7 @@ if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
         mainParentId = newdata.data.Id;
         mainParentTitle = newdata.data.Title;
         createItemMainList();
-           
-    
-           
-          
-        }
-       
+    }
            
 
         
@@ -2261,39 +2260,41 @@ if(AllTimeEntry.length == 0 && Available == false){
     var Childs:any=[]
 
    const FlatView=()=>{
-//     var newArray:any=[]
-//    var Time:any ={}
-//    var Times:any ={}
-//    Time['Time'] = ""
-//    Times['Times'] = "TimeSheet"
-//    Childs.push(Time)
-//    Childs.AdditionalTime = []
-//    FlatviewData.push(Times)
-//    FlatviewData.forEach((itee:any)=>{
-//     itee.Childs=[{"Title":"TimeSheet","AdditionalTime":[]}]
+    var newArray:any=[]
+    var newArray2:any=[]
+   var Time:any ={}
+   var Times:any ={}
+   Time['Time'] = ""
+   Times['Times'] = "TimeSheet"
+   Childs.push(Time)
+   Childs.AdditionalTime = []
+   FlatviewData.push(Times)
+   FlatviewData.forEach((itee:any)=>{
+    itee.Childs=[{"AdditionalTime":[]}]
     
-//    })
+   })
   
    
-//     AllTimeSpentDetails?.forEach((val:any)=>{
-//     val.AdditionalTime?.forEach((haa:any)=>{
-//         Childs.push(haa)
-//     })
-//     })
-//     Childs?.forEach((items:any)=>{
-//         FlatviewData?.forEach((vall:any)=>{
-//             vall.Childs.push(items)
-//             newArray =  items.AdditionalTime.sort(datecomp);
-//             items.AdditionalTime=[]
-//         })
-//     })
-//     FlatviewData.forEach((value:any)=>{
-//         value.Childs.forEach((newiTem:any)=>{
-//             newArray.forEach((valll:any)=>{
-//                 newiTem.AdditionalTime.push(valll)
-//             })
-//         })
-//     })
+    AllTimeSpentDetails?.forEach((val:any)=>{
+    val.AdditionalTime?.forEach((haa:any)=>{
+        newArray.push(haa)
+    })
+    })
+    Childs?.forEach((items:any)=>{
+        FlatviewData?.forEach((vall:any)=>{
+            newArray2 =  newArray.sort(datecomp);
+            items.AdditionalTime=[]
+        })
+    })
+    FlatviewData.forEach((value:any)=>{
+        value.Childs.forEach((newiTem:any)=>{
+            newiTem.Title = 'TimeSheet'
+            newiTem.Category = 'Development' 
+            newArray2.forEach((valll:any)=>{
+                newiTem.AdditionalTime.push(valll)
+            })
+        })
+    })
  // copy.sort((a:any, b:any) => (a.TaskDate > b.TaskDate) ? -1 : 1);
   
 //   Childs.forEach((val:any)=>{
@@ -2314,8 +2315,8 @@ if(AllTimeEntry.length == 0 && Available == false){
     // })
   
     setFlatview(!flatview)
-   // setTimeSheet(FlatviewData);
-   // setTimeSheet(FlatviewData => ([...FlatviewData]));
+    setTimeSheet(FlatviewData);
+    setTimeSheet(FlatviewData => ([...FlatviewData]));
    }
 
     return (
