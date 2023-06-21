@@ -3413,7 +3413,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 3,
       },
       {
-        accessorFn: (row) => row?.DueDate ? Moment(row?.original?.DueDate).format("DD/MM/YYYY") :"",
+        accessorFn: (row) => row?.DueDate ? Moment(row?.DueDate).format("DD/MM/YYYY") :"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.DueDate == null ? (""
@@ -3431,7 +3431,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 4,
       },
       {
-        accessorFn: (row) => row?.Created ? Moment(row?.original?.Created).format("DD/MM/YYYY"):"",
+        accessorFn: (row) => row?.Created ? Moment(row?.Created).format("DD/MM/YYYY"):"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.Created == null ? (""
