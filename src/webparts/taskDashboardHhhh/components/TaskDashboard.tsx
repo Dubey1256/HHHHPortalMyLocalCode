@@ -23,6 +23,7 @@ import {
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
+import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
@@ -44,6 +45,7 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
+var AllMetadata:any=[];
 var AllListId: any = {}
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
@@ -67,6 +69,7 @@ const TaskDashboard = (props: any) => {
     const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
     const [sharewebTasks, setSharewebTasks] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
+    const [AllSmartMetadata, setAllSmartMetadata] = React.useState([]);
     const [AllImmediateTasks, setAllImmediateTasks] = React.useState([]);
     const [UserImmediateTasks, setUserImmediateTasks] = React.useState([]);
     const [AllEmailTasks, setAllEmailTasks] = React.useState([]);
@@ -439,8 +442,8 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
-                            .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory',"Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
@@ -475,6 +478,11 @@ const TaskDashboard = (props: any) => {
                                             ? getComponentasString(task.Component)
                                             : "";
                                     task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                                    if(task?.ClientCategory?.length>0){
+                                        task.ClientCategorySearch=task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                                    }else{
+                                        task.ClientCategorySearch=''
+                                    }
                                     task.ApproverIds = [];
                                     task?.Approver?.map((approverUser: any) => {
                                         task.ApproverIds.push(approverUser?.Id);
@@ -810,7 +818,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Task Id",
                 accessor: "Shareweb_x0020_ID",
                 style: { width: '70px' },
-                showSortIcon: false,
+                showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
 
@@ -866,7 +874,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Site",
                 accessor: 'siteType',
                 id: "SiteIcon", // 'id' is required
-                showSortIcon: false,
+                showSortIcon: true,
                 style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
@@ -888,6 +896,20 @@ const TaskDashboard = (props: any) => {
                             {row?.original?.portfolio?.Title}
                         </a>
                     </span>
+                ),
+            },
+            {
+                accessor: "ClientCategorySearch",
+                internalHeader: "Client Category",
+                id: "ClientCategory",
+                header: "",
+                style: { width: '100px' },
+                showSortIcon: true,
+                size: 100,
+                Cell: ( {row}:any ) => (
+                    <>
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                    </>
                 ),
             },
             {
@@ -1531,9 +1553,9 @@ const TaskDashboard = (props: any) => {
             let smartmeta = [];
             let select: any = '';
             if (AllListId?.TaskTimeSheetListID != undefined && AllListId?.TaskTimeSheetListID != '') {
-                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Description,Configurations,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Description,Configurations,TaxType,Description1,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
             } else {
-                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
             }
             let TaxonomyItems = [];
             try {
@@ -1541,9 +1563,10 @@ const TaskDashboard = (props: any) => {
                     .getById(AllListId?.SmartMetadataListID)
                     .items.select(select)
                     .top(5000)
-                    .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
                     .expand("Parent")
                     .get();
+                    AllMetadata=smartmeta;
+                    setAllSmartMetadata(AllMetadata)
                 siteConfig = smartmeta.filter((data: any) => {
                     if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks') {
                         return data;
@@ -1956,10 +1979,8 @@ const TaskDashboard = (props: any) => {
 
     }
     const sendAllWorkingTodayTasks = () => {
-
-
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
@@ -2156,7 +2177,6 @@ const TaskDashboard = (props: any) => {
                                         <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
                                             Share Everyone's Today's Task
                                         </a> : ''}
-
                                 </ul>
                             </nav>
                         </section>

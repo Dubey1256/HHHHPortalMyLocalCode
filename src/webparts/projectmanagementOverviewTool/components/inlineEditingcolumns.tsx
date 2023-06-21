@@ -738,7 +738,7 @@ const inlineEditingcolumns = (props: any) => {
                                     if (category?.Title == 'Immediate') {
                                         return (
                                             <a title="Immediate">
-                                                <span className="workmember svg__iconbox svg__icon--alert " ></span>
+                                                <span className=" svg__iconbox svg__icon--alert " ></span>
                                                 {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/urgent.svg")} />  */}
                                             </a>
                                         )
@@ -747,14 +747,14 @@ const inlineEditingcolumns = (props: any) => {
                                         return (
                                             <a title="Bottleneck">
                                                 {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/bottleneck.svg")} />  */}
-                                                <span className="workmember svg__iconbox svg__icon--bottleneck" ></span>
+                                                <span className=" svg__iconbox svg__icon--bottleneck" ></span>
                                             </a>
                                         )
                                     }
                                     if (category?.Title == 'Favorite') {
                                         return (
                                             <a title="Favorite">
-                                                <span className="workmember svg__iconbox svg__icon--Star" ></span>
+                                                <span className=" svg__iconbox svg__icon--Star" ></span>
                                                 {/* <img className=' imgAuthor' src={require("../../../Assets/ICON/favouriteselected.svg")} />  */}
                                             </a>
                                         )
@@ -1001,8 +1001,8 @@ const inlineEditingcolumns = (props: any) => {
                 onDismiss={() => setTaskPriorityPopup(false)}
                 isBlocking={TaskPriorityPopup}
             >
-                <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-                    <div className="modal-body">
+                <div className={ServicesTaskCheck ? "serviepannelgreena inline-update-priority" : "inline-update-priority"} >
+                    <div className="modal-body" >
                         <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
                             <tbody>
                                 {priorityRank?.map((item: any, index) => {
