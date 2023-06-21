@@ -4322,7 +4322,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} itemID={Items.Items.Id}  />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">

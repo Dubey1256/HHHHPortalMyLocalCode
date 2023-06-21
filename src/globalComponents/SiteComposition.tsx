@@ -171,7 +171,7 @@ myarray4 = myarray1.reduce(function (previous: any, current: any) {
                                       return (
                                         <div className="Members-Item">
                                           <div className="user-Member-img">
-                                            {client.Id > 419 &&
+                                            {client.Id > 420 &&
                                               client.Id < 435 && (
                                                 <span>{client.Title}</span>
                                               )}

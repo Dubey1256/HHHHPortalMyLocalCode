@@ -21,6 +21,7 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
+let ShowCategoryDatabackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -45,7 +46,6 @@ var isModelChange = false
 var TaskImagess: any = []
 const defaultContent = "";
 let defaultfile = [];
-let ShowCategoryDatabackup: any = [];
 const CreateActivity = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;
@@ -151,7 +151,7 @@ const CreateActivity = (props: any) => {
 
         }
         GetSmartMetadata();
-    }, [linkedComponentData])
+    }, [])
 
 
     const GetSmartMetadata = async () => {
@@ -278,7 +278,6 @@ const CreateActivity = (props: any) => {
         setIsComponentPicker(false);
         setIsComponent(false);
         setIsClientPopup(false);
-        setSearchedCategoryData([]);
         if (type == "SmartComponent") {
             var ComponentData: any = []
             if (AllItems != undefined && item1 != undefined) {
@@ -297,20 +296,20 @@ const CreateActivity = (props: any) => {
                 title.Title = item1.categories;
                 item1.categories.map((itenn: any) => {
                     if (!isItemExists(CategoriesData, itenn.Id)) {
-
                         CategoriesData.push(itenn);
                     }
 
                 })
                 item1.SharewebCategories?.map((itenn: any) => {
-
                     CategoriesData.push(itenn)
                 })
 
                 setCategoriesData(CategoriesData)
+
+
             }
         }
-        if (type =="Category-Task-Footertable") {
+        if (type == "Category-Task-Footertable") {
 
             setPhoneStatus(false)
             setEmailStatus(false)
@@ -326,7 +325,7 @@ const CreateActivity = (props: any) => {
                 setCategoriesData(item1)
             }
         }
-        if (type =="ClientCategory") {
+        if (type == "ClientCategory") {
             var Data: any = []
             if (item1 != undefined && item1.Clientcategories != "") {
                 var title: any = {};
@@ -342,7 +341,7 @@ const CreateActivity = (props: any) => {
 
             }
         }
-        if (type =="LinkedComponent") {
+        if (type == "LinkedComponent") {
             let ServiceData: any = []
             if (item1?.linkedComponent?.length > 0) {
                 // Item.props.linkedComponent = item1.linkedComponent;
@@ -784,7 +783,6 @@ const CreateActivity = (props: any) => {
                             res.data['siteType'] = value.siteName
                         res.data['Shareweb_x0020_ID'] = value?.SharewebID
                         res.data.ParentTaskId = AllItems.Id
-
                         res.data.ClientCategory = []
                         res.data.AssignedTo = []
                         res.data.Responsible_x0020_Team = []
@@ -968,7 +966,6 @@ const CreateActivity = (props: any) => {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-
                             })
                         }
                         if (data?.AssignedToId?.length > 0) {
@@ -978,7 +975,6 @@ const CreateActivity = (props: any) => {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-
                             })
                         }
                             data.ClientCategory = []
@@ -997,12 +993,8 @@ const CreateActivity = (props: any) => {
                         })
                     }
                 }
-
-
             }
         })
-
-
 
     }
     const UpdateBasicImageInfoJSON = async (tempArray: any, item: any) => {
@@ -1372,6 +1364,9 @@ const CreateActivity = (props: any) => {
         setselectPriority( '0' )
     }
 }
+const deleteLinkedComponentData=()=>{
+    setLinkedComponentData([]);
+}
     // ################ this is for Smart category change and remove function #############
 
     //   const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
@@ -1385,15 +1380,19 @@ const CreateActivity = (props: any) => {
     //             tempShareWebTypeData.push(dataType);
     //         }
     //     })
-    //     if (tempArray2 != undefined && tempArray2.length > 0) {
-    //         tempArray2.map((itemData: any) => {
-    //             tempString = tempString != undefined ? tempString + ";" + itemData.Title : itemData.Title
-    //         })
+
+    //     if (usedFor == "For-Panel") {
+    //         setShareWebTypeData(selectCategoryData);
+    //         tempShareWebTypeData = selectCategoryData;
     //     }
-    //     setCategoriesData(tempString);
-    //     tempCategoryData = tempString;
-    //     setShareWebTypeData(tempArray2);
+    //     if (usedFor == "For-Auto-Search") {
+    //         setShareWebTypeData(tempShareWebTypeData);
+    //         setSearchedCategoryData([])
+    //         setCategorySearchKey("");
+    //     }
     // }
+
+
 
     return (
         <>
@@ -1532,7 +1531,7 @@ const CreateActivity = (props: any) => {
                                 </div>} */}
 
 
-                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Component Portfolio
@@ -1547,7 +1546,7 @@ const CreateActivity = (props: any) => {
                                         </span>
                                     </div>
                                 }
-                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Service'&&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Service Portfolio
@@ -1575,7 +1574,7 @@ const CreateActivity = (props: any) => {
                                                                     <a className="hreflink " target="_blank" style={{ color: "#ffffff !important" }} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
-                                                                    <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => setLinkedComponentData([])}> </span>
+                                                                    <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteLinkedComponentData()}> </span>
                                                                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
                                                                 </div>
                                                             </div>
@@ -1680,8 +1679,8 @@ const CreateActivity = (props: any) => {
                                     <div className="col-sm-12">
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Categories</label>
-                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
-
+                                            {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)}  />
                                             <span className="input-group-text">
 
                                                 <a className="hreflink" title="Edit Categories">
@@ -1701,7 +1700,7 @@ const CreateActivity = (props: any) => {
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -1710,24 +1709,7 @@ const CreateActivity = (props: any) => {
                                         </ul>
                                     </div>) : null}
 
-                                {/* <div className="row">
-                                    <div className="col-sm-12 mt-2">
-                                        {CheckCategory?.map((item: any) => {
-                                            return (
-                                                <>
-                                                    <div
-                                                        className="col-sm-12 padL-0 checkbox">
-                                                        <input type="checkbox"
-                                                            onClick={() => checkCat(item.Title)} />
-                                                        <span style={{ marginLeft: "20px" }}> {item.Title}</span>
-                                                    </div>
-                                                </>
-                                            )
-                                        })}
-                                    </div>
-
-
-                                </div> */}
+                                <div className="row">
                                 <div className="col">
                                     <div className="col">
                                         <div
@@ -1761,7 +1743,7 @@ const CreateActivity = (props: any) => {
                                             <label>Immediate</label>
                                         </div>
 
-                                    </div>
+                                    
                                     <div className="form-check ">
                                         <label className="full-width">Approval</label>
                                         <input
@@ -1774,7 +1756,10 @@ const CreateActivity = (props: any) => {
 
                                         />
                                     </div>
-                                </div>
+                                    </div>
+                                    </div>
+                                    </div>
+                                    
                                 {CategoriesData != undefined ?
                                     <div>
                                         {CategoriesData?.map((type: any, index: number) => {
@@ -1867,7 +1852,7 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {IsComponent && AllItems?.Services.length > 0 &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 &&AllItems?.Component.length == 0)) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1875,7 +1860,7 @@ const CreateActivity = (props: any) => {
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent && AllItems?.Component.length > 0 &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0&&AllItems?.Services.length == 0)) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
