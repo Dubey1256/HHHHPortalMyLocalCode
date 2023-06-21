@@ -2450,7 +2450,7 @@ const EditTaskPopup = (Items: any) => {
     }
     const deleteItemFunction = async (itemId: any) => {
         try {
-            if (Items.Items.listId != undefined) {
+            if (Items.Items?.listId != undefined) {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
             } else {
