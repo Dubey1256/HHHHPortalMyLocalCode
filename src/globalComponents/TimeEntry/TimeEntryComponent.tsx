@@ -427,7 +427,9 @@ function DisplayTimeEntry(item: any) {
           </>
         );
       };
-
+      const ComponentCallBack = (dt: any) => {
+        console.log(dt)
+    }
     return (
         <div>
 
@@ -441,7 +443,7 @@ function DisplayTimeEntry(item: any) {
                 <div className=''>
                     <div className=''>
                         <div className='modal-body clearfix'>
-                            <TimeEntryPopup props={item.props} Context={item.Context}></TimeEntryPopup>
+                            <TimeEntryPopup props={item.props} Context={item.Context}  parentCallback={ComponentCallBack}></TimeEntryPopup>
                         </div>
                         <div className='modal-footer'>
                         <button type="button" className="btn btn-primary" onClick={setModalTimmeIsOpenToFalse}>OK</button>

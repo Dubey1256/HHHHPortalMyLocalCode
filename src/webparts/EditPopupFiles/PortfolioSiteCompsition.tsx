@@ -24,7 +24,7 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Protected: false }]);
+    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: true, Manual: false, Protected: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime?.length ? Props.ClientTime.length : 0);
@@ -83,6 +83,7 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         if (SiteData != undefined && SiteData.length > 0) {
+            let tempClientTimeJSON: any = [];
             SiteData.map((SiteItem: any) => {
                 if (SiteItem.Title !== "Health" && SiteItem.Title !== "Offshore Tasks" && SiteItem.Title !== "Gender" && SiteItem.Title !== "Small Projects") {
                     tempData.push(SiteItem);
@@ -98,6 +99,7 @@ const SiteCompositionComponent = (Props: any) => {
                                 data.BtnStatus = true;
                                 data.Date = ClientItem.Date;
                                 data.readOnly = true;
+                                tempClientTimeJSON.push(ClientItem);
                             }
                         })
                         tempData2.push(data);
@@ -112,6 +114,8 @@ const SiteCompositionComponent = (Props: any) => {
                     }
                 })
             }
+            setClientTimeData(tempClientTimeJSON);
+            setSelectedSiteCount(tempClientTimeJSON?.length > 0 ? tempClientTimeJSON.length : 0)
             setSiteTypes(tempData2);
         }
 
@@ -172,7 +176,7 @@ const SiteCompositionComponent = (Props: any) => {
                         setSelectedSiteCount(selectedSiteCount + 1);
                         const object = {
                             // SiteName: DataItem.Title,
-                            Title:DataItem.Title,
+                            Title: DataItem.Title,
                             ClienTimeDescription: (100 / (selectedSiteCount + 1)).toFixed(1),
                             localSiteComposition: true,
                             siteIcons: DataItem.Item_x005F_x0020_Cover?.Url,
@@ -494,7 +498,9 @@ const SiteCompositionComponent = (Props: any) => {
         let ClientCategoryIDs: any = [];
         let ClientCategoryData: any = [];
         let SiteCompositionSettingData: any = [];
-        let SiteTaggingJSON: any = []
+        let SiteTaggingJSON: any = [];
+        let TotalPercentageCount: any = 0;
+        let TaskShuoldBeUpdate: any = true;
 
         if (SiteTaggingFinalData?.length > 0) {
             SitesTaggingData = SiteTaggingFinalData
@@ -545,21 +551,43 @@ const SiteCompositionComponent = (Props: any) => {
 
         }
 
-        try {
-            console.log("Final Updated SiteTaggingFinalData =====", SitesTaggingData);
-            console.log("Final Updated SiteSettingsFinalData =====", SiteCompositionSettingData);
-            console.log("Final Updated ClientCategoryData =====", ClientCategoryData);
-            let web = new Web(AllListIdData.siteUrl);
-            await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
-                Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
-                ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
-                SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : JSON.stringify(SiteCompositionSettings),
-            }).then(() => {
-                console.log("Site Composition Updated !!!");
-                alert("save successfully !!!");
+        if (SiteTaggingJSON?.length > 0) {
+            SiteTaggingJSON.map((itemData: any) => {
+                TotalPercentageCount = TotalPercentageCount + Number(itemData.ClienTimeDescription);
             })
-        } catch (error) {
-            console.log("Error : ", error.message)
+        }
+
+        if (TotalPercentageCount > 100) {
+            TaskShuoldBeUpdate = false;
+            TotalPercentageCount = 0
+            alert("site composition allocation should not be more than 100%");
+        }
+        if (TotalPercentageCount.toFixed(0) < 100 && TotalPercentageCount > 0) {
+            TotalPercentageCount = 0
+            let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+            if (conformationSTatus) {
+                TaskShuoldBeUpdate = true;
+            } else {
+                TaskShuoldBeUpdate = false;
+            }
+        }
+        if (TaskShuoldBeUpdate) {
+            try {
+                console.log("Final Updated SiteTaggingFinalData =====", SitesTaggingData);
+                console.log("Final Updated SiteSettingsFinalData =====", SiteCompositionSettingData);
+                console.log("Final Updated ClientCategoryData =====", ClientCategoryData);
+                let web = new Web(AllListIdData.siteUrl);
+                await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
+                    Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
+                    ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+                    SiteCompositionSettings: (SiteCompositionSettingData != undefined && SiteCompositionSettingData.length > 0) ? JSON.stringify(SiteCompositionSettingData) : JSON.stringify(SiteCompositionSettings),
+                }).then(() => {
+                    console.log("Site Composition Updated !!!");
+                    alert("save successfully !!!");
+                })
+            } catch (error) {
+                console.log("Error : ", error.message)
+            }
         }
 
     }
