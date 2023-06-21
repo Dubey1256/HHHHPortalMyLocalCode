@@ -4046,35 +4046,167 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                        />
-                      </span>
-                      Implmentation
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                        />
-                      </span>
-                      Development
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites"></span>
-                      Activity
-                    </div>
-                  </li>
-                </ul>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={(e) => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites">
+
+                      <img
+
+                        className="icon-sites"
+
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
+
+                      />
+
+                    </span>
+
+                    Implmentation
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites">
+
+                      <img
+
+                        className="icon-sites"
+
+                        src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+
+                      />
+
+                    </span>
+
+                    Development
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+
+                    /></span>
+
+                    Activity
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Bug")}>
+
+                    <span className="icon-sites" > <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
+
+                    /></span>
+
+                    Bug
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Feedback")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
+
+                    /></span>
+
+                    Feedback
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Improvement")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
+
+                    /></span>
+
+                    Improvement
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Design")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png"
+
+                    /></span>
+
+                    Design
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites"></span>
+
+                    Activity
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Task")}>
+
+                    <span className="icon-sites"> </span>
+
+                    Task
+
+                  </div>
+
+                </li>
+
+              </ul>
+
               )}
             </div>
           </div>
