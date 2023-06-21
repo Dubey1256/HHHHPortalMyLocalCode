@@ -13,9 +13,8 @@ const EmailComponent = (props: any) => {
   console.log(props);
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
-    // mention_To.push(props?.items.TaskCreatorData[0].Email.replace('{', '').replace('}', '').trim());
     if (props.CreatedApprovalTask != undefined || props.statusUpdateMailSendStatus != undefined) {
-      if (props.CreatedApprovalTask == true || props.statusUpdateMailSendStatus == true) {
+      if (props.CreatedApprovalTask == true || props.statusUpdateMailSendStatus == false) {
         if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
           props?.items.TaskApprovers.map((ApproverData: any) => {
             let tempEmail = ApproverData.Name;

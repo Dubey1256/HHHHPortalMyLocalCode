@@ -479,7 +479,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
   private async GetSmartMetaData(ClientCategory: any, ClientTime: any) {
     let array2: any = [];
-
+    ClientTimeArray=[];
     if ((ClientTime == null && ClientTimeArray?.length == 0)) {
       var siteComp: any = {};
       siteComp.SiteName = this.state?.listName,
@@ -734,7 +734,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private CallBack() {
-    ClientTimeArray=[];
+    // ClientTimeArray=[];
     this.setState({
       isOpenEditPopup: false,
       countfeedback: this.state.countfeedback+1
