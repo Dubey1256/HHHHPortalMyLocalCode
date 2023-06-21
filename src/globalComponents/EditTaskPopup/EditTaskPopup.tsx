@@ -59,7 +59,7 @@ let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
 let ApprovalStatusGlobal: any = false;
-let SiteCompositionPrecentageCheck: any = false;
+let SiteCompositionPrecentageValue: any = 0;
 var TaskApproverBackupArray: any = [];
 var TaskCreatorApproverBackupArray: any = [];
 var ReplaceImageIndex: any;
@@ -1951,10 +1951,23 @@ const EditTaskPopup = (Items: any) => {
     // ******************** This is Task All Details Update Function  ***************************
 
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
+        let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
-        if (SiteCompositionPrecentageCheck == true) {
-             alert("site composition allocation should not be more than 100%");
-        } else {
+        if (SiteCompositionPrecentageValue > 100) {
+            TaskShuoldBeUpdate = false;
+            SiteCompositionPrecentageValue = 0
+            alert("site composition allocation should not be more than 100%");
+        }
+        if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
+            SiteCompositionPrecentageValue = 0
+            let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+            if (conformationSTatus) {
+                TaskShuoldBeUpdate = true;
+            } else {
+                TaskShuoldBeUpdate = false;
+            }
+        }
+        if (TaskShuoldBeUpdate) {
             try {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update(DataJSONUpdate).then(async (res: any) => {
@@ -2003,13 +2016,21 @@ const EditTaskPopup = (Items: any) => {
                     TaskCreatorApproverBackupArray = []
                     TaskApproverBackupArray = []
                     ApproverIds = []
-                    SiteCompositionPrecentageCheck = false
+                    SiteCompositionPrecentageValue = 0
+                    let CalculateStatusPercentage: any = smartMetaCall[0].PercentComplete ? smartMetaCall[0].PercentComplete * 100 : 0;
                     if (Items.sendApproverMail != undefined) {
                         if (Items.sendApproverMail) {
                             setSendEmailComponentStatus(true)
                         } else {
                             setSendEmailComponentStatus(false)
                         }
+                    }
+                    if(CalculateStatusPercentage == 5 && ImmediateStatus){
+                        setSendEmailComponentStatus(true);
+                        Items.StatusUpdateMail = true;
+                    }else{
+                        setSendEmailComponentStatus(false);
+                        Items.StatusUpdateMail = false;
                     }
                     if (sendEmailGlobalCount > 0) {
                         if (sendEmailStatus) {
@@ -2018,6 +2039,8 @@ const EditTaskPopup = (Items: any) => {
                             setSendEmailComponentStatus(true)
                         }
                     }
+                   
+
                     if (
                         Items?.pageName == "TaskDashBoard" ||
                         Items?.pageName == "ProjectProfile" ||
@@ -2261,15 +2284,9 @@ const EditTaskPopup = (Items: any) => {
             ClientCategoryData.push({});
         }
         if (ClientCategoryData?.length > 0) {
-            let PrecentageCount: any = 0;
             ClientCategoryData?.map((ClientData: any) => {
-                PrecentageCount = PrecentageCount + Number(ClientData.ClienTimeDescription);
+                SiteCompositionPrecentageValue = SiteCompositionPrecentageValue + Number(ClientData.ClienTimeDescription);
             })
-            if (PrecentageCount > 100) {
-                SiteCompositionPrecentageCheck = true;
-            } else {
-                SiteCompositionPrecentageCheck = false;
-            }
         }
         let UpdateDataObject: any = {
             IsTodaysTask: (EditData.IsTodaysTask ? EditData.IsTodaysTask : null),
@@ -2430,16 +2447,16 @@ const EditTaskPopup = (Items: any) => {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
-            if(Items?.pageName =="TaskFooterTable"){
-                var ItmesDelete:any={
-                    data:{
-                        Id:itemId,
-                        ItmesDelete:true
+            if (Items?.pageName == "TaskFooterTable") {
+                var ItmesDelete: any = {
+                    data: {
+                        Id: itemId,
+                        ItmesDelete: true
                     }
-                 }
-                Items.Call(ItmesDelete); 
+                }
+                Items.Call(ItmesDelete);
             }
-            else{
+            else {
                 Items.Call();
             }
             console.log("Your post has been deleted successfully");
@@ -4625,7 +4642,7 @@ const EditTaskPopup = (Items: any) => {
                         />
                     }
 
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
