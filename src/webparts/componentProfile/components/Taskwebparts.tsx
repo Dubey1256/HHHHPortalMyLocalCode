@@ -428,7 +428,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           try {
             let AllTasksMatches = [];
             var select =
-              "SharewebTaskLevel2No,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
+              "SharewebTaskLevel2No,SiteCompositionSettings,ParentTask/Title,ParentTask/Id,Services/Title,ClientTime,SharewebTaskLevel1No,Services/Id,Events/Id,Events/Title,ItemRank,Portfolio_x0020_Type,TimeSpent,BasicImageInfo,CompletedDate,Shareweb_x0020_ID, Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,SharewebCategories/Id,SharewebCategories/Title,ParentTask/Shareweb_x0020_ID,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level, Priority_x0020_Rank, Team_x0020_Members/Title, Team_x0020_Members/Name, Component/Id,Component/Title,Component/ItemType, Team_x0020_Members/Id,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,  ClientCategory/Id, ClientCategory/Title, FileLeafRef, FeedBack, Title, Id, PercentComplete,StartDate, DueDate, Comments, Categories, Status, Body, Mileage,PercentComplete,ClientCategory,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title&$expand=ParentTask,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
               filter +
               "";
             AllTasksMatches = await globalCommon.getData(
@@ -870,7 +870,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     let componentDetails: any = [];
     let componentDetails1: any = [];
     var select =
-      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,PortfolioStructureID,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Editor/Title,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebTaskType/Title,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=Parent,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
+      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Editor/Title,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebTaskType/Title,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=Parent,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
       filt +
       "";
 
@@ -3413,7 +3413,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 3,
       },
       {
-        accessorFn: (row) => row?.DueDate ? Moment(row?.original?.DueDate).format("DD/MM/YYYY") :"",
+        accessorFn: (row) => row?.DueDate ? Moment(row?.DueDate).format("DD/MM/YYYY") :"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.DueDate == null ? (""
@@ -3431,7 +3431,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 4,
       },
       {
-        accessorFn: (row) => row?.Created ? Moment(row?.original?.Created).format("DD/MM/YYYY"):"",
+        accessorFn: (row) => row?.Created ? Moment(row?.Created).format("DD/MM/YYYY"):"",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.Created == null ? (""
@@ -3614,6 +3614,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   }
 
+
+  const openTaskAndPortfolioMulti = () => {
+    checkData?.map((item:any)=>{
+      if(item?.original?.siteType === "Master Tasks"){
+        window.open(`${NextProp?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`,'_blank')
+      }else{
+        window.open(`${NextProp?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`,'_blank')
+      }
+    })
+  }
+
   React.useEffect(() => {
     if (table.getState().columnFilters.length) {
       setExpanded(true);
@@ -3704,7 +3715,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               {Iconssc.map((icon: any) => {
                 return (
                   <>
-                    <span className="Dyicons" onClick={() => handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined ? icon?.nextIcon : ""}`}</span></>
+                    <span className="Dyicons" title={icon?.Title} onClick={() => handleupdatedata(icon)}>{icon?.Icon}  </span> <span>{`${icon?.nextIcon != undefined ? icon?.nextIcon : ""}`}</span></>
                 )
               })}
 
@@ -3778,6 +3789,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             >
               Restructure
             </button>}
+            {table?.getSelectedRowModel()?.flatRows?.length > 0 &&<span>
+                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span>}
             {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
 
             <button
@@ -4032,35 +4046,167 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
-                        />
-                      </span>
-                      Implmentation
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
-                        />
-                      </span>
-                      Development
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites"></span>
-                      Activity
-                    </div>
-                  </li>
-                </ul>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={(e) => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites">
+
+                      <img
+
+                        className="icon-sites"
+
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
+
+                      />
+
+                    </span>
+
+                    Implmentation
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites">
+
+                      <img
+
+                        className="icon-sites"
+
+                        src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+
+                      />
+
+                    </span>
+
+                    Development
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+
+                    /></span>
+
+                    Activity
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Bug")}>
+
+                    <span className="icon-sites" > <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
+
+                    /></span>
+
+                    Bug
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Feedback")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
+
+                    /></span>
+
+                    Feedback
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Improvement")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
+
+                    /></span>
+
+                    Improvement
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Design")}>
+
+                    <span className="icon-sites"> <img
+
+                      className="icon-sites"
+
+                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png"
+
+                    /></span>
+
+                    Design
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                    <span className="icon-sites"></span>
+
+                    Activity
+
+                  </div>
+
+                </li>
+
+                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                  <div onClick={() => CreateMeetingPopups("Task")}>
+
+                    <span className="icon-sites"> </span>
+
+                    Task
+
+                  </div>
+
+                </li>
+
+              </ul>
+
               )}
             </div>
           </div>

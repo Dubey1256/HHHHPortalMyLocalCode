@@ -63,6 +63,7 @@ const CreateWS = (props: any) => {
     const [TaskResponsibleTeam, setTaskResponsibleTeam] = React.useState([]);
     const [showChildData, setShowChildData] = React.useState(false);
     const [childItem, setChildItem] = React.useState(false);
+    const [trgetValue, setTrgetValue] = React.useState({Title:'',Description:''});
 
 
 
@@ -344,7 +345,7 @@ const CreateWS = (props: any) => {
 
         let web = new Web(dynamicList.siteUrl);
         await web.lists.getById(AllItems.listId).items.add({
-            Title: AllItems.Title,
+            Title: trgetValue?.Title != undefined?trgetValue?.Title:AllItems.Title,
             ComponentId: { "results": Component },
             Categories: categoriesItem ? categoriesItem : null,
             SharewebCategoriesId: { "results": CategoryID },
@@ -352,7 +353,7 @@ const CreateWS = (props: any) => {
             ParentTaskId: AllItems.Id,
             ServicesId: { "results": RelevantPortfolioIds },
             Priority: AllItems.Priority,
-            Body: AllItems.Description,
+            Body: trgetValue?.Description != undefined ? trgetValue?.Description:AllItems.Description,
             // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
             DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
             SharewebTaskTypeId: SharewebTasknewTypeId,
@@ -405,10 +406,6 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("DD-MM-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.Author={
-                    Id: res?.data?.AuthorId
-                }
-                res.Item_x0020_Type=""
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -420,10 +417,6 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ? Moment(res?.data?.DueDate).format("MM-DD-YYYY") : '',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.Author={
-                    Id: res?.data?.AuthorId
-                }
-                res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
             }
@@ -595,7 +588,7 @@ const CreateWS = (props: any) => {
             }
             let web = new Web(dynamicList.siteUrl);
             await web.lists.getById(AllItems.listId).items.add({
-                Title: AllItems.Title,
+                Title: trgetValue.Title != undefined?trgetValue.Title:AllItems.Title,
                 ComponentId: { "results": Component },
                 Categories: categoriesItem ? categoriesItem : null,
                 Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
@@ -603,7 +596,7 @@ const CreateWS = (props: any) => {
                 ParentTaskId: AllItems.Id,
                 ServicesId: { "results": RelevantPortfolioIds },
                 SharewebTaskTypeId: SharewebTasknewTypeId,
-                Body: AllItems.Description,
+                Body: trgetValue.Description != undefined ? trgetValue.Description:AllItems.Description,
                 // DueDate: NewDate != '' && NewDate != undefined ? NewDate : undefined,
                 DueDate: myDate.editDate = myDate.editDate ? Moment(myDate?.editDate).format("ddd, DD MMM yyyy") : '',
                 Shareweb_x0020_ID: SharewebID,
@@ -712,8 +705,7 @@ const CreateWS = (props: any) => {
     // };
     const onRenderCustomHeaderMain = () => {
         return (
-            <div 
-            className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"}>
+            <div className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                     <h2 className='heading'>
                         {`Create Item`}
@@ -932,7 +924,7 @@ const CreateWS = (props: any) => {
                 isOpen={TaskStatuspopup}
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
-                className={AllItems?.Portfolio_x0020_Type == 'Service'|| AllItems?.Services?.length>0 ? "serviepannelgreena" : ""}
+                className={AllItems?.Portfolio_x0020_Type == 'Service' ? "serviepannelgreena" : ""}
             >
                 <div className="modal-body border p-3 bg-f5f5 active">
                     <div className='row'>
@@ -976,7 +968,7 @@ const CreateWS = (props: any) => {
                         <div className="col-sm-8 pad0">
                             <label className="full-width"></label>
                             <input className="full-width" type="text"
-                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => AllItems.Title = e.target.value}
+                                placeholder="Enter Child Item Title" defaultValue={AllItems?.Title} onChange={(e: any) => setTrgetValue({...trgetValue,Title: e.target.value})}
                             />
                         </div>
                         <div className="col-sm-4">
@@ -1145,7 +1137,7 @@ const CreateWS = (props: any) => {
                     <div className='row'>
                         <div className='col-sm-12 mt-1'>
                             <label className='full_width'>Description</label>
-                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => AllItems.Description = e.target.value}></textarea>
+                            <textarea rows={4} className="ng-pristine ng-valid ng-empty ng-touched full_width" onChange={(e: any) => setTrgetValue({...trgetValue,Description: e.target.value})}></textarea>
                         </div>
                     </div>
 

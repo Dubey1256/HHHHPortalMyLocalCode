@@ -17,6 +17,7 @@ import "froala-editor/js/plugins.pkgd.min.js";
 import "froala-editor/js/froala_editor.pkgd.min.js";
 import "froala-editor/css/froala_style.min.css";
 import "froala-editor/css/froala_editor.pkgd.min.css";
+import * as globalCommon from "../../../globalComponents/globalCommon";
 
 import Froala from "react-froala-wysiwyg";
 import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
@@ -62,6 +63,10 @@ const CreateActivity = (props: any) => {
 
         console.log(props)
     }
+    const [PhoneStatus, setPhoneStatus] = React.useState(false);
+    const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
+    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [TaskImages, setTaskImages] = React.useState([])
     const [AllCategoryData, setAllCategoryData] = React.useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
@@ -72,10 +77,6 @@ const CreateActivity = (props: any) => {
     const [categorySearchKey, setCategorySearchKey] = React.useState('');
     const [checkedCat, setcheckedCat] = React.useState(false);
     const [IsComponent, setIsComponent] = React.useState(false);
-    const [PhoneStatus, setPhoneStatus] = React.useState(false);
-    const [EmailStatus, setEmailStatus] = React.useState(false);
-    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
-    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [SharewebComponent, setSharewebComponent] = React.useState('');
     const [selectPriority, setselectPriority] = React.useState('');
     const [Priorityy, setPriorityy] = React.useState(false);
@@ -107,8 +108,18 @@ const CreateActivity = (props: any) => {
 
     React.useEffect(() => {
         loadAllCategoryData("Categories");
+        setPost({ ...post, Title: AllItems.Title})
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
+                ClientCategoriesData.push(value)
+            })
+        }
+        if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
+            AllItems.ClientCategory?.results?.forEach((value: any) => {
+                ClientCategoriesData.push(value)
+            })
+        } else if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
+            AllItems.ClientCategory.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
@@ -211,6 +222,64 @@ const CreateActivity = (props: any) => {
 
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
+
+        AllItems.SiteCompositionSettingsbackup = globalCommon.parseJSON(AllItems.SiteCompositionSettings);
+
+        if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team')) {
+
+            let allItems = globalCommon.parseJSON(AllItems.Sitestagging);
+
+            AllItems.Sitestaggingbackup = [];
+
+            allItems?.forEach((obj: any) => {
+
+                if (obj.ClienTimeDescription != undefined) {
+
+                    let Item: any = {};
+
+                    Item.SiteName = obj.Title;
+
+                    Item.ClienTimeDescription = obj.ClienTimeDescription;
+
+                    Item.localSiteComposition = obj.isAvailable;
+
+                    AllItems.Sitestaggingbackup.push(Item);
+
+                }
+
+            })
+
+
+
+
+        }
+
+        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
+
+        if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
+
+            SiteTypeBackupArray.forEach((site: any) => {
+
+                if (site.Title != undefined && site.Title === 'Shareweb')
+
+                    setActiveTile("siteType", "siteType", site)
+
+            })
+
+        }
+
+        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 1) {
+
+            SiteTypeBackupArray.forEach((site: any) => {
+
+                if (site.Title != undefined && site.Title === AllItems.Sitestaggingbackup[0].Title)
+
+                    setActiveTile("siteType", "siteType", site)
+
+            })
+
+        }
+
 
 
     }
@@ -662,21 +731,6 @@ const CreateActivity = (props: any) => {
             }
 
         })
-
-        // AllItems.Component?.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com.Id)
-        //     }
-
-
-        // })
-        // AllItems.Service?.forEach((com: any) => {
-
-        //     if (com != undefined) {
-        //         RelevantPortfolioIds.push(com.Id)
-        //     }
-
-        // })
         if (linkedComponentData.length == 0) {
             if (portfolioId != '') {
                 RelevantPortfolioIds.push(portfolioId)
@@ -718,6 +772,11 @@ const CreateActivity = (props: any) => {
                     ClientCategory.push(val.Id)
                 }
             })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -725,12 +784,22 @@ const CreateActivity = (props: any) => {
                 })
             }
         }
+        if (AllItems?.Team_x0020_Members != undefined  && AllItems?.Team_x0020_Members?.length>0) {
+            AllItems.Team_x0020_Members.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
+        }
+        if (AllItems?.Responsible_x0020_Team != undefined &&  AllItems?.Responsible_x0020_Team?.length>0) {
+            AllItems.Responsible_x0020_Team.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
@@ -773,7 +842,9 @@ const CreateActivity = (props: any) => {
                         SharewebTaskLevel1No: value.LatestTaskNumber,
                         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
                         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                        Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+                        Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+                        SiteCompositionSettings: JSON.stringify(AllItems.SiteCompositionSettingsbackup),
+                        ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
 
                     }).then((res: any) => {
                         res.data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
@@ -790,7 +861,7 @@ const CreateActivity = (props: any) => {
                         if (res?.data?.Team_x0020_MembersId?.length > 0) {
                             res.data?.Team_x0020_MembersId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                   if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         res.data.Team_x0020_Members.push(User?.AssingedToUser)
                                     }
                                 })
@@ -800,7 +871,7 @@ const CreateActivity = (props: any) => {
                         if (res?.data?.Responsible_x0020_TeamId?.length > 0) {
                             res.data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                   if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         res.data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
@@ -810,7 +881,7 @@ const CreateActivity = (props: any) => {
                         if (res?.data?.AssignedToId?.length > 0) {
                             res.data?.AssignedToId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                   if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         res.data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
@@ -826,6 +897,7 @@ const CreateActivity = (props: any) => {
                             })
                         }
                         res.data.Clientcategories = res.data.ClientCategory;
+
                         let fileName: any = '';
                         let tempArray: any = [];
                         // let SiteUrl = SiteUrl;
@@ -911,49 +983,52 @@ const CreateActivity = (props: any) => {
                         if (AllItems.SharewebTaskLevel1No == undefined) {
                             WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
                         }
+                    } else { SharewebID = 'A' + AllItems.Id; SharewebTasknewTypeId = 2; WorstreamLatestId = undefined; }
 
-                        let web = new Web(dynamicList.siteUrl);
-                        await web.lists.getById(value.listId).items.add({
-                            Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
-                            ComponentId: { "results": Component },
-                            Categories: categoriesItem ? categoriesItem : null,
-                            Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
-                            // DueDate: date != undefined ? new Date(date).toDateString() : date,
-                            DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
-                            ServicesId: { "results": RelevantPortfolioIds },
-                            SharewebCategoriesId: { "results": CategoryID },
-                            ParentTaskId: AllItems.Id,
-                            ClientCategoryId: { "results": ClientCategory },
-                            SharewebTaskTypeId: SharewebTasknewTypeId,
-                            Body: AllItems.Description,
-                            Shareweb_x0020_ID: SharewebID,
-                            Priority: AllItems.Priority,
-                            SharewebTaskLevel2No: WorstreamLatestId,
-                            SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
-                            AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
-                            Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
-                            Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
+                    web = new Web(dynamicList.siteUrl);
+                    await web.lists.getById(value.listId).items.add({
+                        Title: save.Title != undefined && save.Title != '' ? save.Title : post.Title,
+                        ComponentId: { "results": Component },
+                        Categories: categoriesItem ? categoriesItem : null,
+                        Priority_x0020_Rank: AllItems.Priority_x0020_Rank,
+                        // DueDate: date != undefined ? new Date(date).toDateString() : date,
+                        DueDate: date != undefined ? Moment(date).format("MM-DD-YYYY") : null,
+                        ServicesId: { "results": RelevantPortfolioIds },
+                        SharewebCategoriesId: { "results": CategoryID },
+                        ParentTaskId: AllItems.Id,
+                        ClientCategoryId: { "results": ClientCategory },
+                        SharewebTaskTypeId: SharewebTasknewTypeId,
+                        //Body: AllItems.Description,
+                        Shareweb_x0020_ID: SharewebID,
+                        Priority: AllItems.Priority,
+                        SharewebTaskLevel2No: WorstreamLatestId,
+                        SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
+                        AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
+                        Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
+                        Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
+                        SiteCompositionSettings: JSON.stringify(AllItems.SiteCompositionSettingsbackup),
+                        ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
 
-                        }).then((res: any) => {
-                            let data = res.data;
-                            data.ParentTaskId = AllItems.Id
-                            data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
-                            data['SharewebTaskType'] = { Title: 'Task' }
-                            data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
-                                data['Shareweb_x0020_ID'] = SharewebID
-                            data['siteType'] = value?.siteName
-                            data.Created = new Date();
-                            data.Author = {
-                                Id: res?.data?.AuthorId
-                            }                 
-                            data.listId = value.listId
-                            data.AssignedTo = []
+                    }).then((res: any) => {
+                        let data = res.data;
+                        data.ParentTaskId = AllItems.Id
+                        data['SiteIcon'] = value.Item_x005F_x0020_Cover?.Url
+                        data['SharewebTaskType'] = { Title: 'Task' }
+                        data.DueDate = date ? Moment(date).format("MM-DD-YYYY") : null,
+                            data['Shareweb_x0020_ID'] = SharewebID
+                        data['siteType'] = value?.siteName
+                        data.Created = new Date();
+                        data.Author = {
+                            Id: res?.data?.AuthorId
+                        }
+                        data.listId = value.listId
+                        data.AssignedTo = []
                         data.Responsible_x0020_Team = []
                         data.Team_x0020_Members = []
                         if (data?.Team_x0020_MembersId?.length > 0) {
                             data?.Team_x0020_MembersId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                    if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         data.Team_x0020_Members.push(User?.AssingedToUser)
                                     }
                                 })
@@ -962,7 +1037,7 @@ const CreateActivity = (props: any) => {
                         if (data?.Responsible_x0020_TeamId?.length > 0) {
                             data?.Responsible_x0020_TeamId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                    if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
@@ -971,27 +1046,27 @@ const CreateActivity = (props: any) => {
                         if (data?.AssignedToId?.length > 0) {
                             data?.AssignedToId?.map((teamUser: any) => {
                                 let elementFound = props?.TaskUsers?.filter((User: any) => {
-                                    if(User?.AssingedToUser?.Id == teamUser){
+                                    if (User?.AssingedToUser?.Id == teamUser) {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
                             })
                         }
-                            data.ClientCategory = []
-                            if (data?.ClientCategoryId?.length > 0) {
-                                data?.ClientCategoryId?.map((category: any) => {
-                                    let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
-                                    if (elementFound) {
-                                        data.ClientCategory.push(elementFound[0]);
-                                    }
-                                })
-                            }
-                            data.Clientcategories = data.ClientCategory;
-                            res.data = data;
-                            console.log(res);
-                            closeTaskStatusUpdatePoup(res);
-                        })
-                    }
+                        data.ClientCategory = []
+                        if (data?.ClientCategoryId?.length > 0) {
+                            data?.ClientCategoryId?.map((category: any) => {
+                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                if (elementFound) {
+                                    data.ClientCategory.push(elementFound[0]);
+                                }
+                            })
+                        }
+                        data.Clientcategories = data.ClientCategory;
+                        res.data = data;
+                        console.log(res);
+                        closeTaskStatusUpdatePoup(res);
+                    })
+                    // }
                 }
             }
         })
@@ -1191,12 +1266,6 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
-                    TaxonomyItems?.map((items: any) => {
-                        if (items.Title == "Actions") {
-                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
-                        }
-                    })
-
                 }
             },
             error: function (error: any) {
@@ -1391,7 +1460,6 @@ const deleteLinkedComponentData=()=>{
     //         setCategorySearchKey("");
     //     }
     // }
-
 
 
     return (
@@ -1641,38 +1709,38 @@ const deleteLinkedComponentData=()=>{
                                         </div>
                                     </fieldset> */}
                                     <div>
-                                                    <div className="input-group">
-                                                        <input type="text" className="form-control"
-                                                            placeholder="Enter Priority"
-                                                            value={selectPriority ? selectPriority : ''}
-                                                            onChange={(e) => ChangePriorityStatusFunction(e)}
-                                                        />
-                                                    </div>
-                                                    <ul className="p-0 mt-1">
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input"
-                                                                name="radioPriority" type="radio"
-                                                                checked={Number(selectPriority)<= 10 && Number(selectPriority)>= 8}
-                                                                onChange={() =>  setselectPriority( '8' )}
-                                                            />
-                                                            <label className="form-check-label">High</label>
-                                                        </li>
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input" name="radioPriority"
-                                                                type="radio" checked={Number(selectPriority)<= 7 && Number(selectPriority) >= 4}
-                                                                onChange={() => setselectPriority('4')}
-                                                            />
-                                                            <label className="form-check-label">Normal</label>
-                                                        </li>
-                                                        <li className="form-check l-radio">
-                                                            <input className="form-check-input" name="radioPriority"
-                                                                type="radio" checked={Number(selectPriority) <= 3 && Number(selectPriority) > 0}
-                                                                onChange={() => setselectPriority( '1')}
-                                                            />
-                                                            <label className="form-check-label">Low</label>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                        <div className="input-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Enter Priority"
+                                                value={selectPriority ? selectPriority : ''}
+                                                onChange={(e) => ChangePriorityStatusFunction(e)}
+                                            />
+                                        </div>
+                                        <ul className="p-0 mt-1">
+                                            <li className="form-check l-radio">
+                                                <input className="form-check-input"
+                                                    name="radioPriority" type="radio"
+                                                    checked={Number(selectPriority) <= 10 && Number(selectPriority) >= 8}
+                                                    onChange={() => setselectPriority('8')}
+                                                />
+                                                <label className="form-check-label">High</label>
+                                            </li>
+                                            <li className="form-check l-radio">
+                                                <input className="form-check-input" name="radioPriority"
+                                                    type="radio" checked={Number(selectPriority) <= 7 && Number(selectPriority) >= 4}
+                                                    onChange={() => setselectPriority('4')}
+                                                />
+                                                <label className="form-check-label">Normal</label>
+                                            </li>
+                                            <li className="form-check l-radio">
+                                                <input className="form-check-input" name="radioPriority"
+                                                    type="radio" checked={Number(selectPriority) <= 3 && Number(selectPriority) > 0}
+                                                    onChange={() => setselectPriority('1')}
+                                                />
+                                                <label className="form-check-label">Low</label>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
 
                                 <div className="row mt-2">
@@ -1710,56 +1778,23 @@ const deleteLinkedComponentData=()=>{
                                     </div>) : null}
 
                                 <div className="row">
-                                <div className="col">
-                                    <div className="col">
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                name="Phone"
-                                                type="checkbox" checked={PhoneStatus}
-                                                value={`${PhoneStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
-                                            />
-                                            <label className="form-check-label">Phone</label>
-                                        </div>
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={EmailStatus}
-                                                value={`${EmailStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
-                                            />
-                                            <label>Email Notification</label>
+                                    <div className="col-sm-12 mt-2">
+                                        {CheckCategory?.map((item: any) => {
+                                            return (
+                                                <>
+                                                    <div
+                                                        className="col-sm-12 padL-0 checkbox">
+                                                        <input type="checkbox"
+                                                            onClick={() => checkCat(item.Title)} />
+                                                        <span style={{ marginLeft: "20px" }}> {item.Title}</span>
+                                                    </div>
+                                                </>
+                                            )
+                                        })}
+                                    </div>
 
-                                        </div>
-                                        <div
-                                            className="form-check">
-                                            <input className="form-check-input rounded-0"
-                                                type="checkbox"
-                                                checked={ImmediateStatus}
-                                                value={`${ImmediateStatus}`}
-                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
-                                            <label>Immediate</label>
-                                        </div>
 
-                                    
-                                    <div className="form-check ">
-                                        <label className="full-width">Approval</label>
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input rounded-0"
-                                            name="Approval"
-                                            checked={ApprovalStatus}
-                                            value={`${ApprovalStatus}`}
-                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
-
-                                        />
-                                    </div>
-                                    </div>
-                                    </div>
-                                    </div>
-                                    
+                                </div>
                                 {CategoriesData != undefined ?
                                     <div>
                                         {CategoriesData?.map((type: any, index: number) => {

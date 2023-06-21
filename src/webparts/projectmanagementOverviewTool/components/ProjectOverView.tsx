@@ -39,7 +39,7 @@ var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
 export default function ProjectOverview(props: any) {
     const [TableProperty, setTableProperty] = React.useState([]);
-    const [currentUserData, setCurrentUserData]: any = React.useState({}); 
+    const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [CheckBoxData, setCheckBoxData] = React.useState([]);
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [checkData, setcheckData] = React.useState([])
@@ -346,7 +346,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 80,
+                size: 120,
                 header: ({ table }: any) => (
                     <>
                         <button className='border-0 bg-Ff'
@@ -356,6 +356,13 @@ export default function ProjectOverview(props: any) {
                         >
                             {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                         </button>{" "}
+                        <IndeterminateCheckbox className=" "
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />{" "}
 
                     </>
                 ),
@@ -364,7 +371,6 @@ export default function ProjectOverview(props: any) {
                         style={row?.getCanExpand() ? {
                             paddingLeft: `${row?.depth * 5}px`,
                         } : {
-                            paddingLeft: "18px",
                         }}
                     >
                         <>
@@ -380,8 +386,14 @@ export default function ProjectOverview(props: any) {
                             ) : (
                                 ""
                             )}{" "}
-
-                            {row?.original.Shareweb_x0020_ID}
+                            {row?.original?.Item_x0020_Type == "tasks" ? <IndeterminateCheckbox
+                                {...{
+                                    checked: row?.getIsSelected(),
+                                    indeterminate: row?.getIsSomeSelected(),
+                                    onChange: row?.getToggleSelectedHandler(),
+                                }}
+                            /> : ''}
+                            <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
                         </>
                     </div>
                 ),
@@ -659,20 +671,21 @@ export default function ProjectOverview(props: any) {
                 size: 100,
             },
             {
-                Cell: ({ row }: any) => (
+
+                cell: ({ row }) => (
                     <>
-                        <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span>
+                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.Item_x0020_Type === "tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                     </>
                 ),
-                id: 'Actions',
-                accessorKey: "",
+                id: 'Id',
                 canSort: false,
-                resetSorting: false,
-                resetColumnFilters: false,
                 placeholder: "",
+                header: "",
+                resetColumnFilters: false,
+                resetSorting: false,
                 size: 35,
-
-            },
+            }
         ],
         [data]
     );
@@ -684,10 +697,16 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
-                size: 80,
+                size: 120,
                 header: ({ table }: any) => (
                     <>
-
+                        <IndeterminateCheckbox className=" "
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />{" "}
                     </>
                 ),
                 cell: ({ row, getValue }) => (
@@ -695,7 +714,6 @@ export default function ProjectOverview(props: any) {
                         style={row?.getCanExpand() ? {
                             paddingLeft: `${row?.depth * 5}px`,
                         } : {
-                            paddingLeft: "18px",
                         }}
                     >
                         <>
@@ -711,8 +729,15 @@ export default function ProjectOverview(props: any) {
                             ) : (
                                 ""
                             )}{" "}
+                            <IndeterminateCheckbox
+                                {...{
+                                    checked: row?.getIsSelected(),
+                                    indeterminate: row?.getIsSomeSelected(),
+                                    onChange: row?.getToggleSelectedHandler(),
+                                }}
+                            />
+                            <span className='ms-1'>{row?.original.Shareweb_x0020_ID}</span>
 
-                            {row?.original.Shareweb_x0020_ID}
                         </>
                     </div>
                 ),
@@ -869,7 +894,7 @@ export default function ProjectOverview(props: any) {
 
 
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let groupedData = data;
@@ -1092,7 +1117,7 @@ export default function ProjectOverview(props: any) {
     // const page = React.useMemo(() => data, [data]);
     const [ShowingAllData, setShowingData] = React.useState([])
 
-    const callBackData = React.useCallback((elem: any, getSelectedRowModel:any, ShowingData: any) => {
+    const callBackData = React.useCallback((elem: any, getSelectedRowModel: any, ShowingData: any) => {
         if (elem != undefined) {
             setCheckBoxData([elem])
             setTableProperty(getSelectedRowModel?.getSelectedRowModel()?.flatRows)
@@ -1117,12 +1142,12 @@ export default function ProjectOverview(props: any) {
 
     const ShowTeamFunc = () => {
         setShowTeamPopup(true)
-      }
-    
-      const showTaskTeamCAllBack = React.useCallback(() => {
+    }
+
+    const showTaskTeamCAllBack = React.useCallback(() => {
         setShowTeamPopup(false)
-        
-      }, []);
+
+    }, []);
 
 
 
