@@ -4359,7 +4359,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-md-4">
                                         <div className="full_width ">
-                                            <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                            <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                         </div>
                                         <div className="pull-right">
                                             <span className="">
@@ -4374,7 +4374,6 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                 </div>
                                 <div className="row py-3">
-                                   
                                     <div className={IsShowFullViewImage != true ?
                                         'col-sm-3 padL-0 DashboardTaskPopup-Editor above' :
                                         'col-sm-6  padL-0 DashboardTaskPopup-Editor above'}>
@@ -5482,7 +5481,7 @@ const EditTaskPopup = (Items: any) => {
                                                 </div>
                                                 <div className="col-md-4">
                                                     <div className="full_width ">
-                                                        <CommentCard siteUrl={siteUrls} AllListId={AllListIdData} Context={Context} />
+                                                        <CommentCard siteUrl={siteUrls} itemID={Items.Items.Id} AllListId={AllListIdData} Context={Context} />
                                                     </div>
                                                     <div className="pull-right">
                                                         <span className="">
