@@ -190,7 +190,7 @@ function ComponentTable(SelectedProp: any) {
   } catch (e) {
     console.log(e);
   }
-  const [selectedSearchDuration, setSelectedSearchDuration] = React.useState("All Words");
+  // const [selectedSearchDuration, setSelectedSearchDuration] = React.useState("All Words");
   const [Display, setDisplay] = React.useState("none");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -4538,7 +4538,7 @@ function ComponentTable(SelectedProp: any) {
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                     </span>
-                    <span>
+                    {/* <span>
                       <span>
                         <select className="" style={{ height: '30px' }} aria-label="Default select example" value={selectedSearchDuration} onChange={(e) => setSelectedSearchDuration((e.target.value))}>
                           <option selected>All Words</option>
@@ -4546,7 +4546,7 @@ function ComponentTable(SelectedProp: any) {
                           <option value="2">Exact Phrase</option>
                         </select>
                       </span>
-                    </span>
+                    </span> */}
 
                   </span>
                   <span className="toolbox mx-auto">

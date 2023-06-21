@@ -102,6 +102,7 @@ const CreateActivity = (props: any) => {
 
     React.useEffect(() => {
         loadAllCategoryData("Categories");
+        setPost({ ...post, Title: AllItems.Title})
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
@@ -217,20 +218,60 @@ const CreateActivity = (props: any) => {
         SiteTypeBackupArray = SitesTypes;
 
         AllItems.SiteCompositionSettingsbackup = globalCommon.parseJSON(AllItems.SiteCompositionSettings);
-        if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team'))
-            AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.Sitestagging);
-        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
-        if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
-            SiteTypeBackupArray.forEach((site: any) => {
-                if (site.Title != undefined && site.Title === 'Shareweb')
-                    setActiveTile("siteType", "siteType", site)
+
+        if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team')) {
+
+            let allItems = globalCommon.parseJSON(AllItems.Sitestagging);
+
+            AllItems.Sitestaggingbackup = [];
+
+            allItems?.forEach((obj: any) => {
+
+                if (obj.ClienTimeDescription != undefined) {
+
+                    let Item: any = {};
+
+                    Item.SiteName = obj.Title;
+
+                    Item.ClienTimeDescription = obj.ClienTimeDescription;
+
+                    Item.localSiteComposition = obj.isAvailable;
+
+                    AllItems.Sitestaggingbackup.push(Item);
+
+                }
+
             })
+
+
+
+
         }
-        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 1) {
+
+        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
+
+        if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
+
             SiteTypeBackupArray.forEach((site: any) => {
-                if (site.Title != undefined && site.Title === AllItems.Sitestaggingbackup[0].Title)
+
+                if (site.Title != undefined && site.Title === 'Shareweb')
+
                     setActiveTile("siteType", "siteType", site)
+
             })
+
+        }
+
+        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 1) {
+
+            SiteTypeBackupArray.forEach((site: any) => {
+
+                if (site.Title != undefined && site.Title === AllItems.Sitestaggingbackup[0].Title)
+
+                    setActiveTile("siteType", "siteType", site)
+
+            })
+
         }
 
 
@@ -668,21 +709,6 @@ const CreateActivity = (props: any) => {
             }
 
         })
-
-        // AllItems.Component?.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com.Id)
-        //     }
-
-
-        // })
-        // AllItems.Service?.forEach((com: any) => {
-
-        //     if (com != undefined) {
-        //         RelevantPortfolioIds.push(com.Id)
-        //     }
-
-        // })
         if (linkedComponentData.length == 0) {
             if (portfolioId != '') {
                 RelevantPortfolioIds.push(portfolioId)
@@ -724,6 +750,11 @@ const CreateActivity = (props: any) => {
                     ClientCategory.push(val.Id)
                 }
             })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -731,12 +762,22 @@ const CreateActivity = (props: any) => {
                 })
             }
         }
+        if (AllItems?.Team_x0020_Members != undefined  && AllItems?.Team_x0020_Members?.length>0) {
+            AllItems.Team_x0020_Members.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
+        }
+        if (AllItems?.Responsible_x0020_Team != undefined &&  AllItems?.Responsible_x0020_Team?.length>0) {
+            AllItems.Responsible_x0020_Team.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
@@ -920,7 +961,7 @@ const CreateActivity = (props: any) => {
                         if (AllItems.SharewebTaskLevel1No == undefined) {
                             WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
                         }
-                    } else SharewebID = AllItems.Id;
+                    } else { SharewebID = 'A' + AllItems.Id; SharewebTasknewTypeId = 2; WorstreamLatestId = undefined; }
 
                     web = new Web(dynamicList.siteUrl);
                     await web.lists.getById(value.listId).items.add({
@@ -935,7 +976,7 @@ const CreateActivity = (props: any) => {
                         ParentTaskId: AllItems.Id,
                         ClientCategoryId: { "results": ClientCategory },
                         SharewebTaskTypeId: SharewebTasknewTypeId,
-                        Body: AllItems.Description,
+                        //Body: AllItems.Description,
                         Shareweb_x0020_ID: SharewebID,
                         Priority: AllItems.Priority,
                         SharewebTaskLevel2No: WorstreamLatestId,
