@@ -48,16 +48,25 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
+var SiteId = ''
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any = '';
+var timesheetData:any = []
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
+var TimeSheetlistId = ''
+let siteConfig: any = [];
+let siteConfigss: any = [];
+var TimeSheets: any = []
+var MigrationListId = ''
+var siteUrl = ''
+var listName = ''
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
 var TaskApproverBackupArray: any = [];
@@ -1378,7 +1387,6 @@ const EditTaskPopup = (Items: any) => {
     const getAllSitesData = async () => {
         let web = new Web(siteUrls);
         let MetaData: any = [];
-        let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
@@ -2369,6 +2377,8 @@ const EditTaskPopup = (Items: any) => {
     //    ************* This is team configuration call Back function **************
 
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
+        timesheetData = teamConfigData;
+        console.log(timesheetData)
         if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -2969,12 +2979,12 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
-                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(() => {
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then((res) => {
                     if (FunctionsType == "Copy-Task") {
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        deleteItemFunction(Items.Items.Id);
+                        moveTimeSheet(SelectedSite,res.data)
                     }
                 })
             }
@@ -2984,6 +2994,45 @@ const EditTaskPopup = (Items: any) => {
         closeCopyAndMovePopup();
         Items.Call();
     }
+
+    const moveTimeSheet=async(SelectedSite:any ,newItem:any)=>{
+        var TimesheetConfiguration:any=[]
+         var folderUri=''
+         
+         let web = new Web(siteUrls);
+        await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
+         then(async (res)=>{
+             SiteId = res[0].Id
+             siteConfigss.forEach((itemss: any) => {
+                 if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
+                     TimesheetConfiguration = JSON.parse(itemss.Configurations)
+     
+                 }
+             })
+         })
+         TimesheetConfiguration?.forEach((val: any) => {    
+             TimeSheetlistId = val.TimesheetListId;
+             siteUrl = val.siteUrl
+             listName = val.TimesheetListName
+         
+     })
+     timesheetData?.forEach(async (val:any)=>{
+         var siteType:any = "Task" + SelectedSite +"Id"
+         var SiteId = "Task" + Items.Items.siteType;
+        // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
+        var Data =  await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
+ 
+             [siteType] : newItem.Id,
+ 
+         })
+         console.log(Data)
+         deleteItemFunction(Items.Items.Id);
+       })
+      
+     var UpdatedData: any = {}
+  
+ 
+     }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
