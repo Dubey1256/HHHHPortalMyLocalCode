@@ -30,6 +30,7 @@ export interface ITaskFeedbackState {
   showcomment: string;
   showcomment_subtext: string;
   fbData: any;
+
   percentage:any;
   index: number;
   CommenttoPost: string;
@@ -59,6 +60,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
       fbData: this.props.feedback,
       index: this.props.index,
       percentage:this.props.Result.PercentComplete,
+     
       CommenttoPost: '',
       isModalOpen: false,
       emailcomponentopen:false,
@@ -501,6 +503,8 @@ console.log(fullfeedbackbackup)
       FeedBack: JSON.stringify(fullfeedbackbackup)
     }).then((data:any)=>{
    console.log(data)
+   this.props.Result.FeedBack=fullfeedbackbackup
+  
     }).catch((error:any)=>{
    console.log(error)
     });

@@ -12,7 +12,7 @@ const ClientCategoryPupup=(props:any)=>{
     const [searchedData, setSearchedData] = React.useState([])
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [value, setValue] = React.useState("");
-    const [select,setSelect] = React.useState([])
+    const [select,setSelect] = React.useState(props.selectedClientCategoryData!=undefined?props.selectedClientCategoryData:[])
     console.log(props)
     React.useEffect(()=>{
         GetCategoryData();
@@ -111,7 +111,7 @@ const ClientCategoryPupup=(props:any)=>{
     }
     const deleteSelectedCat = (val: any) => {
        
-            select.map((valuee: any, index) => {
+            select.map((valuee: any, index:any) => {
                 if (val.Id == valuee.Id) {
                     select.splice(index, 1)
                 }
@@ -124,7 +124,7 @@ const ClientCategoryPupup=(props:any)=>{
 
             })
 
-            setSelect(select => ([...select]));
+            setSelect((select: any) => ([...select]));
         
     }
     function Example(callBack: any, type: any) {

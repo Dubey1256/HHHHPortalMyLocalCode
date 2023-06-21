@@ -68,61 +68,61 @@ function Portfolio({SelectedProp}:any) {
   const [ParentData, SetParentData] = React.useState([]);
 
   ID=getQueryVariable('taskId');
-  const handleOpen = (item: any) => {
+  const handleOpen = (item:any) => {
     setIsActive((current) => !current);
-    setIsActive(false);
-    item.show = item.show == true ? false : true;
+    item.show = !item.show;
     setArray((array) => [...array]);
   };
+  
   const handleOpen1 = (item: any) => {
-    item.showl = item.showl = item.showl == true ? false : true;
+    item.showl = !item.showl ;
     setdatam((datam) => [...datam]);
   };
   const handleOpen2 = (item: any) => {
-    item.shows = item.shows = item.shows == true ? false : true;
+    item.shows = !item.shows; 
     setdatas((datas) => [...datas]);
   };
 
   const handleOpen4 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showj = item.showj = item.showj == true ? false : true;
+    item.showj = !item.showj;
     setdataj((dataj) => [...dataj]);
   };
   const handleOpen5 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showm = item.showm = item.showm == true ? false : true;
+    item.showm = !item.showm ;
     setdatams((datams) => [...datams]);
   };
   const handleOpen6 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showm = item.showb = item.showb == true ? false : true;
+    item.showb = !item.showb;
     setdatamb((datamb) => [...datamb]);
   };
   const handleOpen7 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showhelp = item.showhelp = item.showhelp == true ? false : true;
+    item.showhelp = !item.showhelp;
     setdatahelp((datahelp) => [...datahelp]);
   };
   const handleOpen8 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showQues = item.showQues = item.showQues == true ? false : true;
+    item.showQues = !item.showQues;
     setdataQues((dataQues) => [...dataQues]);
   };
   const handleOpen9 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showtech = item.showtech = item.showtech == true ? false : true;
+    item.showtech = !item.showtech;
     setdatatech((datatech) => [...datatech]);
   };
   const handleOpen10 = (item: any) => {
     setIsActive((current) => !current);
     setIsActive(true);
-    item.showHelp = item.showHelp = item.showHelp == true ? false : true;
+    item.showHelp = !item.showHelp;
     setdataHelp((dataHelp) => [...dataHelp]);
   };
   React.useEffect(() => {
@@ -159,6 +159,17 @@ function Portfolio({SelectedProp}:any) {
         success: function (data) {
           response = response.concat(data.d.results);
           response.map((item: any) => {
+            item.show= true
+            item.showl=true
+            item.shows=true
+            item.showj=true
+            item.showm=true
+            item.showb=true
+            item.showhelp=true
+            item.showQues=true
+            item.showtech = true
+            item.showHelp=true
+            item.showk = true
             if (item.FolderID != undefined) {
               folderId = item.FolderID;
               let urln = `${web}/_api/lists/getbyid('${ContextValue.DocumentsListID}')/items?$select=Id,Title,FileDirRef,FileLeafRef,ServerUrl,FSObjType,EncodedAbsUrl&$filter=Id eq ${folderId}`;
@@ -1141,11 +1152,12 @@ Iconpps = [
                                     >
                                       <p className="m-0">
                                         {data.map((item) => (
-                                          <a>{item.Background}</a>
+                                          <>{item.Background}</>
                                         ))}
                                       </p>
                                     </div>
                                   )}
+                                   
                                 </div>
                               </div>
                             </div>

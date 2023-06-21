@@ -6,12 +6,9 @@ import * as Moment from "moment";
 import { Modal, Panel, PanelType } from "office-ui-fabric-react";
 //import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  FaAngleDown,
-  FaAngleUp,
   FaPrint,
   FaFileExcel,
   FaPaintBrush,
-  FaEdit,
   FaSearch,
   FaSort,
   FaSortDown,
@@ -22,8 +19,6 @@ import {
   FaMinus,
   FaPlus,
   FaCompressArrowsAlt,
-  FaWindowClose,
-  FaRegWindowClose,
 } from "react-icons/fa";
 import { CSVLink } from "react-csv";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
@@ -52,7 +47,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { HTMLProps } from "react";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
-import InlineEditingcolumns from "../../projectmanagementOverviewTool/components/inlineEditingcolumns";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
@@ -72,6 +66,7 @@ let showPopHover: any;
 let popHoverDataGroup: any = []
 let Renderarray: any = [];
 let AllDataRender: any = [];
+let forceExpanded: any = [];
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -122,11 +117,6 @@ function DebouncedInput({
 
   return (
     <>
-      {/* <input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    /> */}
       <div className="container-2 mx-1">
         <span className="icon"><FaSearch /></span>
         <input type="search" id="search" {...props}
@@ -200,7 +190,7 @@ function ComponentTable(SelectedProp: any) {
   } catch (e) {
     console.log(e);
   }
-
+  const [selectedSearchDuration, setSelectedSearchDuration] = React.useState("All Words");
   const [Display, setDisplay] = React.useState("none");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -241,11 +231,7 @@ function ComponentTable(SelectedProp: any) {
   // const [table, setTable] = React.useState(data);
   const [WSPopup, setWSPopup] = React.useState(false);
   const [AllUsers, setTaskUser] = React.useState([]);
-  const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [addModalOpen, setAddModalOpen] = React.useState(false);
-  const [show, setShow] = React.useState(false);
-  const [showChild, setShowChild] = React.useState(false);
-  const [showSubChild, setShowSubChild] = React.useState(false);
   const [state, setState] = React.useState([]);
   const [filterGroups, setFilterGroups] = React.useState([]);
   const [filterItems, setfilterItems] = React.useState([]);
@@ -370,7 +356,7 @@ function ComponentTable(SelectedProp: any) {
     ) {
       if (checkedList[0].SharewebTaskType.Title == "Activities") {
         setWSPopup(true);
-        checkedList.push(checkedList[0]);
+        // checkedList.push(checkedList[0]);
         //setMeetingItems(childsData)
       }
     }
@@ -997,9 +983,7 @@ function ComponentTable(SelectedProp: any) {
               if (result.DueDate == "Invalid date" || "") {
                 result.DueDate = result.DueDate.replaceAll("Invalid date", "");
               }
-              result.PercentComplete = (result.PercentComplete * 100).toFixed(
-                0
-              );
+              result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
               result.chekbox = false;
               if (result.Short_x0020_Description_x0020_On != undefined) {
                 result.Short_x0020_Description_x0020_On =
@@ -2271,7 +2255,7 @@ function ComponentTable(SelectedProp: any) {
     temp.childs = [];
     temp.childsLength = 0;
     temp.flag = true;
-    temp.PercentComplete = "";
+    temp.PercentComplete ="";
     temp.ItemRank = "";
     temp.DueDate = "";
     // ComponetsData['allComponets'][i]['childs']
@@ -2289,7 +2273,9 @@ function ComponentTable(SelectedProp: any) {
         temp.childs.push(task);
       }
     });
-
+    if(temp?.childs?.length>0){
+      temp.childs = temp?.childs?.filter((ele:any, ind:any) => ind === temp?.childs?.findIndex((elem:any) => elem.ID === ele.ID));
+    }
     ComponetsData["allComponets"].push(temp);
     bindData();
   };
@@ -2427,6 +2413,8 @@ function ComponentTable(SelectedProp: any) {
           if (comp.Id == MainId || comp.ID == MainId) {
             comp.childs.push(childItem.data);
             comp.subRows.push(childItem.data);
+            comp.subRows = comp?.subRows?.filter((ele:any, ind:any) => ind === comp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
+
           }
 
           if (comp.subRows != undefined && comp.subRows.length > 0) {
@@ -2436,6 +2424,7 @@ function ComponentTable(SelectedProp: any) {
               if (subComp.Id == MainId || subComp.ID == MainId) {
                 subComp.childs.push(childItem.data);
                 subComp.subRows.push(childItem.data);
+                subComp.subRows = subComp?.subRows?.filter((ele:any, ind:any) => ind === subComp?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
 
               }
 
@@ -2459,8 +2448,7 @@ function ComponentTable(SelectedProp: any) {
                       Feat.subRows == undefined ? [] : Feat.subRows;
                     Feat.childs.push(childItem.data);
                     Feat.subRows.push(childItem.data);
-
-                    Feat.subRows = Feat?.subRows?.filter((ele: any, ind: any) => ind === Feat?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                    Feat.subRows = Feat?.subRows?.filter((ele:any, ind:any) => ind === Feat?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                   }
 
                   if (Feat.subRows != undefined && Feat.subRows.length > 0) {
@@ -2490,7 +2478,8 @@ function ComponentTable(SelectedProp: any) {
                         // Activity.subRows = Activity?.subRows.filter((val: any, id: any, array: any) => {
                         //     return array.indexOf(val) == id;
                         // })
-                        Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                        // Activity.subRows = Activity?.subRows?.filter((ele: any, ind: any) => ind === Activity?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                        Activity.subRows = Activity?.subRows?.filter((ele:any, ind:any) => ind === Activity?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                       }
 
                       if (
@@ -2520,8 +2509,8 @@ function ComponentTable(SelectedProp: any) {
                               workst.subRows == undefined ? [] : workst.subRows;
                             workst.childs.push(childItem.data);
                             workst.subRows.push(childItem.data);
-                            workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID)
-                            );
+                            // workst.subRows = workst?.subRows?.filter((ele: any, ind: any) => ind === workst?.subRows?.findIndex((elem: { ID: any }) => elem.ID === ele.ID));
+                            workst.subRows = workst?.subRows?.filter((ele:any, ind:any) => ind === workst?.subRows?.findIndex((elem:any) => elem.ID === ele.ID));
                           }
                         });
                       }
@@ -2555,95 +2544,6 @@ function ComponentTable(SelectedProp: any) {
     setIsTask(true);
     setSharewebTask(item);
   };
-
-  //////////CheckBox Item Start/////
-
-  // const onChangeHandler = (itrm: any, child: any, eTarget: any, getSelectedRowModel: any) => {
-  //   if (eTarget == true) {
-  //     setcheckData(getSelectedRowModel)
-  //     setShowTeamMemberOnCheck(true)
-  //   } else {
-  //     setcheckData([])
-  //     setShowTeamMemberOnCheck(false)
-  //   }
-  //   var Arrays: any = [];
-  //   const checked = eTarget;
-  //   if (checked == true) {
-  //     if (itrm.SharewebTaskType == undefined) {
-  //       setActivityDisable(false);
-  //       itrm["siteUrl"] = ContextValue?.siteUrl;
-  //       itrm["listName"] = "Master Tasks";
-  //       checkedList.push(itrm);
-  //     }
-  //     if (itrm.SharewebTaskType != undefined) {
-  //       if (
-  //         itrm?.SharewebTaskType?.Title == "Activities" || itrm.SharewebTaskType.Title == "Workstream") {
-  //         setActivityDisable(false);
-  //         itrm["siteUrl"] = ContextValue?.siteUrl;
-  //         Arrays.push(itrm);
-  //         itrm["PortfolioId"] = child.Id;
-  //         childsData.push(itrm);
-  //       }
-  //     }
-  //     if (itrm?.SharewebTaskType != undefined) {
-  //       if (itrm?.SharewebTaskType?.Title == "Task") {
-  //         setActivityDisable(true);
-  //       }
-  //     }
-  //   }
-  //   if (checked == false) {
-  //     checkedList?.forEach((val: any, index: any) => {
-  //       checkedList = [];
-  //     });
-  //     if (checkedList.length == 0) {
-  //       setActivityDisable(true);
-  //     }
-  //     $("#ClientCategoryPopup").hide();
-  //   }
-
-  //   let list: any = [];
-  //   var flag = true;
-  //   list?.forEach((obj: any, index: any) => {
-  //     if (
-  //       obj?.Id != undefined &&
-  //       itrm?.Id != undefined &&
-  //       obj?.Id === itrm?.Id
-  //     ) {
-  //       flag = false;
-  //       list = [];
-  //     }
-  //   });
-  //   if (flag) list.push(itrm);
-  //   maidataBackup?.forEach((obj, index) => {
-  //     obj.isRestructureActive = false;
-  //     if (obj.childs != undefined && obj?.childs?.length > 0) {
-  //       obj?.childs?.forEach((sub: any, indexsub: any) => {
-  //         sub.isRestructureActive = false;
-  //         if (sub.childs != undefined && sub.childs.length > 0) {
-  //           sub?.childs?.forEach((newsub: any, lastIndex: any) => {
-  //             newsub.isRestructureActive = false;
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  //   // setData((data) => [...maidataBackup]);
-  //   // setCheckedList((checkedList) => [...list]);
-  // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3525,7 +3425,7 @@ function ComponentTable(SelectedProp: any) {
 
 
               {/* ////////// Plush Icons////// */}
-              {/* <span>
+              <span>
                 {((row.getCanExpand() &&
                   row.subRows?.length !== row.original.subRows?.length) ||
                   !row.getCanExpand() ||
@@ -3577,7 +3477,7 @@ function ComponentTable(SelectedProp: any) {
                 ) : (
                   ""
                 )}{" "}
-              </span> */}
+              </span>
               {getValue()}
             </span>
           </>
@@ -3662,6 +3562,7 @@ function ComponentTable(SelectedProp: any) {
         ),
         id: "Title",
         placeholder: "Title",
+        resetColumnFilters: false,
         header: "",
       },
       {
@@ -3674,6 +3575,7 @@ function ComponentTable(SelectedProp: any) {
         id: "ClientCategory",
         placeholder: "Client Category",
         header: "",
+        resetColumnFilters: false,
         size: 100,
       },
       {
@@ -3685,6 +3587,7 @@ function ComponentTable(SelectedProp: any) {
         ),
         id: "TeamLeaderUser",
         placeholder: "Team",
+        resetColumnFilters: false,
         header: "",
         size: 131,
       },
@@ -3692,18 +3595,21 @@ function ComponentTable(SelectedProp: any) {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
+        resetColumnFilters: false,
         size: 42,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
+        resetColumnFilters: false,
         size: 42,
       },
       {
         accessorKey: "DueDate",
         placeholder: "Due Date",
         header: "",
+        resetColumnFilters: false,
         size: 100,
       },
       {
@@ -3855,34 +3761,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-          // parentData = elem?.parentRow;
-          // parentDataCopy = elem?.parentRow?.original
-          parentDataCopy = elem?.getParentRows()[0]?.original;
-          // if (parentData != undefined && parentData?.parentRow != undefined) {
+        // parentData = elem?.parentRow;
+        // parentDataCopy = elem?.parentRow?.original
+        parentDataCopy = elem?.getParentRows()[0]?.original;
+        // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //   parentData = elem?.parentRow?.parentRow
-          //   parentDataCopy = elem?.parentRow?.parentRow?.original
+        //   parentData = elem?.parentRow?.parentRow
+        //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          //   if (parentData != undefined && parentData?.parentRow != undefined) {
-          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-          //   }
-          // }
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+        //   }
+        // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3932,41 +3838,22 @@ function ComponentTable(SelectedProp: any) {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  const openTaskAndPortfolioMulti = () => {
+    checkData?.map((item: any) => {
+      if (item?.original?.siteType === "Master Tasks") {
+        window.open(`${ContextValue?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+      } else {
+        window.open(`${ContextValue?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+      }
+    })
+  }
 
   let activity = 0;
   let workstrim = 0;
   let task = 0;
   data.map((Com) => {
+    
+
     Com?.subRows?.map((Sub: any) => {
       if (Sub?.SharewebTaskType?.Title == "Activities") {
         activity = activity + 1;
@@ -4073,39 +3960,39 @@ function ComponentTable(SelectedProp: any) {
     });
   }
 
-  React.useEffect(() => {
-    if (table.getState()?.globalFilter?.length > 0) {
-      setExpanded(true);
-    } else {
-      setExpanded({})
-    }
-  }, [table.getState().globalFilter]);
-
-  React.useEffect(() => {
-    if (table.getState().columnFilters.length) {
-      setExpanded(true);
-    } else {
-      setExpanded({});
-    }
-  }, [table.getState().columnFilters]);
+  // React.useEffect(() => {
+  //   if (table.getState()?.globalFilter?.length > 0) {
+  //     setExpanded(true);
+  //   } else {
+  //     setExpanded({})
+  //   }
+  // }, [table.getState().globalFilter]);
 
   // React.useEffect(() => {
-  //   if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
-  //     const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
-  //       (acc: any, cur: any) => {
-  //         if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
-  //           acc[cur] = true;
-  //         }
-  //         return acc;
-  //       },
-  //       {}
-  //     );
-  //     setExpanded(allKeys);
+  //   if (table.getState().columnFilters.length) {
+  //     setExpanded(true);
   //   } else {
   //     setExpanded({});
   //   }
-  //   forceExpanded = [];
-  // }, [table.getState().columnFilters, table.getState().globalFilter]);
+  // }, [table.getState().columnFilters]);
+
+  React.useEffect(() => {
+    if (table.getState().columnFilters.length || table.getState()?.globalFilter?.length > 0) {
+      const allKeys = Object.keys(table.getFilteredRowModel().rowsById).reduce(
+        (acc: any, cur: any) => {
+          if (table.getFilteredRowModel().rowsById[cur].subRows?.length) {
+            acc[cur] = true;
+          }
+          return acc;
+        },
+        {}
+      );
+      setExpanded(allKeys);
+    } else {
+      setExpanded({});
+    }
+    forceExpanded = [];
+  }, [table.getState().columnFilters, table.getState().globalFilter]);
 
   const ShowTeamFunc = () => {
     setShowTeamPopup(true)
@@ -4649,8 +4536,16 @@ function ComponentTable(SelectedProp: any) {
                       <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
-                        placeholder="Search All..."
-                      />
+                        placeholder="Search All..." />
+                    </span>
+                    <span>
+                      <span>
+                        <select className="" style={{ height: '30px' }} aria-label="Default select example" value={selectedSearchDuration} onChange={(e) => setSelectedSearchDuration((e.target.value))}>
+                          <option selected>All Words</option>
+                          <option value="1">Any Words</option>
+                          <option value="2">Exact Phrase</option>
+                        </select>
+                      </span>
                     </span>
 
                   </span>
@@ -4711,6 +4606,10 @@ function ComponentTable(SelectedProp: any) {
                     >
                       Restructure
                     </button>}
+
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 && <span>
+                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span>}
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
 
                     <a className="brush" onClick={clearSearch}>

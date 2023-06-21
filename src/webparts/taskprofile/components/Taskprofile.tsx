@@ -734,6 +734,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
   }
 
   private CallBack() {
+    ClientTimeArray=[];
     this.setState({
       isOpenEditPopup: false,
       countfeedback: this.state.countfeedback+1
@@ -1146,7 +1147,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                       </li>
                     }
 
-                    {breadcrumbitem.ParentTask == undefined ||breadcrumbitem.ChildTask==undefined ||breadcrumbitem.Subchild==undefined || breadcrumbitem.Subchild == undefined||breadcrumbitem. Parentitem!=undefined && 
+                    {breadcrumbitem.ParentTask == undefined  && 
                       <li>
                         <a >
                           <span>{this.state.Result['Title']}</span>
@@ -1584,9 +1585,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             {this.state.Result != undefined &&
               <div className="ItemInfo mb-20" style={{ paddingTop: '15px' }}>
                 
-                <div>Created <span >{(moment(this.state.Result['Creation']).format('DD MMM YYYY hh:mm '))}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
+                <div>Created <span >{(moment(this.state.Result['Creation']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['Author'] != null && this.state.Result['Author'].length > 0 && this.state.Result['Author'][0].Title}</span>
                 </div>
-                <div>Last modified <span >{(moment(this.state.Result['Modified']).format('DD MMM YYYY hh:mm '))}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
+                <div>Last modified <span >{(moment(this.state.Result['Modified']).format('DD MMM YYYY HH:mm '))}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span>
                 {/* <div>Last modified <span >{this.ConvertLocalTOServerDate(this.state.Result['Modified'], 'DD MMM YYYY hh:mm')}</span> by <span className="siteColor">{this.state.Result['ModifiedBy'] != null && this.state.Result['ModifiedBy'].Title}</span> */}
                   <span>{this.state.itemID ? <VersionHistoryPopup taskId={this.state.itemID} listId={this.state.Result.listId} siteUrls={this.state.Result.siteUrl} isOpen={this.state.isopenversionHistory} /> : ''}</span>
                 </div>

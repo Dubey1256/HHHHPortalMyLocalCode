@@ -10,7 +10,7 @@ var SelectedClientCategoryBackupArray: any = [];
 var BackupSiteTypeData: any = [];
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
-    var ClientTime = Props.ClientTime != undefined ? Props.ClientTime :[];
+    var ClientTime = Props.ClientTime != undefined ? Props.ClientTime : [];
     var SitesTaggingData: any = Props.SitesTaggingData
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
@@ -63,19 +63,24 @@ const SiteCompositionComponent = (Props: any) => {
             setSelectedClientCategory(SelectedClientCategoryFromProps);
             SelectedClientCategoryFromProps?.map((dataItem: any) => {
                 if (dataItem.siteName == "EPS") {
-                    setEPSClientCategory([dataItem])
+                    // setEPSClientCategory([dataItem])
+                    EPSClientCategory.push(dataItem);
                 }
                 if (dataItem.siteName == "EI") {
-                    setEIClientCategory([dataItem])
+                    // setEIClientCategory([dataItem])
+                    EIClientCategory.push(dataItem);
                 }
                 if (dataItem.siteName == "Education") {
-                    setEducationClientCategory([dataItem])
+                    // setEducationClientCategory([dataItem])
+                    EducationClientCategory.push(dataItem);
                 }
                 if (dataItem.siteName == "Migration") {
-                    setMigrationClientCategory([dataItem])
+                    // setMigrationClientCategory([dataItem])
+                    MigrationClientCategory.push(dataItem);
                 }
-                SelectedClientCategoryBackupArray.push(dataItem);
+                // SelectedClientCategoryBackupArray.push(dataItem);
             })
+            SelectedClientCategoryBackupArray = SelectedClientCategoryFromProps;
         }
         if (SiteData != undefined && SiteData.length > 0) {
             SiteData.map((SiteItem: any) => {
@@ -146,8 +151,14 @@ const SiteCompositionComponent = (Props: any) => {
                         })
                         setClientTimeData(tempDataForRemove);
                         SiteCompositionObject.ClientTime = tempDataForRemove;
+                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                         ClientTime = tempDataForRemove;
-                        callBack(SiteCompositionObject);
+                        if(tempDataForRemove?.length > 0){
+                            callBack(SiteCompositionObject, "dataExits");
+                        }else{
+                            callBack(SiteCompositionObject, "dataDeleted")
+                        }
+                       
                     } else {
                         DataItem.BtnStatus = true
                         setSelectedSiteCount(selectedSiteCount + 1);
@@ -157,15 +168,16 @@ const SiteCompositionComponent = (Props: any) => {
                             localSiteComposition: true,
                             siteIcons: DataItem.Item_x005F_x0020_Cover
                         }
-                        ClientTime.push(object);
+                        ClientTimeData.push(object);
                         let tempData: any = [];
-                        ClientTime?.map((TimeData: any) => {
+                        ClientTimeData?.map((TimeData: any) => {
                             TimeData.ClienTimeDescription = (100 / (selectedSiteCount + 1)).toFixed(1);
                             tempData.push(TimeData);
                         })
                         setClientTimeData(tempData);
                         SiteCompositionObject.ClientTime = tempData;
-                        callBack(SiteCompositionObject);
+                        SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+                        callBack(SiteCompositionObject, "dataExits");
                     }
                 }
                 TempArray.push(DataItem)
@@ -187,7 +199,7 @@ const SiteCompositionComponent = (Props: any) => {
                 tempData.push(TimeData);
             })
             SiteCompositionObject.ClientTime = tempData;
-            callBack(SiteCompositionObject);
+            callBack(SiteCompositionObject, "dataExits");
             setIsPortfolioComposition(false);
             setCheckBoxStatus(false);
         }
@@ -234,7 +246,7 @@ const SiteCompositionComponent = (Props: any) => {
         }
         SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         SiteCompositionObject.ClientTime = ClientTimeData;
-        callBack(SiteCompositionObject);
+        callBack(SiteCompositionObject, "dataExits");
         // }
 
     }
@@ -468,6 +480,7 @@ const SiteCompositionComponent = (Props: any) => {
     }
 
     const saveSelectedClientCategoryData = () => {
+        let isCategorySelected: any = false;
         let TempArray: any = [];
         if (EPSClientCategory != undefined && EPSClientCategory.length > 0) {
             EPSClientCategory?.map((EPSData: any) => {
@@ -491,10 +504,11 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (TempArray != undefined && TempArray.length > 0) {
             SiteCompositionObject.selectedClientCategory = TempArray;
+            isCategorySelected = true;
         }
-        callBack(SiteCompositionObject);
+        callBack(SiteCompositionObject, "dataExits");
         AutoCompleteItemsArray = [];
-        SelectedClientCategoryBackupArray = [];
+        SelectedClientCategoryBackupArray = TempArray;
         setClientCategoryPopupStatus(false);
     }
 
@@ -551,8 +565,10 @@ const SiteCompositionComponent = (Props: any) => {
                 }
             })
             SiteCompositionObject.ClientTime = ClientTimeTemp;
+            SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
+            SiteCompositionObject.SiteCompositionSettings = SiteCompositionSettings;
         }
-        callBack(SiteCompositionObject);
+        callBack(SiteCompositionObject, "dataExits");
     }
 
     // ************************ this is for the auto Suggestion fuction for all Client Category ******************
@@ -713,11 +729,11 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1" style={{ width: "12%" }}>
                                                 {ProportionalStatus ?
                                                     <>{isPortfolioComposition ? <input
-                                                        type="number" min="1"
+                                                        type="number" min="1" max='100'
                                                         value={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
                                                         className="form-control p-1" readOnly={true} style={{ cursor: "not-allowed" }}
                                                         onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                    /> : <input type="number" min="1"
+                                                    /> : <input type="number" min="1" max='100'
                                                         style={ProportionalStatus && siteData.BtnStatus ? { cursor: "not-allowed" } : {}}
                                                         defaultValue={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
                                                         value={siteData.BtnStatus ? (100 / selectedSiteCount).toFixed(2) : ""}
@@ -725,11 +741,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                     />}  </>
                                                     : <> {siteData.BtnStatus ?
                                                         <input
-                                                            type="number" min="1"
+                                                            type="number" min="1" max='100'
                                                             defaultValue={siteData.ClienTimeDescription ? Number(siteData.ClienTimeDescription).toFixed(2) : null}
-                                                            className="form-control p-1"  style={{width:"100%"}}
+                                                            className="form-control p-1" style={{ width: "100%" }}
                                                             onChange={(e) => ChangeTimeManuallyFunction(e, siteData.Title)}
-                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed",width:"100%" }}
+                                                        /> : <input type="number" readOnly={true} style={{ cursor: "not-allowed", width: "100%" }}
                                                         />}</>
                                                 }
                                             </td>
