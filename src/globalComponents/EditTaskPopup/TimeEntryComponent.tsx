@@ -1610,7 +1610,7 @@ function TimeEntryPopup(item: any) {
         let web = new Web(`${CurrentSiteUrl}`);
 
 if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
-    AllTimeEntry.forEach((ite:any)=>{
+    AllTimeEntry.forEach(async (ite:any)=>{
         if(ite.Title == UpdatedData.AuthorName){
              Available = true;
             let folderUri: string = `/${UpdatedData.Company}`
@@ -1631,20 +1631,18 @@ if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
                 // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
             };
     
-            let newdata =  web.lists.getByTitle(listNames)
-                .items
-                .add({ ...itemMetadataAdded }).then((res:any)=>{
-                    console.log(newdata)
-                    let movedata =  web
-                    .getFileByServerRelativeUrl(`${listUri}/${res.data.Id}_.000`)
-                    .moveTo(`${listUri}${folderUri}/${res.data.Id}_.000`).then((res:any)=>{
-                        console.log(movedata);
-                        mainParentId = res.data.Id;
-                        mainParentTitle = res.data.Title;
-                        createItemMainList();
-                    });
-              
-                });
+            let newdata = await web.lists.getByTitle(listNames)
+            .items
+            .add({ ...itemMetadataAdded });
+        console.log(newdata)
+
+        let movedata = await web
+            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+        console.log(movedata);
+        mainParentId = newdata.data.Id;
+        mainParentTitle = newdata.data.Title;
+        createItemMainList();
            
     
            
