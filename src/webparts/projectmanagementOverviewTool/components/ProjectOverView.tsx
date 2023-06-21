@@ -392,8 +392,8 @@ export default function ProjectOverview(props: any) {
                                     indeterminate: row?.getIsSomeSelected(),
                                     onChange: row?.getToggleSelectedHandler(),
                                 }}
-                            />: ''}
-                            {''+row?.original.Shareweb_x0020_ID}
+                            /> : ''}
+                            <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
                         </>
                     </div>
                 ),
@@ -714,7 +714,6 @@ export default function ProjectOverview(props: any) {
                         style={row?.getCanExpand() ? {
                             paddingLeft: `${row?.depth * 5}px`,
                         } : {
-                            paddingLeft: "18px",
                         }}
                     >
                         <>
@@ -737,7 +736,8 @@ export default function ProjectOverview(props: any) {
                                     onChange: row?.getToggleSelectedHandler(),
                                 }}
                             />
-                            {row?.original.Shareweb_x0020_ID}
+                            <span className='ms-1'>{row?.original.Shareweb_x0020_ID}</span>
+
                         </>
                     </div>
                 ),
