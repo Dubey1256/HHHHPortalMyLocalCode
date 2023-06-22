@@ -1413,7 +1413,7 @@ function SmartConnectTable(SelectedProp: any) {
                                     {allitemsData.length &&
                                         <div className="col-sm-12 p-0 smart">
                                             <div >
-                                                <GlobalCommanTable columns={columns} data={allitemsData} callBackData={callBackData} />
+                                                <GlobalCommanTable  columns={columns} data={allitemsData}  TaskUsers={taskUsers}  showHeader={false} callBackData={callBackData} />
                                             </div>
                                         </div>
                                     }
