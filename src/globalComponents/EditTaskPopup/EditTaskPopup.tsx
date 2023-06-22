@@ -62,7 +62,7 @@ var FeedBackBackupArray: any = [];
 var ChangeTaskUserStatus: any = true;
 var TimeSheetlistId = ''
 let siteConfig: any = [];
-let siteConfigss: any = [];
+let siteConfigs: any = [];
 var TimeSheets: any = []
 var MigrationListId = ''
 var siteUrl = ''
@@ -1391,7 +1391,7 @@ const EditTaskPopup = (Items: any) => {
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
             .expand('Author,Editor')
             .get()
@@ -3003,7 +3003,7 @@ const EditTaskPopup = (Items: any) => {
         await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
          then(async (res)=>{
              SiteId = res[0].Id
-             siteConfigss.forEach((itemss: any) => {
+             siteConfig.forEach((itemss: any) => {
                  if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
                      TimesheetConfiguration = JSON.parse(itemss.Configurations)
      
@@ -3016,6 +3016,7 @@ const EditTaskPopup = (Items: any) => {
              listName = val.TimesheetListName
          
      })
+     var count = 0;
      timesheetData?.forEach(async (val:any)=>{
          var siteType:any = "Task" + SelectedSite +"Id"
          var SiteId = "Task" + Items.Items.siteType;
@@ -3024,9 +3025,16 @@ const EditTaskPopup = (Items: any) => {
  
              [siteType] : newItem.Id,
  
+         }).then((res)=>{
+            count++ 
+
+            if(count == timesheetData.length){
+                deleteItemFunction(Items.Items.Id);
+            }
          })
-         console.log(Data)
-         deleteItemFunction(Items.Items.Id);
+       
+
+        
        })
       
      var UpdatedData: any = {}
