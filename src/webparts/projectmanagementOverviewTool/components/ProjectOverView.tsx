@@ -260,9 +260,9 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
-                    <span>
+              
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
-                    </span>
+            
 
                 ),
                 id: "PercentComplete",
@@ -275,10 +275,10 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
-                    <span>
+            
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
-                    </span>
+              
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
@@ -290,10 +290,11 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
-                    <span>
+                   <div >
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
-                        {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
-                    </span>
+                   </div>
+                    
+                    
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",

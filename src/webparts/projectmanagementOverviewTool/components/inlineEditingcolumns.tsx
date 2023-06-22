@@ -721,8 +721,8 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Team' ?
                     <>
-                        <span style={{ display: "block", width: "100%", height: "100%" }} className='hreflink' onClick={() => setTeamMembersPopup(true)} >
-                            <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
+                        <span style={{ display: "flex", width: "100%", height: "100%" }} className='hreflink' onClick={() => setTeamMembersPopup(true)} >
+                            {}<ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
                         </span>
                     </>
                     : ''
