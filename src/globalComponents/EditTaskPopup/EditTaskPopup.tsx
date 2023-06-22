@@ -3481,7 +3481,7 @@ const EditTaskPopup = (Items: any) => {
                 headerText={`Update Task Status`}
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
-                isBlocking={true}
+                isBlocking={TaskStatusPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
@@ -3518,7 +3518,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closeTimeSheetPopup}
-                isBlocking={true}
+                isBlocking={TimeSheetPopup}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
                     <TimeEntryPopup props={Items.Items} />
@@ -4548,7 +4548,7 @@ const EditTaskPopup = (Items: any) => {
                 customWidth="100%"
                 onRenderHeader={onRenderCustomHeaderMain}
                 onDismiss={ImageCompareFunctionClosePopup}
-                isBlocking={true}
+                isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
                 <div className="modal-body mb-5">
@@ -4639,7 +4639,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="100%"
                 onDismiss={ImageCustomizeFunctionClosePopup}
-                isBlocking={true}
+                isBlocking={false}
                 onRenderFooter={onRenderCustomFooterOther}
             >
                 <div className={ServicesTaskCheck ? "modal-body mb-5 serviepannelgreena" : "modal-body mb-5"}>
