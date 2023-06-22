@@ -50,7 +50,6 @@ var taskUsers: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
-var timesheetData:any = []
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any = '';
@@ -58,15 +57,7 @@ var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
-var SiteId = ''
 var ChangeTaskUserStatus: any = true;
-var TimeSheetlistId = ''
-let siteConfig: any = [];
-let siteConfigs: any = [];
-var TimeSheets: any = []
-var MigrationListId = ''
-var siteUrl = ''
-var listName = ''
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
 var TaskApproverBackupArray: any = [];
@@ -1387,12 +1378,12 @@ const EditTaskPopup = (Items: any) => {
     const getAllSitesData = async () => {
         let web = new Web(siteUrls);
         let MetaData: any = [];
-        //let siteConfig: any = [];
+        let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
             .expand('Author,Editor')
             .get()
@@ -1449,6 +1440,7 @@ const EditTaskPopup = (Items: any) => {
                         let temp: any = [];
                         temp.push(user)
                         setCurrentUserData(temp);
+                        console.log("Current User Details =======", user)
                         currentUserBackupArray.push(user);
                         if (user.UserGroupId == 7) {
                             setIsUserFromHHHHTeam(true);
@@ -1464,6 +1456,30 @@ const EditTaskPopup = (Items: any) => {
                 });
     }
 
+
+    // **************** this is for Getting current user Data ************* 
+
+    // const getCurrentUserDetails = async () => {
+    //     console.log("This is getting current your details functions =======================")
+    //     let currentUserId = Context.pageContext._legacyPageContext.userId
+    //     // await pnp.sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+    //     if (currentUserId != undefined) {
+    //         if (taskUsers != null && taskUsers?.length > 0) {
+    //             taskUsers?.map((userData: any) => {
+    //                 if (userData.AssingedToUserId == currentUserId) {
+    //                     let temp: any = [];
+    //                     temp.push(userData)
+    //                     setCurrentUserData(temp);
+    //                     console.log("Current User Details =======", userData)
+    //                     currentUserBackupArray.push(userData);
+    //                     if (userData.UserGroupId == 7) {
+    //                         setIsUserFromHHHHTeam(true);
+    //                     }
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
 
     // ********** this is for Getting All  Employees Data For Approval Function and Approval Popup  *******************
 
@@ -1566,6 +1582,8 @@ const EditTaskPopup = (Items: any) => {
         }
     }
 
+
+
     //    ************************* This is for status section Functions **************************
 
     const openTaskStatusUpdatePopup = (itemData: any) => {
@@ -1616,6 +1634,14 @@ const EditTaskPopup = (Items: any) => {
                     })
                 }
                 if (StatusInput == 5) {
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
                     EditData.CompletedDate = undefined;
                     EditData.IsTodaysTask = false;
                     StatusArray?.map((item: any) => {
@@ -1637,7 +1663,11 @@ const EditTaskPopup = (Items: any) => {
                             setTaskStatus(item.taskStatusComment);
                         }
                     })
-                   
+                    // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+                    //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+                    // } else {
+                    //     setWorkingMember(156);
+                    // }
                 }
                 if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
                     setWorkingMember(9);
@@ -1686,7 +1716,31 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     ChangeTaskUserStatus = true;
                 }
-               
+                // if (StatusInput == 1) {
+                //     let tempArray: any = [];
+                //     if (TaskApproverBackupArray != undefined && TaskApproverBackupArray.length > 0) {
+                //         if (TaskApproverBackupArray?.length > 0) {
+                //             TaskApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     } else if (TaskCreatorApproverBackupArray != undefined && TaskCreatorApproverBackupArray.length > 0) {
+                //         if (TaskCreatorApproverBackupArray?.length > 0) {
+                //             TaskCreatorApproverBackupArray.map((dataItem: any) => {
+                //                 tempArray.push(dataItem);
+                //             })
+                //         }
+                //     }
+                //     StatusArray?.map((item: any) => {
+                //         if (StatusInput == item.value) {
+                //             setPercentCompleteStatus(item.status);
+                //             setTaskStatus(item.taskStatusComment);
+                //         }
+                //     })
+                //     setTaskAssignedTo(tempArray);
+                //     setTaskTeamMembers(tempArray);
+                //     setApproverData(tempArray);
+                // }
             } else {
                 setTaskStatus('');
                 setPercentCompleteStatus('');
@@ -1744,6 +1798,14 @@ const EditTaskPopup = (Items: any) => {
         }
 
         if (StatusData.value == 5) {
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+
+            // } else {
+            //     setWorkingMember(156);
+            // }
             EditData.CompletedDate = undefined;
             EditData.IsTodaysTask = false;
         }
@@ -1753,7 +1815,22 @@ const EditTaskPopup = (Items: any) => {
                 EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
             }
             EditData.IsTodaysTask = true;
+            // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+            //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+            // } else {
+            //     setWorkingMember(156);
+            // }
         }
+        // if (StatusData.value == 70) {
+        // if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.AssignedTo, "Development", 156);
+        // } else if (EditData.Team_x0020_Members != undefined && EditData.Team_x0020_Members?.length > 0) {
+        //     setWorkingMemberFromTeam(EditData.Team_x0020_Members, "Development", 156);
+        // } else {
+        //     setWorkingMember(156);
+        // }
+        // }
+
         if (StatusData.value == 93 || StatusData.value == 96 || StatusData.value == 99) {
             EditData.IsTodaysTask = false;
             EditData.workingThisWeek = false;
@@ -2870,7 +2947,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const copyAndMoveTaskFunction = async (FunctionsType: number) => {
-        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images still not moving we are working on it. Click OK if you still would like to proceed without Images`)
+        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images and Timesheet functionality still not moving we are working on it. Click OK if you still would like to proceed without Images and Timesheets`)
         if (CopyAndMoveTaskStatus) {
             copyAndMoveTaskFunctionOnBackendSide(FunctionsType);
         } else {
@@ -2892,13 +2969,12 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
-                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res) => {
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(() => {
                     if (FunctionsType == "Copy-Task") {
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        await moveTimeSheet(SelectedSite,res.data)
-                       
+                        deleteItemFunction(Items.Items.Id);
                     }
                 })
             }
@@ -2908,47 +2984,6 @@ const EditTaskPopup = (Items: any) => {
         closeCopyAndMovePopup();
         Items.Call();
     }
-
-    const moveTimeSheet=async(SelectedSite:any ,newItem:any)=>{
-        var TimesheetConfiguration:any=[]
-         var folderUri=''
-         
-         let web = new Web(siteUrls);
-        await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
-         then(async (res)=>{
-             SiteId = res[0].Id
-             siteConfig.forEach((itemss: any) => {
-                 if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
-                     TimesheetConfiguration = JSON.parse(itemss.Configurations)
-     
-                 }
-             })
-         })
-         TimesheetConfiguration?.forEach((val: any) => {    
-             TimeSheetlistId = val.TimesheetListId;
-             siteUrl = val.siteUrl
-             listName = val.TimesheetListName
-         
-     })
-     var count = 0;
-     timesheetData?.forEach(async (val:any)=>{
-         var siteType:any = "Task" + SelectedSite +"Id"
-         var SiteId = "Task" + Items.Items.siteType;
-        // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
-        var Data =  await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
- 
-             [siteType] : newItem.Id,
- 
-         }).then((res)=>{
-            count++ 
-
-            if(count == timesheetData.length){
-                deleteItemFunction(Items.Items.Id);
-            }
-         })
-       })
-     var UpdatedData: any = {}
-     }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3518,7 +3553,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closeTimeSheetPopup}
-                isBlocking={TimeSheetPopup}
+                isBlocking={false}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
                     <TimeEntryPopup props={Items.Items} />
@@ -4292,7 +4327,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
+                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.lnegth > 0 ? 'Working Member':""}</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>
@@ -4409,16 +4444,33 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {UploadBtnStatus ?
                                                             <div>
-                                                                
+                                                                {/* <div className="drag-upload-image mt-1"
+                                                                    style={isDragging ? { border: '1px solid red' } : undefined}
+                                                                    onClick={onImageUpload}
+                                                                    {...dragProps}
+                                                                >
+                                                                    Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                                </div> */}
                                                                 <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                             </div> : null}
                                                         {TaskImages?.length == 0 ? <div>
-                
+                                                            {/* <div className="drag-upload-image mt-1"
+                                                                style={isDragging ? { border: '1px solid red' } : undefined}
+                                                                onClick={onImageUpload}
+                                                                {...dragProps}
+                                                            >
+                                                                Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
+                                                            </div> */}
                                                             <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                         </div> : null}
-                                                       
+                                                        {/* <div>
+                                                            <FlorarImageUploadComponent />
+                                                        </div> */}
+
+                                                        {/* <button onClick={onImageRemoveAll}>Upload item-images</button> */}
+
                                                     </div>
 
                                                 )}
@@ -4450,9 +4502,34 @@ const EditTaskPopup = (Items: any) => {
                                         </>
                                             : null}
                                     </div>
-                                  
+                                    {/* <div className="form-group">
+                                                    <div className="col-sm-6">
+                                                        <div ng-if="attachments.length > 0"
+                                                            ng-repeat="attachedFiles in attachments">
+                                                            <div ng-show="ImageName != attachedFiles.FileName">
+                                                                <div
+                                                                    ng-if="attachedFiles.FileName.toLowerCase().indexOf('.txt'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.docx'.toLowerCase())> -1  || attachedFiles.FileName.toLowerCase().indexOf('.pdf'.toLowerCase())> -1  || attachedFiles.FileName.toLowerCase().indexOf('.doc'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.msg'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.pptx'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.xls'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.xlsx'.toLowerCase())> -1">
+                                                                    <a
+                                                                        ng-href="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?web=1">attachedFiles.FileName </a>
+                                                                    <a style={{ cursor: "pointer" }} title="Delete" data-toggle="modal"
+                                                                        ng-click="deleteFile(attachedFiles)">
+                                                                        <img ng-src="/_layouts/images/delete.gif" />
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="clearfix"></div>
+                                                </div> */}
+                                    {/* </div>
+                                     </div> */}
                                 </div>
                             </div>
+                            {/* <div className="tab-pane " id="TIMESHEET" role="tabpanel" aria-labelledby="TIMESHEET">
+                                <div>
+                                    <TeamComposition props={Items} />
+                                </div>
+                            </div> */}
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
@@ -4639,7 +4716,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="100%"
                 onDismiss={ImageCustomizeFunctionClosePopup}
-                isBlocking={false}
+                isBlocking={ImageCustomizePopup}
                 onRenderFooter={onRenderCustomFooterOther}
             >
                 <div className={ServicesTaskCheck ? "modal-body mb-5 serviepannelgreena" : "modal-body mb-5"}>
@@ -5372,7 +5449,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col mt-2">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
+                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.lnegth > 0 ? 'Working Member':""}</label>
                                                                 {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                                     return (
                                                                         <div className="TaskUsers" key={index}>
@@ -5543,7 +5620,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="700px"
                 onDismiss={closeCopyAndMovePopup}
-                isBlocking={true}
+                isBlocking={CopyAndMoveTaskPopup}
             >
                 <div className="modal-body">
                     <div className={ServicesTaskCheck ? " serviepannelgreena" : ""} >
@@ -5595,7 +5672,7 @@ const EditTaskPopup = (Items: any) => {
                 onRenderHeader={onRenderCustomReplaceImageHeader}
                 isOpen={replaceImagePopup}
                 onDismiss={closeReplaceImagePopup}
-                isBlocking={true}
+                isBlocking={replaceImagePopup}
                 type={PanelType.custom}
                 customWidth="500px"
 
@@ -5621,7 +5698,7 @@ const EditTaskPopup = (Items: any) => {
                     onRenderHeader={onRenderCustomProjectManagementHeader}
                     isOpen={ProjectManagementPopup}
                     onDismiss={closeProjectManagementPopup}
-                    isBlocking={true}
+                    isBlocking={ProjectManagementPopup}
                     type={PanelType.custom}
                     customWidth="1100px"
                     onRenderFooter={customFooterForProjectManagement}
@@ -5776,3 +5853,6 @@ export default React.memo(EditTaskPopup);
 
 // step-2B :
 // <EditTaskPopup Items={Items} ></EditTaskPopup>
+
+
+// 22 june code backup recover from before  santosh update
