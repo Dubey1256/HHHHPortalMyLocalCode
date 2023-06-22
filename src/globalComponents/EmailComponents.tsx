@@ -13,9 +13,8 @@ const EmailComponent = (props: any) => {
   console.log(props);
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
-    // mention_To.push(props?.items.TaskCreatorData[0].Email.replace('{', '').replace('}', '').trim());
-    if (props.CreatedApprovalTask != undefined) {
-      if (props.CreatedApprovalTask == true) {
+    if (props.CreatedApprovalTask != undefined || props.statusUpdateMailSendStatus != undefined) {
+      if (props.CreatedApprovalTask == true || props.statusUpdateMailSendStatus == false) {
         if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
           props?.items.TaskApprovers.map((ApproverData: any) => {
             let tempEmail = ApproverData.Name;
@@ -30,10 +29,22 @@ const EmailComponent = (props: any) => {
     }
 
     console.log(mention_To);
+    let TaskStatus: any = ''
+    if (props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true) {
+      TaskStatus = "Approval"
+    }
+    if (props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true) {
+      TaskStatus = "Approved"
+    } else {
+      TaskStatus = "Rejected"
+    }
+    if (props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == true) {
+      TaskStatus = "Immediate (5%)"
+    }
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
+        Subject: "[ " + props.items.siteType + " - " + TaskStatus + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -74,28 +85,36 @@ const EmailComponent = (props: any) => {
     <>
 
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
-        <div style={{ marginTop: "2pt" }}>Hi,</div>
-        {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
-          <div style={{ marginTop: "2pt" }}>
-            {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
-            Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
-            <p>
-              <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
-              <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
-            </p>
-          </div>
-        </> :
-          <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
-            <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
-          }
-            {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
-              <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
-          </>
-        }
+        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
+          <div>
+            <div style={{ marginTop: "2pt" }}>Hi,</div>
+            {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ?
+              <>
+                <div style={{ marginTop: "2pt" }}>
+                  {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
+                  Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+                  <p>
+                    <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+                    <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+                  </p>
+                </div>
+              </> :
+              <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
+                <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
+              }
+                {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
+                  <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
+              </>
+            }
 
-        <div style={{ marginTop: "11.25pt" }}>
-          <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
-        </div>
+            <div style={{ marginTop: "11.25pt" }}>
+              <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
+            </div>
+          </div>
+          : <div style={{ marginTop: "11.25pt" }}>
+            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
+          </div>
+        }
         {/* <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u>
           </div> */}
@@ -191,19 +210,26 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
+                        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
+                        <>
                         {props.CreatedApprovalTask ?
                           <p><span style={{ fontSize: '10.0pt', color: 'black' }}>For Approval</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
                           <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? "Approved" : "Follow up"}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         }
+                        </>:<p><span style={{ fontSize: '10.0pt', color: 'black' }}>Acknowledged</span><span style={{ color: "black" }}> </span><u></u><u></u></p> }
 
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        {props.CreatedApprovalTask ?
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>1</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
-                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+                        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
+                          <>
+                            {props.CreatedApprovalTask ?
+                              <p><span style={{ fontSize: '10.0pt', color: 'black' }}>1%</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
+                              <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+                          </> : <p><span style={{ fontSize: '10.0pt', color: 'black' }}>5%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
+
                       </td>
                     </tr>
                     <tr>

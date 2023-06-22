@@ -20,7 +20,9 @@ import "froala-editor/css/froala_editor.pkgd.min.css";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 
 import Froala from "react-froala-wysiwyg";
+import ServiceComponentPortfolioPopup from '../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup';
 //import "bootstrap/dist/css/bootstrap.min.css";
+let ShowCategoryDatabackup: any = [];
 let AutoCompleteItemsArray: any = [];
 var AssignedToIds: any = [];
 var ResponsibleTeamIds: any = [];
@@ -61,6 +63,10 @@ const CreateActivity = (props: any) => {
 
         console.log(props)
     }
+    const [PhoneStatus, setPhoneStatus] = React.useState(false);
+    const [EmailStatus, setEmailStatus] = React.useState(false);
+    const [ImmediateStatus, setImmediateStatus] = React.useState(false);
+    const [ApprovalStatus, setApprovalStatus] = React.useState(false);
     const [TaskImages, setTaskImages] = React.useState([])
     const [AllCategoryData, setAllCategoryData] = React.useState([]);
     const [SearchedCategoryData, setSearchedCategoryData] = React.useState([]);
@@ -102,6 +108,7 @@ const CreateActivity = (props: any) => {
 
     React.useEffect(() => {
         loadAllCategoryData("Categories");
+        setPost({ ...post, Title: AllItems.Title})
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
@@ -155,7 +162,7 @@ const CreateActivity = (props: any) => {
 
         }
         GetSmartMetadata();
-    }, [linkedComponentData])
+    }, [])
 
 
     const GetSmartMetadata = async () => {
@@ -217,20 +224,60 @@ const CreateActivity = (props: any) => {
         SiteTypeBackupArray = SitesTypes;
 
         AllItems.SiteCompositionSettingsbackup = globalCommon.parseJSON(AllItems.SiteCompositionSettings);
-        if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team'))
-            AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.Sitestagging);
-        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
-        if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
-            SiteTypeBackupArray.forEach((site: any) => {
-                if (site.Title != undefined && site.Title === 'Shareweb')
-                    setActiveTile("siteType", "siteType", site)
+
+        if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team')) {
+
+            let allItems = globalCommon.parseJSON(AllItems.Sitestagging);
+
+            AllItems.Sitestaggingbackup = [];
+
+            allItems?.forEach((obj: any) => {
+
+                if (obj.ClienTimeDescription != undefined) {
+
+                    let Item: any = {};
+
+                    Item.SiteName = obj.Title;
+
+                    Item.ClienTimeDescription = obj.ClienTimeDescription;
+
+                    Item.localSiteComposition = obj.isAvailable;
+
+                    AllItems.Sitestaggingbackup.push(Item);
+
+                }
+
             })
+
+
+
+
         }
-        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 1) {
+
+        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
+
+        if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
+
             SiteTypeBackupArray.forEach((site: any) => {
-                if (site.Title != undefined && site.Title === AllItems.Sitestaggingbackup[0].Title)
+
+                if (site.Title != undefined && site.Title === 'Shareweb')
+
                     setActiveTile("siteType", "siteType", site)
+
             })
+
+        }
+
+        else if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length === 1) {
+
+            SiteTypeBackupArray.forEach((site: any) => {
+
+                if (site.Title != undefined && site.Title === AllItems.Sitestaggingbackup[0].Title)
+
+                    setActiveTile("siteType", "siteType", site)
+
+            })
+
         }
 
 
@@ -329,6 +376,22 @@ const CreateActivity = (props: any) => {
                 setCategoriesData(CategoriesData)
 
 
+            }
+        }
+        if (type == "Category-Task-Footertable") {
+
+            setPhoneStatus(false)
+            setEmailStatus(false)
+            setImmediateStatus(false)
+            setApprovalStatus(false)
+
+            if (item1 != undefined && item1.length > 0) {
+                item1?.map((itenn: any) => {
+                    selectedCategoryTrue(itenn.Title)
+
+                })
+
+                setCategoriesData(item1)
             }
         }
         if (type == "ClientCategory") {
@@ -668,21 +731,6 @@ const CreateActivity = (props: any) => {
             }
 
         })
-
-        // AllItems.Component?.forEach((com: any) => {
-        //     if (com != undefined) {
-        //         Component.push(com.Id)
-        //     }
-
-
-        // })
-        // AllItems.Service?.forEach((com: any) => {
-
-        //     if (com != undefined) {
-        //         RelevantPortfolioIds.push(com.Id)
-        //     }
-
-        // })
         if (linkedComponentData.length == 0) {
             if (portfolioId != '') {
                 RelevantPortfolioIds.push(portfolioId)
@@ -724,6 +772,11 @@ const CreateActivity = (props: any) => {
                     ClientCategory.push(val.Id)
                 }
             })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -731,12 +784,22 @@ const CreateActivity = (props: any) => {
                 })
             }
         }
+        if (AllItems?.Team_x0020_Members != undefined  && AllItems?.Team_x0020_Members?.length>0) {
+            AllItems.Team_x0020_Members.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
+        }
+        if (AllItems?.Responsible_x0020_Team != undefined &&  AllItems?.Responsible_x0020_Team?.length>0) {
+            AllItems.Responsible_x0020_Team.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
@@ -920,7 +983,7 @@ const CreateActivity = (props: any) => {
                         if (AllItems.SharewebTaskLevel1No == undefined) {
                             WorstreamLatestId = AllItems?.SharewebTaskLevel1No;
                         }
-                    } else SharewebID = AllItems.Id;
+                    } else { SharewebID = 'A' + AllItems.Id; SharewebTasknewTypeId = 2; WorstreamLatestId = undefined; }
 
                     web = new Web(dynamicList.siteUrl);
                     await web.lists.getById(value.listId).items.add({
@@ -935,7 +998,7 @@ const CreateActivity = (props: any) => {
                         ParentTaskId: AllItems.Id,
                         ClientCategoryId: { "results": ClientCategory },
                         SharewebTaskTypeId: SharewebTasknewTypeId,
-                        Body: AllItems.Description,
+                        //Body: AllItems.Description,
                         Shareweb_x0020_ID: SharewebID,
                         Priority: AllItems.Priority,
                         SharewebTaskLevel2No: WorstreamLatestId,
@@ -978,7 +1041,6 @@ const CreateActivity = (props: any) => {
                                         data.Responsible_x0020_Team.push(User?.AssingedToUser);
                                     }
                                 })
-
                             })
                         }
                         if (data?.AssignedToId?.length > 0) {
@@ -988,7 +1050,6 @@ const CreateActivity = (props: any) => {
                                         data.AssignedTo.push(User?.AssingedToUser)
                                     }
                                 })
-
                             })
                         }
                         data.ClientCategory = []
@@ -1085,38 +1146,28 @@ const CreateActivity = (props: any) => {
             setTaskResponsibleTeam([])
         }
     }
-    const SelectPriority = (priority: any, e: any) => {
-        if (priority == '(1) High') {
-            setselectPriority('8')
-        }
-        if (priority == '(2) Normal') {
-            setselectPriority("4")
-        }
-        if (priority == '(3) Low') {
-            setselectPriority("1")
-        }
-    }
+   
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
         var finalDate = Moment(date).format("YYYY-MM-DD")
         setDate(finalDate);
 
     };
-    const Priority = (e: any) => {
-        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
+    // const Priority = (e: any) => {
+    //     if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
 
-    }
+    // }
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
@@ -1157,6 +1208,7 @@ const CreateActivity = (props: any) => {
     };
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
+
     const autoSuggestionsForCategory = (e: any) => {
         let searchedKey: any = e.target.value;
         setCategorySearchKey(e.target.value);
@@ -1281,94 +1333,101 @@ const CreateActivity = (props: any) => {
 
     //  ###################  Smart Category slection Common Functions with Validations ##################
 
-    // const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
-    //     setIsComponentPicker(false);
-    //     let TempArray: any = [];
-    //     selectCategoryData.map((existingData: any) => {
-    //         let elementFoundCount: any = 0;
-    //         if (tempShareWebTypeData != undefined && tempShareWebTypeData.length > 0) {
-    //             tempShareWebTypeData.map((currentData: any) => {
-    //                 if (existingData.Title == currentData.Title) {
-    //                     elementFoundCount++;
-    //                 }
-    //             })
-    //         }
-    //         if (elementFoundCount == 0) {
-    //             let category: any;
-    //             if (selectCategoryData != undefined && selectCategoryData.length > 0) {
-    //                 selectCategoryData.map((categoryData: any) => {
-    //                     if (usedFor == "For-Auto-Search") {
-    //                         tempShareWebTypeData.push(categoryData);
-    //                     }
-    //                     TempArray.push(categoryData)
-    //                     let isExists: any = 0;
-    //                     if (tempCategoryData != undefined) {
-    //                         isExists = tempCategoryData.search(categoryData.Title);
-    //                     } else {
-    //                         category = category != undefined ? category + ";" + categoryData.Title : categoryData.Title
-    //                     }
-    //                     if (isExists < 0) {
-    //                         category = tempCategoryData ? tempCategoryData + ";" + categoryData.Title : categoryData.Title;
-    //                     }
-    //                 })
-    //             }
-    //             setCategoriesData(category);
-    //             let phoneCheck = category.search("Phone");
-    //             let emailCheck = category.search("Email");
-    //             let ImmediateCheck = category.search("Immediate");
-    //             let ApprovalCheck = category.search("Approval");
-    //             let OnlyCompletedCheck = category.search("Only Completed");
-    //             if (phoneCheck >= 0) {
-    //                 setPhoneStatus(true)
-    //             } else {
-    //                 setPhoneStatus(false)
-    //             }
-    //             if (emailCheck >= 0) {
-    //                 setEmailStatus(true)
-    //             } else {
-    //                 setEmailStatus(false)
-    //             }
-    //             if (ImmediateCheck >= 0) {
-    //                 setImmediateStatus(true)
-    //             } else {
-    //                 setImmediateStatus(false)
-    //             }
-    //             if (ApprovalCheck >= 0) {
-    //                 setApprovalStatus(true);
-    //                 setApproverData(TaskApproverBackupArray);
-    //             } else {
-    //                 setApprovalStatus(false)
-    //             }
-    //             if (OnlyCompletedCheck >= 0) {
-    //                 setOnlyCompletedStatus(true);
-    //             } else {
-    //                 setOnlyCompletedStatus(false);
-    //             }
-    //         }
-    //     })
+    const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
+        setCategorySearchKey("");
+        console.log(selectCategoryData)
+        selectedCategoryTrue(selectCategoryData[0].Title)
 
-    //     if (usedFor == "For-Panel") {
-    //         setShareWebTypeData(selectCategoryData);
-    //         tempShareWebTypeData = selectCategoryData;
-    //     }
-    //     if (usedFor == "For-Auto-Search") {
-    //         setShareWebTypeData(tempShareWebTypeData);
-    //         setSearchedCategoryData([])
-    //         setCategorySearchKey("");
-    //     }
-    // }
+        setIsComponentPicker(false);
+        let data: any = CategoriesData
+        data = data.concat(selectCategoryData)
+        setCategoriesData(CategoriesData => [...data])
 
-    // this is for change priority status function 
 
-    const ChangePriorityStatusFunction = (e: any) => {
-        let value = e.target.value;
-        if (Number(value) <= 10) {
-            setselectPriority(e.target.value)
-        } else {
-            alert("Priority Status not should be greater than 10");
-            setselectPriority('0')
+        setSearchedCategoryData([]);
+
+        // setCategoriesData(data)
+    }
+    // ==============CHANGE Category function==============
+    const CategoryChange = (e: any, typeValue: any, IdValue: any) => {
+        let statusValue: any = e.currentTarget.checked;
+        let type: any = typeValue;
+        let Id: any = IdValue;
+        if (statusValue) {
+
+            selectedCategoryTrue(type)
+            console.log(ShowCategoryDatabackup)
+            let array: any = [];
+
+            array = array.concat(CategoriesData);
+            ShowCategoryDatabackup.map((items: any) => {
+                if (items.Title == type) {
+                    array.push(items)
+                }
+            })
+
+            setCategoriesData(CategoriesData => [...array])
+        }
+        if (statusValue == false) {
+
+            selectedCategoryFalse(type)
+            console.log(ShowCategoryDatabackup)
+            let array: any = [];
+
+            array = array.concat(CategoriesData);
+            array?.map((item: any, index: any) => {
+
+                if (item.Title == type) {
+                    array.splice(index, 1);
+                }
+            })
+            setCategoriesData(CategoriesData => [...array])
+        }
+
+
+    }
+
+    const selectedCategoryFalse = (type: any) => {
+        if (type == "Phone") {
+            setPhoneStatus(false)
+        }
+        if (type == "Email Notification") {
+            setEmailStatus(false)
+        }
+        if (type == "Immediate") {
+            setImmediateStatus(false)
+        }
+        if (type == "Approval") {
+            setApprovalStatus(false)
         }
     }
+    const selectedCategoryTrue = (type: any) => {
+        if (type == "Phone") {
+            setPhoneStatus(true)
+        }
+        if (type == "Email Notification") {
+            setEmailStatus(true)
+        }
+        if (type == "Immediate") {
+            setImmediateStatus(true)
+        }
+        if (type == "Approval") {
+            setApprovalStatus(true)
+        }
+    }
+     const ChangePriorityStatusFunction = (e: any) => {
+    let value = e.target.value;
+    if (Number(value) <= 10) {
+        setselectPriority(e.target.value )
+    } else {
+        alert("Priority Status not should be greater than 10");
+        setselectPriority( '0' )
+    }
+}
+const deleteLinkedComponentData=()=>{
+    setLinkedComponentData([]);
+}
+    
 
     return (
         <>
@@ -1507,7 +1566,7 @@ const CreateActivity = (props: any) => {
                                 </div>} */}
 
 
-                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Component Portfolio
@@ -1522,7 +1581,7 @@ const CreateActivity = (props: any) => {
                                         </span>
                                     </div>
                                 }
-                                {AllItems?.Portfolio_x0020_Type == 'Component' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Service'&&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Service Portfolio
@@ -1538,23 +1597,26 @@ const CreateActivity = (props: any) => {
                                     </div>
                                 }
                                 {AllItems?.Portfolio_x0020_Type == 'Service' &&
-                                    <div className="input-group">
+                                    <div className="col-sm-12  inner-tabb">
 
                                         {
                                             linkedComponentData?.length > 0 ? <div>
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
-                                                        <>
-                                                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                                <div>
+                                                        
+                                                            <div className="block d-flex justify-content-between mb-1">
+                                                               
                                                                     <a className="hreflink " target="_blank" style={{ color: "#ffffff !important" }} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
-                                                                    <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => setLinkedComponentData([])}> </span>
+                                                                    <a  className='text-end'>
+                                                                    <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteLinkedComponentData()}> </span>
+                                                                    </a>
+                                                                   
                                                                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
-                                                                </div>
+                                                                
                                                             </div>
-                                                        </>
+                                                     
                                                     )
                                                 })}
                                             </div> : null
@@ -1591,31 +1653,7 @@ const CreateActivity = (props: any) => {
 
 
                                 <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                    {/* <fieldset>
-                                        <label>Priority</label>
-                                        <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                        <div className="mt-2">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)}
-                                                />High
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)}
-                                                />Normal
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                            </label>
-                                        </div>
-                                    </fieldset> */}
+                                   
                                     <div>
                                         <div className="input-group">
                                             <input type="text" className="form-control"
@@ -1656,7 +1694,7 @@ const CreateActivity = (props: any) => {
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Categories</label>
                                             {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
-                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} />
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)}  />
                                             <span className="input-group-text">
 
                                                 <a className="hreflink" title="Edit Categories">
@@ -1676,7 +1714,7 @@ const CreateActivity = (props: any) => {
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  >
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -1685,7 +1723,7 @@ const CreateActivity = (props: any) => {
                                         </ul>
                                     </div>) : null}
 
-                                <div className="row">
+                                {/* <div className="row">
                                     <div className="col-sm-12 mt-2">
                                         {CheckCategory?.map((item: any) => {
                                             return (
@@ -1702,6 +1740,53 @@ const CreateActivity = (props: any) => {
                                     </div>
 
 
+                                </div> */}
+                                 <div className="col">
+                                    <div className="col">
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                name="Phone"
+                                                type="checkbox" checked={PhoneStatus}
+                                                value={`${PhoneStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                            />
+                                            <label className="form-check-label">Phone</label>
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={EmailStatus}
+                                                value={`${EmailStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+                                            />
+                                            <label>Email Notification</label>
+
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={ImmediateStatus}
+                                                value={`${ImmediateStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                            <label>Immediate</label>
+                                        </div>
+
+                                    </div>
+                                    <div className="form-check ">
+                                        <label className="full-width">Approval</label>
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input rounded-0"
+                                            name="Approval"
+                                            checked={ApprovalStatus}
+                                            value={`${ApprovalStatus}`}
+                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
+
+                                        />
+                                    </div>
                                 </div>
                                 {CategoriesData != undefined ?
                                     <div>
@@ -1795,10 +1880,27 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
-            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>}
-            {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} AllListId={dynamicList} Call={Call}></Picker>}
-            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Service')) &&
+                <ServiceComponentPortfolioPopup
+                    props={SharewebComponent}
+                    Dynamic={dynamicList}
+                    Call={Call}
+                    ComponentType={"Service"}
+                />
+            }
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Component')) &&
+                <ServiceComponentPortfolioPopup
+                    props={SharewebComponent}
+                    Dynamic={dynamicList}
+                    Call={Call}
+                    ComponentType={"Component"}
+
+                />
+            }
+            {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
+            {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>} */}
+            {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} usedFor="Task-Footertable" AllListId={dynamicList} Call={Call}></Picker>}
+            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory}selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
         </>
     )
 }

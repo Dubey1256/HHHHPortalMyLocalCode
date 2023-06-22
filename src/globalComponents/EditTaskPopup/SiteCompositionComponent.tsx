@@ -19,7 +19,7 @@ const SiteCompositionComponent = (Props: any) => {
     const callBack = Props.callBack;
     const currentListName = Props.currentListName;
     const ServicesTaskCheck = Props.isServiceTask;
-    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: false, Manual: false, Portfolio: false, localSiteComposition: false }]);
+    const SiteCompositionSettings = (Props.SiteCompositionSettings != undefined ? JSON.parse(Props.SiteCompositionSettings) : [{ Proportional: true, Manual: false, Portfolio: false, localSiteComposition: false }]);
     const SelectedClientCategoryFromProps = Props.SelectedClientCategory;
     const [SiteTypes, setSiteTypes] = useState([]);
     const [selectedSiteCount, setSelectedSiteCount] = useState(Props.ClientTime.length);
@@ -153,12 +153,12 @@ const SiteCompositionComponent = (Props: any) => {
                         SiteCompositionObject.ClientTime = tempDataForRemove;
                         SiteCompositionObject.selectedClientCategory = SelectedClientCategoryBackupArray;
                         ClientTime = tempDataForRemove;
-                        if(tempDataForRemove?.length > 0){
+                        if (tempDataForRemove?.length > 0) {
                             callBack(SiteCompositionObject, "dataExits");
-                        }else{
+                        } else {
                             callBack(SiteCompositionObject, "dataDeleted")
                         }
-                       
+
                     } else {
                         DataItem.BtnStatus = true
                         setSelectedSiteCount(selectedSiteCount + 1);
@@ -683,15 +683,6 @@ const SiteCompositionComponent = (Props: any) => {
                     <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
                         Overridden
                     </label>
-
-                    {/* <label className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-                        Overridden
-                        <span className="svg__iconbox svg__icon--info"></span>
-                        <span className="popover__content">
-                            if this is checked then it should consider site allocations from Task otherwise from tagged component.
-                        </span>
-
-                    </label> */}
                 </span>
             </div>
             <div className="my-2 ps-3">
@@ -756,7 +747,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                 {ProportionalStatus ? <span>{siteData.BtnStatus && TotalTime ? (TotalTime / selectedSiteCount).toFixed(2) + " h" : siteData.BtnStatus ? "0 h" : null}</span> : <span>{siteData.BtnStatus && TotalTime ? (siteData.ClienTimeDescription ? (siteData.ClienTimeDescription * TotalTime / 100).toFixed(2) + " h" : "0 h") : siteData.BtnStatus ? "0 h" : null}</span>}
                                             </td>
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
-                                                {siteData.Title == "EI" && (currentListName?.toLowerCase() == "ei" || currentListName?.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "EI" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
@@ -803,7 +794,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "EPS" && (currentListName?.toLowerCase() == "eps" || currentListName?.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "EPS" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
@@ -850,7 +841,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "Education" && (currentListName?.toLowerCase() == "education" || currentListName?.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "Education" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
@@ -898,7 +889,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                             </div>) : null}
                                                     </>
                                                     : null}
-                                                {siteData.Title == "Migration" && (currentListName?.toLowerCase() == "migration" || currentListName?.toLowerCase() == "shareweb") ?
+                                                {siteData.Title == "Migration" ?
                                                     <>
                                                         <div className="input-group block justify-content-between">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?

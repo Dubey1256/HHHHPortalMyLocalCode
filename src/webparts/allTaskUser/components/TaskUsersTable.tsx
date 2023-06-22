@@ -32,6 +32,7 @@ import {
 import { Icon, Link, PrimaryButton } from '@fluentui/react';
 
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 interface ITaskUser {
   Title: string;
@@ -97,11 +98,174 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
     []
   )
   const [globalFilter, setGlobalFilter] = React.useState('');
-
+  const [excelData, setExcelData] :any= React.useState([]);
   const [data, setData] = React.useState<ITaskUser[]>(() => props.TaskUsers);
   const refreshData = () => setData(props.TaskUsers);
   React.useEffect(() => refreshData(), [props.TaskUsers]);
 
+ 
+  // const Columns = React.useMemo<ColumnDef<any, unknown>[]>(
+  //   () => [
+  //     {
+  //       accessorKey: "",
+  //       size: 7,
+  //       canSort: true,
+  //       placeholder: "",
+  //       id: 'Id',
+  //       cell: ({ row}) => (
+  //         <div>
+         
+  //         {row?.original?.Item_x0020_Cover == undefined &&
+  //             <div className="text-center title2_taskuser contact ng-binding"
+  //                 title={row?.original?.Title}
+  //                 ui-draggable="true"
+  //                 on-drop-success="dropSuccessHandler($event, $index, group.childs">
+  //                 {row?.original?.Suffix}
+  //             </div>
+  //         }
+  //         {row?.original?.Item_x0020_Cover != undefined &&
+  //             <img style={{ width: "28px" }}
+  //                 title={row?.original?.Title} src={row?.original?.Item_x0020_Cover} />
+  //         }
+  //         </div>
+  //       ),
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span className="hreflink">{row?.original?.Title}</span>
+  //                  {row?.original?.Suffix != undefined &&
+  //                      <span>({row?.original?.Suffix})</span>
+  //                  }
+  //         </>
+  //       ),
+  //       accessorKey: "Title",
+  //       id: "Title",
+  //       canSort: true,
+  //       placeholder: "Search Name",
+  //       header: "",
+  //       size: 15,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.usertitle}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "usertitle",
+  //       id: "usertitle",
+  //       canSort: true,
+  //       placeholder: "Search",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.TimeCategory}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "TimeCategory",
+  //       id: "TimeCategory",
+  //       canSort: true,
+  //       placeholder: "Search Category",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.SortOrder}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "SortOrder",
+  //       id: "SortOrder",
+  //       canSort: true,
+  //       placeholder: "Sort",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.Userrole}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "Userrole",
+  //       id: "Userrole",
+  //       canSort: true,
+  //       placeholder: "Search Roles",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+        
+      
+     
+
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.Company}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "Company",
+  //       id: "Company",
+  //       canSort: true,
+  //       placeholder: "Company",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span >{row?.original?.UserManagerName}</span>
+  //         </>
+  //       ),
+  //       accessorKey: "UserManagerName",
+  //       id: "UserManagerName",
+  //       canSort: true,
+  //       placeholder: "Approver",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span ><a onClick={(e) => EditData(e, row?.original?.Id)}><FaEdit /></a></span>
+  //         </>
+  //       ),
+       
+  //       id: "Id",
+  //       canSort: true,
+  //       placeholder: "",
+  //       header: "",
+  //       size: 5,
+  //     },
+  //     {
+  //       cell: ({ row }) => (
+  //         <>
+  //           <span ><a><FiDelete /></a></span>
+  //         </>
+  //       ),
+       
+  //       id: "Id",
+  //       canSort: true,
+  //       placeholder: "",
+  //       header: "",
+  //       size: 5,
+  //     },
+      
+  //   ],
+  //   [taskUser]
+  // );
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   const columns = React.useMemo<ColumnDef<ITaskUser, any>[]>(
     () => [
       {
@@ -111,8 +275,10 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         id: "Title",
         cell: info => props.GetUser(info.row.original.Title, info.row.original.TaskId),
         sortDescFirst: false
+               
       },
       {
+        
         accessorKey: "Group",
         header: "",
         placeholder: "Group"
@@ -153,7 +319,9 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
     [data]
   )
 
-
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+       
+  }, []);
 
   const table = useReactTable({
     data,
@@ -199,7 +367,11 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
         <span className='leftsec'></span>
         <span className='toolbox'><PrimaryButton  text="Add Team Member" onClick={() => props.AddTask()} /></span>
       </div>
-      <div className="Alltable mt-10">
+
+
+      { <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} excelDatas={data} showHeader={true}  />}
+
+      {/* <div className="Alltable mt-10">
         <div className="col-sm-12 p-0 smart">
           <div className="wrapper">
             <table className="SortingTable table table-hover" style={{ width: "100%" }}>
@@ -272,7 +444,7 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
             </table>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="h-2" />
       {/* {data.length>10 && <div className="flex items-center gap-2">

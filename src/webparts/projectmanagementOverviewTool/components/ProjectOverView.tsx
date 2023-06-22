@@ -1065,7 +1065,7 @@ export default function ProjectOverview(props: any) {
                 items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
                 items.AssignedUser = []
-                items.siteType = "Master Tasks"
+                items.siteType = "Project"
                 items.TeamMembersSearch = '';
                 if (items.AssignedTo != undefined) {
                     items.AssignedTo.map((taskUser: any) => {
@@ -1325,7 +1325,7 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="col-sm-4 text-end">
                                     {GroupedDisplayTable ? <a className="hreflink " onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink text-end" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
-                                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
+                                    {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
                                 </div>
                             </div>
                             {GroupedDisplayTable ?
@@ -1350,9 +1350,9 @@ export default function ProjectOverview(props: any) {
                                         </div>
                                     </div>
                                     <div className="Alltable p-2">
-                                        {selectedView == 'grouped' ? <GlobalCommanTable columns={columns} data={data} paginatedTable={false} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverviewGrouped"} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverview"} /> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverviewGrouped"} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData}  pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable AllListId={AllListId}  columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable AllListId={AllListId}  columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
                                     </div>
                                 </>
                                 : ""}
@@ -1360,7 +1360,7 @@ export default function ProjectOverview(props: any) {
                                 {!GroupedDisplayTable ?
 
                                     <div className="Alltable p-2">
-                                        <GlobalCommanTable paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} />
+                                        <GlobalCommanTable AllListId={AllListId}  paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser}  showHeader={true}/>
                                     </div> : ''}
                             </div>
                         </div>

@@ -1664,7 +1664,7 @@ const ProjectManagementMain = (props: any) => {
                             ) : (
                               ""
                             )}
-                            <GlobalCommanTable columns={column2} data={data} callBackData={callBackData} />
+                            <GlobalCommanTable AllListId={AllListId}  columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
                           </div>
 
                         </div>
