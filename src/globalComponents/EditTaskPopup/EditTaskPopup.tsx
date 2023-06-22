@@ -4409,33 +4409,16 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {UploadBtnStatus ?
                                                             <div>
-                                                                {/* <div className="drag-upload-image mt-1"
-                                                                    style={isDragging ? { border: '1px solid red' } : undefined}
-                                                                    onClick={onImageUpload}
-                                                                    {...dragProps}
-                                                                >
-                                                                    Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
-                                                                </div> */}
+                                                                
                                                                 <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                             </div> : null}
                                                         {TaskImages?.length == 0 ? <div>
-                                                            {/* <div className="drag-upload-image mt-1"
-                                                                style={isDragging ? { border: '1px solid red' } : undefined}
-                                                                onClick={onImageUpload}
-                                                                {...dragProps}
-                                                            >
-                                                                Drop here Or <span className="siteColor" style={{ cursor: "pointer" }} >Click Here To Upload</span>
-                                                            </div> */}
+                
                                                             <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                         </div> : null}
-                                                        {/* <div>
-                                                            <FlorarImageUploadComponent />
-                                                        </div> */}
-
-                                                        {/* <button onClick={onImageRemoveAll}>Upload item-images</button> */}
-
+                                                       
                                                     </div>
 
                                                 )}
@@ -4467,34 +4450,9 @@ const EditTaskPopup = (Items: any) => {
                                         </>
                                             : null}
                                     </div>
-                                    {/* <div className="form-group">
-                                                    <div className="col-sm-6">
-                                                        <div ng-if="attachments.length > 0"
-                                                            ng-repeat="attachedFiles in attachments">
-                                                            <div ng-show="ImageName != attachedFiles.FileName">
-                                                                <div
-                                                                    ng-if="attachedFiles.FileName.toLowerCase().indexOf('.txt'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.docx'.toLowerCase())> -1  || attachedFiles.FileName.toLowerCase().indexOf('.pdf'.toLowerCase())> -1  || attachedFiles.FileName.toLowerCase().indexOf('.doc'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.msg'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.pptx'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.xls'.toLowerCase())> -1 || attachedFiles.FileName.toLowerCase().indexOf('.xlsx'.toLowerCase())> -1">
-                                                                    <a
-                                                                        ng-href="{{CurrentSiteUrl}}/Lists/{{Item.siteType}}/Attachments/{{attachedItemId}}/{{attachedFiles.FileName}}?web=1">attachedFiles.FileName </a>
-                                                                    <a style={{ cursor: "pointer" }} title="Delete" data-toggle="modal"
-                                                                        ng-click="deleteFile(attachedFiles)">
-                                                                        <img ng-src="/_layouts/images/delete.gif" />
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="clearfix"></div>
-                                                </div> */}
-                                    {/* </div>
-                                     </div> */}
+                                  
                                 </div>
                             </div>
-                            {/* <div className="tab-pane " id="TIMESHEET" role="tabpanel" aria-labelledby="TIMESHEET">
-                                <div>
-                                    <TeamComposition props={Items} />
-                                </div>
-                            </div> */}
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
                                 <div className="d-flex justify-content-between">
                                     <div className="col-sm-7">
