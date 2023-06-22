@@ -1387,7 +1387,7 @@ const EditTaskPopup = (Items: any) => {
     const getAllSitesData = async () => {
         let web = new Web(siteUrls);
         let MetaData: any = [];
-        let siteConfig: any = [];
+        //let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
