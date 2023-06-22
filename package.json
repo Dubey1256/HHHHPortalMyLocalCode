@@ -46,6 +46,8 @@
     "gulp-postcss": "^9.0.1",
     "immutable": "^4.1.0",
     "jquery": "^3.6.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.29",
     "material-table": "^2.0.3",
     "moment-timezone": "^0.5.40",
     "office-ui-fabric-react": "^7.199.1",

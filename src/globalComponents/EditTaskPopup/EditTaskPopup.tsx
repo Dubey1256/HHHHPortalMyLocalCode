@@ -48,17 +48,17 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
-var SiteId = ''
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
+var timesheetData:any = []
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any = '';
-var timesheetData:any = []
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
+var SiteId = ''
 var ChangeTaskUserStatus: any = true;
 var TimeSheetlistId = ''
 let siteConfig: any = [];
@@ -1387,6 +1387,7 @@ const EditTaskPopup = (Items: any) => {
     const getAllSitesData = async () => {
         let web = new Web(siteUrls);
         let MetaData: any = [];
+        let siteConfig: any = [];
         let tempArray: any = [];
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
@@ -2377,8 +2378,6 @@ const EditTaskPopup = (Items: any) => {
     //    ************* This is team configuration call Back function **************
 
     const getTeamConfigData = React.useCallback((teamConfigData: any) => {
-        timesheetData = teamConfigData;
-        console.log(timesheetData)
         if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -2450,7 +2449,7 @@ const EditTaskPopup = (Items: any) => {
     }
     const deleteItemFunction = async (itemId: any) => {
         try {
-            if (Items.Items?.listId != undefined) {
+            if (Items.Items.listId != undefined) {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
             } else {
@@ -2957,7 +2956,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const copyAndMoveTaskFunction = async (FunctionsType: number) => {
-        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images and Timesheet functionality still not moving we are working on it. Click OK if you still would like to proceed without Images and Timesheets`)
+        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images still not moving we are working on it. Click OK if you still would like to proceed without Images`)
         if (CopyAndMoveTaskStatus) {
             copyAndMoveTaskFunctionOnBackendSide(FunctionsType);
         } else {
@@ -2979,12 +2978,13 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
-                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then((res) => {
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res) => {
                     if (FunctionsType == "Copy-Task") {
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        moveTimeSheet(SelectedSite,res.data)
+                        await moveTimeSheet(SelectedSite,res.data)
+                       
                     }
                 })
             }
@@ -3610,7 +3610,7 @@ const EditTaskPopup = (Items: any) => {
                 type={PanelType.custom}
                 customWidth="850px"
                 onDismiss={closeTimeSheetPopup}
-                isBlocking={false}
+                isBlocking={TimeSheetPopup}
             >
                 <div className={ServicesTaskCheck ? "modal-body serviepannelgreena" : "modal-body"}>
                     <TimeEntryPopup props={Items.Items} />
@@ -3622,7 +3622,7 @@ const EditTaskPopup = (Items: any) => {
                 isOpen={modalIsOpen}
                 onDismiss={setModalIsOpenToFalse}
                 onRenderHeader={onRenderCustomHeaderMain}
-                isBlocking={false}
+                isBlocking={modalIsOpen}
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
@@ -4384,7 +4384,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.lnegth > 0 ? 'Working Member':""}</label>
+                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>
@@ -4682,7 +4682,7 @@ const EditTaskPopup = (Items: any) => {
                 customWidth="100%"
                 onRenderHeader={onRenderCustomHeaderMain}
                 onDismiss={ImageCompareFunctionClosePopup}
-                isBlocking={false}
+                isBlocking={ImageComparePopup}
                 onRenderFooter={onRenderCustomFooterOther}
             >
                 <div className="modal-body mb-5">
@@ -5506,7 +5506,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col mt-2">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.lnegth > 0 ? 'Working Member':""}</label>
+                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
                                                                 {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                                     return (
                                                                         <div className="TaskUsers" key={index}>
