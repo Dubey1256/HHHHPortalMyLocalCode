@@ -209,7 +209,7 @@ const BackgroundCommentComponent = (Props: any) => {
                         <div className={`col-12 d-flex float-end add_cmnt my-1 `}>
                             <div className="">
                                 <img 
-                                    // style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} 
+                                    style={{ width: "40px", borderRadius: "50%", height: "40px", margin: "5px" }} 
                                     src={dataItem.AuthorImage != undefined && dataItem.AuthorImage != '' ?
                                     dataItem.AuthorImage : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"} 
                                     />
