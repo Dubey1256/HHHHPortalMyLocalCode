@@ -25,6 +25,7 @@ var ParentId: any = ''
 var Category: any = '';
 var NewCategoryId: any = ''
 var Eyd = ''
+var timesheetMoveData:any =[]
 var changeEdited = '';
 var CurrentUserTitle = ''
 var Categoryy = '';
@@ -837,7 +838,10 @@ function TimeEntryPopup(item: any) {
 
         });
         console.log(TaskTimeSheetCategoriesGrouping)
-    //    item?.parentCallback(timesheetMoveData);
+        if(item.parentCallback != undefined){
+            item.parentCallback(timesheetMoveData);
+        }
+       
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
         // var mainArray: any = []
         // var sortedCars: any = []
@@ -1091,9 +1095,11 @@ function TimeEntryPopup(item: any) {
                         let totletimeparentcount = 0;
                         //  let totletimeparentcount = 0;
                         let AllAvailableTitle = [];
-                       AllTimeSpentDetails.forEach((items:any)=>{
-                        timesheetMoveData.push(items)
-                       })
+
+                        AllTimeSpentDetails.forEach((items:any)=>{
+                            timesheetMoveData.push(items)
+                           })
+                       
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
                             item.Item_x005F_x0020_Cover = undefined;
