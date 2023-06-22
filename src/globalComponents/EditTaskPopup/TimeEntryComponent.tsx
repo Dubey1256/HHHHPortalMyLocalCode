@@ -837,7 +837,7 @@ function TimeEntryPopup(item: any) {
 
         });
         console.log(TaskTimeSheetCategoriesGrouping)
-       item?.parentCallback(timesheetMoveData);
+    //    item?.parentCallback(timesheetMoveData);
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
         // var mainArray: any = []
         // var sortedCars: any = []
