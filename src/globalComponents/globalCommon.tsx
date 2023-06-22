@@ -1683,6 +1683,18 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
                         subcomp['subRows'].push(featurecomp);
                     }
                 });
+                $.each(FeatureData, function (index: any, ParentFeaturs: any) {
+                    if (
+                        ParentFeaturs.Parent != undefined &&
+                        subcomp.Id == ParentFeaturs.Parent.Id
+                    ) {
+                        ParentFeaturs.NewLeble = subcomp.Title + " > " + ParentFeaturs.Title
+                        ParentFeaturs.defaultChecked = true
+                        subcomp["Child"].push(ParentFeaturs);
+                        AllData.push(ParentFeaturs);
+                        subcomp['subRows'].push(ParentFeaturs);
+                    }
+                });
             }
         });
         $.each(SubComponentsData, function (index: any, subcomp: any) {
@@ -1729,13 +1741,9 @@ const AllTaskUsers = async (siteUrl: any, ListId: any) => {
 }
 
 export const ArrayCopy = async (array: any) => {
-
     let MainArray = [];
-
     if (array != undefined && array.length != undefined) {
-
         MainArray = parseJSON(JSON.stringify(array));
-
     }
 
     return MainArray;
