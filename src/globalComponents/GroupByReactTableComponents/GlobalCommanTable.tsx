@@ -21,6 +21,7 @@ import autoTable from 'jspdf-autotable';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { RiFileExcel2Fill } from 'react-icons/ri';
+import ShowTeamMembers from '../ShowTeamMember';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -84,7 +85,6 @@ function DebouncedInput({
 
 
 
-
 export function Filter({
     column,
     table,
@@ -139,16 +139,16 @@ const GlobalCommanTable = (items: any) => {
     let callBackData = items?.callBackData;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
+    let showHeader = items?.showHeader;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
-    const [TableProperty, setTableProperty] = React.useState<SortingState>([]);
-
-
-    const table: any = useReactTable({
+    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
+    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const table = useReactTable({
         data,
         columns,
         filterFns: {
@@ -176,9 +176,7 @@ const GlobalCommanTable = (items: any) => {
         // filterFns: undefined
     });
 
-
     React.useEffect(() => {
-        setTableProperty(table);
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     let item: any;
@@ -208,7 +206,7 @@ const GlobalCommanTable = (items: any) => {
             })
         }
         let ShowingData = { ComponentCopy: ComponentCopy, SubComponentCopy: SubComponentCopy, FeatureCopy: FeatureCopy, FilterShowhideShwingData: FilterShowhideShwingData }
-        callBackData(item, TableProperty, ShowingData)
+        callBackData(item, ShowingData)
     }, [table?.getRowModel()?.rows])
 
     const CheckDataPrepre = () => {
@@ -217,13 +215,29 @@ const GlobalCommanTable = (items: any) => {
                 elem.original.Id = elem.original.ID
                 item = elem.original;
             });
-            callBackData(item, TableProperty, setRowSelection)
+            callBackData(item)
         } else {
-            callBackData(item, TableProperty, setRowSelection)
+            callBackData(item)
         }
         console.log("itrm", item)
     }
-
+    const ShowTeamFunc = () => {
+        setShowTeamPopup(true)
+    }
+    const showTaskTeamCAllBack = React.useCallback(() => {
+        setShowTeamPopup(false)
+    }, []);
+    const openTaskAndPortfolioMulti = () => {
+        table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
+            if (item?.original?.siteType === "Master Tasks") {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else if (item?.original?.siteType === "Project") {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+            }
+        })
+    }
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
             setExpanded(true);
@@ -231,7 +245,6 @@ const GlobalCommanTable = (items: any) => {
             setExpanded({});
         }
     }, [table.getState().columnFilters]);
-
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
@@ -249,27 +262,34 @@ const GlobalCommanTable = (items: any) => {
         FileSaver.saveAs(data, fileName + fileExtension);
     };
 
+
     return (
         <>
-            <div>
-                <span>
+            {showHeader === true && <div className='tbl-headings'>
+                <span className='leftsec'>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
                 <span className="toolbox mx-auto">
-                    <span><a onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a></span>
-                    <span>
-                        <a><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
-                    </span>
-                    <span>
-                        <a onClick={() => downloadPdf()}>
-                            <i className="fa fa-print mr-5" aria-hidden="true" title="Print"></i>
-                        </a>
-                    </span>
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
+                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+                    <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
+
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+
+
+                    <a className='Prints' onClick={() => downloadPdf()}>
+                        <i className="fa fa-print" aria-hidden="true" title="Print"></i>
+                    </a>
+
                 </span>
-            </div>
+            </div>}
+
             <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
                     {table.getHeaderGroups().map((headerGroup: any) => (
@@ -333,6 +353,8 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
+            {ShowTeamPopup === true && items?.TaskUsers?.length>0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+
         </>
     )
 }
