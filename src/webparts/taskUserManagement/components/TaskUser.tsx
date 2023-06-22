@@ -9,11 +9,19 @@ import Tab from './Tabs/Tab';
 import Tabs from './Tabs/Tabs';
 import './Tabs/styles.css';
 import '../components/Tabs/styles.css';
+
 import { SPComponentLoader } from '@microsoft/sp-loader';
+import {
+    Column, Table,
+    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
+    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
+} from "@tanstack/react-table";
+import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
+
+
 
 SPComponentLoader.loadCss("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css");
-
-
 function Task(): JSX.Element {
     const [modalIsOpen, setModalIsOpen] = React.useState(false)
     const [Title, setTitle] = React.useState([])
@@ -23,32 +31,21 @@ function Task(): JSX.Element {
     const [taskGroup, settaskGroup] = React.useState([])
     const [table, setTable] = React.useState(taskUser);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
-
-
+    const [excelData, setExcelData]: any = React.useState([]);
     let handleChange = (e: { target: { value: string; }; }) => {
         setSearch(e.target.value.toLowerCase());
     };
-
-
     React.useEffect(() => {
         function UserData() {
             var siteConfig: any = []
             var url = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('e968902a-3021-4af2-a30a-174ea95cf8fa')/items?$select=Id,Title,Value,Key,Description,Configurations&$filter=Key eq '" + 'SP-TaskUser-Management' + "'";
-
             $.ajax({
-
                 url: url,
-
                 method: "GET",
-
                 headers: {
-
                     "Accept": "application/json; odata=verbose"
-
                 },
-
                 success: function (data) {
-
                     siteConfig = JSON.parse(data.d.results[0].Configurations);
                     console.log(siteConfig);
                     $.each(siteConfig, function (users: any, user) {
@@ -58,44 +55,26 @@ function Task(): JSX.Element {
                             TaskUserData(user)
                         }
                     });
-
                 },
-
                 error: function (error) {
-
-
                 }
-
             });
-
         }
         UserData();
-
     }, [])
-
     function TaskUserData(user: any) {
-
         var siteConfig: any = []
         var TaskGroup: any = []
         var taskUser: any = []
         var url = ("https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('" + user.listId + "')/items?$select=" + user.query + " ");
-
         $.ajax({
-
             url: url,
-
             method: "GET",
-
             headers: {
-
                 "Accept": "application/json; odata=verbose"
-
             },
-
             success: function (data) {
-
                 $.each(data.d.results, function (uass: any, user) {
-
                     if (user.Item_x0020_Cover != undefined || user.Item_x0020_Cover != null) {
                         user.Item_x0020_Cover = user.Item_x0020_Cover.Url;
                     }
@@ -104,7 +83,6 @@ function Task(): JSX.Element {
                         TaskGroup.push(user);
                         settaskGroup(TaskGroup)
                     }
-
                     else if (user.ItemType == "User") {
                         if (user.IsApprovalMail == undefined || user.IsApprovalMail == '' || user.IsApprovalMail == null || user.IsApprovalMail == 0) {
                             user.IsApprovalMail = 'Decide Case By Case';
@@ -139,17 +117,30 @@ function Task(): JSX.Element {
                             })
                             user['UserManagerName'] = ApproverUserItem;
                         }
-
                         taskUser.push(user);
                     }
-
                 });
+                let datass: any = [];
+                taskUser.map((items: any) => {
+                    datass.push(
+                        {
+                            Title: items?.Title,
+                            Item_x0020_Cover: items?.Item_x0020_Cover,
+                            usertitle: items?.usertitle,
+                            TimeCategory: items?.TimeCategory,
+                            SortOrder: items?.SortOrder,
+                            Userrole: items?.Userrole,
+                            msCompany: items?.msCompany,
+                            UserManagerName: items?.UserManagerName,
+                            Suffix: items?.Suffix,
+                            Id: items?.Id,
+                        }
+                    )
+                })
+                setExcelData(datass);
                 settaskUser(taskUser)
             },
-
             error: function (error) {
-
-
             }
 
         });
@@ -186,6 +177,169 @@ function Task(): JSX.Element {
         setTable(copy2)
 
     }
+
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+    }, []);
+
+
+    const Columns = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                size: 7,
+                canSort: true,
+                placeholder: "",
+                id: 'Id',
+                cell: ({ row }) => (
+                    <div>
+
+                        {row?.original?.Item_x0020_Cover == undefined &&
+                            <div className="text-center title2_taskuser contact ng-binding"
+                                title={row?.original?.Title}
+                                ui-draggable="true"
+                                on-drop-success="dropSuccessHandler($event, $index, group.childs">
+                                {row?.original?.Suffix}
+                            </div>
+                        }
+                        {row?.original?.Item_x0020_Cover != undefined &&
+                            <img style={{ width: "28px" }}
+                                title={row?.original?.Title} src={row?.original?.Item_x0020_Cover} />
+                        }
+                    </div>
+                ),
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span className="hreflink">{row?.original?.Title}</span>
+                        {row?.original?.Suffix != undefined &&
+                            <span>({row?.original?.Suffix})</span>
+                        }
+                    </>
+                ),
+                accessorKey: "Title",
+                id: "Title",
+                canSort: true,
+                placeholder: "Search Name",
+                header: "",
+                size: 15,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.usertitle}</span>
+                    </>
+                ),
+                accessorKey: "usertitle",
+                id: "usertitle",
+                canSort: true,
+                placeholder: "Search",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.TimeCategory}</span>
+                    </>
+                ),
+                accessorKey: "TimeCategory",
+                id: "TimeCategory",
+                canSort: true,
+                placeholder: "Search Category",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.SortOrder}</span>
+                    </>
+                ),
+                accessorKey: "SortOrder",
+                id: "SortOrder",
+                canSort: true,
+                placeholder: "Sort",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.Userrole}</span>
+                    </>
+                ),
+                accessorKey: "Userrole",
+                id: "Userrole",
+                canSort: true,
+                placeholder: "Search Roles",
+                header: "",
+                size: 5,
+            },
+            {
+
+
+
+
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.Company}</span>
+                    </>
+                ),
+                accessorKey: "Company",
+                id: "Company",
+                canSort: true,
+                placeholder: "Company",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span >{row?.original?.UserManagerName}</span>
+                    </>
+                ),
+                accessorKey: "UserManagerName",
+                id: "UserManagerName",
+                canSort: true,
+                placeholder: "Approver",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span ><a onClick={(e) => EditData(e, row?.original?.Id)}><FaEdit /></a></span>
+                    </>
+                ),
+
+                id: "Id",
+                canSort: true,
+                placeholder: "",
+                header: "",
+                size: 5,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span ><a><FiDelete /></a></span>
+                    </>
+                ),
+
+                id: "Id",
+                canSort: true,
+                placeholder: "",
+                header: "",
+                size: 5,
+            },
+
+        ],
+        [taskUser]
+    );
+
+
+
     const EditData = (e: any, Id: any) => {
         var spRequest = new XMLHttpRequest();
         spRequest.open('GET', "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('b318ba84-e21d-4876-8851-88b94b9dc300')/items?$filter=Id eq'" + Id + "'", true);
@@ -331,86 +485,86 @@ function Task(): JSX.Element {
                                                     </div>
                                                     <div className="clearfix"></div>
                                                     <div className="col-sm-12 pad0 mb-10 mt-10">
-                                                       
-                                                            <div className="col-sm-3 padL-0">
-                                                                <label className="full_width headerbox">Approval Type</label>
-                                                                <div className="col-sm-12 pl-3">
-                                                                    <span className="mt-5 col-sm-12 padL-0">
-                                                                        <span className="no-padding">
-                                                                            <input name="IsApprovalMailProcess" className="no-padding" checked={items.IsApprovalMail == 'Approve All'} type="radio" ng-click="IsApprovalMailFunction('Approve All')" />
-                                                                            Approve All
-                                                                        </span>
+
+                                                        <div className="col-sm-3 padL-0">
+                                                            <label className="full_width headerbox">Approval Type</label>
+                                                            <div className="col-sm-12 pl-3">
+                                                                <span className="mt-5 col-sm-12 padL-0">
+                                                                    <span className="no-padding">
+                                                                        <input name="IsApprovalMailProcess" className="no-padding" checked={items.IsApprovalMail == 'Approve All'} type="radio" ng-click="IsApprovalMailFunction('Approve All')" />
+                                                                        Approve All
                                                                     </span>
-                                                                    <span className="mt-5 col-sm-12 pad0">
-                                                                        <span className="no-padding">
-                                                                            <input name="IsApprovalMailProcess" className="no-padding" ng-checked="Item.IsApprovalMail=='Approve All But Selected Items'" type="radio" ng-click="IsApprovalMailFunction('Approve All But Selected Items')" />
-                                                                            Approve Selected
-                                                                            <div ng-show="IsApprovalMail=='Approve All But Selected Items'">
-                                                                                <label> Select Items</label>
-                                                                                <div className="col-sm-12 padL-0">
-                                                                                    <div className="col-sm-11 padding-0  ">
-                                                                                        <input type="text" className="form-control"
-                                                                                            id="txtCategories" />
-                                                                                    </div>
-                                                                                    <div className="col-sm-1 no-padding">
+                                                                </span>
+                                                                <span className="mt-5 col-sm-12 pad0">
+                                                                    <span className="no-padding">
+                                                                        <input name="IsApprovalMailProcess" className="no-padding" ng-checked="Item.IsApprovalMail=='Approve All But Selected Items'" type="radio" ng-click="IsApprovalMailFunction('Approve All But Selected Items')" />
+                                                                        Approve Selected
+                                                                        <div ng-show="IsApprovalMail=='Approve All But Selected Items'">
+                                                                            <label> Select Items</label>
+                                                                            <div className="col-sm-12 padL-0">
+                                                                                <div className="col-sm-11 padding-0  ">
+                                                                                    <input type="text" className="form-control"
+                                                                                        id="txtCategories" />
+                                                                                </div>
+                                                                                <div className="col-sm-1 no-padding">
 
-                                                                                        <img ng-src="{{SiteAbsoluteUrl}}/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
-                                                                                            ng-click="openSmartTaxonomyPopup('Categories', Item.SharewebCategories);" />
-                                                                                    </div>
-                                                                                    <div className="row">
-                                                                                        <div className="col-sm-12 mt-2">
+                                                                                    <img ng-src="{{SiteAbsoluteUrl}}/SiteCollectionImages/ICONS/Foundation/EMMCopyTerm.png"
+                                                                                        ng-click="openSmartTaxonomyPopup('Categories', Item.SharewebCategories);" />
+                                                                                </div>
+                                                                                <div className="row">
+                                                                                    <div className="col-sm-12 mt-2">
 
-                                                                                            <div className="block" ng-repeat="item in smartCategories">
-                                                                                                "item.Title"
-                                                                                                <a className="hreflink"
-                                                                                                    ng-click="removeCategories(item.Id)">
-                                                                                                    <img ng-src="/_layouts/images/delete.gif" />
-                                                                                                </a>
-                                                                                            </div>
-
+                                                                                        <div className="block" ng-repeat="item in smartCategories">
+                                                                                            "item.Title"
+                                                                                            <a className="hreflink"
+                                                                                                ng-click="removeCategories(item.Id)">
+                                                                                                <img ng-src="/_layouts/images/delete.gif" />
+                                                                                            </a>
                                                                                         </div>
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </span>
+                                                                        </div>
+                                                                    </span>
+
+                                                                </span>
+                                                                <span className="mt-5 col-sm-12 pad0">
+                                                                    <span className="no-padding">
+                                                                        <input name="IsApprovalMailProcess" className="no-padding" ng-checked="Item.IsApprovalMail=='Decide Case By Case'" type="radio" ng-click="IsApprovalMailFunction('Decide Case By Case')" />
+                                                                        Case by Case
+                                                                    </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div ng-show="Item.UserGroup.Id!=undefined" className="col-sm-5 pad0 b-right">
+                                                            <div className="col-sm-6 padL-0">
+                                                                <label className="full_width headerbox">Company</label>
+                                                                <div className="col-sm-12 pl-5">
+
+                                                                    <span className="col-sm-12 mt-5 pad0"><input name="Smalsus" className="no-padding" checked={items.Company == 'HHHH'} type="radio" /> HHHH Team</span>
+                                                                    <span className="col-sm-12 mt-5 pad0"><input name="Smalsus" className="no-padding" checked={items.Company == 'Smalsus'} type="radio" ng-click="Companyitem('Smalsus')" /> Smalsus Team</span>
+
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-sm-6 pad0">
+                                                                <label className="full_width headerbox">Roles</label>
+                                                                <div className="col-sm-12 pl-5 PadR0">
+                                                                    <span className="col-sm-12 mt-5 pad0">
+                                                                        <input ng-model="DeliverableTeams" className="no-padding" type="checkbox" ng-click="Roletype('Deliverable Teams')" /> Component Teams
 
                                                                     </span>
-                                                                    <span className="mt-5 col-sm-12 pad0">
-                                                                        <span className="no-padding">
-                                                                            <input name="IsApprovalMailProcess" className="no-padding" ng-checked="Item.IsApprovalMail=='Decide Case By Case'" type="radio" ng-click="IsApprovalMailFunction('Decide Case By Case')" />
-                                                                            Case by Case
-                                                                        </span>
+                                                                    <span className="col-sm-12 mt-5 pad0">
+                                                                        <input ng-model="ServiceTeams" className="no-padding" type="checkbox" ng-click="Roletype('Service Teams')" /> Service
+                                                                        Teams
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                        
-                                                       
-                                                            <div ng-show="Item.UserGroup.Id!=undefined" className="col-sm-5 pad0 b-right">
-                                                                <div className="col-sm-6 padL-0">
-                                                                    <label className="full_width headerbox">Company</label>
-                                                                    <div className="col-sm-12 pl-5">
 
-                                                                        <span className="col-sm-12 mt-5 pad0"><input name="Smalsus" className="no-padding" checked={items.Company == 'HHHH'} type="radio" /> HHHH Team</span>
-                                                                        <span className="col-sm-12 mt-5 pad0"><input name="Smalsus" className="no-padding" checked={items.Company == 'Smalsus'} type="radio" ng-click="Companyitem('Smalsus')" /> Smalsus Team</span>
+                                                        </div>
 
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 pad0">
-                                                                    <label className="full_width headerbox">Roles</label>
-                                                                    <div className="col-sm-12 pl-5 PadR0">
-                                                                        <span className="col-sm-12 mt-5 pad0">
-                                                                            <input ng-model="DeliverableTeams" className="no-padding" type="checkbox" ng-click="Roletype('Deliverable Teams')" /> Component Teams
-
-                                                                        </span>
-                                                                        <span className="col-sm-12 mt-5 pad0">
-                                                                            <input ng-model="ServiceTeams" className="no-padding" type="checkbox" ng-click="Roletype('Service Teams')" /> Service
-                                                                            Teams
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-                                                        
                                                         {items.UserGroupId
                                                             != undefined &&
                                                             <div ng-show="Item.UserGroup.Id!=undefined" className="col-sm-4 mb-10 active_user">
@@ -478,7 +632,7 @@ function Task(): JSX.Element {
                                                     <div ng-if="selectedImageUrl != undefined">
                                                         <div className="col-sm-12  mt-5">
                                                             <div className="img">
-                                                                <img id="selectedimage" src={items.Item_x0020_Cover.Url}  title={items.Item_x0020_Cover.Url} />
+                                                                <img id="selectedimage" src={items.Item_x0020_Cover.Url} title={items.Item_x0020_Cover.Url} />
                                                             </div>
                                                             <div className="break_url">
                                                                 {items.FileLeafRef}
@@ -690,200 +844,12 @@ function Task(): JSX.Element {
                     <Tabs>
                         <Tab title='Task User'>
                             {/* <div id="TaskUser" className="tab-pane fade in active"> */}
-
-                            <div className="tbl-headings">
-                                <span className="leftsec">
-                                    <label>
-                                        Showing {taskUser.length} of {taskUser.length} Components
-                                    </label>
-                                    <label> | </label>
-                                    <span className="g-search">
-                                        <input type="text" className="searchbox_height full_width" id="globalSearch" placeholder="search all" />
-                                        <span className="gsearch-btn" ><i><FaSearch /></i></span>
-                                    </span>
-                                </span>
-                                <span className="toolbox mx-auto">
-                                    <span className="pull-left mr-10">  <button type="button" className="btn btn-primary" onClick={setModalIsOpenToTrue2}>
-                                        Add Team Member</button>
-                                    </span>
-                                    <span>
-                                        <a ng-click="printResults('table-wrapper')">
-                                            <i className="fa fa-print mr-5" aria-hidden="true" title="Print"></i>
-                                        </a>
-                                    </span>
-                                    <span>
-                                        <a data-ng-click="ClearFilters()"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
-                                    </span>
-                                    <span>
-                                        <a>
-                                            <i className="fa fa- mr-5" aria-hidden="true" title="Print"></i>
-                                        </a>
-                                    </span>
-                                </span>
-                            </div>
-                            <div className="col-sm-12 pad0 smart">
-                                <div className="section-event">
-                                    <div className="container-new">
-                                        <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ width: "3%" }}>
-                                                        <div></div>
-                                                    </th>
-
-                                                    {/* <th style={{ width: "2%" }}></th> */}
-                                                    <th style={{ width: "16%" }}>
-                                                        <div style={{ width: "15%" }} className="smart-relative">
-                                                            <input type="search" placeholder="search Name" className="full_width searchbox_height" onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up" onClick={sortBy}>< FaAngleUp /></span>
-                                                                <span className="down" onClick={sortByDng}>< FaAngleDown /></span>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "11%" }}>
-                                                        <div style={{ width: "9%" }} className="smart-relative">
-                                                            <input id="searchClientGroup" type="search" placeholder="search Group"
-                                                                title="Client Category" className="full_width searchbox_height"
-                                                                onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up" >< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "10%" }}>
-                                                        <div style={{ width: "9%" }} className="smart-relative">
-                                                            <input id="searchClientCategory" type="search" placeholder="Search Category"
-                                                                title="Client Category" className="full_width searchbox_height" onChange={handleChange}
-                                                            />
-                                                            <span className="sorticon">
-                                                                <span className="up" >< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "7%" }}>
-                                                        <div style={{ width: "6%" }} className="smart-relative">
-                                                            <input id="searchClientSort" type="search" placeholder="Sort"
-                                                                title="Client Category" className="full_width searchbox_height"
-                                                                onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up">< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "20%" }}>
-                                                        <div style={{ width: "19%" }} className="smart-relative">
-                                                            <input id="searchClietroll" type="search" placeholder="Search Roles"
-                                                                title="Client Category" className="full_width searchbox_height"
-                                                                onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up" >< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "10%" }}>
-                                                        <div style={{ width: "9%" }} className="smart-relative">
-                                                            <input id="searchClientCategory" type="search" placeholder="Company"
-                                                                title="Client Category" className="full_width searchbox_height"
-                                                                onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up">< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "20%" }}>
-                                                        <div style={{ width: "19%" }} className="smart-relative">
-                                                            <input id="searchClientCategory" type="search" placeholder="Approver"
-                                                                title="Client Category" className="full_width searchbox_height"
-                                                                onChange={handleChange} />
-                                                            <span className="sorticon">
-                                                                <span className="up">< FaAngleUp /></span>
-                                                                <span className="down">< FaAngleDown /></span>
-                                                            </span>
-
-                                                        </div>
-                                                    </th>
-                                                    <th style={{ width: "2%" }}></th>
-                                                    <th style={{ width: "2%" }}></th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {taskUser.map(function (item: any, items: any) {
-                                                    if (search == "" || item.Title.toLowerCase().includes(search.toLowerCase())) {
-                                                        return (
-                                                            <>
-                                                                <tr >
-                                                                    <td className="pad0" colSpan={9}>
-                                                                        <table className="table" style={{ width: "100%" }}>
-                                                                            <tr className="bold">
-
-                                                                                <td style={{ width: "3%" }}>
-                                                                                    {item.Item_x0020_Cover == undefined &&
-                                                                                        <div className="text-center title2_taskuser contact ng-binding"
-                                                                                            title={item.Title}
-                                                                                            ui-draggable="true"
-                                                                                            on-drop-success="dropSuccessHandler($event, $index, group.childs">
-                                                                                            {item.Suffix}
-                                                                                        </div>
-                                                                                    }
-                                                                                    {item.Item_x0020_Cover != undefined &&
-                                                                                        <img style={{ width: "28px" }}
-                                                                                            title={item.Title} src={item.Item_x0020_Cover} />
-                                                                                    }</td>
-
-                                                                                <td style={{ width: "16%" }}>
-                                                                                    <span className="hreflink">{item.Title}</span>
-                                                                                    {item.Suffix != undefined &&
-                                                                                        <span>({item.Suffix})</span>
-                                                                                    }
-                                                                                </td>
-
-                                                                                <td style={{ width: "11%" }}>{item.usertitle}</td>
-                                                                                <td style={{ width: "9%" }}>{item.TimeCategory} </td>
-
-                                                                                <td style={{ width: "7%" }}>{item.SortOrder}</td>
-
-                                                                                <td style={{ width: "20%" }}>{item.Userrole}</td>
-                                                                                <td style={{ width: "10%" }}>{item.Company}</td>
-                                                                                <td style={{ width: "20%" }}>{item.UserManagerName}</td>
-                                                                                <td style={{ width: "2%" }}><a onClick={(e) => EditData(e, item.Id)}><FaEdit /></a></td>
-                                                                                <td style={{ width: "2%" }}><a><FiDelete /></a></td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </td>
-
-
-                                                                </tr>
-
-                                                            </>
-
-
-                                                        )
-
-                                                    }
-                                                })}
-
-
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* </div> */}
+                            {
+                                <GlobalCommanTable columns={Columns} data={taskUser} callBackData={callBackData} excelDatas={excelData} />
+                            }
                         </Tab>
                         <Tab title='TaskGroup'>
-                            {/* <div id="TaskGroup" className="tab-pane fade"> */}
+
                             <div className="tbl-headings">
                                 <span className="leftsec">
                                     <label>
@@ -920,8 +886,6 @@ function Task(): JSX.Element {
                                         <table className="table table-hover" id="EmpTable" style={{ width: "100%" }}>
                                             <thead>
                                                 <tr>
-
-
                                                     {/* <th style={{ width: "2%" }}></th> */}
                                                     <th style={{ width: "45%" }}>
                                                         <div style={{ width: "40%" }} className="smart-relative">
@@ -932,11 +896,6 @@ function Task(): JSX.Element {
                                                             </span>
                                                         </div>
                                                     </th>
-
-
-
-
-
                                                     <th style={{ width: "48%" }}>
                                                         <div style={{ width: "40%" }} className="smart-relative">
                                                             <input id="searchClientCategory" type="search" placeholder="Sort Order"
@@ -972,20 +931,11 @@ function Task(): JSX.Element {
                                                                             </tr>
                                                                         </table>
                                                                     </td>
-
-
                                                                 </tr>
-
                                                             </>
-
-
                                                         )
-
                                                     }
                                                 })}
-
-
-
                                             </tbody>
                                         </table>
                                     </div>
