@@ -50,6 +50,7 @@ var taskUsers: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
+var timesheetData:any = []
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any = '';
@@ -57,7 +58,15 @@ var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
 var FeedBackBackupArray: any = [];
+var SiteId = ''
 var ChangeTaskUserStatus: any = true;
+var TimeSheetlistId = ''
+let siteConfig: any = [];
+let siteConfigs: any = [];
+var TimeSheets: any = []
+var MigrationListId = ''
+var siteUrl = ''
+var listName = ''
 let ApprovalStatusGlobal: any = false;
 let SiteCompositionPrecentageValue: any = 0;
 var TaskApproverBackupArray: any = [];
@@ -1383,7 +1392,7 @@ const EditTaskPopup = (Items: any) => {
         MetaData = await web.lists
             .getById(AllListIdData.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Configurations,EncodedAbsUrl,IsVisible,Created,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title")
             .top(4999)
             .expand('Author,Editor')
             .get()
@@ -2947,7 +2956,7 @@ const EditTaskPopup = (Items: any) => {
     }
 
     const copyAndMoveTaskFunction = async (FunctionsType: number) => {
-        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images and Timesheet functionality still not moving we are working on it. Click OK if you still would like to proceed without Images and Timesheets`)
+        let CopyAndMoveTaskStatus = confirm(`Uploaded Task Images still not moving we are working on it. Click OK if you still would like to proceed without Images`)
         if (CopyAndMoveTaskStatus) {
             copyAndMoveTaskFunctionOnBackendSide(FunctionsType);
         } else {
@@ -2969,12 +2978,13 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
-                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(() => {
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res) => {
                     if (FunctionsType == "Copy-Task") {
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        deleteItemFunction(Items.Items.Id);
+                        await moveTimeSheet(SelectedSite,res.data)
+                       
                     }
                 })
             }
@@ -2984,6 +2994,53 @@ const EditTaskPopup = (Items: any) => {
         closeCopyAndMovePopup();
         Items.Call();
     }
+
+    const moveTimeSheet=async(SelectedSite:any ,newItem:any)=>{
+        var TimesheetConfiguration:any=[]
+         var folderUri=''
+         
+         let web = new Web(siteUrls);
+        await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
+         then(async (res)=>{
+             SiteId = res[0].Id
+             siteConfig.forEach((itemss: any) => {
+                 if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
+                     TimesheetConfiguration = JSON.parse(itemss.Configurations)
+     
+                 }
+             })
+         })
+         TimesheetConfiguration?.forEach((val: any) => {    
+             TimeSheetlistId = val.TimesheetListId;
+             siteUrl = val.siteUrl
+             listName = val.TimesheetListName
+         
+     })
+     var count = 0;
+     timesheetData?.forEach(async (val:any)=>{
+         var siteType:any = "Task" + SelectedSite +"Id"
+         var SiteId = "Task" + Items.Items.siteType;
+        // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
+        var Data =  await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
+ 
+             [siteType] : newItem.Id,
+ 
+         }).then((res)=>{
+            count++ 
+
+            if(count == timesheetData.length){
+                deleteItemFunction(Items.Items.Id);
+            }
+         })
+       
+
+        
+       })
+      
+     var UpdatedData: any = {}
+  
+ 
+     }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
