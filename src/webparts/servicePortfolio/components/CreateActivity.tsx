@@ -1157,38 +1157,28 @@ const CreateActivity = (props: any) => {
             setTaskResponsibleTeam([])
         }
     }
-    const SelectPriority = (priority: any, e: any) => {
-        if (priority == '(1) High') {
-            setselectPriority('8')
-        }
-        if (priority == '(2) Normal') {
-            setselectPriority("4")
-        }
-        if (priority == '(3) Low') {
-            setselectPriority("1")
-        }
-    }
+   
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
         var finalDate = Moment(date).format("YYYY-MM-DD")
         setDate(finalDate);
 
     };
-    const Priority = (e: any) => {
-        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
+    // const Priority = (e: any) => {
+    //     if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
 
-    }
+    // }
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
@@ -1229,6 +1219,7 @@ const CreateActivity = (props: any) => {
     };
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
+
     const autoSuggestionsForCategory = (e: any) => {
         let searchedKey: any = e.target.value;
         setCategorySearchKey(e.target.value);
@@ -1447,31 +1438,7 @@ const CreateActivity = (props: any) => {
 const deleteLinkedComponentData=()=>{
     setLinkedComponentData([]);
 }
-    // ################ this is for Smart category change and remove function #############
-
-    //   const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
-    //     let tempString: any;
-
-    //     let tempArray2: any = [];
-    //     tempShareWebTypeData = [];
-    //     ShareWebTypeData?.map((dataType: any) => {
-    //         if (dataType.Id != TypeId) {
-    //             tempArray2.push(dataType)
-    //             tempShareWebTypeData.push(dataType);
-    //         }
-    //     })
-
-    //     if (usedFor == "For-Panel") {
-    //         setShareWebTypeData(selectCategoryData);
-    //         tempShareWebTypeData = selectCategoryData;
-    //     }
-    //     if (usedFor == "For-Auto-Search") {
-    //         setShareWebTypeData(tempShareWebTypeData);
-    //         setSearchedCategoryData([])
-    //         setCategorySearchKey("");
-    //     }
-    // }
-
+    
 
     return (
         <>
@@ -1641,23 +1608,26 @@ const deleteLinkedComponentData=()=>{
                                     </div>
                                 }
                                 {AllItems?.Portfolio_x0020_Type == 'Service' &&
-                                    <div className="input-group">
+                                    <div className="col-sm-12  inner-tabb">
 
                                         {
                                             linkedComponentData?.length > 0 ? <div>
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
-                                                        <>
-                                                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                                <div>
+                                                        
+                                                            <div className="block d-flex justify-content-between mb-1">
+                                                               
                                                                     <a className="hreflink " target="_blank" style={{ color: "#ffffff !important" }} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
+                                                                    <a  className='text-end'>
                                                                     <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteLinkedComponentData()}> </span>
+                                                                    </a>
+                                                                   
                                                                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
-                                                                </div>
+                                                                
                                                             </div>
-                                                        </>
+                                                     
                                                     )
                                                 })}
                                             </div> : null
@@ -1694,31 +1664,7 @@ const deleteLinkedComponentData=()=>{
 
 
                                 <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                    {/* <fieldset>
-                                        <label>Priority</label>
-                                        <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                        <div className="mt-2">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)}
-                                                />High
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)}
-                                                />Normal
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                            </label>
-                                        </div>
-                                    </fieldset> */}
+                                   
                                     <div>
                                         <div className="input-group">
                                             <input type="text" className="form-control"
@@ -1788,7 +1734,7 @@ const deleteLinkedComponentData=()=>{
                                         </ul>
                                     </div>) : null}
 
-                                <div className="row">
+                                {/* <div className="row">
                                     <div className="col-sm-12 mt-2">
                                         {CheckCategory?.map((item: any) => {
                                             return (
@@ -1805,6 +1751,53 @@ const deleteLinkedComponentData=()=>{
                                     </div>
 
 
+                                </div> */}
+                                 <div className="col">
+                                    <div className="col">
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                name="Phone"
+                                                type="checkbox" checked={PhoneStatus}
+                                                value={`${PhoneStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                            />
+                                            <label className="form-check-label">Phone</label>
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={EmailStatus}
+                                                value={`${EmailStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+                                            />
+                                            <label>Email Notification</label>
+
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={ImmediateStatus}
+                                                value={`${ImmediateStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                            <label>Immediate</label>
+                                        </div>
+
+                                    </div>
+                                    <div className="form-check ">
+                                        <label className="full-width">Approval</label>
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input rounded-0"
+                                            name="Approval"
+                                            checked={ApprovalStatus}
+                                            value={`${ApprovalStatus}`}
+                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
+
+                                        />
+                                    </div>
                                 </div>
                                 {CategoriesData != undefined ?
                                     <div>
@@ -1898,7 +1891,7 @@ const deleteLinkedComponentData=()=>{
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 &&AllItems?.Component.length == 0)) &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1906,7 +1899,7 @@ const deleteLinkedComponentData=()=>{
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0&&AllItems?.Services.length == 0)) &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}

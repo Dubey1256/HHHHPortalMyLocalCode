@@ -32,6 +32,7 @@ import {
 import { Icon, Link, PrimaryButton } from '@fluentui/react';
 
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 
 interface ITaskGroup {
   Title: string;
@@ -95,6 +96,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
 
   const [data, setData] = React.useState<ITaskGroup[]>(() => props.TaskUsers);
   const refreshData = () => setData(props.TaskUsers);
+  const [excelData, setExcelData] :any= React.useState([]);
   React.useEffect(()=>refreshData(), [props.TaskUsers]);
 
   const columns = React.useMemo<ColumnDef<ITaskGroup, any>[]>(
@@ -125,6 +127,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
     ],
     [data]
   )
+
+  const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+       
+  }, []);
   
   const table = useReactTable({
     data,
@@ -152,6 +158,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
   })
 
   React.useEffect(() => {
+   
     if (table.getState().columnFilters[0]?.id === 'Title') {
       if (table.getState().sorting[0]?.id !== 'Title') {
         table.setSorting([{ id: 'Title', desc: false }])
@@ -177,7 +184,10 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
         <span className='leftsec'></span>
         <span className='toolbox'><PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} /></span>
       </div>
-      <div className="Alltable mt-10">
+
+      { <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} excelDatas={data} showHeader={true} />
+                            }
+      {/* <div className="Alltable mt-10">
         <div className="col-sm-12 p-0 smart">
           <div className="wrapper">
           <BTable striped bordered hover responsive size="lg">
@@ -249,7 +259,7 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
       </BTable>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="h-2" />
       {data.length>10 && <div className="flex items-center gap-2">
