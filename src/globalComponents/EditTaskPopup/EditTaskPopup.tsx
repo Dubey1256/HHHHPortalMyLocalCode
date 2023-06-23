@@ -57,6 +57,7 @@ var tempCategoryData: any = '';
 var SiteTypeBackupArray: any = [];
 var currentUserBackupArray: any = [];
 let AutoCompleteItemsArray: any = [];
+let SelectedSite: any = ''
 var FeedBackBackupArray: any = [];
 var SiteId = ''
 var ChangeTaskUserStatus: any = true;
@@ -65,6 +66,7 @@ let siteConfig: any = [];
 let siteConfigs: any = [];
 var TimeSheets: any = []
 var MigrationListId = ''
+var newGeneratedId: any = ''
 var siteUrl = ''
 var listName = ''
 let ApprovalStatusGlobal: any = false;
@@ -78,7 +80,7 @@ var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
-
+var timesheetData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -167,6 +169,7 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
+    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
 
 
     const StatusArray = [
@@ -1877,18 +1880,20 @@ const EditTaskPopup = (Items: any) => {
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
-        if (SiteCompositionPrecentageValue > 100) {
-            TaskShuoldBeUpdate = false;
-            SiteCompositionPrecentageValue = 0
-            alert("site composition allocation should not be more than 100%");
-        }
-        if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
-            SiteCompositionPrecentageValue = 0
-            let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
-            if (conformationSTatus) {
-                TaskShuoldBeUpdate = true;
-            } else {
+        if(EnableSiteCompositionValidation){
+            if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
+                SiteCompositionPrecentageValue = 0
+                alert("site composition allocation should not be more than 100%");
+            }
+            if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
+                SiteCompositionPrecentageValue = 0
+                let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+                if (conformationSTatus) {
+                    TaskShuoldBeUpdate = true;
+                } else {
+                    TaskShuoldBeUpdate = false;
+                }
             }
         }
         if (TaskShuoldBeUpdate) {
@@ -2368,14 +2373,17 @@ const EditTaskPopup = (Items: any) => {
         }
     }
     const deleteItemFunction = async (itemId: any) => {
+        var site = SelectedSite.replace(/^"|"$/g, '');
         try {
             if (Items.Items.listId != undefined) {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listId).items.getById(itemId).recycle();
+
             } else {
                 let web = new Web(siteUrls);
                 await web.lists.getById(Items.Items.listName).items.getById(itemId).recycle();
             }
+
             if (Items?.pageName == "TaskFooterTable") {
                 var ItmesDelete: any = {
                     data: {
@@ -2388,10 +2396,16 @@ const EditTaskPopup = (Items: any) => {
             else {
                 Items.Call();
             }
+            if (newGeneratedId != "" && newGeneratedId != undefined) {
+                let Url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${site}`
+                window.location.href = Url;
+                Items.Call();
+            }
             console.log("Your post has been deleted successfully");
         } catch (error) {
             console.log("Error:", error.message);
         }
+
     }
 
     // ************* this is for FeedBack Comment Section Functions ************
@@ -2886,7 +2900,7 @@ const EditTaskPopup = (Items: any) => {
 
 
     const copyAndMoveTaskFunctionOnBackendSide = async (FunctionsType: any) => {
-        let SelectedSite: any = ''
+
         let TaskDataJSON: any = await MakeUpdateDataJSON();;
         if (SiteTypes != undefined && SiteTypes.length > 0) {
             SiteTypes.map((dataItem: any) => {
@@ -2898,13 +2912,20 @@ const EditTaskPopup = (Items: any) => {
         try {
             if (SelectedSite.length > 0) {
                 let web = new Web(siteUrls);
-                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res) => {
+                await web.lists.getByTitle(SelectedSite).items.add(TaskDataJSON).then(async (res: any) => {
+                    newGeneratedId = res.data.Id;
                     if (FunctionsType == "Copy-Task") {
+                        newGeneratedId = res.data.Id;
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
+                        let url = `${siteUrls}/SitePages/Task-Profile.aspx?taskId=${newGeneratedId}&Site=${SelectedSite}`
+                        window.open(url);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        await moveTimeSheet(SelectedSite, res.data)
-
+                        if(timesheetData != undefined && timesheetData.length > 0){
+                            await moveTimeSheet(SelectedSite, res.data);
+                        }else{
+                            deleteItemFunction(Items.Items.Id);
+                        }
                     }
                 })
             }
@@ -2912,13 +2933,13 @@ const EditTaskPopup = (Items: any) => {
             console.log("Copy-Task Error :", error);
         }
         closeCopyAndMovePopup();
-        Items.Call();
+        // Items.Call();
     }
 
     const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
+        newGeneratedId = newItem.Id;
         var TimesheetConfiguration: any = []
         var folderUri = ''
-
         let web = new Web(siteUrls);
         await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
             then(async (res) => {
@@ -2926,41 +2947,29 @@ const EditTaskPopup = (Items: any) => {
                 siteConfig.forEach((itemss: any) => {
                     if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
                         TimesheetConfiguration = JSON.parse(itemss.Configurations)
-
                     }
                 })
             })
-        TimesheetConfiguration?.forEach((val: any) => {
-            TimeSheetlistId = val.TimesheetListId;
-            siteUrl = val.siteUrl
-            listName = val.TimesheetListName
-
-        })
-        var count = 0;
-        timesheetData?.forEach(async (val: any) => {
-            var siteType: any = "Task" + SelectedSite + "Id"
-            var SiteId = "Task" + Items.Items.siteType;
-            // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
-            var Data = await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
-
-                [siteType]: newItem.Id,
-
-            }).then((res) => {
-                count++
-
-            if(count == timesheetData.length){
-                deleteItemFunction(Items.Items.Id);
-            }
-         })
-       
-
-        
-       })
-      
-     var UpdatedData: any = {}
-  
- 
-     }
+            TimesheetConfiguration?.forEach((val: any) => {
+                TimeSheetlistId = val.TimesheetListId;
+                siteUrl = val.siteUrl
+                listName = val.TimesheetListName
+            })
+            var count = 0;
+            timesheetData?.forEach(async (val: any) => {
+                var siteType: any = "Task" + SelectedSite + "Id"
+                var SiteId = "Task" + Items.Items.siteType;
+                var Data = await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
+                    [siteType]: newItem.Id,
+                }).then((res) => {
+                    count++
+                    if (count == timesheetData.length) {
+                        deleteItemFunction(Items.Items.Id);
+                    }
+                })
+            })
+        var UpdatedData: any = {}
+    }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -3216,6 +3225,7 @@ const EditTaskPopup = (Items: any) => {
 
     const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
         if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
+            setEnableSiteCompositionValidation(true)
             let tempArray: any = [];
             Data.ClientTime?.map((ClientTimeItems: any) => {
                 if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
