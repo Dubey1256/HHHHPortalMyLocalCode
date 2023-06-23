@@ -641,10 +641,10 @@ const SiteCompositionComponent = (Props: any) => {
                 <input
                     type="radio"
                     id="Proportional"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
+                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
                     onChange={() => ChangeSiteCompositionSettings("Proportional")}
                     name="SiteCompositions"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0].Proportional : false}
+                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
                     title="add Proportional Time"
                     className="me-1"
                 />
@@ -653,10 +653,10 @@ const SiteCompositionComponent = (Props: any) => {
                     type="radio"
                     id="Manual"
                     name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
+                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                     title="add manual Time"
                     className="mx-1"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0].Manual : false}
+                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                     onChange={() => ChangeSiteCompositionSettings("Manual")}
                 />
                 <label>Manual</label>
@@ -664,9 +664,9 @@ const SiteCompositionComponent = (Props: any) => {
                     type="radio"
                     id="Portfolio"
                     name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].Portfolio : false}
+                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
                     title="Portfolio"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0].Portfolio : false}
+                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
                     onChange={() => ChangeSiteCompositionSettings("Portfolio")}
                     className="mx-1" />
                 <label>
@@ -677,7 +677,7 @@ const SiteCompositionComponent = (Props: any) => {
                     <input
                         type="checkbox"
                         className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
-                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0].localSiteComposition : false}
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
                     <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
@@ -691,7 +691,7 @@ const SiteCompositionComponent = (Props: any) => {
                         <tbody>
                             {SiteTypes?.map((siteData: any, index: any) => {
                                 if (siteData.Title !== "Health" && siteData.Title !== "Offshore Tasks" && siteData.Title !== "Gender" && siteData.Title !== "Small Projects") {
-                                    if (siteData.ClienTimeDescription != undefined || siteData.ClienTimeDescription != null) {
+                                    if (siteData?.ClienTimeDescription != undefined || siteData?.ClienTimeDescription != null) {
                                         let num: any = Number(siteData.ClienTimeDescription).toFixed(0);
                                         TotalPercent = TotalPercent + Number(num);
                                     }
