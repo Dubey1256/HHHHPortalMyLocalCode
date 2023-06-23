@@ -422,6 +422,13 @@ const CreateActivity = (props: any) => {
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }
+        if (type == "Service") {
+           
+       
+            setSmartComponentData(item1);
+            console.log("Popup component taskfootertable", item1)
+        }
+
 
         if (CategoriesData != undefined) {
             CategoriesData?.forEach(function (type: any) {
@@ -1904,7 +1911,7 @@ const deleteLinkedComponentData=()=>{
                     Dynamic={dynamicList}
                     Call={Call}
                     ComponentType={"Component"}
-  
+
                 />
             }
             {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
