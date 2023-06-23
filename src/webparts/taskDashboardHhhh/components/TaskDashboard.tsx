@@ -919,10 +919,9 @@ const TaskDashboard = (props: any) => {
                 accessor: "Priority_x0020_Rank",
                 style: { width: '100px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => (
-                    <span>
+                Cell: ({ row }: any) => ( 
                         <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
-                    </span>
+         
                 ),
             },
 
@@ -960,9 +959,9 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
-                    <span>
+                  
                         <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
-                    </span>
+                
                 ),
             },
             {
@@ -971,9 +970,9 @@ const TaskDashboard = (props: any) => {
                 style: { width: '150px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span>
+                
                         <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
-                    </span>
+             
                 ),
             },
             {
