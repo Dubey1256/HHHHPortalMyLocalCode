@@ -421,7 +421,7 @@ const ProjectManagementMain = (props: any) => {
 
   const untagTask = async (item: any) => {
     let confirmation = confirm(
-      "Are you sure you want to untag " + item.Project.Id + " to this project ?"
+      "Are you sure you want to untag " + `${item?.Shareweb_x0020_ID} - ${item?.Title}` + " from this project ?"
     );
     if (confirmation == true) {
       const web = new Web(item?.siteUrl);

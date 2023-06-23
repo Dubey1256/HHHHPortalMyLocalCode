@@ -1,18 +1,9 @@
 import * as React from 'react';
 import {
-    Column,
-    Table,
-    ExpandedState,
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getExpandedRowModel,
-    ColumnDef,
-    flexRender,
-    getSortedRowModel,
-    SortingState,
-    FilterFn,
-} from "@tanstack/react-table";
+    Column, Table,
+    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
+    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
+  } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -143,11 +134,13 @@ const GlobalCommanTable = (items: any) => {
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+        []
+      );
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
     const table = useReactTable({
         data,
         columns,
@@ -155,11 +148,13 @@ const GlobalCommanTable = (items: any) => {
             fuzzy: fuzzyFilter
         },
         state: {
+            columnFilters,
             globalFilter,
             expanded,
             sorting,
             rowSelection,
-        },
+          },
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
@@ -272,15 +267,15 @@ const GlobalCommanTable = (items: any) => {
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
-                <span className="toolbox">
-                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                <span className="toolbox mx-auto">
+                    {table?.getSelectedRowModel()?.flatRows?.length>0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
-                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span> : <span><a title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" onClick={()=>{setGlobalFilter('');setColumnFilters([]);}} aria-hidden="true"  title="Clear All"></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
