@@ -1713,7 +1713,7 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                           <dl>
                             <dt className="bg-fxdark">Component Portfolio</dt>
                             <dd className="bg-light">
-                              <div className="block">
+                            <div style={{backgroundColor: "#292984",boxSizing: "border-box"}}>
                                 <a
                                   className="service"
                                   style={{ border: "0px" }}
