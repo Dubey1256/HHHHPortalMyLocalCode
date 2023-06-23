@@ -80,7 +80,7 @@ var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
-
+var timesheetData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -169,6 +169,7 @@ const EditTaskPopup = (Items: any) => {
     const [SearchedServiceCompnentKey, setSearchedServiceCompnentKey] = React.useState<any>('');
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
+    const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
 
 
     const StatusArray = [
@@ -1879,18 +1880,20 @@ const EditTaskPopup = (Items: any) => {
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
-        if (SiteCompositionPrecentageValue > 100) {
-            TaskShuoldBeUpdate = false;
-            SiteCompositionPrecentageValue = 0
-            alert("site composition allocation should not be more than 100%");
-        }
-        if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
-            SiteCompositionPrecentageValue = 0
-            let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
-            if (conformationSTatus) {
-                TaskShuoldBeUpdate = true;
-            } else {
+        if(EnableSiteCompositionValidation){
+            if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
+                SiteCompositionPrecentageValue = 0
+                alert("site composition allocation should not be more than 100%");
+            }
+            if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
+                SiteCompositionPrecentageValue = 0
+                let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+                if (conformationSTatus) {
+                    TaskShuoldBeUpdate = true;
+                } else {
+                    TaskShuoldBeUpdate = false;
+                }
             }
         }
         if (TaskShuoldBeUpdate) {
@@ -3221,6 +3224,7 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+        setEnableSiteCompositionValidation(true)
         if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
             let tempArray: any = [];
             Data.ClientTime?.map((ClientTimeItems: any) => {
