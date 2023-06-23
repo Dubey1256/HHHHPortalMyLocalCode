@@ -908,7 +908,8 @@ function CreateTaskComponent(props: any) {
                         taskCreated = true;
                         createdTask.Id = data?.data?.Id
                         createdTask.siteType = save.siteType
-                        createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url
+                        data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
+                        createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
                             props?.callBack
