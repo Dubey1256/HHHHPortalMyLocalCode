@@ -23,7 +23,7 @@ var ResponsibleTeamIds: any = [];
 var dynamicList: any = {}
 var TeamMemberIds: any = [];
 
-//var checkedWS:boolean=true;
+//var checkedWS:boolean=true; 
 const CreateWS = (props: any) => {
     if (props.SelectedProp != undefined && props.SelectedProp.SelectedProp != undefined) {
         dynamicList = props.SelectedProp.SelectedProp;

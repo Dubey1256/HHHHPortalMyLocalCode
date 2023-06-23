@@ -3,7 +3,7 @@ import {
     Column, Table,
     ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
     ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
-  } from "@tanstack/react-table";
+} from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { HTMLProps } from 'react';
@@ -125,6 +125,7 @@ export function IndeterminateCheckbox(
 // ReactTable Part end/////
 
 const GlobalCommanTable = (items: any) => {
+    // let headerOptions:any={};
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
@@ -136,9 +137,13 @@ const GlobalCommanTable = (items: any) => {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
-      );
+    );
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
+    const [headerOptions, setHeaderOptions] = React.useState({
+        openTab: false,
+        teamsIcon: false,
+    });
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const table = useReactTable({
@@ -153,7 +158,7 @@ const GlobalCommanTable = (items: any) => {
             expanded,
             sorting,
             rowSelection,
-          },
+        },
         onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
@@ -182,6 +187,7 @@ const GlobalCommanTable = (items: any) => {
     let FilterShowhideShwingData: any = false;
     let AfterSearch = table?.getRowModel()?.rows;
     React.useEffect(() => {
+        setHeaderOptions((prev) => ({ ...prev, ...items?.headerOptions }));
         if (AfterSearch != undefined && AfterSearch.length > 0) {
             AfterSearch?.map((Comp: any) => {
                 if (Comp.columnFilters.Title == true || Comp.columnFilters.PortfolioStructureID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
@@ -262,20 +268,22 @@ const GlobalCommanTable = (items: any) => {
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between'>
                 <span className='leftsec'>
+                    <span className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
-                <span className="toolbox mx-auto">
-                    {table?.getSelectedRowModel()?.flatRows?.length>0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
-                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                <span className="toolbox">
+                    {headerOptions?.teamsIcon ?
+                        <span>{table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                        </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}</span> : ''}
+                    {headerOptions?.openTab ? <span>{table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+                    </span> : <span><a title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}</span> : ''}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" onClick={()=>{setGlobalFilter('');setColumnFilters([]);}} aria-hidden="true"  title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }} aria-hidden="true" title="Clear All"></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
@@ -348,7 +356,7 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {ShowTeamPopup === true && items?.TaskUsers?.length>0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
 
         </>
     )
