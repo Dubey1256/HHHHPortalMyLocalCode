@@ -180,6 +180,7 @@ let ParentDs: any;
 let countaa = 0;
 let Itemtypes: any;
 let globalFilterHighlited: any;
+let SmartMetaData:any=[];
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -245,7 +246,161 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [RestructureChecked, setRestructureChecked] = React.useState([]);
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
 
+  // SmartTotalTime
 
+
+  const SmartMetaDatas = async () => {
+    var metadatItem: any = [];
+    let smartmetaDetails: any = [];
+    var select: any =
+      "Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,Color_x0020_Tag,SortOrder,Configurations,SmartFilters,Selectable,Parent/Id,Parent/Title&$expand=Parent";
+    smartmetaDetails = await globalCommon.getData(
+      NextProp.siteUrl,
+      NextProp.SmartMetadataListID,
+      select
+    );
+
+
+
+    SmartMetaData= smartmetaDetails;
+
+  }
+
+  React.useEffect(()=>{
+    SmartMetaDatas();
+  },[])
+
+
+
+  const SmartTimeData = async (items: any) => {
+    let FinalTotalTime: any = 0;
+    let AllTimeSpentDetails: any = [];
+    let filteres: string;
+    let TimeSheetlistId:any;
+    let siteUrl:any;
+    let listName:any;
+    
+// Get the list Name
+     let TimesheetConfiguration:any=[];
+     if(SmartMetaData.length>0){
+
+     
+      SmartMetaData.forEach((itemss: any) => {
+
+      if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
+
+          TimesheetConfiguration = JSON.parse(itemss.Configurations)
+
+
+
+
+      }
+
+  })
+
+  TimesheetConfiguration?.forEach((val: any) => {
+
+
+
+
+      TimeSheetlistId = val.TimesheetListId;
+
+      siteUrl = val.siteUrl
+
+      listName = val.TimesheetListName
+  })
+}
+
+
+    if (items.siteType === "Offshore Tasks") {
+      const siteType = "OffshoreTasks";
+      filteres = `Task${siteType}/Id eq ${items.Id}`;
+    } else {
+      filteres = `Task${items.siteType}/Id eq ${items.Id}`;
+    }
+    
+    const select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
+    let count = 0;
+    
+    let allurls: { Url: string }[];
+    
+    if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
+      allurls = [
+        { Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select }
+      ];
+    } else if (items.siteType === "SH") {
+      allurls = [
+        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` }
+      ];
+    }else {
+      allurls = [
+        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
+      ];
+    }
+    
+     
+  
+    for (const item of allurls) {
+      try {
+        const response = await $.ajax({
+          url: item.Url,
+          method: "GET",
+          headers: {
+            "Accept": "application/json; odata=verbose"
+          }
+        });
+  
+        count++;
+        let tempArray: any = [];
+  
+        if (response.d.results !== undefined && response.d.results.length > 0) {
+          AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
+  
+          AllTimeSpentDetails.forEach((item: any) => {
+            if (item.AdditionalTimeEntry !== null) {
+              const data = JSON.parse(item.AdditionalTimeEntry);
+  
+              if (data !== undefined && data.length > 0) {
+                data.forEach((timeData: any) => {
+                  tempArray.push(timeData);
+                });
+              }
+            }
+          });
+        }
+  
+        let TotalTimeData: number = 0;
+  
+        if (tempArray.length > 0) {
+          tempArray.forEach((tempItem: any) => {
+            if (typeof tempItem.TaskTimeInMin === 'string') {
+              const timeValue = Number(tempItem.TaskTimeInMin);
+  
+              if (timeValue > 0) {
+                TotalTimeData += timeValue;
+              }
+            } else {
+              if (tempItem.TaskTimeInMin > 0) {
+                TotalTimeData += tempItem.TaskTimeInMin;
+              }
+            }
+          });
+        }
+  
+        if (TotalTimeData > 0) {
+          FinalTotalTime = TotalTimeData / 60;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  
+    console.log(FinalTotalTime);
+    return FinalTotalTime;
+  };
+  
+  
+  // End of SmartTotalTime
 
 
   // CustomHeader of the Add Structure
@@ -493,6 +648,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 //     ""
                 //   );
                 // }
+                SmartTimeData(result)
+                .then((returnresult) => {
+                  result.smartTime = String(returnresult)
+                  // console.log("Final Total Time:", returnresult);
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
                 result.PercentComplete = (result.PercentComplete * 100).toFixed(
                   0
                 );
@@ -870,7 +1033,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     let componentDetails: any = [];
     let componentDetails1: any = [];
     var select =
-      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Editor/Title,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebTaskType/Title,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=Parent,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
+      "ID,Id,Title,Mileage,TaskListId,TaskListName,PortfolioLevel,SiteCompositionSettings,PortfolioStructureID,PortfolioStructureID,component_x0020_link,Package,Comments,DueDate,Sitestagging,Body,Deliverables,StartDate,Created,Item_x0020_Type,Help_x0020_Information,Background,Categories,Short_x0020_Description_x0020_On,CategoryItem,Priority_x0020_Rank,Priority,TaskDueDate,PercentComplete,Modified,CompletedDate,ItemRank,Portfolio_x0020_Type,Services/Title, ClientTime,Services/Id,Events/Id,Events/Title,Parent/Id,Parent/Title,Component/Id,Component/Title,Component/ItemType,Services/Id,Services/Title,Services/ItemType,Events/Id,Author/Title,Author/Id,Editor/Title,Events/Title,Events/ItemType,SharewebCategories/Id,SharewebTaskType/Title,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,ClientCategory/Id,ClientCategory/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title&$expand=Parent,Events,Services,SharewebTaskType,AssignedTo,Component,ClientCategory,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories&$filter=" +
       filt +
       "";
 
@@ -3258,7 +3421,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   console.log(siteConfig);
 
   const findUserByName = (name: any) => {
-    const user = AllUsers.filter((user: any) => user.Title == name);
+    const user = AllUsers.filter((user: any) => user.AssingedToUserId === name);
     let Image: any;
     if (user[0]?.Item_x0020_Cover != undefined) {
       Image = user[0].Item_x0020_Cover.Url;
@@ -3440,7 +3603,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 {row?.original?.Author != undefined ? (
                   <>
                     <span>{Moment(row?.original?.Created).format("DD/MM/YYYY")} </span>
-                    <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Title)}
+                    <img className="workmember" title={row?.original?.Author?.Title} src={findUserByName(row?.original?.Author?.Id)}
                     />
 
                   </>
@@ -3460,6 +3623,24 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         placeholder: "Created Date",
         header: "",
         size: 9,
+      },
+      {
+        accessorFn: (row) => row?.smartTime,
+        cell: ({ row }) => (
+          <>
+            {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
+              
+              <>
+              <span>{row?.original?.smartTime}</span>
+              </>
+            
+            )}
+          </>
+        ),
+        id: "smartTime",
+        placeholder: "SmartTime",
+        header: "",
+        size:6,
       },
       {
         cell: ({ row, getValue }) => (
