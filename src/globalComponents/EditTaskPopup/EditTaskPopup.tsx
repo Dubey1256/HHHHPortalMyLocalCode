@@ -3224,8 +3224,8 @@ const EditTaskPopup = (Items: any) => {
     }, [])
 
     const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
-        setEnableSiteCompositionValidation(true)
         if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
+            setEnableSiteCompositionValidation(true)
             let tempArray: any = [];
             Data.ClientTime?.map((ClientTimeItems: any) => {
                 if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.siteIcons?.length > 0 || ClientTimeItems.siteIcons?.Url.length > 0) {
