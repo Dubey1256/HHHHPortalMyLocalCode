@@ -2377,7 +2377,12 @@ const EditTaskPopup = (Items: any) => {
 
     //    ************* This is team configuration call Back function **************
 
-    const getTeamConfigData = React.useCallback((teamConfigData: any) => {
+    const getTeamConfigData = React.useCallback((teamConfigData: any,type:any) => {
+
+        if(type == "Timesheet"){
+            timesheetData = teamConfigData;
+            console.log(timesheetData)
+        }
         if (ChangeTaskUserStatus) {
             if (teamConfigData?.AssignedTo?.length > 0) {
                 let tempArray: any = [];
@@ -3040,7 +3045,7 @@ const EditTaskPopup = (Items: any) => {
      var UpdatedData: any = {}
   
  
-     }
+    }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {

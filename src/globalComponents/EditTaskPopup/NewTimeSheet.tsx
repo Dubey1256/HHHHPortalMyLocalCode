@@ -11,10 +11,10 @@ const NewTameSheetComponent = (props: any) => {
         setTeamConfig(dt)
         console.log(TeamConfig)
         console.log(TeamConfig)
-        props?.TeamConfigDataCallBack(dt);
+        props?.TeamConfigDataCallBack(dt,'Configuration');
     }
     const ComponentCallBack = (dt: any) => {
-        props?.TeamConfigDataCallBack(dt);
+        props?.TeamConfigDataCallBack(dt,'Timesheet');
     }
     // var itemInfo = {
     //     siteURL: TeamConfigInfo?.siteUrl,
