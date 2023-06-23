@@ -2948,13 +2948,19 @@ const EditTaskPopup = (Items: any) => {
             }).then((res) => {
                 count++
 
-                if (count == timesheetData.length) {
-                    deleteItemFunction(Items.Items.Id);
-                }
-            })
-        })
-        var UpdatedData: any = {}
-    }
+            if(count == timesheetData.length){
+                deleteItemFunction(Items.Items.Id);
+            }
+         })
+       
+
+        
+       })
+      
+     var UpdatedData: any = {}
+  
+ 
+     }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
