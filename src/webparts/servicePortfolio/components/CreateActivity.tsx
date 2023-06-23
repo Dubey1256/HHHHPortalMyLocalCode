@@ -1224,8 +1224,12 @@ const CreateActivity = (props: any) => {
             setSearchedCategoryData([]);
         }
     }
+
+
+///======================================auto suggestion =====================
+
     var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
@@ -1257,6 +1261,12 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
+                    TaxonomyItems?.map((items: any) => {
+                        if (items.Title == "Actions") {
+                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+                        }
+                    })
+
                 }
             },
             error: function (error: any) {
@@ -1894,7 +1904,7 @@ const deleteLinkedComponentData=()=>{
                     Dynamic={dynamicList}
                     Call={Call}
                     ComponentType={"Component"}
-
+  
                 />
             }
             {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
