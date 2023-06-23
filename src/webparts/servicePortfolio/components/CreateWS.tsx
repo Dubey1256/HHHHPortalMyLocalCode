@@ -320,6 +320,11 @@ const CreateWS = (props: any) => {
                 CategoryID.push(category.Id)
             }
         })
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+            AllItems.AssignedTo.forEach((obj: any) => {
+                AssignedToIds.push(obj.Id);
+            })
+        }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
@@ -327,12 +332,22 @@ const CreateWS = (props: any) => {
                 })
             }
         }
+        if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+            AllItems.TeamMembers.forEach((obj: any) => {
+                TeamMemberIds.push(obj.Id);
+            })
+        }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
                 })
             }
+        }
+        if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+            AllItems.TeamLeader.forEach((obj: any) => {
+                ResponsibleTeamIds.push(obj.Id);
+            })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
@@ -541,6 +556,11 @@ const CreateWS = (props: any) => {
                     CategoryID.push(category.Id)
                 }
             })
+            if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
+                AllItems.AssignedTo.forEach((obj: any) => {
+                    AssignedToIds.push(obj.Id);
+                })
+            }
             if (isDropItemRes == true) {
                 if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                     TaskAssignedTo.map((taskInfo) => {
@@ -548,12 +568,22 @@ const CreateWS = (props: any) => {
                     })
                 }
             }
+            if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
+                AllItems.TeamMembers.forEach((obj: any) => {
+                    TeamMemberIds.push(obj.Id);
+                })
+            }
             if (isDropItem == true) {
                 if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                     TaskTeamMembers.map((taskInfo) => {
                         TeamMemberIds.push(taskInfo.Id);
                     })
                 }
+            }
+            if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
+                AllItems.TeamLeader.forEach((obj: any) => {
+                    ResponsibleTeamIds.push(obj.Id);
+                })
             }
             if (isDropItem == true) {
                 if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {

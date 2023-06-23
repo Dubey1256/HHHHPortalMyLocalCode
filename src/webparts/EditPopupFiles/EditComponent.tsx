@@ -1940,27 +1940,29 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                             </div>
                           )}
                           {EditData?.Portfolio_x0020_Type == "Component" && (
-                            <div className="input-group">
+                            <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div className="serviepannelgreena">
+                                  
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task  block">
-                                          <div >
+                                        <div className="block d-flex justify-content-between mb-1">
+                                       
                                             <a
-                                              className="hreflink service"
+                                              className="hreflink service ps-2"
                                               target="_blank"
                                               data-interception="off"
                                               href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                             >
                                               {com.Title}
                                             </a>
-                                            <span className="bg-light svg__icon--cross svg__iconbox"onClick={() =>
+                                            <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox"onClick={() =>
                                                    setLinkedComponentData([])
-                                              }></span>
+                                              }></span></a>
+                                          
                                            
-                                          </div>
+                                       
                                         </div>
                                       </>
                                     );
@@ -1974,27 +1976,30 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                             </div>
                           )}
                           {EditData?.Portfolio_x0020_Type == "Service" && (
-                            <div className="input-group">
+                            <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div>
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
-                                        <div className="d-flex Component-container-edit-task  block ">
-                                          <div >
+                                        <div className="block d-flex justify-content-between mb-1">
+                                     
                                             <a
-                                              className="hreflink service "
+                                              className="hreflink service ps-2"
                                               target="_blank"
                                               data-interception="off"
                                               href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
                                             >
                                               {com.Title}
                                             </a>
+                                            <a className='text-end'>
                                             <span className="bg-light svg__icon--cross svg__iconbox"onClick={() =>
                                                   setLinkedComponentData([])
                                               }></span>
+                                            </a>
+                                          
                                            
-                                          </div>
+                                         
                                         </div>
                                       </>
                                     );

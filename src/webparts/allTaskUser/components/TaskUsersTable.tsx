@@ -363,9 +363,9 @@ function TableTaskUsers(props: ITableTaskUsersProps) {
       </div>
       <br />
       <div className="h-2"></div> */}
-      <div className='bg-transparent justify-content-between tbl-headings'>
-        <span className='leftsec'></span>
-        <span className='toolbox'><PrimaryButton  text="Add Team Member" onClick={() => props.AddTask()} /></span>
+      <div className='tbl-button'>
+     
+        <span><PrimaryButton  text="Add Team Member" onClick={() => props.AddTask()} /></span>
       </div>
 
 

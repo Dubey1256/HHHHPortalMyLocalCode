@@ -35,6 +35,10 @@ var allSitesTasks: any = [];
 var AllListId: any = {};
 var currentUserId: '';
 var currentUser: any = [];
+let headerOptions:any={
+    openTab:true,
+    teamsIcon:true
+}
 var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
 export default function ProjectOverview(props: any) {
@@ -1350,9 +1354,9 @@ export default function ProjectOverview(props: any) {
                                         </div>
                                     </div>
                                     <div className="Alltable p-2">
-                                        {selectedView == 'grouped' ? <GlobalCommanTable AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData}  pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable AllListId={AllListId}  columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable AllListId={AllListId}  columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData}  pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
                                     </div>
                                 </>
                                 : ""}
@@ -1360,7 +1364,7 @@ export default function ProjectOverview(props: any) {
                                 {!GroupedDisplayTable ?
 
                                     <div className="Alltable p-2">
-                                        <GlobalCommanTable AllListId={AllListId}  paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser}  showHeader={true}/>
+                                        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser}  showHeader={true}/>
                                     </div> : ''}
                             </div>
                         </div>

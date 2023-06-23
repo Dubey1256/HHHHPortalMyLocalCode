@@ -180,9 +180,9 @@ function TableTaskGroups(props: ITableTaskUsersProps) {
         {/* <div style={{display:"inline",width:"50%"}}>
           <PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} style={{float:"right"}} />
         </div>         */}
-          <div className='bg-transparent justify-content-between tbl-headings'>
-        <span className='leftsec'></span>
-        <span className='toolbox'><PrimaryButton className='mb-2' text="Add Team Group" onClick={()=>props.AddTask()} /></span>
+          <div className='tbl-button'>
+     
+        <span><PrimaryButton  text="Add Team Group" onClick={()=>props.AddTask()} /></span>
       </div>
 
       { <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} excelDatas={data} showHeader={true} />
@@ -383,6 +383,7 @@ function DebouncedInput({
     const timeout = setTimeout(() => {
       onChange(value)
     }, debounce)
+    
 
     return () => clearTimeout(timeout)
   }, [value])

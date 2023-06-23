@@ -321,7 +321,7 @@ const ServiceComponentPortfolioPopup = ({ props, Dynamic, Call, ComponentType, s
                         </div>
                         <div className="col-sm-12 p-0 smart">
                             <div className="wrapper">
-                                <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
+                            <GlobalCommanTable columns={columns} data={data} callBackData={callBackData} />
                             </div>
                         </div>
                     </div>
