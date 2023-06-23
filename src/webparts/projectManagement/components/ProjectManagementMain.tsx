@@ -33,6 +33,10 @@ let smartComponentData: any = [];
 let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
+let headerOptions:any={
+  openTab:true,
+  teamsIcon:true
+}
 var DynamicData: any = {}
 var ChildData: any = []
 var Parent: any = []
@@ -1664,7 +1668,7 @@ const ProjectManagementMain = (props: any) => {
                             ) : (
                               ""
                             )}
-                            <GlobalCommanTable AllListId={AllListId}  columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
+                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
                           </div>
 
                         </div>
