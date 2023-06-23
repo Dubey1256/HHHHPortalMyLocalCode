@@ -265,14 +265,14 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings'>
+            {showHeader === true && <div className='tbl-headings justify-content-between'>
                 <span className='leftsec'>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
-                <span className="toolbox mx-auto">
+                <span className="toolbox">
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
