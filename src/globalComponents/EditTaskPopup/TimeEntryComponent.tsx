@@ -45,7 +45,7 @@ var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
 var change: any = new Date()
-
+var UserName:any=''
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
@@ -118,13 +118,19 @@ function TimeEntryPopup(item: any) {
 
     }
     const getAllTime=async ()=>{
+        $.each(AllUsers, async function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId === CurntUserId) {
+                UserName = taskUser.Title;
+              }
+
+        });
         var newItem:any=[]
         let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .filter(`Title eq '${CurrentUserTitle}'`)
+            .filter(`Title eq '${UserName}'`)
             .getAll();
             AllTimeEntry = taskUsers;
            
@@ -2266,63 +2272,8 @@ if(AllTimeEntry.length == 0 && Available == false){
     var Childs:any=[]
 
    const FlatView=()=>{
-    var newArray:any=[]
-    var newArray2:any=[]
-   var Time:any ={}
-   var Times:any ={}
-   Time['Time'] = ""
-   Times['Times'] = "TimeSheet"
-   Childs.push(Time)
-   Childs.AdditionalTime = []
-   FlatviewData.push(Times)
-   FlatviewData.forEach((itee:any)=>{
-    itee.Childs=[{"AdditionalTime":[]}]
-    
-   })
-  
-   
-    AllTimeSpentDetails?.forEach((val:any)=>{
-    val.AdditionalTime?.forEach((haa:any)=>{
-        newArray.push(haa)
-    })
-    })
-    Childs?.forEach((items:any)=>{
-        FlatviewData?.forEach((vall:any)=>{
-            newArray2 =  newArray.sort(datecomp);
-            items.AdditionalTime=[]
-        })
-    })
-    FlatviewData.forEach((value:any)=>{
-        value.Childs.forEach((newiTem:any)=>{
-            newiTem.Title = 'TimeSheet'
-            newiTem.Category = 'Development' 
-            newArray2.forEach((valll:any)=>{
-                newiTem.AdditionalTime.push(valll)
-            })
-        })
-    })
- // copy.sort((a:any, b:any) => (a.TaskDate > b.TaskDate) ? -1 : 1);
-  
-//   Childs.forEach((val:any)=>{
-//     val.AdditionalTime=[]
-//     copy.forEach((item:any)=>{
-//         val.AdditionalTime.push(item)
-//     })
-//     }) 
-   
-   
-    // FlatviewData.forEach((item:any)=>{
-    //     item.Childs?.forEach((val:any)=>{
-    //         newArray?.forEach((naa:any)=>{
-    //             val.AdditionalTime.push(naa)
-    //         })
-          
-    //     })
-    // })
-  
     setFlatview(!flatview)
-    setTimeSheet(FlatviewData);
-    setTimeSheet(FlatviewData => ([...FlatviewData]));
+
    }
 
     return (
