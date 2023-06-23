@@ -50,7 +50,7 @@ var taskUsers: any = []
 var IsShowFullViewImage = false;
 var CommentBoxData: any = [];
 var SubCommentBoxData: any = [];
-var timesheetData:any = []
+var timesheetData: any = []
 var updateFeedbackArray: any = [];
 var tempShareWebTypeData: any = [];
 var tempCategoryData: any = '';
@@ -78,6 +78,7 @@ var EditDataBackup: any;
 var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
+var timesheetData: any = [];
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -1637,7 +1638,7 @@ const EditTaskPopup = (Items: any) => {
                             setTaskStatus(item.taskStatusComment);
                         }
                     })
-                   
+
                 }
                 if (StatusInput == 93 || StatusInput == 96 || StatusInput == 99) {
                     setWorkingMember(9);
@@ -1686,7 +1687,7 @@ const EditTaskPopup = (Items: any) => {
                 } else {
                     ChangeTaskUserStatus = true;
                 }
-               
+
             } else {
                 setTaskStatus('');
                 setPercentCompleteStatus('');
@@ -1948,10 +1949,10 @@ const EditTaskPopup = (Items: any) => {
                             setSendEmailComponentStatus(false)
                         }
                     }
-                    if(CalculateStatusPercentage == 5 && ImmediateStatus){
+                    if (CalculateStatusPercentage == 5 && ImmediateStatus) {
                         setSendEmailComponentStatus(true);
                         Items.StatusUpdateMail = true;
-                    }else{
+                    } else {
                         setSendEmailComponentStatus(false);
                         Items.StatusUpdateMail = false;
                     }
@@ -1962,7 +1963,7 @@ const EditTaskPopup = (Items: any) => {
                             setSendEmailComponentStatus(true)
                         }
                     }
-                   
+
 
                     if (
                         Items?.pageName == "TaskDashBoard" ||
@@ -2291,52 +2292,57 @@ const EditTaskPopup = (Items: any) => {
 
     //    ************* This is team configuration call Back function **************
 
-    const getTeamConfigData = React.useCallback((teamConfigData: any) => {
-        if (ChangeTaskUserStatus) {
-            if (teamConfigData?.AssignedTo?.length > 0) {
-                let tempArray: any = [];
-                teamConfigData.AssignedTo?.map((arrayData: any) => {
-                    if (arrayData.AssingedToUser != null) {
-                        tempArray.push(arrayData.AssingedToUser)
-                    } else {
-                        tempArray.push(arrayData);
-                    }
-                })
-                setTaskAssignedTo(tempArray);
-                EditData.AssignedTo = tempArray;
-            } else {
-                setTaskAssignedTo([]);
-                EditData.AssignedTo = [];
-            }
-            if (teamConfigData?.TeamMemberUsers?.length > 0) {
-                let tempArray: any = [];
-                teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
-                    if (arrayData.AssingedToUser != null) {
-                        tempArray.push(arrayData.AssingedToUser)
-                    } else {
-                        tempArray.push(arrayData);
-                    }
-                })
-                setTaskTeamMembers(tempArray);
-                EditData.Team_x0020_Members = tempArray;
-            } else {
-                setTaskTeamMembers([]);
-                EditData.Team_x0020_Members = [];
-            }
-            if (teamConfigData?.ResponsibleTeam?.length > 0) {
-                let tempArray: any = [];
-                teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
-                    if (arrayData.AssingedToUser != null) {
-                        tempArray.push(arrayData.AssingedToUser)
-                    } else {
-                        tempArray.push(arrayData);
-                    }
-                })
-                setTaskResponsibleTeam(tempArray);
-                EditData.Responsible_x0020_Team = tempArray;
-            } else {
-                setTaskResponsibleTeam([]);
-                EditData.Responsible_x0020_Team = [];
+    const getTeamConfigData = React.useCallback((teamConfigData: any, Type: any) => {
+        if (Type == "TimeSheet") {
+            timesheetData = teamConfigData;
+            console.log(timesheetData)
+        } else {
+            if (ChangeTaskUserStatus) {
+                if (teamConfigData?.AssignedTo?.length > 0) {
+                    let tempArray: any = [];
+                    teamConfigData.AssignedTo?.map((arrayData: any) => {
+                        if (arrayData.AssingedToUser != null) {
+                            tempArray.push(arrayData.AssingedToUser)
+                        } else {
+                            tempArray.push(arrayData);
+                        }
+                    })
+                    setTaskAssignedTo(tempArray);
+                    EditData.AssignedTo = tempArray;
+                } else {
+                    setTaskAssignedTo([]);
+                    EditData.AssignedTo = [];
+                }
+                if (teamConfigData?.TeamMemberUsers?.length > 0) {
+                    let tempArray: any = [];
+                    teamConfigData.TeamMemberUsers?.map((arrayData: any) => {
+                        if (arrayData.AssingedToUser != null) {
+                            tempArray.push(arrayData.AssingedToUser)
+                        } else {
+                            tempArray.push(arrayData);
+                        }
+                    })
+                    setTaskTeamMembers(tempArray);
+                    EditData.Team_x0020_Members = tempArray;
+                } else {
+                    setTaskTeamMembers([]);
+                    EditData.Team_x0020_Members = [];
+                }
+                if (teamConfigData?.ResponsibleTeam?.length > 0) {
+                    let tempArray: any = [];
+                    teamConfigData.ResponsibleTeam?.map((arrayData: any) => {
+                        if (arrayData.AssingedToUser != null) {
+                            tempArray.push(arrayData.AssingedToUser)
+                        } else {
+                            tempArray.push(arrayData);
+                        }
+                    })
+                    setTaskResponsibleTeam(tempArray);
+                    EditData.Responsible_x0020_Team = tempArray;
+                } else {
+                    setTaskResponsibleTeam([]);
+                    EditData.Responsible_x0020_Team = [];
+                }
             }
         }
     }, [])
@@ -2897,8 +2903,8 @@ const EditTaskPopup = (Items: any) => {
                         console.log(`Task Copied Successfully on ${SelectedSite} !!!!!`);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        await moveTimeSheet(SelectedSite,res.data)
-                       
+                        await moveTimeSheet(SelectedSite, res.data)
+
                     }
                 })
             }
@@ -2909,46 +2915,46 @@ const EditTaskPopup = (Items: any) => {
         Items.Call();
     }
 
-    const moveTimeSheet=async(SelectedSite:any ,newItem:any)=>{
-        var TimesheetConfiguration:any=[]
-         var folderUri=''
-         
-         let web = new Web(siteUrls);
-        await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
-         then(async (res)=>{
-             SiteId = res[0].Id
-             siteConfig.forEach((itemss: any) => {
-                 if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
-                     TimesheetConfiguration = JSON.parse(itemss.Configurations)
-     
-                 }
-             })
-         })
-         TimesheetConfiguration?.forEach((val: any) => {    
-             TimeSheetlistId = val.TimesheetListId;
-             siteUrl = val.siteUrl
-             listName = val.TimesheetListName
-         
-     })
-     var count = 0;
-     timesheetData?.forEach(async (val:any)=>{
-         var siteType:any = "Task" + SelectedSite +"Id"
-         var SiteId = "Task" + Items.Items.siteType;
-        // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
-        var Data =  await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
- 
-             [siteType] : newItem.Id,
- 
-         }).then((res)=>{
-            count++ 
+    const moveTimeSheet = async (SelectedSite: any, newItem: any) => {
+        var TimesheetConfiguration: any = []
+        var folderUri = ''
 
-            if(count == timesheetData.length){
-                deleteItemFunction(Items.Items.Id);
-            }
-         })
-       })
-     var UpdatedData: any = {}
-     }
+        let web = new Web(siteUrls);
+        await web.lists.getByTitle(SelectedSite).items.select("Id,Title").filter(`Id eq ${newItem.Id}`).get().
+            then(async (res) => {
+                SiteId = res[0].Id
+                siteConfig.forEach((itemss: any) => {
+                    if (itemss.Title == SelectedSite && itemss.TaxType == 'Sites') {
+                        TimesheetConfiguration = JSON.parse(itemss.Configurations)
+
+                    }
+                })
+            })
+        TimesheetConfiguration?.forEach((val: any) => {
+            TimeSheetlistId = val.TimesheetListId;
+            siteUrl = val.siteUrl
+            listName = val.TimesheetListName
+
+        })
+        var count = 0;
+        timesheetData?.forEach(async (val: any) => {
+            var siteType: any = "Task" + SelectedSite + "Id"
+            var SiteId = "Task" + Items.Items.siteType;
+            // var SiteId = val + "." + Items.Items.siteType + "." + val.Items.Items.siteType.Id;
+            var Data = await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
+
+                [siteType]: newItem.Id,
+
+            }).then((res) => {
+                count++
+
+                if (count == timesheetData.length) {
+                    deleteItemFunction(Items.Items.Id);
+                }
+            })
+        })
+        var UpdatedData: any = {}
+    }
 
     // ************** this is for Project Management Section Functions ************
     const closeProjectManagementPopup = () => {
@@ -4292,7 +4298,7 @@ const EditTaskPopup = (Items: any) => {
                                             </div>
                                             <div className="col mt-2">
                                                 <div className="input-group">
-                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
+                                                    <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member' : ""}</label>
                                                     {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                         return (
                                                             <div className="TaskUsers" key={index}>
@@ -4409,16 +4415,16 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         {UploadBtnStatus ?
                                                             <div>
-                                                                
+
                                                                 <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                             </div> : null}
                                                         {TaskImages?.length == 0 ? <div>
-                
+
                                                             <FlorarImageUploadComponent callBack={FlorarImageUploadComponentCallBack} />
 
                                                         </div> : null}
-                                                       
+
                                                     </div>
 
                                                 )}
@@ -4450,7 +4456,7 @@ const EditTaskPopup = (Items: any) => {
                                         </>
                                             : null}
                                     </div>
-                                  
+
                                 </div>
                             </div>
                             <div className="tab-pane " id="NEWTIMESHEET" role="tabpanel" aria-labelledby="NEWTIMESHEET">
@@ -5372,7 +5378,7 @@ const EditTaskPopup = (Items: any) => {
                                                         </div>
                                                         <div className="col mt-2">
                                                             <div className="input-group">
-                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member':""}</label>
+                                                                <label className="form-label full-width  mx-2">{EditData.TaskAssignedUsers?.length > 0 ? 'Working Member' : ""}</label>
                                                                 {EditData.TaskAssignedUsers?.map((userDtl: any, index: any) => {
                                                                     return (
                                                                         <div className="TaskUsers" key={index}>
