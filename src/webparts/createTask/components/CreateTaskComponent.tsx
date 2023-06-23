@@ -77,12 +77,7 @@ function CreateTaskComponent(props: any) {
         GetSmartMetadata();
     }, [])
     React.useEffect(() => {
-        try {
-            isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
-            isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : ""
-        } catch (error: any) {
-            console.log(error)
-        }
+       
         AllListId = {
             MasterTaskListID: props?.SelectedProp?.MasterTaskListID,
             TaskUsertListID: props?.SelectedProp?.TaskUsertListID,
@@ -96,7 +91,17 @@ function CreateTaskComponent(props: any) {
             isShowTimeEntry: isShowTimeEntry,
             isShowSiteCompostion: isShowSiteCompostion
         }
-        oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
+        try {
+            isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
+            isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : "";
+            if (AllListId?.siteUrl?.toLowerCase() == 'https://hhhhteams.sharepoint.com/sites/hhhh/sp') {
+                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask.aspx`
+            } else {
+                oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask-old.aspx`
+            }
+        } catch (error: any) {
+            console.log(error)
+        }
         base_Url = AllListId?.siteUrl
         setRefreshPage(!refreshPage);
     }, [relevantTasks])
@@ -154,9 +159,9 @@ function CreateTaskComponent(props: any) {
                     // saveItem.portfolioType = "Service";
                     setSave(prevSave => ({
                         ...prevSave,
-                        linkedServices: DataItem, 
-                        portfolioType : "Service" 
-                      }));
+                        linkedServices: DataItem,
+                        portfolioType: "Service"
+                    }));
                     // setSave({ ...save, linkedServices: DataItem, portfolioType : "Service" });
                     setLinkedComponentData(DataItem);
                     // selectPortfolioType('Service')
@@ -169,9 +174,9 @@ function CreateTaskComponent(props: any) {
                 if (DataItem != undefined && DataItem.length > 0) {
                     setSave(prevSave => ({
                         ...prevSave,
-                        Component: DataItem, 
-                        portfolioType : "Component" 
-                      }));
+                        Component: DataItem,
+                        portfolioType: "Component"
+                    }));
                     // setSave({ ...save, Component: DataItem });
                     setSmartComponentData(DataItem);
                     // selectPortfolioType('Component');
@@ -903,6 +908,7 @@ function CreateTaskComponent(props: any) {
                         taskCreated = true;
                         createdTask.Id = data?.data?.Id
                         createdTask.siteType = save.siteType
+                        createdTask.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url
                         if (props?.projectId != undefined) {
                             EditPopup(data?.data)
                             props?.callBack
@@ -1716,7 +1722,7 @@ function CreateTaskComponent(props: any) {
         setSave(prevSave => ({
             ...prevSave,
             taskName: e.target.value
-          }));
+        }));
 
     }
     //
@@ -1734,7 +1740,7 @@ function CreateTaskComponent(props: any) {
                     </div> : ''}
                     <div className='col-sm-6 ps-0'>
                         <label className='full-width'>Task Name</label>
-                        <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => {  changeTitle(e) }}></input>
+                        <input type="text" placeholder='Enter task Name' className='full-width' value={save.taskName} onChange={(e) => { changeTitle(e) }}></input>
                     </div>
                     <div className='col-sm-2 p-0 mt-4'>
                         <input
