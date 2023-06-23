@@ -30,6 +30,7 @@ var changeEdited = '';
 var CurrentUserTitle = ''
 var Categoryy = '';
 var CategoryyID: any = ''
+var timesheetMoveData:any =[]
 var TaskCate: any = []
 var TimeSheetlistId = ''
 var TimeSheets: any = []
@@ -44,7 +45,7 @@ var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
 var change: any = new Date()
-
+var UserName:any=''
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
@@ -117,13 +118,19 @@ function TimeEntryPopup(item: any) {
 
     }
     const getAllTime=async ()=>{
+        $.each(AllUsers, async function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId === CurntUserId) {
+                UserName = taskUser.Title;
+              }
+
+        });
         var newItem:any=[]
         let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .filter(`Title eq '${CurrentUserTitle}'`)
+            .filter(`Title eq '${UserName}'`)
             .getAll();
             AllTimeEntry = taskUsers;
            
@@ -1051,8 +1058,9 @@ function TimeEntryPopup(item: any) {
         else {
 
             var filteres = "Task" + items.siteType + "/Id eq " + items.Id;
+            var linkedSite = "Task" + items.siteType
         }
-        var select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres + "";
+        var select = `Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle,${linkedSite}&$filter= ${filteres}`;
         var count = 0;
 
         if (items.siteType == "Migration" || items.siteType == "ALAKDigital") {
@@ -1297,7 +1305,7 @@ function TimeEntryPopup(item: any) {
             val.AdditionalTime.push(item)
         })
         }) 
-
+ 
         setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
     }
 
@@ -1651,12 +1659,7 @@ if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
         mainParentId = newdata.data.Id;
         mainParentTitle = newdata.data.Title;
         createItemMainList();
-           
-    
-           
-          
-        }
-       
+    }
            
 
         
@@ -2269,61 +2272,8 @@ if(AllTimeEntry.length == 0 && Available == false){
     var Childs:any=[]
 
    const FlatView=()=>{
-//     var newArray:any=[]
-//    var Time:any ={}
-//    var Times:any ={}
-//    Time['Time'] = ""
-//    Times['Times'] = "TimeSheet"
-//    Childs.push(Time)
-//    Childs.AdditionalTime = []
-//    FlatviewData.push(Times)
-//    FlatviewData.forEach((itee:any)=>{
-//     itee.Childs=[{"Title":"TimeSheet","AdditionalTime":[]}]
-    
-//    })
-  
-   
-//     AllTimeSpentDetails?.forEach((val:any)=>{
-//     val.AdditionalTime?.forEach((haa:any)=>{
-//         Childs.push(haa)
-//     })
-//     })
-//     Childs?.forEach((items:any)=>{
-//         FlatviewData?.forEach((vall:any)=>{
-//             vall.Childs.push(items)
-//             newArray =  items.AdditionalTime.sort(datecomp);
-//             items.AdditionalTime=[]
-//         })
-//     })
-//     FlatviewData.forEach((value:any)=>{
-//         value.Childs.forEach((newiTem:any)=>{
-//             newArray.forEach((valll:any)=>{
-//                 newiTem.AdditionalTime.push(valll)
-//             })
-//         })
-//     })
- // copy.sort((a:any, b:any) => (a.TaskDate > b.TaskDate) ? -1 : 1);
-  
-//   Childs.forEach((val:any)=>{
-//     val.AdditionalTime=[]
-//     copy.forEach((item:any)=>{
-//         val.AdditionalTime.push(item)
-//     })
-//     }) 
-   
-   
-    // FlatviewData.forEach((item:any)=>{
-    //     item.Childs?.forEach((val:any)=>{
-    //         newArray?.forEach((naa:any)=>{
-    //             val.AdditionalTime.push(naa)
-    //         })
-          
-    //     })
-    // })
-  
     setFlatview(!flatview)
-   // setTimeSheet(FlatviewData);
-   // setTimeSheet(FlatviewData => ([...FlatviewData]));
+
    }
 
     return (
