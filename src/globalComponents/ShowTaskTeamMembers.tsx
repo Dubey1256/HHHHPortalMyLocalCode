@@ -147,9 +147,7 @@ function ShowTaskTeamMembers(item: any) {
                   ></img>
                 </a>
               </div>
-            ) : (
-              " "
-            )}
+            ) :''}
             {ItemNew["AllTeamMembers"] != null &&
               ItemNew["AllTeamMembers"].length > 1 ? (
               <div
@@ -192,9 +190,7 @@ function ShowTaskTeamMembers(item: any) {
                   </div>
                 </span>
               </div>
-            ) : (
-              ""
-            )}
+            ) : <span>&nbsp;</span>}
             {/* {item?.ShowTeamsIcon != false ? <div>
               {ItemNew?.allMembersEmail != null ? (
                 <span style={{ marginLeft: '5px' }} >
