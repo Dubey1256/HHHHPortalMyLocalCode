@@ -94,6 +94,9 @@ function CreateTaskComponent(props: any) {
         try {
             isShowTimeEntry = props?.SelectedProp?.TimeEntry != "" ? JSON.parse(props?.SelectedProp?.TimeEntry) : "";
             isShowSiteCompostion = props?.SelectedProp?.SiteCompostion != "" ? JSON.parse(props?.SelectedProp?.SiteCompostion) : "";
+            AllListId.isShowTimeEntry=isShowTimeEntry;
+            AllListId.isShowSiteCompostion=isShowSiteCompostion;
+
             if (AllListId?.siteUrl?.toLowerCase() == 'https://hhhhteams.sharepoint.com/sites/hhhh/sp') {
                 oldTaskIrl = `${AllListId.siteUrl}/SitePages/CreateTask.aspx`
             } else {

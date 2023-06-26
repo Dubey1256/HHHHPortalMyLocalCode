@@ -8,32 +8,28 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'BigCalendarWebPartStrings';
-import BigCalendar from './components/BigCalendars';
-import { IBigCalendarProps } from './components/IBigCalendarProps';
+import * as strings from 'TestWebPartWebPartStrings';
+import TestWebPart from './components/TestWebPart';
+import { ITestWebPartProps } from './components/ITestWebPartProps';
 
-export interface IBigCalendarWebPartProps {
+export interface ITestWebPartWebPartProps {
   description: string;
-  siteUrl:string;
-  SmalsusLeaveCalendar:string
 }
 
-export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalendarWebPartProps> {
+export default class TestWebPartWebPart extends BaseClientSideWebPart<ITestWebPartWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IBigCalendarProps> = React.createElement(
-      BigCalendar,
+    const element: React.ReactElement<ITestWebPartProps> = React.createElement(
+      TestWebPart,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        siteUrl: this.context.pageContext.web.absoluteUrl,
-        SmalsusLeaveCalendar: this.properties.SmalsusLeaveCalendar,
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -51,7 +47,7 @@ export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalend
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then((context:any) => {
+        .then(context => {
           let environmentMessage: string = '';
           switch (context.app.host.name) {
             case 'Office': // running in Office
@@ -113,13 +109,7 @@ export default class BigCalendarWebPart extends BaseClientSideWebPart<IBigCalend
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-
-                }),
-                PropertyPaneTextField('SmalsusLeaveCalendar', {
-                  label: "SmalsusLeaveCalendar"
-
                 })
-
               ]
             }
           ]

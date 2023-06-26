@@ -45,7 +45,7 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
-var AllMetadata:any=[];
+var AllMetadata: any = [];
 var AllListId: any = {}
 var selectedInlineTask: any = {};
 var isShowTimeEntry: any;
@@ -317,32 +317,6 @@ const TaskDashboard = (props: any) => {
                     let [day, month, year] = filledTime?.TaskDate?.split('/')
                     const timeFillDate = new Date(+year, +month - 1, +day)
                     if (filledTime?.AuthorId == currentUserId) {
-                        // if (start == 'Today' || start == 'Yesterday') {
-                        //     if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
-                        //         let data = { ...timeEntry?.taskDetails[0] };
-                        //         if (data == '' || data == undefined)
-                        //             data = {};
-                        //         totalTime += parseFloat(filledTime?.TaskTime);
-                        //         data.TaskTime = filledTime?.TaskTime;
-                        //         data.timeDate = filledTime?.TaskDate;
-                        //         data.Description = filledTime?.Description
-                        //         data.timeFillDate = timeFillDate;
-                        //         weekTimeEntries.push(data);
-                        //     }
-
-                        // } else  if (start == 'Last Month' || start == 'Last Week'){
-                        //     if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
-                        //         let data = { ...timeEntry?.taskDetails[0] };
-                        //         if (data == '' || data == undefined)
-                        //             data = {};
-                        //         totalTime += parseFloat(filledTime?.TaskTime);
-                        //         data.TaskTime = filledTime?.TaskTime;
-                        //         data.timeDate = filledTime?.TaskDate;
-                        //         data.Description = filledTime?.Description
-                        //         data.timeFillDate = timeFillDate;
-                        //         weekTimeEntries.push(data);
-                        //     }
-                        // }else {
                         if (timeFillDate >= startDate && timeFillDate <= endDate && timeEntry?.taskDetails[0] != undefined) {
                             let data = { ...timeEntry?.taskDetails[0] };
                             if (data == '' || data == undefined)
@@ -442,7 +416,7 @@ const TaskDashboard = (props: any) => {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory',"Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
                             .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
@@ -478,10 +452,10 @@ const TaskDashboard = (props: any) => {
                                             ? getComponentasString(task.Component)
                                             : "";
                                     task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
-                                    if(task?.ClientCategory?.length>0){
-                                        task.ClientCategorySearch=task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
-                                    }else{
-                                        task.ClientCategorySearch=''
+                                    if (task?.ClientCategory?.length > 0) {
+                                        task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                                    } else {
+                                        task.ClientCategorySearch = ''
                                     }
                                     task.ApproverIds = [];
                                     task?.Approver?.map((approverUser: any) => {
@@ -906,7 +880,7 @@ const TaskDashboard = (props: any) => {
                 style: { width: '100px' },
                 showSortIcon: true,
                 size: 100,
-                Cell: ( {row}:any ) => (
+                Cell: ({ row }: any) => (
                     <>
                         <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
                     </>
@@ -919,9 +893,9 @@ const TaskDashboard = (props: any) => {
                 accessor: "Priority_x0020_Rank",
                 style: { width: '100px' },
                 showSortIcon: true,
-                Cell: ({ row }: any) => ( 
-                        <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
-         
+                Cell: ({ row }: any) => (
+                    <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+
                 ),
             },
 
@@ -938,19 +912,19 @@ const TaskDashboard = (props: any) => {
                     TaskUsers={taskUsers}
                 />,
             },
-            // {
-            //     internalHeader: "Estimated Time",
-            //     showSortIcon: true,
-            //     accessor: "EstimatedTime",
-            //     style: { width: '80px' },
-            //     Cell: ({ row }: any) => <InlineEditingcolumns
-            //         AllListId={AllListId}
-            //         callBack={inlineCallBack}
-            //         columnName="EstimatedTime"
-            //         item={row?.original}
-            //         TaskUsers={taskUsers}
-            //     />,
-            // },
+            {
+                internalHeader: "Estimated Time",
+                showSortIcon: true,
+                accessor: "EstimatedTime",
+                style: { width: '80px' },
+                Cell: ({ row }: any) => 
+                <InlineEditingcolumns
+                    AllListId={AllListId}
+                    callBack={inlineCallBack}
+                    columnName="EstimatedTime"
+                    item={row?.original}
+                    TaskUsers={taskUsers} />,
+            },
 
             {
                 internalHeader: "% Complete",
@@ -959,9 +933,9 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
-                  
-                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
-                
+
+                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+
                 ),
             },
             {
@@ -970,9 +944,9 @@ const TaskDashboard = (props: any) => {
                 style: { width: '150px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                
-                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
-             
+
+                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+
                 ),
             },
             {
@@ -1564,8 +1538,8 @@ const TaskDashboard = (props: any) => {
                     .top(5000)
                     .expand("Parent")
                     .get();
-                    AllMetadata=smartmeta;
-                    setAllSmartMetadata(AllMetadata)
+                AllMetadata = smartmeta;
+                setAllSmartMetadata(AllMetadata)
                 siteConfig = smartmeta.filter((data: any) => {
                     if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks') {
                         return data;

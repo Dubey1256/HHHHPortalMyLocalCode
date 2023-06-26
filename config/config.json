@@ -58,14 +58,6 @@
         }
       ]
     },
-    "task-dashboard-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/taskDashboard/TaskDashboardWebPart.js",
-          "manifest": "./src/webparts/taskDashboard/TaskDashboardWebPart.manifest.json"
-        }
-      ]
-    },
     "taskprofile-web-part": {
       "components": [
         {
@@ -162,14 +154,6 @@
         }
       ]
     },
-    "material-ui-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/materialUi/MaterialUiWebPart.js",
-          "manifest": "./src/webparts/materialUi/MaterialUiWebPart.manifest.json"
-        }
-      ]
-    },
     "create-task-web-part": {
       "components": [
         {
@@ -234,14 +218,6 @@
         }
       ]
     },
-    "big-calendar-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/bigCalendar/BigCalendarWebPart.js",
-          "manifest": "./src/webparts/bigCalendar/BigCalendarWebPart.manifest.json"
-        }
-      ]
-    },
     "update-top-navigation-web-part": {
       "components": [
         {
@@ -281,6 +257,14 @@
           "manifest": "./src/webparts/teamleaderDashboard/TeamleaderDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "test-web-part-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/testWebPart/TestWebPartWebPart.js",
+          "manifest": "./src/webparts/testWebPart/TestWebPartWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -308,7 +292,6 @@
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
     "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
-    "TaskDashboardWebPartStrings": "lib/webparts/taskDashboard/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
@@ -322,7 +305,6 @@
     "ProjectmanagementOverviewToolWebPartStrings": "lib/webparts/projectmanagementOverviewTool/loc/{locale}.js",
     "CategoriesWeeklyMultipleReportWebPartStrings": "lib/webparts/categoriesWeeklyMultipleReport/loc/{locale}.js",
     "HrContactSearchWebPartStrings": "lib/webparts/hrContactSearch/loc/{locale}.js",
-    "MaterialUiWebPartStrings": "lib/webparts/materialUi/loc/{locale}.js",
     "CreateTaskWebPartStrings": "lib/webparts/createTask/loc/{locale}.js",
     "PermissionManagementWebPartStrings": "lib/webparts/permissionManagement/loc/{locale}.js",
     "AllTaskUserWebPartStrings": "lib/webparts/allTaskUser/loc/{locale}.js",
@@ -333,10 +315,10 @@
     "TasksViewWebPartStrings": "lib/webparts/tasksView/loc/{locale}.js",
     "DataToolWebPartStrings": "lib/webparts/dataTool/loc/{locale}.js",
     "UpdateTopNavigationWebPartStrings": "lib/webparts/updateTopNavigation/loc/{locale}.js",
-    "BigCalendarWebPartStrings": "lib/webparts/bigCalendar/loc/{locale}.js",
     "TaskDashboardHhhhWebPartStrings": "lib/webparts/taskDashboardHhhh/loc/{locale}.js",
     "CreatedByTablesWebPartStrings": "lib/webparts/createdByTables/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
-    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js"
+    "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
+    "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js"
   }
 }
