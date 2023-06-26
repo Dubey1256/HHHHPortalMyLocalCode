@@ -422,6 +422,13 @@ const CreateActivity = (props: any) => {
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }
+        if (type == "Service") {
+           
+       
+            setSmartComponentData(item1);
+            console.log("Popup component taskfootertable", item1)
+        }
+
 
         if (CategoriesData != undefined) {
             CategoriesData?.forEach(function (type: any) {
@@ -856,6 +863,7 @@ const CreateActivity = (props: any) => {
                         res.data.ParentTaskId = AllItems.Id
                         res.data.ClientCategory = []
                         res.data.AssignedTo = []
+                        var MyData = res.data;
                         res.data.Responsible_x0020_Team = []
                         res.data.Team_x0020_Members = []
                         if (res?.data?.Team_x0020_MembersId?.length > 0) {
@@ -935,9 +943,19 @@ const CreateActivity = (props: any) => {
                             if (res.data.listId != undefined) {
                                 let web = new Web(dynamicList?.siteUrl);
                                 let item = web.lists.getById(res.data.listId).items.getById(res.data.Id);
-                                item.attachmentFiles.add(fileName, data);
-                                console.log("Attachment added");
-                                UpdateBasicImageInfoJSON(tempArray, res.data);
+                                item.attachmentFiles.add(fileName, data).then((res)=>{
+
+                                    console.log("Attachment added");
+
+
+
+
+                                    UpdateBasicImageInfoJSON(tempArray, MyData);
+
+
+
+
+                                })
 
                             }
                         }
@@ -1224,8 +1242,12 @@ const CreateActivity = (props: any) => {
             setSearchedCategoryData([]);
         }
     }
+
+
+///======================================auto suggestion =====================
+
     var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
@@ -1257,6 +1279,12 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
+                    TaxonomyItems?.map((items: any) => {
+                        if (items.Title == "Actions") {
+                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+                        }
+                    })
+
                 }
             },
             error: function (error: any) {

@@ -1,4 +1,4 @@
-declare interface IBigCalendarWebPartStrings {
+declare interface ITestWebPartWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -12,7 +12,7 @@ declare interface IBigCalendarWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
-declare module 'BigCalendarWebPartStrings' {
-  const strings: IBigCalendarWebPartStrings;
+declare module 'TestWebPartWebPartStrings' {
+  const strings: ITestWebPartWebPartStrings;
   export = strings;
 }

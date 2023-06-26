@@ -33,6 +33,10 @@ let smartComponentData: any = [];
 let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
+let headerOptions:any={
+  openTab:true,
+  teamsIcon:true
+}
 var DynamicData: any = {}
 var ChildData: any = []
 var Parent: any = []
@@ -421,7 +425,7 @@ const ProjectManagementMain = (props: any) => {
 
   const untagTask = async (item: any) => {
     let confirmation = confirm(
-      "Are you sure you want to untag " + item.Project.Id + " to this project ?"
+      "Are you sure you want to untag " + `${item?.Shareweb_x0020_ID} - ${item?.Title}` + " from this project ?"
     );
     if (confirmation == true) {
       const web = new Web(item?.siteUrl);
@@ -1664,7 +1668,7 @@ const ProjectManagementMain = (props: any) => {
                             ) : (
                               ""
                             )}
-                            <GlobalCommanTable AllListId={AllListId}  columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
+                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
                           </div>
 
                         </div>

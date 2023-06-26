@@ -37,7 +37,7 @@ const ShowClintCatogory = (Item: any) => {
                     return (
                         <>
                             {" "}
-                            {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag }}>
+                            {index <= 1 ? <span title={elem?.Title} className="ClientCategory-Usericon" style={{ backgroundColor: elem?.Color_x0020_Tag  }}>
                                 {elem?.Title?.slice(0, 2).toUpperCase()}
                             </span> : ''}
                         </>

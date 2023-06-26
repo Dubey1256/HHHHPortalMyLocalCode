@@ -2537,7 +2537,7 @@ function EditProjectPopup(item: any) {
                     <span>
                       {" "}
                       {EditData.ID ? (
-                        <VersionHistoryPopup
+                        <VersionHistoryPopup  siteUrls={AllListId?.siteUrl}
                           taskId={EditData.ID}
                           listId={AllListId?.MasterTaskListID}
                         />
@@ -2552,7 +2552,7 @@ function EditProjectPopup(item: any) {
                     <span>
                       <a
                         target="_blank"
-                        data-interception
+                        data-interception="off"
                         href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${EditData.Id}`}
                       >
                         <img src="https://hhhhteams.sharepoint.com/sites/HHHH/_layouts/15/images/ichtm.gif?rev=23" />{" "}
