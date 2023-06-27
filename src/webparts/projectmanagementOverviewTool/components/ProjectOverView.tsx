@@ -9,16 +9,6 @@ import {
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import {
-    useTable,
-    useSortBy,
-    useFilters,
-    useExpanded,
-    usePagination,
-    HeaderGroup,
-
-} from 'react-table';
-import { Filter, DefaultColumnFilter } from './filters';
 import { Web } from "sp-pnp-js";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
