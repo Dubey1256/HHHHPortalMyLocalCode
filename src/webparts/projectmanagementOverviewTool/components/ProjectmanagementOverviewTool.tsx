@@ -19,7 +19,9 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
       SmartMetadataListID,
       SmartInformationListID,
       DocumentsListID,
-      TaskTimeSheetListID
+      TaskTimeSheetListID,
+      TimeEntry,
+      SiteCompostion
     } = this.props;
 
     return (

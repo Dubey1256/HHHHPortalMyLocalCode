@@ -2,6 +2,7 @@ import * as React from 'react';
 import styles from './TestWebPart.module.scss';
 import { ITestWebPartProps } from './ITestWebPartProps';
 import { escape } from '@microsoft/sp-lodash-subset';
+import HalfClientCategory from './HalfClientCategory';
 // import DisplayDetails from './AccountView';
 
 export default class TestWebPart extends React.Component<ITestWebPartProps, {}> {
@@ -11,11 +12,20 @@ export default class TestWebPart extends React.Component<ITestWebPartProps, {}> 
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID,
+      TimeEntry,
+      SiteCompostion
     } = this.props;
 
     return (
-     <span></span>
+      <HalfClientCategory props={this.props}/>
     );
   }
 }

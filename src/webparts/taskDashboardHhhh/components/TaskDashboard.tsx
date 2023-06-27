@@ -2433,7 +2433,7 @@ const TaskDashboard = (props: any) => {
                                                         {pageImmediate?.map((row: any) => {
                                                             prepareRowImmediate(row);
                                                             return (
-                                                                <tr onClick={() => { selectedInlineTask = { table: "bottleneck", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
                                                                     {row.cells.map(
                                                                         (cell: {
                                                                             getCellProps: () => JSX.IntrinsicAttributes &
