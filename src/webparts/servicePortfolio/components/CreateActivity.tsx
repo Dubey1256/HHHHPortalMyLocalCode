@@ -213,7 +213,13 @@ const CreateActivity = (props: any) => {
                 if (componentDetails?.length == 0) {
                     WorstreamLatestId = 1;
                 } else {
-                    WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                    if(AllItems?.SharewebTaskType!= 'Workstream'){
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                    }
+                    else{
+                        WorstreamLatestId = 1;
+                    }
+                   
                 }
                 getTasktype();
             }

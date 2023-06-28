@@ -10,12 +10,14 @@ import {
     ColumnDef,
     flexRender,
     getSortedRowModel,
+    PaginationState,
     SortingState,
     FilterFn,
+    getPaginationRowModel,
     ColumnFiltersState,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -136,13 +138,14 @@ export function IndeterminateCheckbox(
 // ReactTable Part end/////
 
 const GlobalCommanTable = (items: any) => {
-    let expendedTrue=items?.expendedTrue
+    let expendedTrue = items?.expendedTrue
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
     let showHeader = items?.showHeader;
+    let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -151,12 +154,13 @@ const GlobalCommanTable = (items: any) => {
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
-        []
-    
-      )
-    const table = useReactTable({
+
+
+
+
+    const table: any = useReactTable({
         data,
         columns,
         filterFns: {
@@ -169,7 +173,6 @@ const GlobalCommanTable = (items: any) => {
             sorting,
             rowSelection,
         },
-        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
@@ -177,6 +180,7 @@ const GlobalCommanTable = (items: any) => {
         getSubRows: (row: any) => row.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -186,6 +190,9 @@ const GlobalCommanTable = (items: any) => {
         // filterFns: undefined
     });
 
+    React.useEffect(() => {
+        table.setPageSize(30);
+    }, [table])
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
@@ -248,15 +255,17 @@ const GlobalCommanTable = (items: any) => {
             }
         })
     }
-   if(expendedTrue === false){
+
     React.useEffect(() => {
-        if (table.getState().columnFilters.length) {
-            setExpanded(true);
-        } else {
-            setExpanded({});
+        if (expendedTrue === false) {
+            if (table.getState().columnFilters.length) {
+                setExpanded(true);
+            } else {
+                setExpanded({});
+            }
         }
     }, [table.getState().columnFilters]);
-   }
+
 
     React.useEffect(() => {
         if (expendedTrue === true) {
@@ -285,7 +294,7 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings'>
+            {showHeader === true && <div className='tbl-headings mb-1'>
                 <span className='leftsec'>
                     <DebouncedInput
                         value={globalFilter ?? ""}
@@ -293,9 +302,9 @@ const GlobalCommanTable = (items: any) => {
                         placeholder="Search All..." />
                 </span>
                 <span className="toolbox mx-auto">
-                    {showTeamMemberOnCheck === true &&items?.TaskUsers?.length>0  ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                    {table?.getFilteredRowModel()?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
@@ -373,7 +382,54 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {ShowTeamPopup === true && items?.TaskUsers?.length>0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaAngleDoubleLeft />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaChevronLeft />
+                </button>
+                <div>Page</div>
+                <strong>
+                    {table.getState().pagination.pageIndex + 1} of{' '}
+                    {table.getPageCount()}
+                </strong>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaChevronRight />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaAngleDoubleRight />
+                </button>
+                <select className='w-25'
+                    value={table.getState().pagination.pageSize}
+                    onChange={e => {
+                        table.setPageSize(Number(e.target.value))
+                    }}
+                >
+                    {[20, 30, 40, 50, 60].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div> : ''}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
 
         </>
     )
