@@ -1054,6 +1054,7 @@ function TimeEntryPopup(item: any) {
         if (items.siteType == "Offshore Tasks") {
             var siteType = "OffshoreTasks"
             var filteres = "Task" + siteType + "/Id eq " + items.Id;
+            var linkedSite = "Task" + siteType
         }
         else {
 
@@ -1704,7 +1705,19 @@ if(AllTimeEntry.length == 0 && Available == false){
     const saveTimeSpent = async () => {
        
         var UpdatedData: any = {}
-        smartTermId = "Task" + item.props.siteType + "Id";
+        if (item?.props?.siteType == "Offshore Tasks") {
+
+            var siteType = "OffshoreTasks"
+
+            smartTermId = "Task" + siteType + "Id";
+
+        }
+
+        else{
+
+            smartTermId = "Task" + item?.props?.siteType + "Id";
+
+        }
         showProgressBar();
 
         var AddedData: any = []

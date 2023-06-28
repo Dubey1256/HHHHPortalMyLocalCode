@@ -9,11 +9,12 @@ import "moment-timezone";
 import { v4 as uuidv4 } from "uuid";
 import EmailComponenet from "./email";
 import { SPHttpClient } from "@microsoft/sp-http";
+import { FaPaperPlane } from "react-icons/fa";
 import {
   PeoplePicker,
   PrincipalType,
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-
+import "./style.css";
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
 import { Web } from "sp-pnp-js";
@@ -38,7 +39,7 @@ import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
 import Tooltip from "../../../globalComponents/Tooltip";
-import { Modal } from "react-bootstrap";
+//import Modal from "react-bootstrap/Modal";
 //import MoreSlot from "./Slots";
 interface IEventData {
   Event_x002d_Type?: string;
@@ -95,7 +96,8 @@ let startTime: any,
   //   startDateTime: any,
   eventPass: any = {},
   endTime: any,
-  allDay: any = false;
+  allDay: any = false,
+  title_people: any;
 // endDateTime: any;
 //let dateTime:any,startDate:any,startTime:any,endtDate:any,endTime:any;
 let maxD = new Date(8640000000000000);
@@ -108,14 +110,14 @@ const App = (props: any) => {
   // const [name, setName]:any = React.useState('');
   const [startDate, setStartDate]: any = React.useState(null);
   const [endDate, setEndDate]: any = React.useState(null);
-   const [chkName, setChkName]:any = React.useState('');
+  const [chkName, setChkName]: any = React.useState("");
   const [type, setType]: any = React.useState("");
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   // const myButton = document.getElementById("myButton");
   const [disabl, setdisabl] = React.useState(false);
   const [disab, setdisab] = React.useState(false);
-  //const [fakeEvent, setfakeEvent] = React.useState([]);
+  const [dt, setDt] = React.useState();
   const [selectedTime, setSelectedTime]: any = React.useState("10:00");
   const [selectedTimeEnd, setSelectedTimeEnd]: any = React.useState("19:00");
   const [location, setLocation]: any = React.useState();
@@ -123,13 +125,14 @@ const App = (props: any) => {
   //let saveE:any=[]
   const [email, setEmail]: any = React.useState(false);
   const [todayEvent, setTodayEvent]: any = React.useState(false);
-const [peopleName,setPeopleName]:any =React.useState([]);
+  const [peopleName, setPeopleName]: any = React.useState([]);
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
   const [selectedPeople, setSelectedPeople] = React.useState<any[]>([]);
   const [showRecurrence, setshowRecurrence] = React.useState(false);
-  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =    React.useState(false);
+  const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
+    React.useState(false);
   const [peoplePickerShow, setPeoplePickerShow] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [showM, setShowM] = React.useState([]);
@@ -397,7 +400,6 @@ const [peopleName,setPeopleName]:any =React.useState([]);
 
   const ConvertLocalTOServerDateToSave = (date: any, Time: any) => {
     if (date != undefined && date != "") {
-      
       const dateString = date;
       const dateObj = moment(dateString, "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
       const formattedDater = dateObj.format("ddd MMM DD YYYY");
@@ -408,10 +410,7 @@ const [peopleName,setPeopleName]:any =React.useState([]);
     } else return "";
   };
 
-
   let offset: any;
-
- 
 
   const convertDateTimeOffset = (Date: any): string | undefined => {
     let ConvertDateOffset: string | undefined;
@@ -459,7 +458,7 @@ const [peopleName,setPeopleName]:any =React.useState([]);
       .get()
       .then((dataaa: any[]) => {
         console.log("datata", dataaa);
-        setChkName(dataaa);
+
         compareData = dataaa;
         // dataaa.EventDate
         let localArray: any = [];
@@ -501,9 +500,16 @@ const [peopleName,setPeopleName]:any =React.useState([]);
             enddate.setHours(enddate.getHours() - 5);
             enddate.setMinutes(enddate.getMinutes() - 30);
           }
+          let a;
+          if (item.Name != undefined && item.Event_x002d_Type != undefined) {
+            a = item.Name + "-" + item.Event_x002d_Type + "-" + item.Title;
+          } else {
+            a = item.Title;
+          }
+
           const dataEvent = {
             iD: item.ID,
-            title: item.Title,
+            title: a,
             start: startdate,
             end: enddate,
             location: item.Location,
@@ -514,6 +520,7 @@ const [peopleName,setPeopleName]:any =React.useState([]);
             modify: item.Editor.Title,
             cTime: createdAt,
             mTime: modifyAt,
+            Name: item.Name,
           };
           // const create ={
           //   id:item.Id,
@@ -525,6 +532,7 @@ const [peopleName,setPeopleName]:any =React.useState([]);
         });
         localArr = localArray;
         setEvents(localArray);
+        setChkName(localArray);
       })
       .catch((error: any) => {
         //console.log(error);
@@ -551,7 +559,7 @@ const [peopleName,setPeopleName]:any =React.useState([]);
         });
     }
   };
-const [details,setDetails]:any=React.useState([])
+  const [details, setDetails]: any = React.useState([]);
   const saveEvent = async () => {
     if (inputValueName.length > 0) {
       const chkstartDate = new Date(startDate);
@@ -569,8 +577,16 @@ const [details,setDetails]:any=React.useState([])
             setSelectedTimeEnd(selectedTimeEnd);
             return;
           }
+
+          if (
+            peopleName == props.props.context._pageContext._user.displayName
+          ) {
+            setPeopleName(props.props.context._pageContext._user.displayName);
+          } else {
+            setPeopleName(title_people);
+          }
           const newEvent = {
-            name:peopleName,
+            name: peopleName,
             title: inputValueName,
             start: startDate,
             end: endDate,
@@ -584,7 +600,7 @@ const [details,setDetails]:any=React.useState([])
           let eventData = {
             Title: newEvent.title,
 
-            Name:newEvent.name,
+            Name: newEvent.name,
 
             Location: newEvent.loc,
 
@@ -1109,6 +1125,7 @@ const [details,setDetails]:any=React.useState([])
   };
 
   const handleDateClick = async (event: any) => {
+    console.log(event);
     setshowRecurrence(false);
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
@@ -1183,6 +1200,8 @@ const [details,setDetails]:any=React.useState([])
   console.log(CTime, MTime, "faees");
 
   const handleSelectSlot = (slotInfo: any) => {
+    setSelectedPeople(props.props.context._pageContext._user.loginName);
+    setPeopleName(props.props.context._pageContext._user.displayName);
     setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
@@ -1253,36 +1272,6 @@ const [details,setDetails]:any=React.useState([])
     }
   };
 
-  React.useEffect(() => {
-    //void getSPCurrentTimeOffset();
-    setSelectedPeople(initialPeople);
-    void getData();
-  }, []);
-
-  const initialPeople: any = [
-    {
-      id: "1",
-      text: "John Doe",
-      secondaryText: "johndoe@example.com",
-      tertiaryText: "",
-      optionalText: "",
-    },
-    {
-      id: "2",
-      text: "Jane Smith",
-      secondaryText: "janesmith@example.com",
-      tertiaryText: "",
-      optionalText: "",
-    },
-    {
-      id: "3",
-      text: "Bob Johnson",
-      secondaryText: "bobjohnson@example.com",
-      tertiaryText: "",
-      optionalText: "",
-    },
-  ];
-
   // const people = (people:any) => {
   //   console.log("people")
   // };
@@ -1310,7 +1299,7 @@ const [details,setDetails]:any=React.useState([])
 
   const people = async (people: any) => {
     let userId: number = undefined;
-    let userTitle: string = undefined;
+    let userTitle: any;
     let userSuffix: string = undefined;
 
     if (people.length > 0) {
@@ -1320,22 +1309,29 @@ const [details,setDetails]:any=React.useState([])
       userTitle = userInfo.Title;
       userSuffix = userTitle
         .split(" ")
-        .map((i) => i.charAt(0))
+        .map((i: any) => i.charAt(0))
         .join("");
+
+      title_people = userTitle;
+      setPeopleName(userTitle);
     }
-    setPeopleName(userTitle)
   };
 
-  const handleShowMore = (event: any) => {
+  const handleShowMore = (event: any, date: any) => {
     // console.log
-
+    const dat = new Date(date);
+    const formattedDate: any = dat.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    setDt(formattedDate);
     // handleSelectSlot(slotinfo2);
-    console.log("clicked", event);
+    console.log("clicked", event, date);
     setShowM(event);
     openModal();
   };
 
-  
   const openModal = () => {
     setIsOpen(true);
   };
@@ -1343,27 +1339,34 @@ const [details,setDetails]:any=React.useState([])
   const closeModal = () => {
     setIsOpen(false);
   };
-  
+
   const emailComp = () => {
     const currentDate = new Date();
-    var eData:any=[]
-    const currentDayEvents = events.filter(
+
+    const currentDayEvents = chkName.filter(
       (event: { start: moment.MomentInput }) =>
         moment(event.start).isSame(currentDate, "day")
     );
-    const currentDayEvents2 = chkName.filter(
-      (event: { start: moment.MomentInput }) =>
-        moment(event.start).isSame(currentDate, "day")
-    );
-    console.log("newevents",currentDayEvents2);
+
+    console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
 
+  React.useEffect(() => {
+    //void getSPCurrentTimeOffset();
+    void getData();
+  }, []);
+
   return (
     <div>
       <div style={{ height: "500pt" }}>
-        <button onClick={emailComp}>Email</button>
+        <a className="mailBtn" href="#" onClick={emailComp}>
+          <FaPaperPlane></FaPaperPlane> <span>Send Leave Summary</span>
+        </a>
+        {/* <button type="button" className="mailBtn" >
+          Email
+        </button> */}
         <Calendar
           events={events}
           selectable
@@ -1384,28 +1387,43 @@ const [details,setDetails]:any=React.useState([])
       </div>
 
       {email ? (
-        <EmailComponenet Context={props.props.context} data={todayEvent} data1={peopleName} data2={details} />
+        <EmailComponenet
+          Context={props.props.context}
+          data={todayEvent}
+          data2={details}
+        />
       ) : null}
 
       {isOpen && (
-        <Modal 
-        isopen={isOpen} 
-        onClose={closeModal}>
-          {/* Add the content of your modal */}
-          {/* <h2>Modal Content</h2>
-          <p>This is the content of the modal.</p> */}
-          <table>
+        <Panel
+          headerText={`Leaves of ${dt}`}
+          isOpen={isOpen}
+          onDismiss={closeModal}
+          // isFooterAtBottom={true}
+          type={PanelType.medium}
+          closeButtonAriaLabel="Close"
+        >
+          <table className="styled-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
             <tbody>
-              {showM?.map((item, index) => {
+              {showM?.map((item: any) => {
                 return (
-                  <tr key={index}>
+                  <tr>
                     <td>{item.title}</td>
+                    <td><a href="#" onClick={() =>handleDateClick(item)}><span title="Edit" className="svg__iconbox svg__icon--edit"></span></a></td>
+                    <td><a href="#" onClick={deleteElement} ><span className="svg__iconbox svg__icon--trash"></span></a></td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </Modal>
+        </Panel>
       )}
 
       <Panel
@@ -1419,24 +1437,24 @@ const [details,setDetails]:any=React.useState([])
         <form className="row g-3">
           {peoplePickerShow ? (
             <div>
-            <PeoplePicker
-              context={props.props.context}
-              principalTypes={[PrincipalType.User]}
-              personSelectionLimit={1}
-              titleText="Select People"
-              resolveDelay={1000}
-              onChange={people}
-              showtooltip={true}
-              required={true}
-              defaultSelectedUsers={initialPeople}
-            ></PeoplePicker>
-          </div>
-            
-          ) : ("")}
-           
+              <PeoplePicker
+                context={props.props.context}
+                principalTypes={[PrincipalType.User]}
+                personSelectionLimit={1}
+                titleText="Select People"
+                resolveDelay={1000}
+                onChange={people}
+                showtooltip={true}
+                required={true}
+                defaultSelectedUsers={[selectedPeople]}
+              ></PeoplePicker>
+            </div>
+          ) : (
+            ""
+          )}
           <div className="col-md-12">
             <TextField
-              label="Title"
+              label="Short Description"
               value={inputValueName}
               onChange={handleInputChangeName}
             />
