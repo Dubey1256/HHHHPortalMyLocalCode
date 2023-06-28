@@ -173,6 +173,7 @@ const GlobalCommanTable = (items: any) => {
             sorting,
             rowSelection,
         },
+        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
