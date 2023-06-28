@@ -3276,7 +3276,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "ID",
-        size: 17,
+        size: 7,
         header: ({ table }: any) => (
           <>
             <button className='border-0 bg-Ff'

@@ -247,23 +247,23 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            <div>
-                <span>
+            <div className='tbl-headings '>
+                <span className='leftsec'>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
                 <span className="toolbox mx-auto">
-                    <span><a onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a></span>
-                    <span>
-                        <a><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
-                    </span>
-                    <span>
-                        <a onClick={() => downloadPdf()}>
+                   <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
+                    
+                        <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                   
+                    
+                        <a className='Prints' onClick={() => downloadPdf()}>
                             <i className="fa fa-print mr-5" aria-hidden="true" title="Print"></i>
                         </a>
-                    </span>
+                  
                 </span>
             </div>
 

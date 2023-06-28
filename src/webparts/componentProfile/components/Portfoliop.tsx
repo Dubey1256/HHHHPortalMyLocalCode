@@ -973,8 +973,9 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                                               data-interception="off"
                                               href={SelectedProp.siteUrl+"/SitePages/Component-Portfolio.aspx?ComponentID="+item.Parent.Id}
                                             >
-                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "}
+                                              <span className="svg__iconbox svg__icon--editBox"></span>
+                                              {/* <img src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25" />{" "} */}
                                             </a>
                                           </>
                                         )}
