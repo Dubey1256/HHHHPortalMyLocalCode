@@ -81,6 +81,7 @@ const inlineEditingcolumns = (props: any) => {
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
         setFeedback(props?.item?.Remark);
+       
         if (props?.item?.PercentComplete != undefined) {
             props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
         }
@@ -97,6 +98,17 @@ const inlineEditingcolumns = (props: any) => {
             result = percent + "% Completed"
         }
         return result
+    }
+    const setEstimatedTimeProps=()=>{
+        if (props?.item?.EstimatedTime != undefined && props?.item?.EstimatedTime > 0) {
+            changeTime=props?.item?.EstimatedTime * 60;
+            setTimeInHours(props?.item?.EstimatedTime);
+            setTimeInMinutes(changeTime)
+        } else {
+            setTimeInHours(0);
+            setTimeInMinutes(0)
+            changeTime=0;
+        }
     }
     const GetSmartMetadata = async () => {
         let impSharewebCategories: any = [];
@@ -337,10 +349,12 @@ const inlineEditingcolumns = (props: any) => {
             "Priority_x0020_Rank": priorityRank,
             SharewebCategoriesId: { "results": selectedCatId },
             DueDate: newDueDate,
-            Remark: feedback
+            Remark: feedback,
+            EstimatedTime: TimeInHours
         })
             .then((res: any) => {
-                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "Comments","Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
+              
+                web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                     .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                     .getById(props?.item?.Id).get().then((task) => {
                         task.AllTeamMember = [];
@@ -390,12 +404,16 @@ const inlineEditingcolumns = (props: any) => {
                             });
                         });
                         props.item = task;
+                        clearEstimations();
                         props?.callBack(task);
                     });
+
                 setTaskStatusPopup(false);
                 setTaskPriorityPopup(false);
                 setTeamMembersPopup(false);
+                clearEstimations();
                 setRemark(false)
+                
                 setDueDate({ ...dueDate, editPopup: false });
             })
 
@@ -452,6 +470,12 @@ const inlineEditingcolumns = (props: any) => {
 
         }
     };
+    const clearEstimations=()=>{
+        setTimeInHours(0);
+        setTimeInMinutes(0)
+        changeTime=0;
+        setUpdateEstimatedTime(false);
+    }
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
         let tempArray: any = [];
         filterArray.map((TeamItems: any) => {
@@ -785,33 +809,33 @@ const inlineEditingcolumns = (props: any) => {
                             {/* <span className="d-inline-block" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-content="Disabled popover">
                                 {props.item.PercentComplete}
                             </span> */}
-                            <span title={getPercentCompleteTitle(props?.item?.PercentComplete)}>{props?.item?.PercentComplete} </span> 
+                            <span title={getPercentCompleteTitle(props?.item?.PercentComplete)}>{props?.item?.PercentComplete} </span>
                             {
-                                        props?.item?.IsTodaysTask ? <>
-                                            {
-                                                props?.item?.AssignedTo?.map((AssignedUser: any) => {
-                                                    return (
-                                                        AllTaskUser?.map((user: any) => {
-                                                            if (AssignedUser.Id == user.AssingedToUserId) {
-                                                                return (
-                                                                    <a target="_blank"
-                                                                        data-interception="off"
-                                                                        title={user.Title}
-                                                                    >
-                                                                        {user?.Item_x0020_Cover?.Url != undefined ?
-                                                                             <img className="workmember ms-1" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
-                                                                             <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser ms-1 "></span>}
+                                props?.item?.IsTodaysTask ? <>
+                                    {
+                                        props?.item?.AssignedTo?.map((AssignedUser: any) => {
+                                            return (
+                                                AllTaskUser?.map((user: any) => {
+                                                    if (AssignedUser.Id == user.AssingedToUserId) {
+                                                        return (
+                                                            <a target="_blank"
+                                                                data-interception="off"
+                                                                title={user.Title}
+                                                            >
+                                                                {user?.Item_x0020_Cover?.Url != undefined ?
+                                                                    <img className="workmember ms-1" title={user?.Title} src={user?.Item_x0020_Cover?.Url}></img> :
+                                                                    <span title={user?.Title} className="svg__iconbox svg__icon--defaultUser ms-1 "></span>}
 
-                                                                    </a>
-                                                                )
-                                                            }
+                                                            </a>
+                                                        )
+                                                    }
 
-                                                        })
-                                                    )
                                                 })
-                                            }
-                                        </> : ''
+                                            )
+                                        })
                                     }
+                                </> : ''
+                            }
                             {/* <div className="popover__wrapper inlineEdit me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
                             {props.item.PercentComplete}
                                 <div className="popover__content">
@@ -886,7 +910,7 @@ const inlineEditingcolumns = (props: any) => {
             <Panel
                 headerText={`Update Estimated Time`}
                 isOpen={UpdateEstimatedTime}
-                onDismiss={() => setUpdateEstimatedTime(false)}
+                onDismiss={() => clearEstimations()}
                 isBlocking={UpdateEstimatedTime}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
@@ -950,8 +974,8 @@ const inlineEditingcolumns = (props: any) => {
                         </div>
                     </div>
                     <footer className="float-end">
-                        <button type="button" className="btn btn-primary px-3" onClick={UpdateTaskStatus}>
-                            Save
+                        <button type="button" className="btn btn-primary px-3 mt-4" onClick={UpdateTaskStatus}>
+                            Update
                         </button>
                     </footer>
                 </div>

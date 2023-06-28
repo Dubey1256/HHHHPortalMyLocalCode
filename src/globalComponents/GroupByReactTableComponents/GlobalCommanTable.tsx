@@ -129,6 +129,7 @@ const GlobalCommanTable = (items: any) => {
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
+    let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
     let showHeader = items?.showHeader;
@@ -246,6 +247,12 @@ const GlobalCommanTable = (items: any) => {
             setExpanded({});
         }
     }, [table.getState().columnFilters]);
+
+    React.useEffect(() => {
+        if (pageName === 'hierarchyPopperToolTip') {
+            callBackDataToolTip(expanded);
+        }
+    }, [expanded])
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
