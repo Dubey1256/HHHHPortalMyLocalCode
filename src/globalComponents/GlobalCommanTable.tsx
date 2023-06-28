@@ -1,11 +1,21 @@
 import * as React from 'react';
 import {
-    Column, Table,
-    ExpandedState, useReactTable, getCoreRowModel, getFilteredRowModel, getExpandedRowModel, ColumnDef, flexRender, getSortedRowModel, SortingState,
-    ColumnFiltersState, FilterFn, getFacetedUniqueValues, getFacetedRowModel
+    Column,
+    Table,
+    ExpandedState,
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getExpandedRowModel,
+    ColumnDef,
+    flexRender,
+    getSortedRowModel,
+    SortingState,
+    FilterFn,
+    getPaginationRowModel,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -125,41 +135,34 @@ export function IndeterminateCheckbox(
 // ReactTable Part end/////
 
 const GlobalCommanTable = (items: any) => {
-    // let headerOptions:any={};
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
+    let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
     let showHeader = items?.showHeader;
+    let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    );
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [headerOptions, setHeaderOptions] = React.useState({
-        openTab:false,
-        teamsIcon:false,
-    });
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-    const table = useReactTable({
+    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const table: any = useReactTable({
         data,
         columns,
         filterFns: {
             fuzzy: fuzzyFilter
         },
         state: {
-            columnFilters,
             globalFilter,
             expanded,
             sorting,
             rowSelection,
         },
-        onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
@@ -167,6 +170,7 @@ const GlobalCommanTable = (items: any) => {
         getSubRows: (row: any) => row.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -187,7 +191,6 @@ const GlobalCommanTable = (items: any) => {
     let FilterShowhideShwingData: any = false;
     let AfterSearch = table?.getRowModel()?.rows;
     React.useEffect(() => {
-        setHeaderOptions((prev) => ({ ...prev, ...items?.headerOptions }));
         if (AfterSearch != undefined && AfterSearch.length > 0) {
             AfterSearch?.map((Comp: any) => {
                 if (Comp.columnFilters.Title == true || Comp.columnFilters.PortfolioStructureID == true || Comp.columnFilters.ClientCategory == true || Comp.columnFilters.TeamLeaderUser == true || Comp.columnFilters.PercentComplete == true || Comp.columnFilters.ItemRank == true || Comp.columnFilters.DueDate == true) {
@@ -247,6 +250,12 @@ const GlobalCommanTable = (items: any) => {
         }
     }, [table.getState().columnFilters]);
 
+    React.useEffect(() => {
+        if (pageName === 'hierarchyPopperToolTip') {
+            callBackDataToolTip(expanded);
+        }
+    }, [expanded])
+
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
         const doc = new jsPDF({ orientation: 'landscape' });
@@ -266,24 +275,23 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings justify-content-between'>
+            {showHeader === true && <div className='tbl-headings'>
                 <span className='leftsec'>
-                    <span className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                <span className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
-                <span className="toolbox">
-                    {headerOptions?.teamsIcon ? 
-                    <span>{table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
-                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}</span> : ''}
-                    {headerOptions?.openTab ? <span>{table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
-                        <a onClick={() => openTaskAndPortfolioMulti()} title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a title='Open in New tab' className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}</span> : ''}
+                <span className="toolbox mx-auto">
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
+                    {table?.getFilteredRowModel()?.rows?.length> 0 ? <span>
+                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }} aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
@@ -356,6 +364,48 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
+            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaAngleDoubleLeft />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaChevronLeft />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaChevronRight />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaAngleDoubleRight />
+                </button>
+                <select className='w-25'
+                    value={table.getState().pagination.pageSize}
+                    onChange={e => {
+                        table.setPageSize(Number(e.target.value))
+                    }}
+                >
+                    {[10, 20, 30, 40, 50].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div> : ''}
             {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
 
         </>
