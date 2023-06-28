@@ -150,11 +150,11 @@ const EmailComponenet = (props: any) => {
 
           <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
-         <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+         <table cellPadding={0} cellSpacing={0}  width="100%" style={{ width: "100.0%" }}>
               <tbody>
                 <tr>
                   <td width="70%" valign="top" style={{ width: '70.0%', padding: '4pt' }}>
-                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <table cellPadding={0} cellSpacing={0}  width="99%" style={{ width: "99.0%" }}>
                       <tbody>
                        
                         <tr>
@@ -265,7 +265,7 @@ const EmailComponenet = (props: any) => {
                   
                       </tbody>
                     </table>
-                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <table cellPadding={0} cellSpacing={0} width="99%" style={{ width: "99.0%" }}>
                       <tbody>
                         <tr>
                           <td style={{ padding: '2pt' }}></td>
@@ -278,7 +278,7 @@ const EmailComponenet = (props: any) => {
                           props.items["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
                               <tr >
-                                <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
+                                <td width={"30px"} align='center' style={{border: "1px solid #ccc", }}>
                                   <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}</span></p>
                                 </td>
                                 
@@ -296,8 +296,8 @@ const EmailComponenet = (props: any) => {
                               </tr>
                               {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
-                                  <tr style={{ background: "#ccc" }}>
-                                    <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
+                                  <tr >
+                                    <td width={"30px"} style={{border: "1px solid #ccc"}} align='center'>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                     </td>
                                     <td style={fbData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
@@ -333,7 +333,7 @@ const EmailComponenet = (props: any) => {
                         </tr>
                         <tr>
                           <td style={{ border: 'none', padding: '4pt' }}>
-                            {props.items["Comments"]?.map((cmtData: any, i: any) => {
+                            {props.items["Comments"]!=""&&props.items["Comments"]!=null&&props.items["Comments"]?.map((cmtData: any, i: any) => {
                               return <div style={{ border: 'solid #cccccc 1.0pt', padding: '4pt', marginTop: '0pt', marginBottom:'4pt' }}>
                                 <div style={{ marginBottom: "3.75pt" }}>
                                   <p style={{ margin: '0pt' }}>
