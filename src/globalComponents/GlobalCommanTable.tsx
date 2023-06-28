@@ -277,7 +277,7 @@ const GlobalCommanTable = (items: any) => {
         <>
             {showHeader === true && <div className='tbl-headings'>
                 <span className='leftsec'>
-                <span className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
