@@ -81,7 +81,7 @@ const inlineEditingcolumns = (props: any) => {
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
         setFeedback(props?.item?.Remark);
-       
+
         if (props?.item?.PercentComplete != undefined) {
             props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
         }
@@ -99,15 +99,15 @@ const inlineEditingcolumns = (props: any) => {
         }
         return result
     }
-    const setEstimatedTimeProps=()=>{
+    const setEstimatedTimeProps = () => {
         if (props?.item?.EstimatedTime != undefined && props?.item?.EstimatedTime > 0) {
-            changeTime=props?.item?.EstimatedTime * 60;
+            changeTime = props?.item?.EstimatedTime * 60;
             setTimeInHours(props?.item?.EstimatedTime);
             setTimeInMinutes(changeTime)
         } else {
             setTimeInHours(0);
             setTimeInMinutes(0)
-            changeTime=0;
+            changeTime = 0;
         }
     }
     const GetSmartMetadata = async () => {
@@ -353,7 +353,7 @@ const inlineEditingcolumns = (props: any) => {
             EstimatedTime: TimeInHours
         })
             .then((res: any) => {
-              
+
                 web.lists.getById(props?.item?.listId).items.select("ID", "Title", "EstimatedTime", "Comments", "Remark", "DueDate", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Editor/Title", "Modified")
                     .expand("Team_x0020_Members", "Approver", "ParentTask", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
                     .getById(props?.item?.Id).get().then((task) => {
@@ -413,7 +413,7 @@ const inlineEditingcolumns = (props: any) => {
                 setTeamMembersPopup(false);
                 clearEstimations();
                 setRemark(false)
-                
+
                 setDueDate({ ...dueDate, editPopup: false });
             })
 
@@ -470,10 +470,10 @@ const inlineEditingcolumns = (props: any) => {
 
         }
     };
-    const clearEstimations=()=>{
+    const clearEstimations = () => {
         setTimeInHours(0);
         setTimeInMinutes(0)
-        changeTime=0;
+        changeTime = 0;
         setUpdateEstimatedTime(false);
     }
     const setWorkingMemberFromTeam = (filterArray: any, filterType: any, StatusID: any) => {
@@ -745,8 +745,11 @@ const inlineEditingcolumns = (props: any) => {
             {
                 props?.columnName == 'Team' ?
                     <>
-                        <span style={{ display: "flex", width: "100%", height: "100%" }} className='hreflink' onClick={() => setTeamMembersPopup(true)} >
-                            <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
+
+                        <span style={{ display: "flex", width: "100%", height: "100%" }} onClick={() => setTeamMembersPopup(true)} className='hreflink'>&nbsp;
+                            <span>
+                                <ShowTaskTeamMembers props={props?.item} TaskUsers={props?.TaskUsers} />
+                            </span>
                         </span>
                     </>
                     : ''
