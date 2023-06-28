@@ -292,7 +292,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                     }
                     if (ClientCategory != undefined && ClientCategory.length > 0) {
-                        let TempArray: any = [];
+                        let selectedCC: any = [];
                         ClientCategory.map((ClientData: any) => {
                             if (AllClientCategoryDataBackup != undefined && AllClientCategoryDataBackup.length > 0) {
                                 AllClientCategoryDataBackup.map((clientCategoryData: any) => {
@@ -301,14 +301,14 @@ const EditTaskPopup = (Items: any) => {
                                         ClientData.siteName = clientCategoryData.siteName;
                                         // }
                                         ClientData.ParentID = clientCategoryData.ParentID;
-                                        TempArray.push(ClientData)
+                                        selectedCC.push(ClientData)
                                     }
                                 })
 
                             }
                         })
-                        setSelectedClientCategory(TempArray);
-                        selectedClientCategoryData = TempArray;
+                        setSelectedClientCategory(selectedCC);
+                        selectedClientCategoryData = selectedCC;
                     }
                 }
                 GetSelectedTaskDetails();
@@ -1986,6 +1986,7 @@ const EditTaskPopup = (Items: any) => {
                         }
                         Items.Call(DataJSONUpdate);
                     } else {
+
                         Items.Call();
                     }
                 })
@@ -3213,8 +3214,9 @@ const EditTaskPopup = (Items: any) => {
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
-    const SendEmailNotificationCallBack = React.useCallback(() => {
+    const SendEmailNotificationCallBack = React.useCallback((items:any) => {
         setSendEmailComponentStatus(false);
+        Items.Call(items);
     }, [])
     // ************************ this is for Site Composition Component Section Functions ***************************
 

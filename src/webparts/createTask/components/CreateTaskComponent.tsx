@@ -21,7 +21,7 @@ let SitesTypes: any = []
 let subCategories: any = []
 let AllComponents: any = []
 let taskUsers: any = [];
-let taskCreated = false;
+// let taskCreated = false;
 let createdTask: any = {}
 let loggedInUser: any;
 let oldTaskIrl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx";
@@ -908,7 +908,7 @@ function CreateTaskComponent(props: any) {
                         data.data.siteUrl = selectedSite?.siteUrl?.Url;
                         data.data.siteType = save.siteType;
                         data.data.listId = selectedSite?.listId;
-                        taskCreated = true;
+                        // taskCreated = true;
                         createdTask.Id = data?.data?.Id
                         createdTask.siteType = save.siteType
                         data.data.SiteIcon = selectedSite?.Item_x005F_x0020_Cover?.Url;
@@ -1244,12 +1244,12 @@ function CreateTaskComponent(props: any) {
             }
         },
     ];
-    const CallBack = React.useCallback(() => {
+    const CallBack = React.useCallback((items) => {
         setEditTaskPopupData({
             isOpenEditPopup: false,
             passdata: null
         })
-        if (taskCreated) {
+        if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
         }
         createdTask = {};
