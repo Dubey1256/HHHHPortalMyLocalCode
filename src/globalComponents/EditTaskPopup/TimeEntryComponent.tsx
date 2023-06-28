@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { sp, Web } from "sp-pnp-js";
 import * as $ from 'jquery';
 import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
@@ -10,14 +10,19 @@ import { spfi } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/folders";
 import pnp, { PermissionKind } from "sp-pnp-js";
+import {
+    ColumnDef,
+} from "@tanstack/react-table";
 import { parseISO, format } from 'date-fns';
 import "@pnp/sp/lists";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import GlobalCommanTable from '../GroupByReactTableComponents/GlobalCommanTable';
 import * as moment from "moment-timezone";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Tooltip from '../Tooltip';
 import * as globalCommon from '../globalCommon'
+import { truncate } from '@microsoft/sp-lodash-subset';
 var AllTimeSpentDetails: any = [];
 var CurntUserId = ''
 var changeTime: any = 0;
@@ -25,17 +30,18 @@ var ParentId: any = ''
 var Category: any = '';
 var NewCategoryId: any = ''
 var Eyd = ''
-var timesheetMoveData:any =[]
 var changeEdited = '';
 var CurrentUserTitle = ''
+var CategoriesIdd = ''
 var Categoryy = '';
 var CategoryyID: any = ''
-var timesheetMoveData:any =[]
+var timesheetMoveData: any = []
 var TaskCate: any = []
 var TimeSheetlistId = ''
-var TimeSheets: any = []
+var backupData: any = []
 var MigrationListId = ''
 var siteUrl = ''
+let Flatview: any = false;
 var PortfolioType = ''
 var listName = ''
 var RelativeUrl: any = ''
@@ -44,8 +50,9 @@ var AllTimeEntry: any = [];
 var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
+let expendedTrue: any = true;
 var change: any = new Date()
-var UserName:any=''
+
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
@@ -60,7 +67,7 @@ function TimeEntryPopup(item: any) {
     const [modalTimeIsOpen, setTimeModalIsOpen] = React.useState(false);
     // const [AllMetadata, setMetadata] = React.useState([]);
     const [EditTaskItemitle, setEditItem] = React.useState('');
-    const [flatview, setFlatview] = React.useState(false);
+    const [flatview, setFlatview] = React.useState<any>("");
     const [collapseItem, setcollapseItem] = React.useState(true);
     const [open, setOpen] = React.useState(false);
     const [search, setSearch]: [string, (search: string) => void] = React.useState("");
@@ -70,13 +77,11 @@ function TimeEntryPopup(item: any) {
     const [CopyTaskpopup, setCopyTaskpopup] = React.useState(false);
     const [AddTaskTimepopup, setAddTaskTimepopup] = React.useState(false);
     const [TimeSheet, setTimeSheets] = React.useState([])
-   // const [myDatee, setMyDatee] = React.useState(Moment().format())
     const [myDatee, setMyDatee] = React.useState<any>(new Date())
-    //const [myDatee, setMyDatee] = React.useState(new Date())
-    const [changeTimeAdd, setchangeTimeAdd] = React.useState()
-    const [AdditionalTime, setAdditionalTime] = React.useState([])
+    const [backupData, setBackupData] = React.useState([])
     const [count, setCount] = React.useState(1)
     const [month, setMonth] = React.useState(1)
+    const [data, setData] = React.useState([])
     const [counts, setCounts] = React.useState(1)
     const [months, setMonths] = React.useState(1)
     const [saveEditTaskTime, setsaveEditTaskTime] = React.useState([])
@@ -112,28 +117,22 @@ function TimeEntryPopup(item: any) {
         // if(AllTimeEntry.length == 0){
         //     await getAllTime()
         // }
-      
+
         EditData(item.props);
         //console.log(this.taskUsers);
 
     }
-    const getAllTime=async ()=>{
-        $.each(AllUsers, async function (index: any, taskUser: any) {
-            if (taskUser.AssingedToUserId === CurntUserId) {
-                UserName = taskUser.Title;
-              }
-
-        });
-        var newItem:any=[]
+    const getAllTime = async () => {
+        var newItem: any = []
         let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .filter(`Title eq '${UserName}'`)
+            .filter(`Title eq '${CurrentUserTitle}'`)
             .getAll();
-            AllTimeEntry = taskUsers;
-           
+        AllTimeEntry = taskUsers;
+
     }
     // pnp.sp.web.currentUser.get().then(result => {
     //     CurntUserId = result.Id;
@@ -157,8 +156,8 @@ function TimeEntryPopup(item: any) {
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
                 var inputDate = new Date(editaskk)
                 setediteddata(inputDate)
-              
-              
+
+
 
             }
 
@@ -190,14 +189,14 @@ function TimeEntryPopup(item: any) {
             setMyDatee(change)
             var inputDate = new Date(change)
             setMyDatee(inputDate)
-           // setMyDatee(change)
+            // setMyDatee(change)
 
             if (Type == 'EditTime') {
                 changeEdited = (Moment(editeddata).add(1, 'years').format())
                 var editaskk = Moment(changeEdited).format("ddd, DD MMM yyyy")
-               // setediteddata(editaskk)
-               var inputDate = new Date(editaskk)
-               setediteddata(inputDate)
+                // setediteddata(editaskk)
+                var inputDate = new Date(editaskk)
+                setediteddata(inputDate)
 
             }
         }
@@ -436,8 +435,8 @@ function TimeEntryPopup(item: any) {
         //    }
 
     }
-    const openTaskStatusUpdatePoup = async() => {
-      
+    const openTaskStatusUpdatePoup = async () => {
+
         AllUsers.forEach((val: any) => {
             TimeSheet.forEach((time: any) => {
                 if (val.AssingedToUserId == CurntUserId) {
@@ -457,6 +456,7 @@ function TimeEntryPopup(item: any) {
         var array: any = []
         Categoryy = child.Category.Title
         CategoryyID = child.ID
+        CategoriesIdd =  child.Category.Id
         array.push(child)
         setCategoryData(array)
         setEditcategory(true)
@@ -464,21 +464,22 @@ function TimeEntryPopup(item: any) {
 
     const closeEditcategorypopup = (child: any) => {
         setNewData(undefined)
+        setcheckCategories(undefined)
         setEditcategory(false)
     }
 
-    const openCopyTaskpopup = (childitem: any, childinew: any) => {
+    const openCopyTaskpopup = (childitem: any,) => {
         setCopyTaskpopup(true)
-        dateValue = childinew.TaskDate.split("/");
+        dateValue = childitem.TaskDate.split("/");
         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
-        var inputDate:any = new Date(Eyd)
+        var inputDate: any = new Date(Eyd)
         setediteddata(inputDate)
         var Array: any = []
         var Childitem: any = []
         Array.push(childitem)
-        Childitem.push(childinew)
+        Childitem.push(childitem)
         setsaveCopyTaskTime(Array)
         setsaveCopyTaskTimeChild(Childitem)
         console.log(item)
@@ -503,7 +504,7 @@ function TimeEntryPopup(item: any) {
         dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
-        var inputDate:any = new Date(Eyd)
+        var inputDate: any = new Date(Eyd)
         setediteddata(inputDate)
         //setediteddata(Eyd)
         var Array: any = []
@@ -615,7 +616,7 @@ function TimeEntryPopup(item: any) {
     const GetTimeSheet = async () => {
         var TimeSheet: any = []
         var newArray: any = []
-       const web = new Web(`${CurrentSiteUrl}`);
+        const web = new Web(`${CurrentSiteUrl}`);
 
         const res = await web.lists.getByTitle('SmartMetadata').items
             .select("Id,Title,TaxType,Parent/Id,Parent/Title").expand("Parent").top(4999).get();
@@ -628,12 +629,12 @@ function TimeEntryPopup(item: any) {
 
         })
         TimeSheet.forEach((val: any) => {
-          
-                if ((val.Title == 'Design' || val.Title == 'Design' || val.Title == 'Development' || val.Title == 'Investigation' || val.Title == 'QA' || val.Title == 'Support' || val.Title == 'Verification' || val.Title == 'Coordination' || val.Title == 'Implementation' || val.Title == 'Conception' || val.Title == 'Preparation') && val.Parent?.Title == 'Components') {
-                    newArray.push(val)
-                }
-           
-           
+
+            if ((val.Title == 'Design' || val.Title == 'Design' || val.Title == 'Development' || val.Title == 'Investigation' || val.Title == 'QA' || val.Title == 'Support' || val.Title == 'Verification' || val.Title == 'Coordination' || val.Title == 'Implementation' || val.Title == 'Conception' || val.Title == 'Preparation') && val.Parent?.Title == 'Components') {
+                newArray.push(val)
+            }
+
+
             setTimeSheets(newArray)
         })
 
@@ -674,11 +675,11 @@ function TimeEntryPopup(item: any) {
             }
         })
         TimesheetConfiguration?.forEach((val: any) => {
-           
-                TimeSheetlistId = val.TimesheetListId;
-                siteUrl = val.siteUrl
-                listName = val.TimesheetListName
-            
+
+            TimeSheetlistId = val.TimesheetListId;
+            siteUrl = val.siteUrl
+            listName = val.TimesheetListName
+
             // else {
             //     MigrationListId = val.TimesheetListId;
             //     siteUrl = val.siteUrl
@@ -706,12 +707,12 @@ function TimeEntryPopup(item: any) {
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
             if (categoryTitle.Id === category) {
                 // item.isShow = true;
-                if (categoryTitle.Childs.length === 0) {
-                    categoryTitle.Childs = [];
+                if (categoryTitle.subRows.length === 0) {
+                    categoryTitle.subRows = [];
                 }
-                if (!isItemExists(categoryTitle.Childs, item.Id)) {
-                    item.show = true;
-                    categoryTitle.Childs.push(item);
+                if (!isItemExists(categoryTitle.subRows, item.Id)) {
+                    item.show = false;
+                    categoryTitle.subRows.push(item);
                 }
             }
         })
@@ -728,8 +729,8 @@ function TimeEntryPopup(item: any) {
                 AllTimeSpentDetails.forEach((val: any) => {
                     if (val.TimesheetTitle.Id != undefined && val.TimesheetTitle.Id === items.Id) {
                         val.isShifted = true;
-                        val.show = true;
-                        val.AdditionalTime.forEach((value: any) => {
+                        val.show = false;
+                        val.subRows.forEach((value: any) => {
                             value.ParentID = val.Id;
                             value.siteListName = val.__metadata.type;
                             value.MainParentId = items.Id;
@@ -752,60 +753,68 @@ function TimeEntryPopup(item: any) {
                         })
                         // $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
                         //     if (items.Id == NewCategoryId) {
-                        //         items.Childs.push(val);
+                        //         items.subRows.push(val);
                         //     }
                         // });
                         //  setAdditionalTime(item.AdditionalTime)
 
 
                     }
-                   
+
                 })
             }
         })
-        AllTimeSpentDetails?.forEach((val:any)=>{
-            if(val.TimesheetTitle.Id == undefined){
-                val.AdditionalTime=[]
-                 AllTimeSpentDetails?.forEach((itemss:any)=>{
-                if(itemss.TimesheetTitle.Id == val.Id){
-                    if(itemss.AdditionalTime != undefined){
-                        itemss.AdditionalTime.forEach((item:any)=>{
-                         val.AdditionalTime.push(item)
-                            
-                        })
+        AllTimeSpentDetails?.forEach((val: any) => {
+            if (val.TimesheetTitle.Id == undefined) {
+                val.subRows = []
+                AllTimeSpentDetails?.forEach((itemss: any) => {
+                    if (itemss.TimesheetTitle.Id == val.Id) {
+                        if (itemss.subRows != undefined) {
+                            itemss.subRows.forEach((item: any) => {
+                                val.subRows.push(item)
+
+                            })
+                        }
                     }
-                }
-            })
-                }
-           
-            
+                })
+            }
+
+
 
         })
-       
+
         AllTimeSpentDetails = $.grep(AllTimeSpentDetails, function (type: any) { return type.isShifted === false });
+
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
-            if (items.AdditionalTime.length === 0) {
+            items.show = false;
+            items.AuthorName = '';
+            items.TaskTime = '';
+            items.TaskDate = '';
+            items.Description = '';
+            if (items.subRows.length === 0) {
                 items.isAvailableToDelete = true;
             }
-            if (items.AdditionalTime != undefined && items.AdditionalTime.length > 0) {
-                $.each(items.AdditionalTime, function (index: any, type: any) {
+            if (items.subRows != undefined && items.subRows.length > 0) {
+                $.each(items.subRows, function (index: any, type: any) {
+                    type.show = true;
                     if (type.Id != undefined)
                         type.Id = type.ID;
                 })
             }
         });
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
-            if (items.AdditionalTime.length > 0) {
-                items.AdditionalTime = items.AdditionalTime.reverse()
-                $.each(items.AdditionalTime, function (index: any, val: any) {
+            if (items.subRows.length > 0) {
+                items.subRows = items.subRows.reverse()
+                $.each(items.subRows, function (index: any, val: any) {
                     var NewDate = val.TaskDate;
+                   // val.TaskDate = moment(val.TaskDate).format("ddd, DD/MM/YYYY")
                     try {
                         getDateForTimeEntry(NewDate, val);
                     } catch (e) { }
                 })
             }
         })
-       
+
         $.each(AllTimeSpentDetails, function (index: any, items: any) {
             if (items.Category.Title === undefined)
                 checkCategory(items, 319);
@@ -814,23 +823,24 @@ function TimeEntryPopup(item: any) {
         })
         var IsTimeSheetAvailable = false;
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
-            if (items.Childs.length > 0) {
+            if (items.subRows.length > 0) {
                 IsTimeSheetAvailable = true;
             }
         });
 
-    var newArray=[]
-
+        var newArray = []
+        let finalData: any = []
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, items: any) {
 
-            if (items.Childs != undefined && items.Childs.length > 0) {
-                $.each(items.Childs, function (index: any, child: any) {
+            if (items.subRows != undefined && items.subRows.length > 0) {
+                $.each(items.subRows, function (index: any, child: any) {
+                    finalData.push(child);
                     if (child.TimesheetTitle.Id == undefined) {
-                        newArray =  child.AdditionalTime.sort(datecomp);
+                        newArray = child.subRows.sort(datecomp);
                         console.log(newArray)
-                      //child.AdditionalTime = child.AdditionalTime.reverse()
+                        //child.AdditionalTime = child.AdditionalTime.reverse()
 
-                                
+
                     }
 
                 })
@@ -840,21 +850,20 @@ function TimeEntryPopup(item: any) {
 
 
 
-          
+
 
         });
         console.log(TaskTimeSheetCategoriesGrouping)
-        if(item.parentCallback != undefined){
-            item.parentCallback(timesheetMoveData);
-        }
-       
+        //item?.parentCallback(timesheetMoveData);
+        setData(finalData)
+        setBackupData(finalData)
         setTimeSheet(TaskTimeSheetCategoriesGrouping)
         // var mainArray: any = []
         // var sortedCars: any = []
         // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
-        //         $.each(temp.Childs, function (index: any, child: any) {
+        //     if (temp.subRows != undefined && temp.subRows.length > 0) {
+        //         $.each(temp.subRows, function (index: any, child: any) {
         //             child.AdditionalTimes = []
         //             if (child.AdditionalTime != undefined && child.AdditionalTime.length > 0) {
         //                 $.each(child.AdditionalTime, function (index: any, ch: any) {
@@ -874,9 +883,9 @@ function TimeEntryPopup(item: any) {
         // })
         // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
+        //     if (temp.subRows != undefined && temp.subRows.length > 0) {
 
-        //         $.each(temp.Childs, function (index: any, child: any) {
+        //         $.each(temp.subRows, function (index: any, child: any) {
         //             child.AdditionalTime = []
         //             $.each(finalData, function (index: any, ch: any) {
         //                 if (child.Id == ch.MainParentId) {
@@ -892,9 +901,9 @@ function TimeEntryPopup(item: any) {
         // })
         // TaskTimeSheetCategoriesGrouping.forEach((temp: any) => {
 
-        //     if (temp.Childs != undefined && temp.Childs.length > 0) {
+        //     if (temp.subRows != undefined && temp.subRows.length > 0) {
 
-        //         $.each(temp.Childs, function (index: any, child: any) {
+        //         $.each(temp.subRows, function (index: any, child: any) {
         //             $.each(child.AdditionalTimes, function (index: any, ch: any) {
 
         //                 child.AdditionalTime.push(ch)
@@ -936,8 +945,8 @@ function TimeEntryPopup(item: any) {
         var a1 = d1.TaskDate.split("/");
         var a2 = d2.TaskDate.split("/");
         a1 = a1[2] + a1[1] + a1[0];
-         a2 = a2[2] + a2[1] + a2[0];
-       // a1 = a1[1] + a1[0] + a1[2];
+        a2 = a2[2] + a2[1] + a2[0];
+        // a1 = a1[1] + a1[0] + a1[2];
         //a2 = a2[1] + a2[0] + a2[2];
         //var a1:any= new Date(d1.TaskDate)
         //var a2:any= new Date(d2.TaskDate)
@@ -946,7 +955,10 @@ function TimeEntryPopup(item: any) {
         return a2 - a1;
     }
 
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
 
+
+    }, []);
     function getDateForTimeEntry(newDate: any, items: any) {
         var LatestDate = [];
         var getMonth = '';
@@ -1029,7 +1041,7 @@ function TimeEntryPopup(item: any) {
 
         $.each(TaskTimeSheetCategoriesGrouping, function (index: any, categoryTitle: any) {
 
-            categoryTitle.Childs = [];
+            categoryTitle.subRows = [];
             categoryTitle.Expanded = true;
             categoryTitle.flag = true;
             // categoryTitle.AdditionalTime = [];
@@ -1054,6 +1066,7 @@ function TimeEntryPopup(item: any) {
         if (items.siteType == "Offshore Tasks") {
             var siteType = "OffshoreTasks"
             var filteres = "Task" + siteType + "/Id eq " + items.Id;
+            var linkedSite = "Task" + siteType
         }
         else {
 
@@ -1101,15 +1114,14 @@ function TimeEntryPopup(item: any) {
                         let totletimeparentcount = 0;
                         //  let totletimeparentcount = 0;
                         let AllAvailableTitle = [];
-
-                        AllTimeSpentDetails.forEach((items:any)=>{
+                        AllTimeSpentDetails.forEach((items: any) => {
                             timesheetMoveData.push(items)
-                           })
-                       
+                        })
                         $.each(AllTimeSpentDetails, async function (index: any, item: any) {
                             item.IsVisible = false;
                             item.Item_x005F_x0020_Cover = undefined;
                             item.Parent = {};
+                            item.subRows = []
                             item.ParentID = 0;
                             item.ParentId = 0;
                             item.ParentType = undefined
@@ -1182,8 +1194,9 @@ function TimeEntryPopup(item: any) {
                                 if (item.AdditionalTimeEntry != undefined && item.AdditionalTimeEntry != '') {
                                     try {
                                         item.AdditionalTime = JSON.parse(item.AdditionalTimeEntry);
-                                        if (item.AdditionalTime.length > 0) {
-                                            $.each(item.AdditionalTime, function (index: any, additionalTime: any) {
+                                        item.subRows = JSON.parse(item.AdditionalTimeEntry);
+                                        if (item.subRows.length > 0) {
+                                            $.each(item.subRows, function (index: any, additionalTime: any) {
                                                 var time = parseFloat(additionalTime.TaskTime)
                                                 if (!isNaN(time)) {
                                                     totletimeparentcount += time;
@@ -1268,44 +1281,44 @@ function TimeEntryPopup(item: any) {
         // setData(data => ([...data]));
 
     };
-    const sortBy = (Type:any) => {
-        var copy:any=[]
-        AllTimeSpentDetails?.forEach((val:any)=>{
-        val?.AdditionalTime.forEach((item:any)=>{
-            copy.push(item)
-        })
-        })
-
-        
-        copy.sort((a:any, b:any) => (a.Type > b.Type) ? 1 : -1);
-        AllTimeSpentDetails?.forEach((val:any)=>{
-            val.AdditionalTime=[]
-            copy.forEach((item:any)=>{
-                val.AdditionalTime.push(item)
-            })
-            })
-
-            setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
-
-    }
-    const sortByDng = (Type:any) => {
-
-        var copy:any=[]
-        AllTimeSpentDetails?.forEach((val:any)=>{
-            val?.AdditionalTime.forEach((item:any)=>{
+    const sortBy = (Type: any) => {
+        var copy: any = []
+        AllTimeSpentDetails?.forEach((val: any) => {
+            val?.AdditionalTime.forEach((item: any) => {
                 copy.push(item)
             })
         })
 
 
-      copy.sort((a:any, b:any) => (a.Type < b.Type) ? 1 : -1);
-      AllTimeSpentDetails?.forEach((val:any)=>{
-        val.AdditionalTime=[]
-        copy.forEach((item:any)=>{
-            val.AdditionalTime.push(item)
+        copy.sort((a: any, b: any) => (a.Type > b.Type) ? 1 : -1);
+        AllTimeSpentDetails?.forEach((val: any) => {
+            val.AdditionalTime = []
+            copy.forEach((item: any) => {
+                val.AdditionalTime.push(item)
+            })
         })
-        }) 
- 
+
+        setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
+
+    }
+    const sortByDng = (Type: any) => {
+
+        var copy: any = []
+        AllTimeSpentDetails?.forEach((val: any) => {
+            val?.AdditionalTime.forEach((item: any) => {
+                copy.push(item)
+            })
+        })
+
+
+        copy.sort((a: any, b: any) => (a.Type < b.Type) ? 1 : -1);
+        AllTimeSpentDetails?.forEach((val: any) => {
+            val.AdditionalTime = []
+            copy.forEach((item: any) => {
+                val.AdditionalTime.push(item)
+            })
+        })
+
         setTimeSheet(TaskTimeSheetCategoriesGrouping => ([...TaskTimeSheetCategoriesGrouping]));
     }
 
@@ -1386,33 +1399,33 @@ function TimeEntryPopup(item: any) {
                 }
 
             })
-        
 
 
-        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-            var ListId = TimeSheetlistId
+            if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
+                var ListId = TimeSheetlistId
+
+            }
+            else {
+                var ListId = TimeSheetlistId
+            }
+            let web = new Web(`${CurrentSiteUrl}`);
+
+            await web.lists.getById(ListId).items.getById(childinew.ParentID).update({
+
+
+                AdditionalTimeEntry: JSON.stringify(UpdatedData),
+
+            }).then((res: any) => {
+
+                console.log(res);
+
+
+            })
+
+            setupdateData(updateData + 5)
         }
-        else {
-            var ListId = TimeSheetlistId
-        }
-        let web = new Web(`${CurrentSiteUrl}`);
-
-        await web.lists.getById(ListId).items.getById(childinew.ParentID).update({
-
-
-            AdditionalTimeEntry: JSON.stringify(UpdatedData),
-
-        }).then((res: any) => {
-
-            console.log(res);
-
-
-        })
-    
-        setupdateData(updateData + 5)
-       }
 
     }
 
@@ -1520,6 +1533,7 @@ function TimeEntryPopup(item: any) {
             console.log(res);
 
             closeTaskStatusUpdatePoup2();
+            setupdateData(updateData + 1)
 
         })
 
@@ -1541,7 +1555,7 @@ function TimeEntryPopup(item: any) {
             ContentTypeId: '0x0120',
         }).then(async (res) => {
             const lists = sp.web.lists.getByTitle(ListId);
-           await lists.items.getById(res.data.Id).update({
+            await lists.items.getById(res.data.Id).update({
                 Title: folderName,
                 FileLeafRef: folderNames
             }).then((res) => {
@@ -1584,7 +1598,7 @@ function TimeEntryPopup(item: any) {
 
         }
         let itemMetadataAdded = {
-            'Title':newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
+            'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
             'CategoryId': Category,
             // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
@@ -1625,49 +1639,49 @@ function TimeEntryPopup(item: any) {
 
         let web = new Web(`${CurrentSiteUrl}`);
 
-if(AllTimeEntry  != undefined && AllTimeEntry.length>0){
-    AllTimeEntry.forEach(async (ite:any)=>{
-        if(ite.Title == UpdatedData.AuthorName){
-             Available = true;
-            let folderUri: string = `/${UpdatedData.Company}`
-            if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
-                var listNames = listName
-                var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
-    
-            }
-            else {
-                var listNames = listName
-                var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
-    
-            }
-            let itemMetadataAdded = {
-                'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
-                [smartTermId]: item.props.Id,
-                'CategoryId': Category,
-                // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
-            };
-    
-            let newdata = await web.lists.getByTitle(listNames)
-            .items
-            .add({ ...itemMetadataAdded });
-        console.log(newdata)
+        if (AllTimeEntry != undefined && AllTimeEntry.length > 0) {
+            AllTimeEntry.forEach(async (ite: any) => {
+                if (ite.Title == UpdatedData.AuthorName) {
+                    Available = true;
+                    let folderUri: string = `/${UpdatedData.Company}`
+                    if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+                        var listNames = listName
+                        var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
 
-        let movedata = await web
-            .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
-            .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
-        console.log(movedata);
-        mainParentId = newdata.data.Id;
-        mainParentTitle = newdata.data.Title;
-        createItemMainList();
-    }
-           
+                    }
+                    else {
+                        var listNames = listName
+                        var listUri: string = `${RelativeUrl}/Lists/${listNames}`;
 
-        
-    })
-}
-if(AllTimeEntry.length == 0 && Available == false){
-    GetOrCreateFolder(CurrentUserTitle, UpdatedData, CurrentSiteUrl, listName)
-}
+                    }
+                    let itemMetadataAdded = {
+                        'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
+                        [smartTermId]: item.props.Id,
+                        'CategoryId': Category,
+                        // 'Path': `${RelativeUrl}/Lists/${listName}/${UpdatedData.Company}`
+                    };
+
+                    let newdata = await web.lists.getByTitle(listNames)
+                        .items
+                        .add({ ...itemMetadataAdded });
+                    console.log(newdata)
+
+                    let movedata = await web
+                        .getFileByServerRelativeUrl(`${listUri}/${newdata.data.Id}_.000`)
+                        .moveTo(`${listUri}${folderUri}/${newdata.data.Id}_.000`);
+                    console.log(movedata);
+                    mainParentId = newdata.data.Id;
+                    mainParentTitle = newdata.data.Title;
+                    createItemMainList();
+                }
+
+
+
+            })
+        }
+        if (AllTimeEntry.length == 0 && Available == false) {
+            GetOrCreateFolder(CurrentUserTitle, UpdatedData, CurrentSiteUrl, listName)
+        }
     }
 
 
@@ -1686,7 +1700,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 Category = items.Id
             }
         })
-       // GetOrCreateFolder(CurrentUserTitle, 'Santosh Kumar', CurrentSiteUrl, listName)
+        // GetOrCreateFolder(CurrentUserTitle, 'Santosh Kumar', CurrentSiteUrl, listName)
 
         // let web = new Web(`${CurrentSiteUrl}`);
         // await web.lists.getByTitle('Task Users').items.add({
@@ -1694,17 +1708,24 @@ if(AllTimeEntry.length == 0 && Available == false){
         //     AssingedToUserId: CurntUserId
         // })
         //     .then(async (res: any) => {
-              
+
         //         var folderName = `${CurrentSiteUrl}/Lists/${listName}`
-                
+
         //     })
     }
 
 
     const saveTimeSpent = async () => {
-       
+
         var UpdatedData: any = {}
-        smartTermId = "Task" + item.props.siteType + "Id";
+        if (item.props.siteType == "Offshore Tasks") {
+            var siteType = "OffshoreTasks"
+            smartTermId = "Task" + siteType + "Id";
+        }
+        else{
+            smartTermId = "Task" + item.props.siteType + "Id";
+        }
+       
         showProgressBar();
 
         var AddedData: any = []
@@ -1714,7 +1735,7 @@ if(AllTimeEntry.length == 0 && Available == false){
             return false;
         }
         else {
-             closeTaskStatusUpdatePoup();
+            closeTaskStatusUpdatePoup();
             var count: any = 0;
             $.each(AllUsers, async function (index: any, taskUser: any) {
                 count++
@@ -1723,17 +1744,17 @@ if(AllTimeEntry.length == 0 && Available == false){
                     UpdatedData['Company'] = taskUser.Company;
                     UpdatedData['UserImage'] = (taskUser.Item_x0020_Cover != undefined && taskUser.Item_x0020_Cover.Url != undefined) ? taskUser.Item_x0020_Cover.Url : '';
                     await saveOldUserTask(UpdatedData)
-    
+
                 }
-    
+
             });
             if (UpdatedData.AuthorName == undefined && UpdatedData.AuthorName == null) {
-    
-               alert("Please Add user on Task User Management")
-    
+
+                alert("Please Add user on Task User Management")
+
             }
         }
-        
+
 
 
 
@@ -1753,16 +1774,16 @@ if(AllTimeEntry.length == 0 && Available == false){
         let web = new Web(`${CurrentSiteUrl}`);
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-          
+
         }
         else {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-           
+
         }
 
-       
+
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
-       
+
         let itemMetadataAdded = {
             'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1781,7 +1802,7 @@ if(AllTimeEntry.length == 0 && Available == false){
         NewParentId = newdata.data.Id;
         NewParentTitle = newdata.data.Title;
         NewCategoryId = newdata.data.CategoryId;
-        AllTimeEntry=[]
+        AllTimeEntry = []
         EditData(item.props);
     }
     const createItemforNewUser = async (LetestFolderID: any) => {
@@ -1802,19 +1823,19 @@ if(AllTimeEntry.length == 0 && Available == false){
             }
 
         });
-      
+
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-           
+
         }
         else {
             var listUri: string = `${RelativeUrl}/Lists/${listName}`;
-          
+
         }
 
-       
+
         let folderUri: string = `/${UpdatedData.Company}/${UpdatedData.AuthorName}`
-       
+
         let itemMetadataAdded = {
             'Title': newData != undefined && newData.Title != undefined && newData.Title != '' ? newData.Title : checkCategories,
             [smartTermId]: item.props.Id,
@@ -1855,7 +1876,7 @@ if(AllTimeEntry.length == 0 && Available == false){
 
 
 
-        $.each(TaskCate, async function (index: any,items:any) {
+        $.each(TaskCate, async function (index: any, items: any) {
 
             if (items.TimesheetTitle.Id != undefined && items.TimesheetTitle.Id == ParentId) {
                 if (items.AdditionalTime.length > 0 && items.AdditionalTime != undefined) {
@@ -1934,17 +1955,17 @@ if(AllTimeEntry.length == 0 && Available == false){
 
     const deleteCategory = async (val: any) => {
 
-       var deleteConfirmation =  confirm("Are you sure, you want to delete this?")
-            var ListId = TimeSheetlistId
-            if (deleteConfirmation) {
+        var deleteConfirmation = confirm("Are you sure, you want to delete this?")
+        var ListId = TimeSheetlistId
+        if (deleteConfirmation) {
 
-        let web = new Web(`${CurrentSiteUrl}`);
-        await web.lists.getById(ListId).items.getById(val.Id).delete()
-            .then((i: any) => {
-                console.log(i);
-            });
-        setupdateData(updateData + 5)
-            }
+            let web = new Web(`${CurrentSiteUrl}`);
+            await web.lists.getById(ListId).items.getById(val.Id).delete()
+                .then((i: any) => {
+                    console.log(i);
+                });
+            setupdateData(updateData + 1)
+        }
 
     }
 
@@ -2059,7 +2080,7 @@ if(AllTimeEntry.length == 0 && Available == false){
 
 
             Title: newData != undefined ? newData.Title : checkCategories,
-            CategoryId: Category
+            CategoryId: Category != undefined &&  Category != "" ? Category : CategoriesIdd
 
         }).then((res: any) => {
 
@@ -2072,48 +2093,48 @@ if(AllTimeEntry.length == 0 && Available == false){
     }
     const onRenderCustomHeaderAddTaskTime = () => {
         return (
-          <>
-    
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Add Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
+            <>
+
+                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                    Add Task Time
+                </div>
+                <Tooltip ComponentId='1753' />
+            </>
         );
-     };
-     const onRenderCustomHeaderEditTaskTime = () => {
+    };
+    const onRenderCustomHeaderEditTaskTime = () => {
         return (
-          <>
-    
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Edit Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
+            <>
+
+                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                    Edit Task Time
+                </div>
+                <Tooltip ComponentId='1753' />
+            </>
         );
-      };
-      const onRenderCustomHeaderCopyTaskTime = () => {
+    };
+    const onRenderCustomHeaderCopyTaskTime = () => {
         return (
-          <>
-    
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Copy Task Time
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
+            <>
+
+                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                    Copy Task Time
+                </div>
+                <Tooltip ComponentId='1753' />
+            </>
         );
-      };
-      const onRenderCustomHeaderEditCategory= () => {
+    };
+    const onRenderCustomHeaderEditCategory = () => {
         return (
-          <>
-    
-            <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
-            Edit Category
-            </div>
-            <Tooltip ComponentId='1753' />
-          </>
+            <>
+
+                <div className='ps-4 siteColor' style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600" }}>
+                    Edit Category
+                </div>
+                <Tooltip ComponentId='1753' />
+            </>
         );
-      };
+    };
 
     const changeTimeFunction = (e: any, type: any) => {
 
@@ -2171,7 +2192,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-               // setMyDatee(finalDate)
+                // setMyDatee(finalDate)
                 setediteddata(change)
             }
             if (type == '1Jandate') {
@@ -2203,9 +2224,9 @@ if(AllTimeEntry.length == 0 && Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 var finalDate = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-               // setMyDatee(finalDate)
+                // setMyDatee(finalDate)
                 //setediteddata(finalDate)
-               // var inputDate = new Date(a1)
+                // var inputDate = new Date(a1)
                 setMyDatee(change)
             }
             if (type == '15thdate') {
@@ -2216,9 +2237,9 @@ if(AllTimeEntry.length == 0 && Available == false){
                 a1 = a1[2] + a1[1] + a1[0];
                 let finalDate: any = Moment(a1).format("ddd, DD MMM yyyy")
                 change = new window.Date(finalDate)
-               // setMyDatee(finalDate)
-               // setediteddata(finalDate)
-               // var inputDate = new Date(a1)
+                // setMyDatee(finalDate)
+                // setediteddata(finalDate)
+                // var inputDate = new Date(a1)
                 setMyDatee(change)
             }
             if (type == '1Jandate') {
@@ -2232,7 +2253,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 change = new window.Date(finalDate)
                 //setMyDatee(finalDate)
                 //setediteddata(finalDate)
-               // var inputDate = new Date(a1)
+                // var inputDate = new Date(a1)
                 setMyDatee(change)
             }
             if (type == 'Today') {
@@ -2258,8 +2279,8 @@ if(AllTimeEntry.length == 0 && Available == false){
     }
     const handleDatedue = (date: any) => {
         change = new window.Date(date)
-        var NewDate:any = new window.Date(date)
-       // var FinalDate = moment(NewDate).format("ddd, DD MMM yyyy")
+        var NewDate: any = new window.Date(date)
+        // var FinalDate = moment(NewDate).format("ddd, DD MMM yyyy")
         setMyDatee(NewDate)
         //setMyDatee(NewDate)
         setediteddata(NewDate)
@@ -2268,16 +2289,149 @@ if(AllTimeEntry.length == 0 && Available == false){
         setNewData({ ...newData, TaskDate: event.target.value })
     }
 
-    var FlatviewData:any=[]
-    var Childs:any=[]
+    const flatviewOpen = (e: any) => {
+        var newArray:any=[]
+        var sortedData:any=[]
+        Flatview = e.target.checked;
+        if(Flatview == false){
+            setData(backupData)  
+        }
+        else{
+            data?.forEach((item:any)=>{
+                item.subRows?.forEach((val:any)=>{
+                    newArray.push(val)
+                })
+            })
+            sortedData =  newArray.sort(datecomp);
+            setData(sortedData)
+        }
+        
+       // setFlatview((flatview: any) => ([...flatview]))
 
-   const FlatView=()=>{
-    setFlatview(!flatview)
+    }
 
-   }
 
+    const column = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+
+            {
+                accessorFn: (row) => row?.AuthorName,
+                id: "AuthorName",
+                placeholder: "AuthorName",
+                header: "",
+                size: 460,
+                cell: ({ row }) => (
+                    <>
+                        <span>
+                            <div className="d-flex">
+                                <>
+                                    {row.getCanExpand() ? (
+                                        <span
+                                            className="border-0"
+                                            {...{
+                                                onClick: row.getToggleExpandedHandler(),
+                                                style: { cursor: "pointer" },
+                                            }}
+                                        >
+                                            {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                        </span>
+                                    ) : (
+                                        ""
+                                    )}{" "}
+
+
+                                    {row?.original?.show === true ? <span>
+                                        {(row?.original?.AuthorImage != '' && row?.original.AuthorImage != null) ?
+                                            <>
+                                                <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                    title={row?.original.AuthorName}
+                                                    data-toggle="popover"
+                                                    data-trigger="hover"
+                                                    src={row?.original.AuthorImage}></img>
+
+                                            </> : <> <img className="AssignUserPhoto1 wid29 bdrbox"
+                                                title={row?.original.AuthorName}
+                                                data-toggle="popover"
+                                                data-trigger="hover"
+                                                src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"></img></>}<span className='mx-1'>{row?.original?.AuthorName}</span>
+                                        </span> :
+
+
+                                        <><span className='mx-1'>{row?.original?.Category?.Title} - {row?.original?.Title}</span><span className="svg__iconbox svg__icon--edit" onClick={() => Editcategorypopup(row.original)}></span><span className="svg__iconbox svg__icon--cross" onClick={() => deleteCategory(row.original)}></span></>}
+                                </>
+                            </div>
+                        </span>
+                    </>
+                ),
+
+            },
+
+            {
+                accessorKey: 'TaskDate',
+                placeholder: "TaskDate",
+                header: "",
+                size: 95,
+            },
+            {
+                accessorKey: 'TaskTime',
+                placeholder: "TaskTime",
+                header: "",
+                size: 95,
+
+
+            },
+            {
+                accessorKey: 'Description',
+                placeholder: "Description",
+                header: "",
+               
+            },
+            {
+                id: "ff",
+                accessorKey: "",
+                size: 75,
+                canSort: false,
+                placeholder: "",
+                cell: ({ row }) => (
+                    <div className='editicons'>
+
+                        {row?.original?.show === false  ? <span style={{ width: "7.7%"}}>
+
+
+
+                            <button type="button" className="btn btn-primary me-1 d-flex " onClick={() => openAddTasktimepopup(row.original)} >
+                                Add Time <span className="bg-light m-0  ms-1 p-0 svg__icon--Plus svg__iconbox"></span>
+
+                            </button>
+                        </span> :
+
+                            <span>
+                                <span>  <a title="Copy" className="hreflink">
+                                    <img
+                                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_copy.png" onClick={() => openCopyTaskpopup(row.original)}></img>
+                                </a></span>
+
+                                <span>  <a className="hreflink"
+                                >
+                                    <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(row.getParentRow().original, row.original)}></span>
+
+                                </a></span>
+                                <span>  <a title="Delete" className="hreflink">
+                                    <span className="svg__icon--trash  svg__iconbox" onClick={() => deleteTaskTime(row.original)}></span>
+
+                                </a>
+                                </span>
+                                <span />
+                            </span>}
+
+                    </div>
+                )
+            }
+        ],
+        [data]
+    );
     return (
-        <div className={PortfolioType=='Service'?'serviepannelgreena':''}>
+        <div className={PortfolioType == 'Service' ? 'serviepannelgreena' : ''}>
             <div>
                 <div className="col-sm-12 p-0">
                     <span ng-if="Item!=undefined">
@@ -2290,15 +2444,15 @@ if(AllTimeEntry.length == 0 && Available == false){
                                 + Add Time in New Structure
                             </a>
                             <div>
-                            <input type = "checkbox" className="hreflink pull-Left mt-1 me-1" onClick={()=>FlatView()}/>
+                                <input type="checkbox" className="hreflink pull-Left mt-1 me-1" onClick={(e: any) => flatviewOpen(e)} />
 
-                              FlatView
-                            
+                                FlatView
+
+
+                            </div>
 
                         </div>
 
-                        </div>
-                       
 
                     </div>
                 </div>
@@ -2309,9 +2463,9 @@ if(AllTimeEntry.length == 0 && Available == false){
                 <div id="forShowTask" className="pt-0" >
                     <div className='Alltable'>
                         <div className="col-sm-12 p-0 smart">
-                            <div className="section-event">
-                                <div className="wrapper">
-                                    <table className="table table-hover TimeSheet" id="EmpTable" style={{ width: "100%" }}>
+                            <div>
+                                <div className="wrapper AllTime">
+                                    {/* <table className="table table-hover TimeSheet" id="EmpTable" style={{ width: "100%" }}>
                                         <thead>
                                             <tr>
                                                 <th style={{ width: "2%" }}>
@@ -2375,15 +2529,15 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                 <div id="SpfxProgressbar" style={{ display: "none" }}>
                                                     <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
                                                 </div>
-                                                if (item.Childs != undefined && item.Childs.length > 0) {
+                                                if (item.subRows != undefined && item.subRows.length > 0) {
 
                                                     return (
                                                         <>
 
-                                                            {item.Childs != undefined && item.Childs.length > 0 && (
+                                                            {item.subRows != undefined && item.subRows.length > 0 && (
                                                                 <>
 
-                                                                    {item.Childs.map(function (childitem: any) {
+                                                                    {item.subRows.map(function (childitem: any) {
 
                                                                         return (
 
@@ -2552,7 +2706,9 @@ if(AllTimeEntry.length == 0 && Available == false){
 
                                             })}
                                         </tbody>
-                                    </table>
+                                    </table> */}
+                                    {data && <GlobalCommanTable columns={column} data={data} callBackData={callBackData} expendedTrue={expendedTrue} />}
+
                                     {TaskCate.length === 0 && <div className="text-center pb-3"
                                     >
                                         No Timesheet Available
@@ -2573,7 +2729,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 onDismiss={closeTaskStatusUpdatePoup}
                 isBlocking={false}
             >
-                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
+                <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
 
                     <div className='row'>
                         <div className="col-sm-9 border-end" >
@@ -2816,7 +2972,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     </div>
 
                 </div>
-                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
+                <div className={PortfolioType == "Service" ? "modal-footer mt-2 serviepannelgreena" : "modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" disabled={TimeInMinutes == 0 ? true : false} onClick={saveTimeSpent}>
                         Submit
                     </button>
@@ -2829,7 +2985,7 @@ if(AllTimeEntry.length == 0 && Available == false){
             {/* ---------------------------------------------------------------------EditTime--------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
-               onRenderHeader={onRenderCustomHeaderEditTaskTime}
+                onRenderHeader={onRenderCustomHeaderEditTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={TaskStatuspopup2}
@@ -2840,7 +2996,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     return (
                         <>
 
-                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
+                            <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
                                 <div className="col">
 
                                     <div className="form-group mb-2">
@@ -2899,10 +3055,10 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                                     value={editeddata}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                     selected={editeddata}
-                                                                     onChange={handleDatedue}
-                                                                     dateFormat="EEE, dd MMM yyyy"
-                 
+                                                                    selected={editeddata}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="EEE, dd MMM yyyy"
+
 
                                                                 />
 
@@ -3098,17 +3254,17 @@ if(AllTimeEntry.length == 0 && Available == false){
                     return (
                         <>
 
-                            <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
+                            <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
                                 <div className="col">
 
-                                    <div className="form-group mb-2">
+                                    {/* <div className="form-group mb-2">
                                         <label>Title</label>
                                         <input type="text" autoComplete="off"
                                             className="form-control" name="TimeTitle"
                                             defaultValue={item.Title}
                                             onChange={(e) => setPostData({ ...postData, Title: e.target.value })} />
 
-                                    </div>
+                                    </div> */}
                                     {saveCopyTaskTimeChild.map((child: any, index: any) => {
                                         return (
                                             <>
@@ -3157,9 +3313,9 @@ if(AllTimeEntry.length == 0 && Available == false){
                                                                     value={Moment(myDatee).format('ddd, DD MMM yyyy')}
                                                                     onChange={(e) => setNewData({ ...newData, TaskDate: e.target.value })} /> */}
                                                                 <DatePicker className="form-control"
-                                                                 selected={editeddata}
-                                                                 onChange={handleDatedue}
-                                                                 dateFormat="EEE, dd MMM yyyy"/>
+                                                                    selected={editeddata}
+                                                                    onChange={handleDatedue}
+                                                                    dateFormat="EEE, dd MMM yyyy" />
 
                                                             </div>
                                                         </div>
@@ -3344,14 +3500,14 @@ if(AllTimeEntry.length == 0 && Available == false){
             {/* ----------------------------------------Add Time Popup------------------------------------------------------------------------------------------------------------------------------------- */}
 
             <Panel
-               onRenderHeader={onRenderCustomHeaderAddTaskTime}
+                onRenderHeader={onRenderCustomHeaderAddTaskTime}
                 type={PanelType.custom}
                 customWidth="850px"
                 isOpen={AddTaskTimepopup}
                 onDismiss={closeAddTaskTimepopup}
                 isBlocking={false}
             >
-                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
+                <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
 
 
 
@@ -3400,9 +3556,9 @@ if(AllTimeEntry.length == 0 && Available == false){
                                             value={Moment(myDatee).format('ddd, DD MMM yyyy')}
                                             onChange={(e) => setPostData({ ...postData, TaskDate: e.target.value })} /> */}
                                         <DatePicker className="form-control"
-                                           selected={myDatee}
-                                           onChange={handleDatedue}
-                                           dateFormat="EEE, dd MMM yyyy" />
+                                            selected={myDatee}
+                                            onChange={handleDatedue}
+                                            dateFormat="EEE, dd MMM yyyy" />
 
                                     </div>
                                 </div>
@@ -3579,7 +3735,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                 onDismiss={closeEditcategorypopup}
                 isBlocking={false}
             >
-                <div className={PortfolioType=="Service"?"modal-body border p-3 serviepannelgreena":"modal-body border p-3"}>
+                <div className={PortfolioType == "Service" ? "modal-body border p-3 serviepannelgreena" : "modal-body border p-3"}>
 
                     <div className='row'>
                         {categoryData?.map((item) => {
@@ -3639,7 +3795,7 @@ if(AllTimeEntry.length == 0 && Available == false){
                     </div>
 
                 </div>
-                <div className={PortfolioType=="Service"?"modal-footer mt-2 serviepannelgreena":"modal-footer mt-2"}>
+                <div className={PortfolioType == "Service" ? "modal-footer mt-2 serviepannelgreena" : "modal-footer mt-2"}>
                     <button type="button" className="btn btn-primary" onClick={updateCategory}>
                         Submit
                     </button>
