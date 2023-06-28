@@ -13,8 +13,9 @@ const EmailComponent = (props: any) => {
   console.log(props);
   const sendEmail = async (send: any) => {
     let mention_To: any = [];
-    if (props.CreatedApprovalTask != undefined || props.statusUpdateMailSendStatus != undefined) {
-      if (props.CreatedApprovalTask == true || props.statusUpdateMailSendStatus == false) {
+    // mention_To.push(props?.items.TaskCreatorData[0].Email.replace('{', '').replace('}', '').trim());
+    if (props.CreatedApprovalTask != undefined) {
+      if (props.CreatedApprovalTask == true) {
         if (props?.items.TaskApprovers != undefined && props?.items.TaskApprovers.length > 0) {
           props?.items.TaskApprovers.map((ApproverData: any) => {
             let tempEmail = ApproverData.Name;
@@ -29,22 +30,10 @@ const EmailComponent = (props: any) => {
     }
 
     console.log(mention_To);
-    let TaskStatus: any = ''
-    if (props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true) {
-      TaskStatus = "Approval"
-    }
-    if (props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true) {
-      TaskStatus = "Approved"
-    } else {
-      TaskStatus = "Rejected"
-    }
-    if (props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == true) {
-      TaskStatus = "Immediate (5%)"
-    }
     if (mention_To.length > 0) {
       let EmailProps = {
         To: mention_To,
-        Subject: "[ " + props.items.siteType + " - " + TaskStatus + " ]" + props.items.Title,
+        Subject: "[ " + props.items.siteType + " - " + `${props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? "Approval" : (props.ApprovalTaskStatus ? "Approved" : "Rejected")}` + " ]" + props.items.Title,
         Body: props.items.Title
       }
       console.log(EmailProps);
@@ -69,7 +58,7 @@ const EmailComponent = (props: any) => {
     }).then((data: any) => {
       console.log("Email Sent!");
       console.log(data);
-      props.callBack();
+      props.callBack(true);
     }).catch((err) => {
       console.log(err.message);
     });
@@ -85,44 +74,32 @@ const EmailComponent = (props: any) => {
     <>
 
       <div id='htmlMailBodyEmail' style={{ display: 'none' }}>
-        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
-          <div>
-            <div style={{ marginTop: "2pt" }}>Hi,</div>
-            {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ?
-              <>
-                <div style={{ marginTop: "2pt" }}>
-                  {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
-                  Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
-                  <p>
-                    <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
-                    <a style={{ marginLeft: "20px" }} href={`${props.items["siteUrl"]}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
-                  </p>
-                </div>
-              </> :
-              <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
-                <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
-              }
-                {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
-                  <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
-              </>
-            }
-
-            <div style={{ marginTop: "11.25pt" }}>
-              <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
-            </div>
+        <div style={{ marginTop: "2pt" }}>Hi,</div>
+        {props.CreatedApprovalTask != undefined && props.CreatedApprovalTask == true ? <>
+          <div style={{ marginTop: "2pt" }}>
+            {props?.items.TaskCreatorData[0].Title} has created a Task which requires your Approval.Please take your time and review:
+            Please note that you still have 1 tasks left to approve.<br /> You can find all pending approval tasks on your task dashboard or the approval page.
+            <p>
+              <a href={`${props.items["siteUrl"]}/SitePages/TaskDashboard.aspx`} target="_blank" data-interception="off">Your Task Dashboard</a>
+              <a style={{ marginLeft: "20px" }} href={`${props.Context._pageContext._web.absoluteUrl}/SitePages/TaskManagement.aspx?SmartfavoriteId=101&smartfavorite=All%20Approval%20Tasks`} target="_blank" data-interception="off">Your Approval Page</a>
+            </p>
           </div>
-          : <div style={{ marginTop: "11.25pt" }}>
-            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u>
-          </div>
+        </> :
+          <>  {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == true &&
+            <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.CurrentUser[0].Title}, team will process it further. Refer Approval Comments.</div>
+          }
+            {props.ApprovalTaskStatus != undefined && props.ApprovalTaskStatus == false &&
+              <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props.CurrentUser[0].Title}. Refer Reject Comments.</div>}
+          </>
         }
-        {/* <div style={{ marginTop: "11.25pt" }}>
-            <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u>
-          </div> */}
-        <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
+
+        <div style={{ marginTop: "11.25pt" }}>
+          <a href={`${props.Context._pageContext._web.absoluteUrl}/SitePages/Task-Profile.aspx?taskId=${props.items.Id}&Site=${props.items.siteType}`} target="_blank" data-interception="off">{props.items["Title"]}</a><u></u><u></u></div>
+        <table cellPadding={0} cellSpacing={0}width="100%" style={{ width: "100.0%" }}>
           <tbody>
             <tr>
               <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                <table cellPadding={0} cellSpacing={0} width="99%" style={{ width: "99.0%" }}>
                   <tbody>
                     <tr>
                       <td style={{ padding: ".75pt .75pt .75pt .75pt" }}></td>
@@ -210,26 +187,19 @@ const EmailComponent = (props: any) => {
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
-                        <>
                         {props.CreatedApprovalTask ?
                           <p><span style={{ fontSize: '10.0pt', color: 'black' }}>For Approval</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
                           <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? "Approved" : "Follow up"}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
                         }
-                        </>:<p><span style={{ fontSize: '10.0pt', color: 'black' }}>Acknowledged</span><span style={{ color: "black" }}> </span><u></u><u></u></p> }
 
                       </td>
                       <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
                         <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
                       </td>
                       <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                        {props.statusUpdateMailSendStatus != undefined && props.statusUpdateMailSendStatus == false ?
-                          <>
-                            {props.CreatedApprovalTask ?
-                              <p><span style={{ fontSize: '10.0pt', color: 'black' }}>1%</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
-                              <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
-                          </> : <p><span style={{ fontSize: '10.0pt', color: 'black' }}>5%</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
-
+                        {props.CreatedApprovalTask ?
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>1</span><span style={{ color: "black" }}> </span><u></u><u></u></p> :
+                          <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{props.ApprovalTaskStatus ? 3 : 2}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>}
                       </td>
                     </tr>
                     <tr>
@@ -240,72 +210,51 @@ const EmailComponent = (props: any) => {
                         <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
                           {props.items["component_x0020_link"] != null &&
                             <a href={props.items["component_x0020_link"].Url} target="_blank">{props.items["component_x0020_link"].Url}</a>
-                          }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          }</span></p>
                       </td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                      <td style={{ padding: '4pt' }}></td>
                     </tr>
-                    <tr>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                    </tr>
-                    <tr>
-                      <td width="91" style={{ border: "none" }}></td>
-                      <td width="46" style={{ border: "none" }}></td>
-                      <td width="46" style={{ border: "none" }}></td>
-                      <td width="100" style={{ border: "none" }}></td>
-                      <td width="53" style={{ border: "none" }}></td>
-                      <td width="51" style={{ border: "none" }}></td>
-                      <td width="74" style={{ border: "none" }}></td>
-                      <td width="32" style={{ border: "none" }}></td>
-                      <td width="33" style={{ border: "none" }}></td>
-                    </tr>
+                   
                   </tbody>
                 </table>
-                <table cellPadding="0" width="99%" style={{ width: "99.0%", border: "1px solid #ccc" }}>
+                <table cellPadding={0} cellSpacing={0} width="99%" style={{ width: "99.0%" }}>
                   <tbody>
                     <tr>
-                      <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                      <td style={{ padding: '2pt' }}></td>
                     </tr>
                     {props.items["FeedBack"] != null &&
                       props.items["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
                       props.items["FeedBack"][0]?.FeedBackDescriptions[0].Title != '' &&
                       props.items["FeedBack"][0]?.FeedBackDescriptions.map((fbData: any, i: any) => {
                         return <>
-                          <tr style={{ background: "#ccc" }}>
-                            <td>
-                              <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
+                          <tr >
+                            <td  width={"30px"} align='center' style={{border: "1px solid #ccc", }}>
+                              <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.</span></p>
                             </td>
-                            <td><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                            <td style={{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}} ><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
                               {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments'].map((fbComment: any) => {
-                                return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt'}}>
                                   <div style={{ marginBottom: '3.75pt' }}>
-                                    <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
+                                    <p style={{ marginLeft: '15px'}}>Comment by<span>{fbComment.AuthorName} - {fbComment.Created}<u></u><u></u></span></p>
                                   </div>
-                                  <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                  <p style={{ marginLeft: '15px' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
                                 </div>
                               })}
                             </td>
                           </tr>
                           {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext'].map((fbSubData: any, j: any) => {
                             return <>
-                              <tr style={{ background: "#ccc" }} >
-                                <td>
-                                  <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
+                              <tr  >
+                                <td width={"30px"} style={{border: "1px solid #ccc"}} align='center'>
+                                  <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                 </td>
-                                <td><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                <td style={{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
                                   {fbSubData['Comments'] != null && fbSubData['Comments']?.length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
                                       <div style={{ marginBottom: '3.75pt' }}>
-                                        <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
+                                        <p style={{ marginLeft: '15px'}}>Comment by<span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment.AuthorName} - {fbSubComment.Created}<u></u><u></u></span></p>
                                       </div>
-                                      <p style={{ marginLeft: '15px', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                      <p style={{ marginLeft: '15px'}}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
                                     </div>
                                   })}
                                 </td>
@@ -318,7 +267,7 @@ const EmailComponent = (props: any) => {
                 </table>
               </td>
               <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                <table className='table table-striped ' cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                <table className='table table-striped ' cellPadding={0} cellSpacing={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
                   <tbody>
                     <tr>
                       <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
