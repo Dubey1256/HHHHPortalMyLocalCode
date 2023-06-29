@@ -1,14 +1,14 @@
 import * as React from 'react';
-
-import { IProjectmanagementOverviewToolProps } from './IProjectmanagementOverviewToolProps';
+import styles from './TestWebPart.module.scss';
+import { ITestWebPartProps } from './ITestWebPartProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import ProjectOverview from './ProjectOverView';
+import HalfClientCategory from './HalfClientCategory';
+// import DisplayDetails from './AccountView';
 
-export default class ProjectmanagementOverviewTool extends React.Component<IProjectmanagementOverviewToolProps, {}> {
-  public render(): React.ReactElement<IProjectmanagementOverviewToolProps> {
+export default class TestWebPart extends React.Component<ITestWebPartProps, {}> {
+  public render(): React.ReactElement<ITestWebPartProps> {
     const {
       description,
-      Context,
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
@@ -25,9 +25,7 @@ export default class ProjectmanagementOverviewTool extends React.Component<IProj
     } = this.props;
 
     return (
-    <div>
-    <ProjectOverview props={this.props} /> 
-    </div>
+      <HalfClientCategory props={this.props}/>
     );
   }
 }

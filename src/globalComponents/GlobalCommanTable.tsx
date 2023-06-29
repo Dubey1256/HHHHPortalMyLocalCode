@@ -12,15 +12,17 @@ import {
     getSortedRowModel,
     SortingState,
     FilterFn,
+    getPaginationRowModel,
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
-import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { RiFileExcel2Fill } from 'react-icons/ri';
+import ShowTeamMembers from './ShowTeamMember';
 
 // ReactTable Part/////
 declare module "@tanstack/table-core" {
@@ -136,17 +138,20 @@ const GlobalCommanTable = (items: any) => {
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
+    let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
+    let showHeader = items?.showHeader;
+    let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
-
-
-    const table = useReactTable({
+    const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
+    const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
+    const table: any = useReactTable({
         data,
         columns,
         filterFns: {
@@ -165,6 +170,7 @@ const GlobalCommanTable = (items: any) => {
         getSubRows: (row: any) => row.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -219,7 +225,23 @@ const GlobalCommanTable = (items: any) => {
         }
         console.log("itrm", item)
     }
-
+    const ShowTeamFunc = () => {
+        setShowTeamPopup(true)
+    }
+    const showTaskTeamCAllBack = React.useCallback(() => {
+        setShowTeamPopup(false)
+    }, []);
+    const openTaskAndPortfolioMulti = () => {
+        table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
+            if (item?.original?.siteType === "Master Tasks") {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else if (item?.original?.siteType === "Project") {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else {
+                window.open(`${items?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+            }
+        })
+    }
     React.useEffect(() => {
         if (table.getState().columnFilters.length) {
             setExpanded(true);
@@ -227,6 +249,12 @@ const GlobalCommanTable = (items: any) => {
             setExpanded({});
         }
     }, [table.getState().columnFilters]);
+
+    React.useEffect(() => {
+        if (pageName === 'hierarchyPopperToolTip') {
+            callBackDataToolTip(expanded);
+        }
+    }, [expanded])
 
     // Print ANd Xls Parts//////
     const downloadPdf = () => {
@@ -247,33 +275,39 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            <div className='tbl-headings '>
+            {showHeader === true && <div className='tbl-headings'>
                 <span className='leftsec'>
+                <span className='Header-Showing-Items'>{`Showing ${table?.getRowModel()?.rows?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
                 <span className="toolbox mx-auto">
-                   <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
-                    
-                        <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
-                   
-                    
-                        <a className='Prints' onClick={() => downloadPdf()}>
-                            <i className="fa fa-print mr-5" aria-hidden="true" title="Print"></i>
-                        </a>
-                  
-                </span>
-            </div>
+                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
+                    {table?.getFilteredRowModel()?.rows?.length> 0 ? <span>
+                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+                    <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-            <table className="SortingTable table table-hover" id='my-table' style={{ width: "100%" }}>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+
+
+                    <a className='Prints' onClick={() => downloadPdf()}>
+                        <i className="fa fa-print" aria-hidden="true" title="Print"></i>
+                    </a>
+
+                </span>
+            </div>}
+
+            <table className="SortingTable table table-hover mb-0" id='my-table' style={{ width: "100%" }}>
                 <thead className='fixed-Header top-0'>
-                    {table.getHeaderGroups().map((headerGroup) => (
+                    {table.getHeaderGroups().map((headerGroup: any) => (
                         <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
+                            {headerGroup.headers.map((header: any) => {
                                 return (
-                                    <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
+                                    <th key={header.id} colSpan={header.colSpan} style={header.column.columnDef.size != undefined && header.column.columnDef.size != 150 ? { width: header.column.columnDef.size + "px" } : {}}>
                                         {header.isPlaceholder ? null : (
                                             <div className='position-relative' style={{ display: "flex" }}>
                                                 {flexRender(
@@ -310,11 +344,13 @@ const GlobalCommanTable = (items: any) => {
                 <tbody>
                     {table?.getRowModel()?.rows?.map((row: any) => {
                         return (
-                            <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
+                            <tr className={pageName == 'ProjectOverviewGrouped' ? (row.original.Item_x0020_Type == "tasks" ? "a-bg" : "") : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : "")))))}
                                 key={row.id}>
                                 {row.getVisibleCells().map((cell: any) => {
                                     return (
-                                        <td key={cell.id}>
+                                        <td key={cell.id}
+
+                                        >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
@@ -328,6 +364,50 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
+            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaAngleDoubleLeft />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    <FaChevronLeft />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaChevronRight />
+                </button>
+                <button
+                    className="border rounded p-1"
+                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                    disabled={!table.getCanNextPage()}
+                >
+                    <FaAngleDoubleRight />
+                </button>
+                <select className='w-25'
+                    value={table.getState().pagination.pageSize}
+                    onChange={e => {
+                        table.setPageSize(Number(e.target.value))
+                    }}
+                >
+                    {[10, 20, 30, 40, 50].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                        </option>
+                    ))}
+                </select>
+            </div> : ''}
+            {ShowTeamPopup === true && items?.TaskUsers?.length > 0 ? <ShowTeamMembers props={table?.getSelectedRowModel()?.flatRows} callBack={showTaskTeamCAllBack} TaskUsers={items?.TaskUsers} /> : ''}
+
         </>
     )
 }

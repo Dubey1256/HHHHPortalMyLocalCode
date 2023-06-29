@@ -9,16 +9,6 @@ import {
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
-import {
-    useTable,
-    useSortBy,
-    useFilters,
-    useExpanded,
-    usePagination,
-    HeaderGroup,
-
-} from 'react-table';
-import { Filter, DefaultColumnFilter } from './filters';
 import { Web } from "sp-pnp-js";
 import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import * as Moment from 'moment';
@@ -35,6 +25,10 @@ var allSitesTasks: any = [];
 var AllListId: any = {};
 var currentUserId: '';
 var currentUser: any = [];
+let headerOptions:any={
+    openTab:true,
+    teamsIcon:true
+}
 var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
 export default function ProjectOverview(props: any) {
@@ -236,8 +230,8 @@ export default function ProjectOverview(props: any) {
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" ? <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> : ''}
-                        {row?.original?.siteType !== "Master Tasks" ? <span>
+                        {row?.original?.siteType === "Project" ? <a className='hreflink' href={`${AllListId?.siteUrl}/SitePages/Project-Management.aspx?ProjectId=${row?.original?.Id}`} data-interception="off" target="_blank">{row?.original?.Title}</a> : ''}
+                        {row?.original?.siteType !== "Project" ? <span>
                             <a className='hreflink'
                                 href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                                 data-interception="off"
@@ -260,9 +254,9 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
-                    <span>
+              
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
-                    </span>
+            
 
                 ),
                 id: "PercentComplete",
@@ -275,10 +269,10 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
-                    <span>
+            
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
-                    </span>
+              
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
@@ -290,10 +284,11 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
-                    <span>
+                   <div >
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
-                        {/* <ShowTaskTeamMembers  props={row?.original} TaskUsers={AllTaskUser}></ShowTaskTeamMembers> */}
-                    </span>
+                   </div>
+                    
+                    
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",
@@ -324,8 +319,8 @@ export default function ProjectOverview(props: any) {
 
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
-                        {row?.original?.siteType !== "Master Tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType !== "Project" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                     </>
                 ),
                 id: 'Id',
@@ -507,7 +502,7 @@ export default function ProjectOverview(props: any) {
 
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                     </>
                 ),
@@ -674,7 +669,7 @@ export default function ProjectOverview(props: any) {
 
                 cell: ({ row }) => (
                     <>
-                        {row?.original?.siteType === "Master Tasks" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
+                        {row?.original?.siteType === "Project" ? <span title="Edit Project" onClick={(e) => EditComponentPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                         {row?.original?.Item_x0020_Type === "tasks" ? <span title="Edit Task" onClick={(e) => EditPopup(row?.original)} className="svg__iconbox svg__icon--edit hreflink" ></span> : ''}
                     </>
                 ),
@@ -1064,7 +1059,7 @@ export default function ProjectOverview(props: any) {
                 items.siteUrl = AllListId?.siteUrl;
                 items.listId = AllListId?.MasterTaskListID;
                 items.AssignedUser = []
-                items.siteType = "Master Tasks"
+                items.siteType = "Project"
                 items.TeamMembersSearch = '';
                 if (items.AssignedTo != undefined) {
                     items.AssignedTo.map((taskUser: any) => {
@@ -1324,7 +1319,7 @@ export default function ProjectOverview(props: any) {
                                 </div>
                                 <div className="col-sm-4 text-end">
                                     {GroupedDisplayTable ? <a className="hreflink " onClick={() => { setDisplayGroupedTable(false) }}>Hide Working Today's Task</a> : <a className="hreflink text-end" onClick={() => { setDisplayGroupedTable(true) }}>Show Working Today's Task</a>}  <AddProject CallBack={CallBack} AllListId={AllListId} />
-                                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''}
+                                    {/* {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a></span> : ''} */}
                                 </div>
                             </div>
                             {GroupedDisplayTable ?
@@ -1349,9 +1344,9 @@ export default function ProjectOverview(props: any) {
                                         </div>
                                     </div>
                                     <div className="Alltable p-2">
-                                        {selectedView == 'grouped' ? <GlobalCommanTable columns={columns} data={data} paginatedTable={false} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverviewGrouped"} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverview"} /> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} searchSubRows={false} pageName={"ProjectOverviewGrouped"} /> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData}  pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
                                     </div>
                                 </>
                                 : ""}
@@ -1359,7 +1354,7 @@ export default function ProjectOverview(props: any) {
                                 {!GroupedDisplayTable ?
 
                                     <div className="Alltable p-2">
-                                        <GlobalCommanTable paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} />
+                                        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser}  showHeader={true}/>
                                     </div> : ''}
                             </div>
                         </div>

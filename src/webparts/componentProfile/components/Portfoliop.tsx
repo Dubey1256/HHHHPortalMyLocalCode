@@ -72,7 +72,14 @@ function Portfolio({SelectedProp}:any) {
   const [questionandhelp, setquestionandhelp] = React.useState([]);
 
   const [ParentData, SetParentData] = React.useState([]);
+  const [ImagePopover, SetImagePopover] = React.useState({
+    isModalOpen: false,
 
+      imageInfo: {ImageName:"",ImageUrl:""},
+
+      showPopup: 'none'
+
+  });
   ID=getQueryVariable('taskId');
   const handleOpen = (item:any) => {
     setIsActive((current) => !current);
@@ -297,7 +304,7 @@ function Portfolio({SelectedProp}:any) {
     let web =new Web(ContextValue?.siteUrl);
    
     componentDetails = await web.lists
-      .getById('ec34b38f-0669-480a-910c-f84e92e58adf')
+      .getById(ContextValue.MasterTaskListID)
       .items.select(
         "ComponentPortfolio/Id",
         "ComponentPortfolio/Title",
@@ -607,6 +614,57 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
  }
   
 //  basic image End
+
+  // ImagePopover 
+  const OpenModal=(e: any, item: any)=> {
+
+    if (item.Url != undefined) {
+
+      item.ImageUrl = item?.Url;
+
+    }
+
+    //debugger;
+
+    e.preventDefault();
+
+    // console.log(item);
+
+    SetImagePopover({
+
+      isModalOpen: true,
+
+      imageInfo: item,
+
+      showPopup: 'block'
+
+    });
+
+  }
+
+
+
+
+  //close the model
+
+  const  CloseModal=(e: any)=> {
+
+    e.preventDefault();
+
+    SetImagePopover({
+
+      isModalOpen: false,
+
+      imageInfo: {ImageName:"",ImageUrl:""},
+
+      showPopup: 'none'
+
+    });
+
+  }
+
+
+
 
   return (
     <div className={TypeSite == "Service" ? "serviepannelgreena" : ""}>
@@ -973,9 +1031,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                                               data-interception="off"
                                               href={SelectedProp.siteUrl+"/SitePages/Component-Portfolio.aspx?ComponentID="+item.Parent.Id}
                                             >
-                                              <span className="svg__iconbox svg__icon--editBox"></span>
-                                              {/* <img src={require('../../../Assets/ICON/edit_page.svg')}
-                                width="30" height="25" />{" "} */}
+                                              <img src={require('../../../Assets/ICON/edit_page.svg')}
+                                width="30" height="25" />{" "}
                                             </a>
                                           </>
                                         )}
@@ -1654,7 +1711,7 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                           <dl>
                             <dt className="bg-fxdark">Component Portfolio</dt>
                             <dd className="bg-light">
-                              <div className="block">
+                            <div style={{backgroundColor: "#292984",boxSizing: "border-box"}}>
                                 <a
                                   className="service"
                                   style={{ border: "0px" }}
@@ -1678,7 +1735,7 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
               </div>
             </div>
             <div className="col-md-3">
-              <aside>
+            <aside>
                 {data.map((item) => {
                   return (
                     <>
@@ -1695,13 +1752,106 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                       
                       }
                        {(imageArray != undefined && imageArray[0]?.ImageName && item?.BasicImageInfo != undefined ) && (
-                       <div>
-                          <img
+                       <div className="col">
+                        
+
+<div className="Taskaddcommentrow mb-2">
+
+ 
+    <div className="taskimage border mb-3">
+
+      {/*  <BannerImageCard imgData={imgData}></BannerImageCard> */}
+
+
+
+
+      <a className='images' target="_blank" data-interception="off" href={imageArray[0]?.ImageUrl}>
+
+        <img alt={imageArray[0]?.ImageName} src={imageArray[0]?.ImageUrl}
+
+          onMouseOver={(e) => OpenModal(e, imageArray[0])}
+
+          onMouseOut={(e) => CloseModal(e)} ></img>
+
+      </a>
+
+
+
+
+
+      <div className="Footerimg d-flex align-items-center bg-fxdark justify-content-between p-2 ">
+
+        <div className='usericons'>
+
+          <span>
+
+            <span >{imageArray[0]?.UploadeDate}</span>
+
+            <span className='round px-1'>
+
+
+                <img className='align-self-start' title={imageArray[0]?.UserName} src={imageArray[0]?.UserImage} />
+
+              
+
+            </span>
+
+
+
+
+          </span>
+
+        </div>
+
+        <div>
+
+          <a className='images' target="_blank" data-interception="off" href={imageArray[0]?.ImageUrl}><span className='mx-2'><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M212.686 315.314L120 408l32.922 31.029c15.12 15.12 4.412 40.971-16.97 40.971h-112C10.697 480 0 469.255 0 456V344c0-21.382 25.803-32.09 40.922-16.971L72 360l92.686-92.686c6.248-6.248 16.379-6.248 22.627 0l25.373 25.373c6.249 6.248 6.249 16.378 0 22.627zm22.628-118.628L328 104l-32.922-31.029C279.958 57.851 290.666 32 312.048 32h112C437.303 32 448 42.745 448 56v112c0 21.382-25.803 32.09-40.922 16.971L376 152l-92.686 92.686c-6.248 6.248-16.379 6.248-22.627 0l-25.373-25.373c-6.249-6.248-6.249-16.378 0-22.627z"></path></svg></span></a>
+
+          <span >
+
+            {imageArray[0]?.ImageName?.length > 15 ? imageArray[0]?.ImageName.substring(0, 15) + '...' : imageArray[0]?.ImageName}
+
+          </span>
+
+          <span>|</span>
+
+        </div>
+
+
+
+
+      </div>
+
+
+
+
+    </div>
+
+
+</div>
+<div className='imghover' style={{ display: ImagePopover.showPopup }}>
+
+          <div className="popup">
+
+            <div className="parentDiv">
+
+              <span style={{ color: 'white' }}>{ImagePopover.imageInfo.ImageName}</span>
+
+              <img style={{ maxWidth: '100%' }} src={ImagePopover.imageInfo["ImageUrl"]}></img>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+                          {/* <img
                             alt={imageArray[0]?.ImageName}
                             style={{ width: "280px", height: "145px" }}
                             src={imageArray[0]?.ImageUrl}
                           />
-                          <p>{imageArray[0]?.UploadeDate} {imageArray[0]?.UserName}</p>
+                          <p>{imageArray[0]?.UploadeDate} {imageArray[0]?.UserName}</p> */}
                         </div>
                          )
                      
