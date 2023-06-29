@@ -3379,10 +3379,10 @@ function ComponentTable(SelectedProp: any) {
                     {!row.getCanExpand() ||
                       (row.getCanExpand() &&
                         row.subRows?.length !== row.original.subRows?.length)
-                      ? <FaPlus />
+                      ? <FaPlus style={{fontSize: '13px'}}/>
                       : row.getIsExpanded()
                         ? <FaMinus />
-                        : <FaPlus />}
+                        : <FaPlus style={{fontSize: '13px'}}/>}
                   </span>
                 ) : (
                   ""

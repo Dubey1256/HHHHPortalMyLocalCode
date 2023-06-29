@@ -51,6 +51,7 @@ var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
 let expendedTrue: any = true;
+let UserName:string;
 var change: any = new Date()
 
 const SP = spfi();
@@ -122,17 +123,23 @@ function TimeEntryPopup(item: any) {
         //console.log(this.taskUsers);
 
     }
-    const getAllTime = async () => {
-        var newItem: any = []
+    const getAllTime=async ()=>{
+        $.each(AllUsers, async function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId === CurntUserId) {
+                UserName = taskUser.Title;
+              }
+
+        });
+        var newItem:any=[]
         let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .filter(`Title eq '${CurrentUserTitle}'`)
+            .filter(`Title eq '${UserName}'`)
             .getAll();
-        AllTimeEntry = taskUsers;
-
+            AllTimeEntry = taskUsers;
+           
     }
     // pnp.sp.web.currentUser.get().then(result => {
     //     CurntUserId = result.Id;
@@ -2319,7 +2326,7 @@ function TimeEntryPopup(item: any) {
                 id: "AuthorName",
                 placeholder: "AuthorName",
                 header: "",
-                size: 460,
+                size: 360,
                 cell: ({ row }) => (
                     <>
                         <span>
