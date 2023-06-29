@@ -52,7 +52,6 @@ var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
 let expendedTrue: any = true;
-let UserName:string;
 var change: any = new Date()
 
 const SP = spfi();
