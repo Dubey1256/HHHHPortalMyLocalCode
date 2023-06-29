@@ -6,7 +6,7 @@ import { Web } from "sp-pnp-js";
 import * as Moment from "moment";
 import Tooltip from "../../../globalComponents/Tooltip";
 
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaPencilAlt } from "react-icons/fa";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
 import CommentCard from "../../../globalComponents/Comments/CommentCard";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -15,7 +15,304 @@ import Sitecomposition from "../../../globalComponents/SiteComposition";
 import SmartInformation from "../../taskprofile/components/SmartInformation";
 import { spfi } from "@pnp/sp/presets/all";
 const sp = spfi();
+// Work the Inline Editing
+interface EditableFieldProps {
+  listName: string;
+  itemId: number;
+  fieldName: string;
+  value: any;
+  onChange: (value: string) => void;
+  type:string;
+  web:string;
+}
 
+
+export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, fieldName, value, onChange,type,web }) => {
+  const [editing, setEditing] = React.useState(false);
+  const [fieldValue, setFieldValue] = React.useState(value);
+
+
+  const handleCancel = () => {
+    setEditing(false);
+    setFieldValue(value);
+  };
+
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+
+
+  if(fieldName == "Priority"){
+
+    const [selectedPriority, setSelectedPriority] = React.useState(value);
+
+    const handleInputChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+      const priorityValue = event.currentTarget.value;
+      setSelectedPriority(priorityValue);
+    };
+    
+    const handleSave = async () => {
+      try {
+        let priorityValue = selectedPriority;
+    
+        if (priorityValue === "(1) High") {
+          setFieldValue(priorityValue);
+        } else if (priorityValue === "(2) Normal") {
+          setFieldValue(priorityValue);
+        } else if (priorityValue === "(3) Low") {
+          setFieldValue(priorityValue);
+        }
+    
+        let webs = new Web(web);
+        await webs.lists.getByTitle(listName).items.getById(itemId).update({
+          [fieldName]: priorityValue,
+        });
+    
+        setEditing(false);
+        onChange(priorityValue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    
+    if (editing) {
+      return (
+
+    <div className="priority">
+  <div>
+    <button
+    type="button"
+      value="(1) High"
+      onClick={handleInputChange}
+      className={selectedPriority === "(1) High" ? "secleatedBtn" : ""}
+    >
+      (1) High
+    </button>
+    <button
+    type="button"
+      value="(2) Normal"
+      onClick={handleInputChange}
+      className={selectedPriority === "(2) Normal" ? "secleatedBtn" : ""}
+    >
+      (2) Normal
+    </button>
+    <button
+    type="button"
+      value="(3) Low"
+      onClick={handleInputChange}
+      className={selectedPriority === "(3) Low" ? "secleatedBtn" : ""}
+    >
+      (3) Low
+    </button>
+  </div>
+  <span className="sveBtn">
+    <a onClick={handleSave}>
+      <span className="svg__iconbox svg__icon--Save"></span>
+    </a>
+    <a onClick={handleCancel}>
+      <span className="svg__iconbox svg__icon--cross"></span>
+    </a>
+  </span>
+</div>
+      )}
+
+  }
+  if(fieldName == "ItemRank"){
+    const [selectedRank, setSelectedRank] = React.useState(value);
+    
+    const handleInputChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedRank(event.target.value);
+    };
+    const handleSave = async () => {
+      try {
+        setFieldValue(selectedRank);
+        let webs = new Web(web);
+        await webs.lists.getByTitle(listName).items.getById(itemId).update({
+          [fieldName]: selectedRank,
+        });
+  
+        setEditing(false);
+        onChange(selectedRank);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    // Rest of the component code...
+    let TaskItemRank = [{ rankTitle: "Select Item Rank", rank: null },
+    { rankTitle: "(8) Top Highlights", rank: 8 },
+    { rankTitle: "(7) Featured Item", rank: 7 },
+    { rankTitle: "(6) Key Item", rank: 6 },
+    { rankTitle: "(5) Relevant Item", rank: 5 },
+    { rankTitle: "(4) Background Item", rank: 4 },
+    { rankTitle: "(2) to be verified", rank: 2 },
+    { rankTitle: "(1) Archive", rank: 1 },
+    { rankTitle: "(0) No Show", rank: 0 }]
+    if (editing) {
+      return (
+        <div className="editcolumn">
+          <select value={selectedRank} onChange={handleInputChange}>
+            {TaskItemRank.map((item:any, index:any) => (
+              <option key={index} value={item.rank}>
+                {item.rankTitle}
+              </option>
+            ))}
+          </select>
+          <span>
+            <a onClick={handleSave}>
+              <span className="svg__iconbox svg__icon--Save"></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span className="svg__iconbox svg__icon--cross"></span>
+            </a>
+          </span>
+        </div>
+      );
+    }
+  
+    // Rest of the component code...
+  };
+  
+
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFieldValue(event.target.value);
+  };
+if(fieldName =="PercentComplete"){
+
+  const handleSave = async () => {
+    try {
+      setFieldValue(parseInt(fieldValue));
+      // if(type == "Number"){
+      //   setFieldValue(fieldValue/100);
+      // }
+     let valpercent=parseInt(fieldValue);
+     let webs = new Web(web);
+      await webs.lists.getByTitle(listName).items.getById(itemId).update({
+        [fieldName]: valpercent/100,
+      });
+      
+      setEditing(false);
+      onChange(fieldValue);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+ 
+
+  if (editing) {
+    return (
+      <div className="editcolumn ">
+        <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
+      <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
+        <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
+        
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <span>{fieldValue}</span>
+      <a className="pancil-icons" onClick={handleEdit}>
+        <FaPencilAlt/> 
+      </a>
+    </div>
+  );
+}
+ 
+  if(type == "Date"){
+    const handleSave = async () => {
+      try {
+        setFieldValue(fieldValue);
+        // if(type == "Number"){
+        //   setFieldValue(fieldValue/100);
+        // }
+       let webs = new Web(web);
+        await webs.lists.getByTitle(listName).items.getById(itemId).update({
+          [fieldName]: fieldValue,
+        });
+        
+        setEditing(false);
+        onChange(fieldValue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+   
+  
+    if (editing) {
+      return (
+        <div className="editcolumn ">
+          <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
+        <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
+          <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
+          
+        </div>
+      );
+    }
+  
+    return (
+      <div>
+        <span>{fieldValue}</span>
+        <a className="pancil-icons" onClick={handleEdit}>
+          <FaPencilAlt/> 
+        </a>
+      </div>
+    );
+  }
+  // if(type="text"){
+
+  // } if(type="Number"){
+    
+  // } 
+
+  const handleSave = async () => {
+    try {
+      setFieldValue(fieldValue);
+      // if(type == "Number"){
+      //   setFieldValue(fieldValue/100);
+      // }
+     let webs = new Web(web);
+      await webs.lists.getByTitle(listName).items.getById(itemId).update({
+        [fieldName]: fieldValue,
+      });
+      
+      setEditing(false);
+      onChange(fieldValue);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+ 
+
+  if (editing) {
+    return (
+      <div className="editcolumn ">
+        <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
+      <span><a onClick={handleSave}><span className="svg__iconbox svg__icon--Save "></span></a>
+        <a onClick={handleCancel}><span className="svg__iconbox svg__icon--cross "></span></a></span>
+        
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <span>{fieldValue}</span>
+      <a className="pancil-icons" onClick={handleEdit}>
+        <FaPencilAlt/> 
+      </a>
+    </div>
+  );
+};
+
+
+// Work end the Inline Editing
 let TeamMembers: any = [];
 let AssigntoMembers: any = [];
 let AllQuestion: any[] = [];
@@ -662,7 +959,12 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
     });
 
   }
-
+// Inline editing
+const [Item,setItem]=React.useState("")
+  const handleFieldChange = (fieldName:any) => (e:any) => {
+    const updatedItem = { ...data[0], [fieldName]: e.target.value };
+    setItem(updatedItem);
+  };
 
 
 
@@ -889,9 +1191,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                          
                             {data.map((item) => (
                               <a>
-                                {item.DueDate != null
-                                  ? Moment(item.DueDate).format("DD/MM/YYYY")
-                                  : ""}
+                                 <EditableField listName="Master Tasks" itemId={item.Id} fieldName="DueDate" value={item?.DueDate!=undefined?Moment(item?.DueDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("DueDate")} type="Date" web={web}/>
+                               
                               </a>
                             ))}
                         
@@ -903,9 +1204,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                              {item.StartDate != null
-                                ? Moment(item.StartDate).format("DD/MM/YYYY")
-                                : ""}
+                                  <EditableField listName="Master Tasks" itemId={item.Id} fieldName="StartDate" value={item?.StartDate!=undefined?Moment(item.StartDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("StartDate")} type="Date" web={web}/>
+                           
                             </a>
                           ))}
                         </dd>
@@ -962,8 +1262,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                         <dt className="bg-fxdark">Item Rank</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                            <a>{item.ItemRank}</a>
-                          ))}
+                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="ItemRank" value={item?.ItemRank!=undefined?item?.ItemRank:""} onChange={handleFieldChange("ItemRank")} type="" web={web}/>
+                             ))}
                         </dd>
                       </dl>
                     </div>
@@ -972,8 +1272,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                         <dt className="bg-fxdark">Priority</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                            <a>{item.Priority != null ? item.Priority : ""}</a>
-                          ))}
+                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="Priority" value={item?.Priority!=undefined?item?.Priority:""} onChange={handleFieldChange("Priority")} type="" web={web}/>
+                             ))}
                         </dd>
                       </dl>
                       <dl>
@@ -981,11 +1281,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                              {item.CompletedDate != null
-                                ? Moment(item.CompletedDate).format(
-                                    "DD/MM/YYYY"
-                                  )
-                                : ""}
+                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="CompletedDate" value={item?.CompletedDate!=undefined?Moment(item.CompletedDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("CompletedDate")} type="Date" web={web}/>
+                              
                             </a>
                           ))}
                         </dd>
@@ -1002,7 +1299,8 @@ if(data?.length != 0 && data[0]?.BasicImageInfo != undefined||null){
                         <dt className="bg-fxdark">% Complete</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                            <a>{(item.PercentComplete * 100).toFixed(0)}</a>
+                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="PercentComplete" value={item?.PercentComplete!=undefined?(item.PercentComplete * 100).toFixed(0):""} onChange={handleFieldChange("PercentComplete")} type="Number" web={web}/>
+                           
                           ))}
                         </dd>
                       </dl>
