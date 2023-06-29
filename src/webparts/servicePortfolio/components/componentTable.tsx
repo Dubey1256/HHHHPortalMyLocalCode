@@ -49,7 +49,7 @@ import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 var filt: any = "";
 var siteConfig: any = [];
@@ -3379,10 +3379,10 @@ function ComponentTable(SelectedProp: any) {
                     {!row.getCanExpand() ||
                       (row.getCanExpand() &&
                         row.subRows?.length !== row.original.subRows?.length)
-                      ? <FaPlus />
+                      ? <FaPlus style={{fontSize: '13px'}}/>
                       : row.getIsExpanded()
                         ? <FaMinus />
-                        : <FaPlus />}
+                        : <FaPlus style={{fontSize: '13px'}}/>}
                   </span>
                 ) : (
                   ""
