@@ -1022,7 +1022,7 @@ const excelSelectFunc=(e:any)=>{
 
     return (
       
-        <div >
+        <div className='createdBy'>
            
              <div className='row'>
               <div className='col'><h3 className="siteColor">Created By - {queryId}</h3></div>
@@ -1042,7 +1042,7 @@ const excelSelectFunc=(e:any)=>{
                         {/* <a  className="excal" data-toggle="modal" data-target="#exampleModal">
                             <RiFileExcel2Fill/>  </a> */}
                            <span>
-                           <a onClick={excelAllChecked} className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                           <a onClick={excelAllChecked} className="excal" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                             <RiFileExcel2Fill/>
 </a>
 
@@ -1084,8 +1084,8 @@ const excelSelectFunc=(e:any)=>{
                     {headerGroups?.map((headerGroup: any) => (
                         <tr  {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers?.map((column: any) => (
-                                <th className='position-relative'  {...column.getHeaderProps()} style={column?.style}>
-                           <div className='w80 position-relative'>
+                                <th {...column.getHeaderProps()} style={column?.style}>
+                           <div className='searchBoxwt position-relative'>
                                 <span class="Table-SortingIcon" {...column.getSortByToggleProps()} >
                                         {column.render('Header')}
                                         {generateSortingIndicator(column)}
@@ -1105,7 +1105,7 @@ const excelSelectFunc=(e:any)=>{
                                        {column?.id == "idType" && 
                                        <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.idType} onChange={(e:any)=>selectAll(e)}   value={'idType'} /> <label>Select All</label> </span></li>
-                                       <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
+                                       <ul className='dropitem'>
                                             {allLists?.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
                                                  <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
@@ -1134,7 +1134,7 @@ const excelSelectFunc=(e:any)=>{
                                             {column?.id == 'Categories' && 
                                            <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.catogries} onChange={(e:any)=>selectAll(e)}  value={'Categories'} /> <label>Select All</label> </span></li>
-                                       <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
+                                       <ul className='dropitem'>
                                         {catogries?.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
@@ -1144,7 +1144,7 @@ const excelSelectFunc=(e:any)=>{
                                             {column?.id == 'priority' && 
                                            <div className="dropdown-menu p-2 ">
                                            <li><span><input type='checkbox' checked={selectAllChecks.priority} onChange={(e:any)=>selectAll(e)}  value={'priority'} /> <label>Select All</label> </span></li>
-                                          <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
+                                          <ul className='dropitem'>
                                         {checkPriority?.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
                                             <div>
@@ -1206,7 +1206,7 @@ const excelSelectFunc=(e:any)=>{
                                            {column?.id == 'TeamMembersSearch' && 
                                            <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.teamMembers} onChange={(e:any)=>selectAll(e)}  value={'TeamMembersSearch'} /> <label>Select All</label> </span></li>
-                                       <ul style={{width:'200px', height:'250px', overflow:'auto', listStyle:'none', paddingLeft:'10px'}}>
+                                       <ul className='dropitem'>
                                         {taskUser?.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
                                             </ul> 
                                             <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
