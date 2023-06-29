@@ -10,10 +10,9 @@ import {
     ColumnDef,
     flexRender,
     getSortedRowModel,
-    PaginationState,
     SortingState,
     FilterFn,
-    getPaginationRowModel,
+    getPaginationRowModel
 } from "@tanstack/react-table";
 import { RankingInfo, rankItem, compareItems } from "@tanstack/match-sorter-utils";
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp, FaInfoCircle, FaChevronRight, FaChevronDown, FaChevronLeft, FaAngleDoubleRight, FaAngleDoubleLeft } from 'react-icons/fa';
@@ -136,6 +135,7 @@ export function IndeterminateCheckbox(
 // ReactTable Part end/////
 
 const GlobalCommanTable = (items: any) => {
+    let expendedTrue = items?.expendedTrue
     let data = items?.data;
     let columns = items?.columns;
     let callBackData = items?.callBackData;
@@ -152,11 +152,6 @@ const GlobalCommanTable = (items: any) => {
     const [globalFilter, setGlobalFilter] = React.useState("");
     const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
     const [showTeamMemberOnCheck, setShowTeamMemberOnCheck] = React.useState(false)
-
-
-
-    
-   
     const table: any = useReactTable({
         data,
         columns,
@@ -185,15 +180,14 @@ const GlobalCommanTable = (items: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    
-    React.useEffect(() => {
-        table.setPageSize(30);
-    }, [table])
+
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
+    React.useEffect(() => {
+        table.setPageSize(30)
+    }, [])
     let item: any;
-
     let ComponentCopy: any = 0;
     let SubComponentCopy: any = 0;
     let FeatureCopy: any = 0;
@@ -252,12 +246,23 @@ const GlobalCommanTable = (items: any) => {
         })
     }
     React.useEffect(() => {
-        if (table.getState().columnFilters.length) {
+        if (expendedTrue === false) {
+            if (table.getState().columnFilters.length) {
+                setExpanded(true);
+            } else {
+                setExpanded({});
+            }
+        }
+    }, [table.getState().columnFilters]);
+
+
+    React.useEffect(() => {
+        if (expendedTrue === true) {
             setExpanded(true);
         } else {
             setExpanded({});
         }
-    }, [table.getState().columnFilters]);
+    }, []);
 
     React.useEffect(() => {
         if (pageName === 'hierarchyPopperToolTip') {
@@ -284,18 +289,18 @@ const GlobalCommanTable = (items: any) => {
 
     return (
         <>
-            {showHeader === true && <div className='tbl-headings mb-1'>
+            {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
-                    <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.length} out of ${data?.length}`}</span>
+                    <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         placeholder="Search All..." />
                 </span>
-                <span className="toolbox mx-auto">
+                <span className="toolbox">
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
-                    {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
+                    {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
@@ -388,11 +393,13 @@ const GlobalCommanTable = (items: any) => {
                 >
                     <FaChevronLeft />
                 </button>
-                <div>Page</div>
-                <strong>
-                    {table.getState().pagination.pageIndex + 1} of{' '}
-                    {table.getPageCount()}
-                </strong>
+                <span className="flex items-center gap-1">
+                    <div>Page</div>
+                    <strong>
+                        {table.getState().pagination.pageIndex + 1} of{' '}
+                        {table.getPageCount()}
+                    </strong>
+                </span>
                 <button
                     className="border rounded p-1"
                     onClick={() => table.nextPage()}
