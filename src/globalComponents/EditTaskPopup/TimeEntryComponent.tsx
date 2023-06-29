@@ -2326,7 +2326,7 @@ function TimeEntryPopup(item: any) {
                 id: "AuthorName",
                 placeholder: "AuthorName",
                 header: "",
-                size: 460,
+                size: 300,
                 cell: ({ row }) => (
                     <>
                         <span>
