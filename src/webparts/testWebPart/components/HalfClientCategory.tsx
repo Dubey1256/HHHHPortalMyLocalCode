@@ -325,7 +325,7 @@ const HalfClientCategory = (props: any) => {
             let Alltask: any = [];
             // var AllUsers: any = []
             Alltask = await web.lists.getById(AllListId?.MasterTaskListID).items
-                .select("Deliverables,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Events/Id,Events/Title,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
+                .select("Deliverables,PortfolioStructureID,ClientCategory/Id,ClientCategory/Title,TechnicalExplanations,ValueAdded,Categories,Idea,Short_x0020_Description_x0020_On,Background,Help_x0020_Information,Short_x0020_Description_x0020__x,ComponentCategory/Id,ComponentCategory/Title,Comments,HelpDescription,FeedBack,Body,Events/Id,Events/Title,SiteCompositionSettings,ClientTime,ShortDescriptionVerified,Portfolio_x0020_Type,BackgroundVerified,descriptionVerified,Synonyms,BasicImageInfo,OffshoreComments,OffshoreImageUrl,HelpInformationVerified,IdeaVerified,TechnicalExplanationsVerified,Deliverables,DeliverablesVerified,ValueAddedVerified,CompletedDate,Idea,ValueAdded,TechnicalExplanations,Item_x0020_Type,Sitestagging,Package,Parent/Id,Parent/Title,Short_x0020_Description_x0020_On,Short_x0020_Description_x0020__x,Short_x0020_description_x0020__x0,Admin_x0020_Notes,AdminStatus,Background,Help_x0020_Information,SharewebCategories/Id,SharewebCategories/Title,Priority_x0020_Rank,Reference_x0020_Item_x0020_Json,Team_x0020_Members/Title,Team_x0020_Members/Name,Team_x0020_Members/Id,Item_x002d_Image,component_x0020_link,IsTodaysTask,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,AttachmentFiles/FileName,FileLeafRef,FeedBack,Title,Id,PercentComplete,Company,StartDate,DueDate,Comments,Categories,Status,WebpartId,Body,Mileage,PercentComplete,Attachments,Priority,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title")
                 .filter("Item_x0020_Type ne 'Project'")
                 .expand("ComponentCategory,ClientCategory,AssignedTo,Events,AttachmentFiles,Author,Editor,Team_x0020_Members,SharewebCategories,Parent").top(4999).getAll();
 
@@ -336,7 +336,7 @@ const HalfClientCategory = (props: any) => {
                     items.siteUrl = AllListId?.siteUrl;
                     items.listId = AllListId?.MasterTaskListID;
                     items.AssignedUser = []
-                    items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
+                    items.Shareweb_x0020_ID = items?.PortfolioStructureID;
                     items.TeamMembersSearch = '';
                     if (items.AssignedTo != undefined) {
                         items.AssignedTo.map((taskUser: any) => {
@@ -402,6 +402,26 @@ const HalfClientCategory = (props: any) => {
     const CallBack = (item: any) => {
 
     }
+    function IndeterminateCheckbox({
+        indeterminate,
+        className = "",
+        ...rest
+      }: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
+        const ref = React.useRef<HTMLInputElement>(null!);
+        React.useEffect(() => {
+          if (typeof indeterminate === "boolean") {
+            ref.current.indeterminate = !rest.checked && indeterminate;
+          }
+        }, [ref, indeterminate]);
+        return (
+          <input
+            type="checkbox"
+            ref={ref}
+            className={className + "  cursor-pointer form-check-input rounded-0"}
+            {...rest}
+          />
+        );
+      }
     const columns = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
@@ -412,38 +432,26 @@ const HalfClientCategory = (props: any) => {
                 size: 80,
                 header: ({ table }: any) => (
                     <>
-                        <button className='border-0 bg-Ff'
+                        <IndeterminateCheckbox className=" "
                             {...{
-                                onClick: table.getToggleAllRowsExpandedHandler(),
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
                             }}
-                        >
-                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                        </button>{" "}
+                        />{" "}
 
                     </>
                 ),
                 cell: ({ row, getValue }) => (
-                    <div
-                        style={row?.getCanExpand() ? {
-                            paddingLeft: `${row?.depth * 5}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
+                    <div>
                         <>
-                            {row?.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row?.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
-
+                            <IndeterminateCheckbox
+                                {...{
+                                    checked: row.getIsSelected(),
+                                    indeterminate: row.getIsSomeSelected(),
+                                    onChange: row.getToggleSelectedHandler(),
+                                }}
+                            />{" "}
                             {row?.original.Shareweb_x0020_ID}
                         </>
                     </div>
@@ -571,31 +579,26 @@ const HalfClientCategory = (props: any) => {
                 size: 80,
                 header: ({ table }: any) => (
                     <>
-
+                        <IndeterminateCheckbox className=" "
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />{" "}
 
                     </>
                 ),
                 cell: ({ row, getValue }) => (
-                    <div
-                        style={row?.getCanExpand() ? {
-                            paddingLeft: `${row?.depth * 5}px`,
-                        } : {
-                            paddingLeft: "18px",
-                        }}
-                    >
+                    <div>
                         <>
-                            {row?.getCanExpand() ? (
-                                <span className=' border-0'
-                                    {...{
-                                        onClick: row?.getToggleExpandedHandler(),
-                                        style: { cursor: "pointer" },
-                                    }}
-                                >
-                                    {row?.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-                                </span>
-                            ) : (
-                                ""
-                            )}{" "}
+                            <IndeterminateCheckbox
+                                {...{
+                                    checked: row.getIsSelected(),
+                                    indeterminate: row.getIsSomeSelected(),
+                                    onChange: row.getToggleSelectedHandler(),
+                                }}
+                            />{" "}
 
                             {row?.original.Shareweb_x0020_ID}
                         </>
@@ -610,7 +613,7 @@ const HalfClientCategory = (props: any) => {
                         <span className='d-flex'>
                             <a
                                 className="hreflink"
-                                href={`${props?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
+                                href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.Id}`}
                                 data-interception="off"
                                 target="_blank"
                             >
@@ -709,7 +712,7 @@ const HalfClientCategory = (props: any) => {
             <div className='ProjectOverViewRadioFlat  d-flex justify-content-between'>
                 <dl className='alignCenter gap-2 mb-0'>
                     <dt className='form-check l-radio'>
-                        <input className='form-check-input' type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Master Tasks View
+                        <input className='form-check-input' type="radio" value="grouped" name="date" checked={selectedView == 'MasterTask'} onClick={() => setSelectedView('MasterTask')} /> Portfolio View
                     </dt>
                     <dt className='form-check l-radio'>
                         <input className='form-check-input' type="radio" value="flat" name="date" checked={selectedView == 'AllSiteTasks'} onClick={() => setSelectedView('AllSiteTasks')} /> All Sites Task View
@@ -743,7 +746,7 @@ const HalfClientCategory = (props: any) => {
                     {" "}
                 </EditInstituton>
             )}
-              {pageLoaderActive ? <PageLoader /> : ''}
+            {pageLoaderActive ? <PageLoader /> : ''}
         </div>
     )
 }

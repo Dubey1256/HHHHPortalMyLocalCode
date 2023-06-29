@@ -1860,8 +1860,7 @@ const TaskDashboard = (props: any) => {
 
             });
             body =
-                `
-            <table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
+            `<table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
             <thead>
             <tr>
             <th colspan="3" bgcolor="#eee" style="font-size:22px; padding:10px;"> Time report </th> 
@@ -1876,7 +1875,7 @@ const TaskDashboard = (props: any) => {
             <tr>
             <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">Today</th>
             <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This week</th>
-            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;"><strong>This Month</strong></th>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This Month</th>
             </tr>
             <tr>
             <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.today} Hour</th>

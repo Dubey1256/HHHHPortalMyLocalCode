@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import axios, { AxiosResponse } from "axios";
-import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import TagTaskToProjectPopup from "./TagTaskToProjectPopup";
 import CreateTaskFromProject from "./CreateTaskFromProject";
 import * as globalCommon from '../../../globalComponents/globalCommon'

@@ -53,7 +53,7 @@ import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 var filt: any = "";
 var siteConfig: any = [];
 var ComponentsDataCopy: any = [];
