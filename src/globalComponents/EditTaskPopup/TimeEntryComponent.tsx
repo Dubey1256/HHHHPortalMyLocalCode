@@ -2429,7 +2429,7 @@ function TimeEntryPopup(item: any) {
 
                                 <span>  <a className="hreflink"
                                 >
-                                    <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(row?.getParentRow()?.original, row.original)}></span>
+                                    <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(row.getParentRow().original, row.original)}></span>
 
                                 </a></span>
                                 <span>  <a title="Delete" className="hreflink">
