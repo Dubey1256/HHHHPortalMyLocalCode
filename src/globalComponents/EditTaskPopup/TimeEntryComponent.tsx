@@ -47,6 +47,7 @@ var listName = ''
 var RelativeUrl: any = ''
 var CurrentSiteUrl: any = ''
 var AllTimeEntry: any = [];
+var UserName:any=''
 var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
@@ -122,17 +123,23 @@ function TimeEntryPopup(item: any) {
         //console.log(this.taskUsers);
 
     }
-    const getAllTime = async () => {
-        var newItem: any = []
+    const getAllTime=async ()=>{
+        $.each(AllUsers, async function (index: any, taskUser: any) {
+            if (taskUser.AssingedToUserId === CurntUserId) {
+                UserName = taskUser.Title;
+              }
+
+        });
+        var newItem:any=[]
         let web = new Web(`${CurrentSiteUrl}`);
         let taskUsers = [];
         taskUsers = await web.lists
             .getByTitle(listName)
             .items
-            .filter(`Title eq '${CurrentUserTitle}'`)
+            .filter(`Title eq '${UserName}'`)
             .getAll();
-        AllTimeEntry = taskUsers;
-
+            AllTimeEntry = taskUsers;
+           
     }
     // pnp.sp.web.currentUser.get().then(result => {
     //     CurntUserId = result.Id;
@@ -470,8 +477,10 @@ function TimeEntryPopup(item: any) {
 
     const openCopyTaskpopup = (childitem: any,) => {
         setCopyTaskpopup(true)
-        dateValue = childitem.TaskDate.split("/");
-        dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        var dateValue = childitem.TaskDates.substring(4)
+        var b = dateValue.trim()
+       var dateValues = b.split("/");
+        dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
         var inputDate: any = new Date(Eyd)
@@ -500,13 +509,15 @@ function TimeEntryPopup(item: any) {
     var Dateet: any = ''
     const openTaskStatusUpdatePoup2 = (childitem: any, childinew: any) => {
 
-        dateValue = childinew.TaskDate.split("/");
-        dp = dateValue[1] + "/" + dateValue[0] + "/" + dateValue[2];
+        var dateValue = childinew.TaskDates.substring(4)
+        var b = dateValue.trim()
+        var dateValuess = b.split("/");
+       var dp = dateValuess[1] + "/" + dateValuess[0] + "/" + dateValuess[2];
         Dateet = new Date(dp)
         Eyd = Moment(Dateet).format("ddd, DD MMM yyyy")
         var inputDate: any = new Date(Eyd)
         setediteddata(inputDate)
-        //setediteddata(Eyd)
+        //setediteddata(Eyd) 
         var Array: any = []
         var Childitem: any = []
         setTaskStatuspopup2(true)
@@ -806,8 +817,10 @@ function TimeEntryPopup(item: any) {
             if (items.subRows.length > 0) {
                 items.subRows = items.subRows.reverse()
                 $.each(items.subRows, function (index: any, val: any) {
-                    var NewDate = val.TaskDate;
-                   // val.TaskDate = moment(val.TaskDate).format("ddd, DD/MM/YYYY")
+                    var dateValues = val.TaskDate.split("/");
+                    var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                    var NewDate = new Date(dp)
+                   val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY")
                     try {
                         getDateForTimeEntry(NewDate, val);
                     } catch (e) { }
@@ -1505,12 +1518,15 @@ function TimeEntryPopup(item: any) {
                     updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
 
                     updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
-
+                    
 
                 }
                 UpdatedData.push(updateitem)
-            })
+            }) 
         });
+        UpdatedData?.forEach((val:any)=>{
+            delete val.TaskDates
+        })
         setTaskStatuspopup2(false)
         if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
@@ -2319,7 +2335,7 @@ function TimeEntryPopup(item: any) {
                 id: "AuthorName",
                 placeholder: "AuthorName",
                 header: "",
-                size: 460,
+                size: 360,
                 cell: ({ row }) => (
                     <>
                         <span>
@@ -2367,10 +2383,10 @@ function TimeEntryPopup(item: any) {
             },
 
             {
-                accessorKey: 'TaskDate',
+                accessorKey: 'TaskDates',
                 placeholder: "TaskDate",
                 header: "",
-                size: 95,
+                size: 115,
             },
             {
                 accessorKey: 'TaskTime',
@@ -2413,7 +2429,7 @@ function TimeEntryPopup(item: any) {
 
                                 <span>  <a className="hreflink"
                                 >
-                                    <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(row.getParentRow().original, row.original)}></span>
+                                    <span className="svg__iconbox svg__icon--edit" onClick={() => openTaskStatusUpdatePoup2(row?.getParentRow()?.original, row.original)}></span>
 
                                 </a></span>
                                 <span>  <a title="Delete" className="hreflink">
