@@ -6,7 +6,7 @@ import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';
 import ListGroup from 'react-bootstrap/ListGroup';
- let clientCat: any[]=[];
+
 export interface IStructureCreationProps {
     CreatOpen: (item: any) => void;
     Close: (item: any) => void;
@@ -72,11 +72,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
 
     private async LoadSPComponents() {
 
-       if(this.props.SelectedItem.ClientCategory.results!=undefined){
-        this.props.SelectedItem.ClientCategory.results?.map((items:any)=>{
-            clientCat.push(items.Id)
-        })
-       } 
+      
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
@@ -425,6 +421,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                             ClientCategoryIds.push(clientCategory.Id);
                         })
                     }
+                    if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory.results != undefined && self.state.SelectedItem.ClientCategory.results.length > 0) {
+                        self.state.SelectedItem.ClientCategory.results.forEach(function (clientCategory: any) {
+                            ClientCategoryIds.push(clientCategory.Id);
+                        })
+                    }
                     let AssignedToIds: any = []
                     let TeamMembersIds: any = []
                     if (item.AssignedToUsers != undefined && item.AssignedToUsers.length > 0) {
@@ -447,8 +448,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         Team_x0020_MembersId: { "results": self.TeamMembersIds },
                         "PortfolioLevel": item.NextLevel,
                         "PortfolioStructureID": item.PortfolioStructureIDs,
-                        ClientCategoryId: { "results": clientCat },
-                        // ClientCategoryId:{"results": ClientCategoryIds}   
+                        // ClientCategoryId: { "results": clientCat },
+                        ClientCategoryId:{"results": ClientCategoryIds}   
 
                     }
                     if (self.state.SelectedItem.Sitestagging != undefined) {

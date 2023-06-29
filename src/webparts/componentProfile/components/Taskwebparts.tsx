@@ -127,7 +127,7 @@ function Filter({
   const columnFilterValue = column.getFilterValue();
   // style={{ width: placeholder?.size }}
   return (
-    <input style={{ width: "100%" }} className="me-1 my-1 on-search-cross"
+    <input style={{ width: "100%" }} className="me-1 mb-1 on-search-cross"
       // type="text"
       title={placeholder?.placeholder}
       type="search"
@@ -3542,7 +3542,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 26,
+        size: 28,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3650,7 +3650,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: "smartTime",
         placeholder: "SmartTime",
         header: "",
-        size:4,
+        size:6,
       },
       {
         cell: ({ row, getValue }) => (
