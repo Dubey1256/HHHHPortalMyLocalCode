@@ -53,7 +53,7 @@ const ShowClintCatogory = (Item: any) => {
                                         return (
                                             <>
                                                 <span className="team_Members_Item" style={{ padding: "2px" }}>
-                                                    <span title={rcData?.Title} className="ClientCategory-Usericon" style={{ color: rcData?.Color_x0020_Tag }}>
+                                                    <span title={rcData?.Title} className="ClientCategory-Usericon" style={{ backgroundColor: rcData?.Color_x0020_Tag }}>
                                                         {rcData?.Title?.slice(0, 2).toUpperCase()}
                                                     </span>
                                                     <div className="mx-2">{rcData?.Title}</div>
