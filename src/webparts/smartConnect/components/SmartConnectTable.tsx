@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import HighlightableCell from '../../componentPortfolio/components/highlight';
 import { FaChevronDown, FaChevronRight, FaCompressArrowsAlt } from 'react-icons/fa';
-import GlobalCommanTable, { IndeterminateCheckbox } from '../../../globalComponents/GlobalCommanTable';
+import GlobalCommanTable, { IndeterminateCheckbox } from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import PortfolioTable from './PortfolioTable';

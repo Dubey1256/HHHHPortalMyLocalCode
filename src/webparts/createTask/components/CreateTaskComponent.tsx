@@ -723,14 +723,24 @@ function CreateTaskComponent(props: any) {
                     }
                 });
             }
-
+            let selectedCC:any=[];
+            let postClientTime:any='';
+            let siteCompositionDetails:any='';
             try {
                 let selectedComponent: any[] = [];
+                
                 if (save.Component !== undefined && save.Component.length > 0) {
                     save.Component?.map((com: any) => {
                         if (save.Component !== undefined && save.Component.length >= 0) {
                             $.each(save.Component, function (index: any, smart: any) {
                                 selectedComponent.push(smart.Id);
+                                postClientTime=smart?.clientTime;
+                                siteCompositionDetails=smart?.SiteCompositionSettings;
+                                smart?.ClientCategory?.map((cc:any)=>{
+                                    if(cc.Id!=undefined){
+                                        selectedCC.push(cc.Id) 
+                                    }
+                                })
                             })
                         }
                     })
@@ -741,6 +751,13 @@ function CreateTaskComponent(props: any) {
                         if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
                             $.each(save.linkedServices, function (index: any, smart: any) {
                                 selectedService.push(smart.Id);
+                                postClientTime=smart?.clientTime;
+                                siteCompositionDetails=smart?.SiteCompositionSettings;
+                                smart?.ClientCategory?.map((cc:any)=>{
+                                    if(cc.Id!=undefined){
+                                        selectedCC.push(cc.Id) 
+                                    }
+                                })
                             })
                         }
                     })
@@ -807,12 +824,13 @@ function CreateTaskComponent(props: any) {
                         Team_x0020_MembersId: { "results": TeamMembersIds },
                         // SharewebComponentId: { "results": $scope.SharewebComponent },
                         SharewebCategoriesId: { "results": sharewebCat },
+                        ClientCategoryId: { "results": selectedCC },
                         // LinkServiceTaskId: { "results": $scope.SaveServiceTaskItemId },
                         "Priority_x0020_Rank": priorityRank,
-                        SiteCompositionSettings: '',
+                        SiteCompositionSettings:siteCompositionDetails!=undefined?siteCompositionDetails: '',
                         AssignedToId: { "results": AssignedToIds },
                         SharewebTaskTypeId: 2,
-                        ClientTime: '',
+                        ClientTime: postClientTime!=undefined?postClientTime:'',
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
