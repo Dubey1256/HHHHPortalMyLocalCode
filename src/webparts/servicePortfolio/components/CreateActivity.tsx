@@ -1200,7 +1200,7 @@ const CreateActivity = (props: any) => {
                         {`Create Quick Option - ${AllItems?.NoteCall}`}
                     </h2>
                 </div>
-                <Tooltip ComponentId={AllItems?.Id} />
+                <Tooltip ComponentId={1746} />
             </div>
         );
     };

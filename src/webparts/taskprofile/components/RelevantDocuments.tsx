@@ -57,9 +57,9 @@ const RelevantDocuments = (props: any) => {
                     return (
                         <div className='card-body p-1'>
                             <ul  className='d-flex list-none'>
-                                <li>
+                                {/* <li>
                                    <a  href={item?.FileDirRef} target="_blank" data-interception="off" > <span className='svg__iconbox svg__icon--folder'></span></a>
-                                </li>
+                                </li> */}
                                 <li>
                                   <a  href={item.EncodedAbsUrl}>
                                     {item?.File_x0020_Type=="pdf"&&<span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
