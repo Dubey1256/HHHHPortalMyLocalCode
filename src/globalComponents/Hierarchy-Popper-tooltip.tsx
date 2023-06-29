@@ -98,9 +98,9 @@ export default function ReactPopperTooltip({ ShareWebId, row }: any) {
                                 ""
                             )}{" "}
 
-                            <> {row?.original?.siteIcon != undefined ?
+                            <> {row?.original?.SiteIcon != undefined ?
                                 <a className="hreflink" title="Show All Child" data-toggle="modal">
-                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.siteIcon}></img>
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
                                 </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>}
                                 <span>{row?.original?.Shareweb_x0020_ID}</span>
                             </>
