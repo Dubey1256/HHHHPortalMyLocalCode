@@ -734,7 +734,7 @@ function CreateTaskComponent(props: any) {
                         if (save.Component !== undefined && save.Component.length >= 0) {
                             $.each(save.Component, function (index: any, smart: any) {
                                 selectedComponent.push(smart.Id);
-                                postClientTime=smart?.clientTime;
+                                postClientTime=smart?.Sitestagging;
                                 siteCompositionDetails=smart?.SiteCompositionSettings;
                                 smart?.ClientCategory?.map((cc:any)=>{
                                     if(cc.Id!=undefined){
@@ -751,7 +751,7 @@ function CreateTaskComponent(props: any) {
                         if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
                             $.each(save.linkedServices, function (index: any, smart: any) {
                                 selectedService.push(smart.Id);
-                                postClientTime=smart?.clientTime;
+                                postClientTime=smart?.Sitestagging;
                                 siteCompositionDetails=smart?.SiteCompositionSettings;
                                 smart?.ClientCategory?.map((cc:any)=>{
                                     if(cc.Id!=undefined){
@@ -1269,8 +1269,9 @@ function CreateTaskComponent(props: any) {
         })
         if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+              createdTask = {};
         }
-        createdTask = {};
+
     }, [])
     const EditPopup = React.useCallback((item: any) => {
         setEditTaskPopupData({

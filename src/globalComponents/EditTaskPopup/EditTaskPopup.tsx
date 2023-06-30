@@ -1985,8 +1985,11 @@ const EditTaskPopup = (Items: any) => {
                             Items.Call(dataEditor)
                         }
                         Items.Call(DataJSONUpdate);
+                    }
+                    if(EditData?.Categories?.toLowerCase().indexOf('approval') == -1){
+                        Items.Call(true);
                     } else {
-
+                       
                         Items.Call();
                     }
                 })
