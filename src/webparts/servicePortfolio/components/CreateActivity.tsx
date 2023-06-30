@@ -114,15 +114,29 @@ const CreateActivity = (props: any) => {
                 ClientCategoriesData.push(value)
             })
         }
+
+        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        //     AllItems.ClientCategory2.results.forEach((value: any) => {
+        //         ClientCategoriesData.push(value)
+        //     })
+        // }
         if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
-            AllItems.ClientCategory?.results?.forEach((value: any) => {
-                ClientCategoriesData.push(value)
-            })
-        } else if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
-            AllItems.ClientCategory.forEach((value: any) => {
-                ClientCategoriesData.push(value)
-            })
-        }
+            if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+                AllItems.ClientCategory2.results.forEach((value2: any) => {
+                    ClientCategoriesData.push(value2)
+                })
+            }else{
+                AllItems.ClientCategory?.results?.forEach((value: any) => {
+                    ClientCategoriesData.push(value)
+                })
+            }
+           
+        } 
+        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        //     AllItems.ClientCategory2.results.forEach((value: any) => {
+        //         ClientCategoriesData.push(value)
+        //     })
+        // }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
             if (AllItems?.Portfolio_x0020_Type == 'Component' || (AllItems.Component != undefined && AllItems.Component.length > 0)) {
                 smartComponentData.push(AllItems);
