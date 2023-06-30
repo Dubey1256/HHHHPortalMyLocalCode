@@ -26,7 +26,7 @@ import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-
+import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
 
 import {
   Column,
@@ -180,7 +180,8 @@ let ParentDs: any;
 let countaa = 0;
 let Itemtypes: any;
 let globalFilterHighlited: any;
-let SmartMetaData: any = [];
+let SmartMetaData:any=[];
+let selectedClientCategoryPopup:any=false;
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -200,8 +201,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [checkCounter, setCheckCounter] = React.useState(true)
   const [checkData, setcheckData] = React.useState([])
   const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-
-
+  const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
+  // const[selectedClientCategoryPopup,setSelectedClientCategoryPopup]=React.useState(false);
 
 
 
@@ -2522,6 +2523,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       );
     } else {
       if (MeetingItems[0] != undefined) {
+        let parentcat:any=[];
+          if(MeetingItems[0]?.ClientCategory!=undefined && MeetingItems[0]?.ClientCategory?.results?.length>0){
+            MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
+              parentcat.push(items)
+            })
+            setSelectedClientCategory(parentcat)
+            selectedClientCategoryPopup=true
+          }
         if (items != undefined && items.length > 0) {
           MeetingItems[0].ClientCategory = [];
           items.forEach((val: any) => {
@@ -2529,6 +2538,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           });
         }
         if (MeetingItems[0].SharewebTaskType != undefined) {
+          
           if (MeetingItems[0].SharewebTaskType.Title == "Activities") {
             setWSPopup(true);
           }
@@ -2543,7 +2553,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
         if (
           MeetingItems[0].SharewebTaskType == undefined &&
-          childsData[0] == undefined
+          childsData[0] == undefined&& selectedClientCategoryPopup==false
         ) {
           setActivityPopup(true);
         }
@@ -3932,7 +3942,19 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
   }, [Iconssc]);
 
-
+ 
+   const parentClientCat = React.useCallback((items:any) => {
+  console.log(items)
+  if(items!=undefined && items.length>0){
+    setSelectedClientCategory(items)
+    MeetingItems[0].ClientCategory.results=items
+  }
+    selectedClientCategoryPopup=false;
+    setActivityPopup(true);
+   
+    // setSelectedClientCategory(items)
+   
+}, [])
 
   return (
     <div
@@ -4191,6 +4213,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {WSPopup && (
         <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
+      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={selectedClientCategory} callback={parentClientCat} />:""}
 
       <Panel
 
@@ -4686,6 +4709,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           </button>
         </footer>
       </Panel>
+      
     </div>
+  
   );
 }

@@ -47,6 +47,7 @@ var listName = ''
 var RelativeUrl: any = ''
 var CurrentSiteUrl: any = ''
 var AllTimeEntry: any = [];
+var UserName:any=''
 var AllUsers: any = [];
 var TimesheetConfiguration: any = []
 var isShowCate: any = ''
