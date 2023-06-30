@@ -56,11 +56,11 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
       try {
         let priorityValue = selectedPriority;
     
-        if (priorityValue === "(1) High") {
+        if (priorityValue === "High") {
           setFieldValue(priorityValue);
-        } else if (priorityValue === "(2) Normal") {
+        } else if (priorityValue === "Normal") {
           setFieldValue(priorityValue);
-        } else if (priorityValue === "(3) Low") {
+        } else if (priorityValue === "Low") {
           setFieldValue(priorityValue);
         }
     
@@ -83,27 +83,27 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
   <div>
     <button
     type="button"
-      value="(1) High"
+      value="High"
       onClick={handleInputChange}
-      className={selectedPriority === "(1) High" ? "secleatedBtn" : ""}
+      className={selectedPriority === "High" ? "secleatedBtn" : ""}
     >
-      (1) High
+      High
     </button>
     <button
     type="button"
-      value="(2) Normal"
+      value="Normal"
       onClick={handleInputChange}
-      className={selectedPriority === "(2) Normal" ? "secleatedBtn" : ""}
+      className={selectedPriority === "Normal" ? "secleatedBtn" : ""}
     >
-      (2) Normal
+      Normal
     </button>
     <button
     type="button"
-      value="(3) Low"
+      value="Low"
       onClick={handleInputChange}
-      className={selectedPriority === "(3) Low" ? "secleatedBtn" : ""}
+      className={selectedPriority === "Low" ? "secleatedBtn" : ""}
     >
-      (3) Low
+      Low
     </button>
   </div>
   <span className="sveBtn">
@@ -1191,7 +1191,7 @@ const [Item,setItem]=React.useState("")
                          
                             {data.map((item) => (
                               <a>
-                                 <EditableField listName="Master Tasks" itemId={item.Id} fieldName="DueDate" value={item?.DueDate!=undefined?Moment(item?.DueDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("DueDate")} type="Date" web={web}/>
+                                 <EditableField listName="Master Tasks" itemId={item.Id} fieldName="DueDate" value={item?.DueDate!=undefined?Moment(item?.DueDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("DueDate")} type="Date" web={ContextValue?.siteUrl}/>
                                
                               </a>
                             ))}
@@ -1204,7 +1204,7 @@ const [Item,setItem]=React.useState("")
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                                  <EditableField listName="Master Tasks" itemId={item.Id} fieldName="StartDate" value={item?.StartDate!=undefined?Moment(item.StartDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("StartDate")} type="Date" web={web}/>
+                                  <EditableField listName="Master Tasks" itemId={item.Id} fieldName="StartDate" value={item?.StartDate!=undefined?Moment(item.StartDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("StartDate")} type="Date" web={ContextValue?.siteUrl}/>
                            
                             </a>
                           ))}
@@ -1262,7 +1262,7 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">Item Rank</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="ItemRank" value={item?.ItemRank!=undefined?item?.ItemRank:""} onChange={handleFieldChange("ItemRank")} type="" web={web}/>
+                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="ItemRank" value={item?.ItemRank!=undefined?item?.ItemRank:""} onChange={handleFieldChange("ItemRank")} type="" web={ContextValue?.siteUrl}/>
                              ))}
                         </dd>
                       </dl>
@@ -1272,7 +1272,7 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">Priority</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="Priority" value={item?.Priority!=undefined?item?.Priority:""} onChange={handleFieldChange("Priority")} type="" web={web}/>
+                             <EditableField listName="Master Tasks" itemId={item.Id} fieldName="Priority" value={item?.Priority!=undefined?item?.Priority:""} onChange={handleFieldChange("Priority")} type="" web={ContextValue?.siteUrl}/>
                              ))}
                         </dd>
                       </dl>
@@ -1281,7 +1281,7 @@ const [Item,setItem]=React.useState("")
                         <dd className="bg-light">
                           {data.map((item) => (
                             <a>
-                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="CompletedDate" value={item?.CompletedDate!=undefined?Moment(item.CompletedDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("CompletedDate")} type="Date" web={web}/>
+                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="CompletedDate" value={item?.CompletedDate!=undefined?Moment(item.CompletedDate).format("DD/MM/YYYY"):""} onChange={handleFieldChange("CompletedDate")} type="Date" web={ContextValue?.siteUrl}/>
                               
                             </a>
                           ))}
@@ -1299,7 +1299,7 @@ const [Item,setItem]=React.useState("")
                         <dt className="bg-fxdark">% Complete</dt>
                         <dd className="bg-light">
                           {data.map((item) => (
-                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="PercentComplete" value={item?.PercentComplete!=undefined?(item.PercentComplete * 100).toFixed(0):""} onChange={handleFieldChange("PercentComplete")} type="Number" web={web}/>
+                              <EditableField listName="Master Tasks" itemId={item.Id} fieldName="PercentComplete" value={item?.PercentComplete!=undefined?(item.PercentComplete * 100).toFixed(0):""} onChange={handleFieldChange("PercentComplete")} type="Number" web={ContextValue?.siteUrl}/>
                            
                           ))}
                         </dd>
