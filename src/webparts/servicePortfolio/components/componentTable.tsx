@@ -3400,18 +3400,6 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <div className="tooltipSec popover__wrapper me-1">
-              <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
-              <div className="popover__content" style={{ display: showPopHover }}>
-                <div>
-                  <div className="tootltip-title">{row?.original?.Title}</div>
-                  <button className="toolClose" onClick={(e) => handleuffixLeave(row)}><div className="popHoverCross">×</div></button>
-                </div>
-                <div className="tooltip-body">
-                  {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
-                </div>
-              </div>
-            </div> */}
             <ReactPopperTooltip ShareWebId={getValue()} row={row} />
           </>
         ),
@@ -3420,13 +3408,6 @@ function ComponentTable(SelectedProp: any) {
         header: "",
         size: 130,
       },
-      // {
-      //   accessorKey: "Shareweb_x0020_ID",
-      //   placeholder: "ID",
-      //   header: "",
-      //   size: 130,
-      //   resetColumnFilters: false,
-      // },
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
