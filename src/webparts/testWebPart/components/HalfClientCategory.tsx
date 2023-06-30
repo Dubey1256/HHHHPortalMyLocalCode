@@ -137,6 +137,7 @@ const HalfClientCategory = (props: any) => {
             siteConfig = [];
         }
     };
+    
     function siteCompositionType(jsonStr: any) {
         var data = JSON.parse(jsonStr);
         try {
