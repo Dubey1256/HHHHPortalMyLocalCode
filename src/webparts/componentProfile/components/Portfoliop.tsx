@@ -1310,7 +1310,7 @@ const [Item,setItem]=React.useState("")
                             {item.Parent.Title != undefined && (
                               <dl>
                                 <dt className="bg-fxdark">Parent</dt>
-                                <dd className="bg-light" style={{width: "auto"}}>
+                                <dd className="bg-light" >
                                   <a
                                     target="_blank"
                                     data-interception="off"
