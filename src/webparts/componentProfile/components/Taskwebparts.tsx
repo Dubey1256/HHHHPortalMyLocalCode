@@ -170,6 +170,7 @@ var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
+var MeetingItemsParentcat: any = [];
 var childsData: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
@@ -2009,9 +2010,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   function AddItem() { }
 
   const Call = React.useCallback((childItem: any) => {
-    if (MeetingItems.length > 0) {
-      MeetingItems = [];
-    }
+    // if (MeetingItems.length > 0) {
+    //   MeetingItems = [];
+    // }
     setRowSelection({})
     // MeetingItems?.forEach((val: any): any => {
     //     val.chekBox = false;
@@ -3890,11 +3891,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
  
    const parentClientCat = React.useCallback((items:any) => {
   console.log(items)
-  if(items!=undefined && items.length>0){
-    setSelectedClientCategory(items)
-    MeetingItems[0].ClientCategory.results=items
+  if(items!=undefined ){
+    // setSelectedClientCategory(items)
+    console.log(selectedClientCategory)
+    // MeetingItemsParentcat[0]= {...MeetingItemsParentcat[0],...MeetingItems[0]}
+    MeetingItemsParentcat[0]=items
   }
     selectedClientCategoryPopup=false;
+
     setActivityPopup(true);
    
     // setSelectedClientCategory(items)
@@ -4105,7 +4109,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         ></TimeEntryPopup>
       )}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
-      {MeetingPopup && (
+      {MeetingPopup &&(
         <CreateActivity
           props={MeetingItems[0]}
           Call={Call}
@@ -4116,7 +4120,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {WSPopup && (
         <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={selectedClientCategory} callback={parentClientCat} />:""}
+      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""}
 
       <Panel
 
@@ -4132,8 +4136,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           PortfolioType={IsUpdated}
           PropsValue={NextProp}
           SelectedItem={
-            checkedList != null && checkedList.length > 0
-              ? checkedList[0]
+            MeetingItems != null && MeetingItems.length > 0
+              ? MeetingItems[0]
               : props
           }
         />
