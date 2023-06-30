@@ -188,7 +188,7 @@ const GlobalCommanTable = (items: any) => {
         if(items?.pageSize!=undefined){
             table.setPageSize(items?.pageSize)
         }else{
-            table.setPageSize(30)
+            table.setPageSize(100)
         }
         table.setPageSize(100)
     }, [])
