@@ -2069,7 +2069,7 @@ function TimeEntryPopup(item: any) {
             console.log(res);
 
             closeCopyTaskpopup();
-            setupdateData(updateData + 7)
+            setupdateData(updateData + 1)
 
         })
     }
@@ -2110,7 +2110,7 @@ function TimeEntryPopup(item: any) {
             console.log(res);
 
             closeEditcategorypopup((e: any) => e);
-            setupdateData(updateData + 3)
+            setupdateData(updateData + 1)
 
         })
     }
