@@ -1988,7 +1988,12 @@ const EditTaskPopup = (Items: any) => {
                     }
                     if(EditData?.Categories?.toLowerCase().indexOf('approval') == -1){
                         Items.Call(true);
-                    } else {
+                    }
+                    if(EditData?.Categories==undefined){
+                        Items.Call(true);
+                    }
+                    
+                    else {
                        
                         Items.Call();
                     }

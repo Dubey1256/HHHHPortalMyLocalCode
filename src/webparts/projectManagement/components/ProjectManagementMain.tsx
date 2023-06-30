@@ -1613,7 +1613,7 @@ const ProjectManagementMain = (props: any) => {
 
                               {
                                 Masterdata?.Body != undefined ? <div className="mt-2 p-0 row">
-                                  <details className="pe-0">
+                                  <details className="pe-0" open>
                                     <summary>Description</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
                                   </details>

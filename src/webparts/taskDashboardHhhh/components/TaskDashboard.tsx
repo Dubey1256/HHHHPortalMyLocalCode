@@ -125,7 +125,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
-
+    //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -1611,13 +1611,33 @@ const TaskDashboard = (props: any) => {
                 taskUser = await web.lists
                     .getById(AllListId?.TaskUsertListID)
                     .items
-                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,IsShowTeamLeader,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
                     .get();
             }
             catch (error) {
                 return Promise.reject(error);
             }
             return taskUser;
+        } else {
+            alert('Task User List Id not Available')
+        }
+    }
+    const loadTodaysLeave = async () => {
+        let todayAbsentEmp;
+        if (AllListId?.TaskUsertListID != undefined) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                todayAbsentEmp = await web.lists
+                    .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
+                    .items
+                    .select("Id,name/Title,name/Id,title,start,end,reason,type,loc")
+                    .expand('name')
+                    .get();
+            }
+            catch (error) {
+                return Promise.reject(error);
+            }
+     console.log(todayAbsentEmp)
         } else {
             alert('Task User List Id not Available')
         }
@@ -2013,7 +2033,7 @@ const TaskDashboard = (props: any) => {
                             })
                             body =
                                 '<h3>'
-                                + teamMember?.Title
+                                + teamMember?.Title+ ` (${teamMember?.Group})`
                                 + '</h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
@@ -2036,7 +2056,7 @@ const TaskDashboard = (props: any) => {
                             body = body.replaceAll('>,<', '><')
                         } else {
                             body = '<h3>'
-                                + teamMember?.Title
+                                + teamMember?.Title+ ` (${teamMember?.Group})`
                                 + '</h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '
