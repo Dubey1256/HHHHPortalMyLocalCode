@@ -180,7 +180,7 @@ const Tabless = (props: any) => {
                 internalHeader: 'Team Members',
                 accessor: 'TeamMembersSearch',
                 showSortIcon: true,
-                style: { width: '150px' },
+                style: { width: '110px' },
                 Cell: ({ row }: any) => (
                     <span>
                         <ShowTaskTeamMembers props={row?.original} TaskUsers={taskUser} />
@@ -747,9 +747,6 @@ const Tabless = (props: any) => {
 
     }
 
-    const generateSortingIndicator = (column: any) => {
-        return column.isSorted ? (column.isSortedDesc ? <FaSortDown /> : <FaSortUp />) : (column.showSortIcon ? <FaSort /> : '');
-    };
 
   
 
@@ -1056,9 +1053,9 @@ const excelSelectFunc=(e:any)=>{
       </div>
       <div className="modal-body">
       {excelSelct.map((item:any)=>
-        <dl>
-          <dt> <input value={item.value} type='checkbox' checked={selectExcelData.includes(item.value)} onChange={(e:any)=>excelSelectFunc(e)} /><label>{item.item}</label></dt>
-        </dl>
+        <ul className='exportlist'>
+          <li> <input value={item.value} type='checkbox' checked={selectExcelData.includes(item.value)} onChange={(e:any)=>excelSelectFunc(e)} /><label>{item.item}</label></li>
+        </ul>
        
      )}
       </div>
@@ -1084,17 +1081,9 @@ const excelSelectFunc=(e:any)=>{
                     {headerGroups?.map((headerGroup: any) => (
                         <tr  {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers?.map((column: any) => (
-                                <th {...column.getHeaderProps()} style={column?.style}>
-                           <div className='searchBoxwt position-relative'>
-                                <span class="Table-SortingIcon" {...column.getSortByToggleProps()} >
-                                        {column.render('Header')}
-                                        {generateSortingIndicator(column)}
-
-                                    </span>
+                                <th {...column.getHeaderProps()} style={column?.style}>                                                  
                                     <Filter column={column} />
-                                        </div>
-                                
-                                  
+
                                     {    
                                         column?.id !=='Title' && column.id !== 'ID' ?
                                         <div className="dropdown filtericons">
@@ -1108,17 +1097,17 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                             {allLists?.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
-                                                 <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                                 <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                   </div> }
 
 
                                         {column?.id == 'percentage' && 
                                         <div className="dropdown-menu p-2 ">
                                         <li><span><input type='checkbox' checked={selectAllChecks.percentage} onChange={(e:any)=>selectAll(e)}  value={'percentage'} /> <label>Select All</label> </span></li>
-                                       <dl>
-                                        {checkPercentage?.map((item: any) => <dt className='ms-2 fw-normal'><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /><label> {item}</label></dt>)}
-                                          </dl>
-                                          <div>
+                                       <ul className='dropitem'>
+                                        {checkPercentage?.map((item: any) => <li><span><input type='checkbox' checked={checkPercentages.some((x:any)=>x==item)}  onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label> {item}</label></span> </li>)}
+                                          </ul>
+                                          <div className='filterbox'>
                                             <li>
                                                 <span><input type='radio' name='percentage' checked={radio.percentage=='=='} value={'=='} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})} /> <label>{'='}</label> </span>
                                                 <span><input type='radio' name='percentage' checked={radio.percentage=='>'} value={'>'} onChange={(e:any)=>setRadio({...radio, percentage:e.target.value})}/> <label>{'>'}</label></span>
@@ -1127,7 +1116,7 @@ const excelSelectFunc=(e:any)=>{
                                             </li>
                                             <span><input type='number' value={priorAndPerc.percentage}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,percentage:e.target.value})}  /></span>
                                             </div>
-                                          <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                          <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                           </div>}
 
 
@@ -1137,7 +1126,7 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                         {catogries?.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
@@ -1147,7 +1136,7 @@ const excelSelectFunc=(e:any)=>{
                                           <ul className='dropitem'>
                                         {checkPriority?.map((item: any) => <li><span><input type='checkbox' checked={checkPrioritys.some((x:any)=>x==item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul>
-                                            <div>
+                                            <div className='filterbox'>
                                             <li>
                                                 <span><input type='radio' name='priority' value={'=='} checked={radio.priority=='=='} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})}  /> <label>{'='}</label> </span>
                                                 <span><input type='radio' name='priority' value={'>'} checked={radio.priority=='>'} onChange={(e:any)=>setRadio({...radio, priority:e.target.value})} /> <label>{'>'}</label></span>
@@ -1156,51 +1145,54 @@ const excelSelectFunc=(e:any)=>{
                                             </li>
                                             <span><input type='number' value={priorAndPerc.priority}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,priority:e.target.value})}  /></span>
                                             </div>
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
                                             {column?.id == 'dueDate' && 
                                            <div className="dropdown-menu p-2 ">
-                                            <div>
+                                            <div className='filterbox'>
                                             <li>
                                                 <span><input type='radio' name='newDueDate' value={'=='} checked={radio.due=='=='}  onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'='}</label> </span>
                                                 <span><input type='radio' name='newDueDate' value={'>'}  checked={radio.due=='>'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'>'}</label></span>
                                                 <span><input type='radio' name='newDueDate' value={'<'}  checked={radio.due=='<'} onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'<'}</label> </span>
                                                 <span><input type='radio' name='newDueDate' value={'!='} checked={radio.due=='!='}  onChange={(e:any)=>setRadio({...radio, due:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
-                                            </div>
                                             <input type='date' value={date.due !== null ? date.due : ''} onChange={(e:any)=>setDate({...date, due:e.target.value})} />
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            </div>
+                                           
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
 
                                             {column?.id == 'modified' && 
                                             <div className="dropdown-menu p-2 ">
-                                                 <div>
+                                                 <div className='filterbox'>
                                             <li>
                                                 <span><input type='radio' name='newModified' value={'=='}  checked={radio.modify=='=='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'='}</label> </span>
                                                 <span><input type='radio' name='newModified' value={'>'}  checked={radio.modify=='>'} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'>'}</label></span>
                                                 <span><input type='radio' name='newModified' value={'<'}  checked={radio.modify=='<'} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})} /> <label>{'<'}</label> </span>
                                                 <span><input type='radio' name='newModified' value={'!='} checked={radio.modify=='!='} onChange={(e:any)=>setRadio({...radio, modify:e.target.value})}  /> <label>{'!='}</label> </span>
                                             </li>
-                                            </div>
                                             <input type='date' value={date.modify !== null ? date.modify : '' } onChange={(e:any)=>setDate({...date, modify:e.target.value})} />
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            </div>
+                                           
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
                                            
                                             {column?.id == 'created' && 
                                        <div className="dropdown-menu p-2 ">
-                                         <div>
+                                         <div className='filterbox'>
                                             <li>
                                                 <span><input type='radio' name='newCreated' checked={radio.created=='=='} value={'=='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})}  /> <label>{'='}</label> </span>
                                                 <span><input type='radio' name='newCreated'  checked={radio.created=='>'} value={'>'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'>'}</label></span>
                                                 <span><input type='radio' name='newCreated' checked={radio.created=='<'} value={'<'} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'<'}</label> </span>
                                                 <span><input type='radio' name='newCreated' checked={radio.created=='!='} value={'!='} onChange={(e:any)=>setRadio({...radio, created:e.target.value})} /> <label>{'!='}</label> </span>
                                             </li>
-                                            </div>
                                             <input type='date' value={date.created !== null ? date.created : ''} onChange={(e:any)=>setDate({...date, created:e.target.value})}  />
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            </div>
+                                           
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
                                            {column?.id == 'TeamMembersSearch' && 
@@ -1209,7 +1201,7 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                         {taskUser?.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="dropdown-item p-2 bg-primary" href="#" onClick={listFilters1}>Filter</a> <a className="dropdown-item p-2 bg-light" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
                                           
                                     </div> : ''

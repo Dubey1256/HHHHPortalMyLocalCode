@@ -11,6 +11,7 @@ import {
   FaSort,
   FaCompressArrowsAlt,
   FaSearch,
+  FaPaintBrush,
 } from "react-icons/fa";
 import Tooltip from "../../../globalComponents/Tooltip";
 import EditInstituton from "../../EditPopupFiles/EditComponent";
@@ -114,20 +115,20 @@ function DebouncedInput({
   );
 }
 
-
 function Filter({
   column,
   table,
-  placeholder
+  placeholder,
 }: {
   column: Column<any, any>;
   table: Table<any>;
-  placeholder: any
+  placeholder: any;
 }): any {
   const columnFilterValue = column.getFilterValue();
   // style={{ width: placeholder?.size }}
   return (
-    <input style={{ width: "100%" }} className="me-1 mb-1 on-search-cross"
+    <input
+      className="me-1 mb-1 on-search-cross form-control "
       // type="text"
       title={placeholder?.placeholder}
       type="search"
@@ -170,7 +171,7 @@ var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
-var MeetingItemsParentcat: any = [];
+let MeetingItemsParentcat:any=[];
 var childsData: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
@@ -183,6 +184,7 @@ let Itemtypes: any;
 let globalFilterHighlited: any;
 let SmartMetaData:any=[];
 let selectedClientCategoryPopup:any=false;
+
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -264,13 +266,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
 
-    SmartMetaData= smartmetaDetails;
+    SmartMetaData = smartmetaDetails;
 
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     SmartMetaDatas();
-  },[])
+  }, [])
 
 
 
@@ -278,40 +280,40 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     let FinalTotalTime: any = 0;
     let AllTimeSpentDetails: any = [];
     let filteres: string;
-    let TimeSheetlistId:any;
-    let siteUrl:any;
-    let listName:any;
-    
-// Get the list Name
-     let TimesheetConfiguration:any=[];
-     if(SmartMetaData.length>0){
+    let TimeSheetlistId: any;
+    let siteUrl: any;
+    let listName: any;
 
-     
+    // Get the list Name
+    let TimesheetConfiguration: any = [];
+    if (SmartMetaData.length > 0) {
+
+
       SmartMetaData.forEach((itemss: any) => {
 
-      if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
+        if (itemss.Title == items.siteType && itemss.TaxType == 'Sites') {
 
           TimesheetConfiguration = JSON.parse(itemss.Configurations)
 
 
 
 
-      }
+        }
 
-  })
+      })
 
-  TimesheetConfiguration?.forEach((val: any) => {
-
-
+      TimesheetConfiguration?.forEach((val: any) => {
 
 
-      TimeSheetlistId = val.TimesheetListId;
 
-      siteUrl = val.siteUrl
 
-      listName = val.TimesheetListName
-  })
-}
+        TimeSheetlistId = val.TimesheetListId;
+
+        siteUrl = val.siteUrl
+
+        listName = val.TimesheetListName
+      })
+    }
 
 
     if (items.siteType === "Offshore Tasks") {
@@ -320,12 +322,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     } else {
       filteres = `Task${items.siteType}/Id eq ${items.Id}`;
     }
-    
+
     const select = "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,Author/Id,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle&$filter=" + filteres;
     let count = 0;
-    
+
     let allurls: { Url: string }[];
-    
+
     if (items.siteType === "Migration" || items.siteType === "ALAKDigital") {
       allurls = [
         { Url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyid('9ed5c649-3b4e-42db-a186-778ba43c5c93')/items?$select=" + select }
@@ -334,14 +336,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       allurls = [
         { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` }
       ];
-    }else {
+    } else {
       allurls = [
         { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
       ];
     }
-    
-     
-  
+
+
+
     for (const item of allurls) {
       try {
         const response = await $.ajax({
@@ -351,17 +353,17 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             "Accept": "application/json; odata=verbose"
           }
         });
-  
+
         count++;
         let tempArray: any = [];
-  
+
         if (response.d.results !== undefined && response.d.results.length > 0) {
           AllTimeSpentDetails = AllTimeSpentDetails.concat(response.d.results);
-  
+
           AllTimeSpentDetails.forEach((item: any) => {
             if (item.AdditionalTimeEntry !== null) {
               const data = JSON.parse(item.AdditionalTimeEntry);
-  
+
               if (data !== undefined && data.length > 0) {
                 data.forEach((timeData: any) => {
                   tempArray.push(timeData);
@@ -370,14 +372,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
           });
         }
-  
+
         let TotalTimeData: number = 0;
-  
+
         if (tempArray.length > 0) {
           tempArray.forEach((tempItem: any) => {
             if (typeof tempItem.TaskTimeInMin === 'string') {
               const timeValue = Number(tempItem.TaskTimeInMin);
-  
+
               if (timeValue > 0) {
                 TotalTimeData += timeValue;
               }
@@ -388,7 +390,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
           });
         }
-  
+
         if (TotalTimeData > 0) {
           FinalTotalTime = TotalTimeData / 60;
         }
@@ -396,12 +398,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         console.error("Error:", error);
       }
     }
-  
+
     console.log(FinalTotalTime);
     return FinalTotalTime;
   };
-  
-  
+
+
   // End of SmartTotalTime
 
 
@@ -651,13 +653,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 //   );
                 // }
                 SmartTimeData(result)
-                .then((returnresult) => {
-                  result.smartTime = String(returnresult)
-                  // console.log("Final Total Time:", returnresult);
-                })
-                .catch((error) => {
-                  console.error("Error:", error);
-                });
+                  .then((returnresult) => {
+                    result.smartTime = String(returnresult)
+                    // console.log("Final Total Time:", returnresult);
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                  });
                 result.PercentComplete = (result.PercentComplete * 100).toFixed(
                   0
                 );
@@ -943,10 +945,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   // var SubComponentsData: any = []; var FeatureData: any = [];
   var MetaData: any = [];
   var showProgressBar = () => {
+    setLoaded(false);
     $(" #SpfxProgressbar").show();
   };
 
   var showProgressHide = () => {
+    setLoaded(true);
     $(" #SpfxProgressbar").hide();
   };
   var Response: any = [];
@@ -1045,10 +1049,18 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       select
     );
     console.log(componentDetails);
-    //  componentDetails?.map((items:any) =>{
-    //   items.Created = Moment(items?.Created).format("DD/MM/YYYY")
-
-    // })
+    componentDetails?.map((result: any) => {
+      if (result.Item_x0020_Type === 'Component') {
+        result.boldRow = 'boldClable'
+        result.lableColor = 'f-bg';
+      }
+      if (result.Item_x0020_Type === 'SubComponent') {
+        result.lableColor = 'a-bg';
+      }
+      if (result.Item_x0020_Type === 'Feature') {
+        result.lableColor = 'w-bg';
+      }
+    })
     var array: any = [];
     if (
       Itemtypes != undefined &&
@@ -1438,10 +1450,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       //   });
       // }
       result.Restructuring =
-      IsUpdated != undefined && IsUpdated == "Service"
-        ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
-        : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
- 
+        IsUpdated != undefined && IsUpdated == "Service"
+          ? "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png"
+          : "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png";
+
       if (result.Item_x0020_Type == "Root Component") {
         result["subRows"] =
           result["subRows"] != undefined ? result["subRows"] : [];
@@ -2071,7 +2083,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 // subComp.childs.push(childItem.data)
                 CountArray++;
                 subComp.subRows.push(childItem.data)
-                
+
                 subComp.subRows = subComp?.subRows?.filter((ele: any, ind: any) => ind === subComp?.subRows?.findIndex((elem: { ID: any; }) => elem.ID === ele.ID))
               }
 
@@ -2492,13 +2504,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   };
   // Add activity popup array
   const closeTaskStatusUpdatePoup2 = () => {
-    MeetingItems?.forEach((val: any): any => {
-      val.chekBox = false;
-    });
+    setRowSelection({})
     setActivityPopup(false);
     // childsData =[]
     MeetingItems = [];
     childsData = [];
+
     // setMeetingItems([])
   };
   const CreateMeetingPopups = (item: any) => {
@@ -3448,36 +3459,29 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const columns = React.useMemo<ColumnDef<any, unknown>[]>(
     () => [
       {
-        accessorKey: "Shareweb_x0020_ID",
-        placeholder: "ID",
-        size: 7,
+        accessorKey: "",
+        placeholder: "",
+        size: 35,
+        id: 'Id',
         header: ({ table }: any) => (
           <>
-            <button className='border-0 bg-Ff'
+            <button
+              className="border-0 bg-Ff"
               {...{
                 onClick: table.getToggleAllRowsExpandedHandler(),
               }}
             >
-              {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+              {table.getIsAllRowsExpanded() ? (
+                <FaChevronDown />) : (<FaChevronRight />)}
             </button>{" "}
-            <IndeterminateCheckbox {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }} />{" "}
           </>
         ),
         cell: ({ row, getValue }) => (
-          <div
-            style={row.getCanExpand() ? {
-              paddingLeft: `${row.depth * 5}px`,
-            } : {
-              paddingLeft: "18px",
-            }}
-          >
+          <div className="d-flex">
             <>
               {row.getCanExpand() ? (
-                <span className='border-0'
+                <span
+                  className="border-0"
                   {...{
                     onClick: row.getToggleExpandedHandler(),
                     style: { cursor: "pointer" },
@@ -3485,24 +3489,77 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 >
                   {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
                 </span>
-              ) : ""}{" "}
-              {row?.original?.TitleNew != 'Tasks' ? <IndeterminateCheckbox
-                {...{
-                  checked: row.getIsSelected(),
-                  indeterminate: row.getIsSomeSelected(),
-                  onChange: row.getToggleSelectedHandler()
-
-                }}
-              /> : ""}{" "}
-              {row?.original?.SiteIcon != undefined ?
-                <a className="hreflink" title="Show All Child" data-toggle="modal">
-                  <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-                </a> : <>{row?.original?.TitleNew != "Tasks" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
-              }
+              ) : (
+                ""
+              )}{" "}
               {getValue()}
             </>
           </div>
         ),
+      },
+      {
+        header: ({ table }: any) => (
+          <>
+            <IndeterminateCheckbox className="mx-1 "
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />{" "}
+          </>
+        ),
+        cell: ({ row, getValue }) => (
+          <>
+            <span className="d-flex">
+              {row?.original?.TitleNew != "Tasks" ? (
+                <IndeterminateCheckbox
+                  {...{
+                    checked: row.getIsSelected(),
+                    indeterminate: row.getIsSomeSelected(),
+                    onChange: row.getToggleSelectedHandler(),
+                  }}
+                />
+              ) : (
+                ""
+              )}{" "}
+              {row?.original?.SiteIcon != undefined ? (
+                <a className="hreflink" title="Show All Child" data-toggle="modal" >
+                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
+                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type ==="Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                  }
+                    src={row?.original?.SiteIcon}>
+                  </img>
+                </a>
+              ) : (
+                <>
+                  {row?.original?.TitleNew != "Tasks" ? (
+                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                      row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                    }>
+                      {row?.original?.SiteIconTitle}
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </>
+              )}
+              {getValue()}
+            </span>
+          </>
+        ),
+        accessorKey: "",
+        id: "row?.original.Id",
+        canSort: false,
+        placeholder: "",
+        size: 145,
+      },
+      {
+        accessorKey: "Shareweb_x0020_ID",
+        placeholder: "ID",
+        header: "",
+        size: 130,
+        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.Title,
@@ -3527,7 +3584,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             {row?.original?.Categories == 'Draft' ?
               <FaCompressArrowsAlt style={{ height: '11px', width: '20px' }} /> : ''}
             {row?.original?.subRows?.length > 0 ?
-              <span className='ms-1'>{row?.original?.subRows?.length ? '('+ row?.original?.subRows?.length +')': "" }</span> : ''}
+              <span className='ms-1'>{row?.original?.subRows?.length ? '(' + row?.original?.subRows?.length + ')' : ""}</span> : ''}
 
             {row?.original?.Short_x0020_Description_x0020_On != null &&
               <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
@@ -3543,7 +3600,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: "Title",
         placeholder: "Title",
         header: "",
-        size: 28,
       },
       {
         accessorFn: (row) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
@@ -3560,7 +3616,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: 'ClientCategory',
         placeholder: "Client Category",
         header: "",
-        size: 8,
+        size: 100,
       },
       {
         accessorFn: (row) => row?.TeamLeaderUser?.map((elem: any) => elem.Title).join("-"),
@@ -3572,22 +3628,22 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: 'TeamLeaderUser',
         placeholder: "Team",
         header: "",
-        size: 5,
+        size: 120,
       },
       {
         accessorKey: "PercentComplete",
         placeholder: "Status",
         header: "",
-        size: 3,
+        size: 42,
       },
       {
         accessorKey: "ItemRank",
         placeholder: "Item Rank",
         header: "",
-        size: 3,
+        size: 42,
       },
       {
-        accessorFn: (row) => row?.DueDate ? Moment(row?.DueDate).format("DD/MM/YYYY") :"",
+        accessorFn: (row) => row?.DueDate ? Moment(row?.DueDate).format("DD/MM/YYYY") : "",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.DueDate == null ? (""
@@ -3602,10 +3658,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: 'DueDate',
         placeholder: "Due Date",
         header: "",
-        size: 4,
+        size: 100,
       },
       {
-        accessorFn: (row) => row?.Created ? Moment(row?.Created).format("DD/MM/YYYY"):"",
+        accessorFn: (row) => row?.Created ? Moment(row?.Created).format("DD/MM/YYYY") : "",
         cell: ({ row, getValue }) => (
           <>
             {row?.original?.Created == null ? (""
@@ -3633,25 +3689,25 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         id: 'Created',
         placeholder: "Created Date",
         header: "",
-        size: 9,
+        size: 127,
       },
       {
         accessorFn: (row) => row?.smartTime,
         cell: ({ row }) => (
           <>
             {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
-              
+
               <>
-              <span>{row?.original?.smartTime}</span>
+                <span>{row?.original?.smartTime}</span>
               </>
-            
+
             )}
           </>
         ),
         id: "smartTime",
         placeholder: "SmartTime",
         header: "",
-        size:6,
+        size: 56,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3668,7 +3724,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 0,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3687,7 +3743,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         canSort: false,
         placeholder: "",
         header: "",
-        size: 0,
+        size: 1,
       },
       {
         cell: ({ row, getValue }) => (
@@ -3695,7 +3751,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
             <a> {row?.original?.siteType == "Master Tasks" && (
               <span className="mt-1 svg__iconbox svg__icon--edit" onClick={(e) => EditComponentPopup(row?.original)}> </span>)}
-              
+
               {row?.original?.Item_x0020_Type == "Task" && row?.original?.siteType != "Master Tasks" && (
                 <span onClick={(e) => EditItemTaskPopup(row?.original)} className="mt-1 svg__iconbox svg__icon--edit"></span>
               )}
@@ -3710,7 +3766,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         header: "",
         size: 1,
       },
-
     ],
     [data]
   );
@@ -3799,6 +3854,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         onChangeHandler(itrm, props, eTarget, table?.getSelectedRowModel()?.flatRows);
       }
     } else {
+      MeetingItems = [];
       setcheckData([])
       setCheckedList([]);
       setShowTeamMemberOnCheck(false)
@@ -3808,11 +3864,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
   const openTaskAndPortfolioMulti = () => {
-    checkData?.map((item:any)=>{
-      if(item?.original?.siteType === "Master Tasks"){
-        window.open(`${NextProp?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`,'_blank')
-      }else{
-        window.open(`${NextProp?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`,'_blank')
+    checkData?.map((item: any) => {
+      if (item?.original?.siteType === "Master Tasks") {
+        window.open(`${NextProp?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+      } else {
+        window.open(`${NextProp?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
       }
     })
   }
@@ -3824,6 +3880,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       setExpanded({});
     }
   }, [table.getState().columnFilters]);
+
 
   const ShowTeamFunc = () => {
     setShowTeamPopup(true)
@@ -3889,21 +3946,36 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   }, [Iconssc]);
 
  
-   const parentClientCat = React.useCallback((items:any) => {
-  console.log(items)
-  if(items!=undefined ){
-    // setSelectedClientCategory(items)
-    console.log(selectedClientCategory)
-    // MeetingItemsParentcat[0]= {...MeetingItemsParentcat[0],...MeetingItems[0]}
-    MeetingItemsParentcat[0]=items
-  }
-    selectedClientCategoryPopup=false;
+  const parentClientCat = React.useCallback((items:any) => {
 
-    setActivityPopup(true);
-   
-    // setSelectedClientCategory(items)
-   
-}, [])
+    console.log(items)
+  
+    if(items!=undefined ){
+  
+      // setSelectedClientCategory(items)
+  
+      console.log(selectedClientCategory)
+  
+      // MeetingItemsParentcat[0]= {...MeetingItemsParentcat[0],...MeetingItems[0]}
+  
+      MeetingItemsParentcat[0]=items
+  
+    }
+  
+      selectedClientCategoryPopup=false;
+  
+  
+  
+  
+      setActivityPopup(true);
+  
+     
+  
+      // setSelectedClientCategory(items)
+  
+     
+  
+  }, [])
 
   return (
     <div
@@ -3997,19 +4069,23 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               Restructure
             </button>}
             {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
-                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+              <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+            </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
 
-                    {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
-                    </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
+            {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
+            </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
+            <a className="brush" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}>
 
-            <button
+<FaPaintBrush />
+
+</a>
+            {/* <button
               type="button"
               className="btn {{(compareComponents.length==0 && SelectedTasks.length==0)?'btn-grey':'btn-primary'}}"
               disabled={true}
             >
               Compare
-            </button>
+            </button> */}
             <a className="expand">
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
@@ -4019,79 +4095,121 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           </span>
 
         </div>
-        <div className="col-sm-12 pad0 smart">
-          <div className="">
-            <div className={`${data.length > 10 ? "wrapper" : "MinHeight"}`}>
-              <table className="SortingTable table table-hover" style={{ width: "100%" }}>
-                <thead className='fixed-Header top-0'>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <th key={header.id} colSpan={header.colSpan} style={{ width: header.column.columnDef.size + "%" }}>
-                            {header.isPlaceholder ? null : (
-                              <div className='position-relative' style={{ display: "flex" }}>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                                {header.column.getCanFilter() ? (
-                                  // <span>
-                                  <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                  // </span>
-                                ) : null}
-                                {header.column.getCanSort() ? <div
+        <div className="col-sm-12 p-0 smart mt-1 ">
+          <div className="wrapper">
+            <table
+              className="SortingTable searchCrossIcon groupTable  table table-hover"
+              style={{ width: "100%" }}
+            >
+              <thead className="fixed-Header top-0">
+                {table?.getHeaderGroups()?.map((headerGroup) => (
+                  <tr key={headerGroup?.id}>
+                    {headerGroup?.headers?.map((header) => {
+                      return (
+                        <th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          style={header.id != 'Title' ? {
+                            width: header.column.columnDef.size + "px",
+                          } : {}}
+                        >
+                          {header.isPlaceholder ? null : (
+                            <div
+                              className="position-relative"
+                              style={{ display: "flex" }}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.getCanFilter() ? (
+                                // <span>
+                                <Filter
+                                  column={header.column}
+                                  table={table}
+                                  placeholder={
+                                    header.column.columnDef
+                                  }
+                                />
+                              ) : // </span>
+                                null}
+                              {header.column.getCanSort() ? (
+                                <div
                                   {...{
-                                    className: header.column.getCanSort()
-                                      ? "cursor-pointer select-none shorticon"
-                                      : "",
-                                    onClick: header.column.getToggleSortingHandler(),
+                                    className:
+                                      header.column.getCanSort()
+                                        ? "cursor-pointer select-none shorticon"
+                                        : "",
+                                    onClick:
+                                      header.column.getToggleSortingHandler(),
                                   }}
                                 >
-                                  {header.column.getIsSorted()
-                                    ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
+                                  {header.column.getIsSorted() ? (
+                                    {
+                                      asc: <FaSortDown />,
+                                      desc: <FaSortUp />,
+                                    }[
                                     header.column.getIsSorted() as string
                                     ] ?? null
-                                    : <FaSort />}
-                                </div> : ""}
-                              </div>
+                                  ) : (
+                                    <FaSort />
+                                  )}
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                          )}
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1}
+                  color={
+                    IsUpdated == "Events Portfolio"
+                      ? "#f98b36"
+                      : IsUpdated == "Service Portfolio"
+                        ? "#228b22"
+                        : "#000069"
+                  }
+                  speed={2}
+                  trail={60}
+                  shadow={false}
+                  hwaccel={false}
+                  className="spinner"
+                  zIndex={2e9}
+                  top="28%"
+                  left="50%"
+                  scale={1.0}
+                  loadedClassName="loadedContent"
+                />
+
+                {table?.getRowModel()?.rows?.map((row: any) => {
+                  return (
+                    <tr className={row?.original?.lableColor} key={row.id} >
+                      {row.getVisibleCells().map((cell: any) => {
+                        return (
+                          <td className={row?.original?.boldRow} key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
                             )}
-                          </th>
+                          </td>
                         );
                       })}
                     </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {/* <div id="SpfxProgressbar" className="align-items-center" style={{ display: "none" }}>
-                                                        <img id="sharewebprogressbar-image" src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/loading_apple.gif" alt="Loading..." />
-                                                    </div> */}
-                  <Loader loaded={loaded} lines={13} length={20} width={10} radius={30} corners={1} rotate={0} direction={1} color={IsUpdated == 'Events Portfolio' ? '#f98b36' : (IsUpdated == 'Service Portfolio' ? '#228b22' : '#000069')} speed={2} trail={60} shadow={false}
-                    hwaccel={false} className="spinner" zIndex={2e9} top="28%" left="50%" scale={1.0} loadedClassName="loadedContent" />
-
-                  {table?.getRowModel()?.rows?.map((row: any) => {
-                    return (
-                      <tr className={row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Component" ? "c-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "SubComponent" ? "s-bg" : (row?.getIsExpanded() == true && row.original.Item_x0020_Type == "Feature" ? "f-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Activities" ? "a-bg" : (row?.getIsExpanded() == true && row.original.SharewebTaskType?.Title == "Workstream" ? "w-bg" : ""))))}
-                        key={row.id}>
-                        {row.getVisibleCells().map((cell: any) => {
-                          return (
-                            <td key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-
-                </tbody>
-              </table>
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
+
+
+
       </div>
       {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllUsers} /> : ''}
 
@@ -4108,8 +4226,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
+      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
-      {MeetingPopup &&(
+      {MeetingPopup && (
         <CreateActivity
           props={MeetingItems[0]}
           Call={Call}
@@ -4120,7 +4239,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {WSPopup && (
         <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""}
 
       <Panel
 
@@ -4136,8 +4254,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           PortfolioType={IsUpdated}
           PropsValue={NextProp}
           SelectedItem={
-            MeetingItems != null && MeetingItems.length > 0
-              ? MeetingItems[0]
+            checkedList != null && checkedList.length > 0
+              ? checkedList[0]
               : props
           }
         />
@@ -4257,165 +4375,165 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               ) : (
                 <ul className="quick-actions">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                  <div onClick={(e) => CreateMeetingPopups("Activities")}>
+                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
 
-                    <span className="icon-sites">
+                      <span className="icon-sites">
 
-                      <img
+                        <img
 
-                        className="icon-sites"
+                          className="icon-sites"
 
-                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
+                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
 
-                      />
+                        />
 
-                    </span>
+                      </span>
 
-                    Implmentation
+                      Implmentation
 
-                  </div>
+                    </div>
 
-                </li>
+                  </li>
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                  <div onClick={() => CreateMeetingPopups("Activities")}>
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
 
-                    <span className="icon-sites">
+                      <span className="icon-sites">
 
-                      <img
+                        <img
+
+                          className="icon-sites"
+
+                          src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+
+                        />
+
+                      </span>
+
+                      Development
+
+                    </div>
+
+                  </li>
+
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
+
+                      <span className="icon-sites"> <img
 
                         className="icon-sites"
 
                         src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
 
-                      />
+                      /></span>
 
-                    </span>
+                      Activity
 
-                    Development
+                    </div>
 
-                  </div>
+                  </li>
 
-                </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    <div onClick={() => CreateMeetingPopups("Bug")}>
 
-                  <div onClick={() => CreateMeetingPopups("Activities")}>
+                      <span className="icon-sites" > <img
 
-                    <span className="icon-sites"> <img
+                        className="icon-sites"
 
-                      className="icon-sites"
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
 
-                      src=" https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/development.png"
+                      /></span>
 
-                    /></span>
+                      Bug
 
-                    Activity
+                    </div>
 
-                  </div>
+                  </li>
 
-                </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    <div onClick={() => CreateMeetingPopups("Feedback")}>
 
-                  <div onClick={() => CreateMeetingPopups("Bug")}>
+                      <span className="icon-sites"> <img
 
-                    <span className="icon-sites" > <img
+                        className="icon-sites"
 
-                      className="icon-sites"
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
 
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
+                      /></span>
 
-                    /></span>
+                      Feedback
 
-                    Bug
+                    </div>
 
-                  </div>
+                  </li>
 
-                </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    <div onClick={() => CreateMeetingPopups("Improvement")}>
 
-                  <div onClick={() => CreateMeetingPopups("Feedback")}>
+                      <span className="icon-sites"> <img
 
-                    <span className="icon-sites"> <img
+                        className="icon-sites"
 
-                      className="icon-sites"
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
 
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
+                      /></span>
 
-                    /></span>
+                      Improvement
 
-                    Feedback
+                    </div>
 
-                  </div>
+                  </li>
 
-                </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    <div onClick={() => CreateMeetingPopups("Design")}>
 
-                  <div onClick={() => CreateMeetingPopups("Improvement")}>
+                      <span className="icon-sites"> <img
 
-                    <span className="icon-sites"> <img
+                        className="icon-sites"
 
-                      className="icon-sites"
+                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png"
 
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
+                      /></span>
 
-                    /></span>
+                      Design
 
-                    Improvement
+                    </div>
 
-                  </div>
+                  </li>
 
-                </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    <div onClick={() => CreateMeetingPopups("Activities")}>
 
-                  <div onClick={() => CreateMeetingPopups("Design")}>
+                      <span className="icon-sites"></span>
 
-                    <span className="icon-sites"> <img
+                      Activity
 
-                      className="icon-sites"
+                    </div>
 
-                      src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png"
+                  </li>
 
-                    /></span>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                    Design
+                    <div onClick={() => CreateMeetingPopups("Task")}>
 
-                  </div>
+                      <span className="icon-sites"> </span>
 
-                </li>
+                      Task
 
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+                    </div>
 
-                  <div onClick={() => CreateMeetingPopups("Activities")}>
+                  </li>
 
-                    <span className="icon-sites"></span>
-
-                    Activity
-
-                  </div>
-
-                </li>
-
-                <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                  <div onClick={() => CreateMeetingPopups("Task")}>
-
-                    <span className="icon-sites"> </span>
-
-                    Task
-
-                  </div>
-
-                </li>
-
-              </ul>
+                </ul>
 
               )}
             </div>

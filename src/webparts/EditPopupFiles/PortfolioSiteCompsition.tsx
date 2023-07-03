@@ -652,6 +652,7 @@ const SiteCompositionComponent = (Props: any) => {
 
     const ChangeDateManuallyFunction = (e: any, SiteName: any, Type: any) => {
         let TempArray: any = [];
+        let TempSiteTaggingData: any = [];
         if (BackupSiteTypeData != undefined && BackupSiteTypeData) {
             BackupSiteTypeData?.map((SiteData: any) => {
                 if (SiteData.Title == SiteName) {
@@ -670,6 +671,23 @@ const SiteCompositionComponent = (Props: any) => {
                     TempArray.push(SiteData);
                 }
             })
+        }
+       
+        if (TempArray != undefined && TempArray.length > 0) {
+            TempArray?.map((TempData: any) => {
+                if (TempData.BtnStatus) {
+                    const object = {
+                        ClienTimeDescription: TempData.ClienTimeDescription,
+                        Title: TempData.Title,
+                        localSiteComposition: true,
+                        siteIcons: TempData.Item_x005F_x0020_Cover?.Url,
+                        Date: TempData.Date
+                    }
+                    TempSiteTaggingData.push(object)
+                }
+            })
+            SiteCompositionObject.ClientTime = TempSiteTaggingData;
+            SiteTaggingFinalData = TempSiteTaggingData;
         }
         setSiteTypes(TempArray);
     }
