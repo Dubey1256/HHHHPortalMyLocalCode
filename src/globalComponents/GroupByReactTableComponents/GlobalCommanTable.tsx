@@ -188,7 +188,7 @@ const GlobalCommanTable = (items: any) => {
         if(items?.pageSize!=undefined){
             table.setPageSize(items?.pageSize)
         }else{
-            table.setPageSize(30)
+            table.setPageSize(100)
         }
         table.setPageSize(100)
     }, [])
@@ -383,7 +383,7 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true && table?.getFilteredRowModel()?.rows?.length> table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"
                     onClick={() => table.setPageIndex(0)}

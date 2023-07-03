@@ -257,6 +257,13 @@ var isShowSiteCompostion: any = "";
             alert('Site Config Length less than 0')
         }
     };
+    const getComponentasString = function (results: any) {
+        var component = "";
+        $.each(results, function (cmp: any) {
+          component += cmp.Title + "; ";
+        });
+        return component;
+      };
     function IndeterminateCheckbox({
         indeterminate,
         className = "",
@@ -331,7 +338,7 @@ var isShowSiteCompostion: any = "";
             header: "",
             resetSorting: false,
             resetColumnFilters: false,
-            size: 50
+            size: 70
           },
          
           {
@@ -400,6 +407,37 @@ var isShowSiteCompostion: any = "";
             resetColumnFilters: false,
             resetSorting: false,
             header: "",
+          },
+          {
+            accessorFn: (row) => row?.Portfolio,
+            cell: ({ row }) => (
+              <span>
+                {row.original.Services.length >= 1 ? (
+                  <a
+                    className="hreflink text-success"
+                    data-interception="off"
+                    target="blank"
+                    href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                  >
+                    {row?.original?.portfolio?.Title}
+                  </a>
+                ) : (
+                  <a
+                    className="hreflink"
+                    data-interception="off"
+                    target="blank"
+                    href={`${row?.original?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                  >
+                    {row?.original?.portfolio?.Title}
+                  </a>
+                )}
+              </span>
+            ),
+            id: "Portfolio",
+            placeholder: "Portfolio",
+            resetColumnFilters: false,
+            resetSorting: false,
+            header: ""
           },
       
           {
