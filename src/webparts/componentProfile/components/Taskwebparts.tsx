@@ -4239,7 +4239,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {WSPopup && (
         <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={selectedClientCategory} callback={parentClientCat} />:""}
 
       <Panel
 
