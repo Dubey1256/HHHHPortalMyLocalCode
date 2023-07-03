@@ -1591,7 +1591,7 @@ export const GetServiceAndComponentAllData = async (Props: any) => {
             .getById(Props.MasterTaskListID)
             .items
             .select("ID", "Title", "DueDate", "Status", "Portfolio_x0020_Type", "Sitestagging",
-                "SiteCompositionSettings", "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime','Sitestagging','SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
+                 "ItemRank", "Item_x0020_Type", 'PortfolioStructureID', 'ClientTime','SiteCompositionSettings', "Parent/Id", "Author/Id", "Author/Title", "Parent/Title", "SharewebCategories/Id", "SharewebCategories/Title", "AssignedTo/Id", "AssignedTo/Title", "Team_x0020_Members/Id", "Team_x0020_Members/Title", "ClientCategory/Id", "ClientCategory/Title")
             .expand("Team_x0020_Members", "Author", "ClientCategory", "Parent", "SharewebCategories", "AssignedTo", "ClientCategory")
             .top(4999)
             .get();

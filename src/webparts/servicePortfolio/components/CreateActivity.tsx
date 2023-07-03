@@ -227,11 +227,11 @@ const CreateActivity = (props: any) => {
                 if (componentDetails?.length == 0) {
                     WorstreamLatestId = 1;
                 } else {
-                    if(AllItems?.SharewebTaskType!= 'Workstream'){
+                    if(AllItems?.SharewebTaskType.Title!= undefined?AllItems?.SharewebTaskType.Title!= 'Workstream':AllItems?.SharewebTaskType!="Workstream"){
                         WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     else{
-                        WorstreamLatestId = 1;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No;
                     }
                    
                 }
@@ -1928,7 +1928,7 @@ const deleteLinkedComponentData=()=>{
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Service')) &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 ||AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1936,7 +1936,7 @@ const deleteLinkedComponentData=()=>{
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Component')) &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 || AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
