@@ -49,7 +49,7 @@ import HighlightableCell from "../../componentPortfolio/components/highlight";
 import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
-import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import GlobalCommanTable from "../../../globalComponents/GlobalCommanTable";
 import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 var filt: any = "";
 var siteConfig: any = [];
@@ -2189,13 +2189,13 @@ function ComponentTable(SelectedProp: any) {
       var AllTaggedTask: any = [];
       SelectedLevel.forEach((item: any) => {
         TasksItem.forEach((task: any) => {
-          if (
-            task.SharewebTaskType != undefined &&
-            task.SharewebTaskType.Title != undefined &&
-            item.Title == task.SharewebTaskType.Title
-          ) {
-            AllTaggedTask.push(task);
-          }
+          // if (
+          //   task.SharewebTaskType != undefined &&
+          //   task.SharewebTaskType.Title != undefined &&
+          //   item.Title == task.SharewebTaskType.Title
+          // ) {
+          AllTaggedTask.push(task);
+          // }
         });
       });
       // AllTaskData1 = AllTaskData1.concat(TasksItem);
@@ -2342,9 +2342,7 @@ function ComponentTable(SelectedProp: any) {
     }
     return csvData;
   };
-  const clearSearch = () => {
-    setSearch("");
-  };
+
 
   const expndpopup = (e: any) => {
     settablecontiner(e);
@@ -3314,7 +3312,7 @@ function ComponentTable(SelectedProp: any) {
               {row?.original?.SiteIcon != undefined ? (
                 <a className="hreflink" title="Show All Child" data-toggle="modal" >
                   <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
-                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
                   }
                     src={row?.original?.SiteIcon}>
                   </img>
@@ -3379,10 +3377,10 @@ function ComponentTable(SelectedProp: any) {
                     {!row.getCanExpand() ||
                       (row.getCanExpand() &&
                         row.subRows?.length !== row.original.subRows?.length)
-                      ? <FaPlus style={{fontSize: '13px'}}/>
+                      ? <FaPlus style={{ fontSize: '10px' }} />
                       : row.getIsExpanded()
                         ? <FaMinus />
-                        : <FaPlus style={{fontSize: '13px'}}/>}
+                        : <FaPlus style={{ fontSize: '10px' }} />}
                   </span>
                 ) : (
                   ""
@@ -3402,18 +3400,6 @@ function ComponentTable(SelectedProp: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <div className="tooltipSec popover__wrapper me-1">
-              <span onMouseOver={(e) => handleSuffixHover(row)}>{row?.original?.Shareweb_x0020_ID}</span>
-              <div className="popover__content" style={{ display: showPopHover }}>
-                <div>
-                  <div className="tootltip-title">{row?.original?.Title}</div>
-                  <button className="toolClose" onClick={(e) => handleuffixLeave(row)}><div className="popHoverCross">×</div></button>
-                </div>
-                <div className="tooltip-body">
-                  {popHoverDataGroup && <GlobalCommanTable columns={column} data={popHoverDataGroup} callBackData={callBackData} />}
-                </div>
-              </div>
-            </div> */}
             <ReactPopperTooltip ShareWebId={getValue()} row={row} />
           </>
         ),
@@ -3422,13 +3408,6 @@ function ComponentTable(SelectedProp: any) {
         header: "",
         size: 130,
       },
-      // {
-      //   accessorKey: "Shareweb_x0020_ID",
-      //   placeholder: "ID",
-      //   header: "",
-      //   size: 130,
-      //   resetColumnFilters: false,
-      // },
       {
         accessorFn: (row) => row?.Title,
         cell: ({ row, column, getValue }) => (
@@ -3672,34 +3651,34 @@ function ComponentTable(SelectedProp: any) {
     if (table?.getSelectedRowModel()?.flatRows.length > 0) {
       table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
         if (elem?.getParentRows() != undefined) {
-        // parentData = elem?.parentRow;
-        // parentDataCopy = elem?.parentRow?.original
-        parentDataCopy = elem?.getParentRows()[0]?.original;
-        // if (parentData != undefined && parentData?.parentRow != undefined) {
+          // parentData = elem?.parentRow;
+          // parentDataCopy = elem?.parentRow?.original
+          parentDataCopy = elem?.getParentRows()[0]?.original;
+          // if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //   parentData = elem?.parentRow?.parentRow
-        //   parentDataCopy = elem?.parentRow?.parentRow?.original
+          //   parentData = elem?.parentRow?.parentRow
+          //   parentDataCopy = elem?.parentRow?.parentRow?.original
 
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
 
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        //   if (parentData != undefined && parentData?.parentRow != undefined) {
-        //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
-        //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
-        //   }
-        // }
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          //   if (parentData != undefined && parentData?.parentRow != undefined) {
+          //     parentData = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow
+          //     parentDataCopy = elem?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.parentRow?.original
+          //   }
+          // }
         }
         elem.original.Id = elem.original.ID;
         itrm = elem.original;
@@ -3758,7 +3737,6 @@ function ComponentTable(SelectedProp: any) {
       }
     })
   }
-
   function extractValueShareWebTaskId(str: any) {
     const regex = /T(\d+)/;
     const match = str.match(regex);
@@ -3852,7 +3830,7 @@ function ComponentTable(SelectedProp: any) {
             }
             if (acti?.SharewebTaskType?.Title == "Task") {
               acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
-              acti.toolSharewebId = feat.toolSharewebId + '-' +  extractValueShareWebTaskId(acti?.Shareweb_x0020_ID)
+              acti.toolSharewebId = feat.toolSharewebId + '-' + extractValueShareWebTaskId(acti?.Shareweb_x0020_ID)
               task = task + 1;
             }
             acti?.subRows?.map((works: any) => {
@@ -4609,7 +4587,7 @@ function ComponentTable(SelectedProp: any) {
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
 
-                    <a className="brush" onClick={clearSearch}>
+                    <a className="brush" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}>
                       <FaPaintBrush />
                     </a>
 
