@@ -202,7 +202,7 @@ const BackgroundCommentComponent = (Props: any) => {
 
                 </div>
             </div>
-            <div className="Background_Comment col-8 full-width ps-3">
+            <div className="Background_Comment col-8 ps-3">
                 <p className="siteColor mb-0">Comments</p>
                 {BackgroundComments != undefined && BackgroundComments.length > 0 ? BackgroundComments.map((dataItem: any, Index: any) => {
                     return (
