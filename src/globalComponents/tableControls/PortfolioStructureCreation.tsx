@@ -6,12 +6,14 @@ import { arraysEqual, Panel, PanelType } from 'office-ui-fabric-react';
 import { GlobalConstants } from '../LocalCommon';
 import * as globalCommon from '../globalCommon';
 import ListGroup from 'react-bootstrap/ListGroup';
+
 export interface IStructureCreationProps {
     CreatOpen: (item: any) => void;
     Close: (item: any) => void;
     SelectedItem: any;
     PortfolioType: any;
     PropsValue: any;
+   
 }
 
 export interface IStructureCreationState {
@@ -69,6 +71,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     }
 
     private async LoadSPComponents() {
+
+      
         let SPDetails: any = [];
         let filtertitle = this.state.PortfolioType.split(' ')[0];
         this.Portfolio_x0020_Type = filtertitle;
@@ -186,6 +190,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     private AdminStatusItem = 'Not Started';
     private GetportfolioIdCount = 0;
     private PortfolioStructureIDs = '';
+  
     private NextLevel = 0;
     private MasterItemsType = '';
     private CountFor = 0;
@@ -224,6 +229,7 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
     };
 
     createComponent = async (Type: any) => {
+
         let postdata = {
             "Item_x0020_Type": 'Component',
             "Title": this.state.textTitle,
@@ -231,7 +237,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
             "Portfolio_x0020_Type": this.Portfolio_x0020_Type,
             "AdminStatus": this.AdminStatusItem,
             "PortfolioLevel": this.NextLevel,
-            "PortfolioStructureID": this.PortfolioStructureIDs
+            "PortfolioStructureID": this.PortfolioStructureIDs,
+            // "ClientCategory":clientCat
         }
         let web = new Web(this.state.PropValue.siteUrl);
         const i = await web.lists
@@ -401,6 +408,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 // self.AssignedTo.push(assignto.AssingedToUserId);
                             })
                         }
+                        if (self.state.TeamConfig.AssignedTo!=undefined && self.state.TeamConfig.AssignedTo.length>0) {
+                            self.state.TeamConfig.AssignedTo.forEach(function (assignto: any) {
+                                self.AssignedIds.push(assignto.AssingedToUserId);
+                                // self.AssignedTo.push(assignto.AssingedToUserId);
+                            })
+                        }
                         if (self.state.TeamConfig.TeamMemberUsers != undefined && self.state.TeamConfig.TeamMemberUsers.length > 0) {
 
                             self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {
@@ -411,6 +424,11 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                     let ClientCategoryIds: any = []
                     if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory.length > 0) {
                         self.state.SelectedItem.ClientCategory.forEach(function (clientCategory: any) {
+                            ClientCategoryIds.push(clientCategory.Id);
+                        })
+                    }
+                    if (self.state.SelectedItem != undefined && self.state.SelectedItem.ClientCategory != undefined && self.state.SelectedItem.ClientCategory.results != undefined && self.state.SelectedItem.ClientCategory.results.length > 0) {
+                        self.state.SelectedItem.ClientCategory.results.forEach(function (clientCategory: any) {
                             ClientCategoryIds.push(clientCategory.Id);
                         })
                     }
@@ -436,7 +454,8 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                         Team_x0020_MembersId: { "results": self.TeamMembersIds },
                         "PortfolioLevel": item.NextLevel,
                         "PortfolioStructureID": item.PortfolioStructureIDs,
-                        ClientCategoryId: { "results": ClientCategoryIds },
+                        // ClientCategoryId: { "results": clientCat },
+                        ClientCategoryId:{"results": ClientCategoryIds}   
 
                     }
                     if (self.state.SelectedItem.Sitestagging != undefined) {
@@ -862,16 +881,15 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                                         </div>
                                                         <div className="card-body">
                                                             <div className='d-flex justify-content-between align-items-center mb-0'>
-                                                                <label className='mb-1'>
-                                                                    {
-                                                                        (item.MasterItemsType == 'SubComponent')?  
-                                                                <span className="Dyicons ">S</span>
-                                                                :
-                                                                <span className="Dyicons ">F</span>
-                                                               
-                                                                
-                                                                    }
-                                                                <span className='ms-1'><strong>Title</strong> </span> </label>
+                                                                <label className='mb-1'>  <img className="icon-sites-img"
+                                                                    src={
+                                                                        (item.MasterItemsType == 'SubComponent')?
+                                                                        item.IconUrl :
+                                                                        (item.MasterItemsType == 'Feature' && this.state.PortfolioType == 'Service')?'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Service_Icons/feature_icon.png':'https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feature_icon.png' 
+                                                                        } 
+                                                                    
+                                                                        
+                                                                        /> <span className='ms-1'><strong>Title</strong> </span> </label>
 
                                                                 {this.state.SelectedItem.Item_x0020_Type == 'Component' &&
                                                                     <>

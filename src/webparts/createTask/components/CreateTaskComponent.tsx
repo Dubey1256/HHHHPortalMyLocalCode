@@ -724,8 +724,8 @@ function CreateTaskComponent(props: any) {
                 });
             }
             let selectedCC:any=[];
-            let postClientTime:any='';
-            let siteCompositionDetails:any='';
+            let postClientTime:any;
+            let siteCompositionDetails:any;
             try {
                 let selectedComponent: any[] = [];
                 
@@ -734,7 +734,7 @@ function CreateTaskComponent(props: any) {
                         if (save.Component !== undefined && save.Component.length >= 0) {
                             $.each(save.Component, function (index: any, smart: any) {
                                 selectedComponent.push(smart.Id);
-                                postClientTime=smart?.clientTime;
+                                postClientTime= JSON.parse(smart?.Sitestagging);
                                 siteCompositionDetails=smart?.SiteCompositionSettings;
                                 smart?.ClientCategory?.map((cc:any)=>{
                                     if(cc.Id!=undefined){
@@ -751,7 +751,7 @@ function CreateTaskComponent(props: any) {
                         if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
                             $.each(save.linkedServices, function (index: any, smart: any) {
                                 selectedService.push(smart.Id);
-                                postClientTime=smart?.clientTime;
+                                postClientTime=JSON.parse(smart?.Sitestagging);
                                 siteCompositionDetails=smart?.SiteCompositionSettings;
                                 smart?.ClientCategory?.map((cc:any)=>{
                                     if(cc.Id!=undefined){
@@ -811,6 +811,10 @@ function CreateTaskComponent(props: any) {
                         TeamMembersIds.push(49);
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
+                   
+                    postClientTime?.map((items:any)=>{
+                        items.SiteName=items.Title
+                    })
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -830,7 +834,7 @@ function CreateTaskComponent(props: any) {
                         SiteCompositionSettings:siteCompositionDetails!=undefined?siteCompositionDetails: '',
                         AssignedToId: { "results": AssignedToIds },
                         SharewebTaskTypeId: 2,
-                        ClientTime: postClientTime!=undefined?postClientTime:'',
+                        ClientTime: postClientTime!=undefined?JSON.stringify(postClientTime):'',
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -1269,8 +1273,9 @@ function CreateTaskComponent(props: any) {
         })
         if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
+              createdTask = {};
         }
-        createdTask = {};
+
     }, [])
     const EditPopup = React.useCallback((item: any) => {
         setEditTaskPopupData({

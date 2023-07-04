@@ -185,7 +185,12 @@ const GlobalCommanTable = (items: any) => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     React.useEffect(() => {
-        table.setPageSize(30)
+        if(items?.pageSize!=undefined){
+            table.setPageSize(items?.pageSize)
+        }else{
+            table.setPageSize(100)
+        }
+        table.setPageSize(100)
     }, [])
     let item: any;
     let ComponentCopy: any = 0;
@@ -378,7 +383,7 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true && table?.getFilteredRowModel()?.rows?.length> table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"
                     onClick={() => table.setPageIndex(0)}
@@ -420,7 +425,7 @@ const GlobalCommanTable = (items: any) => {
                         table.setPageSize(Number(e.target.value))
                     }}
                 >
-                    {[20, 30, 40, 50, 60].map(pageSize => (
+                    {[20, 30, 40, 50, 60,100,150,200].map(pageSize => (
                         <option key={pageSize} value={pageSize}>
                             Show {pageSize}
                         </option>

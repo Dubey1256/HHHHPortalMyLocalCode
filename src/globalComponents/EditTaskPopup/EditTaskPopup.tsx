@@ -541,15 +541,19 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                // if (item.Priority_x0020_Rank != undefined) {
-                //     if (ItemRankArray != undefined) {
-                //         ItemRankArray?.map((rank: any) => {
-                //             if (rank.rank == item.Priority_x0020_Rank) {
-                //                 item.Priority_x0020_Rank = rank.rank;
-                //             }
-                //         })
-                //     }
-                // }
+                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null) {
+                    if(item.Priority != undefined){
+                        if(item.Priority == "(3) Low"){
+                            item.Priority_x0020_Rank = 1
+                        }
+                        if(item.Priority == "(2) Normal"){
+                            item.Priority_x0020_Rank = 4
+                        }
+                        if(item.Priority == "(1) High"){
+                            item.Priority_x0020_Rank = 8
+                        }
+                    }
+                }
                 item.TaskId = globalCommon.getTaskId(item);
                 item.siteUrl = siteUrls;
                 item.siteType = Items.Items.siteType;
@@ -1985,8 +1989,16 @@ const EditTaskPopup = (Items: any) => {
                             Items.Call(dataEditor)
                         }
                         Items.Call(DataJSONUpdate);
-                    } else {
-
+                    }
+                    if(EditData?.Categories?.toLowerCase().indexOf('approval') == -1){
+                        Items.Call(true);
+                    }
+                    if(EditData?.Categories==undefined){
+                        Items.Call(true);
+                    }
+                    
+                    else {
+                       
                         Items.Call();
                     }
                 })

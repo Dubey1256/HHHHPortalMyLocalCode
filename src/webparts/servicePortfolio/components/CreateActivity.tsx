@@ -114,15 +114,29 @@ const CreateActivity = (props: any) => {
                 ClientCategoriesData.push(value)
             })
         }
+
+        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        //     AllItems.ClientCategory2.results.forEach((value: any) => {
+        //         ClientCategoriesData.push(value)
+        //     })
+        // }
         if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
-            AllItems.ClientCategory?.results?.forEach((value: any) => {
-                ClientCategoriesData.push(value)
-            })
-        } else if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
-            AllItems.ClientCategory.forEach((value: any) => {
-                ClientCategoriesData.push(value)
-            })
-        }
+            if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+                AllItems.ClientCategory2.results.forEach((value2: any) => {
+                    ClientCategoriesData.push(value2)
+                })
+            }else{
+                AllItems.ClientCategory?.results?.forEach((value: any) => {
+                    ClientCategoriesData.push(value)
+                })
+            }
+           
+        } 
+        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        //     AllItems.ClientCategory2.results.forEach((value: any) => {
+        //         ClientCategoriesData.push(value)
+        //     })
+        // }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
             if (AllItems?.Portfolio_x0020_Type == 'Component' || (AllItems.Component != undefined && AllItems.Component.length > 0)) {
                 smartComponentData.push(AllItems);
@@ -213,11 +227,11 @@ const CreateActivity = (props: any) => {
                 if (componentDetails?.length == 0) {
                     WorstreamLatestId = 1;
                 } else {
-                    if(AllItems?.SharewebTaskType!= 'Workstream'){
+                    if(AllItems?.SharewebTaskType.Title!= undefined?AllItems?.SharewebTaskType.Title!= 'Workstream':AllItems?.SharewebTaskType!="Workstream"){
                         WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     else{
-                        WorstreamLatestId = 1;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No;
                     }
                    
                 }
@@ -1200,7 +1214,7 @@ const CreateActivity = (props: any) => {
                         {`Create Quick Option - ${AllItems?.NoteCall}`}
                     </h2>
                 </div>
-                <Tooltip ComponentId={AllItems?.Id} />
+                <Tooltip ComponentId={1746} />
             </div>
         );
     };
@@ -1914,7 +1928,7 @@ const deleteLinkedComponentData=()=>{
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Service')) &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 ||AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1922,7 +1936,7 @@ const deleteLinkedComponentData=()=>{
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 &&AllItems?.Portfolio_x0020_Type == 'Component')) &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 || AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
