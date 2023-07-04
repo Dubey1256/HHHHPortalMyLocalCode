@@ -15,6 +15,8 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
 var changeTime: any = 0;
+let siteUrl:any='';
+let smartMetadataListId:any='';
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
@@ -64,6 +66,17 @@ const inlineEditingcolumns = (props: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
     React.useEffect(() => {
+        if( props?.item?.metaDataListId!=undefined){
+            smartMetadataListId=props?.item?.metaDataListId;
+        }else{
+            smartMetadataListId=props?.AllListId?.SmartMetadataListID;
+        }
+        if( props?.item?.siteUrl!=undefined){
+            siteUrl=props?.item?.siteUrl;
+        }else{
+            siteUrl=props?.AllListId?.siteUrl;
+        }
+        
         loadTaskUsers();
         if (props?.item?.Services?.length > 0) {
             setServicesTaskCheck(true)
@@ -121,18 +134,18 @@ const inlineEditingcolumns = (props: any) => {
             Priority = JSON.parse(localStorage.getItem("Priority"));
             let site = JSON.parse(localStorage.getItem("siteUrl"));
             let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
-            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null || site == null || site != props?.AllListId?.siteUrl) && !DataLoaded) {
+            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null || site == null || site != siteUrl) && !DataLoaded) {
                 impSharewebCategories = [];
                 SharewebtaskCategories = [];
                 Priority = [];
                 var TaskTypes: any = []
                 var Timing: any = []
                 var Task: any = []
-                let web = new Web(props?.AllListId?.siteUrl);
+                let web = new Web(siteUrl);
                 let MetaData = [];
                 localStorage.setItem("inlineMetaDataLoaded", JSON.stringify(true));
                 MetaData = await web.lists
-                    .getById(props?.AllListId?.SmartMetadataListID)
+                    .getById(smartMetadataListId)
                     .items.select("Id", "IsVisible", "ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
@@ -151,7 +164,7 @@ const inlineEditingcolumns = (props: any) => {
                 localStorage.setItem("taskCategoryType", JSON.stringify(SharewebtaskCategories));
                 localStorage.setItem("Priority", JSON.stringify(getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank')));
                 localStorage.setItem("impTaskCategoryType", JSON.stringify(impSharewebCategories));
-                localStorage.setItem("siteUrl", JSON.stringify(props?.AllListId?.siteUrl));
+                localStorage.setItem("siteUrl", JSON.stringify(siteUrl));
                 Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
                 setTaskCategoryType(SharewebtaskCategories);
                 setImpTaskCategoryType(impSharewebCategories);
@@ -180,7 +193,12 @@ const inlineEditingcolumns = (props: any) => {
         return Items;
     }
     const loadTaskUsers = async () => {
-        taskUsers = props?.TaskUsers;
+        if(props?.TaskUsers?.length>0){
+            taskUsers = props?.TaskUsers;
+        }else{
+            taskUsers =[];
+        }
+        
         setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {

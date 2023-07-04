@@ -142,6 +142,7 @@ const GlobalCommanTable = (items: any) => {
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
+    let siteUrl:any='';
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
@@ -185,6 +186,7 @@ const GlobalCommanTable = (items: any) => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     React.useEffect(() => {
+        
         if(items?.pageSize!=undefined){
             table.setPageSize(items?.pageSize)
         }else{
@@ -241,12 +243,18 @@ const GlobalCommanTable = (items: any) => {
     }, []);
     const openTaskAndPortfolioMulti = () => {
         table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
+            let siteUrl:any=''
+            if( item?.original?.siteUrl!=undefined){
+                siteUrl=item?.original?.siteUrl;
+            }else{
+                siteUrl=items?.AllListId?.siteUrl;
+            }
             if (item?.original?.siteType === "Master Tasks") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else if (item?.original?.siteType === "Project") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
             }
         })
     }
