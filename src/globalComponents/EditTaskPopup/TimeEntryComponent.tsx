@@ -57,11 +57,22 @@ var change: any = new Date()
 const SP = spfi();
 
 function TimeEntryPopup(item: any) {
-    PortfolioType = item.props.Portfolio_x0020_Type
-    CurntUserId = item.Context.pageContext._legacyPageContext.userId
-    CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
-    RelativeUrl = item.Context.pageContext.web.serverRelativeUrl
-    CurrentSiteUrl = item.Context.pageContext.web.absoluteUrl
+    if(item?.props?.siteUrl != undefined){
+        var Url = item?.props?.siteUrl.split("https://hhhhteams.sharepoint.com")
+        RelativeUrl = Url[1]
+        CurrentSiteUrl = item?.props?.siteUrl
+        PortfolioType = item.props.Portfolio_x0020_Type
+        CurntUserId = item.Context.pageContext._legacyPageContext.userId
+        CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
+    
+    }
+    else{
+        PortfolioType = item.props.Portfolio_x0020_Type
+        CurntUserId = item.Context.pageContext._legacyPageContext.userId
+        CurrentUserTitle = item.Context.pageContext._legacyPageContext?.userDisplayName
+        RelativeUrl = item.Context.pageContext.web.serverRelativeUrl
+        CurrentSiteUrl = item.Context.pageContext.web.absoluteUrl
+    }
     const [AllTimeSheetDataNew, setTimeSheet] = React.useState([])
     const [date, setDate] = React.useState(undefined);
     const [showCat, setshowCat] = React.useState('')
@@ -1402,7 +1413,7 @@ function TimeEntryPopup(item: any) {
         if (deleteConfirmation) {
 
             $.each(TaskCate, function (index: any, subItem: any) {
-                if (subItem.Id == childinew.ParentID) {
+                if (subItem.Id == childinew.MainParentId) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
                             if (NewsubItem?.ParentID == childinew.ParentID) {
@@ -1516,18 +1527,25 @@ function TimeEntryPopup(item: any) {
         var UpdatedData: any = []
         $.each(backupData, function (index: any, update: any) {
             $.each(update.AdditionalTime, function (index: any, updateitem: any) {
-                if (updateitem.ID === child.ID && updateitem.ParentID === child.ParentID) {
+                if(child.MainParentId == update.ID){
+                    if (updateitem.ID === child.ID && updateitem.MainParentId === child.MainParentId) {
 
-                    updateitem.Id = child.ID;
-                    updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
-                    updateitem.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
-                    updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
-
-                    updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
-
-
+                        updateitem.Id = child.ID;
+                        updateitem.TaskTime = TimeInHours != undefined && TimeInHours != 0 ? TimeInHours : child.TaskTime;
+                        updateitem.TaskTimeInMin = TimeInMinutes != undefined && TimeInMinutes != 0 ? TimeInMinutes : child.TaskTimeInMin;
+                        updateitem.TaskDate = Dateee != "Invalid date" ? Dateee : Moment(DateFormate).format('DD/MM/YYYY');
+    
+                        updateitem.Description = postData != undefined && postData.Description != undefined && postData.Description != '' ? postData.Description : child.Description;
+                        UpdatedData.push(updateitem)
+                       
+                    }
+                    else{
+                        UpdatedData.push(updateitem)
+                    }
                 }
-                UpdatedData.push(updateitem)
+            
+                
+              
             })
         });
         UpdatedData?.forEach((val: any) => {

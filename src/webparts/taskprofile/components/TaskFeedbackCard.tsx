@@ -342,15 +342,19 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           }
          
           )
-        }else{
-          countemailbutton=1;
         }
+        if(isShowLight==1 && item=="Approve"){
+          countemailbutton=0;
+          this.setState({
+            emailcomponentopen:true,
+          })
+        }else{
+          countemailbutton=0;
+          this.setState({
+            emailcomponentopen:true,
+          })
          
-      }else{
-        countemailbutton=0;
-        this.setState({
-          emailcomponentopen:true,
-        })
+      }
        
       }
     }
