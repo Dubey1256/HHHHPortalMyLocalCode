@@ -1,11 +1,8 @@
 import * as React from "react";
 // import ImagesC from "./Images";
 import {
-  arraysEqual,
-  Modal,
   Panel,
-  PanelType,
-  TextField,
+  PanelType
 } from "office-ui-fabric-react";
 
 // import * as Moment from 'moment';
@@ -17,21 +14,16 @@ import { Web } from "sp-pnp-js";
 import ComponentPortPolioPopup from "./ComponentPortfolioSelection";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { map } from "lodash";
-import DatePicker from "react-datepicker";
-import { ClickAwayListener } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
 import Picker from "../../globalComponents/EditTaskPopup/SmartMetaDataPicker";
-// import LinkedComponent from "../../globalComponents/EditTaskPopup/LinkedComponent";
 import ServiceComponentPortfolioPopup from "../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
 import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
 import ImagesC from "./Image";
-import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
 import SiteCompositionComponent from "./PortfolioSiteCompsition";
 var PostTechnicalExplanations = "";
@@ -52,10 +44,6 @@ var selectedClientCategoryData: any = [];
 var AllClientCategoryDataBackup: any = [];
 
 function EditInstitution({ item, SelectD, Calls }: any) {
-  // Id:any
-
-
-
   if (SelectD != undefined && SelectD?.siteUrl != undefined) {
     web = new Web(SelectD?.siteUrl);
     RequireData = SelectD
@@ -63,7 +51,6 @@ function EditInstitution({ item, SelectD, Calls }: any) {
     if (item?.siteUrl != undefined) {
       web = new Web(item?.siteUrl);
     }
-
     RequireData = SelectD.SelectedProp
     web = new Web(RequireData?.siteUrl);
   }
@@ -100,9 +87,10 @@ function EditInstitution({ item, SelectD, Calls }: any) {
   const [selectedClientCategory, setSelectedClientCategory] = React.useState([]);
   const [ParentData, SetParentData] = React.useState([]);
   const [SiteTypes, setSiteTypes] = React.useState([]);
-  // $('.ms-Dialog-main .main-153').hide();
+  const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
+  const [SiteCompositionSetting, setSiteCompositionSetting] = React.useState([]);
+  const [SiteTaggingData, setSiteTaggingData] = React.useState([])
   const setModalIsOpenToTrue = (e: any) => {
-    // e.preventDefault()
     setModalIsOpen(true);
   };
   const onEditorStateChange = React.useCallback(
@@ -136,11 +124,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
         item1.SharewebCategories.map((itenn: any) => {
           CategoriesData.push(itenn);
         });
-
-        //  Backupdata = CategoriesData
         setCategoriesData(CategoriesData);
-        //item.smartCategories = item1.smartCategories;
-        //  item.smartCategories.push(title);
       }
     }
     if (functionType == "Close") {
@@ -152,17 +136,12 @@ function EditInstitution({ item, SelectD, Calls }: any) {
     } else {
       if (type == "Component") {
         if (item1 != undefined && item1.length > 0) {
-          // item.linkedComponent = item1.linkedComponent;
-          // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
           setLinkedComponentData(item1);
           console.log("Popup component linkedComponent", item1.linkedComponent);
         }
       }
-
       if (type == "Service") {
         if (item1 != undefined && item1.length > 0) {
-          // item.linkedComponent = item1.linkedComponent;
-          // setEditData({ ...EditData, RelevantPortfolio: propsItems.linkedComponent })
           setLinkedComponentData(item1);
           console.log("Popup component linkedComponent", item1.linkedComponent);
         }
@@ -558,7 +537,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
         // setClientTimeData(tempArray3)
         item.siteCompositionData = tempArray3;
       }
-       else {
+      else {
         const object: any = {
           SiteName: "HHHH",
           ClienTimeDescription: 100,
@@ -1087,225 +1066,243 @@ function EditInstitution({ item, SelectD, Calls }: any) {
     setComponent((EditData) => [...EditData]);
   };
   const SaveData = async () => {
+    let TaskShuoldBeUpdate = true;
     var UploadImage: any = [];
-
+    let ClientCategoryIDs: any = [];
     var item: any = {};
     var smartComponentsIds: any[] = [];
     var RelevantPortfolioIds = "";
+    let TotalCompositionsValue: any = 0;
     var Items = EditData;
-    if (smartComponentData != undefined && smartComponentData.length > 0) {
-      smartComponentData.map((com: any) => {
-        if (smartComponentData != undefined && smartComponentData.length >= 0) {
-          $.each(smartComponentData, function (index: any, smart: any) {
-            smartComponentsIds.push(smart.Id);
-          });
-        }
-      });
-    }
-    if (NewArray != undefined && NewArray.length > 0) {
-      CategoriesData = []
-      NewArray.map((NeitemA: any) => {
-        CategoriesData.push(NeitemA);
-      });
-    }
-    var categoriesItem = "";
-    CategoriesData.map((category) => {
-      if (category.Title != undefined) {
-        categoriesItem =
-          categoriesItem == ""
-            ? category.Title
-            : categoriesItem + ";" + category.Title;
-      }
-    });
-    var CategoryID: any = [];
-    CategoriesData.map((category) => {
-      if (category.Id != undefined) {
-        CategoryID.push(category.Id);
-      }
-    });
-    if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
-      linkedComponentData?.map((com: any) => {
-        if (
-          linkedComponentData != undefined &&
-          linkedComponentData?.length >= 0
-        ) {
-          $.each(linkedComponentData, function (index: any, smart: any) {
-            RelevantPortfolioIds = smart.Id;
-          });
-        }
-      });
-    }
-    if (isDropItemRes == true) {
-      if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
-        TaskAssignedTo.map((taskInfo) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
-    } else {
-      if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
-        EditData?.AssignedTo.map((taskInfo: any) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
-    }
-    if (isDropItem == true) {
-      if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
-        TaskTeamMembers.map((taskInfo) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
-    } else {
-      if (
-        EditData?.Team_x0020_Members != undefined &&
-        EditData?.Team_x0020_Members?.length > 0
-      ) {
-        EditData?.Team_x0020_Members.map((taskInfo: any) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
-    }
-
-    // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
-    //     TaskResponsibleTeam.map((taskInfo) => {
-    //         ResponsibleTeamIds.push(taskInfo.Id);
-    //     })
-    // }
-
-    //     if (EditData?.Responsible_x0020_Team != undefined && EditData?.Responsible_x0020_Team?.length > 0) {
-    //         EditData?.Responsible_x0020_Team.map((taskInfo: any) => {
-    //             ResponsibleTeamIds.push(taskInfo.Id);
-    //         })
-    //     }
-
-    // if (Items.smartComponent != undefined) {
-    //     Items.smartComponent.map((com: any) => {
-    //         // if (com.Title != undefined) {
-
-    //         //     component = com.Title
-
-    //         // }
-
-    //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
-
-    //             $.each(Items.smartComponent, function (index: any, smart: any) {
-
-    //                 smartComponentsIds.push(smart.Id);
-
-    //             })
-    //         }
-    //     })
-    // }
-    if (
-      Items.ItemRankTitle != undefined &&
-      Items.ItemRankTitle != "Select Item Rank"
-    )
-      var ItemRank = SharewebItemRank.filter(
-        (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
-      )[0].rank;
-
-    await web.lists
-      .getById(RequireData.MasterTaskListID)
-      .items.getById(Items.Id)
-      .update({
-        Title: Items.Title,
-
-        ItemRank: ItemRank,
-        Priority_x0020_Rank: Items.Priority_x0020_Rank,
-        ComponentId: { results: smartComponentsIds },
-        Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
-        DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
-        CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
-
-        // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
-        Categories: categoriesItem ? categoriesItem : null,
-        SharewebCategoriesId: { results: CategoryID },
-        // ClientCategoryId: { "results": RelevantPortfolioIds },
-        ServicePortfolioId:
-          RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
-        Synonyms: JSON.stringify(Items["Synonyms"]),
-        Package: Items.Package,
-        AdminStatus: Items.AdminStatus,
-        Priority: Items.Priority,
-        Mileage: Items.Mileage,
-        ValueAdded: Items.ValueAdded,
-        Idea: Items.Idea,
-        Background: Items.Background,
-        Admin_x0020_Notes: Items.Admin_x0020_Notes,
-        component_x0020_link: {
-          Description:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
-              : null,
-          Url:
-            Items.component_x0020_link != undefined
-              ? Items.component_x0020_link
-              : null,
-        },
-        TechnicalExplanations:
-          PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
-            ? PostTechnicalExplanations
-            : EditData?.TechnicalExplanations,
-        Deliverables:
-          PostDeliverables != undefined && PostDeliverables != ""
-            ? PostDeliverables
-            : EditData?.Deliverables,
-        Short_x0020_Description_x0020_On:
-          PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
-            ? PostShort_x0020_Description_x0020_On
-            : EditData?.Short_x0020_Description_x0020_On,
-        Body:
-          PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
-        AssignedToId: {
-          results:
-            AssignedToIds != undefined && AssignedToIds?.length > 0
-              ? AssignedToIds
-              : [],
-        },
-        Responsible_x0020_TeamId: {
-          results:
-            ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
-              ? ResponsibleTeamIds
-              : [],
-        },
-        Team_x0020_MembersId: {
-          results:
-            TeamMemberIds != undefined && TeamMemberIds?.length > 0
-              ? TeamMemberIds
-              : [],
-        },
-        // PercentComplete: saveData.PercentComplete == undefined ? EditData?.PercentComplete : saveData.PercentComplete,
-
-        // Categories: Items.Categories
-
-        // BasicImageInfo: JSON.stringify(UploadImage)
+    if (SiteTaggingData?.length > 0) {
+      SiteTaggingData.map((clientData: any) => {
+        TotalCompositionsValue = TotalCompositionsValue + clientData.ClienTimeDescription;
       })
-      .then((res: any) => {
-        console.log(res);
-
-        setModalIsOpenToFalse();
+    }
+    if (EnableSiteCompositionValidation) {
+      if (TotalCompositionsValue > 100) {
+        TaskShuoldBeUpdate = false;
+        TotalCompositionsValue = 0
+        alert("site composition allocation should not be more than 100%");
+      }
+      if (TotalCompositionsValue.toFixed(0) < 100 && TotalCompositionsValue > 0) {
+        TotalCompositionsValue = 0
+        let conformationStatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
+        if (conformationStatus) {
+          TaskShuoldBeUpdate = true;
+        } else {
+          TaskShuoldBeUpdate = false;
+        }
+      }
+    }
+    if (TaskShuoldBeUpdate) {
+      if (smartComponentData != undefined && smartComponentData.length > 0) {
+        smartComponentData.map((com: any) => {
+          if (smartComponentData != undefined && smartComponentData.length >= 0) {
+            $.each(smartComponentData, function (index: any, smart: any) {
+              smartComponentsIds.push(smart.Id);
+            });
+          }
+        });
+      }
+      if (NewArray != undefined && NewArray.length > 0) {
+        CategoriesData = []
+        NewArray.map((NeitemA: any) => {
+          CategoriesData.push(NeitemA);
+        });
+      }
+      var categoriesItem = "";
+      CategoriesData.map((category) => {
+        if (category.Title != undefined) {
+          categoriesItem =
+            categoriesItem == ""
+              ? category.Title
+              : categoriesItem + ";" + category.Title;
+        }
       });
+      var CategoryID: any = [];
+      CategoriesData.map((category) => {
+        if (category.Id != undefined) {
+          CategoryID.push(category.Id);
+        }
+      });
+      if (linkedComponentData != undefined && linkedComponentData?.length > 0) {
+        linkedComponentData?.map((com: any) => {
+          if (
+            linkedComponentData != undefined &&
+            linkedComponentData?.length >= 0
+          ) {
+            $.each(linkedComponentData, function (index: any, smart: any) {
+              RelevantPortfolioIds = smart.Id;
+            });
+          }
+        });
+      }
+      if (isDropItemRes == true) {
+        if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+          TaskAssignedTo.map((taskInfo) => {
+            AssignedToIds.push(taskInfo.Id);
+          });
+        }
+      } else {
+        if (EditData?.AssignedTo != undefined && EditData?.AssignedTo?.length > 0) {
+          EditData?.AssignedTo.map((taskInfo: any) => {
+            AssignedToIds.push(taskInfo.Id);
+          });
+        }
+      }
+      if (isDropItem == true) {
+        if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+          TaskTeamMembers.map((taskInfo) => {
+            TeamMemberIds.push(taskInfo.Id);
+          });
+        }
+      } else {
+        if (
+          EditData?.Team_x0020_Members != undefined &&
+          EditData?.Team_x0020_Members?.length > 0
+        ) {
+          EditData?.Team_x0020_Members.map((taskInfo: any) => {
+            TeamMemberIds.push(taskInfo.Id);
+          });
+        }
+      }
+
+      // if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+      //     TaskResponsibleTeam.map((taskInfo) => {
+      //         ResponsibleTeamIds.push(taskInfo.Id);
+      //     })
+      // }
+
+      //     if (EditData?.Responsible_x0020_Team != undefined && EditData?.Responsible_x0020_Team?.length > 0) {
+      //         EditData?.Responsible_x0020_Team.map((taskInfo: any) => {
+      //             ResponsibleTeamIds.push(taskInfo.Id);
+      //         })
+      //     }
+
+      // if (Items.smartComponent != undefined) {
+      //     Items.smartComponent.map((com: any) => {
+      //         // if (com.Title != undefined) {
+
+      //         //     component = com.Title
+
+      //         // }
+
+      //         if (Items.smartComponent != undefined && Items.smartComponent.length >= 0) {
+
+      //             $.each(Items.smartComponent, function (index: any, smart: any) {
+
+      //                 smartComponentsIds.push(smart.Id);
+
+      //             })
+      //         }
+      //     })
+      // }
+
+      if (selectedClientCategory?.length > 0) {
+        selectedClientCategory.map((dataItem: any) => {
+          ClientCategoryIDs.push(dataItem.Id);
+        })
+
+      } else {
+        ClientCategoryIDs = [];
+      }
+
+      if (
+        Items.ItemRankTitle != undefined &&
+        Items.ItemRankTitle != "Select Item Rank"
+      )
+        var ItemRank = SharewebItemRank.filter(
+          (option: { rankTitle: any }) => option.rankTitle == Items.ItemRankTitle
+        )[0].rank;
+
+      await web.lists
+        .getById(RequireData.MasterTaskListID)
+        .items.getById(Items.Id)
+        .update({
+          Title: Items.Title,
+
+          ItemRank: ItemRank,
+          Priority_x0020_Rank: Items.Priority_x0020_Rank,
+          ComponentId: { results: smartComponentsIds },
+          Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
+          StartDate: EditData?.StartDate ? moment(EditData?.StartDate).format("MM-DD-YYYY") : null,
+          DueDate: EditData?.DueDate ? moment(EditData?.DueDate).format("MM-DD-YYYY") : null,
+          CompletedDate: EditData?.CompletedDate ? moment(EditData?.CompletedDate).format("MM-DD-YYYY") : null,
+
+          // Categories:EditData?.smartCategories != undefined && EditData?.smartCategories != ''?EditData?.smartCategories[0].Title:EditData?.Categories,
+          Categories: categoriesItem ? categoriesItem : null,
+          SharewebCategoriesId: { results: CategoryID },
+          // ClientCategoryId: { "results": RelevantPortfolioIds },
+          ServicePortfolioId:
+            RelevantPortfolioIds != "" ? RelevantPortfolioIds : null,
+          Synonyms: JSON.stringify(Items["Synonyms"]),
+          Package: Items.Package,
+          AdminStatus: Items.AdminStatus,
+          Priority: Items.Priority,
+          Mileage: Items.Mileage,
+          ValueAdded: Items.ValueAdded,
+          Idea: Items.Idea,
+          Background: Items.Background,
+          Admin_x0020_Notes: Items.Admin_x0020_Notes,
+          component_x0020_link: {
+            Description:
+              Items.component_x0020_link != undefined
+                ? Items.component_x0020_link
+                : null,
+            Url:
+              Items.component_x0020_link != undefined
+                ? Items.component_x0020_link
+                : null,
+          },
+          TechnicalExplanations:
+            PostTechnicalExplanations != undefined &&
+              PostTechnicalExplanations != ""
+              ? PostTechnicalExplanations
+              : EditData?.TechnicalExplanations,
+          Deliverables:
+            PostDeliverables != undefined && PostDeliverables != ""
+              ? PostDeliverables
+              : EditData?.Deliverables,
+          Short_x0020_Description_x0020_On:
+            PostShort_x0020_Description_x0020_On != undefined &&
+              PostShort_x0020_Description_x0020_On != ""
+              ? PostShort_x0020_Description_x0020_On
+              : EditData?.Short_x0020_Description_x0020_On,
+          Body:
+            PostBody != undefined && PostBody != "" ? PostBody : EditData?.Body,
+          AssignedToId: {
+            results:
+              AssignedToIds != undefined && AssignedToIds?.length > 0
+                ? AssignedToIds
+                : [],
+          },
+          Responsible_x0020_TeamId: {
+            results:
+              ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0
+                ? ResponsibleTeamIds
+                : [],
+          },
+          Team_x0020_MembersId: {
+            results:
+              TeamMemberIds != undefined && TeamMemberIds?.length > 0
+                ? TeamMemberIds
+                : [],
+          },
+          Sitestagging: SiteTaggingData?.length > 0 ? JSON.stringify(SiteTaggingData) : EditData.siteCompositionData?.length > 0 ? JSON.stringify(EditData.siteCompositionData) : '',
+          ClientCategoryId: { "results": (ClientCategoryIDs != undefined && ClientCategoryIDs.length > 0) ? ClientCategoryIDs : [] },
+          SiteCompositionSettings: SiteCompositionSetting?.length > 0 ? JSON.stringify(SiteCompositionSetting) : EditData.SiteCompositionSettings?.length > 0 ? JSON.stringify(EditData.SiteCompositionSettings) : ''
+        })
+        .then((res: any) => {
+          console.log(res);
+          setModalIsOpenToFalse();
+        });
+    }
   };
   const EditComponentPicker = (item: any, title: any) => {
-    // <ComponentPortPolioPopup ></ComponentPortPolioPopup>
     setIsComponentPicker(true);
     setSharewebCategory(item);
-    // <ComponentPortPolioPopup props={item}></ComponentPortPolioPopup>
   };
-  // const onEditorStateChange = (e: any, item: any) => {
-  //     //  item.Description = e.target.value;
-  //     setComponent(EditData => ([...EditData]));
-  //     // const { components } = this.state;
-  //     // const x = { components };
-  //     // for (const i in x){
-  //     //     if(x[i].id ==== id){
-  //     //         x[i].contentValue.editorState = e;
-  //     //     }
-  //     // }
-  //     // this.setState({components: x})
-  // }
   const ChangeStatus = (e: any, item: any) => {
     item.AdminStatus = e.target.value;
     setComponent((EditData) => [...EditData]);
@@ -1503,7 +1500,6 @@ function EditInstitution({ item, SelectD, Calls }: any) {
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
-
       await web.lists
         .getById(RequireData.MasterTaskListID)
         .items.getById(item.Id)
@@ -1527,6 +1523,46 @@ function EditInstitution({ item, SelectD, Calls }: any) {
   };
 
   // ******************** This is for the Site Compsition Component related All Functions And CallBack *******************
+
+  const SiteCompositionCallBack = React.useCallback((Data: any, Type: any) => {
+    if (Data.ClientTime != undefined && Data.ClientTime.length > 0) {
+      setEnableSiteCompositionValidation(true);
+      let tempArray: any = [];
+      Data.ClientTime?.map((ClientTimeItems: any) => {
+        if (ClientTimeItems.ClientCategory != undefined || ClientTimeItems.SiteImages?.length > 0) {
+          let newObject: any = {
+            ClienTimeDescription: ClientTimeItems.ClienTimeDescription,
+            Title: ClientTimeItems.Title,
+            localSiteComposition: true,
+            SiteImages: ClientTimeItems.SiteImages,
+            Date: ClientTimeItems.Date
+          }
+          tempArray.push(newObject);
+        } else {
+          tempArray.push(ClientTimeItems);
+        }
+      })
+      const finalData = tempArray.filter((val: any, id: any, array: any) => {
+        return array.indexOf(val) == id;
+      })
+      setSiteTaggingData(finalData);
+    } else {
+      if (Type == "dataDeleted") {
+        setSiteTaggingData([{}])
+      }
+    }
+    if (Data.selectedClientCategory != undefined && Data.selectedClientCategory.length > 0) {
+      setSelectedClientCategory(Data.selectedClientCategory);
+    } else {
+      if (Type == "dataDeleted") {
+        setSelectedClientCategory([]);
+      }
+    }
+    if (Data.SiteCompositionSettings != undefined && Data.SiteCompositionSettings.length > 0) {
+      setSiteCompositionSetting(Data.SiteCompositionSettings);
+    }
+    console.log("Site Composition final Call back Data =========", Data);
+  }, [])
 
 
   //  ******************  This is All Site Details Get Data Call From Backend **************
@@ -1569,169 +1605,169 @@ function EditInstitution({ item, SelectD, Calls }: any) {
     return Items;
   }
 
-   //  ######################  This is  Client Category Get Data Call From Backend  #######################
+  //  ######################  This is  Client Category Get Data Call From Backend  #######################
 
-   const loadAllClientCategoryData = function (SmartTaxonomy: any) {
+  const loadAllClientCategoryData = function (SmartTaxonomy: any) {
     var AllTaskusers = []
     var AllMetaData: any = []
     var TaxonomyItems: any = []
     var url = (`${RequireData.siteUrl}/_api/web/lists/getbyid('${RequireData?.SmartMetadataListID}')/items?$select=Id,Title,IsVisible,ParentID,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,IsSendAttentionEmail/Id,IsSendAttentionEmail/Title,IsSendAttentionEmail/EMail&$expand=IsSendAttentionEmail&$orderby=SortOrder&$top=4999&$filter=TaxType eq '` + SmartTaxonomy + "'")
     $.ajax({
-        url: url,
-        method: "GET",
-        headers: {
-            "Accept": "application/json; odata=verbose"
-        },
-        success: function (data) {
-            AllTaskusers = data.d.results;
-            $.each(AllTaskusers, function (index: any, item: any) {
-                if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
-                    item.newTitle = 'EPS';
-                }
-                else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
-                    item.newTitle = 'EI';
-                }
-                else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
-                    item.newTitle = 'Education';
-                }
-                else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
-                    item.newTitle = 'Migration';
-                }
-                else {
-                    item.newTitle = item.Title;
-                }
-                AllMetaData.push(item);
-            })
-            if (SmartTaxonomy == "Client Category") {
-                // setAllClientCategoryData(AllMetaData);
-                // AllClientCategoryDataBackup = AllMetaData;
-                BuildClieantCategoryAllDataArray(AllMetaData);
-            }
-        },
-        error: function (error: any) {
-            console.log('Error:', error)
+      url: url,
+      method: "GET",
+      headers: {
+        "Accept": "application/json; odata=verbose"
+      },
+      success: function (data) {
+        AllTaskusers = data.d.results;
+        $.each(AllTaskusers, function (index: any, item: any) {
+          if (item.Title.toLowerCase() == 'pse' && item.TaxType == 'Client Category') {
+            item.newTitle = 'EPS';
+          }
+          else if (item.Title.toLowerCase() == 'e+i' && item.TaxType == 'Client Category') {
+            item.newTitle = 'EI';
+          }
+          else if (item.Title.toLowerCase() == 'education' && item.TaxType == 'Client Category') {
+            item.newTitle = 'Education';
+          }
+          else if (item.Title.toLowerCase() == 'migration' && item.TaxType == 'Client Category') {
+            item.newTitle = 'Migration';
+          }
+          else {
+            item.newTitle = item.Title;
+          }
+          AllMetaData.push(item);
+        })
+        if (SmartTaxonomy == "Client Category") {
+          // setAllClientCategoryData(AllMetaData);
+          // AllClientCategoryDataBackup = AllMetaData;
+          BuildClieantCategoryAllDataArray(AllMetaData);
         }
+      },
+      error: function (error: any) {
+        console.log('Error:', error)
+      }
     })
-};
+  };
 
-const BuildClieantCategoryAllDataArray = (DataItem: any) => {
+  const BuildClieantCategoryAllDataArray = (DataItem: any) => {
     let MainParentArray: any = [];
     let FinalArray: any = [];
     if (DataItem != undefined && DataItem.length > 0) {
-        DataItem.map((Item: any) => {
-            if (Item.ParentID == 0) {
-                Item.Child = [];
-                MainParentArray.push(Item);
-            }
-        })
+      DataItem.map((Item: any) => {
+        if (Item.ParentID == 0) {
+          Item.Child = [];
+          MainParentArray.push(Item);
+        }
+      })
     }
     if (MainParentArray?.length > 0) {
-        MainParentArray.map((ParentArray: any) => {
+      MainParentArray.map((ParentArray: any) => {
+        if (DataItem?.length > 0) {
+          DataItem.map((ChildArray: any) => {
+            if (ParentArray.Id == ChildArray.ParentID) {
+              ChildArray.siteName = ParentArray.newTitle;
+              ChildArray.Child = [];
+              ParentArray.Child.push(ChildArray);
+            }
+          })
+        }
+
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
             if (DataItem?.length > 0) {
-                DataItem.map((ChildArray: any) => {
-                    if (ParentArray.Id == ChildArray.ParentID) {
-                        ChildArray.siteName = ParentArray.newTitle;
-                        ChildArray.Child = [];
-                        ParentArray.Child.push(ChildArray);
-                    }
-                })
+              DataItem.map((ChildArray: any) => {
+                if (ChildLevelFirst.Id == ChildArray.ParentID) {
+                  ChildArray.siteName = ParentArray.newTitle;
+                  ChildArray.Child = [];
+                  ChildLevelFirst.Child.push(ChildArray);
+                }
+              })
             }
-
-        })
+          })
+        }
+      })
     }
     if (MainParentArray?.length > 0) {
-        MainParentArray.map((ParentArray: any) => {
-            if (ParentArray?.Child?.length > 0) {
-                ParentArray?.Child.map((ChildLevelFirst: any) => {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
+            if (ChildLevelFirst.Child?.length > 0) {
+              ChildLevelFirst.Child.map((lastChild: any) => {
+                if (DataItem?.length > 0) {
+                  DataItem.map((ChildArray: any) => {
+                    if (lastChild.Id == ChildArray.ParentID) {
+                      ChildArray.siteName = ParentArray.newTitle;
+                      ChildArray.Child = [];
+                      lastChild.Child.push(ChildArray);
+                    }
+                  })
+                }
+              })
+
+            }
+
+          })
+        }
+      })
+    }
+    if (MainParentArray?.length > 0) {
+      MainParentArray.map((ParentArray: any) => {
+        if (ParentArray?.Child?.length > 0) {
+          ParentArray?.Child.map((ChildLevelFirst: any) => {
+            if (ChildLevelFirst.Child?.length > 0) {
+              ChildLevelFirst.Child.map((lastChild: any) => {
+                if (lastChild.Child?.length > 0) {
+                  lastChild.Child?.map((endChild: any) => {
                     if (DataItem?.length > 0) {
-                        DataItem.map((ChildArray: any) => {
-                            if (ChildLevelFirst.Id == ChildArray.ParentID) {
-                                ChildArray.siteName = ParentArray.newTitle;
-                                ChildArray.Child = [];
-                                ChildLevelFirst.Child.push(ChildArray);
-                            }
-                        })
+                      DataItem.map((ChildArray: any) => {
+                        if (endChild.Id == ChildArray.ParentID) {
+                          ChildArray.siteName = ParentArray.newTitle;
+                          ChildArray.Child = [];
+                          endChild.Child.push(ChildArray);
+                        }
+                      })
                     }
-                })
+
+                  })
+                }
+
+              })
+
             }
-        })
+
+          })
+        }
+      })
     }
     if (MainParentArray?.length > 0) {
-        MainParentArray.map((ParentArray: any) => {
-            if (ParentArray?.Child?.length > 0) {
-                ParentArray?.Child.map((ChildLevelFirst: any) => {
-                    if (ChildLevelFirst.Child?.length > 0) {
-                        ChildLevelFirst.Child.map((lastChild: any) => {
-                            if (DataItem?.length > 0) {
-                                DataItem.map((ChildArray: any) => {
-                                    if (lastChild.Id == ChildArray.ParentID) {
-                                        ChildArray.siteName = ParentArray.newTitle;
-                                        ChildArray.Child = [];
-                                        lastChild.Child.push(ChildArray);
-                                    }
-                                })
-                            }
-                        })
-
-                    }
-
-                })
-            }
-        })
-    }
-    if (MainParentArray?.length > 0) {
-        MainParentArray.map((ParentArray: any) => {
-            if (ParentArray?.Child?.length > 0) {
-                ParentArray?.Child.map((ChildLevelFirst: any) => {
-                    if (ChildLevelFirst.Child?.length > 0) {
-                        ChildLevelFirst.Child.map((lastChild: any) => {
-                            if (lastChild.Child?.length > 0) {
-                                lastChild.Child?.map((endChild: any) => {
-                                    if (DataItem?.length > 0) {
-                                        DataItem.map((ChildArray: any) => {
-                                            if (endChild.Id == ChildArray.ParentID) {
-                                                ChildArray.siteName = ParentArray.newTitle;
-                                                ChildArray.Child = [];
-                                                endChild.Child.push(ChildArray);
-                                            }
-                                        })
-                                    }
-
-                                })
-                            }
-
-                        })
-
-                    }
-
-                })
-            }
-        })
-    }
-    if (MainParentArray?.length > 0) {
-        MainParentArray.map((finalItem: any) => {
-            FinalArray.push(finalItem);
-            if (finalItem.Child?.length > 0) {
-                finalItem.Child.map((FinalChild: any) => {
-                    FinalArray.push(FinalChild);
-                    if (FinalChild.Child?.length > 0) {
-                        FinalChild.Child.map((LastChild: any) => {
-                            FinalArray.push(LastChild)
-                            if (LastChild.Child?.length > 0) {
-                                LastChild.Child?.map((endChild: any) => {
-                                    FinalArray.push(endChild);
-                                })
-                            }
-                        })
-
-                    }
-                })
+      MainParentArray.map((finalItem: any) => {
+        FinalArray.push(finalItem);
+        if (finalItem.Child?.length > 0) {
+          finalItem.Child.map((FinalChild: any) => {
+            FinalArray.push(FinalChild);
+            if (FinalChild.Child?.length > 0) {
+              FinalChild.Child.map((LastChild: any) => {
+                FinalArray.push(LastChild)
+                if (LastChild.Child?.length > 0) {
+                  LastChild.Child?.map((endChild: any) => {
+                    FinalArray.push(endChild);
+                  })
+                }
+              })
 
             }
-        })
+          })
+
+        }
+      })
     }
     AllClientCategoryDataBackup = FinalArray;
-}
+  }
 
   return (
     <>
@@ -1943,26 +1979,26 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                             <div className="col-sm-12  inner-tabb">
                               {linkedComponentData?.length > 0 ? (
                                 <div className="serviepannelgreena">
-                                  
+
                                   {linkedComponentData?.map((com: any) => {
                                     return (
                                       <>
                                         <div className="block d-flex justify-content-between mb-1">
-                                       
-                                            <a
-                                              className="hreflink service ps-2"
-                                              target="_blank"
-                                              data-interception="off"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox"onClick={() =>
-                                                   setLinkedComponentData([])
-                                              }></span></a>
-                                          
-                                           
-                                       
+
+                                          <a
+                                            className="hreflink service ps-2"
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                          >
+                                            {com.Title}
+                                          </a>
+                                          <a className='text-end'>  <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                            setLinkedComponentData([])
+                                          }></span></a>
+
+
+
                                         </div>
                                       </>
                                     );
@@ -1983,23 +2019,23 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                                     return (
                                       <>
                                         <div className="block d-flex justify-content-between mb-1">
-                                     
-                                            <a
-                                              className="hreflink service ps-2"
-                                              target="_blank"
-                                              data-interception="off"
-                                              href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
-                                            >
-                                              {com.Title}
-                                            </a>
-                                            <a className='text-end'>
-                                            <span className="bg-light svg__icon--cross svg__iconbox"onClick={() =>
-                                                  setLinkedComponentData([])
-                                              }></span>
-                                            </a>
-                                          
-                                           
-                                         
+
+                                          <a
+                                            className="hreflink service ps-2"
+                                            target="_blank"
+                                            data-interception="off"
+                                            href={`${RequireData.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}
+                                          >
+                                            {com.Title}
+                                          </a>
+                                          <a className='text-end'>
+                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                              setLinkedComponentData([])
+                                            }></span>
+                                          </a>
+
+
+
                                         </div>
                                       </>
                                     );
@@ -2073,10 +2109,10 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                                             {com.Title}
                                           </a>
                                           <a>
-                                          <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-                                                setSmartComponentData([])
-                                              }></span>
-                                           
+                                            <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
+                                              setSmartComponentData([])
+                                            }></span>
+
                                           </a>
                                         </div>
                                       </div>
@@ -2603,9 +2639,9 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                                                   {type.Title}
                                                 </a>
                                                 <span className="bg-light svg__icon--cross svg__iconbox" onClick={() =>
-                                                    deleteCategories(type.Id)}></span>
-                                              
-                                               
+                                                  deleteCategories(type.Id)}></span>
+
+
                                               </div>
                                             )}
                                         </>
@@ -3096,7 +3132,7 @@ const BuildClieantCategoryAllDataArray = (DataItem: any) => {
                               SiteCompositionSettings={EditData.SiteCompositionSettings}
                               // SmartTotalTimeData={SmartTotalTimeData}
                               currentListName={EditData.siteType}
-                              // callBack={SiteCompositionCallBack}
+                              callBack={SiteCompositionCallBack}
                               isServiceTask={EditData?.Portfolio_x0020_Type == "Service" ? true : false}
                               SelectedClientCategory={selectedClientCategory}
                             // isPortfolioConncted={ComponentTaskCheck || ServicesTaskCheck ? true : false}
