@@ -22,12 +22,12 @@ import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import PortfolioStructureCreationCard from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
 import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 
 import {
   Column,
@@ -51,6 +51,8 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
+
 
 ///TanstackTable filter And CheckBox 
 declare module "@tanstack/table-core" {
@@ -184,7 +186,9 @@ let Itemtypes: any;
 let globalFilterHighlited: any;
 let SmartMetaData:any=[];
 let selectedClientCategoryPopup:any=false;
-
+let activity = 0;
+let workstrim = 0;
+let task = 0;
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -251,6 +255,162 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
 
   // SmartTotalTime
+
+  // Popover start 
+
+  function extractValueShareWebTaskId(str: any) {
+    const regex = /T(\d+)/;
+    const match = str.match(regex);
+
+    if (match && match[0]) {
+      return match[0];
+    }
+
+    return '';
+  }
+
+
+  React.useEffect(() => {
+    FindAWTDataCount();
+  }, [data])
+  const FindAWTDataCount = () => {
+    data?.map((Com) => {
+      Com.toolTitle = Com.Title;
+      Com.toolSharewebId = Com.PortfolioStructureID;
+      Com?.subRows?.map((Sub: any) => {
+
+        if (Sub?.Item_x0020_Type == "SubComponent") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.PortfolioStructureID;
+        }
+        if (Sub?.Item_x0020_Type == "Feature") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.PortfolioStructureID;
+        }
+        if (Sub?.SharewebTaskType?.Title === "Activities") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.ShowTooltipSharewebId;
+          activity = activity + 1;
+        }
+        if (Sub?.SharewebTaskType?.Title == "Workstream") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          // Sub.toolSharewebId = Sub.PortfolioStructureID;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          workstrim = workstrim + 1;
+        }
+        if (Sub?.SharewebTaskType?.Title == "Task") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          task = task + 1;
+        }
+
+        Sub?.subRows?.map((feat: any) => {
+          if (feat?.Item_x0020_Type == "SubComponent") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.PortfolioStructureID;
+          }
+          if (feat?.Item_x0020_Type == "Feature") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.PortfolioStructureID;
+          }
+          if (feat?.SharewebTaskType?.Title == "Activities") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.ShowTooltipSharewebId;
+            activity = activity + 1;
+          }
+          if (feat?.SharewebTaskType?.Title == "Workstream") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + feat?.Shareweb_x0020_ID?.slice(-2);
+            workstrim = workstrim + 1;
+          }
+          if (feat?.SharewebTaskType?.Title == "Task") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + extractValueShareWebTaskId(feat?.Shareweb_x0020_ID);
+            task = task + 1;
+          }
+          feat?.subRows?.map((acti: any) => {
+            if (Sub?.Item_x0020_Type == "SubComponent") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.PortfolioStructureID;
+
+            }
+            if (Sub?.Item_x0020_Type == "Feature") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.PortfolioStructureID;
+
+            }
+            if (acti?.SharewebTaskType?.Title == "Activities") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.ShowTooltipSharewebId;
+              activity = activity + 1;
+            }
+            if (acti?.SharewebTaskType?.Title == "Workstream") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = feat.toolSharewebId + '-' + acti?.Shareweb_x0020_ID?.slice(-2);
+              workstrim = workstrim + 1;
+            }
+            if (acti?.SharewebTaskType?.Title == "Task") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = feat.toolSharewebId + '-' + extractValueShareWebTaskId(acti?.Shareweb_x0020_ID)
+              task = task + 1;
+            }
+            acti?.subRows?.map((works: any) => {
+              if (Sub?.Item_x0020_Type == "SubComponent") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.PortfolioStructureID;
+              }
+              if (Sub?.Item_x0020_Type == "Feature") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.PortfolioStructureID;
+              }
+              if (works?.SharewebTaskType?.Title == "Activities") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.ShowTooltipSharewebId;
+                activity = activity + 1;
+              }
+              if (works?.SharewebTaskType?.Title == "Workstream") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID?.slice(-2);
+                workstrim = workstrim + 1;
+              }
+              if (works?.SharewebTaskType?.Title == "Task") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID;
+                task = task + 1;
+              }
+              works?.subRows?.map((taskss: any) => {
+                if (Sub?.Item_x0020_Type == "SubComponent") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.PortfolioStructureID
+                }
+                if (Sub?.Item_x0020_Type == "Feature") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.PortfolioStructureID
+                }
+                if (taskss?.SharewebTaskType?.Title == "Activities") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.ShowTooltipSharewebId;
+                  activity = activity + 1;
+                }
+                if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + taskss?.Shareweb_x0020_ID?.slice(-2);
+                  workstrim = workstrim + 1;
+                }
+                if (taskss?.SharewebTaskType?.Title == "Task") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + extractValueShareWebTaskId(taskss?.Shareweb_x0020_ID);
+                  task = task + 1;
+                }
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+
+  // Popover end 
 
 
   const SmartMetaDatas = async () => {
@@ -467,9 +627,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             marginLeft: "20px",
           }}
         >
-          <span>{`Create Activity ${MeetingItems[0]?.Title}`}</span>
+          <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
-        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+        <Tooltip ComponentId="1746" />
       </div>
     );
   };
@@ -1802,6 +1962,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       setShowTeamMemberOnCheck(true)
     } else {
       setcheckData([])
+      MeetingItems=[]
+      childsData=[]
       setShowTeamMemberOnCheck(false)
     }
     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
@@ -3555,11 +3717,16 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 145,
       },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorFn: (row) => row?.Shareweb_x0020_ID,
+        cell: ({ row, getValue }) => (
+          <>
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+          </>
+        ),
+        id: "Shareweb_x0020_ID",
         placeholder: "ID",
         header: "",
         size: 130,
-        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.Title,
@@ -3854,6 +4021,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         onChangeHandler(itrm, props, eTarget, table?.getSelectedRowModel()?.flatRows);
       }
     } else {
+      childsData=[]
       MeetingItems = [];
       setcheckData([])
       setCheckedList([]);
@@ -4321,48 +4489,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                                     } */}
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                        />
-                      </span>
-                      Bug
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                        />
-                      </span>
-                      Feedback
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                      </span>
-                      Improvement
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                      </span>
-                      Design
-                    </div>
-                  </li>
+                  
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                     <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites"></span>
-                      Activities
+                      Activity
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4374,28 +4505,31 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
+<div onClick={() => CreateMeetingPopups("Activities")}>
 
-                      <span className="icon-sites">
+  <span className="icon-sites"></span>
 
-                        <img
+  Activity
 
-                          className="icon-sites"
+</div>
 
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
+</li>
 
-                        />
+<li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                      </span>
+<div onClick={() => CreateMeetingPopups("Task")}>
 
-                      Implmentation
+  <span className="icon-sites"> </span>
 
-                    </div>
+  Task
 
-                  </li>
+</div>
+
+</li>
+
+                
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4418,6 +4552,23 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
 
                   </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+<div onClick={() => CreateMeetingPopups("Improvement")}>
+
+  <span className="icon-sites"> <img
+
+    className="icon-sites"
+
+    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
+
+  /></span>
+
+  Improvement
+
+</div>
+
+</li>
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4431,7 +4582,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Activity
+Implementation
 
                     </div>
 
@@ -4449,7 +4600,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Bug
+Feedback
 
                     </div>
 
@@ -4467,29 +4618,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Feedback
+Design
 
                     </div>
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Improvement")}>
-
-                      <span className="icon-sites"> <img
-
-                        className="icon-sites"
-
-                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
-
-                      /></span>
-
-                      Improvement
-
-                    </div>
-
-                  </li>
+                 
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4503,35 +4638,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Design
+Bug 
 
                     </div>
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-
-                      <span className="icon-sites"></span>
-
-                      Activity
-
-                    </div>
-
-                  </li>
-
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-
-                      <span className="icon-sites"> </span>
-
-                      Task
-
-                    </div>
-
-                  </li>
+                  
 
                 </ul>
 
