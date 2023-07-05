@@ -3231,7 +3231,7 @@ function ComponentTable(SelectedProp: any) {
             marginLeft: "20px",
           }}
         >
-          <span>{`Create Activity ${checkedList[0]?.Title}`} ``</span>
+          <span>{`Create ${checkedList[0]?.Portfolio_x0020_Type} item in ${checkedList[0]?.PortfolioStructureID}  ${checkedList[0]?.Title}`} ``</span>
         </div>
         <Tooltip ComponentId={checkedList[0]?.Id} />
       </div>
