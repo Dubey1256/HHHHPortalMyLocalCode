@@ -3309,31 +3309,7 @@ function ComponentTable(SelectedProp: any) {
               ) : (
                 ""
               )}{" "}
-              {row?.original?.SiteIcon != undefined ? (
-                <a className="hreflink" title="Show All Child" data-toggle="modal" >
-                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
-                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
-                  }
-                    src={row?.original?.SiteIcon}>
-                  </img>
-                </a>
-              ) : (
-                <>
-                  {row?.original?.Title != "Others" ? (
-                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
-                      row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
-                    }>
-                      {row?.original?.SiteIconTitle}
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </>
-              )}
-
-
-              {/* ////////// Plush Icons////// */}
-              <span>
+              <span style={{ width: '18px' }}>
                 {((row.getCanExpand() &&
                   row.subRows?.length !== row.original.subRows?.length) ||
                   !row.getCanExpand() ||
@@ -3379,13 +3355,34 @@ function ComponentTable(SelectedProp: any) {
                         row.subRows?.length !== row.original.subRows?.length)
                       ? <FaPlus style={{ fontSize: '10px' }} />
                       : row.getIsExpanded()
-                        ? <FaMinus />
+                        ? <FaMinus  style={{fontSize: '11px'}}/>
                         : <FaPlus style={{ fontSize: '10px' }} />}
                   </span>
                 ) : (
                   ""
                 )}{" "}
               </span>
+              {row?.original?.SiteIcon != undefined ? (
+                <a className="hreflink" title="Show All Child" data-toggle="modal" >
+                  <img className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 icon-sites-img ml20 me-1" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 icon-sites-img ml20 me-1" :
+                    row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 icon-sites-img ml20 me-1" : row?.original?.SharewebTaskType?.Title == "Task" || row?.original?.Item_x0020_Type === "Task" && row?.original?.SharewebTaskType == undefined ? "ml-60 icon-sites-img ml20 me-1" : "icon-sites-img ml20 me-1"
+                  }
+                    src={row?.original?.SiteIcon}>
+                  </img>
+                </a>
+              ) : (
+                <>
+                  {row?.original?.Title != "Others" ? (
+                    <div className={row?.original?.Item_x0020_Type == "SubComponent" ? "ml-12 Dyicons" : row?.original?.Item_x0020_Type == "Feature" ? "ml-24 Dyicons" : row?.original?.SharewebTaskType?.Title == "Activities" ? "ml-36 Dyicons" :
+                      row?.original?.SharewebTaskType?.Title == "Workstream" ? "ml-48 Dyicons" : row?.original?.SharewebTaskType?.Title == "Task" ? "ml-60 Dyicons" : "Dyicons"
+                    }>
+                      {row?.original?.SiteIconTitle}
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </>
+              )}
               {getValue()}
             </span>
           </>
