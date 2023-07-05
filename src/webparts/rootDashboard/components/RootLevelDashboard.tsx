@@ -1,6 +1,6 @@
 import React from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"; import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaFilter, FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
   ColumnDef,
 } from "@tanstack/react-table";
@@ -27,7 +27,8 @@ let headerOptions: any = {
   openTab: true,
   teamsIcon: false
 }
-var dashboardConfig: any = {};
+let allLists: any = [];
+var dashboardConfig: any = [];
 var isShowTimeEntry: any = "";
 var allSitesTasks: any = [];
 var AllMetadata: any = [];
@@ -36,6 +37,9 @@ const RootLevelDashboard = (props: any) => {
   const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
   const [SharewebTimeComponent, setSharewebTimeComponent] = React.useState([]);
   const [AllTasks, setAllTasks] = React.useState([]);
+  const [dashboardConfigrations, setDashboardConfigrations] = React.useState([]);
+  const [AllTasksBackup, setAllTasksBackup] = React.useState([]);
+  const [selectedSiteFilter, setSelectedSiteFilter]: any = React.useState([]);
   const [passdata, setpassdata] = React.useState("");
   const [IsTimeEntry, setIsTimeEntry] = React.useState(false);
   React.useEffect(() => {
@@ -98,6 +102,9 @@ const RootLevelDashboard = (props: any) => {
         smartmeta?.map((item: any) => {
           if (item?.Title == 'RootDashboardConfig') {
             dashboardConfig = JSON.parse(item?.Configurations);
+            if(dashboardConfig?.length>0){
+              setDashboardConfigrations(dashboardConfig)
+            }
             dashboardConfig?.map(async (config: any) => {
               await GetSitesMetaData(config)
             })
@@ -135,6 +142,7 @@ const RootLevelDashboard = (props: any) => {
               siteConfig.push(site)
             }
           })
+          allLists = [...allLists, ...siteConfig]
         } else {
           siteConfig = smartmeta;
         }
@@ -172,7 +180,7 @@ const RootLevelDashboard = (props: any) => {
             items.ShowTeamsIcon = false
             items.AllTeamMember = [];
             items.siteType = config.Title;
-            items.metaDataListId=metaDataConfig?.metadataListId;
+            items.metaDataListId = metaDataConfig?.metadataListId;
             items.bodys = items.Body != null && items.Body.split('<p><br></p>').join('');
             items.listId = config.listId;
             items.siteUrl = config.siteUrl.Url;
@@ -261,6 +269,7 @@ const RootLevelDashboard = (props: any) => {
             })
             const mergedArray = [...AllTasks, ...allSitesTasks]
             setAllTasks(sortOnCreated(mergedArray));
+            setAllTasksBackup(sortOnCreated(mergedArray));
             console.log(allSitesTasks);
           }
 
@@ -343,15 +352,35 @@ const RootLevelDashboard = (props: any) => {
         size: 35
       },
       {
-        accessorFn: (row) => row?.siteType,
+        accessorKey: 'siteType',
+        // header: ({ table }: any) => (
+        //   <>
+        //   <span className='Site-Filter'>
+        //   <span className='me-1'>
+        //           <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
+        //           <FaFilter />
+        //             <div className='popover__content'>
+        //             <div className="dropdown-menu p-2 ">
+        //                                 <li><span><input type='checkbox'  value={'idType'} /> <label>Select All</label> </span></li>
+        //                                <ul className='dropitem'>
+        //                                     {allLists?.map((item: any) => <li><span><input type='checkbox'  value={item.Title} /> <label>{item.Title}</label> </span></li>)}
+        //                                          </ul>
+        //                                          <li><a className="btn btn-primary" >Filter</a> <a className="btn btn-default ms-1" >Clear</a></li>
+        //                           </div>
+        //             </div>
+        //           </div>
+        //         </span>
+        //   </span>
+        //   </>
+        // ),
         cell: ({ row }) => (
           <span>
             <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
           </span>
         ),
         id: "Site",
-        placeholder: "Site",
         header: "",
+        placeholder: "Site",
         resetSorting: false,
         resetColumnFilters: false,
         size: 70
@@ -460,7 +489,7 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.Priority_x0020_Rank,
         cell: ({ row }) => (
           <span>
-              <InlineEditingcolumns
+            <InlineEditingcolumns
               type='Task'
               callBack={inlineCallBack}
               columnName='Priority'
@@ -481,13 +510,13 @@ const RootLevelDashboard = (props: any) => {
         accessorFn: (row) => row?.DueDate,
         cell: ({ row }) => (
           <>
-           <InlineEditingcolumns
-            callBack={inlineCallBack}
-            columnName='DueDate'
-            item={row?.original}
-            pageName={'ProjectManagment'}
-          />
-          {/* <span>{row?.original?.DisplayDueDate}</span> */}
+            <InlineEditingcolumns
+              callBack={inlineCallBack}
+              columnName='DueDate'
+              item={row?.original}
+              pageName={'ProjectManagment'}
+            />
+            {/* <span>{row?.original?.DisplayDueDate}</span> */}
 
           </>
         ),
@@ -601,33 +630,83 @@ const RootLevelDashboard = (props: any) => {
     [allSitesTasks]
   );
   const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+  }, []);
+  const inlineCallBack = React.useCallback((task: any) => {
+    setAllTasks(prevState => {
+      return prevState.map(item => {
+        if (item?.Id === task?.Id && task?.siteType === item?.siteType) {
+          return {
+            ...item,
+            ...task
+          };
+        } else {
+          return item;
+        }
+      });
+    });
     
 
   }, []);
-  const inlineCallBack = React.useCallback((item: any) => {
-  
-     allSitesTasks?.map((task: any) => {
-      if (task?.Id === item?.Id && task?.siteType === item?.siteType) {
-        return { ...task, ...item };
-      }
-      return task;
-    });
-    setAllTasks(allSitesTasks);
-}, []);
   const sortOnCreated = (Array: any) => {
     Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
     return Array;
   }
+  const clearSiteFilter = () => {
+    setSelectedSiteFilter([])
+    setAllTasks(AllTasksBackup);
+  }
+  const siteFilter = (item: any) => {
+    let selectedSites:any=[];
+    selectedSites=selectedSiteFilter;
+    if(!selectedSites?.includes(item?.siteUrl)){
+      selectedSites.push(item?.siteUrl);
+    }else{
+      var indexToRemove = selectedSites.indexOf(item?.siteUrl);
+      selectedSites?.splice(indexToRemove, 1)
+    }
+    setSelectedSiteFilter(selectedSites);
+    filterData();
+  }
+  const filterData =()=>{
+    if(selectedSiteFilter?.length>0){
+      setAllTasks(prevState => {
+        return AllTasksBackup?.filter(item => {
+          if(selectedSiteFilter?.includes(item?.siteUrl)){
+            return item
+          }
+        });
+      });
+    }else{
+      setAllTasks(AllTasksBackup);
+    }
+  }
   return (
     <>
-    <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
-    {IsTimeEntry && (
-      <DisplayTimeEntry
-        props={SharewebTimeComponent}
-        CallBackTimeEntry={TimeEntryCallBack}
-        Context={props?.props?.Context}
-      ></DisplayTimeEntry>
-    )}
+      <div className='AllTaskSiteRadio d-flex justify-content-between'>
+        <dl className='alignCenter gap-2 mb-0'>
+          {dashboardConfigrations?.map((list: any) => {
+            return (
+              <dt className='form-check l-radio'>
+                <input className='form-check-input' type="checkbox" value={list?.siteUrl} name="date" checked={selectedSiteFilter?.includes(list?.siteUrl)} onClick={() => siteFilter(list)} /> {list?.siteName}
+              </dt>
+            )
+          })}
+
+        </dl>
+        <div className="text-end">
+          <a className="hreflink" onClick={() => { clearSiteFilter() }}>Clear Site Filter</a>
+        </div>
+      </div>
+      <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+      {IsTimeEntry && (
+        <DisplayTimeEntry
+          props={SharewebTimeComponent}
+          CallBackTimeEntry={TimeEntryCallBack}
+          Context={props?.props?.Context}
+        ></DisplayTimeEntry>
+      )}
     </>
   )
 }

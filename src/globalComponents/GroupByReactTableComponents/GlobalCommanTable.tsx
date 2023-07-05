@@ -9,6 +9,7 @@ import {
     getExpandedRowModel,
     ColumnDef,
     flexRender,
+    ColumnFiltersState,
     getSortedRowModel,
     SortingState,
     FilterFn,
@@ -147,6 +148,9 @@ const GlobalCommanTable = (items: any) => {
     let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+        []
+      );
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -161,15 +165,17 @@ const GlobalCommanTable = (items: any) => {
         },
         state: {
             globalFilter,
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
-        getSubRows: (row: any) => row.subRows,
+        getSubRows: (row: any) => row?.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
@@ -318,7 +324,7 @@ const GlobalCommanTable = (items: any) => {
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"  onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
