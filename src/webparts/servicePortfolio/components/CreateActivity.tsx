@@ -225,13 +225,13 @@ const CreateActivity = (props: any) => {
                     .get()
                 console.log(componentDetails)
                 if (componentDetails?.length == 0) {
-                    WorstreamLatestId = 1;
+                    WorstreamLatestId = AllItems?.SharewebTaskLevel2No;
                 } else {
                     if(AllItems?.SharewebTaskType.Title!= undefined?AllItems?.SharewebTaskType.Title!= 'Workstream':AllItems?.SharewebTaskType!="Workstream"){
                         WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     else{
-                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No!=undefined?componentDetails[0]?.SharewebTaskLevel2No:AllItems?.SharewebTaskLevel2No;
                     }
                    
                 }

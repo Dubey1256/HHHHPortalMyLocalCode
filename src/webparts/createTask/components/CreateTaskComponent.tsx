@@ -514,9 +514,9 @@ function CreateTaskComponent(props: any) {
         MetaData = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
-            .expand('Author,Editor')
+            .expand('Author,Editor,Parent')
             .get();
         AllMetadata = MetaData;
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
@@ -538,17 +538,17 @@ function CreateTaskComponent(props: any) {
         setpriorityRank(Priority)
 
         TaskTypes?.map((task: any) => {
-            if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
+            if (task.Parent !== undefined && task.Parent.Id === 0 && task.Title !== 'Phone') {
                 Task.push(task);
                 getChilds(task, TaskTypes);
             }
-            if (task.ParentID !== undefined && task.ParentID !== 0 && task.IsVisible) {
+            if (task.Parent!== undefined && task.Parent.Id !== 0 && task.IsVisible) {
                 subCategories.push(task);
             }
         })
         Task?.map((taskItem: any) => {
             subCategories?.map((item: any) => {
-                if (taskItem.Id === item.ParentID) {
+                if (taskItem.Id === item.Parent.Id) {
                     try {
                         item.ActiveTile = false;
                         item.SubTaskActTile = item.Title.replace(/\s/g, "");
@@ -624,7 +624,7 @@ function CreateTaskComponent(props: any) {
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items?.map((childItem: any) => {
-            if (childItem.ParentID !== undefined && parseInt(childItem.ParentID) === item.ID) {
+            if (childItem.Parent !== undefined && parseInt(childItem.Parent.Id) === item.ID) {
                 item.childs.push(childItem);
                 getChilds(childItem, items);
             }
@@ -729,39 +729,7 @@ function CreateTaskComponent(props: any) {
             try {
                 let selectedComponent: any[] = [];
                 
-                if (save.Component !== undefined && save.Component.length > 0) {
-                    save.Component?.map((com: any) => {
-                        if (save.Component !== undefined && save.Component.length >= 0) {
-                            $.each(save.Component, function (index: any, smart: any) {
-                                selectedComponent.push(smart.Id);
-                                postClientTime= JSON.parse(smart?.Sitestagging);
-                                siteCompositionDetails=smart?.SiteCompositionSettings;
-                                smart?.ClientCategory?.map((cc:any)=>{
-                                    if(cc.Id!=undefined){
-                                        selectedCC.push(cc.Id) 
-                                    }
-                                })
-                            })
-                        }
-                    })
-                }
-                let selectedService: any[] = [];
-                if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
-                    save.linkedServices?.map((com: any) => {
-                        if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
-                            $.each(save.linkedServices, function (index: any, smart: any) {
-                                selectedService.push(smart.Id);
-                                postClientTime=JSON.parse(smart?.Sitestagging);
-                                siteCompositionDetails=smart?.SiteCompositionSettings;
-                                smart?.ClientCategory?.map((cc:any)=>{
-                                    if(cc.Id!=undefined){
-                                        selectedCC.push(cc.Id) 
-                                    }
-                                })
-                            })
-                        }
-                    })
-                }
+               
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
                     CopyUrl = save.taskUrl
@@ -776,6 +744,43 @@ function CreateTaskComponent(props: any) {
                             selectedSite = site;
                         }
                     })
+                    if (save.Component !== undefined && save.Component.length > 0) {
+                        save.Component?.map((com: any) => {
+                            if (save.Component !== undefined && save.Component.length >= 0) {
+                                $.each(save.Component, function (index: any, smart: any) {
+                                    selectedComponent.push(smart.Id);
+                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
+                                        postClientTime=JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails=smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc:any)=>{
+                                            if(cc.Id!=undefined){
+                                                selectedCC.push(cc.Id) 
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    let selectedService: any[] = [];
+                    if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
+                        save.linkedServices?.map((com: any) => {
+                            if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
+                                $.each(save.linkedServices, function (index: any, smart: any) {
+                                    selectedService.push(smart.Id);
+                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
+                                        postClientTime=JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails=smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc:any)=>{
+                                            if(cc.Id!=undefined){
+                                                selectedCC.push(cc.Id) 
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
                         setSave({ ...save, rank: 4 })
@@ -1967,7 +1972,7 @@ function CreateTaskComponent(props: any) {
                                                     {subCategory?.map((item: any) => {
                                                         return (
                                                             <>
-                                                                {Task.Id === item.ParentID && <>
+                                                                {Task.Id === item.Parent.Id && <>
                                                                     {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
                                                                     <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
 
