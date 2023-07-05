@@ -856,7 +856,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
-          isBlocking={false}>
+          isBlocking={true}>
 
           <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 
@@ -1052,7 +1052,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
-                              <tr >
+                              <tr>
                                 <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
                                   <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}</span></p>
                                 </td>
@@ -1070,7 +1070,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </tr>
                               {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
-                                  <tr style={{ background: "#ccc" }}>
+                                  <tr>
                                     <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                     </td>

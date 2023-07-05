@@ -408,6 +408,12 @@ export class PortfolioStructureCreationCard extends React.Component<IStructureCr
                                 // self.AssignedTo.push(assignto.AssingedToUserId);
                             })
                         }
+                        if (self.state.TeamConfig.AssignedTo!=undefined && self.state.TeamConfig.AssignedTo.length>0) {
+                            self.state.TeamConfig.AssignedTo.forEach(function (assignto: any) {
+                                self.AssignedIds.push(assignto.AssingedToUserId);
+                                // self.AssignedTo.push(assignto.AssingedToUserId);
+                            })
+                        }
                         if (self.state.TeamConfig.TeamMemberUsers != undefined && self.state.TeamConfig.TeamMemberUsers.length > 0) {
 
                             self.state.TeamConfig.TeamMemberUsers.forEach(function (TeamMember: any) {

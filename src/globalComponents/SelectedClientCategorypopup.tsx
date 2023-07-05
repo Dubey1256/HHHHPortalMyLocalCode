@@ -3,11 +3,21 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 let checkedData:any=[];
 const SelectedClientCategoryPupup = (props: any) => {
     const [PopupSmartTaxanomy, setPopupSmartTaxanomy] = React.useState(true);
-    const [selectedCategory, setselectedCategory] = React.useState(props?.items);
- 
+    const [data, setData]= React.useState<any>({})
+    
+     const [allClientCategory,setClientCategory]=React.useState([])
     const [checked, setChecked] = React.useState(false);
-
-
+   const getClientCategory=(data:any)=>{
+     let parentcat:any=[]
+    data?.ClientCategory?.results?.map((items:any)=>{
+        parentcat.push(items)
+      })
+      setClientCategory(parentcat)
+   }
+       React.useEffect(() =>{
+        setData(props?.items)
+        getClientCategory(props?.items)
+       },[])
     const customHeader = () => {
         return (
             <div className={"d-flex full-width pb-1"} >
@@ -21,34 +31,14 @@ const SelectedClientCategoryPupup = (props: any) => {
 
     const closeSelectedClientCategoryPupup = () => {
         setPopupSmartTaxanomy(false)
-        props.callback(checkedData)
+        data.ClientCategory2={}
+        data.ClientCategory2={
+           results:[]
+        };
+         props.callback()
         checkedData=[];
-        // props.Call();
-        // NewArray = []
-        // setSelect([])
-        // item.closePopupCallBack();
-
-    }
-    const saveCategories = () => {
-        console.log("close")
-        setPopupSmartTaxanomy(false)
-        props.callback(checkedData)
-        checkedData=[];
-
-    }
-    const customFooter = () => {
-        return (
-            <footer>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
-                    OK
-                </button>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
-                    Cancel
-                </button>
-            </footer>
-        )
-    }
-   
+      }
+    
     const handleChange = (items: any, e: any) => {
         setChecked(!checked);
         if(e.currentTarget.checked){
@@ -63,6 +53,30 @@ const SelectedClientCategoryPupup = (props: any) => {
         console.log('items......', items)
         console.log('e......', e)
     };
+    const saveCategories = () => {
+        console.log("close")
+        setPopupSmartTaxanomy(false)
+        data.ClientCategory2={}
+        data.ClientCategory2={
+           results:checkedData};
+      props.callback(data)
+        checkedData=[];
+
+    }
+    const customFooter = () => {
+        return (
+            <footer>
+                 <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
+                    Cancel
+                </button>
+                <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
+                    OK
+                </button>
+               
+            </footer>
+        )
+    }
+   
     return (
         <>
             <Panel
@@ -73,10 +87,10 @@ const SelectedClientCategoryPupup = (props: any) => {
                 onDismiss={closeSelectedClientCategoryPupup}
                 isBlocking={false}
                 onRenderFooter={customFooter}
-            // className={props?.props?.Portfolio_x0020_Type == 'Service'||props?.props?.Services?.length>0 ? "serviepannelgreena" : ""}
+            className={data?.Portfolio_x0020_Type == 'Service'|| data?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
 
-                {selectedCategory?.map((item: any, index: any) => (
+                {allClientCategory?.map((item: any, index: any) => (
                     <React.Fragment key={item?.Id}>
                         <label>
                             <input
@@ -84,7 +98,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                                 id={item?.Id}
                                 name={item?.Title}
                                 type="checkbox"
-                                className="mx-2"
+                                className="me-2"
                                 onChange={(e) => handleChange(item, e)}
                             />
                             {item?.Title}
