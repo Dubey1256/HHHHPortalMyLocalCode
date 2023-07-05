@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "hhhh-portal-client-side-solution",
+    "id": "27fb8e2e-b470-4fc2-a52c-f4040c2c78d2",
+    "version": "1.3.8.3",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.15.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "hhhh-portal description"
+      },
+      "longDescription": {
+        "default": "hhhh-portal description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "hhhh-portal Feature",
+        "description": "The feature that activates elements of the hhhh-portal solution.",
+        "id": "97b8494c-768c-4404-9a50-dab765699744",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/hhhh-portal.sppkg"
+  }
+}
