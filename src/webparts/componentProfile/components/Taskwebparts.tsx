@@ -1962,6 +1962,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       setShowTeamMemberOnCheck(true)
     } else {
       setcheckData([])
+      MeetingItems=[]
+      childsData=[]
       setShowTeamMemberOnCheck(false)
     }
     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
@@ -4019,6 +4021,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         onChangeHandler(itrm, props, eTarget, table?.getSelectedRowModel()?.flatRows);
       }
     } else {
+      childsData=[]
       MeetingItems = [];
       setcheckData([])
       setCheckedList([]);
