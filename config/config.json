@@ -273,6 +273,14 @@
           "manifest": "./src/webparts/rootDashboard/RootDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "team-portfolio-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamPortfolio/TeamPortfolioWebPart.js",
+          "manifest": "./src/webparts/teamPortfolio/TeamPortfolioWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -328,6 +336,7 @@
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
-    "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js"
+    "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
+    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js"
   }
 }

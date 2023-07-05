@@ -31,14 +31,13 @@ const SelectedClientCategoryPupup = (props: any) => {
 
     const closeSelectedClientCategoryPupup = () => {
         setPopupSmartTaxanomy(false)
-        // props.callback(checkedData)
+        data.ClientCategory2={}
+        data.ClientCategory2={
+           results:[]
+        };
+         props.callback()
         checkedData=[];
-        // props.Call();
-        // NewArray = []
-        // setSelect([])
-        // item.closePopupCallBack();
-
-    }
+      }
     
     const handleChange = (items: any, e: any) => {
         setChecked(!checked);
@@ -60,20 +59,20 @@ const SelectedClientCategoryPupup = (props: any) => {
         data.ClientCategory2={}
         data.ClientCategory2={
            results:checkedData};
-    //    data.ClientCategory2.results=checkedData
-        props.callback(data)
+      props.callback(data)
         checkedData=[];
 
     }
     const customFooter = () => {
         return (
             <footer>
+                 <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
+                    Cancel
+                </button>
                 <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
                     OK
                 </button>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
-                    Cancel
-                </button>
+               
             </footer>
         )
     }
@@ -88,7 +87,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                 onDismiss={closeSelectedClientCategoryPupup}
                 isBlocking={false}
                 onRenderFooter={customFooter}
-            // className={props?.props?.Portfolio_x0020_Type == 'Service'||props?.props?.Services?.length>0 ? "serviepannelgreena" : ""}
+            className={data?.Portfolio_x0020_Type == 'Service'|| data?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
 
                 {allClientCategory?.map((item: any, index: any) => (
@@ -99,7 +98,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                                 id={item?.Id}
                                 name={item?.Title}
                                 type="checkbox"
-                                
+                                className="me-2"
                                 onChange={(e) => handleChange(item, e)}
                             />
                             {item?.Title}

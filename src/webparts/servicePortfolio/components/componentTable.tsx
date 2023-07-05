@@ -3330,9 +3330,6 @@ function ComponentTable(SelectedProp: any) {
                   )}
                 </>
               )}
-
-
-              {/* ////////// Plush Icons////// */}
               <span>
                 {((row.getCanExpand() &&
                   row.subRows?.length !== row.original.subRows?.length) ||
