@@ -856,7 +856,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
-          isBlocking={false}>
+          isBlocking={true}>
 
           <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 

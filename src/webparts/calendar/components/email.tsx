@@ -65,6 +65,7 @@ const EmailComponenet = (props: any) => {
       .then(() => {
         console.log("Email Sent!");
         alert("Email Sent!");
+        props.call();
       })
       .catch((error) => {
         alert("error");
@@ -110,7 +111,7 @@ const EmailComponenet = (props: any) => {
                             {item.title}
                         </td>
                         <td style={{border:"1px solid #000",borderTop:"0px"}}>
-                            {item.iD}
+                            {item.Designation}
                         </td>
                         
                         
