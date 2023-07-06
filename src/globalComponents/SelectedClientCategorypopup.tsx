@@ -66,10 +66,10 @@ const SelectedClientCategoryPupup = (props: any) => {
     const customFooter = () => {
         return (
             <footer>
-                 <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
+                 <button type="button" className="btn btn-default float-end mx-3" onClick={() => closeSelectedClientCategoryPupup()}>
                     Cancel
                 </button>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
+                <button type="button" className="btn btn-primary float-end " onClick={() => saveCategories()}>
                     OK
                 </button>
                
