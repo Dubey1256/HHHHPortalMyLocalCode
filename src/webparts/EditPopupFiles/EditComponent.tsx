@@ -1076,7 +1076,7 @@ function EditInstitution({ item, SelectD, Calls }: any) {
     var Items = EditData;
     if (SiteTaggingData?.length > 0) {
       SiteTaggingData.map((clientData: any) => {
-        TotalCompositionsValue = TotalCompositionsValue + clientData.ClienTimeDescription;
+        TotalCompositionsValue = TotalCompositionsValue + Number(clientData.ClienTimeDescription);
       })
     }
     if (EnableSiteCompositionValidation) {
