@@ -225,13 +225,13 @@ const CreateActivity = (props: any) => {
                     .get()
                 console.log(componentDetails)
                 if (componentDetails?.length == 0) {
-                    WorstreamLatestId = 1;
+                    WorstreamLatestId = AllItems?.SharewebTaskLevel2No;
                 } else {
                     if(AllItems?.SharewebTaskType.Title!= undefined?AllItems?.SharewebTaskType.Title!= 'Workstream':AllItems?.SharewebTaskType!="Workstream"){
                         WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
                     }
                     else{
-                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No;
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No!=undefined?componentDetails[0]?.SharewebTaskLevel2No:AllItems?.SharewebTaskLevel2No;
                     }
                    
                 }
@@ -1015,6 +1015,10 @@ const CreateActivity = (props: any) => {
                         if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
+                        if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& Task. SharewebTaskType.Title=="Workstream") {
+                            SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + 'w'+WorstreamLatestId+'-T' + LatestId;
+                        }
+                      
                         if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
                             SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
                         }

@@ -3,6 +3,7 @@ import $ from 'jquery';
 import {
     ColumnDef,
 } from "@tanstack/react-table";
+import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
@@ -125,7 +126,7 @@ const TaskDashboard = (props: any) => {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
-    //    loadTodaysLeave();
+        //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -917,13 +918,13 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "EstimatedTime",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => 
-                <InlineEditingcolumns
-                    AllListId={AllListId}
-                    callBack={inlineCallBack}
-                    columnName="EstimatedTime"
-                    item={row?.original}
-                    TaskUsers={taskUsers} />,
+                Cell: ({ row }: any) =>
+                    <InlineEditingcolumns
+                        AllListId={AllListId}
+                        callBack={inlineCallBack}
+                        columnName="EstimatedTime"
+                        item={row?.original}
+                        TaskUsers={taskUsers} />,
             },
 
             {
@@ -994,7 +995,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Task Id",
                 accessor: "Shareweb_x0020_ID",
                 style: { width: '70px' },
-                showSortIcon: false,
+                showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
 
@@ -1038,7 +1039,7 @@ const TaskDashboard = (props: any) => {
                 internalHeader: "Site",
                 accessor: 'siteType',
                 id: "SiteIcon", // 'id' is required
-                showSortIcon: false,
+                showSortIcon: true,
                 style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
@@ -1092,6 +1093,15 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "Description",
                 style: { width: '200px' },
+                Cell: ({ value }: any) => (
+                    <div
+                        className="column-description"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        {value}
+                    </div>
+                ),
             },
 
             {
@@ -1159,7 +1169,23 @@ const TaskDashboard = (props: any) => {
         ],
         []
     );
+    const handleMouseEnter = (event: any) => {
+        const target = event.target;
+        const hasOverflow = target.scrollWidth > target.clientWidth;
 
+        if (hasOverflow) {
+            target.style.whiteSpace = 'normal';
+            target.style.overflow = 'visible';
+            target.style.textOverflow = 'unset';
+        }
+    };
+
+    const handleMouseLeave = (event: any) => {
+        const target = event.target;
+        target.style.whiteSpace = 'nowrap';
+        target.style.overflow = 'hidden';
+        target.style.textOverflow = 'ellipsis';
+    };
     const {
         getTableProps: getTablePropsToday,
         getTableBodyProps: getTableBodyPropsToday,
@@ -1637,7 +1663,7 @@ const TaskDashboard = (props: any) => {
             catch (error) {
                 return Promise.reject(error);
             }
-     console.log(todayAbsentEmp)
+            console.log(todayAbsentEmp)
         } else {
             alert('Task User List Id not Available')
         }
@@ -1880,7 +1906,7 @@ const TaskDashboard = (props: any) => {
 
             });
             body =
-            `<table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
+                `<table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
             <thead>
             <tr>
             <th colspan="3" bgcolor="#eee" style="font-size:22px; padding:10px;"> Time report </th> 
@@ -2033,7 +2059,7 @@ const TaskDashboard = (props: any) => {
                             })
                             body =
                                 '<h3>'
-                                + teamMember?.Title+ ` (${teamMember?.Group})`
+                                + teamMember?.Title + ` (${teamMember?.Group})`
                                 + '</h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
@@ -2056,7 +2082,7 @@ const TaskDashboard = (props: any) => {
                             body = body.replaceAll('>,<', '><')
                         } else {
                             body = '<h3>'
-                                + teamMember?.Title+ ` (${teamMember?.Group})`
+                                + teamMember?.Title + ` (${teamMember?.Group})`
                                 + '</h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '

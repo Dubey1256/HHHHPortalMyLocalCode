@@ -9,6 +9,7 @@ import {
     getExpandedRowModel,
     ColumnDef,
     flexRender,
+    ColumnFiltersState,
     getSortedRowModel,
     SortingState,
     FilterFn,
@@ -142,10 +143,14 @@ const GlobalCommanTable = (items: any) => {
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
+    let siteUrl:any='';
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+        []
+      );
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -160,15 +165,17 @@ const GlobalCommanTable = (items: any) => {
         },
         state: {
             globalFilter,
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
-        getSubRows: (row: any) => row.subRows,
+        getSubRows: (row: any) => row?.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
@@ -185,6 +192,7 @@ const GlobalCommanTable = (items: any) => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     React.useEffect(() => {
+        
         if(items?.pageSize!=undefined){
             table.setPageSize(items?.pageSize)
         }else{
@@ -241,12 +249,18 @@ const GlobalCommanTable = (items: any) => {
     }, []);
     const openTaskAndPortfolioMulti = () => {
         table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
+            let siteUrl:any=''
+            if( item?.original?.siteUrl!=undefined){
+                siteUrl=item?.original?.siteUrl;
+            }else{
+                siteUrl=items?.AllListId?.siteUrl;
+            }
             if (item?.original?.siteType === "Master Tasks") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else if (item?.original?.siteType === "Project") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
             } else {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+                window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
             }
         })
     }
@@ -310,7 +324,7 @@ const GlobalCommanTable = (items: any) => {
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
                     <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"  onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>

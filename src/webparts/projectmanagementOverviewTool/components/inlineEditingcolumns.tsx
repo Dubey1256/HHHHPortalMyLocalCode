@@ -15,11 +15,14 @@ var ResponsibleTeamIds: any = [];
 var TeamMemberIds: any = [];
 var ApproverIds: any = [];
 var changeTime: any = 0;
+let siteUrl: any = '';
+let smartMetadataListId: any = '';
 let AllMetadata: any = [];
 let TaskCreatorApproverBackupArray: any = [];
 let TaskApproverBackupArray: any = [];
 const inlineEditingcolumns = (props: any) => {
     const [TimeInHours, setTimeInHours] = React.useState(0)
+    const [taskStatusInNumber, setTaskStatusInNumber] = React.useState(0)
     const [TimeInMinutes, setTimeInMinutes] = React.useState(0)
     const [TeamConfig, setTeamConfig] = React.useState();
     const [teamMembersPopup, setTeamMembersPopup] = React.useState(false);
@@ -33,6 +36,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([]);
+    const [editDate, setEditDate]: any = React.useState(null);
     const [dueDate, setDueDate] = useState({ editDate: props?.item?.DueDate != undefined ? props?.item?.DueDate : null, editPopup: false, selectDateName: '' })
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
@@ -64,13 +68,26 @@ const inlineEditingcolumns = (props: any) => {
         { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
     ]
     React.useEffect(() => {
+        if (props?.item?.metaDataListId != undefined) {
+            smartMetadataListId = props?.item?.metaDataListId;
+        } else {
+            smartMetadataListId = props?.AllListId?.SmartMetadataListID;
+        }
+        if (props?.item?.siteUrl != undefined) {
+            siteUrl = props?.item?.siteUrl;
+        } else {
+            siteUrl = props?.AllListId?.siteUrl;
+        }
+
         loadTaskUsers();
-        if (props?.item?.Services?.length > 0) {
+        if (props?.item?.Services?.length > 0 && props?.pageName != 'ProjectOverView') {
             setServicesTaskCheck(true)
         } else {
             setServicesTaskCheck(false)
         }
-
+        if (props?.item?.DueDate != undefined) {
+            setEditDate(props?.item?.DueDate);
+        }
         let selectedCategoryId: any = [];
         props?.item?.SharewebCategories?.map((category: any) => {
             selectedCategoryId.push(category.Id);
@@ -81,12 +98,14 @@ const inlineEditingcolumns = (props: any) => {
         setSelectedCatId(selectedCategoryId);
         setTaskPriority(props?.item?.Priority_x0020_Rank);
         setFeedback(props?.item?.Remark);
-
+        setEstimatedTimeProps()
         if (props?.item?.PercentComplete != undefined) {
             props.item.PercentComplete = parseInt(props?.item?.PercentComplete);
+            setTaskStatusInNumber(props.item.PercentComplete)
         }
         GetSmartMetadata();
-    }, [])
+
+    }, [props])
     const getPercentCompleteTitle = (percent: any) => {
         let result = '';
         StatusArray?.map((status: any) => {
@@ -121,18 +140,18 @@ const inlineEditingcolumns = (props: any) => {
             Priority = JSON.parse(localStorage.getItem("Priority"));
             let site = JSON.parse(localStorage.getItem("siteUrl"));
             let DataLoaded = JSON.parse(localStorage.getItem("inlineMetaDataLoaded"));
-            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null || site == null || site != props?.AllListId?.siteUrl) && !DataLoaded) {
+            if ((impSharewebCategories == null || SharewebtaskCategories == null || Priority == null || site == null || site != siteUrl) && !DataLoaded) {
                 impSharewebCategories = [];
                 SharewebtaskCategories = [];
                 Priority = [];
                 var TaskTypes: any = []
                 var Timing: any = []
                 var Task: any = []
-                let web = new Web(props?.AllListId?.siteUrl);
+                let web = new Web(siteUrl);
                 let MetaData = [];
                 localStorage.setItem("inlineMetaDataLoaded", JSON.stringify(true));
                 MetaData = await web.lists
-                    .getById(props?.AllListId?.SmartMetadataListID)
+                    .getById(smartMetadataListId)
                     .items.select("Id", "IsVisible", "ProfileType", "ParentID", "Title", "SmartSuggestions", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
                     .top(5000)
                     .expand("Parent")
@@ -151,7 +170,7 @@ const inlineEditingcolumns = (props: any) => {
                 localStorage.setItem("taskCategoryType", JSON.stringify(SharewebtaskCategories));
                 localStorage.setItem("Priority", JSON.stringify(getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank')));
                 localStorage.setItem("impTaskCategoryType", JSON.stringify(impSharewebCategories));
-                localStorage.setItem("siteUrl", JSON.stringify(props?.AllListId?.siteUrl));
+                localStorage.setItem("siteUrl", JSON.stringify(siteUrl));
                 Priority = getSmartMetadataItemsByTaxType(AllMetadata, 'Priority Rank');
                 setTaskCategoryType(SharewebtaskCategories);
                 setImpTaskCategoryType(impSharewebCategories);
@@ -180,7 +199,12 @@ const inlineEditingcolumns = (props: any) => {
         return Items;
     }
     const loadTaskUsers = async () => {
-        taskUsers = props?.TaskUsers;
+        if (props?.TaskUsers?.length > 0) {
+            taskUsers = props?.TaskUsers;
+        } else {
+            taskUsers = [];
+        }
+
         setAllTaskUser(taskUsers)
     }
     const openTaskStatusUpdatePopup = async () => {
@@ -233,8 +257,8 @@ const inlineEditingcolumns = (props: any) => {
                 })
             }
         }
-        if (props?.item.PercentComplete != undefined) {
-            statusValue = props?.item.PercentComplete;
+        if (taskStatusInNumber != undefined) {
+            statusValue = taskStatusInNumber;
             props.item.PercentComplete = statusValue;
             if (statusValue < 70 && statusValue > 20) {
                 setTaskStatus("In Progress");
@@ -329,8 +353,8 @@ const inlineEditingcolumns = (props: any) => {
         })
 
         setPercentCompleteCheck(false);
-        let newDueDate: any = new Date(dueDate.editDate);
-        if (dueDate.editDate == null || dueDate.editDate == '' || dueDate.editDate == undefined) {
+        let newDueDate: any = new Date(editDate);
+        if (editDate == null || editDate == '' || editDate == undefined) {
             newDueDate = null;
         } else {
             if (!isValidDate(newDueDate)) {
@@ -339,7 +363,7 @@ const inlineEditingcolumns = (props: any) => {
         }
         let web = new Web(props?.item?.siteUrl);
         await web.lists.getById(props?.item?.listId).items.getById(props?.item?.Id).update({
-            PercentComplete: UpdateTaskInfo.PercentCompleteStatus ? (Number(UpdateTaskInfo.PercentCompleteStatus) / 100) : (props?.item?.PercentComplete ? (props?.item?.PercentComplete / 100) : null),
+            PercentComplete: taskStatusInNumber/100,
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds.length > 0) ? TeamMemberIds : [] },
@@ -372,6 +396,7 @@ const inlineEditingcolumns = (props: any) => {
                             task.ApproverIds.push(approverUser?.Id);
                         })
                         task.AssignedToIds = [];
+                        task.AssignedTo = [];
                         task?.AssignedToId?.map((assignedUser: any) => {
                             task.AssignedToIds.push(assignedUser)
                             AllTaskUser?.map((user: any) => {
@@ -405,6 +430,7 @@ const inlineEditingcolumns = (props: any) => {
                         });
                         props.item = task;
                         clearEstimations();
+                        closeTaskDueDate()
                         props?.callBack(task);
                     });
 
@@ -413,8 +439,7 @@ const inlineEditingcolumns = (props: any) => {
                 setTeamMembersPopup(false);
                 clearEstimations();
                 setRemark(false)
-
-                setDueDate({ ...dueDate, editPopup: false });
+                closeTaskDueDate();
             })
 
     }
@@ -434,39 +459,39 @@ const inlineEditingcolumns = (props: any) => {
         setTeamConfig(dt);
 
         if (dt?.AssignedTo?.length > 0) {
-            let tempArray: any = [];
+            let tempAssigned: any = [];
             dt.AssignedTo?.map((arrayData: any) => {
                 if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser);
+                    tempAssigned.push(arrayData.AssingedToUser);
                 } else {
-                    tempArray.push(arrayData);
+                    tempAssigned.push(arrayData);
                 }
             });
-            setTaskAssignedTo(tempArray);
+            setTaskAssignedTo(tempAssigned);
 
         }
         if (dt?.TeamMemberUsers?.length > 0) {
-            let tempArray: any = [];
+            let tempTeam: any = [];
             dt.TeamMemberUsers?.map((arrayData: any) => {
                 if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser);
+                    tempTeam.push(arrayData.AssingedToUser);
                 } else {
-                    tempArray.push(arrayData);
+                    tempTeam.push(arrayData);
                 }
             });
-            setTaskTeamMembers(tempArray);
+            setTaskTeamMembers(tempTeam);
 
         }
         if (dt?.ResponsibleTeam?.length > 0) {
-            let tempArray: any = [];
+            let tempResponsible: any = [];
             dt.ResponsibleTeam?.map((arrayData: any) => {
                 if (arrayData.AssingedToUser != null) {
-                    tempArray.push(arrayData.AssingedToUser);
+                    tempResponsible.push(arrayData.AssingedToUser);
                 } else {
-                    tempArray.push(arrayData);
+                    tempResponsible.push(arrayData);
                 }
             });
-            setTaskResponsibleTeam(tempArray);
+            setTaskResponsibleTeam(tempResponsible);
 
         }
     };
@@ -516,7 +541,7 @@ const inlineEditingcolumns = (props: any) => {
         return result;
     }
     const PercentCompleted = (StatusData: any) => {
-
+        setTaskStatusInNumber(StatusData?.value)
         setUpdateTaskInfo({ ...UpdateTaskInfo, PercentCompleteStatus: StatusData.value })
         setPercentCompleteStatus(StatusData.status);
         setTaskStatus(StatusData.taskStatusComment);
@@ -616,6 +641,7 @@ const inlineEditingcolumns = (props: any) => {
                 if (StatusData.value == item.value) {
                     setPercentCompleteStatus(item.status);
                     setTaskStatus(item.taskStatusComment);
+                  
                 }
             })
         }
@@ -633,7 +659,8 @@ const inlineEditingcolumns = (props: any) => {
 
     }
     const closeTaskDueDate = () => {
-        setDueDate({ ...dueDate, editPopup: false, editDate: props?.item?.DisplayDueDate })
+        setEditDate(null);
+        setDueDate({ editPopup: false, editDate: null, selectDateName: '' })
     }
 
 
@@ -642,26 +669,32 @@ const inlineEditingcolumns = (props: any) => {
 
         if (item === 'Today') {
             setDueDate({ ...dueDate, editDate: dates, selectDateName: item });
+            setEditDate(dates)
         }
         if (item === 'Tommorow') {
-
+            setEditDate(dates.setDate(dates.getDate() + 1))
             setDueDate({ ...dueDate, editDate: dates.setDate(dates.getDate() + 1), selectDateName: item });
         }
         if (item === 'This Week') {
+            setEditDate( new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)))
             setDueDate({ ...dueDate, editDate: new Date(dates.setDate(dates.getDate() - dates.getDay() + 7)), selectDateName: item });
         }
         if (item === 'Next Week') {
+           
             let nextweek = new Date(dates.setDate(dates.getDate() - (dates.getDay() - 1) + 6));
+            setEditDate(nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6))
             setDueDate({ ...dueDate, editDate: nextweek.setDate(nextweek.getDate() - (nextweek.getDay() - 1) + 6), selectDateName: item });
         }
         if (item === 'This Month') {
+            
             let lastDay = new Date(dates.getFullYear(), dates.getMonth() + 1, 0);;
+            setEditDate(lastDay)
             setDueDate({ ...dueDate, editDate: lastDay, selectDateName: item });
         }
     }
     const changeTimes = (val: any, time: any, type: any) => {
         if (val === '15') {
-            changeTime = Number(changeTime)
+            changeTime = Number(TimeInMinutes)
             changeTime = changeTime + 15
             // changeTime = changeTime > 0
             if (changeTime != undefined) {
@@ -671,7 +704,7 @@ const inlineEditingcolumns = (props: any) => {
             setTimeInMinutes(changeTime)
         }
         if (val === '60') {
-            changeTime = Number(changeTime)
+            changeTime = Number(TimeInMinutes)
             changeTime = changeTime + 60
             // changeTime = changeTime > 0
             if (changeTime != undefined) {
@@ -684,7 +717,7 @@ const inlineEditingcolumns = (props: any) => {
     const changeTimesDec = (items: any) => {
 
         if (items === '15') {
-            changeTime = Number(changeTime)
+            changeTime = Number(TimeInMinutes)
             changeTime = changeTime - 15
             setTimeInMinutes(changeTime)
             if (changeTime != undefined) {
@@ -695,7 +728,7 @@ const inlineEditingcolumns = (props: any) => {
 
         }
         if (items === '60') {
-            changeTime = Number(changeTime)
+            changeTime = Number(TimeInMinutes)
             changeTime = changeTime - 60
             if (changeTime != undefined) {
                 var TimeInHour: any = changeTime / 60;
@@ -733,7 +766,18 @@ const inlineEditingcolumns = (props: any) => {
         }
     }
 
-
+    const onRenderCustomHeader = (columnName: any) => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <img className="imgWid29 pe-1 mb-1 " src={props?.item?.SiteIcon} />
+                    <span className="siteColor">
+                        {`Update ${columnName} - ${props?.item?.Shareweb_x0020_ID} ${props?.item?.Title}`}
+                    </span>
+                </div>
+            </div>
+        );
+    };
 
 
 
@@ -871,19 +915,19 @@ const inlineEditingcolumns = (props: any) => {
             {/* Panel to edit due-date */}
 
             <Panel
-                headerText={`Update Due Date`}
+                onRenderHeader={() => onRenderCustomHeader('Due Date')}
                 isOpen={dueDate.editPopup}
+                customWidth="500px"
                 onDismiss={closeTaskDueDate}
                 isBlocking={dueDate.editPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
 
                     <div className="modal-body mt-3 mb-3 d-flex flex-column">
-                        <label className="form-check-label mt-5 mb-2">Edit Due Date</label>
                         <input className="form-check-input p-3 w-100"
                             type='date'
-                            value={dueDate.editDate != null ? Moment(new Date(dueDate.editDate)).format('YYYY-MM-DD') : ''}
-                            onChange={(e: any) => setDueDate({ ...dueDate, editDate: e.target.value })} />
+                            value={editDate != null ? Moment(new Date(editDate)).format('YYYY-MM-DD') : ''}
+                            onChange={(e: any) => setEditDate(e.target.value)} />
 
                         <div className='d-flex flex-column mt-2 mb-2'>
                             <span className='m-1'>
@@ -911,8 +955,9 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
             </Panel>
             <Panel
-                headerText={`Update Estimated Time`}
+                onRenderHeader={() => onRenderCustomHeader('Estimated Time')}
                 isOpen={UpdateEstimatedTime}
+                customWidth="500px"
                 onDismiss={() => clearEstimations()}
                 isBlocking={UpdateEstimatedTime}
             >
@@ -988,8 +1033,9 @@ const inlineEditingcolumns = (props: any) => {
 
             {/* Pannel To select Status */}
             <Panel
-                headerText={`Update Status`}
+                onRenderHeader={() => onRenderCustomHeader('Status')}
                 isOpen={TaskStatusPopup}
+                customWidth="500px"
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={TaskStatusPopup}
             >
@@ -1003,9 +1049,9 @@ const inlineEditingcolumns = (props: any) => {
                                             <td>
                                                 <div className="form-check l-radio">
                                                     <input className="form-check-input"
-                                                        type="radio" checked={(PercentCompleteCheck ? props?.item?.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
+                                                        type="radio" checked={taskStatusInNumber == item?.value}
                                                         onClick={() => PercentCompleted(item)} />
-                                                    <label className="form-check-label mx-2">{item.status}</label>
+                                                    <label className="form-check-label mx-2">{item?.status}</label>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1023,8 +1069,9 @@ const inlineEditingcolumns = (props: any) => {
             </Panel>
             {/* Pannel To select Priority */}
             <Panel
-                headerText={`Update Task Priority`}
+                onRenderHeader={() => onRenderCustomHeader('Priority')}
                 isOpen={TaskPriorityPopup}
+                customWidth="500px"
                 onDismiss={() => setTaskPriorityPopup(false)}
                 isBlocking={TaskPriorityPopup}
             >
@@ -1074,7 +1121,7 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
             </Panel>
             <Panel
-                headerText={`Update Team Members`}
+                onRenderHeader={() => onRenderCustomHeader('Team Members')}
                 isOpen={teamMembersPopup}
                 onDismiss={() => setTeamMembersPopup(false)}
                 isBlocking={teamMembersPopup}
@@ -1091,8 +1138,9 @@ const inlineEditingcolumns = (props: any) => {
                 </div>
             </Panel>
             <Panel
-                headerText={`Update Remarks`}
+                onRenderHeader={() => onRenderCustomHeader('Remarks')}
                 isOpen={remark}
+                customWidth="500px"
                 onDismiss={() => setRemark(false)}
                 isBlocking={remark}
             >
