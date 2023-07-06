@@ -29,9 +29,8 @@ import Tooltip from "../../../globalComponents/Tooltip";
 // import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
-// import PortfolioTagging from "./PortfolioTagging"; // replace 
+// import PortfolioTagging from "./PortfolioTagging"; // replace
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
-
 
 // % complete save on the project popup
 
@@ -41,15 +40,21 @@ interface EditableFieldProps {
   fieldName: string;
   value: any;
   onChange: (value: string) => void;
-  type:string;
-  web:string;
+  type: string;
+  web: string;
 }
 
-
-export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, fieldName, value, onChange,type,web }) => {
+export const EditableField: React.FC<EditableFieldProps> = ({
+  listName,
+  itemId,
+  fieldName,
+  value,
+  onChange,
+  type,
+  web,
+}) => {
   const [editing, setEditing] = React.useState(false);
   const [fieldValue, setFieldValue] = React.useState(value);
-
 
   const handleCancel = () => {
     setEditing(false);
@@ -60,71 +65,90 @@ export const EditableField: React.FC<EditableFieldProps> = ({ listName, itemId, 
     setEditing(true);
   };
 
-
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFieldValue(event.target.value);
   };
-if(fieldName =="PercentComplete"){
+  if (fieldName == "PercentComplete") {
+    const handleSave = async () => {
+      try {
+        setFieldValue(parseInt(fieldValue));
+        // if(type == "Number"){
+        //   setFieldValue(fieldValue/100);
+        // }
+        let valpercent = parseInt(fieldValue);
+        let webs = new Web(web);
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: valpercent / 100,
+          });
 
-  const handleSave = async () => {
-    try {
-      setFieldValue(parseInt(fieldValue));
-      // if(type == "Number"){
-      //   setFieldValue(fieldValue/100);
-      // }
-     let valpercent=parseInt(fieldValue);
-     let webs = new Web(web);
-      await webs.lists.getByTitle(listName).items.getById(itemId).update({
-        [fieldName]: valpercent/100,
-      });
-      
-      setEditing(false);
-      onChange(fieldValue);
-    } catch (error) {
-      console.log(error);
+        setEditing(false);
+        onChange(fieldValue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (editing) {
+      return (
+        <div className="editcolumn ">
+          <span>
+            {" "}
+            <input
+              type={type}
+              value={fieldValue}
+              onChange={handleInputChange}
+            />
+          </span>
+          <span>
+            <a onClick={handleSave}>
+              <span
+                title="save"
+                className="svg__iconbox svg__icon--Save "
+              ></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span
+                title="cancel"
+                className="svg__iconbox svg__icon--cross "
+              ></span>
+            </a>
+          </span>
+        </div>
+      );
     }
-  };
 
- 
-
-  if (editing) {
     return (
-      <div className="editcolumn ">
-        <span> <input type={type} value={fieldValue} onChange={handleInputChange} /></span>
-      <span><a onClick={handleSave}><span title="save" className="svg__iconbox svg__icon--Save "></span></a>
-        <a onClick={handleCancel}><span title="cancel" className="svg__iconbox svg__icon--cross "></span></a></span>
-        
+      <div className="input-group position-relative">
+        <span className="input-group-text ">
+          <input
+            type={type}
+            disabled={true}
+            value={fieldValue}
+            onChange={handleInputChange}
+            className="border-0 border-end"
+          />
+          <svg
+            className="ms-1"
+            onClick={handleEdit}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 48 48"
+            fill="none"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
+              fill="#333333"
+            />
+          </svg>
+        </span>
       </div>
     );
   }
-
-  return (
-    <div className="input-group position-relative">
-       <span className="input-group-text ">
-       <input type={type} disabled={true} value={fieldValue} onChange={handleInputChange} className="border-0 border-end" />
-                            <svg className="ms-1"
-                             onClick={handleEdit}
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 48 48"
-                              fill="none"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
-                                fill="#333333"
-                              />
-                            </svg>
-                          </span>
-     
-     
-    </div>
-  );
-}
-
 };
-
 
 // % End of the project popup
 
@@ -178,17 +202,15 @@ function EditProjectPopup(item: any) {
     EditorState.createEmpty()
   );
 
-
   const [activePicker, setActivePicker] = React.useState(null);
 
   const [datepicker, setdatepicker] = React.useState(false);
-// Save % complete 
-const [Items,setItem]=React.useState("")
-  const handleFieldChange = (fieldName:any) => (e:any) => {
+  // Save % complete
+  const [Items, setItem] = React.useState("");
+  const handleFieldChange = (fieldName: any) => (e: any) => {
     const updatedItem = { ...EditData[0], [fieldName]: e.target.value };
     setItem(updatedItem);
   };
-
 
   // Date picker closer
   const handlePickerFocus = (pickerName: any) => {
@@ -279,7 +301,7 @@ const [Items,setItem]=React.useState("")
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
-          if (type.Id == val.Id ) {
+          if (type.Id == val.Id) {
             BackupCat.push(type.Id);
             setcheckedCat(true);
           }
@@ -292,33 +314,33 @@ const [Items,setItem]=React.useState("")
     // setComponent(CompoenetItem => ([...CompoenetItem]));
   }, []);
 
-
-  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-    if (functionType == 'close') {
-      setIsComponent(false);
-      setIsPortfolio(false);
-    } else {
-      if (Type === "Service") {
-        if (DataItem.length > 0) {
-          DataItem.map((selectedData: any) => {
-            TaggedServices.push(selectedData);
-          })
+  const ComponentServicePopupCallBack = React.useCallback(
+    (DataItem: any, Type: any, functionType: any) => {
+      if (functionType == "close") {
+        setIsComponent(false);
+        setIsPortfolio(false);
+      } else {
+        if (Type === "Service") {
+          if (DataItem.length > 0) {
+            DataItem.map((selectedData: any) => {
+              TaggedServices.push(selectedData);
+            });
+          }
+          setLinkedComponentData(TaggedServices);
         }
-        setLinkedComponentData(TaggedServices)
-      }
-      if (Type === "Component") {
-        if (DataItem?.length > 0) {
-          DataItem.map((selectedData: any) => {
-            TaggedComponents.push(selectedData);
-          })
+        if (Type === "Component") {
+          if (DataItem?.length > 0) {
+            DataItem.map((selectedData: any) => {
+              TaggedComponents.push(selectedData);
+            });
+          }
+          setSmartComponentData(TaggedComponents);
         }
-        setSmartComponentData(TaggedComponents);
+        setIsPortfolio(false);
       }
-      setIsPortfolio(false);
-    }
-  }, [])
-
-
+    },
+    []
+  );
 
   var isItemExists = function (arr: any, Id: any) {
     var isExists = false;
@@ -333,7 +355,10 @@ const [Items,setItem]=React.useState("")
   const GetTaskUsers = async () => {
     let web = new Web(AllListId?.siteUrl);
     let taskUsers = [];
-    taskUsers = await web.lists.getById(AllListId?.TaskUsertListID).items.top(4999).get();
+    taskUsers = await web.lists
+      .getById(AllListId?.TaskUsertListID)
+      .items.top(4999)
+      .get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -582,6 +607,7 @@ const [Items,setItem]=React.useState("")
         }
       }
       getpriority(item);
+      item.showdes = true;
       item.assigned = getMultiUserValues(item);
       if (item.ItemRank != undefined)
         item.ItemRankTitle = TaskItemRank[0].filter(
@@ -686,16 +712,8 @@ const [Items,setItem]=React.useState("")
       item.siteUrl = AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
-          ? GetIconImageUrl(
-            item.siteType,
-            AllListId?.siteUrl,
-            undefined
-          )
-          : GetIconImageUrl(
-            item.siteType,
-            AllListId?.siteUrl,
-            undefined
-          );
+          ? GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined)
+          : GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined);
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -703,10 +721,8 @@ const [Items,setItem]=React.useState("")
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
     backcatss = BackupCat.filter((val: any, id: any, array: any) => {
-
       return array.indexOf(val) == id;
-
-    })
+    });
     //CheckCategory.forEach((val:any)=>{})
     setEditData(Tasks[0]);
     setModalIsOpenToTrue(true);
@@ -734,7 +750,7 @@ const [Items,setItem]=React.useState("")
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
       )
@@ -748,16 +764,19 @@ const [Items,setItem]=React.useState("")
         if (val.TaxType == "Sites") {
           site.push(val);
         }
-        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title == "Email Notification" || val.Title == "Approval" || val.Title == "Immediate")) {
+        if (
+          val.TaxType == "Categories" &&
+          (val.Title == "Phone" ||
+            val.Title == "Email Notification" ||
+            val.Title == "Approval" ||
+            val.Title == "Immediate")
+        ) {
           categoryhh.push(val);
         }
-
       });
       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
-
         return array.indexOf(val) == id;
-
-      })
+      });
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -822,7 +841,7 @@ const [Items,setItem]=React.useState("")
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.MasterTaskListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID",
         "Title",
@@ -1070,21 +1089,32 @@ const [Items,setItem]=React.useState("")
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
     if (item.Priority_x0020_Rank <= 10) {
-
-      if (item.Priority_x0020_Rank == 8 || item.Priority_x0020_Rank == 9 || item.Priority_x0020_Rank == 10) {
+      if (
+        item.Priority_x0020_Rank == 8 ||
+        item.Priority_x0020_Rank == 9 ||
+        item.Priority_x0020_Rank == 10
+      ) {
         item.Priority = "(1) High";
       }
-      if (item.Priority_x0020_Rank == 4 || item.Priority_x0020_Rank == 5 || item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
+      if (
+        item.Priority_x0020_Rank == 4 ||
+        item.Priority_x0020_Rank == 5 ||
+        item.Priority_x0020_Rank == 6 ||
+        item.Priority_x0020_Rank == 7
+      ) {
         item.Priority = "(2) Normal";
       }
-      if (item.Priority_x0020_Rank == 1 || item.Priority_x0020_Rank == 2 || item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
+      if (
+        item.Priority_x0020_Rank == 1 ||
+        item.Priority_x0020_Rank == 2 ||
+        item.Priority_x0020_Rank == 3 ||
+        item.Priority_x0020_Rank == 0
+      ) {
         item.Priority = "(3) Low";
       }
-
     } else {
-      item.Priority_x0020_Rank = ""
+      item.Priority_x0020_Rank = "";
       alert("Please Enter priority between 0 to 10");
-
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -1102,8 +1132,6 @@ const [Items,setItem]=React.useState("")
     setComponent((EditData) => [...EditData]);
   };
 
-
-
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -1119,26 +1147,26 @@ const [Items,setItem]=React.useState("")
         }
       });
       if (itemm.isChecked == true || itemm.isselected == true) {
-        array2.push(itemm)
+        array2.push(itemm);
       }
-    })
-  
-    if(array2 != undefined && array2.length>0 ){
-      array2.map((item:any)=>{
-         if(item.isselected == true || item.isChecked == true){
-          NewArray.push(item)
-         }
-      })
-    //  NewArray = array2
+    });
+
+    if (array2 != undefined && array2.length > 0) {
+      array2.map((item: any) => {
+        if (item.isselected == true || item.isChecked == true) {
+          NewArray.push(item);
+        }
+      });
+      //  NewArray = array2
     }
 
     if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory = []
+      CheckCategory = [];
       NewArray.map((NeitemA: any) => {
         CategoriesData.push(NeitemA);
       });
     } else {
-      CheckCategory = []
+      CheckCategory = [];
     }
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
@@ -1254,9 +1282,15 @@ const [Items,setItem]=React.useState("")
               : [],
         },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-        DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-        CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+        StartDate: EditData.StartDate
+          ? moment(EditData.StartDate).format("MM-DD-YYYY")
+          : null,
+        DueDate: EditData.DueDate
+          ? moment(EditData.DueDate).format("MM-DD-YYYY")
+          : null,
+        CompletedDate: EditData.CompletedDate
+          ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
+          : null,
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
         Categories: categoriesItem ? categoriesItem : null,
         SharewebCategoriesId: { results: CategoryID },
@@ -1284,7 +1318,7 @@ const [Items,setItem]=React.useState("")
         },
         TechnicalExplanations:
           PostTechnicalExplanations != undefined &&
-            PostTechnicalExplanations != ""
+          PostTechnicalExplanations != ""
             ? PostTechnicalExplanations
             : EditData.TechnicalExplanations,
         Deliverables:
@@ -1293,7 +1327,7 @@ const [Items,setItem]=React.useState("")
             : EditData.Deliverables,
         Short_x0020_Description_x0020_On:
           PostShort_x0020_Description_x0020_On != undefined &&
-            PostShort_x0020_Description_x0020_On != ""
+          PostShort_x0020_Description_x0020_On != ""
             ? PostShort_x0020_Description_x0020_On
             : EditData.Short_x0020_Description_x0020_On,
         Body:
@@ -1444,9 +1478,7 @@ const [Items,setItem]=React.useState("")
       ? TeamConfigInfo.Portfolio_x0020_Type
       : "",
     Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
-    siteUrl: TeamConfigInfo
-      ? TeamConfigInfo.siteUrl
-      : AllListId?.siteUrl,
+    siteUrl: TeamConfigInfo ? TeamConfigInfo.siteUrl : AllListId?.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
   };
@@ -1466,23 +1498,40 @@ const [Items,setItem]=React.useState("")
     }
     setComponent((EditData) => [...EditData]);
   };
+
   const onRenderCustomHeader = () => {
     return (
       <>
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            paddingLeft: "25px"
-          }}
-        >
-          {`Project > ${EditData.Title}`}
+        <div className="align-items-center d-flex full-width justify-content-between">
+          <div className="ps-4">
+            {" "}
+            <ul className=" m-0 p-0 spfxbreadcrumb">
+              <li>
+                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+
+                <a
+                  target="_blank"
+                  data-interception="off"
+                  href={`${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx`}
+                >
+                  Project
+                </a>
+              </li>
+              <li>
+                <a>{EditData.Title}</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="feedbkicon">
+            {" "}
+            <Tooltip />{" "}
+          </div>
         </div>
-        <Tooltip />
       </>
     );
   };
+
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
@@ -1500,20 +1549,19 @@ const [Items,setItem]=React.useState("")
     }
   };
   var NewArray: any = [];
-  var array2:any=[];
-  const checkCat = (type: any,e:any) => {
-
+  var array2: any = [];
+  const checkCat = (type: any, e: any) => {
     const { checked } = e.target;
-    if(checked == true){
-      type.isselected = true
-      array2.push(type)
-    }else{
-      type.isselected = false
-      CheckCategory?.forEach((itemm:any,index:any)=>{
-            if(itemm.Id == type.Id){
-              itemm.isChecked = false
-            }
-          })
+    if (checked == true) {
+      type.isselected = true;
+      array2.push(type);
+    } else {
+      type.isselected = false;
+      CheckCategory?.forEach((itemm: any, index: any) => {
+        if (itemm.Id == type.Id) {
+          itemm.isChecked = false;
+        }
+      });
       // array2.push(type)
     }
     // else{
@@ -1528,10 +1576,7 @@ const [Items,setItem]=React.useState("")
     //     }
     //   })
     // }
-
-
   };
-
 
   // const unTagService = (array: any, index: any) => {
   //   array.splice(index, 1);
@@ -1546,19 +1591,19 @@ const [Items,setItem]=React.useState("")
 
   const RemoveSelectedServiceComponent = (DataId: any, ComponentType: any) => {
     let BackupArray: any = [];
-    let TempArray: any = []
+    let TempArray: any = [];
     if (ComponentType == "Service") {
-      BackupArray = TaggedServices
+      BackupArray = TaggedServices;
     }
     if (ComponentType == "Component") {
-      BackupArray = TaggedComponents
+      BackupArray = TaggedComponents;
     }
     if (BackupArray != undefined && BackupArray.length > 0) {
       BackupArray.map((componentData: any) => {
         if (DataId != componentData.Id) {
           TempArray.push(componentData);
         }
-      })
+      });
     }
     if (TempArray != undefined && TempArray.length >= 0) {
       if (ComponentType == "Service") {
@@ -1570,8 +1615,7 @@ const [Items,setItem]=React.useState("")
         setSmartComponentData(TempArray);
       }
     }
-
-  }
+  };
   return (
     <>
       {console.log("Done")}
@@ -1615,7 +1659,6 @@ const [Items,setItem]=React.useState("")
                     CONCEPT
                   </button>
                 </li>
-
               </ul>
               <div
                 className="tab-content border border-top-0 clearfix "
@@ -1708,7 +1751,10 @@ const [Items,setItem]=React.useState("")
                                     <label className="form-label full-width">
                                       Component Portfolio
                                     </label>
-                                    <input type="text" className="form-control" />
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                    />
                                     <span className="input-group-text">
                                       <svg
                                         onClick={(e) =>
@@ -1732,32 +1778,41 @@ const [Items,setItem]=React.useState("")
                                     <div>
                                       {smartComponentData
                                         ? smartComponentData?.map(
-                                          (com: any, index: any) => {
-                                            return (
-                                              <>
-                                                <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
-                                                  <a
-                                                    style={{
-                                                      color: "#fff !important",
-                                                    }}
-                                                    target="_blank"
-                                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                  >
-                                                    {com.Title}
-                                                  </a>
-                                                  <a>
-                                                    <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Component")} className="bg-light svg__icon--cross svg__iconbox"></span>
-                                                    {/* <img
+                                            (com: any, index: any) => {
+                                              return (
+                                                <>
+                                                  <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
+                                                    <a
+                                                      style={{
+                                                        color:
+                                                          "#fff !important",
+                                                      }}
+                                                      target="_blank"
+                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                    >
+                                                      {com.Title}
+                                                    </a>
+                                                    <a>
+                                                      <span
+                                                        onClick={() =>
+                                                          RemoveSelectedServiceComponent(
+                                                            com.Id,
+                                                            "Component"
+                                                          )
+                                                        }
+                                                        className="bg-light svg__icon--cross svg__iconbox"
+                                                      ></span>
+                                                      {/* <img
                                                       className="mx-2"
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                       
                                                     /> */}
-                                                  </a>
-                                                </div>
-                                              </>
-                                            );
-                                          }
-                                        )
+                                                    </a>
+                                                  </div>
+                                                </>
+                                              );
+                                            }
+                                          )
                                         : null}
                                     </div>
                                   </div>
@@ -1767,7 +1822,10 @@ const [Items,setItem]=React.useState("")
                                     <label className="form-label full-width">
                                       Service Portfolio
                                     </label>
-                                    <input type="text" className="form-control" />
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                    />
                                     <span className="input-group-text">
                                       <svg
                                         onClick={(e) =>
@@ -1795,7 +1853,6 @@ const [Items,setItem]=React.useState("")
                                             return (
                                               <>
                                                 <div className="Component-container-edit-task block d-flex justify-content-between my-1">
-
                                                   <a
                                                     className="hreflink "
                                                     target="_blank"
@@ -1806,17 +1863,19 @@ const [Items,setItem]=React.useState("")
                                                   </a>
                                                   <a>
                                                     <span
-                                                      onClick={() => RemoveSelectedServiceComponent(com.Id, "Service")}
+                                                      onClick={() =>
+                                                        RemoveSelectedServiceComponent(
+                                                          com.Id,
+                                                          "Service"
+                                                        )
+                                                      }
                                                       className="bg-light svg__icon--cross svg__iconbox"
-                                                    >
-
-                                                    </span>
+                                                    ></span>
                                                   </a>
                                                   {/* <img
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                      
                                                     /> */}
-
                                                 </div>
                                               </>
                                             );
@@ -1836,13 +1895,24 @@ const [Items,setItem]=React.useState("")
                               <label className="form-label  full-width">
                                 Start Date
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.StartDate ? moment(EditData.StartDate).format("YYYY-MM-DD") : ""}
-                                onChange={(e) => setEditData({
-                                  ...EditData, StartDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.StartDate
+                                    ? moment(EditData.StartDate).format(
+                                        "YYYY-MM-DD"
+                                      )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    StartDate: e.target.value,
+                                  })
+                                }
                               />
-
                             </div>
                           </div>
                           <div className="col-sm-4 ps-0">
@@ -1850,11 +1920,23 @@ const [Items,setItem]=React.useState("")
                               <label className="form-label  full-width">
                                 Due Date
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
-                                onChange={(e) => setEditData({
-                                  ...EditData, DueDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.DueDate
+                                    ? moment(EditData.DueDate).format(
+                                        "YYYY-MM-DD"
+                                      )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    DueDate: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -1864,11 +1946,23 @@ const [Items,setItem]=React.useState("")
                                 {" "}
                                 Completion Date{" "}
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
-                                onChange={(e) => setEditData({
-                                  ...EditData, CompletedDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.CompletedDate
+                                    ? moment(EditData.CompletedDate).format(
+                                        "YYYY-MM-DD"
+                                      )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    CompletedDate: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -2025,7 +2119,9 @@ const [Items,setItem]=React.useState("")
                                           className="form-check-input"
                                           defaultChecked={type.isChecked}
                                           type="checkbox"
-                                          onClick={(e:any) => checkCat(type,e)}
+                                          onClick={(e: any) =>
+                                            checkCat(type, e)
+                                          }
                                         />
                                         <label className="form-check-label">
                                           {type.Title}
@@ -2070,7 +2166,7 @@ const [Items,setItem]=React.useState("")
                                           <>
                                             {type.Title != "Phone" &&
                                               type.Title !=
-                                              "Email Notification" &&
+                                                "Email Notification" &&
                                               type.Title != "Approval" &&
                                               type.Title != "Immediate" && (
                                                 <div className="block d-flex justify-content-between my-1 p-1">
@@ -2181,7 +2277,7 @@ const [Items,setItem]=React.useState("")
                         </div>
                       </div>
                       <div className="col-sm-3 ">
-                        <div className="col" >
+                        <div className="col">
                           <div className="input-group mb-2">
                             <label className="form-label  full-width">
                               Priority
@@ -2288,8 +2384,17 @@ const [Items,setItem]=React.useState("")
                                 <label className="form-label full-width  mx-2">
                                   % Complete
                                 </label>
-                                <EditableField listName="Master Tasks" itemId={EditData?.Id} fieldName="PercentComplete" value={EditData?.PercentComplete} onChange={handleFieldChange("PercentComplete")} type="Number" web={AllListId?.siteUrl}/>
-                           
+                                <EditableField
+                                  listName="Master Tasks"
+                                  itemId={EditData?.Id}
+                                  fieldName="PercentComplete"
+                                  value={EditData?.PercentComplete}
+                                  onChange={handleFieldChange(
+                                    "PercentComplete"
+                                  )}
+                                  type="Number"
+                                  web={AllListId?.siteUrl}
+                                />
                               </div>
                             </div>
                           </div>
@@ -2358,8 +2463,7 @@ const [Items,setItem]=React.useState("")
                                     <input
                                       type="checkbox"
                                       defaultChecked={
-                                        EditData.descriptionVerified ===
-                                        true
+                                        EditData.descriptionVerified === true
                                       }
                                     ></input>
                                     <span className="ps-1">Verified</span>
@@ -2371,16 +2475,13 @@ const [Items,setItem]=React.useState("")
                                         ? EditData.Body
                                         : ""
                                     }
-                                    HtmlEditorStateChange={
-                                      HtmlEditorCallBack
-                                    }
+                                    HtmlEditorStateChange={HtmlEditorCallBack}
                                   ></HtmlEditorCard>
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -2395,7 +2496,8 @@ const [Items,setItem]=React.useState("")
                   <div className="row">
                     <div className="col-sm-7">
                       <div className="row">
-                        <TeamConfigurationCard AllListId={AllListId}
+                        <TeamConfigurationCard
+                          AllListId={AllListId}
                           ItemInfo={item?.props}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
@@ -2403,9 +2505,6 @@ const [Items,setItem]=React.useState("")
                       <div className="row">
                         <section className="accordionbox">
                           <div className="accordion p-0  overflow-hidden">
-
-
-
                             <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -2447,8 +2546,8 @@ const [Items,setItem]=React.useState("")
                                             EditData.BackgroundVerified === true
                                           }
                                           onChange={(e) =>
-                                          (EditData.BackgroundVerified =
-                                            e.target.value)
+                                            (EditData.BackgroundVerified =
+                                              e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2507,8 +2606,8 @@ const [Items,setItem]=React.useState("")
                                             EditData.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                          (EditData.BackgroundVerified =
-                                            e.target.value)
+                                            (EditData.BackgroundVerified =
+                                              e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2525,8 +2624,6 @@ const [Items,setItem]=React.useState("")
                                 </div>
                               </div>
                             </div>
-
-
 
                             <div className="card shadow-none mb-2">
                               <div
@@ -2594,8 +2691,6 @@ const [Items,setItem]=React.useState("")
                     <div className="col-sm-5"></div>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
@@ -2651,7 +2746,8 @@ const [Items,setItem]=React.useState("")
                     <span>
                       {" "}
                       {EditData.ID ? (
-                        <VersionHistoryPopup  siteUrls={AllListId?.siteUrl}
+                        <VersionHistoryPopup
+                          siteUrls={AllListId?.siteUrl}
                           taskId={EditData.ID}
                           listId={AllListId?.MasterTaskListID}
                         />
@@ -2680,8 +2776,9 @@ const [Items,setItem]=React.useState("")
                       <a
                         target="_blank"
                         data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${EditData.component_x0020_link
-                          }`}
+                        href={`mailto:?subject=${"Test"}&body=${
+                          EditData.component_x0020_link
+                        }`}
                       >
                         {" "}
                         Share this task ||
@@ -2689,7 +2786,6 @@ const [Items,setItem]=React.useState("")
                     </span>
                     <span className="p-1">|</span>
                     <a
-
                       data-interception="off"
                       className="p-1"
                       href={`${AllListId?.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
@@ -2726,7 +2822,11 @@ const [Items,setItem]=React.useState("")
               ></ServiceComponentPortfolioPopup>
             )}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} AllListId={AllListId} Call={Call}></Picker>
+              <Picker
+                props={SharewebCategory}
+                AllListId={AllListId}
+                Call={Call}
+              ></Picker>
             )}
           </div>
         )}
