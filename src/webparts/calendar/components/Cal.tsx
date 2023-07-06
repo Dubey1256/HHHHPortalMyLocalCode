@@ -463,7 +463,7 @@ const App = (props: any) => {
       .expand("Author", "Editor")
       .get()
       .then((dataaa: any[]) => {
-        console.log("datata", dataaa);
+        console.log("datata----", dataaa);
 
         compareData = dataaa;
         // dataaa.EventDate
@@ -514,12 +514,13 @@ const App = (props: any) => {
           }
 
           const dataEvent = {
+            shortD:item.Title,
             iD: item.ID,
             title: a,
             start: startdate,
             end: enddate,
             location: item.Location,
-            desc: item.Description,
+            desc: item.Description, 
             alldayevent: item.fAllDayEvent,
             eventType: item.Event_x002d_Type,
             created: item.Author.Title,
@@ -1138,6 +1139,7 @@ const App = (props: any) => {
 
   const handleDateClick = async (event: any) => {
     console.log(event);
+    setInputValueName(event.shortD);
     setshowRecurrence(false);
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
@@ -1147,7 +1149,8 @@ const App = (props: any) => {
     if (event.RecurrenceData) {
       setdisab(true);
       eventPass = event;
-      setInputValueName(event.title);
+      setInputValueName(event.shortD);
+      // setInputValueName(event.title);
       //setStartDate(event.start);
       //setEndDate(event.end);
       setdisabl(false);
@@ -1184,8 +1187,9 @@ const App = (props: any) => {
     localArr.map((item: any) => {
       if (item.iD == event.iD) {
         setdisab(true);
+        
         eventPass = event;
-        setInputValueName(item.title);
+        setInputValueName(item.shortD);
         setStartDate(item.start);
         setEndDate(item.end);
         setdisabl(false);
@@ -1665,8 +1669,8 @@ const App = (props: any) => {
         </> : ""} */}
 
         {!disabl ? (
-          <footer className="bg-f4 fixed-bottom">
-            <div className="align-items-center d-flex justify-content-between me-3 px-4 py-2">
+          <footer>
+            <div className="align-items-center d-flex justify-content-between">
               <div>
                 <div className="">
                   Created {CDate} {CTime} by {createdBY}
@@ -1685,8 +1689,7 @@ const App = (props: any) => {
                 <button
                   className="btn btn-primary px-3"
                   onClick={updateElement}
-                >
-                  Save
+                >Save
                 </button>
                 <button
                   type="button"
