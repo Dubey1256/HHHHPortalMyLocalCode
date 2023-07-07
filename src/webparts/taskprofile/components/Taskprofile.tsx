@@ -316,7 +316,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     }
     var OffshoreComments: any = [];
     if (taskDetails["OffshoreComments"] != null) {
-      OffshoreComments = JSON.parse(taskDetails["OffshoreComments"])
+      let myarray:any=[]
+      myarray = JSON.parse(taskDetails["OffshoreComments"])
+      if (myarray.length != 0) {
+        myarray.map((items: any) => {
+          if (items.AuthorImage != undefined && items.AuthorImage != "") {
+            items.AuthorImage = items.AuthorImage.replace(
+              "https://www.hochhuth-consulting.de",
+              "https://hhhhteams.sharepoint.com/sites/HHHH"
+            );
+            OffshoreComments.push(items);
+          }
+        });
+      }
+
     }
 
     taskDetails["Categories"] = category;
@@ -1221,7 +1234,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   </dl>
                   <dl>
                     <dt className='bg-Fa'>Estimated Time</dt>
-                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0} Hours</span>
+                    <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["EstimatedTime"]!=undefined?this.state.Result["EstimatedTime"]:0}Hours </span>
                      </dd>
                    </dl>
                   {isShowTimeEntry && <dl>
@@ -1361,7 +1374,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Project</dt>
                     <dd className='bg-Ff full-width'>
-                    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Portfolio-Profile.aspx?taskId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
+                    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?taskId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
                       </dd>
                    </dl>
                   {isShowSiteCompostion && <dl className="Sitecomposition">

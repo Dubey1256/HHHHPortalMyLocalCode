@@ -161,9 +161,9 @@ const SmartInformation = (props: any) => {
             }
             if (tagsmartinfo?.Id == items?.Id) {
 
-              if (tagsmartinfo.Description != null && tagsmartinfo?.Description.includes("<p></p>")) {
-                tagsmartinfo.Description = null;
-              }
+              // if (tagsmartinfo.Description != null && tagsmartinfo?.Description.includes("<p></p>")) {
+              //   tagsmartinfo.Description = null;
+              // }
               allSmartInformationglobal.push(tagsmartinfo);
 
             }
