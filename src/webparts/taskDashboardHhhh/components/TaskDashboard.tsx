@@ -1,6 +1,15 @@
 import * as React from 'react'
 import $ from 'jquery';
+import {
+    ColumnDef,
+} from "@tanstack/react-table";
+import '../../projectmanagementOverviewTool/components/styles.css'
+import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
+import "@pnp/sp/sputilities";
+import { IEmailProperties } from "@pnp/sp/sputilities";
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import { Accordion, Card, Button } from "react-bootstrap";
 import EditTaskPopup from "../../../globalComponents/EditTaskPopup/EditTaskPopup";
 import * as Moment from "moment";
@@ -8,13 +17,18 @@ import pnp, { sp, Web } from "sp-pnp-js";
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import InlineEditingcolumns from '../../projectmanagementOverviewTool/components/inlineEditingcolumns';
 import { Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input, } from "reactstrap";
-import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp, } from "react-icons/fa";
+import {
+    FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaChevronDown,
+    FaChevronRight, FaCaretDown, FaCaretRight, FaSort, FaSortDown, FaSortUp,
+} from "react-icons/fa";
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import PageLoader from '../../../globalComponents/pageLoader';
+import ShowClintCatogory from '../../../globalComponents/ShowClintCatogory';
 var taskUsers: any = [];
 var userGroups: any = [];
 var siteConfig: any = [];
+var AllTaskTimeEntries: any = [];
 var AllTasks: any = [];
 var timesheetListConfig: any = [];
 var currentUserId: '';
@@ -22,6 +36,8 @@ var DataSiteIcon: any = [];
 var currentUser: any = [];
 var weekTimeEntry: any = [];
 var today: any = [];
+var MasterListData: any = []
+var MyAllData: any = []
 var backupTaskArray: any = {
     AllAssignedTasks: [],
     workingTodayTasks: [],
@@ -30,15 +46,37 @@ var backupTaskArray: any = {
     assignedApproverTasks: [],
     allTasks: []
 };
+var AllMetadata: any = [];
+var AllListId: any = {}
 var selectedInlineTask: any = {};
+var isShowTimeEntry: any;
+var isShowSiteCompostion: any;
 const TaskDashboard = (props: any) => {
     const [updateContent, setUpdateContent] = React.useState(false);
+    const [createTaskId, setCreateTaskId] = React.useState({});
+    const [isOpenCreateTask, setisOpenCreateTask] = React.useState(false);
+    const [selectedTimeReport, setSelectedTimeReport] = React.useState('');
+    const [timeEntryTotal, setTimeEntryTotal] = React.useState(0);
+    const [currentView, setCurrentView] = React.useState('Home');
+    const [taskTimeDetails, setTaskTimeDetails] = React.useState([]);
+    const [AllSitesTask, setAllSitesTask] = React.useState([]);
     const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [currentUserData, setCurrentUserData]: any = React.useState({});
     const [selectedUser, setSelectedUser]: any = React.useState({});
     const [passdata, setpassdata] = React.useState("");
     const [isOpenEditPopup, setisOpenEditPopup] = React.useState(false);
+    const [openTimeEntryPopup, setOpenTimeEntryPopup] = React.useState(false);
+    const [isTimeEntry, setIsTimeEntry] = React.useState(false);
+    const [weeklyTimeReport, setWeeklyTimeReport] = React.useState([]);
+    const [sharewebTasks, setSharewebTasks] = React.useState([]);
     const [AllAssignedTasks, setAllAssignedTasks] = React.useState([]);
+    const [AllSmartMetadata, setAllSmartMetadata] = React.useState([]);
+    const [AllImmediateTasks, setAllImmediateTasks] = React.useState([]);
+    const [UserImmediateTasks, setUserImmediateTasks] = React.useState([]);
+    const [AllEmailTasks, setAllEmailTasks] = React.useState([]);
+    const [UserEmailTasks, setUserEmailTasks] = React.useState([]);
+    const [AllBottleNeck, setAllBottleNeck] = React.useState([]);
+    const [AllPriorityTasks, setAllPriorityTasks] = React.useState([]);
     const [workingTodayTasks, setWorkingTodayTasks] = React.useState([]);
     const [thisWeekTasks, setThisWeekTasks] = React.useState([]);
     const [bottleneckTasks, setBottleneckTasks] = React.useState([]);
@@ -53,9 +91,42 @@ const TaskDashboard = (props: any) => {
         taskId: '',
         origin: ''
     });
+    const TimeEntryCallBack = React.useCallback((item1) => {
+        setOpenTimeEntryPopup(false);
+    }, []);
+    const EditDataTimeEntry = (e: any, item: any) => {
+
+        setTaskTimeDetails(item);
+        setOpenTimeEntryPopup(true);
+    };
     React.useEffect(() => {
+        try {
+            isShowTimeEntry = props?.props?.TimeEntry != "" ? JSON.parse(props?.props?.TimeEntry) : "";
+            isShowSiteCompostion = props?.props?.SiteCompostion != "" ? JSON.parse(props?.props?.SiteCompostion) : ""
+        } catch (error: any) {
+            console.log(error)
+        }
+        if (props?.props?.TaskTimeSheetListID != undefined && props?.props?.TaskTimeSheetListID != '') {
+            setIsTimeEntry(true)
+        } else {
+            setIsTimeEntry(false)
+        }
         // sp.web.currentUser.get().then(result => { currentUserId = result.Id; console.log(currentUserId) });
+        AllListId = {
+            MasterTaskListID: props?.props?.MasterTaskListID,
+            TaskUsertListID: props?.props?.TaskUsertListID,
+            SmartMetadataListID: props?.props?.SmartMetadataListID,
+            //SiteTaskListID:this.props?.props?.SiteTaskListID,
+            TaskTimeSheetListID: props?.props?.TaskTimeSheetListID,
+            DocumentsListID: props?.props?.DocumentsListID,
+            SmartInformationListID: props?.props?.SmartInformationListID,
+            AdminConfigrationListID: props?.props?.AdminConfigrationListID,
+            siteUrl: props?.props?.siteUrl,
+            isShowTimeEntry: isShowTimeEntry,
+            isShowSiteCompostion: isShowSiteCompostion
+        }
         setPageLoader(true);
+        //    loadTodaysLeave();
         getCurrentUserDetails();
         createDisplayDate();
         try {
@@ -69,8 +140,11 @@ const TaskDashboard = (props: any) => {
 
     }, []);
     React.useEffect(() => {
-        currentUserTimeEntry()
-    }, [currentUserId, timesheetListConfig]);
+        if (AllListId?.isShowTimeEntry == true) {
+            loadAllTimeEntry()
+        }
+
+    }, [timesheetListConfig]);
     React.useEffect(() => {
         let CONTENT = !updateContent;
         setUpdateContent(CONTENT);
@@ -84,33 +158,12 @@ const TaskDashboard = (props: any) => {
             month: '',
             fullDate: new Date()
         }
-        displayDate.day = displayDate.fullDate.toLocaleString('en-GB', { weekday: 'short' });
+        displayDate.day = displayDate.fullDate.toLocaleString('en-GB', { weekday: 'long' });
         displayDate.date = displayDate.fullDate.toLocaleString('en-GB', { day: 'numeric' });
         displayDate.month = displayDate.fullDate.toLocaleString('en-GB', { month: 'long' });
         today = displayDate;
     }
-    const loadAdminConfigurations = async () => {
-        try {
-            var CurrentSiteType = "";
-            let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP")
-            await web.lists
-                .getById('e968902a-3021-4af2-a30a-174ea95cf8fa')
-                .items.select("Id,Title,Value,Key,Description,DisplayTitle,Configurations&$filter=Key eq 'TaskDashboardConfiguration'")
-                .top(4999)
-                .get().then((response) => {
-                    var SmartFavoritesConfig = [];
-                    $.each(response, function (index: any, smart: any) {
-                        if (smart.Configurations != undefined) {
-                            DataSiteIcon = JSON.parse(smart.Configurations);
-                        }
-                    });
-                },
-                    function (error) { }
-                );
-        } catch (e) {
-            console.log(e)
-        }
-    };
+
 
     //Item Exist 
     const checkUserExistence = (item: any, Array: any) => {
@@ -124,78 +177,255 @@ const TaskDashboard = (props: any) => {
     }
     //End 
     // Get Week Start Date 
-    function getThisWeekStartingDate() {
+    function getStartingDate(startDateOf: any) {
         const startingDate = new Date();
-        startingDate.setDate(startingDate.getDate() - startingDate.getDay());
-        const formattedDate = Moment(startingDate).format('YYYY-MM-DDTHH:mm:ssZ');
+        let formattedDate = startingDate;
+        if (startDateOf == 'This Week') {
+            startingDate.setDate(startingDate.getDate() - startingDate.getDay());
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Today') {
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Yesterday') {
+            startingDate.setDate(startingDate.getDate() - 1);
+            formattedDate = startingDate;
+        } else if (startDateOf == 'This Month') {
+            startingDate.setDate(1);
+            formattedDate = startingDate;
+        } else if (startDateOf == 'Last Month') {
+            const lastMonth = new Date(startingDate.getFullYear(), startingDate.getMonth() - 1);
+            const startingDateOfLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+            formattedDate = startingDateOfLastMonth;
+        } else if (startDateOf == 'Last Week') {
+            const lastWeek = new Date(startingDate.getFullYear(), startingDate.getMonth(), startingDate.getDate() - 7);
+            const startingDateOfLastWeek = new Date(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate() - lastWeek.getDay() + 1);
+            formattedDate = startingDateOfLastWeek;
+        }
+
         return formattedDate;
     }
+    function getEndingDate(startDateOf: any): Date {
+        const endingDate = new Date();
+        let formattedDate = endingDate;
+
+        if (startDateOf === 'This Week') {
+            endingDate.setDate(endingDate.getDate() + (6 - endingDate.getDay()));
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Today') {
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Yesterday') {
+            endingDate.setDate(endingDate.getDate() - 1);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'This Month') {
+            endingDate.setMonth(endingDate.getMonth() + 1, 0);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Last Month') {
+            const lastMonth = new Date(endingDate.getFullYear(), endingDate.getMonth() - 1);
+            endingDate.setDate(0);
+            formattedDate = endingDate;
+        } else if (startDateOf === 'Last Week') {
+            const lastWeek = new Date(endingDate.getFullYear(), endingDate.getMonth(), endingDate.getDate() - 7);
+            endingDate.setDate(lastWeek.getDate() - lastWeek.getDay() + 7);
+            formattedDate = endingDate;
+        }
+
+        return formattedDate;
+    }
+
     //End
 
     //Load This Week Time Entry 
-    const currentUserTimeEntry = async () => {
-        let WeekStartDate = getThisWeekStartingDate();
-        let count = 0;
-        let AllTimeEntries: any = [];
+    const loadMigrationTimeEntry = async () => {
         if (timesheetListConfig?.length > 0) {
             let timesheetLists: any = [];
+            let taskLists: any = [];
+            let startDate = getStartingDate('Last Month').toISOString();
             timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
             if (timesheetLists?.length > 0) {
                 timesheetLists?.map(async (list: any) => {
                     let web = new Web(list?.siteUrl);
-                    await web.lists
-                        .getById(list?.listId)
-                        .items.select(
-                            "Id,Title,TaskDate,Created,Modified,TaskTime,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title&$expand=Editor,Author,Category,TimesheetTitle"
-                        )
-                        .top(200).orderBy('Created')
-                        .filter(`Author/Id eq '${currentUserId}'`)
-                        .get().then((data: any) => {
-                            data?.map((item: any) => {
-                                if (item?.TaskDate >= WeekStartDate)
-                                    AllTimeEntries.push(item)
-                            })
-                            count++;
-                        });
-                    if (count == timesheetLists?.lenght) {
-                        weekTimeEntry = AllTimeEntries
-                        console.log(weekTimeEntry)
+                    if (timesheetLists?.listName == 'TasksTimesheet2') {
+                        await web.lists
+                            .getById(list?.listId)
+                            .items.select(list?.query)
+                            .filter("Modified gt '" + startDate + "'")
+                            .getAll().then((data: any) => {
+                                data?.map((item: any) => {
+                                    item.taskDetails = checkTimeEntrySite(item, taskLists)
+                                    AllTaskTimeEntries.push(item)
+                                })
+                                currentUserTimeEntry('This Week')
+                            });
                     }
                 })
             }
         }
     }
+    const loadAllTimeEntry = async () => {
+        if (timesheetListConfig?.length > 0) {
+            let timesheetLists: any = [];
+            let startDate = getStartingDate('Last Month').toISOString();
+            let taskLists: any = [];
+            timesheetLists = JSON.parse(timesheetListConfig[0]?.Configurations)
+            taskLists = JSON.parse(timesheetListConfig[0]?.Description)
+            if (timesheetLists?.length > 0) {
+                timesheetLists?.map(async (list: any) => {
+                    let web = new Web(list?.siteUrl);
+                    if (timesheetLists?.listName != 'TasksTimesheet2') {
+                        await web.lists
+                            .getById(list?.listId)
+                            .items.select(list?.query)
+                            .filter("Modified gt '" + startDate + "'")
+                            .getAll().then((data: any) => {
+                                data?.map((item: any) => {
+                                    item.taskDetails = checkTimeEntrySite(item, taskLists)
+                                    AllTaskTimeEntries.push(item)
+                                })
+                                currentUserTimeEntry('This Week')
+                            });
+                    }
+                })
+                loadMigrationTimeEntry();
+            }
+        }
+    }
+    const checkTimeEntrySite = (timeEntry: any, sitesArray: any) => {
+        let result = ''
+        sitesArray?.map((site: any) => {
+            if (timeEntry[site.Tasklist]?.Id != undefined) {
+                result = AllTasks?.filter((task: any) => {
+                    if (task?.Id == timeEntry[site.Tasklist]?.Id && task?.siteType.toLowerCase() == site.siteType.toLowerCase()) {
+                        return task;
+                    }
+                });
+                //  = getTaskDetails(timeEntry[site.Tasklist].Id, site.siteType)
+            }
+        })
+        return result;
+    }
+    const currentUserTimeEntry = (start: any) => {
+        let totalTime = 0;
+        setSelectedTimeReport(start)
+        let startDate = getStartingDate(start);
+        let endDate = getEndingDate(start);
+        startDate = new Date(startDate.setHours(0, 0, 0, 0));
+        endDate = new Date(endDate.setHours(0, 0, 0, 0));
+        let weekTimeEntries: any = [];
+        AllTaskTimeEntries?.map((timeEntry: any) => {
+            if (timeEntry?.AdditionalTimeEntry != undefined) {
+                let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
+                AdditionalTime?.map((filledTime: any) => {
+                    let [day, month, year] = filledTime?.TaskDate?.split('/')
+                    const timeFillDate = new Date(+year, +month - 1, +day)
+                    if (filledTime?.AuthorId == currentUserId) {
+                        if (timeFillDate >= startDate && timeFillDate <= endDate && timeEntry?.taskDetails[0] != undefined) {
+                            let data = { ...timeEntry?.taskDetails[0] };
+                            if (data == '' || data == undefined)
+                                data = {};
+                            totalTime += parseFloat(filledTime?.TaskTime);
+                            data.TaskTime = filledTime?.TaskTime;
+                            data.timeDate = filledTime?.TaskDate;
+                            data.Description = filledTime?.Description
+                            data.timeFillDate = timeFillDate;
+                            weekTimeEntries.push(data);
+                        }
+                        // }
+                    }
+
+                })
+            }
+        })
+        weekTimeEntries.sort((a: any, b: any) => {
+            return b.timeFillDate - a.timeFillDate;
+        });
+        setWeeklyTimeReport(weekTimeEntries)
+        setTimeEntryTotal(totalTime);
+        weekTimeEntry = weekTimeEntries;
+    }
+    const currentUserTimeEntryCalculation = () => {
+        let todaysTimeTotal = 0;
+        let thisMonthTimeTotal = 0;
+        let thisWeekTimeTotal = 0;
+        let allTimeCategoryTime = {
+            today: 0,
+            thisWeek: 0,
+            thisMonth: 0
+        }
+        let timesheetDistribution = ['Today', 'This Week', 'This Month']
+        timesheetDistribution?.map((start: any) => {
+            let startDate = getStartingDate(start);
+            startDate = new Date(startDate.setHours(0, 0, 0, 0));
+            let endDate = getEndingDate(start);
+            endDate = new Date(endDate.setHours(0, 0, 0, 0));
+            AllTaskTimeEntries?.map((timeEntry: any) => {
+                if (timeEntry?.AdditionalTimeEntry != undefined) {
+                    let AdditionalTime = JSON.parse(timeEntry?.AdditionalTimeEntry)
+                    AdditionalTime?.map((filledTime: any) => {
+                        let [day, month, year] = filledTime?.TaskDate?.split('/')
+                        const timeFillDate = new Date(+year, +month - 1, +day)
+                        if (filledTime?.AuthorId == currentUserId) {
+                            if (start == 'Today') {
+                                if (startDate.getTime() == timeFillDate.getTime() && timeEntry?.taskDetails[0] != undefined) {
+                                    todaysTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            } else if (start == 'This Week') {
+                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
+                                    thisMonthTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            } else if (start == 'This Month') {
+                                if (timeFillDate >= startDate && timeEntry?.taskDetails[0] != undefined) {
+                                    thisWeekTimeTotal += parseFloat(filledTime?.TaskTime);
+                                }
+                            }
+                        }
+
+                    })
+                }
+            })
+        });
+        allTimeCategoryTime = {
+            today: todaysTimeTotal,
+            thisWeek: thisMonthTimeTotal,
+            thisMonth: thisWeekTimeTotal
+        }
+        return allTimeCategoryTime;
+    }
+
     //End 
 
 
     // All Sites Task
-    const LoadAllSiteTasks = function () {
-        loadAdminConfigurations();
+    const LoadAllSiteTasks = async function () {
+        await loadAllComponent()
         let AllSiteTasks: any = [];
+        let approverTask: any = [];
+        let SharewebTask: any = [];
+        let AllImmediates: any = [];
+        let AllEmails: any = [];
+        let AllBottleNeckTasks: any = [];
+        let AllPriority: any = [];
         let query =
             "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
         let Counter = 0;
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+        let web = new Web(AllListId?.siteUrl);
         let arraycount = 0;
         try {
-            if (currentUserId != undefined) {
+            if (currentUserId != undefined && siteConfig?.length > 0) {
 
                 siteConfig.map(async (config: any) => {
                     if (config.Title != "SDC Sites") {
                         let smartmeta = [];
                         await web.lists
                             .getById(config.listId)
-                            .items.select(
-                                "Id,StartDate,DueDate,Title,workingThisWeek,Created,SharewebCategories/Id,SharewebCategories/Title,PercentComplete,IsTodaysTask,Categories,Approver/Id,Approver/Title,Priority_x0020_Rank,Priority,ClientCategory/Id,SharewebTaskType/Id,SharewebTaskType/Title,ClientCategory/Title,Project/Id,Project/Title,Author/Id,Author/Title,Editor/Id,Editor/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,Component/Id,component_x0020_link,Component/Title,Services/Id,Services/Title"
-                            )
-                            .expand(
-                                "Project,SharewebCategories,AssignedTo,Author,Editor,Team_x0020_Members,Responsible_x0020_Team,ClientCategory,Component,Services,SharewebTaskType,Approver"
-                            )
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
                             .getAll().then((data: any) => {
                                 smartmeta = data;
                                 smartmeta.map((task: any) => {
                                     task.AllTeamMember = [];
+                                    task.HierarchyData = [];
                                     task.siteType = config.Title;
+                                    task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
                                     task.listId = config.listId;
                                     task.siteUrl = config.siteUrl.Url;
                                     task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
@@ -214,13 +444,7 @@ const TaskDashboard = (props: any) => {
                                         task.PortfolioTitle = task?.Services[0]?.Title;
                                         task["Portfoliotype"] = "Service";
                                     }
-                                    if (DataSiteIcon != undefined) {
-                                        DataSiteIcon.map((site: any) => {
-                                            if (site.Site == task.siteType) {
-                                                task["siteIcon"] = site.SiteIcon;
-                                            }
-                                        });
-                                    }
+                                    task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
                                     task.TeamMembersSearch = "";
                                     task.componentString =
                                         task.Component != undefined &&
@@ -229,6 +453,11 @@ const TaskDashboard = (props: any) => {
                                             ? getComponentasString(task.Component)
                                             : "";
                                     task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+                                    if (task?.ClientCategory?.length > 0) {
+                                        task.ClientCategorySearch = task?.ClientCategory?.map((elem: any) => elem.Title).join(" ")
+                                    } else {
+                                        task.ClientCategorySearch = ''
+                                    }
                                     task.ApproverIds = [];
                                     task?.Approver?.map((approverUser: any) => {
                                         task.ApproverIds.push(approverUser?.Id);
@@ -250,27 +479,54 @@ const TaskDashboard = (props: any) => {
                                             ? Moment(task.Created).format("DD/MM/YYYY")
                                             : "";
                                     task.TeamMembersId = [];
+                                    task.HierarchyData = globalCommon.hierarchyData(task, MyAllData)
+                                    taskUsers?.map((user: any) => {
+                                        if (user.AssingedToUserId == task.Author.Id) {
+                                            task.createdImg = user?.Item_x0020_Cover?.Url;
+                                        }
+                                    })
+
                                     task?.Team_x0020_Members?.map((taskUser: any) => {
                                         task.TeamMembersId.push(taskUser.Id);
                                         var newuserdata: any = {};
                                         taskUsers?.map((user: any) => {
-                                            if (user.AssingedToUserId == task.Author.Id) {
-                                                task.createdImg = user.Item_x0020_Cover.Url;
-                                            }
                                             if (user.AssingedToUserId == taskUser.Id) {
                                                 if (user?.Title != undefined) {
                                                     task.TeamMembersSearch =
                                                         task.TeamMembersSearch + " " + user?.Title;
                                                 }
-                                                newuserdata["useimageurl"] = user.Item_x0020_Cover.Url;
-                                                newuserdata["Suffix"] = user.Suffix;
-                                                newuserdata["Title"] = user.Title;
-                                                newuserdata["UserId"] = user.AssingedToUserId;
-                                                task["Usertitlename"] = user.Title;
+                                                newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
+                                                newuserdata["Suffix"] = user?.Suffix;
+                                                newuserdata["Title"] = user?.Title;
+                                                newuserdata["UserId"] = user?.AssingedToUserId;
+                                                task["Usertitlename"] = user?.Title;
                                             }
                                             task.AllTeamMember.push(newuserdata);
                                         });
                                     });
+
+                                    const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+                                    const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
+                                    const isEmailNotification = checkUserExistence('Email Notification', task?.SharewebCategories);
+                                    const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                                    if (isCurrentUserApprover && task?.PercentComplete == '1') {
+                                        approverTask.push(task)
+                                    }
+                                    if (isBottleneckTask) {
+                                        AllBottleNeckTasks.push(task)
+                                    }
+                                    if (isImmediate) {
+                                        AllImmediates.push(task)
+                                    }
+                                    if (isEmailNotification) {
+                                        AllEmails.push(task)
+                                    }
+                                    if (task.ClientActivityJson != undefined) {
+                                        SharewebTask.push(task)
+                                    }
+                                    if (parseInt(task.Priority_x0020_Rank) >= 8 && parseInt(task.Priority_x0020_Rank) <= 10) {
+                                        AllPriority.push(task);
+                                    }
                                     AllSiteTasks.push(task)
                                 });
                                 arraycount++;
@@ -278,7 +534,32 @@ const TaskDashboard = (props: any) => {
                         let currentCount = siteConfig?.length;
                         if (arraycount === currentCount) {
                             AllTasks = AllSiteTasks;
-                            filterCurrentUserTask();
+                            backupTaskArray.assignedApproverTasks = approverTask;
+                            setAllPriorityTasks(sortOnCreated(AllPriority))
+                            setAllImmediateTasks(sortOnCreated(AllImmediates));
+                            setAssignedApproverTasks(sortOnCreated(approverTask));
+                            setAllEmailTasks(sortOnCreated(AllEmails));
+                            setAllSitesTask(sortOnCreated(AllSiteTasks));
+                            setSharewebTasks(sortOnCreated(SharewebTask));
+                            setAllBottleNeck(sortOnCreated(AllBottleNeckTasks));
+                            const params = new URLSearchParams(window.location.search);
+                            let query = params.get("UserId");
+                            let userFound = false;
+                            if (query != undefined && query != null && query != '') {
+                                taskUsers.map((user: any) => {
+                                    if (user?.AssingedToUserId == query) {
+                                        userFound = true;
+                                        changeSelectedUser(user)
+                                    }
+                                })
+                                if (userFound == false) {
+                                    if (confirm("User Not Found , Do you want to continue to your Dashboard?")) {
+                                        filterCurrentUserTask()
+                                    }
+                                }
+                            } else {
+                                filterCurrentUserTask();
+                            }
                             backupTaskArray.allTasks = AllSiteTasks;
                             setPageLoader(false);
                         }
@@ -291,28 +572,40 @@ const TaskDashboard = (props: any) => {
             console.log(e)
         }
     };
-    const getChilds1 = function (item: any, array: any) {
-        item.childs = [];
+    const loadAllComponent = async () => {
 
-        array?.map((childItem: any) => {
-            childItem.selected = false;
-            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
-                item.childs.push(childItem);
-                if ((item?.Title == 'HHHH Team' || item?.Title == 'Smalsus Lead Team') && currentUser?.AssingedToUserId == childItem?.AssingedToUserId) {
-                    currentUser.isAdmin = true;
-                    setCurrentUserData(currentUser);
-                }
-            }
-        })
+        let web = new Web(AllListId?.siteUrl);
+        MasterListData = await web.lists
+            .getById(AllListId?.MasterTaskListID)
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .top(4999)
+            .get().then((data) => {
+                data?.forEach((val: any) => {
+                    MyAllData.push(val)
+                })
+
+
+            }).catch((error) => {
+                console.log(error)
+            })
+
+
+    }
+    const sortOnCreated = (Array: any) => {
+        Array.sort((a: any, b: any) => new Date(b.Created).getTime() - new Date(a.Created).getTime());
+        return Array;
     }
 
+
     //Edit CallBack
-    const editTaskCallBack = React.useCallback(() => {
+    const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
+        inlineCallBack(item)
     }, []);
-    const inlineCallBack = React.useCallback((item: any, index: any) => {
+    const inlineCallBack = React.useCallback((item: any) => {
         AllTasks?.map((task: any, index: any) => {
-            if (task.Id == item.Id) {
+            if (task?.Id == item?.Id && task?.siteType == item?.siteType) {
                 AllTasks[index] = { ...task, ...item };
             }
         })
@@ -334,58 +627,192 @@ const TaskDashboard = (props: any) => {
         let workingTodayTask: any = [];
         let workingThisWeekTask: any = [];
         let bottleneckTask: any = [];
+        let Immediates: any = [];
+        let EmailsTasks: any = [];
         let approverTask: any = [];
-
         if (AllTasks?.length > 0 && currentUserId != undefined && currentUserId != '') {
             AllTasks?.map((task: any) => {
                 const isCurrentUserAssigned = task?.AssignedToIds?.includes(currentUserId);
-                const isCurrentUserTeamMember = task?.TeamMembersId?.includes(currentUserId);
-                const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                const isImmediate = checkUserExistence('Immediate', task?.SharewebCategories);
+                const isEmailNotfication = checkUserExistence('Email Notification', task?.SharewebCategories);
                 const isBottleneckTask = checkUserExistence('Bottleneck', task?.SharewebCategories);
+
+                // Testing Only Please Remove Before deployement
+                // const isCurrentUserApprover = task?.ApproverIds?.includes(currentUserId);
+                // if ((isCurrentUserAssigned) && task?.PercentComplete == '1') {
+                //     approverTask.push(task)
+                // }
+                //
+
+
                 let alreadyPushed = false;
-                if (isCurrentUserApprover && task?.PercentComplete == '1') {
-                    approverTask.push(task)
-                    alreadyPushed = true;
-                } else if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
                     workingTodayTask.push(task)
                     alreadyPushed = true;
-                } else if (task?.workingThisWeek && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } else if (task?.workingThisWeek && (isCurrentUserAssigned)) {
                     workingThisWeekTask.push(task)
                     alreadyPushed = true;
-                } else if (isBottleneckTask && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } if (isBottleneckTask && (isCurrentUserAssigned)) {
                     bottleneckTask.push(task)
                     alreadyPushed = true;
-                } else if (!alreadyPushed && (isCurrentUserAssigned || isCurrentUserTeamMember)) {
+                } if (!alreadyPushed && (isCurrentUserAssigned)) {
                     AllAssignedTask.push(task)
                     alreadyPushed = true;
                 }
+                if (isImmediate && (isCurrentUserAssigned)) {
+                    Immediates.push(task)
+                }
+                if (isEmailNotfication && (isCurrentUserAssigned)) {
+                    EmailsTasks.push(task)
+                }
+
+
             })
         }
+
+        // // Testing Only Please Remove Before deployement
+        // setAssignedApproverTasks(sortOnCreated(approverTask));
+        // //
+
         backupTaskArray.AllAssignedTasks = AllAssignedTask;
         backupTaskArray.workingTodayTasks = workingTodayTask;
         backupTaskArray.thisWeekTasks = workingThisWeekTask;
         backupTaskArray.bottleneckTasks = bottleneckTask;
-        backupTaskArray.assignedApproverTasks = approverTask;
-        setAllAssignedTasks(AllAssignedTask);
-        setWorkingTodayTasks(workingTodayTask)
-        setThisWeekTasks(workingThisWeekTask)
-        setBottleneckTasks(bottleneckTask)
-        setAssignedApproverTasks(approverTask)
+        setAllAssignedTasks(sortOnCreated(AllAssignedTask));
+        setUserEmailTasks(sortOnCreated(EmailsTasks))
+        setUserImmediateTasks(sortOnCreated(Immediates))
+        setWorkingTodayTasks(sortOnCreated(workingTodayTask))
+        setThisWeekTasks(sortOnCreated(workingThisWeekTask))
+        setBottleneckTasks(sortOnCreated(bottleneckTask))
+    }
+    const filterCurrentUserWorkingTodayTask = (UserId: any) => {
+        let workingTodayTask: any = [];
+        if (AllTasks?.length > 0) {
+            AllTasks?.map((task: any) => {
+                const isCurrentUserAssigned = task?.AssignedToIds?.includes(UserId);
+                if (task?.IsTodaysTask && (isCurrentUserAssigned)) {
+                    workingTodayTask.push(task)
+                }
+            })
+        }
+        return workingTodayTask;
     }
     //End
+    const column = React.useMemo<ColumnDef<any, unknown>[]>(
+        () => [
+            {
+                accessorKey: "",
+                size: 7,
+                canSort: false,
+                placeholder: "",
+                id: 'PortfolioStructureID',
+                // header: ({ table }: any) => (
+                //   <>
+                //     <button className='border-0 bg-Ff'
+                //       {...{
+                //         onClick: table.getToggleAllRowsExpandedHandler(),
+                //       }}
+                //     >
+                //       {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                //     </button>{" "}
+                //   </>
+                // ),
+                cell: ({ row, getValue }) => (
+                    <div
+                        style={row.getCanExpand() ? {
+                            paddingLeft: `${row.depth * 5}px`,
+                        } : {
+                            paddingLeft: "18px",
+                        }}
+                    >
+                        <>
+                            {row.getCanExpand() ? (
+                                <span className=' border-0'
+                                    {...{
+                                        onClick: row.getToggleExpandedHandler(),
+                                        style: { cursor: "pointer" },
+                                    }}
+                                >
+                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                </span>
+                            ) : (
+                                ""
+                            )}{" "}
+
+                            <> {row?.original?.SiteIcon != undefined ?
+                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                            }
+                                <span>{row?.original?.PortfolioStructureID}</span></>
+
+                            {getValue()}
+                        </>
+                    </div>
+                ),
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        <span>{row.original.Title}</span>
+                    </>
+                ),
+                id: "Title",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 15,
+            },
+            {
+                cell: ({ row }) => (
+                    <>
+                        {/* <span className="hreflink" onClick={() => createOpenTask(row.original)}>+</span> */}
+                    </>
+                ),
+                id: "Title",
+                canSort: false,
+                placeholder: "",
+                header: "",
+                size: 5,
+            },
+        ],
+        []
+    );
+    const createOpenTask = (items: any) => {
+        setCreateTaskId({ portfolioData: items, portfolioType: 'Component' });
+        setisOpenCreateTask(true)
+    }
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+    }, []);
+
     const columns = React.useMemo(
         () => [
             {
                 internalHeader: "Task Id",
                 accessor: "Shareweb_x0020_ID",
                 style: { width: '70px' },
-                showSortIcon: false,
+                showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
 
-                        {row?.original?.Shareweb_x0020_ID}
+                        <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
+                            <div className="popover__content">
+                                <div className="tootltip-title">{row?.original?.Title}
+                                </div>
+                                <div className="tooltip-body">
+                                    {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
+                                        <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
+                                    )}
 
+
+                                </div>
+                            </div>
+                        </div>
                     </span>
+
                 ),
             },
             {
@@ -395,27 +822,39 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
                         <a className='hreflink'
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
                             data-interception="off"
                             target="_blank"
                         >
                             {row?.values?.Title}
                         </a>
+
+                        {row?.original?.Body !== null && <span className="me-1">
+                            <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                <span className="svg__iconbox svg__icon--info " ></span>
+                                <div className="popover__content">
+                                    <span>
+                                        <p
+                                            dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
+                                        ></p>
+                                    </span>
+                                </div>
+                            </div>
+                        </span>
+                        }
                     </span>
                 ),
             },
             {
                 internalHeader: "Site",
                 accessor: 'siteType',
-                id: "siteIcon", // 'id' is required
-                showSortIcon: false,
-                style: { width: '40px' },
+                id: "SiteIcon", // 'id' is required
+                showSortIcon: true,
+                style: { width: '50px' },
                 Cell: ({ row }: any) => (
                     <span>
-                        <img
-                            className="circularImage rounded-circle"
-                            src={row?.original?.siteIcon}
-                        />
+                        {row?.original?.SiteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
                     </span>
                 ),
             },
@@ -427,11 +866,25 @@ const TaskDashboard = (props: any) => {
                     <span>
                         <a className='hreflink' data-interception="off"
                             target="blank"
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
+                            href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${row?.original?.portfolio?.Id}`}
                         >
                             {row?.original?.portfolio?.Title}
                         </a>
                     </span>
+                ),
+            },
+            {
+                accessor: "ClientCategorySearch",
+                internalHeader: "Client Category",
+                id: "ClientCategory",
+                header: "",
+                style: { width: '100px' },
+                showSortIcon: true,
+                size: 100,
+                Cell: ({ row }: any) => (
+                    <>
+                        <ShowClintCatogory clintData={row?.original} AllMetadata={AllMetadata} />
+                    </>
                 ),
             },
             {
@@ -442,9 +895,8 @@ const TaskDashboard = (props: any) => {
                 style: { width: '100px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span>
-                        <InlineEditingcolumns type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
-                    </span>
+                    <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+
                 ),
             },
 
@@ -453,19 +905,38 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 accessor: "DueDate",
                 style: { width: '80px' },
-                Cell: ({ row }: any) => <span >{row?.original?.DisplayDueDate}</span>,
+                Cell: ({ row }: any) => <InlineEditingcolumns
+                    AllListId={AllListId}
+                    callBack={inlineCallBack}
+                    columnName="DueDate"
+                    item={row?.original}
+                    TaskUsers={taskUsers}
+                />,
+            },
+            {
+                internalHeader: "Estimated Time",
+                showSortIcon: true,
+                accessor: "EstimatedTime",
+                style: { width: '80px' },
+                Cell: ({ row }: any) =>
+                    <InlineEditingcolumns
+                        AllListId={AllListId}
+                        callBack={inlineCallBack}
+                        columnName="EstimatedTime"
+                        item={row?.original}
+                        TaskUsers={taskUsers} />,
             },
 
             {
                 internalHeader: "% Complete",
                 accessor: "PercentComplete",
-                style: { width: '70px' },
+                style: { width: '55px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
 
-                    <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
-                    </span>
+
+                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+
                 ),
             },
             {
@@ -474,20 +945,29 @@ const TaskDashboard = (props: any) => {
                 style: { width: '150px' },
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
-                    <span>
-                        <InlineEditingcolumns rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
-                    </span>
+
+                    <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='Team' item={row?.original} TaskUsers={taskUsers} />
+
                 ),
             },
             {
                 internalHeader: "Created",
-                accessor: "DisplayCreateDate",
+                accessor: "Created",
                 showSortIcon: true,
                 style: { width: "125px" },
                 Cell: ({ row }: any) => (
                     <span>
                         <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
-                        <img className="imgAuthor" src={row?.original?.createdImg} />
+                        {row?.original?.createdImg != undefined ?
+                            <>
+                                <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
+                                    data-interception="off" >
+                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                </a>
+                            </>
+
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+
                     </span>
                 ),
             },
@@ -502,14 +982,210 @@ const TaskDashboard = (props: any) => {
                     <span
                         title="Edit Task"
                         onClick={() => EditPopup(row?.original)}
-                        className="svg__iconbox svg__icon--edit"
+                        className="svg__iconbox svg__icon--edit hreflink"
                     ></span>
                 ),
             },
         ],
-        [AllAssignedTasks, thisWeekTasks, workingTodayTasks]
+        [AllAssignedTasks, workingTodayTasks, thisWeekTasks]
     );
+    const columnTimeReport = React.useMemo(
+        () => [
+            {
+                internalHeader: "Task Id",
+                accessor: "Shareweb_x0020_ID",
+                style: { width: '70px' },
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <span>
 
+                        {row?.original?.Shareweb_x0020_ID}
+
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Title",
+                accessor: "Title",
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+                    <span className="d-flex">
+                        <a className='hreflink'
+                            href={`${AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
+                            data-interception="off"
+                            target="_blank"
+                        >
+                            {row?.values?.Title}
+                        </a>
+                        {
+                            row?.original?.Body !== null && <span className="me-1">
+                                <div className="popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
+                                    <span className="svg__iconbox svg__icon--info " ></span>
+                                    <div className="popover__content">
+                                        <span>
+                                            <p
+                                                dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}
+                                            ></p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </span>
+                        }
+
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Site",
+                accessor: 'siteType',
+                id: "SiteIcon", // 'id' is required
+                showSortIcon: true,
+                style: { width: '50px' },
+                Cell: ({ row }: any) => (
+                    <span>
+                        {row?.original?.SiteIcon != undefined ?
+                            <img title={row?.original?.siteType} className="workmember" src={row?.original?.SiteIcon} /> : ''}
+                    </span>
+                ),
+            },
+            // {
+            //     internalHeader: "Priority",
+            //     isSorted: true,
+            //     isSortedDesc: true,
+            //     accessor: "Priority_x0020_Rank",
+            //     style: { width: '100px' },
+            //     showSortIcon: true,
+            //     Cell: ({ row }: any) => (
+            //         <span>
+            //             <InlineEditingcolumns AllListId={AllListId} type='Task' rowIndex={row?.index} callBack={inlineCallBack} TaskUsers={taskUsers} columnName='Priority' item={row?.original} />
+            //         </span>
+            //     ),
+            // },
+
+            // {
+            //     internalHeader: "Due Date",
+            //     showSortIcon: true,
+            //     accessor: "DueDate",
+            //     style: { width: '80px' },
+            //     Cell: ({ row }: any) => <InlineEditingcolumns
+            //         AllListId={AllListId}
+            //         callBack={inlineCallBack}
+            //         columnName="DueDate"
+            //         item={row?.original}
+            //         TaskUsers={taskUsers}
+            //     />,
+            // },
+            {
+                internalHeader: "Entry Date",
+                showSortIcon: true,
+                accessor: "timeDate",
+                style: { width: '80px' },
+            },
+
+            {
+                internalHeader: "Time",
+                showSortIcon: true,
+                accessor: "TaskTime",
+                style: { width: '65px' },
+            },
+            {
+                internalHeader: "Description",
+                showSortIcon: true,
+                accessor: "Description",
+                style: { width: '200px' },
+                Cell: ({ value }: any) => (
+                    <div
+                        className="column-description"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        {value}
+                    </div>
+                ),
+            },
+
+            {
+                internalHeader: "% Complete",
+                accessor: "PercentComplete",
+                style: { width: '55px' },
+                showSortIcon: true,
+                Cell: ({ row }: any) => (
+
+                    <span>
+                        <InlineEditingcolumns AllListId={AllListId} rowIndex={row?.index} callBack={inlineCallBack} columnName='PercentComplete' TaskUsers={taskUsers} item={row?.original} />
+                    </span>
+                ),
+            },
+            {
+                internalHeader: "Created",
+                accessor: "Created",
+                showSortIcon: true,
+                style: { width: "125px" },
+                Cell: ({ row }: any) => (
+                    <span>
+                        <span className="ms-1">{row?.original?.DisplayCreateDate}</span>
+                        {row?.original?.createdImg != undefined ?
+                            <>
+                                <a href={`${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=${row?.original?.Author?.Id}&Name=${row?.original?.Author?.Title}`} target="_blank"
+                                    data-interception="off" >
+                                    <img title={row?.original?.Author?.Title} className="workmember ms-1" src={row?.original?.createdImg} />
+                                </a>
+                            </>
+                            : <span title={row?.original?.Author?.Title} className="svg__iconbox svg__icon--defaultUser "></span>}
+                    </span>
+                ),
+            },
+
+            {
+                internalHeader: "",
+                id: "Id", // 'id' is required
+                isSorted: false,
+                style: { width: '65px' },
+                showSortIcon: false,
+                Cell: ({ row }: any) => (
+                    <>
+                        <a
+                            onClick={(e) => EditDataTimeEntry(e, row.original)}
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="auto"
+                            title="Click To Edit Timesheet"
+                        >
+                            <span
+                                className="svg__iconbox svg__icon--clock"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                title="Click To Edit Timesheet"
+                            ></span>
+                        </a>
+                        <span
+                            title="Edit Task"
+                            onClick={() => EditPopup(row?.original)}
+                            className="svg__iconbox svg__icon--edit hreflink"
+                        ></span>
+                    </>
+
+                ),
+            },
+        ],
+        []
+    );
+    const handleMouseEnter = (event: any) => {
+        const target = event.target;
+        const hasOverflow = target.scrollWidth > target.clientWidth;
+
+        if (hasOverflow) {
+            target.style.whiteSpace = 'normal';
+            target.style.overflow = 'visible';
+            target.style.textOverflow = 'unset';
+        }
+    };
+
+    const handleMouseLeave = (event: any) => {
+        const target = event.target;
+        target.style.whiteSpace = 'nowrap';
+        target.style.overflow = 'hidden';
+        target.style.textOverflow = 'ellipsis';
+    };
     const {
         getTableProps: getTablePropsToday,
         getTableBodyProps: getTableBodyPropsToday,
@@ -531,20 +1207,19 @@ const TaskDashboard = (props: any) => {
         useExpanded,
         usePagination
     );
-
     const {
-        getTableProps: getTablePropsApprover,
-        getTableBodyProps: getTableBodyPropsApprover,
-        headerGroups: headerGroupsApprover,
-        page: pageApprover,
-        prepareRow: prepareRowApprover,
-        gotoPage: gotoPageApprover,
-        setPageSize: setPageSizeApprover,
-        state: { pageIndex: pageIndexApprover, pageSize: pageSizeApprover },
+        getTableProps: getTablePropsTimeReport,
+        getTableBodyProps: getTableBodyPropsTimeReport,
+        headerGroups: headerGroupsTimeReport,
+        page: pageTimeReport,
+        prepareRow: prepareRowTimeReport,
+        gotoPage: gotoPageTimeReport,
+        setPageSize: setPageSizeTimeReport,
+        state: { pageIndex: pageIndexTimeReport, pageSize: pageSizeTimeReport },
     }: any = useTable(
         {
-            columns: columns,
-            data: assignedApproverTasks,
+            columns: columnTimeReport,
+            data: weeklyTimeReport,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
@@ -553,6 +1228,7 @@ const TaskDashboard = (props: any) => {
         useExpanded,
         usePagination
     );
+
     const {
         getTableProps: getTablePropsBottleneck,
         getTableBodyProps: getTableBodyPropsBottleneck,
@@ -566,6 +1242,84 @@ const TaskDashboard = (props: any) => {
         {
             columns: columns,
             data: bottleneckTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 100000 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
+    const {
+        getTableProps: getTablePropsApprover,
+        getTableBodyProps: getTableBodyPropsApprover,
+        headerGroups: headerGroupsApprover,
+        page: pageApprover,
+        prepareRow: prepareRowApprover,
+        gotoPage: gotoPageApprover,
+        setPageSize: setPageSizeApprover,
+        canPreviousPage: canPreviousPageApprover,
+        canNextPage: canNextPageApprover,
+        pageOptions: pageOptionsApprover,
+        pageCount: pageCountApprover,
+        nextPage: nextPageApprover,
+        previousPage: previousPageApprover,
+        state: { pageIndex: pageIndexApprover, pageSize: pageSizeApprover },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: assignedApproverTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
+    const {
+        getTableProps: getTablePropsAllPriority,
+        getTableBodyProps: getTableBodyPropsAllPriority,
+        headerGroups: headerGroupsAllPriority,
+        page: pageAllPriority,
+        prepareRow: prepareRowAllPriority,
+        gotoPage: gotoPageAllPriority,
+        setPageSize: setPageSizeAllPriority,
+        canPreviousPage: canPreviousPageAllPriority,
+        canNextPage: canNextPageAllPriority,
+        pageOptions: pageOptionsAllPriority,
+        pageCount: pageCountAllPriority,
+        nextPage: nextPageAllPriority,
+        previousPage: previousPageAllPriority,
+        state: { pageIndex: pageIndexAllPriority, pageSize: pageSizeAllPriority },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllPriorityTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
+    const {
+        getTableProps: getTablePropsImmediate,
+        getTableBodyProps: getTableBodyPropsImmediate,
+        headerGroups: headerGroupsImmediate,
+        page: pageImmediate,
+        prepareRow: prepareRowImmediate,
+        gotoPage: gotoPageImmediate,
+        setPageSize: setPageSizeImmediate,
+        state: { pageIndex: pageIndexImmediate, pageSize: pageSizeImmediate },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: UserImmediateTasks,
             defaultColumn: { Filter: DefaultColumnFilter },
             initialState: { pageIndex: 0, pageSize: 100000 },
         },
@@ -625,6 +1379,142 @@ const TaskDashboard = (props: any) => {
         usePagination
     );
 
+    const {
+        getTableProps: getTablePropsAllSite,
+        getTableBodyProps: getTableBodyPropsAllSite,
+        headerGroups: headerGroupsAllSite,
+        page: pageAllSite,
+        prepareRow: prepareRowAllSite,
+        gotoPage: gotoPageAllSite,
+        setPageSize: setPageSizeAllSite,
+        canPreviousPage: canPreviousPageAllSite,
+        canNextPage: canNextPageAllSite,
+        pageOptions: pageOptionsAllSite,
+        pageCount: pageCountAllSite,
+        nextPage: nextPageAllSite,
+        previousPage: previousPageAllSite,
+        state: { pageIndex: pageIndexAllSite, pageSize: pageSizeAllSite },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllSitesTask,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllImmediate,
+        getTableBodyProps: getTableBodyPropsAllImmediate,
+        headerGroups: headerGroupsAllImmediate,
+        page: pageAllImmediate,
+        prepareRow: prepareRowAllImmediate,
+        gotoPage: gotoPageAllImmediate,
+        setPageSize: setPageSizeAllImmediate,
+        canPreviousPage: canPreviousPageAllImmediate,
+        canNextPage: canNextPageAllImmediate,
+        pageOptions: pageOptionsAllImmediate,
+        pageCount: pageCountAllImmediate,
+        nextPage: nextPageAllImmediate,
+        previousPage: previousPageAllImmediate,
+        state: { pageIndex: pageIndexAllImmediate, pageSize: pageSizeAllImmediate },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllImmediateTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllEmail,
+        getTableBodyProps: getTableBodyPropsAllEmail,
+        headerGroups: headerGroupsAllEmail,
+        page: pageAllEmail,
+        prepareRow: prepareRowAllEmail,
+        gotoPage: gotoPageAllEmail,
+        setPageSize: setPageSizeAllEmail,
+        canPreviousPage: canPreviousPageAllEmail,
+        canNextPage: canNextPageAllEmail,
+        pageOptions: pageOptionsAllEmail,
+        pageCount: pageCountAllEmail,
+        nextPage: nextPageAllEmail,
+        previousPage: previousPageAllEmail,
+        state: { pageIndex: pageIndexAllEmail, pageSize: pageSizeAllEmail },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllEmailTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsAllBottle,
+        getTableBodyProps: getTableBodyPropsAllBottle,
+        headerGroups: headerGroupsAllBottle,
+        page: pageAllBottle,
+        prepareRow: prepareRowAllBottle,
+        gotoPage: gotoPageAllBottle,
+        setPageSize: setPageSizeAllBottle,
+        canPreviousPage: canPreviousPageAllBottle,
+        canNextPage: canNextPageAllBottle,
+        pageOptions: pageOptionsAllBottle,
+        pageCount: pageCountAllBottle,
+        nextPage: nextPageAllBottle,
+        previousPage: previousPageAllBottle,
+        state: { pageIndex: pageIndexAllBottle, pageSize: pageSizeAllBottle },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: AllBottleNeck,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+    const {
+        getTableProps: getTablePropsSharewebTask,
+        getTableBodyProps: getTableBodyPropsSharewebTask,
+        headerGroups: headerGroupsSharewebTask,
+        page: pageSharewebTask,
+        prepareRow: prepareRowSharewebTask,
+        gotoPage: gotoPageSharewebTask,
+        setPageSize: setPageSizeSharewebTask,
+        canPreviousPage: canPreviousPageSharewebTask,
+        canNextPage: canNextPageSharewebTask,
+        pageOptions: pageOptionsSharewebTask,
+        pageCount: pageCountSharewebTask,
+        nextPage: nextPageSharewebTask,
+        previousPage: previousPageSharewebTask,
+        state: { pageIndex: pageIndexSharewebTask, pageSize: pageSizeSharewebTask },
+    }: any = useTable(
+        {
+            columns: columns,
+            data: sharewebTasks,
+            defaultColumn: { Filter: DefaultColumnFilter },
+            initialState: { pageIndex: 0, pageSize: 30 },
+        },
+        useFilters,
+        useSortBy,
+        useExpanded,
+        usePagination
+    );
+
     const generateSortingIndicator = (column: any) => {
         return column.isSorted ? (
             column.isSortedDesc ? (
@@ -643,45 +1533,56 @@ const TaskDashboard = (props: any) => {
     //Update Task After Drop
     const UpdateTaskStatus = async (task: any) => {
         let postToday = task?.IsTodaysTask != undefined ? task.IsTodaysTask : false
+        let AssignedUsers = task?.AssignedToIds?.length > 0 ? task?.AssignedToIds : [];
         let postworkingThisWeekTask = task?.workingThisWeek != undefined ? task.workingThisWeek : false
         let web = new Web(task?.siteUrl);
         await web.lists.getById(task?.listId).items.getById(task?.Id).update({
             IsTodaysTask: postToday,
-            workingThisWeek: postworkingThisWeekTask
+            workingThisWeek: postworkingThisWeekTask,
+            AssignedToId: { "results": AssignedUsers }
+        }).then((res: any) => {
+            console.log("Drop Updated");
         })
-            .then((res: any) => {
-                console.log("Drop Updated");
-            })
 
     }
     //end
     const GetMetaData = async () => {
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        let smartmeta = [];
+        if (AllListId?.SmartMetadataListID != undefined) {
+            let web = new Web(AllListId?.siteUrl);
+            let smartmeta = [];
+            let select: any = '';
+            if (AllListId?.TaskTimeSheetListID != undefined && AllListId?.TaskTimeSheetListID != '') {
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Description,Configurations,TaxType,Description1,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            } else {
+                select = 'Id,IsVisible,ParentID,Title,SmartSuggestions,Configurations,TaxType,Item_x005F_x0020_Cover,Color_x0020_Tag,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable,Parent/Id,Parent/Title'
+            }
+            let TaxonomyItems = [];
+            try {
+                smartmeta = await web.lists
+                    .getById(AllListId?.SmartMetadataListID)
+                    .items.select(select)
+                    .top(5000)
+                    .expand("Parent")
+                    .get();
+                AllMetadata = smartmeta;
+                setAllSmartMetadata(AllMetadata)
+                siteConfig = smartmeta.filter((data: any) => {
+                    if (data?.IsVisible && data?.TaxType == 'Sites' && data?.Title != 'Master Tasks') {
+                        return data;
+                    }
+                });
+                timesheetListConfig = smartmeta.filter((data: any) => {
+                    if (data?.TaxType == 'timesheetListConfigrations') {
+                        return data;
+                    }
+                });
+                LoadAllSiteTasks();
 
-        let TaxonomyItems = [];
-        try {
-            smartmeta = await web.lists
-                .getById("01a34938-8c7e-4ea6-a003-cee649e8c67a")
-                .items.select("Id", "IsVisible", "ParentID", "Title", "SmartSuggestions", "Configurations", "TaxType", "Description1", "Item_x005F_x0020_Cover", "listId", "siteName", "siteUrl", "SortOrder", "SmartFilters", "Selectable", "Parent/Id", "Parent/Title")
-                .top(5000)
-                .filter("(TaxType eq 'Sites')or(TaxType eq 'timesheetListConfigrations')")
-                .expand("Parent")
-                .get();
-            siteConfig = smartmeta.filter((data: any) => {
-                if (data?.IsVisible && data?.TaxType == 'Sites') {
-                    return data;
-                }
-            });
-            timesheetListConfig = smartmeta.filter((data: any) => {
-                if (data?.TaxType == 'timesheetListConfigrations') {
-                    return data;
-                }
-            });
-            LoadAllSiteTasks();
+            } catch (error) {
 
-        } catch (error) {
-
+            }
+        } else {
+            alert("Smart Metadata List Id Not available")
         }
 
     };
@@ -707,32 +1608,65 @@ const TaskDashboard = (props: any) => {
 
     // Current User deatils
     const getCurrentUserDetails = async () => {
-        await axios.get(`${props?.pageContext?.web?.absoluteUrl}/_api/web/currentuser`, {
-            headers: {
-                "Accept": "application/json;odata=verbose"
-            }
-        })
-            .then(response => {
-                currentUserId = response?.data?.d?.Id;
-                console.log(`Current user ID: ${currentUserId}`);
+        try {
+            currentUserId = props?.pageContext?.legacyPageContext?.userId
+            taskUsers = await loadTaskUsers();
+            taskUsers?.map((item: any) => {
+                item.isAdmin = false;
+                if (currentUserId == item?.AssingedToUser?.Id) {
+                    currentUser = item;
+                    setCurrentUserData(item);
+                }
+                item.expanded = false;
+                getChilds1(item, taskUsers);
+                userGroups.push(item);
             })
-            .catch(error => {
-                console.log(error);
-            });
+            userGroups?.sort((a: any, b: any) => a.SortOrder - b.SortOrder)
+            setGroupedUsers(userGroups);
+            GetMetaData();
+        } catch (error) {
+            console.log(error)
+        }
 
-        taskUsers = await globalCommon.loadTaskUsers();
-        taskUsers?.map((item: any) => {
-            item.isAdmin = false;
-            if (currentUserId == item?.AssingedToUser?.Id) {
-                currentUser = item;
-                setCurrentUserData(item);
+    }
+    const loadTaskUsers = async () => {
+        let taskUser;
+        if (AllListId?.TaskUsertListID != undefined) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                taskUser = await web.lists
+                    .getById(AllListId?.TaskUsertListID)
+                    .items
+                    .select("Id,UserGroupId,Suffix,Title,Email,SortOrder,Role,showAllTimeEntry,IsShowTeamLeader,Company,Group,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name&$expand=AssingedToUser,Approver")
+                    .get();
             }
-            item.expanded = false;
-            getChilds1(item, taskUsers);
-            userGroups.push(item);
-        })
-        setGroupedUsers(userGroups);
-        GetMetaData();
+            catch (error) {
+                return Promise.reject(error);
+            }
+            return taskUser;
+        } else {
+            alert('Task User List Id not Available')
+        }
+    }
+    const loadTodaysLeave = async () => {
+        let todayAbsentEmp;
+        if (AllListId?.TaskUsertListID != undefined) {
+            try {
+                let web = new Web(AllListId?.siteUrl);
+                todayAbsentEmp = await web.lists
+                    .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
+                    .items
+                    .select("Id,name/Title,name/Id,title,start,end,reason,type,loc")
+                    .expand('name')
+                    .get();
+            }
+            catch (error) {
+                return Promise.reject(error);
+            }
+            console.log(todayAbsentEmp)
+        } else {
+            alert('Task User List Id not Available')
+        }
     }
     const createGroupUsers = () => {
         let Groups: any = [];
@@ -742,7 +1676,42 @@ const TaskDashboard = (props: any) => {
             getChilds1(item, taskUsers);
             Groups.push(item);
         })
+
         setGroupedUsers(Groups);
+    }
+    const getChilds1 = function (item: any, array: any) {
+        item.childs = [];
+
+        array?.map((childItem: any) => {
+            childItem.selected = false;
+            childItem.UserManagerMail = [];
+            childItem.UserManagerName = ''
+            childItem?.Approver?.map((Approver: any, index: any) => {
+                if (index == 0) {
+
+                    childItem.UserManagerName = Approver?.Title;
+                } else {
+                    childItem.UserManagerName += ' ,' + Approver?.Title
+                }
+                let Mail = Approver?.Name?.split('|')[2]
+                childItem.UserManagerMail.push(Mail)
+            })
+            if (childItem.UserGroupId != undefined && parseInt(childItem.UserGroupId) == item.ID && childItem.IsShowTeamLeader == true) {
+                item.childs.push(childItem);
+            }
+        })
+        item.childs.sort((a: any, b: any) => {
+            const titleA = a.Title.toLowerCase();
+            const titleB = b.Title.toLowerCase();
+
+            if (titleA < titleB) {
+                return -1;
+            }
+            if (titleA > titleB) {
+                return 1;
+            }
+            return 0;
+        });
     }
     // End
 
@@ -753,19 +1722,23 @@ const TaskDashboard = (props: any) => {
             user.selected = !user.selected;
             if (user?.AssingedToUserId != currentUserData?.AssingedToUserId) {
                 currentUserId = user?.AssingedToUserId;
-                setSelectedUser(user)
-                filterCurrentUserTask()
+                setSelectedUser(user);
+                filterCurrentUserTask();
+                currentUserTimeEntry('This Week');
             } else {
                 unSelectUser();
             }
         } else {
             user.selected = !user.selected;
             unSelectUser();
+
         }
     }
     const unSelectUser = () => {
         currentUserId = currentUserData?.AssingedToUserId;
         filterCurrentUserTask()
+        currentUserTimeEntry('This Week');
+        setCurrentView("Home")
         setSelectedUser({})
         createGroupUsers();
     }
@@ -773,7 +1746,7 @@ const TaskDashboard = (props: any) => {
 
     //On Drop Handle
     const handleDrop = (destination: any) => {
-        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.isAdmin == true) {
+        if (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) {
             let todayTasks = workingTodayTasks;
             let thisWeekTask = thisWeekTasks;
             let allTasks = AllAssignedTasks;
@@ -801,6 +1774,15 @@ const TaskDashboard = (props: any) => {
                 todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
                 thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
             }
+            if (destination == 'UnAssign') {
+                task.IsTodaysTask = false;
+                task.workingThisWeek = false;
+                task.AssignedToIds = task?.AssignedToIds?.filter((user: string) => user != currentUserId)
+                UpdateTaskStatus(task);
+                todayTasks = todayTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                thisWeekTask = thisWeekTask.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+                allTasks = allTasks.filter(taskItem => taskItem.Shareweb_x0020_ID != dragedTask.taskId)
+            }
             setAllAssignedTasks(allTasks);
             setThisWeekTasks(thisWeekTask);
             setWorkingTodayTasks(todayTasks);
@@ -819,6 +1801,327 @@ const TaskDashboard = (props: any) => {
         console.log(task, origin);
     }
     //region end
+
+    //Shareworking Today's Task In Email
+    const shareTaskInEmail = (input: any) => {
+        let currentLoginUser = currentUserData?.Title;
+        let CurrentUserSpace = currentLoginUser.replace(' ', '%20');
+        let body: any = '';
+        let text = '';
+        let to: any = [];
+        let body1: any = [];
+        let userApprover = '';
+        let tasksCopy = workingTodayTasks;
+        taskUsers?.map((user: any) => {
+            if (user?.Title == currentLoginUser && user?.Title != undefined) {
+                to = user?.UserManagerMail;
+                userApprover = user?.UserManagerName;
+            }
+        });
+        tasksCopy.sort((a: any, b: any) => {
+            return b.Priority_x0020_Rank - a.Priority_x0020_Rank;
+        });
+        let confirmation = confirm('Your' + ' ' + input + ' ' + 'will be automatically shared with your approver' + ' ' + '(' + userApprover + ')' + '.' + '\n' + 'Do you want to continue?')
+        if (confirmation) {
+            if (input == 'today working tasks') {
+
+                var subject = currentLoginUser + '-Today Working Tasks';
+                tasksCopy?.map((item: any) => {
+                    let teamUsers: any = [];
+                    item?.Team_x0020_Members?.map((item1: any) => {
+                        teamUsers.push(item1?.Title)
+                    });
+                    if (item.DueDate != undefined) {
+                        item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                    }
+                    if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                        item.TaskDueDatenew = '';
+                    if (item.Categories == undefined || item.Categories == '')
+                        item.Categories = '';
+                    if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                        item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                        item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+                    }
+                    if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                        item.EstimatedTime = ''
+                    }
+
+
+                    text =
+                        '<tr>' +
+                        '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                        + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                    body1.push(text);
+                });
+                body =
+                    '<h2>'
+                    + currentLoginUser + '- Today Working Tasks'
+                    + '</h2>'
+                    + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                    + '<thead>'
+                    + '<tr>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
+                    + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time (In Hrs)' + '</th>'
+                    + '</tr>'
+                    + '</thead>'
+                    + '<tbody>'
+                    + body1
+                    + '</tbody>'
+                    + '</table>'
+                    + '<p>' + 'For the complete Task Dashboard of ' + currentLoginUser + ' click the following link:' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '><span style="font-size:13px; font-weight:600">' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '</span>' + '</a>' + '</p>'
+
+
+            }
+            body = body.replaceAll('>,<', '><')
+        }
+        if (input == 'today time entries') {
+            var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
+            let timeSheetData = currentUserTimeEntryCalculation();
+            weeklyTimeReport.map((item: any) => {
+                if (item?.Categories == undefined || item.Categories == '')
+                    item.Categories = '';
+
+                text =
+                    '<tr>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.siteType + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + item?.Shareweb_x0020_ID + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item?.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item?.Id + '&Site=' + item?.siteType + '><span style="font-size:13px; font-weight:600">' + item?.Title + '</span></a>' + '</p>' + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.TaskTime + '</td>'
+                    + '<td style="line-height:18px;font-size:13px;padding:15px;">' + item?.Description + '</td>'
+                body1.push(text);
+
+            });
+            body =
+                `<table width="100%" align="center" cellpadding="0" cellspacing="0" style="border:1px solid #eee">
+            <thead>
+            <tr>
+            <th colspan="3" bgcolor="#eee" style="font-size:22px; padding:10px;"> Time report </th> 
+            </tr>
+            <tr>
+            <th colspan="3" align="center" valign="middle" style="font-size:18px; padding:10px;">
+            <p style="margin-top:0px; margin-bottom:5px">${currentLoginUser}</p>
+            </th>
+            </tr>
+            </thead>
+            <tbody style="border:1px solid #eee;">
+            <tr>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">Today</th>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This week</th>
+            <th height="20" align="center" valign="middle" style="font-size:15px ; border-right:1px solid #eee; border-top: 1px solid #eee; padding: 5px 0px 0px 0px;">This Month</th>
+            </tr>
+            <tr>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.today} Hour</th>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisWeek} Hour</th>
+            <th height="20" align="center" valign="middle" style="font-size:14px ; border-right:1px solid #eee;padding: 0px 0px 5px 0px;">${timeSheetData.thisMonth} Hour</th>
+            </tr>
+            </tbody>
+            </table> `
+                + '<table style="border: 1px solid #ccc; margin-top:5px;" border="0" cellspacing="0" cellpadding="0" width="100%">'
+                + '<thead>'
+                + '<tr>'
+                + '<th align="left"  bgcolor="#f5f5f5" style="line-height:18px;font-size:15px;padding:15px;width:5%">'
+                + 'Site'
+                + '</th>'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:10%" bgcolor="#f5f5f5">'
+                + 'Task ID'
+                + '</th>'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
+                + 'Title'
+                + '</th>'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:5%" bgcolor="#f5f5f5">'
+                + 'Time'
+                + '</th>'
+                + '<th align="left" style="line-height:18px;font-size:15px;padding:15px;width:40%" bgcolor="#f5f5f5">'
+                + 'Description'
+                + '</th>'
+                + '</tr>'
+                + '</thead>'
+                + '<tbody>'
+                + '<tr>'
+                + body1
+                + '</tr>'
+                + '</tbody>'
+                + '</table>'
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}` + '>Click here to open the Complete time entry' + '</a>' + '</p>'
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '>' + 'Click here to open Task Dashboard of ' + currentLoginUser + '</a>' + '</p>'
+            body = body.replaceAll('>,<', '><')
+        }
+
+
+
+
+        if (body1.length > 0 && body1 != undefined) {
+            if (currentUserData?.Email != undefined) {
+                to.push(currentUserData?.Email)
+            }
+            SendEmailFinal(to, subject, body);
+        } else {
+            alert("No entries available");
+        }
+    }
+    const SendEmailFinal = async (to: any, subject: any, body: any) => {
+        let sp = spfi().using(spSPFx(props?.props?.Context));
+        sp.utility.sendEmail({
+            //Body of Email  
+            Body: body,
+            //Subject of Email  
+            Subject: subject,
+            //Array of string for To of Email  
+            To: to,
+            AdditionalHeaders: {
+                "content-type": "text/html",
+                'Reply-To': 'abhishek.tiwari@smalsus.com'
+            },
+        }).then(() => {
+            console.log("Email Sent!");
+
+        }).catch((err) => {
+            console.log(err.message);
+        });
+
+
+
+    }
+    const sendAllWorkingTodayTasks = () => {
+        let text = '';
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
+        let finalBody: any = [];
+        let userApprover = '';
+        let taskUsersGroup = groupedUsers;
+        let confirmation = confirm("Are you sure you want to share the working today task of all team members?")
+        if (confirmation) {
+            var subject = "Today's Working Tasks of All Team";
+            taskUsersGroup?.map((userGroup: any) => {
+                let teamsTaskBody: any = [];
+                if (userGroup.Title == "Junior Developer Team" || userGroup.Title == "Senior Developer Team" || userGroup.Title == "Design Team" || userGroup.Title == "QA Team" || userGroup.Title == "Smalsus Lead Team") {
+                    if (userGroup.Title == "Smalsus Lead Team") {
+                        userGroup.childBackup = userGroup?.childs;
+                        userGroup.childs = [];
+                        userGroup?.childBackup?.map((user: any) => {
+                            if (user?.Title == 'Ranu Trivedi') {
+                                userGroup.childs.push(user);
+                            }
+                        })
+                    }
+                    userGroup?.childs?.map((teamMember: any) => {
+                        let body: any = '';
+                        let body1: any = [];
+                        let tasksCopy: any = [];
+                        tasksCopy = filterCurrentUserWorkingTodayTask(teamMember?.AssingedToUserId)
+                        if (tasksCopy?.length > 0) {
+                            tasksCopy?.map((item: any) => {
+                                let teamUsers: any = [];
+                                item?.Team_x0020_Members?.map((item1: any) => {
+                                    teamUsers.push(item1?.Title)
+                                });
+                                if (item.DueDate != undefined) {
+                                    item.TaskDueDatenew = Moment(item.DueDate).format("DD/MM/YYYY");
+                                }
+                                if (item.TaskDueDatenew == undefined || item.TaskDueDatenew == '')
+                                    item.TaskDueDatenew = '';
+                                if (item.Categories == undefined || item.Categories == '')
+                                    item.Categories = '';
+                                if (item.EstimatedTimeDescription != undefined && item.EstimatedTimeDescription != '') {
+                                    item['DescriptionaAndCategory'] = JSON.parse(item.EstimatedTimeDescription)
+                                    item['shortDescription'] = item.DescriptionaAndCategory[0].shortDescription;
+                                }
+                                if (item.EstimatedTime == undefined || item.EstimatedTime == '' || item.EstimatedTime == null) {
+                                    item.EstimatedTime = ''
+                                }
+
+
+                                text =
+                                    '<tr>' +
+                                    '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.siteType + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Shareweb_x0020_ID + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + '<p style="margin-top:0px; margin-bottom:2px;font-size:14px; color:#333;">' + '<a href =' + item.siteUrl + '/SitePages/Task-Profile.aspx?taskId=' + item.Id + '&Site=' + item.siteType + '><span style="font-size:13px; font-weight:600">' + item.Title + '</span></a>' + '</p>' + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Categories + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.PercentComplete + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.Priority_x0020_Rank + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + teamUsers + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.TaskDueDatenew + '</td>'
+                                    + '<td style="line-height:24px;font-size:13px;padding:15px;">' + item.EstimatedTime + '</td>'
+                                body1.push(text);
+                            })
+                            body =
+                                '<h3>'
+                                + teamMember?.Title + ` (${teamMember?.Group})`
+                                + '</h3>'
+                                + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
+                                + '<thead>'
+                                + '<tr>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Site' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Task ID' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Title' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Category' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + '% Complete' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Team' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Duedate' + '</th>'
+                                + '<th style="line-height:24px;font-size:15px;padding:10px;" bgcolor="#f5f5f5">' + 'Estimated Time (In Hrs)' + '</th>'
+                                + '</tr>'
+                                + '</thead>'
+                                + '<tbody>'
+                                + body1
+                                + '</tbody>'
+                                + '</table>'
+                            body = body.replaceAll('>,<', '><')
+                        } else {
+                            body = '<h3>'
+                                + teamMember?.Title + ` (${teamMember?.Group})`
+                                + '</h3>'
+                                + '<h4>'
+                                + 'No Working Today Tasks Available '
+                                + '</h4>'
+
+
+                        }
+
+
+
+                        teamsTaskBody.push(body);
+                    })
+                    let TeamTitle = '<h2>'
+                        + userGroup.Title
+                        + '</h2>'
+                        + teamsTaskBody
+                    finalBody.push(TeamTitle)
+                }
+            })
+            let sendAllTasks =
+                '<h3>'
+                + 'Please Find the Working Today Tasks of all the Team members mentioned Below.'
+                + '</h3>'
+                + finalBody
+                + '<h3>'
+                + 'Thanks And regards'
+                + '</h3>'
+                + '<h3>'
+                + currentUserData?.Title
+                + '</h3>'
+            SendEmailFinal(to, subject, sendAllTasks);
+
+        }
+
+
+    }
+
+    //end
+
     //Toggle Team 
     const toggleTeamUsers = (index: any) => {
         let userGroups = groupedUsers;
@@ -836,10 +2139,34 @@ const TaskDashboard = (props: any) => {
     const onChangeInSelectAll = (event: any) => {
         setPageSizeAll(Number(event.target.value));
     };
+    const onChangeInSelectAllPriority = (event: any) => {
+        setPageSizeAllPriority(Number(event.target.value));
+    };
+    const onChangeInSelectApprover = (event: any) => {
+        setPageSizeApprover(Number(event.target.value));
+    };
+    const onChangeInSelectAllSite = (event: any) => {
+        setPageSizeAllSite(Number(event.target.value));
+    };
+    const onChangeInSelectAllBottle = (event: any) => {
+        setPageSizeAllBottle(Number(event.target.value));
+    };
+    const onChangeInSelectSharewebTask = (event: any) => {
+        setPageSizeSharewebTask(Number(event.target.value));
+    };
+    const onChangeInSelectAllImmediate = (event: any) => {
+        setPageSizeAllImmediate(Number(event.target.value));
+    };
+    const onChangeInSelectAllEmail = (event: any) => {
+        setPageSizeAllEmail(Number(event.target.value));
+    };
     //End
     return (
         <>
-            <div className="Dashboardsecrtion" style={{ minHeight: '800px' }}>
+            <div className='header-section justify-content-between'>
+                <h2 style={{ color: "#000066", fontWeight: "600" }}>Task Dashboard</h2>
+            </div>
+            <div className="TaskDashboardPage Dashboardsecrtion" style={{ minHeight: '800px' }}>
                 <div className={updateContent ? "dashboard-colm" : "dashboard-colm"}>
                     <aside className="sidebar">
                         <button
@@ -851,7 +2178,7 @@ const TaskDashboard = (props: any) => {
                         ></button>
                         <section className="sidebar__section sidebar__section--menu">
                             <nav className="nav__item">
-                                <ul className="nav__list">
+                                <ul className="nav__list mb-0">
                                     <li id="DefaultViewSelectId" className="nav__item ">
                                         <a className="nav__link border-bottom pb-1" >
                                             <span className="nav__icon nav__icon--home"></span>
@@ -864,6 +2191,10 @@ const TaskDashboard = (props: any) => {
                                     <li className="nav__item  pb-1 pt-0">
 
                                     </li>
+                                    {currentUserData?.Title == "Ranu Trivedi" || currentUserData?.Title == "Abhishek Tiwari" || currentUserData?.Title == "Prashant Kumar" ?
+                                        <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                                            Share Everyone's Today's Task
+                                        </a> : ''}
                                 </ul>
                             </nav>
                         </section>
@@ -877,11 +2208,8 @@ const TaskDashboard = (props: any) => {
                                                 <h6>
                                                     {today.day}
                                                 </h6>
-                                                <h4>
-                                                    {today.date}
-                                                </h4>
                                                 <h5>
-                                                    {today.month}
+                                                    {today.date} {today.month}
                                                 </h5>
                                             </div>
                                         </a>
@@ -893,20 +2221,62 @@ const TaskDashboard = (props: any) => {
                             </nav>
                         </section>
                         <section className="sidebar__section sidebar__section--menu">
+                            {
+                                (currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) ?
+                                    <>
+                                        <div onDrop={(e: any) => handleDrop('UnAssign')} className="mb-2 nontag text-center drophere nav__text" onDragOver={(e: any) => e.preventDefault()}>
+                                            Drop here to Un-Assign
+                                        </div>
+                                        {/* <a className='text-white hreflink' onClick={() => sendAllWorkingTodayTasks()}>
+                                                Share Everyone Today's Task
+                                            </a> */}
+                                        <></>
+                                    </> : ""
+                            }
                             <nav className="nav__item">
+                                <ul className="nav__list text-center" >
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllImmediateTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllImmediateTasks') }}>
+                                        Immediate Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllEmailTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllEmailTasks') }}>
+                                        Email-Notification
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'AllPriorityTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('AllPriorityTasks') }}>
+                                        Priority Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allApproverView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allApproverView') }}>
+                                        Approver Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allBottlenecks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allBottlenecks') }}>
+                                        Bottleneck Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'allTasksView' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('allTasksView') }}>
+                                        All Tasks
+                                    </li>
+                                    <li id="DefaultViewSelectId" className={currentView == 'sharewebTasks' ? "nav__text bg-secondary mb-1 hreflink" : "nav__text mb-1 bg-shade hreflink "} onClick={() => { setCurrentView('sharewebTasks') }}>
+                                        Shareweb Tasks
+                                    </li>
+
+                                </ul>
+                            </nav>
+                        </section>
+                        <section className="sidebar__section sidebar__section--menu" onClick={() => setCurrentView('Home')}>
+                            <nav className="nav__item">
+
                                 <ul className="nav__list">
+
                                     {groupedUsers?.map((filterItem: any, index: any) => {
                                         if (filterItem?.childs?.length > 0) {
                                             return (
-                                                <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink  pt-0 " : "nav__text hreflink  pt-0 "}>
+                                                <li id="DefaultViewSelectId" onClick={() => toggleTeamUsers(index)} className={updateContent ? "nav__text hreflink bg-shade  mb-1 " : "nav__text bg-shade hreflink mb-1 "}>
                                                     {filterItem?.Title}
-                                                    {filterItem?.expanded ? <FaSortUp className='text-white' /> : <FaSortDown className='text-white' />}
+                                                    {filterItem?.expanded ? <span className='svg__iconbox svg__icon--arrowDown  float-start me-1 '></span> : <span className='svg__iconbox svg__icon--arrowRight  float-start me-1'></span>}
                                                     {
                                                         filterItem?.expanded == true ?
-                                                            <ul className="nav__list">
+                                                            <ul className="nav__list ms-2">
                                                                 {filterItem?.childs?.map((childUsers: any) => {
                                                                     return (
-                                                                        <li id="DefaultViewSelectId" className="nav__text  ms-3  ">
+                                                                        <li id="DefaultViewSelectId" className="nav__text  ms-3">
                                                                             <a className={childUsers?.selected ? 'bg-ee hreflink ' : 'text-white hreflink'}
                                                                                 target="_blank" data-interception="off" title={childUsers.Title} onClick={() => changeSelectedUser(childUsers)}>
                                                                                 {childUsers.Title}
@@ -924,9 +2294,10 @@ const TaskDashboard = (props: any) => {
                                 </ul>
                             </nav>
                         </section>
+
                     </aside>
                     <div className={updateContent ? "dashboard-content ps-2 full-width" : "dashboard-content ps-2 full-width"} >
-                        <article className="row">
+                        {currentView == 'Home' ? <article className="row">
                             {selectedUser?.Title != undefined ?
                                 <div className="col-md-12 clearfix">
                                     <h5 className="d-inline-block">
@@ -936,13 +2307,16 @@ const TaskDashboard = (props: any) => {
                                 </div>
                                 : ''}
                             <div className="col-md-12">
-                                <details open>
-                                    <summary> Working Today Tasks {'(' + pageToday?.length + ')'}</summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('workingToday')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                <details open onDrop={(e: any) => handleDrop('workingToday')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
+                                    <summary> Working Today Tasks {'(' + pageToday?.length + ')'}
+                                        {
+                                            currentUserId == currentUserData?.AssingedToUserId ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today working tasks')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share Today Working Tasks</span> : ""
+                                        }</summary>
+                                    <div className='AccordionContent mx-height'>
                                         {workingTodayTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsToday()}>
-                                                <thead>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsToday()}>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsToday?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1006,13 +2380,13 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                <details>
+                                <details onDrop={(e: any) => handleDrop('thisWeek')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
                                     <summary> Working This Week Tasks {'(' + pageWeek?.length + ')'} </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} onDrop={(e: any) => handleDrop('thisWeek')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                    <div className='AccordionContent mx-height'  >
                                         {thisWeekTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsWeek()} >
-                                                <thead>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsWeek()} >
+                                                <thead className="fixed-Header">
                                                     {headerGroupsWeek?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1076,11 +2450,78 @@ const TaskDashboard = (props: any) => {
                                     </div>
                                 </details>
                                 <details>
+                                    <summary>  Immediate Tasks {'(' + pageImmediate?.length + ')'} </summary>
+                                    <div className='AccordionContent mx-height'  >
+                                        {UserImmediateTasks?.length > 0 ?
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsImmediate()}>
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsImmediate?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageImmediate?.length > 0 ?
+                                                    <tbody {...getTableBodyPropsImmediate}>
+                                                        {pageImmediate?.map((row: any) => {
+                                                            prepareRowImmediate(row);
+                                                            return (
+                                                                <tr {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                    {row.cells.map(
+                                                                        (cell: {
+                                                                            getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                            render: (
+                                                                                arg0: string
+                                                                            ) =>
+                                                                                | boolean
+                                                                                | React.ReactChild
+                                                                                | React.ReactFragment
+                                                                                | React.ReactPortal;
+                                                                        }) => {
+                                                                            return (
+                                                                                <td {...cell.getCellProps()}>
+                                                                                    {cell.render("Cell")}
+                                                                                </td>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody> :
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
+                                            </Table>
+                                            : <div className='text-center full-width'>
+                                                <span>No Immediate Tasks Available</span>
+                                            </div>}
+                                    </div>
+                                </details>
+                                <details>
                                     <summary>  Bottleneck Tasks {'(' + pageBottleneck?.length + ')'} </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
+                                    <div className='AccordionContent mx-height'  >
                                         {bottleneckTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsBottleneck()}>
-                                                <thead>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} bordered hover  {...getTablePropsBottleneck()}>
+                                                <thead className="fixed-Header">
                                                     {headerGroupsBottleneck?.map((headerGroup: any) => (
                                                         <tr {...headerGroup.getHeaderGroupProps()}>
                                                             {headerGroup.headers.map((column: any) => (
@@ -1142,82 +2583,16 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
-                                <details>
-                                    <summary>     Approver Tasks {'(' + pageApprover?.length + ')'}</summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }} >
-                                        {assignedApproverTasks?.length > 0 ?
-                                            <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover  {...getTablePropsApprover()}>
-                                                <thead>
-                                                    {headerGroupsApprover?.map((headerGroup: any) => (
-                                                        <tr {...headerGroup.getHeaderGroupProps()}>
-                                                            {headerGroup.headers.map((column: any) => (
-                                                                <th {...column.getHeaderProps()} style={column?.style}>
-                                                                    <span
-                                                                        class="Table-SortingIcon"
-                                                                        style={{ marginTop: "-6px" }}
-                                                                        {...column.getSortByToggleProps()}
-                                                                    >
-                                                                        {column.render("Header")}
-                                                                        {generateSortingIndicator(column)}
-                                                                    </span>
-                                                                    <Filter column={column} />
-                                                                </th>
-                                                            ))}
-                                                        </tr>
-                                                    ))}
-                                                </thead>
-                                                {pageApprover?.length > 0 ?
-                                                    <tbody {...getTableBodyPropsApprover}>
-                                                        {pageApprover?.map((row: any) => {
-                                                            prepareRowApprover(row);
-                                                            return (
-                                                                <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
-                                                                    {row.cells.map(
-                                                                        (cell: {
-                                                                            getCellProps: () => JSX.IntrinsicAttributes &
-                                                                                React.ClassAttributes<HTMLTableDataCellElement> &
-                                                                                React.TdHTMLAttributes<HTMLTableDataCellElement>;
-                                                                            render: (
-                                                                                arg0: string
-                                                                            ) =>
-                                                                                | boolean
-                                                                                | React.ReactChild
-                                                                                | React.ReactFragment
-                                                                                | React.ReactPortal;
-                                                                        }) => {
-                                                                            return (
-                                                                                <td {...cell.getCellProps()}>
-                                                                                    {cell.render("Cell")}
-                                                                                </td>
-                                                                            );
-                                                                        }
-                                                                    )}
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody> :
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colSpan={columns?.length}>
-                                                                <div className="text-center full-width"><span>No Search Result</span></div>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>}
-                                            </Table> : <div className='text-center full-width'>
-                                                <span>No Approver Tasks Available</span>
-                                            </div>}
-                                    </div>
-                                </details>
-                                <details>
+                                <details onDrop={(e: any) => handleDrop('AllTasks')}
+                                    onDragOver={(e: any) => e.preventDefault()}>
                                     <summary>
                                         Assigned Tasks {'(' + backupTaskArray?.AllAssignedTasks?.length + ')'}
                                     </summary>
-                                    <div className='AccordionContent' style={{ maxHeight: '300px', overflow: 'auto' }}  onDrop={(e: any) => handleDrop('AllTasks')}
-                                        onDragOver={(e: any) => e.preventDefault()}>
+                                    <div className='AccordionContent mx-height' >
                                         {AllAssignedTasks?.length > 0 ?
                                             <>
-                                                <Table className={updateContent ? "SortingTable" : "SortingTable"} bordered hover {...getTablePropsAll()} >
-                                                    <thead>
+                                                <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAll()} >
+                                                    <thead className="fixed-Header">
                                                         {headerGroupsAll?.map((headerGroup: any) => (
                                                             <tr {...headerGroup.getHeaderGroupProps()}>
                                                                 {headerGroup.headers.map((column: any) => (
@@ -1266,9 +2641,13 @@ const TaskDashboard = (props: any) => {
                                                                 </tr>
                                                             );
                                                         })}
-                                                    </tbody> : <div className='text-center full-width'>
-                                                        <span>No Search Result</span>
-                                                    </div>}
+                                                    </tbody> : <tbody>
+                                                        <tr>
+                                                            <td colSpan={columns?.length}>
+                                                                <div className="text-center full-width"><span>No Search Result</span></div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>}
 
                                                 </Table>
                                                 <nav>
@@ -1318,13 +2697,933 @@ const TaskDashboard = (props: any) => {
                                             </div>}
                                     </div>
                                 </details>
+                                {((currentUserId == currentUserData?.AssingedToUserId || currentUserData?.showAllTimeEntry == true) && isTimeEntry == true) ?
+                                    <>
+                                        <div className='workrTimeReport'>
+                                            <dl>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="Yesterday" name="date" checked={selectedTimeReport == 'Yesterday'} onClick={() => currentUserTimeEntry('Yesterday')} /> Yesterday
+                                                </dt>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="Today" name="date" checked={selectedTimeReport == 'Today'} onClick={() => currentUserTimeEntry('Today')} /> Today
+                                                </dt>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="This Week" name="date" checked={selectedTimeReport == 'This Week'} onClick={() => currentUserTimeEntry('This Week')} /> This Week
+                                                </dt>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="Last Week" name="date" checked={selectedTimeReport == 'Last Week'} onClick={() => currentUserTimeEntry('Last Week')} /> Last Week
+                                                </dt>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="This Month" name="date" checked={selectedTimeReport == 'This Month'} onClick={() => currentUserTimeEntry('This Month')} /> This Month
+                                                </dt>
+                                                <dt className='form-check l-radio'>
+                                                    <input className='form-check-input' type="radio" value="Last Month" name="date" checked={selectedTimeReport == 'Last Month'} onClick={() => currentUserTimeEntry('Last Month')} /> Last Month
+                                                </dt>
+                                            </dl>
+                                        </div>
+                                        <details>
+                                            {timeEntryTotal > 1 ?
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hours)'}
+                                                    {
+                                                        currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                    }
+                                                </summary> :
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hour)'}
+                                                    {
+                                                        currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
+                                                    }
+                                                </summary>
+                                            }
+
+                                            <div className='AccordionContent mx-height timeEntryReport'  >
+                                                {weeklyTimeReport?.length > 0 ?
+                                                    <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
+                                                        <thead className="fixed-Header">
+                                                            {headerGroupsTimeReport?.map((headerGroup: any) => (
+                                                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                                                    {headerGroup.headers.map((column: any) => (
+                                                                        <th {...column.getHeaderProps()} style={column?.style}>
+                                                                            <span
+                                                                                class="Table-SortingIcon"
+                                                                                style={{ marginTop: "-6px" }}
+                                                                                {...column.getSortByToggleProps()}
+                                                                            >
+                                                                                {column.render("Header")}
+                                                                                {generateSortingIndicator(column)}
+                                                                            </span>
+                                                                            <Filter column={column} />
+                                                                        </th>
+                                                                    ))}
+                                                                </tr>
+                                                            ))}
+                                                        </thead>
+                                                        {pageTimeReport?.length > 0 ?
+                                                            <tbody {...getTableBodyPropsTimeReport}>
+                                                                {pageTimeReport?.map((row: any) => {
+                                                                    prepareRowTimeReport(row);
+                                                                    return (
+                                                                        <tr onClick={() => { selectedInlineTask = { table: "timeEntry Task", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                            {row.cells.map(
+                                                                                (cell: {
+                                                                                    getCellProps: () => JSX.IntrinsicAttributes &
+                                                                                        React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                                        React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                                    render: (
+                                                                                        arg0: string
+                                                                                    ) =>
+                                                                                        | boolean
+                                                                                        | React.ReactChild
+                                                                                        | React.ReactFragment
+                                                                                        | React.ReactPortal;
+                                                                                }) => {
+                                                                                    return (
+                                                                                        <td {...cell.getCellProps()}>
+                                                                                            {cell.render("Cell")}
+                                                                                        </td>
+                                                                                    );
+                                                                                }
+                                                                            )}
+                                                                        </tr>
+                                                                    );
+                                                                })}
+                                                            </tbody> :
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td colSpan={columns?.length}>
+                                                                        <div className="text-center full-width"><span>No Search Result</span></div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>}
+                                                    </Table> : <div className='text-center full-width'>
+                                                        <span>No Time Entry Available</span>
+                                                    </div>}
+                                            </div>
+                                        </details>
+                                    </>
+                                    : ''
+                                }
 
                             </div>
                         </article>
+                            : ''}
+                        {currentView == 'allBottlenecks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`All Bottleneck Tasks - ${AllBottleNeck?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllBottleNeck?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllBottle()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllBottle?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllBottle?.length > 0 ? <tbody {...getTableBodyPropsAllBottle()}>
+                                                    {pageAllBottle?.map((row: any) => {
+                                                        prepareRowAllBottle(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllBottle()} disabled={!canPreviousPageAllBottle}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllBottle + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllBottle()} disabled={!canNextPageAllBottle}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllBottle}
+                                                            onChange={onChangeInSelectAllBottle}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllBottle) => (
+                                                                <option key={pageSizeAllBottle} value={pageSizeAllBottle}>
+                                                                    Show {pageSizeAllBottle}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Bottleneck Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'allTasksView' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`All Site's Tasks - ${AllSitesTask?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllSitesTask?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllSite()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllSite?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllSite?.length > 0 ? <tbody {...getTableBodyPropsAllSite()}>
+                                                    {pageAllSite?.map((row: any) => {
+                                                        prepareRowAllSite(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllSite()} disabled={!canPreviousPageAllSite}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllSite + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllSite()} disabled={!canNextPageAllSite}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllSite}
+                                                            onChange={onChangeInSelectAllSite}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllSite) => (
+                                                                <option key={pageSizeAllSite} value={pageSizeAllSite}>
+                                                                    Show {pageSizeAllSite}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No All Sites Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'allApproverView' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Approver Tasks - ${pageApprover?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {assignedApproverTasks?.length > 0 ?
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsApprover()}>
+                                            <thead className="fixed-Header">
+                                                {headerGroupsApprover?.map((headerGroup: any) => (
+                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                        {headerGroup.headers.map((column: any) => (
+                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                <span
+                                                                    class="Table-SortingIcon"
+                                                                    style={{ marginTop: "-6px" }}
+                                                                    {...column.getSortByToggleProps()}
+                                                                >
+                                                                    {column.render("Header")}
+                                                                    {generateSortingIndicator(column)}
+                                                                </span>
+                                                                <Filter column={column} />
+                                                            </th>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </thead>
+                                            {pageApprover?.length > 0 ?
+                                                <tbody {...getTableBodyPropsApprover}>
+                                                    {pageApprover?.map((row: any) => {
+                                                        prepareRowApprover(row);
+                                                        return (
+                                                            <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> :
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+                                        </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageApprover()} disabled={!canPreviousPageApprover}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexApprover + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageApprover()} disabled={!canNextPageApprover}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeApprover}
+                                                            onChange={onChangeInSelectApprover}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeApprover) => (
+                                                                <option key={pageSizeApprover} value={pageSizeApprover}>
+                                                                    Show {pageSizeApprover}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+
+                                        : <div className='text-center full-width'>
+                                            <span>No Approver Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllPriorityTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Priority Tasks - ${AllPriorityTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllPriorityTasks?.length > 0 ?
+                                        <> <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover  {...getTablePropsAllPriority()}>
+                                            <thead className="fixed-Header">
+                                                {headerGroupsAllPriority?.map((headerGroup: any) => (
+                                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                                        {headerGroup.headers.map((column: any) => (
+                                                            <th {...column.getHeaderProps()} style={column?.style}>
+                                                                <span
+                                                                    class="Table-SortingIcon"
+                                                                    style={{ marginTop: "-6px" }}
+                                                                    {...column.getSortByToggleProps()}
+                                                                >
+                                                                    {column.render("Header")}
+                                                                    {generateSortingIndicator(column)}
+                                                                </span>
+                                                                <Filter column={column} />
+                                                            </th>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </thead>
+                                            {pageAllPriority?.length > 0 ?
+                                                <tbody {...getTableBodyPropsAllPriority}>
+                                                    {pageAllPriority?.map((row: any) => {
+                                                        prepareRowAllPriority(row);
+                                                        return (
+                                                            <tr onClick={() => { selectedInlineTask = { table: "approverTask", taskId: row?.original?.Id } }}  {...row.getRowProps()} className={row?.original?.Services?.length > 0 ? 'serviepannelgreena' : ''}>
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> :
+                                                <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+                                        </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllPriority()} disabled={!canPreviousPageAllPriority}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllPriority + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllPriority()} disabled={!canNextPageAllPriority}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllPriority}
+                                                            onChange={onChangeInSelectAllPriority}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllPriority) => (
+                                                                <option key={pageSizeAllPriority} value={pageSizeAllPriority}>
+                                                                    Show {pageSizeAllPriority}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+
+                                        : <div className='text-center full-width'>
+                                            <span>No Priority Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'sharewebTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Shareweb Tasks - ${sharewebTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {sharewebTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllSite()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsSharewebTask?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageSharewebTask?.length > 0 ? <tbody {...getTableBodyPropsSharewebTask()}>
+                                                    {pageSharewebTask?.map((row: any) => {
+                                                        prepareRowSharewebTask(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageSharewebTask()} disabled={!canPreviousPageSharewebTask}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexSharewebTask + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageSharewebTask()} disabled={!canNextPageSharewebTask}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeSharewebTask}
+                                                            onChange={onChangeInSelectSharewebTask}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeSharewebTask) => (
+                                                                <option key={pageSizeSharewebTask} value={pageSizeSharewebTask}>
+                                                                    Show {pageSizeSharewebTask}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Shareweb Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllImmediateTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Immediate Tasks - ${AllImmediateTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllImmediateTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllImmediate()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllImmediate?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllImmediate?.length > 0 ? <tbody {...getTableBodyPropsAllImmediate()}>
+                                                    {pageAllImmediate?.map((row: any) => {
+                                                        prepareRowAllImmediate(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllImmediate()} disabled={!canPreviousPageAllImmediate}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllImmediate + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllImmediate()} disabled={!canNextPageAllImmediate}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllImmediate}
+                                                            onChange={onChangeInSelectAllImmediate}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllImmediate) => (
+                                                                <option key={pageSizeAllImmediate} value={pageSizeAllImmediate}>
+                                                                    Show {pageSizeAllImmediate}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No Immediate Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
+                        {currentView == 'AllEmailTasks' ? <article className="row">
+                            <div>
+                                <div className='' >
+                                    <div className="col-md-12 clearfix">
+                                        <h5 className="d-inline-block">
+                                            {`Email-Notification's Tasks - ${AllEmailTasks?.length}`}
+                                        </h5>
+                                        <span className='pull-right hreflink' onClick={() => setCurrentView("Home")}>Return To Home</span>
+                                    </div>
+                                    {AllEmailTasks?.length > 0 ?
+                                        <>
+                                            <Table className={updateContent ? "SortingTable mb-0" : "SortingTable mb-0"} hover {...getTablePropsAllEmail()} >
+                                                <thead className="fixed-Header">
+                                                    {headerGroupsAllEmail?.map((headerGroup: any) => (
+                                                        <tr {...headerGroup.getHeaderGroupProps()}>
+                                                            {headerGroup.headers.map((column: any) => (
+                                                                <th {...column.getHeaderProps()} style={column?.style}>
+                                                                    <span
+                                                                        class="Table-SortingIcon"
+                                                                        style={{ marginTop: "-6px" }}
+                                                                        {...column.getSortByToggleProps()}
+                                                                    >
+                                                                        {column.render("Header")}
+                                                                        {generateSortingIndicator(column)}
+                                                                    </span>
+                                                                    <Filter column={column} />
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </thead>
+                                                {pageAllEmail?.length > 0 ? <tbody {...getTableBodyPropsAllEmail()}>
+                                                    {pageAllEmail?.map((row: any) => {
+                                                        prepareRowAllEmail(row);
+                                                        return (
+                                                            <tr >
+                                                                {row.cells.map(
+                                                                    (cell: {
+                                                                        getCellProps: () => JSX.IntrinsicAttributes &
+                                                                            React.ClassAttributes<HTMLTableDataCellElement> &
+                                                                            React.TdHTMLAttributes<HTMLTableDataCellElement>;
+                                                                        render: (
+                                                                            arg0: string
+                                                                        ) =>
+                                                                            | boolean
+                                                                            | React.ReactChild
+                                                                            | React.ReactFragment
+                                                                            | React.ReactPortal;
+                                                                    }) => {
+                                                                        return (
+                                                                            <td {...cell.getCellProps()}>
+                                                                                {cell.render("Cell")}
+                                                                            </td>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody> : <tbody>
+                                                    <tr>
+                                                        <td colSpan={columns?.length}>
+                                                            <div className="text-center full-width"><span>No Search Result</span></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>}
+
+                                            </Table>
+                                            <nav className="pull-right">
+                                                <Pagination>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => previousPageAllEmail()} disabled={!canPreviousPageAllEmail}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleLeft aria-hidden={true} />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink>
+                                                            {pageIndexAllEmail + 1}
+
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    <PaginationItem>
+                                                        <PaginationLink onClick={() => nextPageAllEmail()} disabled={!canNextPageAllEmail}>
+                                                            <span aria-hidden={true}>
+                                                                <FaAngleRight
+                                                                    aria-hidden={true}
+
+                                                                />
+                                                            </span>
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                    {/* <Col md={2}>
+                                                        <Input
+                                                            type='select'
+                                                            value={pageSizeAllEmail}
+                                                            onChange={onChangeInSelectAllEmail}
+                                                        >
+
+                                                            {[10, 20, 30, 40, 50].map((pageSizeAllEmail) => (
+                                                                <option key={pageSizeAllEmail} value={pageSizeAllEmail}>
+                                                                    Show {pageSizeAllEmail}
+                                                                </option>
+                                                            ))}
+                                                        </Input>
+                                                    </Col> */}
+                                                </Pagination>
+                                            </nav>
+                                        </>
+                                        : <div className='text-center full-width'>
+                                            <span>No E-Mail Tasks Available</span>
+                                        </div>}
+                                </div>
+                            </div>
+                        </article> : ''}
                     </div>
                     <div>
                         {isOpenEditPopup ? (
-                            <EditTaskPopup Items={passdata} Call={editTaskCallBack} />
+                            <EditTaskPopup AllListId={AllListId} context={props?.props?.Context} Items={passdata} pageName="TaskDashBoard" Call={editTaskCallBack} />
                         ) : (
                             ""
                         )}
@@ -1334,6 +3633,8 @@ const TaskDashboard = (props: any) => {
                 </div>
             </div>
             {pageLoaderActive ? <PageLoader /> : ''}
+            {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+
         </>
     )
 }

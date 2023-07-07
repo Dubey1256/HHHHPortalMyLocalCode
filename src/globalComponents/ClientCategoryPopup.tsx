@@ -12,13 +12,14 @@ const ClientCategoryPupup=(props:any)=>{
     const [searchedData, setSearchedData] = React.useState([])
     const [selectedCategory, setSelectedCategory] = React.useState([]);
     const [value, setValue] = React.useState("");
-    const [select,setSelect] = React.useState([])
+    const [select,setSelect] = React.useState(props.selectedClientCategoryData!=undefined?props.selectedClientCategoryData:[])
     console.log(props)
     React.useEffect(()=>{
         GetCategoryData();
     },[])
     const closePopupSmartTaxanomy = () => {
         setPopupSmartTaxanomy(false)
+        props.Call();
        // NewArray = []
        // setSelect([])
        // item.closePopupCallBack();
@@ -76,12 +77,10 @@ const ClientCategoryPupup=(props:any)=>{
 
     const customHeader = () => {
         return (
-            <div className="d-flex full-width pb-1" >
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span>
-                        Select Category
-                    </span>
-                </div>
+            <div className={props.props.Services.length>0?"d-flex full-width pb-1 serviepannelgreena":"d-flex full-width pb-1"} >
+                <div    style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+              <h2 className="heading">Select -Client Category</h2>
+                 </div>
                 <Tooltip ComponentId="1626" />
             </div>
         )
@@ -112,7 +111,7 @@ const ClientCategoryPupup=(props:any)=>{
     }
     const deleteSelectedCat = (val: any) => {
        
-            select.map((valuee: any, index) => {
+            select.map((valuee: any, index:any) => {
                 if (val.Id == valuee.Id) {
                     select.splice(index, 1)
                 }
@@ -125,7 +124,7 @@ const ClientCategoryPupup=(props:any)=>{
 
             })
 
-            setSelect(select => ([...select]));
+            setSelect((select: any) => ([...select]));
         
     }
     function Example(callBack: any, type: any) {
@@ -135,13 +134,17 @@ const ClientCategoryPupup=(props:any)=>{
         props.Call(callBack.props, type);
     }
     const saveCategories = () => {
-      
+    
         props.props.Clientcategories = [];
         props.props.smartClientCategories = [];
             var title: any = {}
             // title.Title = select;
             props.props.smartClientCategories.push(title);
-            props.props.Clientcategories = NewArray;
+            props.props.Clientcategories = NewArray.filter((val: any, id: any, array: any) => {
+
+                return array.indexOf(val) == id;
+                   })
+           // props.props.Clientcategories = NewArray;
             Example(props, 'ClientCategory');
         }
 
@@ -171,6 +174,7 @@ const ClientCategoryPupup=(props:any)=>{
                 onDismiss={closePopupSmartTaxanomy}
                 isBlocking={false}
                 onRenderFooter={customFooter}
+                className={props?.props?.Portfolio_x0020_Type == 'Service'||props?.props?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
                 <div id="SmartTaxonomyPopup">
                     <div className="modal-body">
@@ -246,10 +250,11 @@ const ClientCategoryPupup=(props:any)=>{
                                     {select.map((val: any) => {
                                         return (
                                             <>
-                                                <span>
-                                                    <a className="hreflink block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
-                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a>
-                                                </span>
+                                               
+                                                    {/* <a className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)"> {val.Title}
+                                                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" className="ms-2" onClick={() => deleteSelectedCat(val)} /></a> */}
+                                                      <a  className=" block p-1 px-2 mx-1" ng-click="removeSmartArray(item.Id)">  {val.Title}<span  className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteSelectedCat(val)}></span></a>
+                                                      
                                             </>
                                         )
                                     })}

@@ -1,4 +1,4 @@
-import { ColumnActionsMode, ContextualMenu, DetailsList, DirectionalHint, IColumn, Icon, IContextualMenuItem, Image, ImageFit, IPersonaProps, IStackTokens, ITooltipProps, Label, Link, Panel, Persona, PersonaSize, ProgressIndicator, SearchBox, SelectionMode, Stack, Text, TooltipHost } from "@fluentui/react";
+import { ColumnActionsMode, ConstrainMode, ContextualMenu, DetailsList, DetailsListLayoutMode, DirectionalHint, IColumn, Icon, IContextualMenuItem, Image, ImageFit, IPersonaProps, IStackTokens, ITooltipProps, Label, Link, Panel, Persona, PersonaSize, ProgressIndicator, SearchBox, SelectionMode, Stack, Text, TooltipHost } from "@fluentui/react";
 import * as _ from "lodash";
 import * as moment from "moment-timezone";
 import * as React from "react";
@@ -21,6 +21,8 @@ const iconStyles = {root:{
     color: 'deepskyblue'
 }};
 
+const ITEMS_TO_BE_LOADED: number = 100;
+
 class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppState> {
 
     private spService: spservices = null;
@@ -41,6 +43,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         this.ClickFilter = this.ClickFilter.bind(this);
         this._onContextualMenuDismissed = this._onContextualMenuDismissed.bind(this);
         this._onDismissSearchPanel = this._onDismissSearchPanel.bind(this);
+        this._onLoadInitialTaskItems = this._onLoadInitialTaskItems.bind(this);
         
         this.state = {
             isLoading: true,
@@ -48,6 +51,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
             taskUsers: [],
             allTaskItems: [],
             displayedTaskItems: [],
+            loadedTaskItems: [],
             columns: this._setupColumns(),
             searchText: "",
             showResetFilter: false,
@@ -63,7 +67,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
 
     private async loadConfigurations() {
 
-        const resLMIConfig = await this.spService.getLastModifiedItemsConfiguration();
+        const resLMIConfig = await this.spService.getLastModifiedItemsConfiguration(this.props.listConfigurationListId);
         const _taskUsers = await this.getTaskUsers();
 
         const allSiteItems = resLMIConfig.length>0 ? JSON.parse(resLMIConfig[0].Configuration) : [];
@@ -119,15 +123,28 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         this.setState({
             allTaskItems: allTasks,
             displayedTaskItems: allTasks,
+            loadedTaskItems: this._onLoadInitialTaskItems(allTasks),
             isLoading: false
-        })
+        });
 
     }
 
-    private loadMoreTasks(_index: number) {
+    private loadMoreTasks(_startIndex: number) {
         debugger;
-        console.log("LOAD MORE");
-        console.log(_index);
+        const _lastItemIndex = _startIndex+ITEMS_TO_BE_LOADED;
+        const _currentLoadedTaskItems = [...this.state.loadedTaskItems].filter(tItem=>tItem!=null);
+        const _displayedTaskItems = [...this.state.displayedTaskItems];
+        const _newTaskItems = _displayedTaskItems.slice(_startIndex, _lastItemIndex)
+
+        let _loadedTaskItems = [..._currentLoadedTaskItems, ..._newTaskItems];
+
+        if(_displayedTaskItems.length>_lastItemIndex) {
+            _loadedTaskItems = _loadedTaskItems.concat(null);
+        }
+        
+        this.setState({
+            loadedTaskItems:_loadedTaskItems
+        });
     }
 
     private async getTaskItems() {
@@ -183,8 +200,8 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
     }
 
     private async getTaskUsers() {
-        const taskUsersRes = await this.spService.getTasks();
-        const taskUsers = taskUsersRes.filter((taskUser:any)=>taskUser.AssingedToUser!=null).map((taskUser:any)=>({
+        const taskUsersRes = await this.spService.getTasks(this.props.taskUsersListId);
+        const taskUsers = taskUsersRes.filter(taskUser=>taskUser.AssingedToUser!=null).map(taskUser=>({
             UserId: taskUser.AssingedToUser.Id,
             Title: taskUser.Title,
             ImageUrl: taskUser.Item_x0020_Cover ? taskUser.Item_x0020_Cover.Url : "",
@@ -304,17 +321,17 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         if(respTeam) {
             respTeam.forEach((respTeamItem) => respTeamInfo.push({
                 ...this.getUserInfo(respTeamItem.Id)
-            }))
+            }));
         }
         if(assignedUsers) {
             assignedUsers.forEach((assignedToItem) => assignedUserInfo.push({
                 ...this.getUserInfo(assignedToItem.Id)
-            }))
+            }));
         }
         if(teamMembers) {
             teamMembers.forEach((teamMemberItem) => teamMemberInfo.push({
                 ...this.getUserInfo(teamMemberItem.Id)
-            }))
+            }));
         }
         
         let teamUsers = {
@@ -452,6 +469,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
             }
             this.setState({
                 displayedTaskItems: newPendingTasks,
+                loadedTaskItems: this._onLoadInitialTaskItems(newPendingTasks),
                 showResetFilter: true
             });
         }
@@ -500,6 +518,7 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
     
         this.setState({
           displayedTaskItems: modifiedItems,
+          loadedTaskItems: this._onLoadInitialTaskItems(modifiedItems),
           columns: modifeidColumns
         });
       }
@@ -686,6 +705,12 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
     private _setupColumns(): IColumn[] {
         const columns: IColumn[] = [
             {
+                key:"Index",
+                name: "Index",
+                fieldName: "Index",
+                minWidth: 30
+            },
+            {
                 key: "TaskId",
                 name: "Task ID",
                 fieldName: "TaskId",
@@ -838,7 +863,8 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         let filteredTasks = utility.filterListItems(newText, this.state.allTaskItems, this.state.displayedTaskItems, this.state.searchField);
         this.setState({
             searchText: newText,
-            displayedTaskItems: filteredTasks
+            displayedTaskItems: filteredTasks,
+            loadedTaskItems: this._onLoadInitialTaskItems(filteredTasks)
         });
     }
 
@@ -853,9 +879,11 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
           c.isFiltered = false;
     
         });
+        const _allTaskItems = [...this.state.allTaskItems];
         //update the state, this will force the control to refresh
         this.setState({
-          displayedTaskItems: this.state.allTaskItems,          
+          displayedTaskItems: _allTaskItems,
+          loadedTaskItems:  this._onLoadInitialTaskItems(_allTaskItems),         
           columns: columns,
           searchText: "",
           showResetFilter: false
@@ -869,6 +897,14 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         })
     }
 
+    private _onLoadInitialTaskItems(dispTaskItems?: any[]) {
+        if(dispTaskItems.length<=ITEMS_TO_BE_LOADED) {
+            return dispTaskItems;
+        }
+        const _loadedTaskItems: any[] = dispTaskItems.slice(0, ITEMS_TO_BE_LOADED).concat(null);
+        return _loadedTaskItems;
+    }
+
     render() {
 
         const elemProgressIndicator: JSX.Element = <ProgressIndicator label="Please wait..." description="Loading the Tasks list..." />;
@@ -876,18 +912,20 @@ class TasksViewApp extends React.Component<ITasksViewAppProps, ITasksViewAppStat
         const elemSectionTitle: JSX.Element = <Label styles={{root:{color:"#0000BC",fontSize:"25px"}}}>Tasks View</Label>;
         
         const elemListPendingTasks: JSX.Element = (
-            <DetailsList 
-                items = { this.state.displayedTaskItems } 
-                columns = { this.state.columns } 
-                selectionMode = { SelectionMode.none }
-                isHeaderVisible = {true}
-                onShouldVirtualize={ () => false }
-                className = {styles.dataList}
-                onRenderMissingItem = {(index: number, rowData: any) => {
-                    this.loadMoreTasks(index);
-                    return null;
-                }}
-            />
+            <div className={styles.gridContainer}>
+                <DetailsList 
+                    items = { this.state.loadedTaskItems } 
+                    columns = { this.state.columns } 
+                    selectionMode = { SelectionMode.none }
+                    layoutMode={DetailsListLayoutMode.fixedColumns}
+                    constrainMode={ConstrainMode.unconstrained}
+                    onShouldVirtualize={ () => true }
+                    onRenderMissingItem = {(index: number, rowData: any) => {
+                        this.loadMoreTasks(index);
+                        return null;
+                    }}
+                />
+            </div>
         );
 
         const elemContextualMenu = (

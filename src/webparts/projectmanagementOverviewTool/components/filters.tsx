@@ -18,7 +18,8 @@ export const DefaultColumnFilter :any =  ({
   },
 }:any) => {
   return (
-    <Input
+    <Input type="search"
+    className='on-search-cross clearicons'
       value={filterValue || ''}
       onChange={(e) => {
         setFilter(e.target.value || undefined);

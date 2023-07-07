@@ -3,6 +3,7 @@ import * as React from 'react';
 import { IProjectManagementProps } from './IProjectManagementProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import ProjectManagementMain from './ProjectManagementMain';
+// import ProjectManagementMain from './ProjectManagementMain (4)';
 // import TaggedPortfolio from './TaggedPortfolio';
 
 
@@ -15,11 +16,19 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
       hasTeamsContext,
       userDisplayName,
       Context,
-      siteUrl
+      siteUrl,
+      MasterTaskListID,
+      TaskUsertListID,
+      SmartMetadataListID,
+      SmartInformationListID,
+      DocumentsListID,
+      TaskTimeSheetListID,
+      TimeEntry,
+      SiteCompostion
     } = this.props;
     return (
       <div>
-       <ProjectManagementMain pageContext={this.props.Context.pageContext} Context={this.props.Context} siteUrl={this.props.siteUrl}/> 
+        <ProjectManagementMain pageContext={this.props.Context.pageContext} Context={this.props.Context} props={this.props} siteUrl={this.props.siteUrl} />
       </div>
     );
   }

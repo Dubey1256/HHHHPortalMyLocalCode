@@ -10,15 +10,19 @@ export default class ComponentPortfolio extends React.Component<IComponentPortfo
       description,
       isDarkTheme,
       environmentMessage,
-      hasTeamsContext,
+      hasTeamsContext, 
       userDisplayName,
       Context,
       dropdownvalue,
+      MasterTaskListID,
+      TaskUsertListID,
+      TaskTypeID,
+      SmartMetadataListID,
     } = this.props;
 
     return (
       <div className="container" >
-      < Groupby SelectedProp={this.props.dropdownvalue}/>
+      < Groupby SelectedProp={this.props}/>
     </div>
     );
   }

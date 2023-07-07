@@ -26,7 +26,8 @@ export interface ICommentCardProps {
   listName?: string;
   itemID?: number;
   Context?: any;
-
+  AllListId?:any;
+  
 }
 const sp = spfi();
 
@@ -34,6 +35,7 @@ export interface ICommentCardState {
   Result: any;
   listName: string;
   itemID: number;
+  listId:any
   CommenttoPost: string;
   updateComment: boolean;
   isModalOpen: boolean;
@@ -44,6 +46,8 @@ export interface ICommentCardState {
   updateCommentPost: any;
   editorValue: string;
   editorChangeValue: string;
+  mailReply:any;
+  postButtonHide:boolean;
 }
 
 export class CommentCard extends React.Component<ICommentCardProps, ICommentCardState> {
@@ -59,14 +63,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     this.state = {
       Result: {},
-      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props.listName),
-      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props.itemID),
-
+      listName: (this.params1.get('Site') != undefined ? this.params1.get('Site') : props?.listName),
+      itemID: (this.params1.get('taskId') != undefined ? Number(this.params1.get('taskId')) : props?.itemID),
+      listId:props.AllListId.listId,
       CommenttoPost: '',
       updateComment: false,
       isModalOpen: false,
       AllCommentModal: false,
       mentionValue: '',
+      mailReply:{isMailReply:false,Index:null},
+      postButtonHide:false,
       /*editorState:EditorState.createWithContent(
         ContentState.createFromBlockArray(
           convertFromHTML('').contentBlocks
@@ -89,13 +95,24 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private async GetResult() {
     let web = new Web(this.props.siteUrl);
     let taskDetails = [];
-    taskDetails = await web.lists
+    if(this.state.listName!=undefined && this.state.listName!=null && this.state.listName!=""){
+      taskDetails = await web.lists
       .getByTitle(this.state.listName)
       .items
       .getById(this.state.itemID)
       .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
       .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
       .get()
+    }else{
+      taskDetails = await web.lists
+      .getById(this.state.listId)
+      .items
+      .getById(this.state.itemID)
+      .select("ID", "Title", "DueDate","Portfolio_x0020_Type", "ClientCategory/Id", "ClientCategory/Title", "Categories", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Created", "Author/Title", "Author/EMail", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Editor/Title", "Modified", "Comments")
+      .expand("Team_x0020_Members", "Author", "ClientCategory", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services", "Editor")
+      .get()
+    }
+    
 
     await this.GetTaskUsers();
     console.log("this is result function")
@@ -135,9 +152,10 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
     if (tempTask["Comments"] != undefined && tempTask["Comments"].length > 0) {
-      tempTask["Comments"].map((item: any) => {
+      tempTask["Comments"]?.map((item: any) => {
         if (item?.AuthorImage != undefined && item?.AuthorImage.toLowerCase().indexOf('https://www.hochhuth-consulting.de/') > -1) {
           var imgurl = item.AuthorImage.split('https://www.hochhuth-consulting.de/')[1];
+          // item.AuthorImage = `${this.props.Context._pageContext._site.absoluteUrl}` + imgurl;
           item.AuthorImage = 'https://hhhhteams.sharepoint.com/sites/HHHH/' + imgurl;
         }
         // item.AuthorImage = user.Item_x0020_Cover !=undefined ?user.Item_x0020_Cover.Url:item.AuthorImage;
@@ -200,7 +218,8 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     //}); 
     let taskUsers = [];
     taskUsers = await web.lists
-      .getByTitle('Task Users')
+      // .getByTitle('Task Users')TaskUsertListID
+      .getById(this.props?.AllListId?.TaskUsertListID)
       .items
       .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'AssingedToUser/Title', 'AssingedToUser/Id', 'AssingedToUser/EMail')
       .filter("ItemType eq 'User'")
@@ -208,29 +227,31 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       .get();
 
     this.taskUsers = taskUsers;
-
-    for (let index = 0; index < this.taskUsers.length; index++) {
-      this.mentionUsers.push({
-        id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-        display: this.taskUsers[index].Title
-      });
-
-      if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
-        this.topCommenters.push({
+     if(this.taskUsers!=undefined&&this.taskUsers.length>0){
+      for (let index = 0; index < this.taskUsers.length; index++) {
+        this.mentionUsers.push({
           id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
-          display: this.taskUsers[index].Title,
-          Title: this.taskUsers[index].Title,
-          ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
-            this.taskUsers[index].Item_x0020_Cover.Url :
-            "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-        })
+          display: this.taskUsers[index].Title
+        });
+  
+        if (this.taskUsers[index].Title == "Deepak Trivedi" || this.taskUsers[index].Title == "Stefan Hochhuth" || this.taskUsers[index].Title == "Robert Ungethuem" || this.taskUsers[index].Title == "Mattis Hahn"||this.taskUsers[index].Title=="Ksenia Kozhukhar"||this.taskUsers[index].Title=="Mayank Pal") {
+          this.topCommenters.push({
+            id: this.taskUsers[index].Title + "{" + this.taskUsers[index].Email + "}",
+            display: this.taskUsers[index].Title,
+            Title: this.taskUsers[index].Title,
+            ItemCoverURL: (this.taskUsers[index].Item_x0020_Cover != undefined) ?
+              this.taskUsers[index].Item_x0020_Cover.Url :
+              "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"
+          })
+        }
+  
+        if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
+          this.currentUser = this.taskUsers[index];
       }
-
-      if (this.taskUsers[index].AssingedToUser != null && this.taskUsers[index].AssingedToUser.Title == currentUser['Title'])
-        this.currentUser = this.taskUsers[index];
-    }
-    console.log(this.topCommenters);
-    console.log(this.mentionUsers);
+      console.log(this.topCommenters);
+      console.log(this.mentionUsers);
+     }
+    
   }
 
   private handleInputChange(e: any) {
@@ -238,7 +259,11 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   }
 
   private async PostComment(txtCommentControlId: any) {
+    this.setState({
+      postButtonHide:true
+    })
     console.log("this is post comment function")
+    console.log(this.state.Result["Comments"])
     commentlength=commentlength+1;
     let txtComment = this.state.CommenttoPost;
     if (txtComment != '') {
@@ -255,7 +280,19 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       //Add object in feedback
 
       if (this.state.Result["Comments"] != undefined) {
-        this.state.Result["Comments"].push(temp);
+      
+        // if(this.state.mailReply.isMailReply && this.state.mailReply.index!=null){
+        //   if( this.state.Result["Comments"][ this.state.mailReply.index].replyData!=undefined&&  this.state.Result["Comments"][ this.state.mailReply.index].replyData.length>0){
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }else{
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData=[]
+        //     this.state.Result["Comments"][ this.state.mailReply.index].replyData.push(temp)
+        //   }
+      
+        // }else{
+          this.state.Result["Comments"].push(temp);
+        // }
+      
       }
       else {
         this.state.Result["Comments"] = [temp];
@@ -280,11 +317,13 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
       this.setState({
         updateComment: true
       }, () => this.GetEmailObjects());
-
+       
       this.setState({
         updateComment: true,
         CommenttoPost: '',
-        mentionValue: ''
+        mentionValue: '',
+        mailReply:{isMailReply:false,index:null},
+        postButtonHide:false
       });
     } else {
       alert('Please input some text.')
@@ -359,9 +398,22 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
   private GetMentionValues() {
     let mention_str = '';
     if (this.state.mentionValue != '') {
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\[(.*?)\]/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+      let allMention :any;
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+       if(items.display==this.state.mentionValue){
+          return items
+       }
+       })  
+       let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+       let regExpLiteral = /\[(.*?)\]/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\[(.*?)\]/gi;
+         allMention = regExpStr.match(regExpLiteral);
+      }
+    
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           mention_str += allMention[index].replace('[', '@').replace(']', '').trim() + ' ';
@@ -494,10 +546,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
 
     if (this.state.mentionValue != '') {
       //Get All To's
-      let mention_To: any = [];
-      let regExpStr = this.state.mentionValue;
-      let regExpLiteral = /\{(.*?)\}/gi;
-      let allMention = regExpStr.match(regExpLiteral);
+    var allMention:any;
+      let mention_To: any = []; 
+      if(this.state.mailReply.isMailReply){
+        var mentionEmail = this.mentionUsers.filter((items:any)=>{
+          if(items.display==this.state.mentionValue){
+             return items
+          }
+          })  
+          let regExpStr =`@[${this.state.mentionValue}](${mentionEmail[0].id})`;
+          let regExpLiteral = /\{(.*?)\}/gi;
+           allMention = regExpStr.match(regExpLiteral); 
+      } else{
+        let regExpStr = this.state.mentionValue;
+        let regExpLiteral = /\{(.*?)\}/gi;
+        allMention = regExpStr.match(regExpLiteral);
+      }
+     
       if (allMention.length > 0) {
         for (let index = 0; index < allMention.length; index++) {
           /*For Prod when mail is open for all */
@@ -604,6 +669,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
     }
     
   }
+  private replyMailFunction=(replyData:any,index:any)=>{
+    console.log(replyData)
+    console.log(this.mentionUsers)
+      //  var mentionEmail = this.mentionUsers.filter((items:any)=>{
+      //  if(items.display==replyData.AuthorName){
+      //     return items.id
+      //  }
+      //  }) 
+      // var replyData2:any={
+      //   isMailReply:true,
+      //   index:index
+      // }         
+    this.setState({
+      mentionValue:replyData.AuthorName,
+      mailReply:{isMailReply:true,index:index}
+    }, () => { console.log(this.state.mentionValue) })
+  }
 
   public render(): React.ReactElement<ICommentCardProps> {
  
@@ -640,9 +722,14 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
             <div>
               <textarea id='txtComment' value={this.state.CommenttoPost} onChange={(e) => this.handleInputChange(e)} placeholder="Enter your comments here" className='form-control' ></textarea>
            
+              {this.state.postButtonHide?
+              <button disabled onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
+              Post
+            </button>:
               <button onClick={() => this.PostComment('txtComment')} title="Post comment" type="button" className="btn btn-primary mt-2 my-1  float-end px-3">
-                Post
-              </button>
+              Post
+            </button>}
+              
             </div>
 
             <div className="clearfix"></div>
@@ -666,6 +753,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               </span>
                               {cmtData.Created}</span>
                             <div className="d-flex ml-auto media-icons ">
+                              <a onClick={()=>this.replyMailFunction(cmtData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
                               <a  onClick={() => this.openEditModal(cmtData, i)}>
                                 {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/edititem.gif" /> */}
                                 <span className='svg__iconbox svg__icon--edit'></span>
@@ -684,6 +772,43 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                           </div>
 
                         </div>
+                        {/* {cmtData?.replyData!=undefined&& cmtData?.replyData.length>0 && cmtData?.replyData?.map((replyerData:any)=>{
+                          return(
+                            <li className="media  p-1 my-1">
+                            <div className="media-bodyy">
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="comment-date ng-binding">
+                                <span className="round  pe-1">
+                                  <img className="align-self-start " title={replyerData?.AuthorName}
+                                    src={replyerData?.AuthorImage != undefined && replyerData?.AuthorImage != '' ?
+                                    replyerData?.AuthorImage :
+                                      "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
+                                  />
+                                </span>
+                                {replyerData.Created}</span>
+                              <div className="d-flex ml-auto media-icons ">
+                                <a onClick={()=>this.replyMailFunction(replyerData,i)}><span className="svg__icon--mailreply svg__iconbox"></span></a>
+                                <a  onClick={() => this.openEditModal(replyerData, i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--edit'></span>
+                                 
+                                </a>
+                                <a title="Delete" onClick={() => this.clearComment(i)}>
+                              
+                                  <span className='svg__iconbox svg__icon--trash'></span>
+                                </a>
+                              </div>
+                            </div>
+  
+                            <div className="media-text">
+                              {replyerData.Header != '' && <h6 className="userid m-0"><a className="ng-binding">{replyerData?.Header}</a></h6>}
+                              <p className='m-0'><span dangerouslySetInnerHTML={{ __html: replyerData?.Description }}></span></p>
+                            </div>
+  
+                          </div>
+                          </li>
+                          )
+                        })} */}
                       </li>
                     })}
                   </ul>
@@ -731,7 +856,7 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           customWidth="500px"
           onDismiss={(e) => this.closeAllCommentModal(e)}
           isOpen={this.state.AllCommentModal}
-          isBlocking={false}>
+          isBlocking={true}>
 
           <div id='ShowAllCommentsId'className={color?"serviepannelgreena":""}>
 
@@ -799,167 +924,145 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
           <div id='htmlMailBody' style={{ display: 'none' }}>
 
             <div style={{ marginTop: "11.25pt" }}>
-              <a href={this.state.Result?.TaskUrl} target="_blank">{this.state.Result?.Title}</a><u></u><u></u></div>
+              <a href={this.state.Result?.TaskUrl} target="_blank">{this.state.Result?.Title}</a></div>
             <table cellPadding="0" width="100%" style={{ width: "100.0%" }}>
               <tbody>
                 <tr>
-                  <td width="70%" valign="top" style={{ width: '70.0%', padding: '.75pt .75pt .75pt .75pt' }}>
+                  <td width="70%" valign="top" style={{ width: '70.0%', padding: '4pt' }}>
                     <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
                       <tbody>
+                       
                         <tr>
-                          <td style={{ padding: ".75pt .75pt .75pt .75pt" }}></td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Task Id:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["ID"]}</span><u></u><u></u></p>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p  style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["ID"]}</span></p>
                           </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Component:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p>{this.state.Result["Component"] != null &&
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}>{this.state.Result["Component"] != null &&
                               this.state.Result["Component"].length > 0 &&
                               <span style={{ fontSize: '10.0pt', color: 'black' }}>
                                 {this.joinObjectValues(this.state.Result["Component"])}
                               </span>
                             }
-                              <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                              </p>
                           </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Priority:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.Priority}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.StartDate}</span><u></u><u></u></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.CompletedDate}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.DueDate}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.Priority}</span></p>
                           </td>
                         </tr>
                         <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Start Date:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p>{this.state.Result["TeamMembers"] != null &&
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.StartDate}</span></p>
+                          </td>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Completion Date:</span></b></p>
+                          </td>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.CompletedDate}</span></p>
+                          </td>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Due Date:</span></b></p>
+                          </td>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result?.DueDate}</span></p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Team Members:</span></b></p>
+                          </td>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}>{this.state.Result["TeamMembers"] != null &&
                               this.state.Result["TeamMembers"].length > 0 &&
                               <span style={{ fontSize: '10.0pt', color: 'black' }}>
                                 {this.joinObjectValues(this.state.Result?.TeamMembers)}
                               </span>
                             }
-                              <span style={{ color: "black" }}> </span><u></u><u></u></p>
+                              </p>
                           </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created By:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["StartDate"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["StartDate"]}</span></p>
                           </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Created:</span></b></p>
                           </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Categories"]}</span><u></u><u></u></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Status"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
-                          </td>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b><u></u><u></u></p>
-                          </td>
-                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["PercentComplete"]}</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Author"] != null && this.state.Result["Author"].length > 0 && this.state.Result["Author"][0].Title}</span></p>
                           </td>
                         </tr>
                         <tr>
-                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Categories:</span></b></p>
                           </td>
-                          <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p><span style={{ fontSize: '10.0pt', color: 'black' }}>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Categories"]}</span></p>
+                          </td>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>Status:</span></b></p>
+                          </td>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["Status"]}</span></p>
+                          </td>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>% Complete:</span></b></p>
+                          </td>
+                          <td colSpan={2} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>{this.state.Result["PercentComplete"]}</span></p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style={{ border: 'solid #cccccc 1.0pt', background: '#f4f4f4', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><b><span style={{ fontSize: '10.0pt', color: 'black' }}>URL:</span></b></p>
+                          </td>
+                          <td colSpan={7} style={{ border: 'solid #cccccc 1.0pt', background: '#fafafa', padding: '4pt' }}>
+                            <p style={{margin:'4pt 0pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}>
                               {this.state.Result["component_url"] != null &&
                                 <a href={this.state.Result["component_url"].Url} target="_blank">{this.state.Result["component_url"].Url}</a>
-                              }</span><span style={{ color: "black" }}> </span><u></u><u></u></p>
+                              }</span></p>
                           </td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                          <td style={{ padding: '4pt' }}></td>
                         </tr>
-                        <tr>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
-                        </tr>
-                        <tr>
-                          <td width="91" style={{ border: "none" }}></td>
-                          <td width="46" style={{ border: "none" }}></td>
-                          <td width="46" style={{ border: "none" }}></td>
-                          <td width="100" style={{ border: "none" }}></td>
-                          <td width="53" style={{ border: "none" }}></td>
-                          <td width="51" style={{ border: "none" }}></td>
-                          <td width="74" style={{ border: "none" }}></td>
-                          <td width="32" style={{ border: "none" }}></td>
-                          <td width="33" style={{ border: "none" }}></td>
-                        </tr>
+                   
+                  
                       </tbody>
                     </table>
-                    <table cellPadding="0" width="99%" style={{ width: "99.0%" }}>
+                    <table cellPadding="0" width="99%" style={{ width: "99.0%"}}>
                       <tbody>
                         <tr>
-                          <td style={{ padding: '.75pt .75pt .75pt .75pt' }}></td>
+                          <td style={{ padding: '4pt' }}></td>
                         </tr>
 
 
                         {this.state.Result["FeedBack"] != null &&
-                          this.state.Result["FeedBack"][0]?.FeedBackDescriptions.length > 0 &&
+                          this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != '' &&
                           this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             return <>
                               <tr>
-                                <td>
-                                  <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.<u></u><u></u></span></p>
+                                <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
+                                  <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}</span></p>
                                 </td>
-                                <td><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
+                                <td style={{background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}><span dangerouslySetInnerHTML={{ __html: fbData['Title'] }}></span>
                                   {fbData['Comments'] != null && fbData['Comments'].length > 0 && fbData['Comments']?.map((fbComment: any) => {
-                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                    return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
                                       <div style={{ marginBottom: '3.75pt' }}>
-                                        <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span>{fbComment?.AuthorName} - {fbComment?.Created}<u></u><u></u></span></p>
+                                        <p style={{ marginLeft: '1.5pt'}}>Comment by <span>{fbComment?.AuthorName} - {fbComment?.Created}</span></p>
                                       </div>
-                                      <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span><u></u><u></u></span></p>
+                                      <p style={{ marginLeft: '1.5pt'}}><span><span dangerouslySetInnerHTML={{ __html: fbComment['Title'] }}></span></span></p>
                                     </div>
 
                                   })}
@@ -968,16 +1071,16 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                               {fbData['Subtext'] != null && fbData['Subtext'].length > 0 && fbData['Subtext']?.map((fbSubData: any, j: any) => {
                                 return <>
                                   <tr>
-                                    <td>
-                                      <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.<u></u><u></u></span></p>
+                                    <td style={{border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}>
+                                      <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                     </td>
-                                    <td><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                    <td style={{background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
                                       {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
-                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                                        return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
                                           <div style={{ marginBottom: '3.75pt' }}>
-                                            <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}<u></u><u></u></span></p>
+                                            <p style={{ marginLeft: '1.5pt'}}>Comment by<span style={{ fontSize: '10.0pt', color: 'black' }}>{fbSubComment?.AuthorName} - {fbSubComment?.Created}</span></p>
                                           </div>
-                                          <p style={{ marginLeft: '1.5pt', background: '#fbfbfb' }}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span><u></u><u></u></span></p>
+                                          <p style={{ marginLeft: '1.5pt'}}><span style={{ fontSize: '10.0pt', color: 'black' }}><span dangerouslySetInnerHTML={{ __html: fbSubComment['Title'] }}></span></span></p>
                                         </div>
 
                                       })}
@@ -994,23 +1097,23 @@ export class CommentCard extends React.Component<ICommentCardProps, ICommentCard
                       </tbody>
                     </table>
                   </td>
-                  <td width="22%" style={{ width: '22.0%', padding: '.75pt .75pt .75pt .75pt' }}>
-                    <table cellPadding={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
+                  <td width="22%" valign="top" style={{ width: '22.0%', padding: '4pt' }}>
+                    <table cellPadding={0} cellSpacing={0} width="100%" style={{ width: '100.0%', border: 'solid #dddddd 1.0pt', borderRadius: '4px' }}>
                       <tbody>
                         <tr>
-                          <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '.75pt .75pt .75pt .75pt' }}>
-                            <p style={{ marginBottom: '1.25pt' }}><span style={{ color: "#333333" }}>Comments:<u></u><u></u></span></p>
+                          <td style={{ border: 'none', borderBottom: 'solid #dddddd 1.0pt', background: 'whitesmoke', padding: '4pt' }}>
+                            <p style={{ margin: '4pt 0pt' }}><span style={{ color: "#333333" }}>Comments:</span></p>
                           </td>
                         </tr>
                         <tr>
-                          <td style={{ border: 'none', padding: '.75pt .75pt .75pt .75pt' }}>
+                          <td style={{ border: 'none', padding: '4pt' }}>
                             {this.state.Result["Comments"]?.map((cmtData: any, i: any) => {
-                              return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt' }}>
+                              return <div style={{ border: 'solid #cccccc 1.0pt', padding: '4pt', marginTop: '0pt', marginBottom:'4pt' }}>
                                 <div style={{ marginBottom: "3.75pt" }}>
-                                  <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                  <p style={{ margin: '0pt' }}>
                                     <span style={{ color: 'black' }}>{cmtData?.AuthorName} - {cmtData?.Created}</span></p>
                                 </div>
-                                <p style={{ marginBottom: '1.25pt', background: '#fbfbfb' }}>
+                                <p style={{ marginBottom: '4pt' }}>
                                   <span style={{ color: 'black' }}>{cmtData?.Description}</span></p>
                               </div>
                             })}

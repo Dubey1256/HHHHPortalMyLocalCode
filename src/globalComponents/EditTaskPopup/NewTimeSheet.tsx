@@ -5,25 +5,25 @@ import TimeEntryPopup from './TimeEntryComponent';
 
 const NewTameSheetComponent = (props: any) => {
     const TeamConfigInfo = props?.props?.Items;
+    const AllListIdData = props?.AllListId
     const [TeamConfig, setTeamConfig] = useState()
     const DDComponentCallBack = (dt: any) => {
         setTeamConfig(dt)
         console.log(TeamConfig)
-        props?.TeamConfigDataCallBack(dt);
+        console.log(TeamConfig)
+        props?.TeamConfigDataCallBack(dt,"TeamConfiguration");
     }
-    // var itemInfo = {
-    //     siteURL: TeamConfigInfo?.siteUrl,
-    //     listName: TeamConfigInfo?.listName,
-    //     itemID: TeamConfigInfo?.Id
-    // }
+    const ComponentCallBack = (dt: any) => {
+        props?.TeamConfigDataCallBack(dt, "TimeSheet");
+    }
     return (
         <div>
             <div>
-                <TeamConfigurationCard ItemInfo={TeamConfigInfo} parentCallback={DDComponentCallBack}>
+                <TeamConfigurationCard ItemInfo={TeamConfigInfo} parentCallback={DDComponentCallBack} AllListId={AllListIdData}>
                 </TeamConfigurationCard>
             </div>
             <div>
-                <TimeEntryPopup props={TeamConfigInfo} />
+                {AllListIdData.isShowTimeEntry ? <TimeEntryPopup props={TeamConfigInfo} Context={props.props.context} parentCallback={ComponentCallBack}/> : null}
             </div>
         </div>
     )
