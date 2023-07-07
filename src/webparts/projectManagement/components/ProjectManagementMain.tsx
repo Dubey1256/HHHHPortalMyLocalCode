@@ -169,8 +169,9 @@ const ProjectManagementMain = (props: any) => {
           .get();
 
 
-        if ((taskUsers.PercentComplete = undefined))
-          taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
+        if ((taskUsers.PercentComplete != undefined)){
+          taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0)
+        }
         // if (taskUsers.Body != undefined) {
         //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
         // }

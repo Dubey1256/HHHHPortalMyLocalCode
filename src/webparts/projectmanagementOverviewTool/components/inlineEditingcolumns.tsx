@@ -36,7 +36,7 @@ const inlineEditingcolumns = (props: any) => {
     const [ApproverData, setApproverData] = React.useState([]);
     const [InputFieldDisable, setInputFieldDisable] = React.useState(false);
     const [priorityRank, setpriorityRank] = React.useState([]);
-    const [editDate, setEditDate]: any = React.useState(null);
+    const [editDate, setEditDate]: any = React.useState(undefined);
     const [dueDate, setDueDate] = useState({ editDate: props?.item?.DueDate != undefined ? props?.item?.DueDate : null, editPopup: false, selectDateName: '' })
     const [UpdateTaskInfo, setUpdateTaskInfo] = React.useState(
         {
@@ -659,8 +659,8 @@ const inlineEditingcolumns = (props: any) => {
 
     }
     const closeTaskDueDate = () => {
-        setEditDate(null);
-        setDueDate({ editPopup: false, editDate: null, selectDateName: '' })
+        setEditDate(undefined);
+        setDueDate({ editPopup: false, editDate: undefined, selectDateName: '' })
     }
 
 
@@ -1028,7 +1028,7 @@ const inlineEditingcolumns = (props: any) => {
                     </footer>
                 </div>
             </Panel>
-            {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck && props.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() => setDueDate({ ...dueDate, editPopup: true })}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
+            {props?.columnName == 'DueDate' ? <span className={ServicesTaskCheck && props.pageName !== 'ProjectOverView' ? "serviepannelgreena hreflink" : "hreflink"} style={{ display: "block", width: "100%", height: "100%" }} onClick={() =>{ setDueDate({ ...dueDate, editPopup: true }); setEditDate(props?.item?.DueDate != undefined ? props?.item?.DueDate : null)}}> &nbsp;{props?.item?.DisplayDueDate} </span> : ''}
 
 
             {/* Pannel To select Status */}

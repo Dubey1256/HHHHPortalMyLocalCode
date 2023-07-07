@@ -187,6 +187,43 @@ const GlobalCommanTable = (items: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
+    const exportToExcelNew = () => {
+        let excelColumns:any = [];
+        columns?.map((col:any)=>{
+            if(col?.placeholder!=undefined&&col?.placeholder!=''){
+                excelColumns.push(col?.id)
+            }
+        })
+        let excelRows:any=table?.getFilteredRowModel()?.rows?.map((row:any)=>{
+            const newObject = excelColumns.reduce((obj:any, propName:any) => {
+                return {
+                  ...obj,
+                  [propName]: row?.original[propName],
+                };
+              }, {});
+              return newObject;
+        })
+        // Create a new workbook and worksheet
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(excelRows, { header: excelColumns});
+      
+        // Add the worksheet to the workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Table Data');
+      
+        // Convert the workbook to an Excel file
+        const excelFile = XLSX.write(workbook, { type: 'binary', bookType: 'xlsx' });
+      
+        // Save the file with a specified name
+        const fileName = 'table-data.xlsx';
+        const buffer = new ArrayBuffer(excelFile.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < excelFile.length; i++) {
+          view[i] = excelFile.charCodeAt(i) & 0xff;
+        }
+      
+        // Save the file using FileSaver.js
+        FileSaver.saveAs(new Blob([buffer], { type: 'application/octet-stream' }), fileName);
+      };
 
     React.useEffect(() => {
         CheckDataPrepre()
@@ -322,7 +359,7 @@ const GlobalCommanTable = (items: any) => {
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
+                    <a className='excal' onClick={() => exportToExcelNew()}><RiFileExcel2Fill /></a>
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"  onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
