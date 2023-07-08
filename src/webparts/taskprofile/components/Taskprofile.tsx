@@ -1374,7 +1374,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Project</dt>
                     <dd className='bg-Ff full-width'>
-                    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?taskId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
+                    <a className="hreflink" target="_blank" data-interception="off" href={`${this.state.Result["siteUrl"]}/SitePages/Project-Management.aspx?ProjectId=${this.state.Result["Project"]?.Id}`}>{this.state.Result["Project"]?.Title}</a>
                       </dd>
                    </dl>
                   {isShowSiteCompostion && <dl className="Sitecomposition">

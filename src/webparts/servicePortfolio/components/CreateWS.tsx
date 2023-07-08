@@ -362,6 +362,11 @@ const CreateWS = (props: any) => {
                 InheritClientCategory.push(items.Id) 
             }) 
         }
+        if(props?.props?.ClientTime?.length>0){
+
+            props.props.ClientTime=JSON.stringify(props?.props?.ClientTime)
+
+        }
         let web = new Web(dynamicList.siteUrl);
         await web.lists.getById(AllItems.listId).items.add({
             Title: AllItems.Title,
