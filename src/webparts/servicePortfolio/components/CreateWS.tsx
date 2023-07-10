@@ -370,6 +370,11 @@ const CreateWS = (props: any) => {
 
            
         }
+        if(props?.props?.ClientTime?.length>0){
+
+            props.props.ClientTime=JSON.stringify(props?.props?.ClientTime)
+
+        }
         let web = new Web(dynamicList.siteUrl);
         if(props?.props?.ClientTime?.length>0){
             props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
