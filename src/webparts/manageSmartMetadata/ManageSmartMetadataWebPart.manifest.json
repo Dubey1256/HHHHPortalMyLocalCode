@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "f901d8fe-15ff-4828-984b-284fd8797f7b",
+  "id": "fc03dd61-1028-4ea3-8e37-91d09590dc27",
   "alias": "ManageSmartMetadataWebPart",
   "componentType": "WebPart",
 
@@ -22,7 +22,8 @@
     "description": { "default": "ManageSmartMetadata description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "ManageSmartMetadata"
+      "smartMetadataListId": "01A34938-8C7E-4EA6-A003-CEE649E8C67A",
+      "siteConfigurationsListId": "25BCD32B-D222-488D-BF32-6D7C0CA72237"
     }
   }]
 }
