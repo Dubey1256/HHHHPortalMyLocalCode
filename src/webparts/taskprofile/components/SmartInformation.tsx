@@ -18,6 +18,7 @@ import ImageTabComponenet from './ImageTabComponent'
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
+let  taskUser:any=[];
 let mastertaskdetails: any;
 let    MovefolderItemUrl2="";
 const SmartInformation = (props: any) => {
@@ -51,6 +52,7 @@ const SmartInformation = (props: any) => {
   const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
   const [folderCreated,setFolderCreated]=useState(true)
+  // const [taskUser,setTaskUser]=useState([]);
   const handleClose = () => {
     setpopupEdit(false);
     setshowAdddocument(false);
@@ -83,9 +85,34 @@ const SmartInformation = (props: any) => {
   }
 
   useEffect(() => {
+    GetTaskUsers()
     GetResult();
     LoadMasterTaskList();
   }, [show])
+
+//=========== TaskUser Management=====================
+const  GetTaskUsers =async ()  =>{
+  let web = new Web(props.AllListId?.siteUrl);
+  let taskUsers = [];
+  taskUsers = await web.lists
+    .getById(props?.AllListId?.TaskUsertListID)
+    .items
+    .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
+    .filter("ItemType eq 'User'")
+    .expand('AssingedToUser')
+    .get();
+  // taskUsers?.map((item: any, index: any) => {
+  //   if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
+  //     this.backGroundComment = true;
+  //   }
+  // })
+  if(taskUsers.length>0){
+    taskUser=taskUser.concat(taskUsers);
+  }
+
+
+}
+
 
   // ===============get smartInformationId tag in task========================
   const GetResult = async () => {
@@ -144,7 +171,7 @@ const SmartInformation = (props: any) => {
     const web = new Web(props?.AllListId?.siteUrl);
     // var Data = await web.lists.getByTitle("SmartInformation")
     var Data = await web.lists.getById(props?.AllListId?.SmartInformationListID)
-      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Editor/Name,Editor/Title')
+      .items.select('Id,Title,Description,SelectedFolder,URL,Acronym,InfoType/Id,InfoType/Title,Created,Modified,Author/Name,Author/Title,Author/Title,Author/Id,Editor/Name,Editor/Title,Editor/Id')
       .expand("InfoType,Author,Editor")
       .get()
     console.log(Data)
@@ -170,6 +197,18 @@ const SmartInformation = (props: any) => {
           })
         }
       })
+      taskUser?.map((user:any)=>{
+        allSmartInformationglobal?.map((smartinfo:any)=>{
+            if (smartinfo?.Author?.Id==user?.AssingedToUser?.Id){
+              smartinfo.Author.AuthorImage=user?.Item_x0020_Cover
+            }
+            if(smartinfo?.Editor?.Id==user?.AssingedToUser?.Id){
+              smartinfo.Editor.EditorImage=user?.Item_x0020_Cover
+            }
+        })
+
+      })
+
       TagDocument(allSmartInformationglobal);
     }
   }
@@ -988,8 +1027,8 @@ setEditdocumentsData(data);
                   </span>
                 </div>
 
-                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none' }}>
-                  <div className="ps-3" dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
+                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none',fontSize: "small" }}>
+                  <div className="ps-3" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                   {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
                       <div className='card-body p-1 bg-ee mt-1'>
@@ -1039,8 +1078,8 @@ setEditdocumentsData(data);
                     )
                   })}
                 </div>
-                <div className="px-2" style={{ fontSize: "smaller" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='pe-2'>{SmartInformation?.Author?.Title != undefined ? SmartInformation?.Author?.Title : ""}</span></div>
-                <div className="px-2" style={{ fontSize: "smaller" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='pe-1'>{SmartInformation?.Editor?.Title != undefined ? SmartInformation?.Editor?.Title : ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url}/> : ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} />: ""}</span></div>
               </div>
               <div></div>
             </>)

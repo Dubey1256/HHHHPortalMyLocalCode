@@ -782,6 +782,9 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
+                    postClientTime?.map((items:any)=>{
+                        items.SiteName=items.Title
+                    })
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
                         setSave({ ...save, rank: 4 })
@@ -818,9 +821,7 @@ function CreateTaskComponent(props: any) {
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
                    
-                    postClientTime?.map((items:any)=>{
-                        items.SiteName=items.Title
-                    })
+                   
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -874,10 +875,10 @@ function CreateTaskComponent(props: any) {
                         }
                         item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
                     }
-                    if (Tasks != undefined && save.siteType == 'Shareweb') {
-                        item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings;
-                        item.ClientTime = Tasks[0]?.Sitestagging;
-                    }
+                    // if (Tasks != undefined && save.siteType == 'Shareweb') {
+                    //     item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings!=undefined?Tasks[0]?.SiteCompositionSettings:Tasks?.SiteCompositionSettings;
+                    //     item.ClientTime = Tasks[0]?.Sitestagging!=undefined?Tasks[0]?.Sitestagging:Tasks?.Sitestagging;
+                    // }
 
 
 
