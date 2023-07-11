@@ -1027,8 +1027,8 @@ setEditdocumentsData(data);
                   </span>
                 </div>
 
-                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none',fontSize: "smaller" }}>
-                  <div className="ps-3" style={{ fontSize: "smaller" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
+                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none',fontSize: "small" }}>
+                  <div className="ps-3" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                   {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
                       <div className='card-body p-1 bg-ee mt-1'>
@@ -1078,8 +1078,8 @@ setEditdocumentsData(data);
                     )
                   })}
                 </div>
-                <div className="px-2" style={{ fontSize: "smaller" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url}/> : ""}</span></div>
-                <div className="px-2" style={{ fontSize: "smaller" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} />: ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url}/> : ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} />: ""}</span></div>
               </div>
               <div></div>
             </>)
