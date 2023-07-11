@@ -2408,22 +2408,9 @@ function EditProjectPopup(item: any) {
                                     return (
                                       <a
                                         target="_blank"
-                                        href={
-                                          userDtl.Item_x0020_Cover
-                                            ? userDtl.Item_x0020_Cover.Url
-                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                        }
+        
                                       >
                                         <img
-                                          ui-draggable="true"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-placement="bottom"
-                                          title={
-                                            userDtl.Title ? userDtl.Title : ""
-                                          }
-                                          on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
                                           style={{
                                             width: "35px",
                                             height: "35px",
@@ -2431,8 +2418,8 @@ function EditProjectPopup(item: any) {
                                             borderRadius: "50px",
                                           }}
                                           src={
-                                            userDtl.Item_x0020_Cover.Url
-                                              ? userDtl.Item_x0020_Cover.Url
+                                            userDtl?.Item_x0020_Cover?.Url
+                                              ? userDtl?.Item_x0020_Cover?.Url
                                               : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                           }
                                         />
