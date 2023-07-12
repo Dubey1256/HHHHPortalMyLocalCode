@@ -1985,9 +1985,13 @@ function TimeEntryPopup(item: any) {
                         var ListId = TimeSheetlistId
                     }
 
-                    const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
-                        return array.indexOf(val) == id;
-                    })
+                   
+                    if(isTrueTime == true){
+                        const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
+                            return array.indexOf(val) == id;
+                        })
+
+                    
                     await web.lists.getById(ListId)
                         .items.getById(AddParentId)
                         .update({
@@ -2003,6 +2007,7 @@ function TimeEntryPopup(item: any) {
 
 
                         })
+                    }
                 }
 
 
