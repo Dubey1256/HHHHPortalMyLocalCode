@@ -1248,43 +1248,29 @@ function EditProjectPopup(item: any) {
     });
 
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+      AssignedToIds=[]
       TaskAssignedTo.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
       });
     } else {
-      if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-        EditData.AssignedTo.map((taskInfo: any) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
+      AssignedToIds=[]
     }
     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+      TeamMemberIds=[];
       TaskTeamMembers.map((taskInfo) => {
+        
         TeamMemberIds.push(taskInfo.Id);
       });
     } else {
-      if (
-        EditData.Team_x0020_Members != undefined &&
-        EditData.Team_x0020_Members?.length > 0
-      ) {
-        EditData.Team_x0020_Members.map((taskInfo: any) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
+      TeamMemberIds=[]
     }
     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+      ResponsibleTeamIds=[]
       TaskResponsibleTeam.map((taskInfo) => {
         ResponsibleTeamIds.push(taskInfo.Id);
       });
     } else {
-      if (
-        EditData.Responsible_x0020_Team != undefined &&
-        EditData.Responsible_x0020_Team?.length > 0
-      ) {
-        EditData.Responsible_x0020_Team.map((taskInfo: any) => {
-          ResponsibleTeamIds.push(taskInfo.Id);
-        });
-      }
+      ResponsibleTeamIds=[]
     }
     let selectedComponent: any[] = [];
     if (smartComponentData !== undefined && smartComponentData.length > 0) {

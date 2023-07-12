@@ -370,11 +370,6 @@ const CreateWS = (props: any) => {
 
            
         }
-        if(props?.props?.ClientTime?.length>0){
-
-            props.props.ClientTime=JSON.stringify(props?.props?.ClientTime)
-
-        }
         let web = new Web(dynamicList.siteUrl);
         if(props?.props?.ClientTime?.length>0){
             props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
@@ -397,7 +392,7 @@ const CreateWS = (props: any) => {
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             ClientCategoryId: { "results": InheritClientCategory },
             SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
-            ClientTime:props?.props?.ClientTime!=undefined?props?.props?.ClientTime:"",
+            ClientTime:props?.props?.ClientTime.length>0 ?props?.props?.ClientTime:"",
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
