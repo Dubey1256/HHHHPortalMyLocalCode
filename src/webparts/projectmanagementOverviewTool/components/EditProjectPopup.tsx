@@ -1498,6 +1498,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskAssignedTo(tempArray);
       console.log("Team Config  assigadf=====", tempArray);
+    }else{
+      setTaskAssignedTo([])
     }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempArray: any = [];
@@ -1510,6 +1512,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskTeamMembers(tempArray);
       console.log("Team Config member=====", tempArray);
+    }else{
+      setTaskTeamMembers([]);
     }
     if (dt?.ResponsibleTeam?.length > 0) {
       let tempArray: any = [];
@@ -1522,6 +1526,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskResponsibleTeam(tempArray);
       console.log("Team Config reasponsible ===== ", tempArray);
+    }else{
+      setTaskResponsibleTeam([]);
     }
   };
   var itemInfo = {

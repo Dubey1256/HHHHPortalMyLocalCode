@@ -37,6 +37,7 @@ const CreateWS = (props: any) => {
         SelectedTasks.push(AllItems)
         console.log(props)
     }
+
     const [TaskStatuspopup, setTaskStatuspopup] = React.useState(true);
 
     const [isDropItem, setisDropItem] = React.useState(false);
@@ -243,6 +244,7 @@ const CreateWS = (props: any) => {
     }
     const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var NewDate = ''
+       var  clientcaterogiesdata2:any=[];
         WorstreamLatestId += index;
         var SharewebID = '';
         if (Task == undefined || Task == '')
@@ -360,20 +362,22 @@ const CreateWS = (props: any) => {
         if(props?.props!=undefined && props?.props?.ClientCategory?.length>0){
           if(props?.props?.ClientCategory2!=undefined && props?.props?.ClientCategory2?.results?.length>0){
             props?.props?.ClientCategory2?.results?.map((items:any)=>{
-                InheritClientCategory.push(items.Id)  
+                InheritClientCategory.push(items.Id)
+                clientcaterogiesdata2.push(items)  
             })
           }else{
             props.props.ClientCategory?.map((items:any)=>{
                 InheritClientCategory.push(items.Id) 
+                clientcaterogiesdata2.push(items)  
             }) 
           }
 
            
         }
         let web = new Web(dynamicList.siteUrl);
-        if(props?.props?.ClientTime?.length>0){
-            props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
-        }
+        // if(props?.props?.ClientTime?.length>0){
+        //     props.props.ClientTime=JSON.stringify(props?.props?.ClientTime) 
+        // }
         await web.lists.getById(AllItems.listId).items.add({
             Title: AllItems.Title,
             ComponentId: { "results": Component },
@@ -406,7 +410,7 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("DD-MM-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID,
-                res.data.ClientCategory=InheritClientCategory,
+                res.data.ClientCategory=clientcaterogiesdata2,
                 res.data.Created=new Date();
                 res.data.Author={
                     Id: res?.data?.AuthorId
@@ -423,7 +427,7 @@ const CreateWS = (props: any) => {
                 res.data.DueDate = res?.data?.DueDate ?  Moment(res?.data?.DueDate).format("MM-DD-YYYY"):'',
                     res.data['siteType'] = AllItems.siteType
                 res.data['Shareweb_x0020_ID'] = SharewebID
-                res.data.ClientCategory= InheritClientCategory!=undefined? InheritClientCategory: props.props.ClientCategory,
+                res.data.ClientCategory= clientcaterogiesdata2,
                 res.data.Created=new Date();
                 res.data.Author={
                     Id: res?.data?.AuthorId

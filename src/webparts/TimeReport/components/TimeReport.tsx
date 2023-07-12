@@ -14,6 +14,7 @@ import {
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
 import * as Moment from 'moment';
+import Loader from "react-loader";
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
@@ -48,6 +49,7 @@ const TimeReport = () => {
     const [data, setData] = React.useState([])
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
+    const [loaded, setLoaded] = React.useState(true);
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(true);
@@ -55,7 +57,7 @@ const TimeReport = () => {
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
     
     React.useEffect(() => {
-        // GetAllTimeEntry();
+        showProgressBar();
         GetTaskUsers();
         GetSmartmetadata();
 
@@ -151,6 +153,15 @@ const TimeReport = () => {
         }
 
     }
+    var showProgressBar = () => {
+        setLoaded(false);
+        $(" #SpfxProgressbar").show();
+      };
+    
+      var showProgressHide = () => {
+        setLoaded(true);
+        $(" #SpfxProgressbar").hide();
+      };
     const GetMigrationTime = async () => {
         var selectedDate:any=[]
         var filteres = `Modified ge '${datess}'`
@@ -184,6 +195,7 @@ const TimeReport = () => {
     }
 
     var datess = ''
+
     const GeneratedTask = async (Type: any) => {
       
          DevloperTime = 0.00;
@@ -445,6 +457,7 @@ const TimeReport = () => {
             })
         }
         setData(SelectedTime)
+        showProgressHide();
     }
 
     const selectType = (Dates: any) => {
@@ -712,6 +725,10 @@ const TimeReport = () => {
                             <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
                     </h3>
                 </div>
+                <div className='col-sm-9 text-primary'>
+                    <h6 className='pull-right'><b><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    </h6>
+                </div>
             </div>
             <div className='row'>
                 <div className='col-7 mt-4'>
@@ -760,7 +777,29 @@ const TimeReport = () => {
             </div>
 
             <div className='Alltable'>
+          
             <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} />
+            <Loader
+                  loaded={loaded}
+                  lines={13}
+                  length={20}
+                  width={10}
+                  radius={30}
+                  corners={1}
+                  rotate={0}
+                  direction={1}
+                  
+                  speed={2}
+                  trail={60}
+                  shadow={false}
+                  hwaccel={false}
+                  className="spinner"
+                  zIndex={2e9}
+                  top="28%"
+                  left="50%"
+                  scale={1.0}
+                  loadedClassName="loadedContent"
+                />
             </div>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}

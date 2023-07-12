@@ -356,7 +356,7 @@ class ModalEditSmartMetadata extends React.Component<IModalEditSmartMetadataProp
         const elemFooter: JSX.Element = (
             <div style={{textAlign:"right"}}>
                 <Button variant="primary" onClick={this.onSaveSmartMetadata} style={{marginLeft:"5px",height:"34px"}}>Save</Button>
-                <Button className="btn-default" variant="secondary" onClick={()=>this.props.hideModalEditSmartMetadata()} style={{marginLeft:"5px",height:"34px"}}>Cancel</Button>
+                <Button className="btn btn-default" variant="secondary" onClick={()=>this.props.hideModalEditSmartMetadata()} style={{marginLeft:"5px",height:"34px"}}>Cancel</Button>
             </div>
         );
 

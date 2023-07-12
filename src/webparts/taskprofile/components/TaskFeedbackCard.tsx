@@ -339,6 +339,7 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           countemailbutton=0;
           this.setState({
             emailcomponentopen:true,
+            emailComponentstatus:item
           }
          
           )
@@ -347,11 +348,13 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           countemailbutton=0;
           this.setState({
             emailcomponentopen:true,
+            emailComponentstatus:item
           })
         }else{
           countemailbutton=1;
           this.setState({
             emailcomponentopen:false,
+
           })
          
       }

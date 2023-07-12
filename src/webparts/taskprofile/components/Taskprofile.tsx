@@ -527,7 +527,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       console.log(ClientCategory);
     }
  
-    if (ClientTimeArray != undefined && ClientTimeArray?.length > 0) {
+    if (ClientTimeArray != undefined && ClientTimeArray.length>0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if (item?.SiteName == items?.SiteName) {
