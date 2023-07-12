@@ -206,13 +206,13 @@ const GlobalCommanTable = (items: any) => {
         })
         // Create a new workbook and worksheet
         const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(excelRows, { header: excelColumns});
+        const worksheet = XLSX.utils.json_to_sheet(excelRows);
       
         // Add the worksheet to the workbook
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Table Data');
       
         // Convert the workbook to an Excel file
-        const excelFile = XLSX.write(workbook, { type: 'binary', bookType: 'xlsx' });
+        const excelFile = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
       
         // Save the file with a specified name
         const fileName = 'table-data.xlsx';

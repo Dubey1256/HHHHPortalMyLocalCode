@@ -1,5 +1,5 @@
 import * as React from "react";
-// import ImagesC from "./Images";
+import * as Moment from 'moment';
 import {
   arraysEqual,
   Modal,
@@ -179,7 +179,7 @@ function EditProjectPopup(item: any) {
   const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
   const [isOpenPicker, setIsOpenPicker] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
-
+  const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [SharewebCategory, setSharewebCategory] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
@@ -203,7 +203,7 @@ function EditProjectPopup(item: any) {
   );
 
   const [activePicker, setActivePicker] = React.useState(null);
-
+  const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
   const [datepicker, setdatepicker] = React.useState(false);
   // Save % complete
   const [Items, setItem] = React.useState("");
@@ -217,6 +217,20 @@ function EditProjectPopup(item: any) {
     setActivePicker(pickerName);
   };
 
+  const StatusArray = [
+    { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
+    { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
+    { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+    { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+    { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+    { value: 90, status: "90% Project completed", taskStatusComment: "Task completed" },
+    { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+    { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+    { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+    { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
+  ]
   const handlePickerBlur = () => {
     setActivePicker(null);
   };
@@ -579,6 +593,7 @@ function EditProjectPopup(item: any) {
     //     success: function (data) {
     var Tasks = componentDetails;
     $.each(Tasks, function (index: any, item: any) {
+      StatusAutoSuggestion(item?.PercentComplete!=undefined?item?.PercentComplete*100:null)
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
         item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
@@ -709,6 +724,7 @@ function EditProjectPopup(item: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
+     
       item.siteUrl = AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
@@ -724,7 +740,9 @@ function EditProjectPopup(item: any) {
       return array.indexOf(val) == id;
     });
     //CheckCategory.forEach((val:any)=>{})
+
     setEditData(Tasks[0]);
+    
     setModalIsOpenToTrue(true);
 
     //  setModalIsOpenToTrue();
@@ -1045,6 +1063,51 @@ function EditProjectPopup(item: any) {
   //         }
   //     });
   // }
+  const StatusAutoSuggestion = (percentValue: any) => {
+    setTaskStatusPopup(false)
+    let StatusInput = percentValue;
+    let TaskStatus = '';
+    let PercentCompleteStatus = '';
+    let value = Number(percentValue)
+    if (value <= 100) {
+      if (StatusInput > 0) {
+        if (StatusInput == 0) {
+          TaskStatus = 'Not Started'
+          PercentCompleteStatus = 'Not Started';
+
+        }
+        if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
+          TaskStatus = "In Progress";
+          PercentCompleteStatus = `${Number(StatusInput).toFixed(0)}% In Progress`;
+        } else {
+          StatusArray.map((percentStatus: any, index: number) => {
+            if (percentStatus.value == StatusInput) {
+              TaskStatus = percentStatus.taskStatusComment;
+              PercentCompleteStatus = percentStatus.status;
+            }
+          })
+          if (StatusInput == 10) {
+            EditData.CompletedDate = undefined;
+            if (EditData.StartDate == undefined) {
+              EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+            }
+          }
+        }
+        setPercentCompleteStatus(PercentCompleteStatus);
+        setEditData({ ...EditData, PercentComplete: value, Status: TaskStatus })
+      } else {
+        TaskStatus = '';
+        PercentCompleteStatus = '';
+        setPercentCompleteStatus(PercentCompleteStatus);
+      }
+    } else {
+      alert("Status not should be greater than 100");
+      setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+    }
+
+
+    // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
+  }
   const setPriority = function (item: any, val: number) {
     item.Priority_x0020_Rank = val;
     getpriority(item);
@@ -1302,6 +1365,8 @@ function EditProjectPopup(item: any) {
         AdminStatus: Items.AdminStatus,
         Priority: Items.Priority,
         Mileage: Items.Mileage,
+        PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
+        Status: Items?.Status ? Items?.Status : null,
         ValueAdded: Items.ValueAdded,
         Idea: Items.Idea,
         Background: Items.Background,
@@ -1318,7 +1383,7 @@ function EditProjectPopup(item: any) {
         },
         TechnicalExplanations:
           PostTechnicalExplanations != undefined &&
-          PostTechnicalExplanations != ""
+            PostTechnicalExplanations != ""
             ? PostTechnicalExplanations
             : EditData.TechnicalExplanations,
         Deliverables:
@@ -1327,7 +1392,7 @@ function EditProjectPopup(item: any) {
             : EditData.Deliverables,
         Short_x0020_Description_x0020_On:
           PostShort_x0020_Description_x0020_On != undefined &&
-          PostShort_x0020_Description_x0020_On != ""
+            PostShort_x0020_Description_x0020_On != ""
             ? PostShort_x0020_Description_x0020_On
             : EditData.Short_x0020_Description_x0020_On,
         Body:
@@ -1778,41 +1843,41 @@ function EditProjectPopup(item: any) {
                                     <div>
                                       {smartComponentData
                                         ? smartComponentData?.map(
-                                            (com: any, index: any) => {
-                                              return (
-                                                <>
-                                                  <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
-                                                    <a
-                                                      style={{
-                                                        color:
-                                                          "#fff !important",
-                                                      }}
-                                                      target="_blank"
-                                                      href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
-                                                    >
-                                                      {com.Title}
-                                                    </a>
-                                                    <a>
-                                                      <span
-                                                        onClick={() =>
-                                                          RemoveSelectedServiceComponent(
-                                                            com.Id,
-                                                            "Component"
-                                                          )
-                                                        }
-                                                        className="bg-light svg__icon--cross svg__iconbox"
-                                                      ></span>
-                                                      {/* <img
+                                          (com: any, index: any) => {
+                                            return (
+                                              <>
+                                                <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
+                                                  <a
+                                                    style={{
+                                                      color:
+                                                        "#fff !important",
+                                                    }}
+                                                    target="_blank"
+                                                    href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
+                                                  >
+                                                    {com.Title}
+                                                  </a>
+                                                  <a>
+                                                    <span
+                                                      onClick={() =>
+                                                        RemoveSelectedServiceComponent(
+                                                          com.Id,
+                                                          "Component"
+                                                        )
+                                                      }
+                                                      className="bg-light svg__icon--cross svg__iconbox"
+                                                    ></span>
+                                                    {/* <img
                                                       className="mx-2"
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                       
                                                     /> */}
-                                                    </a>
-                                                  </div>
-                                                </>
-                                              );
-                                            }
-                                          )
+                                                  </a>
+                                                </div>
+                                              </>
+                                            );
+                                          }
+                                        )
                                         : null}
                                     </div>
                                   </div>
@@ -1902,8 +1967,8 @@ function EditProjectPopup(item: any) {
                                 defaultValue={
                                   EditData.StartDate
                                     ? moment(EditData.StartDate).format(
-                                        "YYYY-MM-DD"
-                                      )
+                                      "YYYY-MM-DD"
+                                    )
                                     : ""
                                 }
                                 onChange={(e) =>
@@ -1927,8 +1992,8 @@ function EditProjectPopup(item: any) {
                                 defaultValue={
                                   EditData.DueDate
                                     ? moment(EditData.DueDate).format(
-                                        "YYYY-MM-DD"
-                                      )
+                                      "YYYY-MM-DD"
+                                    )
                                     : ""
                                 }
                                 onChange={(e) =>
@@ -1953,8 +2018,8 @@ function EditProjectPopup(item: any) {
                                 defaultValue={
                                   EditData.CompletedDate
                                     ? moment(EditData.CompletedDate).format(
-                                        "YYYY-MM-DD"
-                                      )
+                                      "YYYY-MM-DD"
+                                    )
                                     : ""
                                 }
                                 onChange={(e) =>
@@ -2166,7 +2231,7 @@ function EditProjectPopup(item: any) {
                                           <>
                                             {type.Title != "Phone" &&
                                               type.Title !=
-                                                "Email Notification" &&
+                                              "Email Notification" &&
                                               type.Title != "Approval" &&
                                               type.Title != "Immediate" && (
                                                 <div className="block d-flex justify-content-between my-1 p-1">
@@ -2343,22 +2408,9 @@ function EditProjectPopup(item: any) {
                                     return (
                                       <a
                                         target="_blank"
-                                        href={
-                                          userDtl.Item_x0020_Cover
-                                            ? userDtl.Item_x0020_Cover.Url
-                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                        }
+        
                                       >
                                         <img
-                                          ui-draggable="true"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-placement="bottom"
-                                          title={
-                                            userDtl.Title ? userDtl.Title : ""
-                                          }
-                                          on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
                                           style={{
                                             width: "35px",
                                             height: "35px",
@@ -2366,8 +2418,8 @@ function EditProjectPopup(item: any) {
                                             borderRadius: "50px",
                                           }}
                                           src={
-                                            userDtl.Item_x0020_Cover.Url
-                                              ? userDtl.Item_x0020_Cover.Url
+                                            userDtl?.Item_x0020_Cover?.Url
+                                              ? userDtl?.Item_x0020_Cover?.Url
                                               : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                           }
                                         />
@@ -2380,22 +2432,22 @@ function EditProjectPopup(item: any) {
                           </div>
                           <div className="col mt-2">
                             <div className="input-group">
-                              <div className="TaskUsers">
-                                <label className="form-label full-width  mx-2">
-                                  % Complete
-                                </label>
-                                <EditableField
-                                  listName="Master Tasks"
-                                  itemId={EditData?.Id}
-                                  fieldName="PercentComplete"
-                                  value={EditData?.PercentComplete}
-                                  onChange={handleFieldChange(
-                                    "PercentComplete"
-                                  )}
-                                  type="Number"
-                                  web={AllListId?.siteUrl}
-                                />
-                              </div>
+                              <label className="form-label full-width">Status</label>
+                              <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
+                                defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                onChange={(e) => StatusAutoSuggestion(e.target.value)} />
+                              <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
+                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                              </span>
+                              {PercentCompleteStatus?.length > 0 ?
+                                <span className="full-width l-radio">
+                                  <input type='radio' className="form-check-input my-2" checked />
+                                  <label className="ps-2 pt-1">
+                                    {PercentCompleteStatus}
+                                  </label>
+                                </span> : null}
                             </div>
                           </div>
                         </div>
@@ -2546,8 +2598,8 @@ function EditProjectPopup(item: any) {
                                             EditData.BackgroundVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2606,8 +2658,8 @@ function EditProjectPopup(item: any) {
                                             EditData.IdeaVerified === true
                                           }
                                           onChange={(e) =>
-                                            (EditData.BackgroundVerified =
-                                              e.target.value)
+                                          (EditData.BackgroundVerified =
+                                            e.target.value)
                                           }
                                         ></input>
                                         <span className="ps-1">Verified</span>
@@ -2776,9 +2828,8 @@ function EditProjectPopup(item: any) {
                       <a
                         target="_blank"
                         data-interception="off"
-                        href={`mailto:?subject=${"Test"}&body=${
-                          EditData.component_x0020_link
-                        }`}
+                        href={`mailto:?subject=${"Test"}&body=${EditData.component_x0020_link
+                          }`}
                       >
                         {" "}
                         Share this task ||
@@ -2830,6 +2881,41 @@ function EditProjectPopup(item: any) {
             )}
           </div>
         )}
+      </Panel>
+      {/* ***************** this is status panel *********** */}
+      <Panel
+        headerText={`Update Task Status`}
+        isOpen={TaskStatusPopup}
+        onDismiss={() => { setTaskStatusPopup(false) }}
+        isBlocking={TaskStatusPopup}
+      >
+        <div>
+          <div className="modal-body">
+            <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
+              <tbody>
+                {StatusArray?.map((item: any, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <div className="form-check l-radio">
+                          <input className="form-check-input"
+                            type="radio" checked={EditData.PercentComplete == item.value}
+                            onClick={() => StatusAutoSuggestion(item.value)} />
+                          <label className="form-check-label mx-2">{item.status}</label>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
+                            OK
+                        </button>
+                    </footer> */}
+        </div>
       </Panel>
     </>
   );
