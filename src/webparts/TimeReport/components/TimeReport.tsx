@@ -14,6 +14,7 @@ import {
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
 import * as Moment from 'moment';
+import Loader from "react-loader";
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
@@ -48,14 +49,15 @@ const TimeReport = () => {
     const [data, setData] = React.useState([])
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
+    const [loaded, setLoaded] = React.useState(true);
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(true);
     const [checkedTask, setcheckedTask] = React.useState(false);
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
-    
+
     React.useEffect(() => {
-        // GetAllTimeEntry();
+        showProgressBar();
         GetTaskUsers();
         GetSmartmetadata();
 
@@ -100,7 +102,7 @@ const TimeReport = () => {
     const LoadAllSiteTasks = async () => {
         var Counter = 0;
         let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-     
+
         const requests = smartmetaDetails.map((listID: any) => web.lists
             .getById(listID?.listId)
             .items
@@ -151,8 +153,17 @@ const TimeReport = () => {
         }
 
     }
+    var showProgressBar = () => {
+        setLoaded(false);
+        $(" #SpfxProgressbar").show();
+    };
+
+    var showProgressHide = () => {
+        setLoaded(true);
+        $(" #SpfxProgressbar").hide();
+    };
     const GetMigrationTime = async () => {
-        var selectedDate:any=[]
+        var selectedDate: any = []
         var filteres = `Modified ge '${datess}'`
         var query = "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,Modified,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand= Category,TimesheetTitle,TaskMigration,TaskALAKDigital&$top=4999&$filter=" + filteres + ""
         await $.ajax({
@@ -184,11 +195,12 @@ const TimeReport = () => {
     }
 
     var datess = ''
+
     const GeneratedTask = async (Type: any) => {
-      
-         DevloperTime = 0.00;
-         QATime = 0.00;
-         DesignTime = 0.00;
+
+        DevloperTime = 0.00;
+        QATime = 0.00;
+        DesignTime = 0.00;
 
         if (Type == "Yesterday" || Type == "Today") {
             var myDate = new Date()
@@ -198,11 +210,11 @@ const TimeReport = () => {
             var myDate = new Date(selectdate)
             var final: any = (Moment(myDate).add(-1, 'days').format())
         }
-         
+
         datess = new Date(final).toISOString()
         var ccc: any = []
         var selectedDate: any = []
-        AllTime=[]
+        AllTime = []
 
         var filteres = `Modified ge '${datess}'`
         var query = "Id,Title,TaskDate,TaskTime,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,Author/Id,AuthorId,Author/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id&$expand=Author,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks&$top=4999&$filter=" + filteres + ""
@@ -215,8 +227,8 @@ const TimeReport = () => {
                 "content-Type": "application/json;odata=verbose"
             },
             success: async function (data) {
-        
-               selectedDate = data.d.results;
+
+                selectedDate = data.d.results;
                 await GetMigrationTime()
                 selectedDate?.forEach((time: any) => {
                     if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
@@ -224,7 +236,7 @@ const TimeReport = () => {
                         AllTime.push(time)
                     }
                 })
-                
+
                 makefinalTask(AllTime);
 
 
@@ -445,6 +457,7 @@ const TimeReport = () => {
             })
         }
         setData(SelectedTime)
+        showProgressHide();
     }
 
     const selectType = (Dates: any) => {
@@ -459,7 +472,7 @@ const TimeReport = () => {
             var Datene = Moment(Yesterday).subtract(1, 'day')
             var Datenew = Moment().format("DDMMYYYY")
             checkDate = Datenew;
-          
+
         }
         if (Dates == 'Yesterday') {
             setcheckedWS(true)
@@ -712,6 +725,10 @@ const TimeReport = () => {
                             <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
                     </h3>
                 </div>
+                <div className='col-sm-9 text-primary'>
+                    <h6 className='pull-right'><b><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    </h6>
+                </div>
             </div>
             <div className='row'>
                 <div className='col-7 mt-4'>
@@ -760,7 +777,29 @@ const TimeReport = () => {
             </div>
 
             <div className='Alltable'>
-            <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} />
+
+                <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} />
+                <Loader
+                    loaded={loaded}
+                    lines={13}
+                    length={20}
+                    width={10}
+                    radius={30}
+                    corners={1}
+                    rotate={0}
+                    direction={1}
+
+                    speed={2}
+                    trail={60}
+                    shadow={false}
+                    hwaccel={false}
+                    className="spinner"
+                    zIndex={2e9}
+                    top="28%"
+                    left="50%"
+                    scale={1.0}
+                    loadedClassName="loadedContent"
+                />
             </div>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
