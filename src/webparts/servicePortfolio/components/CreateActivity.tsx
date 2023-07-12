@@ -45,6 +45,7 @@ var SiteTypeBackupArray: any = [];
 var counts = 0
 var isModelChange = false
 var TaskImagess: any = []
+var AllClientCategory:any=[];
 const defaultContent = "";
 let defaultfile = [];
 const CreateActivity = (props: any) => {
@@ -107,6 +108,7 @@ const CreateActivity = (props: any) => {
 
 
     React.useEffect(() => {
+        GetCategoryData();
         loadAllCategoryData("Categories");
         setPost({ ...post, Title: AllItems.Title})
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
@@ -115,11 +117,18 @@ const CreateActivity = (props: any) => {
             })
         }
 
-        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
-        //     AllItems.ClientCategory2.results.forEach((value: any) => {
-        //         ClientCategoriesData.push(value)
-        //     })
-        // }
+     if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
+       if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        AllItems.ClientCategory2.results.forEach((value2: any) => {
+            ClientCategoriesData.push(value2)
+        })
+    }else{
+        AllItems.ClientCategory?.results?.forEach((value: any) => {
+            ClientCategoriesData.push(value)
+        })
+    } 
+        }
+       
         if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
             if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
                 AllItems.ClientCategory2.results.forEach((value2: any) => {
@@ -178,7 +187,18 @@ const CreateActivity = (props: any) => {
         GetSmartMetadata();
     }, [])
 
+    const GetCategoryData=async ()=>{
+        const web = new Web(dynamicList?.siteUrl);
 
+        const res = await web.lists.getById(dynamicList?.SmartMetadataListID).items
+            .select("Id,Title,TaxType,ParentID").top(4999)
+            .filter("TaxType eq 'Client Category'")
+            .get();
+        console.log(res)
+        AllClientCategory=AllClientCategory.concat(res)
+    
+        
+    }
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
@@ -243,17 +263,17 @@ const CreateActivity = (props: any) => {
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
 
-        AllItems.SiteCompositionSettingsbackup = globalCommon.parseJSON(AllItems.SiteCompositionSettings);
+        AllItems.SiteCompositionSettingsbackup = globalCommon?.parseJSON(AllItems.SiteCompositionSettings);
 
         if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team')) {
 
-            let allItems = globalCommon.parseJSON(AllItems.Sitestagging);
+            let allItems = globalCommon?.parseJSON(AllItems?.Sitestagging);
 
             AllItems.Sitestaggingbackup = [];
 
             allItems?.forEach((obj: any) => {
 
-                if (obj.ClienTimeDescription != undefined) {
+                if (obj?.ClienTimeDescription != undefined) {
 
                     let Item: any = {};
 
@@ -274,7 +294,7 @@ const CreateActivity = (props: any) => {
 
         }
 
-        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
+        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems?.ClientTime);
 
         if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
 
@@ -918,7 +938,7 @@ const CreateActivity = (props: any) => {
                         }
                         if (res?.data?.ClientCategoryId?.length > 0) {
                             res.data?.ClientCategoryId?.map((category: any) => {
-                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                let elementFound = AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
                                 if (elementFound) {
                                     res.data.ClientCategory.push(elementFound[0]);
                                 }
@@ -1016,7 +1036,7 @@ const CreateActivity = (props: any) => {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
                         if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& Task. SharewebTaskType.Title=="Workstream") {
-                            SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + 'w'+WorstreamLatestId+'-T' + LatestId;
+                            SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W'+WorstreamLatestId+'-T' + LatestId;
                         }
                       
                         if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
@@ -1049,7 +1069,7 @@ const CreateActivity = (props: any) => {
                         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
                         SiteCompositionSettings: JSON.stringify(AllItems.SiteCompositionSettingsbackup),
-                        ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
+                        ClientTime: JSON.stringify(AllItems?.Sitestaggingbackup!=undefined?AllItems?.Sitestaggingbackup:AllItems?.ClientTime),
 
                     }).then((res: any) => {
                         let data = res.data;
@@ -1097,7 +1117,7 @@ const CreateActivity = (props: any) => {
                         data.ClientCategory = []
                         if (data?.ClientCategoryId?.length > 0) {
                             data?.ClientCategoryId?.map((category: any) => {
-                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                let elementFound = AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
                                 if (elementFound) {
                                     data.ClientCategory.push(elementFound[0]);
                                 }
@@ -1775,24 +1795,6 @@ const deleteLinkedComponentData=()=>{
                                         </ul>
                                     </div>) : null}
 
-                                {/* <div className="row">
-                                    <div className="col-sm-12 mt-2">
-                                        {CheckCategory?.map((item: any) => {
-                                            return (
-                                                <>
-                                                    <div
-                                                        className="col-sm-12 padL-0 checkbox">
-                                                        <input type="checkbox"
-                                                            onClick={() => checkCat(item.Title)} />
-                                                        <span style={{ marginLeft: "20px" }}> {item.Title}</span>
-                                                    </div>
-                                                </>
-                                            )
-                                        })}
-                                    </div>
-
-
-                                </div> */}
                                  <div className="col">
                                     <div className="col">
                                         <div
@@ -1932,7 +1934,7 @@ const deleteLinkedComponentData=()=>{
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 ||AllItems?.Portfolio_x0020_Type == 'Service')) &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 && AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1940,7 +1942,7 @@ const deleteLinkedComponentData=()=>{
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 || AllItems?.Portfolio_x0020_Type == 'Component')) &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 && AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}

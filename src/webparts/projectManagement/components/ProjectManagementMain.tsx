@@ -1620,7 +1620,7 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                    <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} />
+                                 {Masterdata?.AssignedTo?.length>0||Masterdata?.Team_x0020_Members?.length>0||Masterdata?.Responsible_x0020_Team?.length>0?<ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} />:''}   
                                   </dd>
                                 </dl>
                                 <dl>
