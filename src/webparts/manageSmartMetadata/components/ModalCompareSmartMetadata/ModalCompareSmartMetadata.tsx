@@ -3,6 +3,8 @@ import IModalCompareSmartMetadataProps from "./IModalCompareSmartMetadataProps";
 import IModalCompareSmartMetadataState from "./IModalCompareSmartMetadataState";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import * as Icon from 'react-bootstrap-icons';
+import { TbArrowsExchange} from "react-icons/tb";
+import { LuUndo2} from "react-icons/lu";
 import { Checkbox, Dropdown, IDropdownOption, Label, Text, TextField } from "@fluentui/react";
 import { ISmartMetadataItem } from "../ISmartMetadataItem";
 
@@ -520,182 +522,182 @@ class ModalCompareSmartMetadata extends React.Component<IModalCompareSmartMetada
     render() {
 
         const elemCompareItems = (
-            <Container fluid>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+            <Container fluid className="CompareSmartpopup">
+                <Row className="Metadatapannel ">
+                    <Col sm="5" md="5" lg="5">
                         <Label>{this.state.itemOneTitle}</Label>
                     </Col>                    
-                    <Col sm="2" md="2" lg="2"><Icon.Shuffle size="48" onClick={this.handleSwitchItems} /></Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="1" md="1" lg="1" className="text-center"><TbArrowsExchange size="48" onClick={this.handleSwitchItems} /></Col>
+                    <Col sm="5" md="5" lg="5">
                         <Label>{this.state.itemTwoTitle}</Label>
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="48" onClick={this.handleUndoItems} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoItems} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel ">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Title" value={this.state.itemOneTitle} onChange={(ev,newVal)=>this.handleTitleChange(newVal,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1" >
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchTitle("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchTitle("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Title" value={this.state.itemTwoTitle} onChange={(ev,newVal)=>this.handleTitleChange(newVal,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoTitle} />                        
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoTitle} />                        
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel ">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Tax Type" value={this.state.itemOneTaxType} onChange={(ev,newVal)=>this.handleTaxTypeChange(newVal,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchTaxType("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchTaxType("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Tax Type" value={this.state.itemTwoTaxType} onChange={(ev,newVal)=>this.handleTaxTypeChange(newVal,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoTaxType} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoTaxType} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel ">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Sort Order" value={this.state.itemOneSortOrder} onChange={(ev,newVal)=>this.handleSortOrderChange(newVal,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchSortOrder("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchSortOrder("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Sort Order" value={this.state.itemTwoSortOrder} onChange={(ev,newVal)=>this.handleSortOrderChange(newVal,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoSortOrder} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoSortOrder} />
                     </Col>
                 </Row>
-                <Row className="mt-3">
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <Checkbox label="Smart Suggestions" checked={this.state.itemOneSmartSuggestions} onChange={(ev,checked)=>this.handleSmartSuggestionsCheck(checked,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchSmartSuggestions("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchSmartSuggestions("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <Checkbox label="Smart Suggestions" checked={this.state.itemTwoSmartSuggestions} onChange={(ev,checked)=>this.handleSmartSuggestionsCheck(checked,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoSmartSuggestions} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoSmartSuggestions} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <Checkbox label="Is Visible" checked={this.state.itemOneIsVisible} onChange={(ev,checked)=>this.handleIsVisibleCheck(checked,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchIsVisible("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchIsVisible("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <Checkbox label="Is Visible" checked={this.state.itemTwoIsVisible} onChange={(ev,checked)=>this.handleIsVisibleCheck(checked,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoIsVisible} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoIsVisible} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <Dropdown label="Status" calloutProps={{doNotLayer:true}} options={optionsStatus} selectedKey={this.state.itemOneStatus} onChange={(ev,option)=>this.handleStatusChange(option,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchStatus("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchStatus("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <Dropdown label="Status" calloutProps={{doNotLayer:true}} options={optionsStatus} selectedKey={this.state.itemTwoStatus} onChange={(ev,option)=>this.handleStatusChange(option,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoStatus} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoStatus} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Help Description" multiline rows={3} value={this.state.itemOneHelpDescription} onChange={(ev,newVal)=>this.handleHelpDescriptionChange(newVal,"itemOne")} />
                     </Col>                    
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchHelpDescription("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchHelpDescription("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <TextField label="Help Description" multiline rows={3} value={this.state.itemTwoHelpDescription} onChange={(ev,newVal)=>this.handleHelpDescriptionChange(newVal,"itemTwo")} />
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={this.handleUndoHelpDescription} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={this.handleUndoHelpDescription} />
                     </Col> 
                 </Row>                
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <Text>Tasks</Text>
                         {
                             this.state.itemOneTasks.map(taskItem=><Checkbox label={taskItem.Title} checked={this.state.itemOneTasksSelected.map(i=>i.ID).indexOf(taskItem.ID)>-1} onChange={(ev,isChecked)=>this.handleItemOneTasksCheck(isChecked,taskItem)} />)
                         }
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchTasks("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchTasks("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <Text>Tasks</Text>
                         {
                             this.state.itemTwoTasks.map(taskItem=><Checkbox label={taskItem.Title} checked={this.state.itemTwoTasksSelected.map(i=>i.ID).indexOf(taskItem.ID)>-1} onChange={(ev,isChecked)=>this.handleItemTwoTasksCheck(isChecked,taskItem)} />)
                         }
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={()=>this.handleUndoTasks()} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={()=>this.handleUndoTasks()} />
                     </Col>
                 </Row>
-                <Row>
-                    <Col sm="4" md="4" lg="4">
+                <Row className="Metadatapannel">
+                    <Col sm="5" md="5" lg="5">
                         <Text>Childs</Text>
                         {
                             this.state.itemOneChildItems.map(childItem=><Checkbox label={childItem.Title} checked={this.state.itemOneChildItemsSelected.map(i=>i.ID).indexOf(childItem.ID)>-1} onChange={(ev,isChecked)=>this.handleItemOneChildCheck(isChecked,childItem)} />)
                         }
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <div>
+                    <Col sm="1" md="1" lg="1">
+                        <div className="text-center">
                             <div><Icon.ArrowLeft size="24" onClick={()=>this.handleSwitchChildItems("twoToOne")} /></div>
                             <div><Icon.ArrowRight size="24" onClick={()=>this.handleSwitchChildItems("oneToTwo")} /></div>
                         </div>
                     </Col>
-                    <Col sm="4" md="4" lg="4">
+                    <Col sm="5" md="5" lg="5">
                         <Text>Childs</Text>
                         {
                             this.state.itemTwoChildItems.map(childItem=><Checkbox label={childItem.Title} checked={this.state.itemTwoChildItemsSelected.map(i=>i.ID).indexOf(childItem.ID)>-1} onChange={(ev,isChecked)=>this.handleItemTwoChildCheck(isChecked,childItem)} />)
                         }
                     </Col>
-                    <Col sm="2" md="2" lg="2">
-                        <Icon.ArrowCounterclockwise size="36" onClick={()=>this.handleUndoChildItems()} />
+                    <Col sm="1" md="1" lg="1">
+                        <LuUndo2 size="25" onClick={()=>this.handleUndoChildItems()} />
                     </Col>
                 </Row>
             </Container>

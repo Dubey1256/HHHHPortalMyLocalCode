@@ -53,7 +53,6 @@ import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
 
-
 ///TanstackTable filter And CheckBox 
 declare module "@tanstack/table-core" {
   interface FilterFns {

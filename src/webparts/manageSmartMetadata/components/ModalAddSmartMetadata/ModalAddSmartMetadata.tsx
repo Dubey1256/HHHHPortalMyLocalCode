@@ -105,7 +105,7 @@ class ModalAddSmartMetadata extends React.Component<IModalAddSmartMetadataProps,
             modalTitle = `${parentItem.Title} - Create Child Item`;
         }
         const elemCreateSmartMetadata: JSX.Element = (
-            <Container fluid>
+            <Container fluid className="mb-3 C-SmartMetadata">
                 <Row>
                     <TextField label="Title" placeholder="Enter Component Title..." onChange={(ev,newVal)=>this.handleTitleChange(newVal)} />
                 </Row>
@@ -115,7 +115,7 @@ class ModalAddSmartMetadata extends React.Component<IModalAddSmartMetadataProps,
             </Container> 
         );
         const elemCreateSmartMetadataChild: JSX.Element = (
-            <Container fluid>
+            <Container fluid className="mb-3 C-SmartMetadata">
                 {
                     this.state.createSMChildItems.map( createChildItem =>
                         <React.Fragment key={`createChildItem${createChildItem.Key}`}>
