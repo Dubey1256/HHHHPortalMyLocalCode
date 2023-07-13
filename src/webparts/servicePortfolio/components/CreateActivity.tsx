@@ -116,6 +116,11 @@ const CreateActivity = (props: any) => {
                 ClientCategoriesData.push(value)
             })
         }
+        if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
+            AllItems.ClientCategory.forEach((value: any) => {
+                ClientCategoriesData.push(value)
+            })
+        }
 
      if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
        if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
@@ -128,6 +133,7 @@ const CreateActivity = (props: any) => {
         })
     } 
         }
+        
        
         if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
             if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
@@ -1069,7 +1075,7 @@ const CreateActivity = (props: any) => {
                         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
                         SiteCompositionSettings: JSON.stringify(AllItems.SiteCompositionSettingsbackup),
-                        ClientTime: JSON.stringify(AllItems?.Sitestaggingbackup!=undefined?AllItems?.Sitestaggingbackup:AllItems?.ClientTime),
+                        ClientTime: JSON.stringify(AllItems?.ClientTime),
 
                     }).then((res: any) => {
                         let data = res.data;
