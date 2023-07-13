@@ -1664,7 +1664,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(172);
+                        setWorkingMember(40);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1779,7 +1779,7 @@ const EditTaskPopup = (Items: any) => {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
-                setWorkingMember(172);
+                setWorkingMember(40);
             } else {
                 setWorkingMember(42);
             }
