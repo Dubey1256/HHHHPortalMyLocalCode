@@ -33,9 +33,9 @@ let smartComponentData: any = [];
 let portfolioType = "";
 var AllUser: any = [];
 var siteConfig: any = [];
-let headerOptions:any={
-  openTab:true,
-  teamsIcon:true
+let headerOptions: any = {
+  openTab: true,
+  teamsIcon: true
 }
 var DynamicData: any = {}
 var ChildData: any = []
@@ -52,7 +52,7 @@ var isShowTimeEntry: any;
 var isShowSiteCompostion: any;
 const ProjectManagementMain = (props: any) => {
   const [item, setItem] = React.useState({});
-  const [masterData, setMasterData] = React.useState([]);
+  const [AllTaskUsers, setAllTaskUsers] = React.useState([]);
   const [icon, seticon] = React.useState(false);
   const [isCall, setIsCall] = React.useState(false);
   const [ShareWebCoseticonmponent, setShareWebComponent] = React.useState("");
@@ -71,7 +71,32 @@ const ProjectManagementMain = (props: any) => {
   const [starIcon, setStarIcon]: any = React.useState(false);
   const [createTaskId, setCreateTaskId] = React.useState({});
   const [isSmartInfoAvailable, setIsSmartInfoAvailable]: any = React.useState(false);
-
+  const StatusArray = [
+    { value: 1, status: "01% For Approval", taskStatusComment: "For Approval" },
+    { value: 2, status: "02% Follow Up", taskStatusComment: "Follow Up" },
+    { value: 3, status: "03% Approved", taskStatusComment: "Approved" },
+    { value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged" },
+    { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+    { value: 90, status: "90% Project completed", taskStatusComment: "Task completed" },
+    { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+    { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+    { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+    { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
+  ]
+  const getPercentCompleteTitle = (percent: any) => {
+    let result = '';
+    StatusArray?.map((status: any) => {
+      if (status?.value == percent) {
+        result = status?.status;
+      }
+    })
+    if (result.length <= 0) {
+      result = percent + "% Completed"
+    }
+    return result
+  }
   const [expendcollapsAccordion, setExpendcollapsAccordion]: any =
     React.useState({
       description: false,
@@ -158,6 +183,7 @@ const ProjectManagementMain = (props: any) => {
     if (AllListId?.MasterTaskListID != undefined) {
       try {
         AllUser = await loadTaskUsers();
+        setAllTaskUsers(AllUser);
         let web = new Web(props?.siteUrl);
         let taskUsers: any = {};
         var AllUsers: any = [];
@@ -169,8 +195,9 @@ const ProjectManagementMain = (props: any) => {
           .get();
 
 
-        if ((taskUsers.PercentComplete = undefined))
-          taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0);
+        if ((taskUsers.PercentComplete != undefined)) {
+          taskUsers.PercentComplete = (taskUsers?.PercentComplete * 100).toFixed(0)
+        }
         // if (taskUsers.Body != undefined) {
         //   taskUsers.Body = taskUsers.Body.replace(/(<([^>]+)>)/gi, "");
         // }
@@ -200,12 +227,37 @@ const ProjectManagementMain = (props: any) => {
 
         AllUsers?.map((items: any) => {
           items.AssignedUser = [];
+          items.AssignedTo = [];
+          items.Team_x0020_Members=[];
+          items.Responsible_x0020_Team=[];
+          AllUser?.map((user: any) => {
+            if(items?.Team_x0020_MembersId!=undefined){
+              items?.Team_x0020_MembersId?.map((taskUser:any)=>{
+                if (user.AssingedToUserId == taskUser) {
+                  user.Id=user.AssingedToUserId ;
+                  items.Team_x0020_Members.push(user)
+                }
+              })
+            }
+            if(items?.Responsible_x0020_TeamId!=undefined){
+              items?.Responsible_x0020_TeamId?.map((taskUser:any)=>{
+                if (user.AssingedToUserId == taskUser) {
+                  user.Id=user.AssingedToUserId ;
+                  items.Responsible_x0020_Team.push(user)
+                }
+              })
+            }
+           
+          });
           if (items.AssignedToId != undefined) {
             items.AssignedToId.map((taskUser: any) => {
+
               var newuserdata: any = {};
 
               AllUser?.map((user: any) => {
                 if (user.AssingedToUserId == taskUser) {
+                  user.Id=user.AssingedToUserId ;
+                  items.AssignedTo.push(user);
                   newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
                   newuserdata["Suffix"] = user?.Suffix;
                   newuserdata["Title"] = user?.Title;
@@ -487,13 +539,13 @@ const ProjectManagementMain = (props: any) => {
           let smartmeta = [];
           smartmeta = await web.lists
             .getById(config.listId)
-            .items 
+            .items
             .select("Id,Title,Priority_x0020_Rank,Remark,Project/Priority_x0020_Rank,Project/Id,Project/Title,Events/Id,EventsId,workingThisWeek,EstimatedTime,SharewebTaskLevel1No,SharewebTaskLevel2No,OffshoreImageUrl,OffshoreComments,ClientTime,Priority,Status,ItemRank,IsTodaysTask,Body,Component/Id,Component/Title,Services/Id,Services/Title,PercentComplete,ComponentId,Categories,ServicesId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title")
             .expand('AssignedTo,Events,Project,Author,Editor,Component,Services,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory')
             .top(4999)
             .filter("ProjectId eq " + QueryId)
             .orderBy("Priority_x0020_Rank", false)
-           .get();
+            .get();
           arraycount++;
           smartmeta.map((items: any) => {
 
@@ -1526,7 +1578,7 @@ const ProjectManagementMain = (props: any) => {
                                     <span>
                                       <a>
                                         {Masterdata.DueDate != null
-                                          ? Moment(Masterdata.Created).format(
+                                          ? Moment(Masterdata?.Duedate).format(
                                             "DD/MM/YYYY"
                                           )
                                           : ""}
@@ -1568,27 +1620,15 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                    {Masterdata?.AssignedUser?.map(
-                                      (image: any) => (
-                                        <span
-                                          className="headign"
-                                          title={image.Title}
-                                        >
-                                          <img
-                                            className="circularImage rounded-circle"
-                                            src={image.useimageurl}
-                                          />
-                                        </span>
-                                      )
-                                    )}
+                                 {Masterdata?.AssignedTo?.length>0||Masterdata?.Team_x0020_Members?.length>0||Masterdata?.Responsible_x0020_Team?.length>0?<ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} />:''}   
                                   </dd>
                                 </dl>
                                 <dl>
-                                  <dt className="bg-fxdark">% Complete</dt>
+                                  <dt className="bg-fxdark">Status</dt>
                                   <dd className="bg-light">
                                     <a>
                                       {Masterdata.PercentComplete != null
-                                        ? Masterdata.PercentComplete
+                                        ? getPercentCompleteTitle(Masterdata.PercentComplete)
                                         : ""}
                                     </a>
                                     <span className="pull-right">
@@ -1670,7 +1710,7 @@ const ProjectManagementMain = (props: any) => {
                             ) : (
                               ""
                             )}
-                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData}  TaskUsers={AllUser}  showHeader={true} />
+                            <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={data} callBackData={callBackData} TaskUsers={AllUser} showHeader={true} />
                           </div>
 
                         </div>

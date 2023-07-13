@@ -145,8 +145,8 @@ const EmailComponenet = (props: any) => {
       {props.items != null && props?.items?.Approver != undefined &&
         <div id='htmlMailBodyemail' style={{ display: 'none' }}>
           <div style={{ marginTop: "2pt" }}>Hi,</div>
-          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been {taskpermission} by {props.items?.Approver?.Title}, team will process it further. Refer {taskpermission} Comments.</div>}
-          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been {taskpermission} by {props?.items?.Approver?.Title}. Refer {taskpermission} Comments.</div>}
+          {taskpermission != null && taskpermission == "Approve" && <div style={{ marginTop: "2pt" }}>Your task has been Approved by {props.items?.Approver?.Title},Please refer to the Approved Comments.</div>}
+          {taskpermission != null && taskpermission == "Reject" && <div style={{ marginTop: "2pt" }}>Your task has been Rejected by {props?.items?.Approver?.Title}, Please refer to the Rejected Comments.</div>}
 
           <div style={{ marginTop: "11.25pt" }}>
             <a href={`${props.items["siteUrl"]}/SitePages/Task-Profile.aspx?taskId=${props?.items?.Id}&Site=${props?.items?.siteType}`} target="_blank" data-interception="off">{props?.items["Title"]}</a><u></u><u></u></div>
@@ -300,7 +300,7 @@ const EmailComponenet = (props: any) => {
                                     <td width={"30px"} style={{border: "1px solid #ccc"}} align='center'>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                     </td>
-                                    <td style={fbData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                    <td style={fbSubData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
                                       {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                         return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
                                           <div style={{ marginBottom: '3.75pt' }}>

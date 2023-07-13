@@ -5,10 +5,10 @@ import { ImPriceTags } from 'react-icons/im';
 import Tooltip from "../../globalComponents/Tooltip";
 import { Web } from "sp-pnp-js";
 import * as Moment from 'moment';
-// import * as globalCommon from "../../globalComponents/globalCommon";
-// import { FaChevronDown, FaChevronRight } from "react-icons/fa";
-// import GlobalCommanTable, { IndeterminateCheckbox } from "../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
-// import HighlightableCell from "../../globalComponents/GroupByReactTableComponents/highlight";
+import * as globalCommon from "../../globalComponents/globalCommon";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import GlobalCommanTable, { IndeterminateCheckbox } from "../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
+import HighlightableCell from "../../globalComponents/GroupByReactTableComponents/highlight";
 
 var AutoCompleteItemsArray: any = [];
 var SelectedClientCategoryBackupArray: any = [];
@@ -16,12 +16,22 @@ var BackupSiteTypeData: any = [];
 var SiteTaggingFinalData: any = [];
 var SiteSettingsFinalData: any = [];
 var SiteClientCatgeoryFinalData: any = [];
+var AllSiteDataGlobalArray: any = [];
+let SelectedClieantCategoryGlobal: any = [];
+let ClientCategoryPopupSiteNameGlobal: any = '';
+
+var UpdateCCDetailsForTaskList: any;
+let FinalAllDataList: any = [];
+let MasterTaskListData: any = [];
+let SiteTaskListData: any = [];
+var MasterTaskListId: any;
 const SiteCompositionComponent = (Props: any) => {
     const SiteData = Props.SiteTypes;
     var SitesTaggingData: any = Props.SitesTaggingData;
     var ItemId = Props.ItemId;
     const isPortfolioConncted = Props.isPortfolioConncted;
     const AllListIdData: any = Props.AllListId
+    MasterTaskListId = AllListIdData.MasterTaskListID
     const siteUrls = Props.siteUrls;
     const TotalTime = Props.SmartTotalTimeData;
     const callBack = Props.callBack;
@@ -53,7 +63,7 @@ const SiteCompositionComponent = (Props: any) => {
     const [EducationClientCategory, setEducationClientCategory] = useState([]);
     const [MigrationClientCategory, setMigrationClientCategory] = useState([]);
     const [ComponentChildrenData, setComponentChildrenData] = useState([]);
-    const [SelectedSiteAllData, setSelectedSiteAllData] = useState<any>([]);
+    // const [SelectedClieantCategoryGlobal, setSelectedClieantCategoryGlobal] = useState<any>([]);
 
     // const [SitesTaggingData, setSitesTaggingData] = useState([]);
     const [isPortfolioComposition, setIsPortfolioComposition] = useState(false);
@@ -139,6 +149,7 @@ const SiteCompositionComponent = (Props: any) => {
                 setCheckBoxStatus(true)
             }
         }
+        getChildDataForSelectedTask()
     }, [])
 
     const selectSiteCompositionFunction = (e: any, Index: any) => {
@@ -372,7 +383,15 @@ const SiteCompositionComponent = (Props: any) => {
 
     const openClientCategoryModel = async (SiteParentId: any, SiteName: any) => {
         setClientCategoryPopupSiteName(SiteName);
+        ClientCategoryPopupSiteNameGlobal = SiteName;
         // setSelectedClientCategory([]);
+        CommoneFunctionForGettingSiteData(SiteName);
+        setSearchedKey('');
+        setClientCategoryPopupStatus(true);
+        BuildIndividualAllDataArray(SiteParentId, SiteName);
+    }
+
+    const CommoneFunctionForGettingSiteData = (SiteName: any) => {
         let CurrentSelectedSiteData: any;
         if (SiteTypes?.length > 0) {
             SiteTypes.map((siteData: any) => {
@@ -382,34 +401,48 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
         if (CurrentSelectedSiteData != undefined) {
-            // getSlectedSiteAllData(CurrentSelectedSiteData);
+            getSlectedSiteAllData(CurrentSelectedSiteData);
         }
-        setSearchedKey('');
-        setClientCategoryPopupStatus(true);
-        BuildIndividualAllDataArray(SiteParentId, SiteName);
     }
 
-    // const getSlectedSiteAllData = async (SiteData: any) => {
-    //     let tempArray: any = [];
-    //     let SiteUrl: any = SiteData.siteUrl.Url;
-    //     let ListId: any = SiteData.listId;
-    //     try {
-    //         let web = new Web(SiteUrl);
-    //         tempArray = await web.lists
-    //             .getById(ListId)
-    //             .items
-    //             .select('Id,Title,Priority_x0020_Rank,workingThisWeek,EstimatedTime,waitForResponse,OffshoreImageUrl,OffshoreComments,SiteCompositionSettings,BasicImageInfo,ClientTime,Attachments,AttachmentFiles,Priority,Mileage,CompletedDate,FeedBack,Status,ItemRank,IsTodaysTask,Body,Component/Id,component_x0020_link,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,Services/Id,Services/Title,Events/Id,PercentComplete,ComponentId,Categories,SharewebTaskLevel1No,SharewebTaskLevel2No,ServicesId,ClientActivity,ClientActivityJson,EventsId,StartDate,Priority_x0020_Rank,DueDate,SharewebTaskType/Id,SharewebTaskType/Title,Created,Modified,Author/Id,Author/Title,Editor/Id,Editor/Title,SharewebCategories/Id,SharewebCategories/Title,AssignedTo/Id,AssignedTo/Title,Team_x0020_Members/Id,Team_x0020_Members/Title,Responsible_x0020_Team/Id,Responsible_x0020_Team/Title,ClientCategory/Id,ClientCategory/Title')
-    //             .expand('AssignedTo,Author,Editor,Component,Services,Events,SharewebTaskType,Team_x0020_Members,Responsible_x0020_Team,SharewebCategories,ClientCategory,RelevantPortfolio')
-    //             .getAll();
-    //         if (tempArray?.length > 0) {
-    //             setSelectedSiteAllData(tempArray);
-    //             // getChildDataForSelectedTask();
-    //             console.log("Individual Task Data from list ========================", tempArray);
-    //         }
-    //     } catch (error) {
-    //         console.log("Error", error.message);
-    //     }
-    // }
+    const getSlectedSiteAllData = async (SiteData: any) => {
+        let tempArray: any = [];
+        let AllListDataArray: any = [];
+        let SiteUrl: any = SiteData.siteUrl.Url;
+        let ListId: any = SiteData.listId;
+        try {
+            let web = new Web(SiteUrl);
+            tempArray = await web.lists
+                .getById(ListId)
+                .items
+                .select('Id,Title,SiteCompositionSettings,ClientTime,ParentTask/Title,ParentTask/Id,ComponentId,Component/Id,RelevantPortfolio/Title,RelevantPortfolio/Id,Component/Title,ServicesId,Services/Id,Services/Title,SharewebTaskType/Id,SharewebTaskType/Title,SharewebCategories/Id,SharewebCategories/Title,ClientCategory/Id,ClientCategory/Title')
+                .expand('Component,Services,ClientCategory,RelevantPortfolio,ParentTask,SharewebCategories,SharewebTaskType')
+                .getAll();
+            if (tempArray?.length > 0) {
+                tempArray?.map((allSiteData: any) => {
+                    allSiteData.SiteIcon = SiteData.Item_x005F_x0020_Cover?.Url;
+                    allSiteData.PortfolioStructureID = "T" + allSiteData.Id;
+                    if (allSiteData.ComponentId == null || allSiteData.ComponentId == undefined) {
+                        allSiteData.ComponentId = 0;
+                    } else {
+                        allSiteData.ComponentId = allSiteData.ComponentId[0];
+                    }
+                    if (allSiteData.ServicesId == null || allSiteData.ServicesId == undefined) {
+                        allSiteData.ServicesId = 0;
+                    } else {
+                        allSiteData.ServicesId = allSiteData.ServicesId[0];
+                    }
+                    AllListDataArray.push(allSiteData)
+                })
+                // setSelectedSiteAllData(AllListDataArray);
+                AllSiteDataGlobalArray = AllListDataArray;
+                getChildDataForSelectedTask();
+                console.log("Individual Task Data from list ========================", AllListDataArray);
+            }
+        } catch (error) {
+            console.log("Error", error.message);
+        }
+    }
 
 
     const BuildIndividualAllDataArray = (SiteParentId: any, SiteName: any) => {
@@ -535,6 +568,8 @@ const SiteCompositionComponent = (Props: any) => {
         }
         setSearchedKey('');
         setSearchedClientCategoryData([]);
+        // setSelectedClieantCategoryGlobal(selectedCategory);
+        SelectedClieantCategoryGlobal = selectedCategory;
         if (Type == "Main") {
             saveSelectedClientCategoryData();
         }
@@ -657,7 +692,6 @@ const SiteCompositionComponent = (Props: any) => {
         }
         if (TaskShuoldBeUpdate) {
             try {
-
                 let web = new Web(AllListIdData.siteUrl);
                 await web.lists.getById(AllListIdData.MasterTaskListID).items.getById(ItemId).update({
                     Sitestagging: SiteTaggingJSON?.length > 0 ? JSON.stringify(SiteTaggingJSON) : JSON.stringify(ClientTimeData),
@@ -706,7 +740,9 @@ const SiteCompositionComponent = (Props: any) => {
 
     const autoSuggestionsForClientCategoryIdividual = (e: any, siteType: any, SiteId: any) => {
         let SearchedKey: any = e.target.value;
+        CommoneFunctionForGettingSiteData(siteType);
         setClientCategoryPopupSiteName(siteType);
+        ClientCategoryPopupSiteNameGlobal = siteType;
         if (siteType == "EPS") {
             BuildIndividualAllDataArray(SiteId, siteType);
             AutoSuggestionForClientCategory(e, "For-Input");
@@ -729,182 +765,225 @@ const SiteCompositionComponent = (Props: any) => {
         }
     }
 
-
-
     // ******************* this is used for Childern Table section functions ****************
-    // const getChildDataForSelectedTask = async () => {
-    //     let countFirst = 0;
-    //     let countSecond = 0;
-    //     let countThird = 0;
-    //     let GroupByData: any = [];
-    //     let ChildData: any = []
-    //     let ParentChild: any = [];
-    //     let PropsObject: any = {
-    //         MasterTaskListID: AllListIdData.MasterTaskListID,
-    //         siteUrl: AllListIdData.siteUrl,
-    //         ComponentType: Props.isServiceTask ? "Service" : "Component",
-    //         TaskUserListId: AllListIdData.TaskUsertListID
-    //     }
-    //     let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
-    //     if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
-    //         console.log("aal service groupby data ====", CallBackData.GroupByData)
-    //         GroupByData = CallBackData.GroupByData
-    //     }
-    //     if (GroupByData?.length > 0) {
-    //         GroupByData.map((dataItem: any) => {
-    //             if (dataItem.Id == ItemId) {
-    //                 ChildData.push(dataItem);
-    //                 countFirst++;
-    //             }
-    //             if (dataItem.Child?.length > 0) {
-    //                 dataItem.Child.map((subChildItem: any) => {
-    //                     if (subChildItem.id == ItemId) {
-    //                         ChildData.push(subChildItem);
-    //                         countSecond++;
-    //                     }
-    //                     if (subChildItem.Child?.lrngth > 0) {
-    //                         subChildItem.Child.map((lastChildData: any) => {
-    //                             if (lastChildData.Id == ItemId) {
-    //                                 ChildData.push(subChildItem);
-    //                                 countThird++;
-    //                             }
-    //                         })
-    //                     }
-    //                 })
+    const getChildDataForSelectedTask = async () => {
+        let countFirst = 0;
+        let countSecond = 0;
+        let countThird = 0;
+        let GroupByData: any = [];
+        let ChildData: any = []
+        let ParentChild: any = [];
+        let PropsObject: any = {
+            MasterTaskListID: AllListIdData.MasterTaskListID,
+            siteUrl: AllListIdData.siteUrl,
+            ComponentType: Props.isServiceTask ? "Service" : "Component",
+            TaskUserListId: AllListIdData.TaskUsertListID
+        }
+        let CallBackData = await globalCommon.GetServiceAndComponentAllData(PropsObject);
+        if (CallBackData.AllData != undefined && CallBackData.AllData.length > 0) {
+            console.log("aal service groupby data ====", CallBackData.GroupByData)
+            GroupByData = CallBackData.GroupByData
+        }
+        if (GroupByData?.length > 0) {
+            GroupByData.map((dataItem: any) => {
+                if (dataItem.Id == ItemId) {
+                    ChildData.push(dataItem);
+                    countFirst++;
+                }
+                if (dataItem.Child?.length > 0) {
+                    dataItem.Child.map((subChildItem: any) => {
+                        if (subChildItem.id == ItemId) {
+                            ChildData.push(subChildItem);
+                            countSecond++;
+                        }
+                        if (subChildItem.Child?.lrngth > 0) {
+                            subChildItem.Child.map((lastChildData: any) => {
+                                if (lastChildData.Id == ItemId) {
+                                    ChildData.push(subChildItem);
+                                    countThird++;
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        if (countFirst + countSecond + countThird == 0) {
+            setComponentTableVisibiltyStatus(false);
+        } else {
+            setComponentTableVisibiltyStatus(true);
+        }
+        if (ChildData?.length > 0) {
+            let subChildDataCollection: any = [];
+            ChildData.map((parentData: any) => {
+                if (parentData.Child?.length > 0) {
+                    parentData.Child.map((ChildDataFirst: any) => {
+                        if (AllSiteDataGlobalArray?.length > 0) {
+                            AllSiteDataGlobalArray?.map((allSiteData: any) => {
+                                if (allSiteData.ServicesId == ChildDataFirst.Id || allSiteData.ComponentId == ChildDataFirst.Id) {
+                                    ChildDataFirst.Child.push(allSiteData);
+                                    ChildDataFirst.subRows.push(allSiteData);
+                                    countFirst++;
+                                }
+                                if (ChildDataFirst.Child?.length > 0) {
+                                    ChildDataFirst.Child.map((subChildItem: any) => {
+                                        if (subChildItem.Id == allSiteData.ComponentId || subChildItem.Id == allSiteData.ServicesId) {
+                                            subChildItem.Child.push(allSiteData);
+                                            subChildItem.subRows.push(allSiteData);
+                                            countSecond++;
+                                        }
+                                        if (subChildItem.Child?.lrngth > 0) {
+                                            subChildItem.Child.map((lastChildData: any) => {
+                                                if (lastChildData.Id == allSiteData.ComponentId || lastChildData.Id == allSiteData.ServicesId) {
+                                                    lastChildData.Child.push(allSiteData);
+                                                    lastChildData.subRows.push(allSiteData);
+                                                    countThird++;
+                                                }
+                                                if (lastChildData.Child?.length > 0) {
+                                                    lastChildData.Child?.map((EndChild: any) => {
+                                                        if (EndChild.Id == allSiteData.ComponentId || EndChild.Id == allSiteData.ServicesId) {
+                                                            EndChild.Child.push(allSiteData);
+                                                            EndChild.subRows.push(allSiteData);
+                                                            countThird++;
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        ParentChild.push(ChildDataFirst);
+                    });
+                }
+            })
+        }
+        const finalData = ParentChild.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        let FinalTempData: any = finalData;
+        if (AllSiteDataGlobalArray?.length > 0) {
+            AllSiteDataGlobalArray?.map((allSiteDataItem: any) => {
+                if (allSiteDataItem.ServicesId == ItemId || allSiteDataItem.ComponentId == ItemId) {
+                    FinalTempData.push(allSiteDataItem)
+                }
+            })
+        }
+        setComponentChildrenData(FinalTempData);
+    }
+    const columns = React.useMemo(
+        () => [
+            {
+                accessorKey: "PortfolioStructureID",
+                placeholder: "ID",
+                size: 15,
+                header: ({ table }: any) => (
+                    <>
+                        <button className='border-0 bg-Ff'
+                            {...{
+                                onClick: table.getToggleAllRowsExpandedHandler(),
+                            }}
+                        >
+                            {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                        </button>{" "}
+                        <IndeterminateCheckbox {...{
+                            checked: table.getIsAllRowsSelected(),
+                            indeterminate: table.getIsSomeRowsSelected(),
+                            onChange: table.getToggleAllRowsSelectedHandler(),
+                        }} />{" "}
+                    </>
+                ),
+                cell: ({ row, getValue }: any) => (
+                    <div
+                        style={row.getCanExpand() ? {
+                            paddingLeft: `${row.depth * 5}px`,
+                        } : {
+                            paddingLeft: "18px",
+                        }}
+                    >
+                        <>
+                            {row.getCanExpand() ? (
+                                <span className=' border-0'
+                                    {...{
+                                        onClick: row.getToggleExpandedHandler(),
+                                        style: { cursor: "pointer" },
+                                    }}
+                                >
+                                    {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
+                                </span>
+                            ) : (
+                                ""
+                            )}{" "}
+                            {row?.original.Title != 'Others' ? <IndeterminateCheckbox
+                                {...{
+                                    checked: row.getIsSelected(),
+                                    indeterminate: row.getIsSomeSelected(),
+                                    onChange: row.getToggleSelectedHandler(),
 
-    //             }
-    //         })
-    //     }
-    //     if (countFirst + countSecond + countThird == 0) {
-    //         setComponentTableVisibiltyStatus(false);
-    //     } else {
-    //         setComponentTableVisibiltyStatus(true);
-    //     }
-    //     if (ChildData?.length > 0) {
-    //         let subChildDataCollection: any = [];
-    //         ChildData.map((parentData: any) => {
-    //             if (parentData.Child?.length > 0) {
-    //                 parentData.Child.map((ChildDataFirst: any) => {
-    //                     ParentChild.push(ChildDataFirst);
-    //                 });
+                                }}
+                            /> : ""}{" "}
+                            {row?.original?.SiteIcon != undefined ?
+                                <a className="hreflink" title="Show All Child" data-toggle="modal">
+                                    <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
+                                </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
+                            }
+                            {getValue()}
+                        </>
+                    </div>
+                ),
+            },
+            {
+                accessorFn: (row: any) => row?.Title,
+                cell: ({ row, column, getValue }: any) => (
+                    <>
+                        <a className="hreflink serviceColor_Active" target="_blank"
+                        // href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
+                        >
+                            <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
+                        </a>
 
-    //             }
-    //         })
-    //     }
-    //     setComponentChildrenData(ParentChild)
-    // }
-    // const columns = React.useMemo(
-    //     () => [
-    //         {
-    //             accessorKey: "PortfolioStructureID",
-    //             placeholder: "ID",
-    //             size: 15,
-    //             header: ({ table }: any) => (
-    //                 <>
-    //                     <button className='border-0 bg-Ff'
-    //                         {...{
-    //                             onClick: table.getToggleAllRowsExpandedHandler(),
-    //                         }}
-    //                     >
-    //                         {table.getIsAllRowsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-    //                     </button>{" "}
-    //                     <IndeterminateCheckbox {...{
-    //                         checked: table.getIsAllRowsSelected(),
-    //                         indeterminate: table.getIsSomeRowsSelected(),
-    //                         onChange: table.getToggleAllRowsSelectedHandler(),
-    //                     }} />{" "}
-    //                 </>
-    //             ),
-    //             cell: ({ row, getValue }: any) => (
-    //                 <div
-    //                     style={row.getCanExpand() ? {
-    //                         paddingLeft: `${row.depth * 5}px`,
-    //                     } : {
-    //                         paddingLeft: "18px",
-    //                     }}
-    //                 >
-    //                     <>
-    //                         {row.getCanExpand() ? (
-    //                             <span className=' border-0'
-    //                                 {...{
-    //                                     onClick: row.getToggleExpandedHandler(),
-    //                                     style: { cursor: "pointer" },
-    //                                 }}
-    //                             >
-    //                                 {row.getIsExpanded() ? <FaChevronDown /> : <FaChevronRight />}
-    //                             </span>
-    //                         ) : (
-    //                             ""
-    //                         )}{" "}
-    //                         {row?.original.Title != 'Others' ? <IndeterminateCheckbox
-    //                             {...{
-    //                                 checked: row.getIsSelected(),
-    //                                 indeterminate: row.getIsSomeSelected(),
-    //                                 onChange: row.getToggleSelectedHandler(),
+                        {row?.original?.Short_x0020_Description_x0020_On != null &&
+                            <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
+                                <span title="Edit" className="svg__iconbox svg__icon--info"></span>
+                                <span className="popover__content">
+                                    {row?.original?.Short_x0020_Description_x0020_On}
+                                </span>
+                            </span>}
+                    </>
+                ),
+                id: "Title",
+                placeholder: "Title",
+                header: "",
+                size: 27,
+            },
+            {
+                accessorFn: (row: any) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
+                cell: ({ row }: any) => (
+                    <>
+                        {row?.original?.ClientCategory?.map((elem: any) => {
+                            return (
+                                <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
+                            )
+                        })}
+                    </>
+                ),
+                id: 'ClientCategory',
+                placeholder: "Client Category",
+                header: "",
+                size: 15,
+            },
+            {
+                accessorKey: "DueDate",
+                placeholder: "Due Date",
+                header: "",
+                size: 9,
+            },
+        ],
+        [ComponentChildrenData]
+    );
 
-    //                             }}
-    //                         /> : ""}{" "}
-    //                         {row?.original?.SiteIcon != undefined ?
-    //                             <a className="hreflink" title="Show All Child" data-toggle="modal">
-    //                                 <img className="icon-sites-img ml20 me-1" src={row?.original?.SiteIcon}></img>
-    //                             </a> : <>{row?.original?.Title != "Others" ? <div className='Dyicons'>{row?.original?.SiteIconTitle}</div> : ""}</>
-    //                         }
-    //                         {getValue()}
-    //                     </>
-    //                 </div>
-    //             ),
-    //         },
-    //         {
-    //             accessorFn: (row: any) => row?.Title,
-    //             cell: ({ row, column, getValue }: any) => (
-    //                 <>
-    //                     <a className="hreflink serviceColor_Active" target="_blank"
-    //                     // href={Dynamic.siteUrl + "/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.Id}
-    //                     >
-    //                         <HighlightableCell value={getValue()} searchTerm={column.getFilterValue()} />
-    //                     </a>
-
-    //                     {row?.original?.Short_x0020_Description_x0020_On != null &&
-    //                         <span className='popover__wrapper ms-1' data-bs-toggle="tooltip" data-bs-placement="auto">
-    //                             <span title="Edit" className="svg__iconbox svg__icon--info"></span>
-    //                             <span className="popover__content">
-    //                                 {row?.original?.Short_x0020_Description_x0020_On}
-    //                             </span>
-    //                         </span>}
-    //                 </>
-    //             ),
-    //             id: "Title",
-    //             placeholder: "Title",
-    //             header: "",
-    //             size: 27,
-    //         },
-    //         {
-    //             accessorFn: (row: any) => row?.ClientCategory?.map((elem: any) => elem.Title).join("-"),
-    //             cell: ({ row }: any) => (
-    //                 <>
-    //                     {row?.original?.ClientCategory?.map((elem: any) => {
-    //                         return (
-    //                             <> <span title={elem?.Title} className="ClientCategory-Usericon">{elem?.Title?.slice(0, 2).toUpperCase()}</span></>
-    //                         )
-    //                     })}
-    //                 </>
-    //             ),
-    //             id: 'ClientCategory',
-    //             placeholder: "Client Category",
-    //             header: "",
-    //             size: 15,
-    //         },
-    //         {
-    //             accessorKey: "DueDate",
-    //             placeholder: "Due Date",
-    //             header: "",
-    //             size: 9,
-    //         },
-    //     ],
-    //     [ComponentChildrenData]
-    // );
-
-    // const data = ComponentChildrenData;
+    const data = ComponentChildrenData;
 
     //    ************* this is Custom Header For Client Category Popup *****************
     const onRenderCustomClientCategoryHeader = () => {
@@ -920,38 +999,164 @@ const SiteCompositionComponent = (Props: any) => {
         )
     }
 
-    // const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+        console.log("Call Back Elem Data ================", elem);
+        let AllChildData: any = [];
+        if (elem?.length > 0) {
+            elem?.map((itemData: any) => {
+                AllChildData.push(itemData.original)
+            })
+        }
+        if (AllChildData?.length > 0) {
+            makeDataForUpdateClientCategory(AllChildData)
+        }
+    }, []);
 
-    // }, []);
+    const makeDataForUpdateClientCategory = (AllChildDataList: any) => {
+        let MasterTaskTempArray: any = []
+        let SiteTaskTempArray: any = []
+        if (BackupSiteTypeData?.length > 0) {
+            BackupSiteTypeData.map((siteList: any) => {
+                if (siteList.Title == ClientCategoryPopupSiteNameGlobal) {
+                    UpdateCCDetailsForTaskList = siteList;
+                }
+            })
+        }
 
+        if (AllChildDataList?.length > 0) {
+            AllChildDataList.map((allItems: any) => {
+                if (allItems.ClientCategory?.length > 0 || allItems.ClientCategory != null) {
+                    allItems.ClientCategory.push(SelectedClieantCategoryGlobal);
+                } else {
+                    allItems.ClientCategory = [SelectedClieantCategoryGlobal];
+                }
+                FinalAllDataList.push(allItems);
+            })
+        }
+        if (FinalAllDataList?.length > 0) {
+            FinalAllDataList?.map((finalItems: any) => {
+                if (finalItems.Item_x0020_Type == "SubComponent" || finalItems.Item_x0020_Type == "Feature" || finalItems.Item_x0020_Type == "Component") {
+                    finalItems.ListId = AllListIdData.MasterTaskListID;
+                    MasterTaskTempArray.push(finalItems);
+                }
+                if (finalItems.SharewebTaskType?.Title == "Task" || finalItems.SharewebTaskType?.Title == "Activities" || finalItems.SharewebTaskType?.Title == "Workstream") {
+                    finalItems.ListId = UpdateCCDetailsForTaskList.listId;
+                    SiteTaskTempArray.push(finalItems);
+                }
+            })
+        }
+        if (MasterTaskTempArray?.length > 0) {
+            MasterTaskListData = MasterTaskTempArray;
+        }
+        if (SiteTaskTempArray?.length > 0) {
+            SiteTaskListData = SiteTaskTempArray;
+        }
+    }
 
-    // const onRenderComponentChildrenHeader = () => {
-    //     return (
-    //         <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
-    //             <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-    //                 <span>
-    //                     Select Item
-    //                 </span>
-    //             </div>
-    //             <Tooltip ComponentId="1263" />
-    //         </div>
-    //     )
+    const SaveClientCategoryFunction = () => {
+        if (MasterTaskListData?.length > 0) {
+            CommonFunctionForUpdateCC(MasterTaskListData, "MasterTask")
+        }
+        if (SiteTaskListData?.length > 0) {
+            CommonFunctionForUpdateCC(SiteTaskListData, "SiteTasks")
+        }
+
+    }
+
+    const CommonFunctionForUpdateCC = (AllTaskListData: any, ListType: any) => {
+        let web = AllListIdData.siteUrl;
+        if (AllTaskListData?.length > 0) {
+            AllTaskListData?.map(async (ItemData: any) => {
+                let TempArray: any = [];
+                let ClientCategoryIds: any = [];
+                if (ItemData.ClientCategory?.length > 0) {
+                    ItemData.ClientCategory?.map((CCItems: any) => {
+                        TempArray.push(CCItems.Id);
+                    })
+                }
+                ClientCategoryIds = TempArray.filter((val: any, id: any, array: any) => {
+                    return array.indexOf(val) == id;
+                })
+
+                if (ClientCategoryIds?.length > 0) {
+                    if (ListType == "MasterTask") {
+                        UpdateOnBackendSide(web, ItemData.ListId, ClientCategoryIds, ItemData.Id, ListType);
+                    } else {
+                        UpdateOnBackendSide(web, ItemData.ListId, ClientCategoryIds, ItemData.Id, ListType);
+                    }
+                }
+            })
+        }
+        closeComponentChildrenPopup();
+    }
+
+    // const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any) => {
+    //     let web = siteUrl;
+    //     (async () => {
+    //         await Promise.all(
+    //             web.lists.getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+    //                 .items.getById(ItemId)
+    //                 .update({
+    //                     ClientCategory: { "results": (ClientCategoryIds != undefined && ClientCategoryIds.length > 0) ? ClientCategoryIds : [] },
+    //                 }).then(() => {
+    //                     console.log("Client Catgeory Updated !!!!");
+    //                 })
+    //         );
+
+    //     })();
+    //     // await web.lists
+    //     //     .getById('EC34B38F-0669-480A-910C-F84E92E58ADF')
+    //     //     .items.getById(ItemId)
+    //     //     .update({
+    //     //         ClientCategory: { "results": (ClientCategoryIds != undefined && ClientCategoryIds.length > 0) ? ClientCategoryIds : [] },
+    //     //     }).then(() => {
+    //     //         console.log("Client Catgeory Updated !!!!");
+    //     //     })
     // }
-    // const onRenderFooterComponentChildren = () => {
-    //     return (
-    //         <footer
-    //             className={ServicesTaskCheck ? "serviepannelgreena bg-f4 pe-2 py-2 text-end" : "bg-f4 pe-2 py-2 text-end"}
-    //             style={{ position: "absolute", width: "100%", bottom: "0" }}
-    //         >
-    //             <button type="button" className="btn btn-primary px-3 mx-1" >
-    //                 Save
-    //             </button>
-    //             <button type="button" className="btn btn-default px-3 mx-1" onClick={closeComponentChildrenPopup} >
-    //                 Cancel
-    //             </button>
-    //         </footer>
-    //     )
-    // }
+
+    const UpdateOnBackendSide = async (siteUrl: any, ListId: any, ClientCategoryIds: any, ItemId: any, TaskType: any) => {
+        let web = new Web(siteUrl);
+        try {
+            await Promise.all([
+                web.lists.getById(ListId).items.getById(ItemId).update({
+                    ClientCategoryId: { "results": (ClientCategoryIds !== undefined && ClientCategoryIds.length > 0) ? ClientCategoryIds : [] }
+                }).then(() => {
+                    console.log("Client Category Updated!")
+
+                })
+            ]);
+        } catch (error) {
+            console.error("Error updating client category:", error);
+        }
+    };
+
+    const onRenderComponentChildrenHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
+                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                    <span>
+                        Select Item
+                    </span>
+                </div>
+                <Tooltip ComponentId="1263" />
+            </div>
+        )
+    }
+    const onRenderFooterComponentChildren = () => {
+        return (
+            <footer
+                className={ServicesTaskCheck ? "serviepannelgreena bg-f4 pe-2 py-2 text-end" : "bg-f4 pe-2 py-2 text-end"}
+                style={{ position: "absolute", width: "100%", bottom: "0" }}
+            >
+                <button type="button" className="btn btn-primary px-3 mx-1" onClick={SaveClientCategoryFunction}>
+                    Save
+                </button>
+                <button type="button" className="btn btn-default px-3 mx-1" onClick={closeComponentChildrenPopup} >
+                    Cancel
+                </button>
+            </footer>
+        )
+    }
     const onRenderFooter = () => {
         return (
             <footer
@@ -1463,7 +1668,7 @@ const SiteCompositionComponent = (Props: any) => {
                 </div>
             </Panel>
             {/* ********************* this Main Component Children Popup panel ****************** */}
-            {/* {ComponentChildrenData != undefined && ComponentChildrenData.length > 0 ?
+            {ComponentChildrenData != undefined && ComponentChildrenData.length > 0 ?
                 <Panel
                     onRenderHeader={onRenderComponentChildrenHeader}
                     isOpen={ComponentChildrenPopupStatus}
@@ -1476,14 +1681,14 @@ const SiteCompositionComponent = (Props: any) => {
                     <div className={ServicesTaskCheck ? "serviepannelgreena SelectProjectTable " : 'SelectProjectTable '}>
                         <div className="modal-body wrapper p-0 mt-2">
                             <div className="wrapper">
-                                <GlobalCommanTable columns={columns} data={ComponentChildrenData} callBackData={callBackData} />
+                                <GlobalCommanTable columns={columns} data={ComponentChildrenData} usedFor={"SiteComposition"} callBackData={callBackData} />
                             </div>
                         </div>
 
                     </div>
                 </Panel>
                 : null
-            } */}
+            }
         </div >
     )
 }

@@ -15,13 +15,7 @@ function ShowTaskTeamMembers(item: any) {
     setDisplay("block");
     //  setTeamMember((TeamMember: any) => (...TeamMember: any));
   };
-
-  const handleuffixLeave = (item: any) => {
-    setDisplay("none");
-
-    //  setTeamMember((TeamMember: any) => (...TeamMember: any));
-  };
-  const getTaskUsersNew = async () => {
+  React.useEffect(() => {
     let emailarray: any = [];
     TaskUsers = item.TaskUsers;
     console.log(Response);
@@ -99,10 +93,15 @@ function ShowTaskTeamMembers(item: any) {
     }
     Item.allMembersEmail = emailarray.join();
     setItemMember(Item);
-  };
-  React.useEffect(() => {
-    getTaskUsersNew();
   }, []);
+
+
+  const handleuffixLeave = (item: any) => {
+    setDisplay("none");
+
+    //  setTeamMember((TeamMember: any) => (...TeamMember: any));
+  };
+
 
   return (
     <>

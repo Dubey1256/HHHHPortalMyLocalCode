@@ -26,8 +26,8 @@ import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
-import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
+// import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+// import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 
 import {
   Column,
@@ -52,7 +52,6 @@ import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
-
 
 ///TanstackTable filter And CheckBox 
 declare module "@tanstack/table-core" {
@@ -173,7 +172,7 @@ var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
-let MeetingItemsParentcat:any=[];
+// let MeetingItemsParentcat:any=[];
 var childsData: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
@@ -185,7 +184,7 @@ let countaa = 0;
 let Itemtypes: any;
 let globalFilterHighlited: any;
 let SmartMetaData:any=[];
-let selectedClientCategoryPopup:any=false;
+// let selectedClientCategoryPopup:any=false;
 let activity = 0;
 let workstrim = 0;
 let task = 0;
@@ -208,7 +207,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [checkCounter, setCheckCounter] = React.useState(true)
   const [checkData, setcheckData] = React.useState([])
   const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-  const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
+  // const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
   // const[selectedClientCategoryPopup,setSelectedClientCategoryPopup]=React.useState(false);
 
 
@@ -2689,13 +2688,20 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     } else {
       if (MeetingItems[0] != undefined) {
         let parentcat:any=[];
-          if(MeetingItems[0]?.ClientCategory!=undefined && MeetingItems[0]?.ClientCategory?.results?.length>0){
-            MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
-              parentcat.push(items)
-            })
-            setSelectedClientCategory(parentcat)
-            selectedClientCategoryPopup=true
-          }
+          // if(MeetingItems[0]?.ClientCategory!=undefined && (MeetingItems[0]?.ClientCategory?.results?.length>0||MeetingItems[0]?.ClientCategory?.length>0)){
+          //   if(MeetingItems[0]?.ClientCategory?.results?.length>0){
+          //     MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
+          //       parentcat.push(items)
+          //     })
+          //   }else{
+          //     MeetingItems[0]?.ClientCategory?.map((items:any)=>{
+          //       parentcat.push(items)
+          //     })
+          //   }
+           
+          //   setSelectedClientCategory(parentcat)
+          //   selectedClientCategoryPopup=true
+          // }
         if (items != undefined && items.length > 0) {
           MeetingItems[0].ClientCategory = [];
           items.forEach((val: any) => {
@@ -2705,6 +2711,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (MeetingItems[0].SharewebTaskType != undefined) {
           
           if (MeetingItems[0].SharewebTaskType.Title == "Activities") {
+            // selectedClientCategoryPopup=true
+            // if(selectedClientCategoryPopup==false){
+              
+            //   setWSPopup(true);
+             
+            // }
             setWSPopup(true);
           }
         }
@@ -2712,13 +2724,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (
           MeetingItems != undefined &&
           MeetingItems[0].SharewebTaskType?.Title == "Workstream"
+          
         ) {
           setActivityPopup(true);
         }
 
         if (
           MeetingItems[0].SharewebTaskType == undefined &&
-          childsData[0] == undefined&& selectedClientCategoryPopup==false
+          childsData[0] == undefined
         ) {
           setActivityPopup(true);
         }
@@ -2729,19 +2742,35 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       childsData[0] != undefined &&
       childsData[0].SharewebTaskType != undefined
     ) {
+      let parentcat:any=[];
+      // if( childsData[0]?.ClientCategory!=undefined &&  childsData[0]?.ClientCategory?.length>0){
+      //   childsData[0]?.ClientCategory?.map((items:any)=>{
+      //     parentcat.push(items)
+      //   })
+      //   setSelectedClientCategory(parentcat)
+      //   selectedClientCategoryPopup=true
+      // }
+      MeetingItems.push(childsData[0]);
       if (childsData[0].SharewebTaskType.Title == "Activities") {
+        // if(selectedClientCategoryPopup==false){
+        // setWSPopup(true);
+        // }
         setWSPopup(true);
-        MeetingItems.push(childsData[0]);
         //setMeetingItems(childsData)
       }
       if (
         childsData[0] != undefined &&
         childsData[0].SharewebTaskType.Title == "Workstream"
       ) {
-        //setActivityPopup(true)
-        childsData[0].NoteCall = "Task";
-        setMeetingPopup(true);
+        childsData[0].ClientTime=JSON.parse(childsData[0].ClientTime)
         MeetingItems.push(childsData[0]);
+        //setActivityPopup(true)
+       
+          childsData[0].NoteCall = "Task";
+          setMeetingPopup(true);
+         
+       
+       
       }
     }
   };
@@ -3720,7 +3749,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
           </>
         ),
         id: "Shareweb_x0020_ID",
@@ -4114,36 +4143,39 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   }, [Iconssc]);
 
  
-  const parentClientCat = React.useCallback((items:any) => {
+  // const parentClientCat = React.useCallback((items:any) => {
 
-    console.log(items)
+  //   console.log(items)
   
-    if(items!=undefined ){
+  //   if(items!=undefined ){
+  // console.log(selectedClientCategory)
+  //  MeetingItemsParentcat[0]=items
   
-      // setSelectedClientCategory(items)
-  
-      console.log(selectedClientCategory)
-  
-      // MeetingItemsParentcat[0]= {...MeetingItemsParentcat[0],...MeetingItems[0]}
-  
-      MeetingItemsParentcat[0]=items
-  
-    }
-  
-      selectedClientCategoryPopup=false;
-  
-  
-  
-  
-      setActivityPopup(true);
-  
-     
-  
-      // setSelectedClientCategory(items)
+  //   }
+  //  selectedClientCategoryPopup=false;
+  //  if(items?.SharewebTaskType?.Title == "Workstream"){
+  //       items.NoteCall="Task"
+  //       setMeetingPopup(true);
+  //     }
+      
+  //     if(items?.SharewebTaskType?.Title == "Activities"){
+  //       setWSPopup(true);
+         
+  //     }
+      
+  // if(items?.SharewebTaskType==undefined){
+  //   setActivityPopup(true);
+  // }
   
      
   
-  }, [])
+     
+  
+  //     // setSelectedClientCategory(items)
+  
+     
+  
+  // }, [])
 
   return (
     <div
@@ -4394,7 +4426,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""}
+      {/* {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""} */}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
       {MeetingPopup && (
         <CreateActivity

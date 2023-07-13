@@ -378,7 +378,7 @@ const RootLevelDashboard = (props: any) => {
             <img className='circularImage rounded-circle' src={row?.original?.SiteIcon} />
           </span>
         ),
-        id: "Site",
+        id: "siteType",
         header: "",
         placeholder: "Site",
         resetSorting: false,
@@ -390,6 +390,7 @@ const RootLevelDashboard = (props: any) => {
         accessorKey: "Shareweb_x0020_ID",
         placeholder: "Task Id",
         header: "",
+        id:'Shareweb_x0020_ID',
         resetColumnFilters: false,
         resetSorting: false,
         size: 140,
@@ -520,7 +521,7 @@ const RootLevelDashboard = (props: any) => {
 
           </>
         ),
-        id: 'DueDate',
+        id: 'DisplayDueDate',
         resetColumnFilters: false,
         resetSorting: false,
         placeholder: "Due Date",
@@ -573,7 +574,7 @@ const RootLevelDashboard = (props: any) => {
             )}
           </span>
         ),
-        id: 'Created',
+        id: 'DisplayCreateDate',
         canSort: false,
         resetColumnFilters: false,
         resetSorting: false,
@@ -699,7 +700,9 @@ const RootLevelDashboard = (props: any) => {
           <a className="hreflink" onClick={() => { clearSiteFilter() }}>Clear Site Filter</a>
         </div>
       </div>
+      <div className="Alltable">
       <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} columns={column2} data={AllTasks} pageSize={100} callBackData={callBackData} showPagination={true} showHeader={true} />
+      </div>
       {IsTimeEntry && (
         <DisplayTimeEntry
           props={SharewebTimeComponent}

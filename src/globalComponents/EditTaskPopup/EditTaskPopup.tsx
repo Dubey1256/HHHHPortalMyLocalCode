@@ -3400,10 +3400,14 @@ const EditTaskPopup = (Items: any) => {
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                 Share This Task
                             </span> ||
-                            <a target="_blank" className="mx-2" data-interception="off"
+                          
+                            { Items.Items.siteType=="Offshore Tasks" ?<a target="_blank" className="mx-2" data-interception="off"
+                                href={`${siteUrls}/Lists/SharewebQA/EditForm.aspx?ID=${EditData.ID}`}>
+                                Open Out-Of-The-Box Form
+                            </a>:<a target="_blank" className="mx-2" data-interception="off"
                                 href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
-                            </a>
+                            </a>}
                             <span >
                                 <button className="btn btn-primary px-3"
                                     onClick={UpdateTaskInfoFunction}>

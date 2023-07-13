@@ -514,7 +514,7 @@ function CreateTaskComponent(props: any) {
         MetaData = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
             .expand('Author,Editor,Parent')
             .get();
@@ -537,12 +537,13 @@ function CreateTaskComponent(props: any) {
         setTiming(Timing)
         setpriorityRank(Priority)
 
+      
         TaskTypes?.map((task: any) => {
-            if (task.Parent !== undefined && task.Parent.Id === 0 && task.Title !== 'Phone') {
+            if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
                 Task.push(task);
                 getChilds(task, TaskTypes);
             }
-            if (task.Parent!== undefined && task.Parent.Id !== 0 && task.IsVisible) {
+            if (task.ParentID !== undefined && task.ParentID !== 0 && task.IsVisible) {
                 subCategories.push(task);
             }
         })
@@ -624,7 +625,7 @@ function CreateTaskComponent(props: any) {
     const getChilds = (item: any, items: any) => {
         item.childs = [];
         items?.map((childItem: any) => {
-            if (childItem.Parent !== undefined && parseInt(childItem.Parent.Id) === item.ID) {
+            if (childItem.ParentID !== undefined && parseInt(childItem.ParentID) === item.ID) {
                 item.childs.push(childItem);
                 getChilds(childItem, items);
             }
@@ -781,6 +782,9 @@ function CreateTaskComponent(props: any) {
                             }
                         })
                     }
+                    postClientTime?.map((items:any)=>{
+                        items.SiteName=items.Title
+                    })
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
                         setSave({ ...save, rank: 4 })
@@ -817,9 +821,7 @@ function CreateTaskComponent(props: any) {
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
                    
-                    postClientTime?.map((items:any)=>{
-                        items.SiteName=items.Title
-                    })
+                   
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -873,10 +875,10 @@ function CreateTaskComponent(props: any) {
                         }
                         item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
                     }
-                    if (Tasks != undefined && save.siteType == 'Shareweb') {
-                        item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings;
-                        item.ClientTime = Tasks[0]?.Sitestagging;
-                    }
+                    // if (Tasks != undefined && save.siteType == 'Shareweb') {
+                    //     item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings!=undefined?Tasks[0]?.SiteCompositionSettings:Tasks?.SiteCompositionSettings;
+                    //     item.ClientTime = Tasks[0]?.Sitestagging!=undefined?Tasks[0]?.Sitestagging:Tasks?.Sitestagging;
+                    // }
 
 
 
@@ -1972,7 +1974,7 @@ function CreateTaskComponent(props: any) {
                                                     {subCategory?.map((item: any) => {
                                                         return (
                                                             <>
-                                                                {Task.Id === item.Parent.Id && <>
+                                                                 {Task.Id === item.ParentID && <>
                                                                     {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
                                                                     <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
 
