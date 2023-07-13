@@ -7,7 +7,7 @@ import CreateActivity from '../../servicePortfolio/components/CreateActivity';
 import CreateWS from '../../servicePortfolio/components/CreateWS';
 import ShowTaskTeamMembers from '../../../globalComponents/ShowTaskTeamMembers';
 import Loader from "react-loader";
-import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+// import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
 import * as moment from 'moment';
 
 import {
@@ -57,8 +57,8 @@ let finalData: any = [];
 let activity = 0;
 let workstrim = 0;
 let task = 0;
-let selectedClientCategoryPopup:any=false;
-let MeetingItemsParentcat:any=[];
+// let selectedClientCategoryPopup:any=false;
+// let MeetingItemsParentcat:any=[];
 function IndeterminateCheckbox(
   {
     indeterminate,
@@ -139,7 +139,7 @@ function TasksTable(props: any) {
   const [ChengedTitle, setChengedTitle] = React.useState('');
   const [smartmetaDetails, setsmartmetaDetails] = React.useState([]);
   const [checkData, setcheckData] = React.useState(null)
-  const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
+  // const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
   IsUpdated = props.props.Portfolio_x0020_Type;
 
 
@@ -861,6 +861,8 @@ function TasksTable(props: any) {
     if (checkData != undefined && checkData != null) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
+       console.log(MeetingItems[MeetingItems.length - 1]) 
+       MeetingItems[MeetingItems.length - 1].ClientTime=JSON.parse(MeetingItems[MeetingItems.length - 1].ClientTime)
         setMeetingPopup(true)
       }
     }
@@ -876,16 +878,8 @@ function TasksTable(props: any) {
         let data:any=props.props
         data.ClientTime=JSON.stringify(data.ClientTime)
         MeetingItems.push(data)
-        if(MeetingItems[0].ClientCategory!=undefined && MeetingItems[0].ClientCategory.length>0){
-          MeetingItems[0].ClientCategory?.map((items:any)=>{
-            parentcat.push(items)
-          })
-          setSelectedClientCategory(parentcat)
-          selectedClientCategoryPopup=true
-        }
-        if(selectedClientCategoryPopup==false){
-          setWSPopup(true)
-        }
+       setWSPopup(true)
+       
     
 
       }
@@ -2353,19 +2347,19 @@ function TasksTable(props: any) {
     }
   }, [table.getState().columnFilters]);
   
-  const parentClientCat = React.useCallback((items:any) => {
+  // const parentClientCat = React.useCallback((items:any) => {
 
-    console.log(items)
+  //   console.log(items)
   
-    if(items!=undefined ){
-  console.log(selectedClientCategory)
-   MeetingItemsParentcat[0]=items
+  //   if(items!=undefined ){
+  // console.log(selectedClientCategory)
+  //  MeetingItemsParentcat[0]=items
   
-    }
-   selectedClientCategoryPopup=false;
+  //   }
+  //  selectedClientCategoryPopup=false;
 
-   setWSPopup(true)
-  }, [])
+  //  setWSPopup(true)
+  // }, [])
   return (
 
     <div className={IsUpdated === 'Events' ? 'app component eventpannelorange' : (IsUpdated == 'Service' ? 'app component serviepannelgreena' : 'app component')}>
@@ -2574,7 +2568,7 @@ function TasksTable(props: any) {
         <PortfolioStructureCreationCard CreatOpen={CreateOpenCall} Close={CloseCall} PortfolioType={IsUpdated} PropsValue={props} SelectedItem={checkedList != null && checkedList.length > 0 ? checkedList[0] : props} />
       </Panel>
        }
-    {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[MeetingItems.length - 1]} callback={parentClientCat} />:""}
+    {/* {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[MeetingItems.length - 1]} callback={parentClientCat} />:""} */}
     </div>
   )
 
