@@ -9,9 +9,17 @@ const SelectedClientCategoryPupup = (props: any) => {
     const [checked, setChecked] = React.useState(false);
    const getClientCategory=(data:any)=>{
      let parentcat:any=[]
-    data?.ClientCategory?.results?.map((items:any)=>{
-        parentcat.push(items)
-      })
+     if(  data?.ClientCategory?.results?.length>0){
+        data?.ClientCategory?.results?.map((items:any)=>{
+            parentcat.push(items)
+          })
+     }
+     if(data?.ClientCategory?.length>0){
+        data?.ClientCategory?.map((items:any)=>{
+            parentcat.push(items)
+          })
+     }
+   
       setClientCategory(parentcat)
    }
        React.useEffect(() =>{
@@ -35,7 +43,7 @@ const SelectedClientCategoryPupup = (props: any) => {
         data.ClientCategory2={
            results:[]
         };
-         props.callback()
+         props.callback(data)
         checkedData=[];
       }
     
@@ -98,7 +106,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                                 id={item?.Id}
                                 name={item?.Title}
                                 type="checkbox"
-                                className="me-2"
+                                className="form-check-input me-2"
                                 onChange={(e) => handleChange(item, e)}
                             />
                             {item?.Title}

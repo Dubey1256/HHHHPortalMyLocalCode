@@ -14,6 +14,9 @@ import {
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
 import * as Moment from 'moment';
+import * as $ from 'jquery';
+import { MdEmail } from "react-icons/Md";
+import Loader from "react-loader";
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
@@ -48,6 +51,7 @@ const TimeReport = () => {
     const [data, setData] = React.useState([])
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
+    const [loaded, setLoaded] = React.useState(true);
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(true);
@@ -55,7 +59,7 @@ const TimeReport = () => {
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
     
     React.useEffect(() => {
-        // GetAllTimeEntry();
+        showProgressBar();
         GetTaskUsers();
         GetSmartmetadata();
 
@@ -151,6 +155,15 @@ const TimeReport = () => {
         }
 
     }
+    var showProgressBar = () => {
+        setLoaded(false);
+        $(" #SpfxProgressbar").show();
+      };
+    
+      var showProgressHide = () => {
+        setLoaded(true);
+        $(" #SpfxProgressbar").hide();
+      };
     const GetMigrationTime = async () => {
         var selectedDate:any=[]
         var filteres = `Modified ge '${datess}'`
@@ -184,6 +197,7 @@ const TimeReport = () => {
     }
 
     var datess = ''
+
     const GeneratedTask = async (Type: any) => {
       
          DevloperTime = 0.00;
@@ -396,6 +410,7 @@ const TimeReport = () => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
                     }
                     if (task?.Component.length == 0) {
                         item.siteUrl = task.siteUrl
@@ -403,6 +418,7 @@ const TimeReport = () => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
                     }
                     if (task?.Component[0]?.ItemType == 'SubComponent') {
                         item.SubComponents = task.Component[0].Title
@@ -411,6 +427,7 @@ const TimeReport = () => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
                     }
                     if (task?.Component[0]?.ItemType == 'Feature') {
                         item.Features = task.Component[0].Title
@@ -419,6 +436,10 @@ const TimeReport = () => {
                         item.PercentComplete = task.PercentComplete
                         item.Status = task.Status
                         item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        task?.ClientCategory?.forEach((cat:any)=>{
+                            item.ClientCategory = cat.Title;
+                        })
                     }
 
                 }
@@ -445,6 +466,7 @@ const TimeReport = () => {
             })
         }
         setData(SelectedTime)
+        showProgressHide();
     }
 
     const selectType = (Dates: any) => {
@@ -501,38 +523,54 @@ const TimeReport = () => {
 
             },
             {
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
+                        >
+                            {getValue()}
+                        </a>
+
+                    </>
+                ),
+                id: 'Components',
                 header: '',
-                accessorKey: 'Components',
+                accessorFn: (row) => row?.Components,
                 placeholder: "Components",
 
 
             },
             {
+                id: 'SubComponents',
                 header: '',
-                accessorKey: 'SubComponents',
+                accessorFn: (row) => row?.SubComponents,
                 placeholder: "SubComponents",
-                Cell: ({ row }: any) => (
-                    <span>
-                        <a
-                            style={{
-                                textDecoration: "none",
-                                color: `${row?.original?.Component?.length > 0
-                                    ? "#000066"
-                                    : "serviepannelgreena"
-                                    }`,
-                            }}
-                            href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                            data-interception="off"
-                            target="_blank"
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
                         >
+                            {getValue()}
                         </a>
-                    </span>
+
+                    </>
                 ),
 
             },
             {
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
+                        >
+                            {getValue()}
+                        </a>
+
+                    </>
+                ),
+                id: 'Features',
                 header: '',
-                accessorKey: 'Features',
+                accessorFn: (row) => row?.Features,
                 placeholder: "Features",
 
             },
@@ -572,6 +610,12 @@ const TimeReport = () => {
                 header: '',
                 accessorKey: 'Department',
                 placeholder: "Designation",
+
+            },
+            {
+                header: '',
+                accessorKey: 'ClientCategory',
+                placeholder: "ClientCategory",
 
             },
 
@@ -703,6 +747,157 @@ const TimeReport = () => {
             </div>
         );
     };
+    const sendEmail=()=>{
+        var body1:any=[]
+        var body2:any=[]
+        var TotlaTime = QATime + DevloperTime + DesignTime
+        data?.forEach((item:any)=>{
+           var text = '<tr>' +
+            '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.ClientCategory + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Component + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponent + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Feature + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item.Comments + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Priority_x0020_Rank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Effort + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.PercentComplete + '%' + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Status + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Department + '</td>'
+            + '</tr>'
+        body1.push(text);
+        })
+        var text2 =
+        '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Time in Hours' + '</strong>' + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime + '</strong>' + '</td>'
+        + '</tr>';
+    body2.push(text2);
+
+    var bodyA =
+    '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
+    + '<tbody align="center">' +
+    body2 +
+    '</tbody>' +
+    '</table>';
+var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
+var ReportDatetime = "11/07/2023"
+    var body =
+                '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
+                '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
+                '<br>'
+
+                + '</br>' +
+                bodyA +
+                '<br>' + '</br>'
+                + '<table cellspacing="0" cellpadding="1" width="100%" style="border-collapse: collapse;">' +
+                '<thead>' +
+                '<tr style="font-size: 11px;">' +
+                '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'SubComponent' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Feature' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
+
+                + '</thead>' +
+                '<tbody align="center">' +
+                '<tr>' +
+                body1 +
+                '</tr>' +
+                '</tbody>' +
+                '</table>' +
+                '<p>' + '<strong>' + 'Thank You' + '</strong>' + '</p>'
+              var cc:any=[] 
+              var ReplyTo:any = "" 
+            var from:any= undefined
+            var To = ["Ranu.trivedi@hochhuth-consulting.de"];
+            var subject = 'TimeSheet :' + ' ' + ReportDatetime;
+            body = body.replace('>,<', '><');
+           sendEmailToUser(from, To, body, subject, ReplyTo, cc);
+            alert('Email sent sucessfully');
+
+    }
+    const sendEmailToUser =(from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any) => {
+        var siteurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+        var urlTemplate = siteurl + "/_api/SP.Utilities.Utility.SendEmail";
+        var sendData = JSON.stringify({
+            'properties': {
+                '__metadata': {
+                    'type': 'SP.Utilities.EmailProperties'
+                },
+                'AdditionalHeaders': {
+                    "__metadata": {
+                        "type": "Collection(SP.KeyValue)"
+                    },
+                    "results": [{
+                        "__metadata": {
+                            "type": 'SP.KeyValue'
+                        },
+                        //'Reply- To': ReplyTo,
+                        'Key': 'Reply-To:',
+                        'Value': ReplyTo,
+                        'ValueType': 'Edm.String'
+                    }]
+                },
+                'From': from,
+                'To': {
+                    'results': to
+                },
+                'CC': {
+                    'results': cc
+                },
+                'Body': body,
+                'Subject': subject
+            }
+        })
+        $.ajax({
+            contentType: 'application/json',
+            url: urlTemplate,
+            type: "POST",
+            data: sendData,
+            headers: {
+                "Accept": "application/json;odata=verbose",
+                "content-type": "application/json;odata=verbose",
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
+            },
+            success: function (data) {
+                // alert('Email sent sucessfully');
+            },
+            error: function (err) {
+                alert('Error in sending Email: ' + JSON.stringify(err));
+            }
+
+        });
+    }
+    
     return (
         <>
             <div className='row'>
@@ -711,6 +906,10 @@ const TimeReport = () => {
                         <span>
                             <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
                     </h3>
+                </div>
+                <div className='col-sm-9 text-primary'>
+                    <h6 className='pull-right'><b><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    </h6>
                 </div>
             </div>
             <div className='row'>
@@ -760,7 +959,29 @@ const TimeReport = () => {
             </div>
 
             <div className='Alltable'>
+             <div className='pull-right' style={{fontSize:'20px',position:'relative'}} onClick={()=>sendEmail()}><MdEmail/></div>
             <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} />
+            <Loader
+                  loaded={loaded}
+                  lines={13}
+                  length={20}
+                  width={10}
+                  radius={30}
+                  corners={1}
+                  rotate={0}
+                  direction={1}
+                  
+                  speed={2}
+                  trail={60}
+                  shadow={false}
+                  hwaccel={false}
+                  className="spinner"
+                  zIndex={2e9}
+                  top="28%"
+                  left="50%"
+                  scale={1.0}
+                  loadedClassName="loadedContent"
+                />
             </div>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
