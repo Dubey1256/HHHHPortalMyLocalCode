@@ -2743,484 +2743,7 @@ function ComponentTable(SelectedProp: any) {
 
   // --------------------------restructure button function, after click restructure icon will show (buttonRestructuring)----------------------------------------------------
   
-  // const buttonRestructuring = () => {
-  //   var ArrayTest: any = [];
-  //   if (
-  //     checkedList.length > 0 &&
-  //     checkedList[0].childs != undefined &&
-  //     checkedList[0].childs.length > 0 &&
-  //     checkedList[0].Item_x0020_Type === "Component"
-  //   )
-  //     alert("You are not allowed to Restructure this item.");
-
-  //     if(checkedList.length > 0){
-  //       checkedList.map((items:any)=>{
-  //         if( items.childs != undefined &&
-  //           items.childs.length === 0 &&
-  //           items.Item_x0020_Type === "Component"){
-  //             let newObj:any={};
-  //             let newarrays:any=[];
-  //             maidataBackup.forEach((obj) => {
-  //               if(items?.Id !== obj.Id && obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities"){
-  //                 newarrays.push(obj);
-  //                 setCheckSubChilds(obj);
-  //                 setRestructuredItemarray(newarrays);
-  //                 obj.isRestructureActive = true;
-  //               }else{
-  //                 newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle};
-  //                 ArrayTest.push(newObj)
-  //                 setRestructureChecked(ArrayTest);
-  //               }
-  //               if (obj.childs != undefined && obj.childs.length > 0) {
-  //                 obj.childs.forEach((sub: any) => {
-  //                   if (sub.Item_x0020_Type === "SubComponent" && sub.SharewebTaskType?.Title !== "Task" && sub.SharewebTaskType?.Title !== "Activities") {
-  //                     sub.isRestructureActive = true;
-  //                   }
-  //                 });
-  //               }
-  //             });
-  //         }else if(items.Item_x0020_Type === "SubComponent"){
-  //           let newObj:any={}
-  //       maidataBackup.forEach((obj) => {
-  //         if(obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities"){
-  //           obj.isRestructureActive = true;
-  //         }
-  //         if (obj.childs != undefined && obj.childs.length > 0) {
-  //           let newChildarray:any=[];
-  //           let newarrays:any=[];
-  //           obj.childs.forEach((sub: any) => {
-  //             if (sub.Id === items?.Id && sub.Item_x0020_Type === "SubComponent") {
-  //               newarrays.push(obj);
-  //               setCheckSubChilds(sub);
-  //               setRestructuredItemarray(newarrays);
-  //               setComponentRestruct(true);
-  //               newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,}};
-  //                 newChildarray.push(newObj.newChild)
-  //                 setRestructureChecked(newChildarray);
-  //                 ArrayTest.push(newObj);
-  //             }else{
-  //                   if(items?.Item_x0020_Type === "SubComponent" && items?.childs[0]?.Item_x0020_Type !== "Feature" && sub?.Item_x0020_Type === "SubComponent")
-  //                   {
-  //                     sub.isRestructureActive = true;
-  //                   }     
-  //            }        
-  //           });
-  //         }
-  //       });
-  //     }else if(items.Item_x0020_Type === "Feature"){
-  //       let newObj:any={}
-  //       maidataBackup.forEach((obj) => {
-  //         if(obj.SharewebTaskType?.Title !== "Task" && obj.SharewebTaskType?.Title !== "Activities"){
-  //           obj.isRestructureActive = true;
-  //         }
-         
-  //        if (obj.childs != undefined && obj.childs.length > 0) {
-  //           obj.childs.forEach((sub: any) => {
-  //             if(sub.Item_x0020_Type === "SubComponent"){
-  //               sub.isRestructureActive = true;
-  //             }
-  //             if (sub.Id === items?.Id && sub.Item_x0020_Type === items.Item_x0020_Type) {
-  //               // newarrays.push(obj);
-  //               let newChildarray: any = [];
-  //               setRestructuredItemarray(obj);
-  //               newObj = {
-  //                 Title: obj.Title, Item_x0020_Type: obj.Item_x0020_Type, Id: obj.Id, siteIcon: obj.SiteIconTitle, SharewebTaskType: obj.SharewebTaskType,
-  //                 newChild: {
-  //                   Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType,
-  //                   // newFchild: { Title: sub.Title, Item_x0020_Type: sub.Item_x0020_Type, Id: sub.Id, siteIcon: sub.SiteIconTitle, SharewebTaskType: sub.SharewebTaskType, }
-  //                 }
-  //               };
-  //               //End by Ranu
-  //               newChildarray.push(newObj.newChild)
-  //               ArrayTest.push(newObj);
-  //               setCheckSubChilds(sub);
-  //               setRestructureChecked(newChildarray);
-  //               setComponentRestruct(true);
-  //             }
-  //             if (sub.childs != undefined && sub.childs.length > 0) {
-  //                  let newChildarray:any=[];
-  //                  let newarrays:any=[];
-  //               sub.childs.forEach((newsub: any) => {
-  //                 if (newsub.Id === items?.Id && newsub.Item_x0020_Type === items.Item_x0020_Type) {
-  //                   newarrays.push(obj);
-  //                   setCheckSubChilds(newsub);
-  //                   sub.isRestructureActive = false;
-  //               setRestructuredItemarray(newarrays);
-  //                   newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                   newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                   newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle,SharewebTaskType:newsub.SharewebTaskType,}}};
-  //                   setComponentRestruct(true);
-  //                   newChildarray.push(newObj.newChild.newFchild)
-  //                   setRestructureChecked(newChildarray);
-  //                   ArrayTest.push(newObj);
-  //                 }
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }else if(items.SharewebTaskType?.Title === "Activities" && items.Item_x0020_Type === "Task"){
-  //       let newObj:any={}
-  //       maidataBackup.forEach((obj) => {
-  //         let newChildarray:any=[];
-  //           let newarrays:any=[];
-  //         if(obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //           newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
-  //           } 
-  //           newarrays.push(obj);
-  //           setRestructuredItemarray(newarrays);
-  //           newChildarray.push(newObj);
-  //           setRestructureChecked(newChildarray);
-  //           ArrayTest.push(newObj); 
-  //         }
-  //         if(obj.SharewebTaskType?.Title !== "Task" &&  obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id){
-  //        obj.isRestructureActive = true
-  //      } 
-  //      if((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType){
-  //       obj.isRestructureActive = false;
-  //      }
-  //        if (obj?.childs != undefined && obj?.childs?.length > 0) {
-  //           obj.childs.forEach((sub: any) => {
-  //             let newChildarray:any=[];
-  //                 let newarrays:any=[];
-  //                 if(sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //               newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
-  //                }} 
-  //                newarrays.push(obj);
-  //                setRestructuredItemarray(newarrays);
-  //                newChildarray.push(newObj?.newChild);
-  //              setRestructureChecked(newChildarray);
-  //              ArrayTest.push(newObj); 
-  //             }
-  //             if(sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id){
-  //              sub.isRestructureActive = true
-  //                }
-  //                if((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType){
-  //                 sub.isRestructureActive = false;
-  //                } 
-  //             if (sub.childs != undefined && sub.childs.length > 0) {
-  //               sub.childs.forEach((newsub: any) => {
-  //                 let newChildarray:any=[];
-  //                 let newarrays:any=[];
-  //                 setComponentRestruct(true);
-  //                 if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                   newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle ,SharewebTaskType:obj.SharewebTaskType,
-  //                     newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle ,SharewebTaskType:sub.SharewebTaskType,
-  //                     newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
-  //                     }}}   
-  //                     newChildarray.push(newObj?.newChild?.newFchild)
-  //                     setRestructureChecked(newChildarray);
-  //                     ArrayTest.push(newObj);  
-  //                 }
-  //                 if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id){
-                    
-  //                   newsub.isRestructureActive = true
-  //                      }
-  //                     if((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType){
-  //                       newsub.isRestructureActive = false;
-  //                      } 
-  //                 if (newsub.childs != undefined && newsub.childs.length > 0) {
-  //                  let newChildarray:any=[];
-  //                  let newarrays:any=[];
-  //                   newsub.childs.forEach((activity: any) => {
-  //                     if(activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                       activity.isRestructureActive = false;
-  //                       newsub.isRestructureActive = false;
-  //                       newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle  ,SharewebTaskType:obj.SharewebTaskType,
-  //                       newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle  ,SharewebTaskType:sub.SharewebTaskType,
-  //                       newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle  ,SharewebTaskType:newsub.SharewebTaskType,
-  //                       newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
-  //                       newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
-  //                       setRestructureChecked(newChildarray);
-  //                       ArrayTest.push(newObj);  
-  //                     }else{
-  //                       if(activity.SharewebTaskType?.Title !== "Task" && activity?.siteType == items?.siteType){
-  //                         activity.isRestructureActive = true;
-  //                        }   
-  //                   }   
-  //                   if(activity?.childs != undefined && activity?.childs?.length > 0){
-  //                         activity?.childs?.forEach((wrkstrm: any) => {
-  //                           if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType){
-  //                             wrkstrm.isRestructureActive = true;
-  //                           }   
-  //                         })
-  //                       }
-  //                   })
-  //                 }
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }else if(items.SharewebTaskType?.Title === "Workstream" && items.Item_x0020_Type === "Task"){
-  //       let newObj:any={}
-  //       maidataBackup.forEach((obj) => {
-  //         let newChildarray:any=[];
-  //         let newarrays:any=[];
-  //                  if(obj.SharewebTaskType?.Title !== "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //           newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
-  //           } 
-  //           newarrays.push(obj);
-  //           setRestructuredItemarray(newarrays);
-  //           newChildarray.push(newObj);
-  //           setRestructureChecked(newChildarray);
-  //           ArrayTest.push(newObj); 
-  //         }
-  //         if(obj.SharewebTaskType?.Title !== "Task" && obj?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && obj?.Id !== items?.Id){
-  //           obj.isRestructureActive = true;
-  //         }
-  //         if((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType){
-  //           obj.isRestructureActive = false;
-  //          }
-  //        if (obj?.childs != undefined && obj?.childs?.length > 0) {
-  //           obj.childs.forEach((sub: any) => {
-  //             let newChildarray:any=[];
-  //             let newarrays:any=[];
-  //                    if(sub.SharewebTaskType?.Title !== "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //               newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
-  //                }} 
-  //                newarrays.push(obj);
-  //                setRestructuredItemarray(newarrays);
-  //                newChildarray.push(newObj?.newChild);
-  //              setRestructureChecked(newChildarray);
-  //              ArrayTest.push(newObj); 
-  //             }
-  //             if(sub.SharewebTaskType?.Title !== "Task" && sub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && sub?.Id !== items?.Id){
-  //               sub.isRestructureActive = true;
-  //             }
-  //             if((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType){
-  //               sub.isRestructureActive = false;
-  //              }
-  //             if (sub.childs != undefined && sub.childs.length > 0) {
-  //               sub.childs.forEach((newsub: any) => {
-  //                 let newChildarray:any=[];
-  //                 let newarrays:any=[];
-  //                       if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                   newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                     newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                     newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
-  //                     }}}   
-  //                     newChildarray.push(newObj?.newChild?.newFchild)
-  //                     setRestructureChecked(newChildarray);
-  //                     ArrayTest.push(newObj);  
-  //                 }                    
-  //                 if(newsub.SharewebTaskType?.Title !== "Task" && newsub?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && newsub?.Id !== items?.Id){
-  //                   newsub.isRestructureActive = true;
-  //                 } 
-  //                 if((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType){
-  //                   newsub.isRestructureActive = false;
-  //                  }
-  //                 if (newsub.childs != undefined && newsub.childs.length > 0) {
-  //                  let newChildarray:any=[];
-  //                  let newarrays:any=[];
-  //                   newsub.childs.forEach((activity: any) => {
-  //                             if(activity.SharewebTaskType?.Title !== "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                       activity.isRestructureActive = false;
-  //                       newsub.isRestructureActive = false;
-  //                       newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle ,SharewebTaskType:obj.SharewebTaskType,
-  //                       newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle  === undefined ? sub.SiteIcon : sub.SiteIconTitle ,SharewebTaskType:sub.SharewebTaskType,
-  //                       newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle ,SharewebTaskType:newsub.SharewebTaskType,
-  //                       newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
-  //                       newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
-  //                       setRestructureChecked(newChildarray);
-  //                       ArrayTest.push(newObj);  
-  //                     }
-  //                     if(activity.SharewebTaskType?.Title !== "Task" && activity?.Shareweb_x0020_ID !== items?.Shareweb_x0020_ID && activity?.Id !== items?.Id){
-  //                       activity.isRestructureActive = true;
-  //                     }  
-  //                     if((activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType){
-  //                       activity.isRestructureActive = false;
-  //                      }
-  //                     setComponentRestruct(true);
-  //                   if(activity?.childs != undefined && activity?.childs?.length > 0){
-  //                         activity?.childs?.forEach((wrkstrm: any) => {
-  //                           if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                             newarrays.push(obj);
-  //                             setRestructuredItemarray(newarrays);
-  //                             wrkstrm.isRestructureActive = false;
-  //                             newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                             newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                             newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle,SharewebTaskType:newsub.SharewebTaskType,
-  //                             newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
-  //                           newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,}}}}};
-                             
-  //                             newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild)
-  //                             setRestructureChecked(newChildarray);
-  //                             ArrayTest.push(newObj);  
-  //                           }else{
-  //                             if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType){
-  //                               wrkstrm.isRestructureActive = true;
-  //                                 }   
-  //                         }   
-
-                         
-  //                         })
-  //                       }
-  //                   })
-  //                 }
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }else if(items.SharewebTaskType?.Title === "Task" && items.Item_x0020_Type === "Task"){
-  //       let newObj:any={}
-  //       maidataBackup.forEach((obj) => {
-
-  //                let newChildarray:any=[];
-  //         let newarrays:any=[];
-  //                  if(obj.SharewebTaskType?.Title == "Task" && obj?.Id == items?.Id && obj?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //           newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIcon,SharewebTaskType:obj.SharewebTaskType,
-  //           } 
-  //           newarrays.push(obj);
-  //           setRestructuredItemarray(newarrays);
-  //           newChildarray.push(newObj);
-  //           setRestructureChecked(newChildarray);
-  //           ArrayTest.push(newObj); 
-  //         }
-  //         if(obj.SharewebTaskType?.Title !== "Task"){
-  //           obj.isRestructureActive = true;
-  //         }
-  //         if((obj.SharewebTaskType?.Title == "Activities" || obj.SharewebTaskType?.Title == "Workstream") && obj?.siteType !== items?.siteType){
-  //           obj.isRestructureActive = false;
-  //          }
-  //        if (obj?.childs != undefined && obj?.childs?.length > 0) {
-  //           obj.childs.forEach((sub: any) => {
-
-  //                let newChildarray:any=[];
-  //             let newarrays:any=[];
-  //                    if(sub.SharewebTaskType?.Title == "Task" && sub?.Id == items?.Id && sub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //               newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                 newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIcon,SharewebTaskType:sub.SharewebTaskType,
-  //                }} 
-  //                newarrays.push(obj);
-  //                setRestructuredItemarray(newarrays);
-  //                newChildarray.push(newObj?.newChild);
-  //              setRestructureChecked(newChildarray);
-  //              ArrayTest.push(newObj); 
-  //             }
-
-  //             if(sub.SharewebTaskType?.Title !== "Task"){
-  //               sub.isRestructureActive = true;
-  //             }
-  //             if((sub.SharewebTaskType?.Title == "Activities" || sub.SharewebTaskType?.Title == "Workstream") && sub?.siteType !== items?.siteType){
-  //               sub.isRestructureActive = false;
-  //              }
-  //             if (sub.childs != undefined && sub.childs.length > 0) {
-  //               sub.childs.forEach((newsub: any) => {
-  //                 let newChildarray:any=[];
-  //                 let newarrays:any=[];
-  //                       if(newsub.SharewebTaskType?.Title == "Task" && newsub?.Id == items?.Id && newsub?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                   newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                     newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle=== undefined ? sub.SiteIcon : sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                     newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIcon,SharewebTaskType:newsub.SharewebTaskType,
-  //                     }}}   
-  //                     newChildarray.push(newObj?.newChild?.newFchild)
-  //                     setRestructureChecked(newChildarray);
-  //                     ArrayTest.push(newObj);  
-  //                 }           
-
-  //                 if(newsub.SharewebTaskType?.Title !== "Task"){
-  //                   newsub.isRestructureActive = true;
-  //                 } 
-  //                 if((newsub.SharewebTaskType?.Title == "Activities" || newsub.SharewebTaskType?.Title == "Workstream") && newsub?.siteType !== items?.siteType){
-  //                   newsub.isRestructureActive = false;
-  //                  }
-  //                 if (newsub.childs != undefined && newsub.childs.length > 0) {
-  //                  let newChildarray:any=[];
-  //                  let newarrays:any=[];
-  //                   newsub.childs.forEach((activity: any) => {
-
-  //                     if(activity.SharewebTaskType?.Title == "Task" && activity?.Id == items?.Id && activity?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                       newarrays.push(obj);
-  //                       setRestructuredItemarray(newarrays);
-  //                       activity.isRestructureActive = false;
-  //                       newsub.isRestructureActive = false;
-  //                       newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                       newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle=== undefined ? sub.SiteIcon : sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                       newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,SharewebTaskType:newsub.SharewebTaskType,
-  //                       newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType}}}};
-  //                       newChildarray.push(newObj?.newChild?.newFchild?.newActChild)
-  //                       setRestructureChecked(newChildarray);
-  //                       ArrayTest.push(newObj);  
-  //                     }
-  //                     if(activity.SharewebTaskType?.Title !== "Task"){
-  //                       activity.isRestructureActive = true;
-  //                     }  
-  //                     if((activity.SharewebTaskType?.Title == "Activities" || activity.SharewebTaskType?.Title == "Workstream") && activity?.siteType !== items?.siteType){
-  //                       activity.isRestructureActive = false;
-  //                      }
-  //                     setComponentRestruct(true);
-  //                   if(activity?.childs != undefined && activity?.childs?.length > 0){
-  //                         activity?.childs?.forEach((wrkstrm: any) => { 
-  //                           if(wrkstrm.SharewebTaskType?.Title == "Task" && wrkstrm?.Id == items?.Id && wrkstrm?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                             newarrays.push(obj);
-  //                             setRestructuredItemarray(newarrays);
-  //                             wrkstrm.isRestructureActive = false;
-  //                             newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                             newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                             newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,SharewebTaskType:newsub.SharewebTaskType,
-  //                             newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
-  //                           newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,}}}}};
-                             
-  //                             newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild)
-  //                             setRestructureChecked(newChildarray);
-  //                             ArrayTest.push(newObj);  
-  //                           }
-  //                         if(wrkstrm?.childs != undefined && wrkstrm?.childs?.length > 0){
-  //                           wrkstrm?.childs?.forEach((task: any) => {
-  //                             if(task.SharewebTaskType?.Title == "Task" && task?.Id == items?.Id && task?.Shareweb_x0020_ID == items?.Shareweb_x0020_ID){
-  //                               newarrays.push(obj);
-  //                               setRestructuredItemarray(newarrays);
-  //                               wrkstrm.isRestructureActive = false;
-  //                               task.isRestructureActive = false;
-  //                               newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle === undefined ? obj.SiteIcon : obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
-  //                               newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle === undefined ? sub.SiteIcon : sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
-  //                               newFchild:{Title:newsub.Title,Item_x0020_Type:newsub.Item_x0020_Type,Id:newsub.Id,siteIcon:newsub.SiteIconTitle === undefined ? newsub.SiteIcon : newsub.SiteIconTitle,SharewebTaskType:newsub.SharewebTaskType,
-  //                               newActChild:{Title:activity.Title,Item_x0020_Type:activity.Item_x0020_Type,Id:activity.Id,siteIcon:activity.SiteIcon,SharewebTaskType:activity.SharewebTaskType,
-  //                             newWrkChild:{Title:wrkstrm.Title,Item_x0020_Type:wrkstrm.Item_x0020_Type,Id:wrkstrm.Id,siteIcon:wrkstrm.SiteIcon,SharewebTaskType:wrkstrm.SharewebTaskType,
-  //                           newTskChild:{Title:task.Title,Item_x0020_Type:task.Item_x0020_Type,Id:task.Id,siteIcon:task.SiteIcon,SharewebTaskType:task.SharewebTaskType,}}}}}};
-  //                               newChildarray.push(newObj?.newChild?.newFchild?.newActChild?.newWrkChild?.newTskChild)
-  //                               setRestructureChecked(newChildarray);
-  //                               ArrayTest.push(newObj);  
-  //                             }else{
-  //                               if(wrkstrm.SharewebTaskType?.Title !== "Task" && wrkstrm?.siteType == items?.siteType){
-  //                                 task.isRestructureActive = false;
-  //                               }   
-  //                           } 
-  //                           })
-  //                         }
-                          
-  //                         })
-  //                       }
-  //                   })
-  //                 }
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }
-  //       });
-  //     };
-  //   setOldArrayBackup(ArrayTest);
-  //   setData([...maidataBackup]);
-  // };
-
-
+ 
   const buttonRestructuring = () => {
     var ArrayTest: any = [];
     if (
@@ -3296,13 +2819,28 @@ function ComponentTable(SelectedProp: any) {
           }
          
          if (obj.childs != undefined && obj.childs.length > 0) {
+          let newarrays:any=[];
+          let newChildarray:any=[];
             obj.childs.forEach((sub: any) => {
+              setComponentRestruct(true);
               if(sub.Item_x0020_Type === "SubComponent"){
                 sub.isRestructureActive = true;
               }
+              if (sub.Id === items?.Id) {
+                newarrays.push(obj);
+                setCheckSubChilds(sub);
+                sub.isRestructureActive = false;
+            setRestructuredItemarray(newarrays);
+                newObj={Title:obj.Title,Item_x0020_Type:obj.Item_x0020_Type,Id:obj.Id,siteIcon:obj.SiteIconTitle,SharewebTaskType:obj.SharewebTaskType,
+                newChild:{Title:sub.Title,Item_x0020_Type:sub.Item_x0020_Type,Id:sub.Id,siteIcon:sub.SiteIconTitle,SharewebTaskType:sub.SharewebTaskType,
+              }};
+                setComponentRestruct(true);
+                newChildarray.push(newObj.newChild)
+                setRestructureChecked(newChildarray);
+                ArrayTest.push(newObj);
+              }
               if (sub.childs != undefined && sub.childs.length > 0) {
-                   let newChildarray:any=[];
-                   let newarrays:any=[];
+                   
                 sub.childs.forEach((newsub: any) => {
                   if (newsub.Id === items?.Id) {
                     newarrays.push(obj);
@@ -3795,20 +3333,62 @@ const topRestructureClose=()=>{
     let ChengedItemTitle: any = "";
     let siteIcon : any = '';
     let PortfolioLevelNum: any = 0;
+    let SharewebTaskLevel1No:number =0;
+    let Shareweb_x0020_ID:any ;
     
 
-    if( RestructureChecked != undefined && RestructureChecked?.length > 0){
+    if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")){
       ChengedItemTitle ="Component";
         siteIcon = "C";
 
     }
 
-    maidataBackup.map((obj:any)=>{
-         if(obj.Item_x0020_Type === "Component"){
-          PortfolioLevelNum = obj.PortfolioLevel + 1;
-            PortfolioStructureIDs = "C" + PortfolioLevelNum;
-       }
-    })
+    if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")){
+      ChengedItemTitle ="Activities";
+   }
+
+    if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")){
+      maidataBackup.map((obj:any)=>{
+        if(obj.Item_x0020_Type === "Component"){
+         PortfolioLevelNum = obj.PortfolioLevel + 1;
+           PortfolioStructureIDs = "C" + PortfolioLevelNum;
+      }
+   })
+    }
+    
+    if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")){
+      maidataBackup.map((obj:any)=>{
+      if(obj.childs.length > 0 && obj.childs != undefined){
+        obj.childs.map((sub:any)=>{
+          if(checkedList[0].ParentTask?.Id === sub.Id){
+            SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
+            PortfolioStructureIDs = sub.PortfolioStructureID;
+            Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+          }   
+          if(sub.childs.length > 0 && sub.childs != undefined){
+            sub.childs.map((newsub:any)=>{
+              if(checkedList[0].ParentTask?.Id === newsub.Id){
+                SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
+              PortfolioStructureIDs = newsub.PortfolioStructureID;
+              Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+              }  
+              
+              if(newsub.childs.length > 0 && newsub.childs != undefined){
+                newsub.childs.map((feature:any)=>{
+                  if(checkedList[0].ParentTask?.Id === feature.Id){
+                    SharewebTaskLevel1No = feature.SharewebTaskLevel1No +1;
+                  PortfolioStructureIDs = feature.PortfolioStructureID;
+                  Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                  }  
+                })
+              }
+              
+            })
+          }
+        })
+      }
+   })
+   }
 
 
 
@@ -3872,52 +3452,7 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
             }
            
           })
-    //       array?.map((obj:any,index:any)=>{
-    //         obj.isRestructureActive=false;
-    //         if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3 ){
-    //          obj.childs.push(...latestCheckedList);
-    //                  obj.subRows.push(...latestCheckedList);
-    //                  checkUpdate = checkUpdate + 1;
-    //         }
-    //         if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
-    //                       array.splice(index,1);
-    //                       checkUpdate = checkUpdate + 1;
-    //         }
-
-    //         if(obj.subRows != undefined && obj.subRows.length > 0){
-    //           obj.subRows.forEach((sub: any, indexsub: any) => {
-    //             sub.isRestructureActive=false;
-    //             if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3){
-    //               sub.childs.push(...latestCheckedList);
-    //               sub.subRows.push(...latestCheckedList) ;
-    //               checkUpdate = checkUpdate + 1;
-    //      }
-    //      if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
-    //                    array[index]?.subRows.splice(indexsub,1);
-    //                    array[index]?.childs.splice(indexsub,1);
-    //                    checkUpdate = checkUpdate + 1;
-    //      }
-
-    //      if (sub.subRows != undefined && sub.subRows.length > 0) {
-    //       sub.subRows.forEach((newsub: any, lastIndex: any) => {
-    //         newsub.isRestructureActive=false;
-    //         if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && checkUpdate != 3){
-    //           newsub.childs.push(...latestCheckedList);
-    //           newsub.subRows.push(...latestCheckedList);
-    //           checkUpdate = checkUpdate + 1;
-    //  }
-    //  if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate != 3){
-    //                array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
-    //                array[index]?.childs[indexsub]?.childs.splice(lastIndex,1);
-    //                checkUpdate = checkUpdate + 1;
-    //  }
-    //       })
-    //      }
-    //           })
-    //         }
-
-    //       })
-
+ 
           Renderarray = [...array];
           refreshDataTaskLable();
           setRowSelection({});
@@ -3931,6 +3466,96 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
 
         });
     }
+
+    if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureChecked[0].SharewebTaskType?.Title == "Workstream" || RestructureChecked[0].SharewebTaskType?.Title == "Task")) {
+      let web = new Web(ContextValue.siteUrl);
+      var postData: any = {
+        SharewebTaskTypeId:taskTypeId[0].Id,
+        SharewebTaskLevel1No:SharewebTaskLevel1No,
+        Shareweb_x0020_ID:Shareweb_x0020_ID,
+        ParentTaskId:null
+     };
+     
+      await web.lists
+        .getById(checkedList[0].listId)
+        .items.getById(checkedList[0].Id)
+        .update(postData)
+        .then(async (res: any) => {
+
+
+          // let checkUpdate : number = 1;
+          let array : any = [...maidataBackup];
+          let backupCheckedList :any =[];
+          let latestCheckedList:any =[] ; 
+          checkedList.map((items:any)=>{
+            latestCheckedList.push({...items})
+            backupCheckedList.push({...items})
+          })
+          
+          latestCheckedList?.map((items:any)=>{
+              items.PortfolioStructureID = postData.PortfolioStructureID,
+              items.Shareweb_x0020_ID = postData.Shareweb_x0020_ID,
+              items.ParentTask = {Id:null,Title:null,Shareweb_x0020_ID:null},
+              items.SharewebTaskLevel1No = postData.SharewebTaskLevel1No,
+              items.SharewebTaskType = {Id:taskTypeId[0].Id,Level:taskTypeId[0].Level,Title:taskTypeId[0].Title}
+          })
+
+
+          array.map((obj:any,index:any)=>{
+            obj.isRestructureActive=false;
+            array.push(...latestCheckedList);
+            
+            if(obj?.subRows != undefined && obj?.subRows.length > 0){
+              obj?.subRows?.map((sub:any,subIndex:any)=>{
+                if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
+                            array[index]?.subRows.splice(subIndex,1);
+                            array[index]?.childs.splice(subIndex,1);
+                      }
+                if(sub?.subRows != undefined && sub?.subRows.length > 0){
+                  sub?.subRows?.map((newsub:any,newsubIndex:any)=>{
+                    if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
+                      array[index]?.subRows[subIndex]?.subRows.splice(newsubIndex,1);
+                   array[index]?.childs[subIndex]?.childs.splice(newsubIndex,1);
+                }
+                  })
+                }
+  
+              })
+            }
+           
+          })
+ 
+          Renderarray = [...array];
+          refreshDataTaskLable();
+          setRowSelection({});
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
+          setRestructureChecked([]);
+          setNewArrayBackup([]);
+          setOldArrayBackup([]);
+          RestruringCloseCall();
+
+
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
 
 
@@ -4166,7 +3791,7 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
           
 
       if(SharewebTaskType === "Activities"){
-        SharewebTaskTypeId = taskTypeId[2].Id;
+        SharewebTaskTypeId = taskTypeId[2];
       }else{
         SharewebTaskTypeId = SharewebTaskType === "Task" ?taskTypeId[1] : taskTypeId[2];
       }
