@@ -1039,7 +1039,7 @@ const ProjectManagementMain = (props: any) => {
         header: "",
         resetColumnFilters: false,
         resetSorting: false,
-        size: 100
+        size: 75
       },
       {
         accessorFn: (row) => row?.DueDate,
@@ -1101,7 +1101,7 @@ const ProjectManagementMain = (props: any) => {
         resetSorting: false,
         placeholder: "TeamMembers",
         header: "",
-        size: 152
+        size: 110
       },
       {
         accessorFn: (row) => row?.Remark,
@@ -1519,7 +1519,7 @@ const ProjectManagementMain = (props: any) => {
                         <div className="row">
                           <div className="col-md-12 bg-white">
                             <div className="team_member row  py-2">
-                              <div className="col-md-6 p-0">
+                              <div className="col-md-6  pe-0">
                                 <dl>
                                   <dt className="bg-fxdark">Due Date</dt>
                                   <dd className="bg-light">
@@ -1612,7 +1612,7 @@ const ProjectManagementMain = (props: any) => {
 
 
                               {
-                                Masterdata?.Body != undefined ? <div className="mt-2 p-0 row">
+                                Masterdata?.Body != undefined ? <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0" open>
                                     <summary>Description</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Body }}></div>
@@ -1622,7 +1622,7 @@ const ProjectManagementMain = (props: any) => {
                               }
 
                               {
-                                Masterdata?.Background != undefined ? <div className="mt-2 p-0 row">
+                                Masterdata?.Background != undefined ? <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0">
                                     <summary>Background</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Background }}></div>
@@ -1632,7 +1632,7 @@ const ProjectManagementMain = (props: any) => {
                               }
 
                               {
-                                Masterdata?.Idea != undefined ? <div className="mt-2 p-0 row">
+                                Masterdata?.Idea != undefined ? <div className="mt-2 row pe-0 detailsbox">
                                   <details className="pe-0">
                                     <summary>Idea</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Idea }}></div>
@@ -1642,7 +1642,9 @@ const ProjectManagementMain = (props: any) => {
                               }
 
                               {
-                                Masterdata?.Deliverables != undefined ? <div className="mt-2 p-0 row">
+                                Masterdata?.Deliverables != undefined ? <div className="mt-2 row pe-0 detailsboxp 41_
+                                0=][9\
+                                -p/\otyty5/">
                                   <details className="pe-0">
                                     <summary>Deliverables</summary>
                                     <div className="AccordionContent p-2" dangerouslySetInnerHTML={{ __html: Masterdata?.Deliverables }}></div>
@@ -1656,7 +1658,7 @@ const ProjectManagementMain = (props: any) => {
                       </div>
                     </section>
                     <div>
-                      <div className="row">
+                      <div className="row px-2 pe-0">
                         <div className="section-event ps-0">
                           <div className="wrapper project-management-Table">
                             {sidebarStatus.sideBarFilter ? (
