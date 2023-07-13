@@ -4460,7 +4460,7 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined ? ImageDtl.Description : "Add Image Description"} className="mx-1" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
                                                                                 <BiInfoCircle />
                                                                             </span>
                                                                         </div>
