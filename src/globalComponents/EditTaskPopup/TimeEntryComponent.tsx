@@ -573,8 +573,8 @@ function TimeEntryPopup(item: any) {
 
     }
     const closeTaskStatusUpdatePoup = () => {
-        setcheckCategories(undefined)
         setTaskStatuspopup(false)
+        setcheckCategories(undefined)
         setTimeInHours(0)
         setNewData(undefined)
         setTimeInMinutes(0)
@@ -836,13 +836,17 @@ function TimeEntryPopup(item: any) {
             if (items.subRows.length > 0) {
                 items.subRows = items.subRows.reverse()
                 $.each(items.subRows, function (index: any, val: any) {
-                    var dateValues = val.TaskDate.split("/");
-                    var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
-                    var NewDate = new Date(dp)
-                    val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY")
-                    try {
-                        getDateForTimeEntry(NewDate, val);
-                    } catch (e) { }
+                    if(val.TaskDate != null){
+                        var dateValues = val?.TaskDate?.split("/");
+                        var dp = dateValues[1] + "/" + dateValues[0] + "/" + dateValues[2];
+                        var NewDate = new Date(dp)
+                        val.TaskDates = Moment(NewDate).format("ddd, DD/MM/YYYY")
+                        try {
+                            getDateForTimeEntry(NewDate, val);
+                        } catch (e) { }
+                    }
+                   
+                   
                 })
             }
         })
@@ -975,6 +979,9 @@ function TimeEntryPopup(item: any) {
 
     }
     function datecomp(d1: any, d2: any) {
+        if(d1.TaskDate != null && d2.TaskDate != null){
+
+        
         var a1 = d1.TaskDate.split("/");
         var a2 = d2.TaskDate.split("/");
         a1 = a1[2] + a1[1] + a1[0];
@@ -986,6 +993,7 @@ function TimeEntryPopup(item: any) {
         //var b1:any = Moment(a1).format()
         //var b2:any = Moment(a1).format()
         return a2 - a1;
+        }
     }
 
     const callBackData = React.useCallback((elem: any, ShowingData: any) => {
@@ -1420,7 +1428,7 @@ function TimeEntryPopup(item: any) {
                     if (subItem.AdditionalTime.length > 0 && subItem.AdditionalTime != undefined) {
                         $.each(subItem.AdditionalTime, async function (index: any, NewsubItem: any) {
 
-                            if (NewsubItem.ID === childinew.ID)
+                            if (NewsubItem?.ID === childinew?.ID)
                                 subItem.AdditionalTime.splice(index, 1)
 
 
@@ -1665,6 +1673,7 @@ function TimeEntryPopup(item: any) {
 
     }
     const saveOldUserTask = async (UpdatedData: any) => {
+        
         var Available = false;
         var TimeInHours: any = changeTime / 60;
         TimeInHours = TimeInHours.toFixed(2);
@@ -1907,10 +1916,14 @@ function TimeEntryPopup(item: any) {
         var CurrentUser: any = {}
         var update: any = {};
         var CurrentAddData: any = []
+        var CurrentUserData: any=[]
+        var AllData:any = []
         var count = 0
+        var LetestId =''
+        var MyData:any=[]
         var countss = 0
         var AddMainParentId: any = ''
-        var isTrueTime = false;
+        var isTrueTime:Boolean = false;
         var AddParentId: any = ''
         let web = new Web(`${CurrentSiteUrl}`);
         var TimeInMinute: any = changeTime / 60
@@ -1922,27 +1935,51 @@ function TimeEntryPopup(item: any) {
             }
 
         });
+        if (item.props.siteType == "Offshore Tasks") {
+            var siteType = "OffshoreTasks"
+            var filteres = "Task" + siteType + "/Id eq " + item.props.Id;
+            var linkedSite = "Task" + siteType
+        }
+        else {
 
-
-
-        $.each(TaskCate, async function (index: any, items: any) {
+            var filteres = "Task" + item.props.siteType + "/Id eq " + item.props.Id;
+            var linkedSite = "Task" + item.props.siteType
+        }
+        CurrentAddData = await web.lists
+        .getByTitle(listName)
+        .items
+        .select(`Id,Title,TaskDate,Created,Modified,TaskTime,${linkedSite}/Title,${linkedSite}/Id,Description,SortOrder,AdditionalTimeEntry,AuthorId,Author/Title,Editor/Id,Editor/Title,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title`)
+        .expand(`Editor,Author,Category,TimesheetTitle,${linkedSite}`)
+        .filter(`AuthorId eq '${CurntUserId}'` && `TimesheetTitle/Id eq '${ParentId.Id}'`)
+        .getAll();
+        CurrentUserData = CurrentAddData;
+        CurrentUserData?.forEach((time: any) => {
             countss++
-            if (items.TimesheetTitle.Id != undefined && items.TimesheetTitle.Id == ParentId.Id) {
-                if (items.AdditionalTime.length > 0 && items.AdditionalTime != undefined) {
-                    var timeSpentId = items.AdditionalTime[items.AdditionalTime.length - 1];
-                    $.each(items.AdditionalTime, async function (index: any, NewsubItem: any) {
-                        if (NewsubItem.AuthorId == CurntUserId && items.Id == NewsubItem.ParentID) {
-
-                            isTrueTime = true;
-                            count++
-                            AddParentId = NewsubItem.ParentID
-
-                            AddMainParentId = NewsubItem.MainParentId
-                            CurrentAddData.push(NewsubItem)
-                        }
-
-                    })
-
+            if(time.AuthorId == CurntUserId){
+                  if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
+                  time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
+                   AllData.push(time)
+            }
+        }
+        })
+        if(AllData != undefined && AllData.length > 0){
+            var timeSpentId:any = '';
+            AllData?.forEach((itemms:any)=>{
+              
+                 timeSpentId = itemms.AdditionalTime[itemms.AdditionalTime.length - 1];
+                 LetestId = itemms.Id
+                 itemms?.AdditionalTime.forEach((val:any)=>{
+                    isTrueTime = true;
+                    count++
+                    AddParentId = val.ParentID
+        
+                    AddMainParentId = val.MainParentId
+                    MyData.push(val)
+                 })
+                
+            })
+           
+                if(MyData != undefined && MyData.length >0){
                     update['AuthorName'] = CurrentUser.AuthorName;
                     update['AuthorId'] = CurntUserId;
                     update['AuthorImage'] = CurrentUser.AuthorImage;
@@ -1954,75 +1991,164 @@ function TimeEntryPopup(item: any) {
                     update['TaskTimeInMin'] = TimeInMinutes;
                     update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
                     update['Description'] = postData.Description
-                    CurrentAddData.push(update)
-                    UpdatedData = CurrentAddData
+                    MyData.push(update)
+                    UpdatedData = MyData
+                }
+                else {
+                    
+                    update['AuthorName'] = CurrentUser.AuthorName;
+                    update['AuthorImage'] = CurrentUser.AuthorImage;
+                    update['AuthorId'] = CurntUserId
+                    update['ID'] = 0;
+                    update['Id'] = 0;
+                    update['MainParentId'] = ParentId.Id;
+                    update['ParentID'] = LetestId;
+                    update['TaskTime'] = TimeInHours;
+                    update['TaskTimeInMin'] = TimeInMinutes;
+                    update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
+                    update['Description'] = postData.Description
+                    AllData[0].AdditionalTime.push(update)
+                    UpdatedData = AllData[0].AdditionalTime
+        
+                }
+            
+
+           
+            
+        }
+        if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+
+            var ListId = TimeSheetlistId
+
+        }
+        else {
+            var ListId = TimeSheetlistId
+        }
+
+        const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
+            return array.indexOf(val) == id;
+        })
+        if(isTrueTime == true){
+        
+        await web.lists.getById(ListId)
+            .items.getById(AddParentId)
+            .update({
+
+                AdditionalTimeEntry: JSON.stringify(finalData),
+
+            }).then((res: any) => {
+                console.log(res);
+
+               
+                setupdateData(updateData + 1)
 
 
-                    if (items.AdditionalTime.length == 0) {
-                        AddParentId = items.Id;
-                        update['AuthorName'] = CurrentUser.AuthorName;
-                        update['AuthorImage'] = CurrentUser.AuthorImage;
-                        update['AuthorId'] = CurntUserId
-                        update['ID'] = 0;
-                        update['Id'] = 0;
-                        update['MainParentId'] = items.TimesheetTitle.Id;
-                        update['ParentID'] = items.Id;
-                        update['TaskTime'] = TimeInHours;
-                        update['TaskTimeInMin'] = TimeInMinutes;
-                        update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
-                        update['Description'] = postData.Description
-                        items.AdditionalTime.push(update)
-                        UpdatedData = items.AdditionalTime
 
-                    }
+            })
+        }
+      
 
-                    if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
 
-                        var ListId = TimeSheetlistId
+        closeAddTaskTimepopup();
+        // $.each(TaskCate, async function (index: any, items: any) {
+        //     countss++
+        //     if (items.TimesheetTitle.Id != undefined && items.TimesheetTitle.Id == ParentId.Id) {
+        //         if (items.AdditionalTime.length > 0 && items.AdditionalTime != undefined) {
+        //             var timeSpentId = items.AdditionalTime[items.AdditionalTime.length - 1];
+        //             $.each(items.AdditionalTime, async function (index: any, NewsubItem: any) {
+        //                 if (NewsubItem.AuthorId == CurntUserId && items.Id == NewsubItem.ParentID) {
 
-                    }
-                    else {
-                        var ListId = TimeSheetlistId
-                    }
+        //                     isTrueTime = true;
+        //                     count++
+        //                     AddParentId = NewsubItem.ParentID
+
+        //                     AddMainParentId = NewsubItem.MainParentId
+        //                     CurrentAddData.push(NewsubItem)
+        //                 }
+
+        //             })
+
+        //             update['AuthorName'] = CurrentUser.AuthorName;
+        //             update['AuthorId'] = CurntUserId;
+        //             update['AuthorImage'] = CurrentUser.AuthorImage;
+        //             update['ID'] = timeSpentId.ID + 1;
+        //             update['Id'] = timeSpentId.ID + 1;
+        //             update['MainParentId'] = AddMainParentId;
+        //             update['ParentID'] = AddParentId;
+        //             update['TaskTime'] = TimeInHours;
+        //             update['TaskTimeInMin'] = TimeInMinutes;
+        //             update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
+        //             update['Description'] = postData.Description
+        //             CurrentAddData.push(update)
+        //             UpdatedData = CurrentAddData
+
+
+        //             if (items.AdditionalTime.length == 0) {
+        //                 AddParentId = items.Id;
+        //                 update['AuthorName'] = CurrentUser.AuthorName;
+        //                 update['AuthorImage'] = CurrentUser.AuthorImage;
+        //                 update['AuthorId'] = CurntUserId
+        //                 update['ID'] = 0;
+        //                 update['Id'] = 0;
+        //                 update['MainParentId'] = items.TimesheetTitle.Id;
+        //                 update['ParentID'] = items.Id;
+        //                 update['TaskTime'] = TimeInHours;
+        //                 update['TaskTimeInMin'] = TimeInMinutes;
+        //                 update['TaskDate'] = Moment(myDatee).format('DD/MM/YYYY');
+        //                 update['Description'] = postData.Description
+        //                 items.AdditionalTime.push(update)
+        //                 UpdatedData = items.AdditionalTime
+
+        //             }
+                  
+
+        //             if (item.props.siteType == "Migration" || item.props.siteType == "ALAKDigital") {
+
+        //                 var ListId = TimeSheetlistId
+
+        //             }
+        //             else {
+        //                 var ListId = TimeSheetlistId
+        //             }
 
                    
-                    if(isTrueTime == true){
-                        const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
-                            return array.indexOf(val) == id;
-                        })
+        //             if(isTrueTime == true){
+        //                 const finalData = UpdatedData.filter((val: any, id: any, array: any) => {
+        //                     return array.indexOf(val) == id;
+        //                 })
 
                     
-                    await web.lists.getById(ListId)
-                        .items.getById(AddParentId)
-                        .update({
+        //             await web.lists.getById(ListId)
+        //                 .items.getById(AddParentId)
+        //                 .update({
 
-                            AdditionalTimeEntry: JSON.stringify(finalData),
+        //                     AdditionalTimeEntry: JSON.stringify(finalData),
 
-                        }).then((res: any) => {
-                            console.log(res);
+        //                 }).then((res: any) => {
+        //                     console.log(res);
 
-                            closeAddTaskTimepopup();
-                            setupdateData(updateData + 1)
-
-
-
-                        })
-                    }
-                }
+                           
+        //                     setupdateData(updateData + 1)
 
 
+
+        //                 })
+        //             }
+        //         }
 
 
 
 
-            }
-
-        })
 
 
+        //     }
+
+        // })
 
 
-        if (TaskCate.length == countss && isTrueTime == false) {
+
+
+        if (CurrentUserData.length == countss && isTrueTime == false) {
             saveJsonDataAnotherCat(CurrentUser, ParentId)
         }
 
