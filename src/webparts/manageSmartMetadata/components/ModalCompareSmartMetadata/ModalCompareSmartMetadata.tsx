@@ -3,7 +3,7 @@ import IModalCompareSmartMetadataProps from "./IModalCompareSmartMetadataProps";
 import IModalCompareSmartMetadataState from "./IModalCompareSmartMetadataState";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import * as Icon from 'react-bootstrap-icons';
-import { TbArrowsExchange} from "react-icons/Tb";
+import { TbArrowsExchange} from "react-icons/tb";
 import { LuUndo2} from "react-icons/lu";
 import { Checkbox, Dropdown, IDropdownOption, Label, Text, TextField } from "@fluentui/react";
 import { ISmartMetadataItem } from "../ISmartMetadataItem";
