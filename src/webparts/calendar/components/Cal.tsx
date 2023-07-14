@@ -130,7 +130,7 @@ const App = (props: any) => {
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
-  const [selectedPeople, setSelectedPeople] = React.useState([]);
+  const [selectedPeople, setSelectedPeople] = React.useState<any[]>([]);
   const [showRecurrence, setshowRecurrence] = React.useState(false);
   const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
     React.useState(false);
@@ -365,10 +365,12 @@ const App = (props: any) => {
   const minDate: Date = today;
 
   const leaveTypes = [
-    { key: "Event", text: "Event" },
-    { key: "Training", text: "Training " },
+    { key: "Sick", text: "Sick" },
+    // { key: "Training", text: "Training " },
     { key: "Planned Leave", text: "Planned" },
     { key: "Un-Planned", text: "Un-Planned" },
+    { key: "Restricted Holiday", text: "Restricted Holiday" },
+    { key: "LWP", text: "LWP" },
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
@@ -514,13 +516,13 @@ const App = (props: any) => {
           }
 
           const dataEvent = {
-            shortD:item.Title,
+            shortD: item.Title,
             iD: item.ID,
             title: a,
             start: startdate,
             end: enddate,
             location: item.Location,
-            desc: item.Description, 
+            desc: item.Description,
             alldayevent: item.fAllDayEvent,
             eventType: item.Event_x002d_Type,
             created: item.Author.Title,
@@ -1187,7 +1189,7 @@ const App = (props: any) => {
     localArr.map((item: any) => {
       if (item.iD == event.iD) {
         setdisab(true);
-        
+
         eventPass = event;
         setInputValueName(item.shortD);
         setStartDate(item.start);
@@ -1490,7 +1492,7 @@ const App = (props: any) => {
                 onChange={people}
                 showtooltip={true}
                 required={true}
-                defaultSelectedUsers={selectedPeople}
+                defaultSelectedUsers={[selectedPeople]}
               ></PeoplePicker>
             </div>
           ) : (
@@ -1611,7 +1613,7 @@ const App = (props: any) => {
           <Dropdown
             label="Leave Type"
             options={leaveTypes}
-            selectedKey={type}
+            defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
             onChange={(e, option) => setType(option.key)}
           />
           <Dropdown
@@ -1689,7 +1691,8 @@ const App = (props: any) => {
                 <button
                   className="btn btn-primary px-3"
                   onClick={updateElement}
-                >Save
+                >
+                  Save
                 </button>
                 <button
                   type="button"
