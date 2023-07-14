@@ -4615,7 +4615,7 @@ const EditTaskPopup = (Items: any) => {
                         />
                     }
 
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} IsEmailCategoryTask={EmailStatus} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
