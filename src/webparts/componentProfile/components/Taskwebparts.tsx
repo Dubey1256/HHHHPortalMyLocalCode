@@ -52,6 +52,7 @@ import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import HighlightableCell from "../../componentPortfolio/components/highlight";
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 
 
 ///TanstackTable filter And CheckBox 
@@ -3750,7 +3751,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         accessorFn: (row) => row?.Shareweb_x0020_ID,
         cell: ({ row, getValue }) => (
           <>
-            {/* <ReactPopperTooltip ShareWebId={getValue()} row={row} /> */}
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
           </>
         ),
         id: "Shareweb_x0020_ID",
