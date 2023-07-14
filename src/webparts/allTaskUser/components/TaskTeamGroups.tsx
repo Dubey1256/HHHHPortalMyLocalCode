@@ -414,16 +414,16 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
         </>);
 
         const elemTaskMetadata = (this.state.showEditPanel &&  <div>
-            <Label>Created on {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</Label>
-            <Label>Updated on {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</Label>
-            <Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank">Open out-of-the-box form</Link>
-            <Link href="#" onClick={this.onDeleteTask} style={{display:"block"}}><Icon iconName="Delete"/><Text>Delete this group</Text></Link>
+            <p className="mb-0">Created on {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</p>
+            <p className="mb-0">Updated on {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</p>
+            <Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank"> Open out-of-the-box form</Link>
+            <Link href="#" onClick={this.onDeleteTask} style={{display:"block"}}><Icon iconName="Delete"/><Text> Delete this group</Text></Link>
         </div>);
 
-        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
-        const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
+        const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}> Save </PrimaryButton>);
+        const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}> Cancel </DefaultButton>);
 
-        const elemActionButons = (<div>
+        const elemActionButons = (<div className="text-end ">
             { elemSaveButton }
             { elemCancelButton }
         </div>);
@@ -439,13 +439,13 @@ export default class TaskTeamGroups extends Component<ITeamGroupsProps, ITeamGro
             </DialogFooter>
         </Dialog>);
 
-        const elemTaskGroupFooter = () => ( <div style={{"marginLeft": "20px"}}>
+        const elemTaskGroupFooter = () => ( <div className="ms-footer mx-4">
             { elemTaskMetadata }
             { elemActionButons }          
         </div>); 
 
         const elemNewGroupTaskFields = (<div className="ms-LegacyFabricBlock">
-            <div className="ms-Grid">
+            <div className="ms-Grid ms-CreateNewGroup">
                 <div className="ms-Grid-row">
                     <TextField
                         label="Title"
