@@ -557,11 +557,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           FinalTotalTime = TotalTimeData / 60;
         }
       } catch (error) {
-        console.error("Error:", error);
+        // console.error("Error:", error);
       }
     }
 
-    console.log(FinalTotalTime);
+    // // console.log(FinalTotalTime);
     return FinalTotalTime;
   };
 
@@ -757,9 +757,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               config.listId,
               select
             );
-            console.log(AllTasksMatches);
+            // console.log(AllTasksMatches);
             Counter++;
-            console.log(AllTasksMatches.length);
+            // console.log(AllTasksMatches.length);
             if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
               $.each(AllTasksMatches, function (index: any, item: any) {
                 item.isDrafted = false;
@@ -817,7 +817,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 SmartTimeData(result)
                   .then((returnresult) => {
                     result.smartTime = String(returnresult)
-                    // console.log("Final Total Time:", returnresult);
+                    // // console.log("Final Total Time:", returnresult);
                   })
                   .catch((error) => {
                     console.error("Error:", error);
@@ -860,7 +860,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 //     result.ClientCategory.push(catego);
                 //   });
                 // }
-                if (result?.Id === 498 || result?.Id === 104) console.log(result);
+                if (result?.Id === 498 || result?.Id === 104) // console.log(result);
                 result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
                 if (result["Shareweb_x0020_ID"] == undefined) {
                   result["Shareweb_x0020_ID"] = "";
@@ -891,7 +891,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 return type.tagged != true;
               });
               TasksItem = AllTasks;
-              console.log(Response);
+              // console.log(Response);
               map(TasksItem, (task: any) => {
                 if (!isItemExistsNew(CopyTaskData, task)) {
                   CopyTaskData.push(task);
@@ -902,7 +902,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               makeFinalgrouping();
             }
           } catch (error) {
-            console.log(error);
+            // console.log(error);
           }
         } else Counter++;
       });
@@ -1096,7 +1096,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       setData(maidataBackup);
       //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
     }
-    // console.log($scope.ComponetsData['allComponentItemWithStructure']);
+    // // console.log($scope.ComponetsData['allComponentItemWithStructure']);
   };
 
   // var TaxonomyItems: any = [];
@@ -1119,7 +1119,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const getTaskUsers = async () => {
     let taskUsers = (Response = TaskUsers = await globalCommon.loadTaskUsers());
     setTaskUser(Response);
-    console.log(Response);
+    // console.log(Response);
   };
   const GetSmartmetadata = async () => {
     var metadatItem: any = [];
@@ -1134,7 +1134,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
 
 
-    console.log(smartmetaDetails);
+    // console.log(smartmetaDetails);
     setMetadata(smartmetaDetails);
     map(smartmetaDetails, (newtest) => {
       newtest.Id = newtest.ID;
@@ -1210,7 +1210,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       NextProp.MasterTaskListID,
       select
     );
-    console.log(componentDetails);
+    // console.log(componentDetails);
     componentDetails?.map((result: any) => {
       if (result.Item_x0020_Type === 'Component') {
         result.boldRow = 'boldClable'
@@ -1325,7 +1325,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     try {
       json = JSON.parse(jsonItem);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
     return json;
   };
@@ -1412,8 +1412,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                   : GlobalConstants.MAIN_SITE_URL +
                   "/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
               ComponetsData["allComponets"][i]["subRows"].push(task);
-              if (ComponetsData["allComponets"][i]?.Id === 413)
-                console.log(ComponetsData["allComponets"][i]["subRows"].length);
+              // if (ComponetsData["allComponets"][i]?.Id === 413)
+                // console.log(ComponetsData["allComponets"][i]["subRows"].length);
             }
             break;
           }
@@ -1891,7 +1891,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     ComponetsData["allUntaggedTasks"] = [];
     AllTaskData1 = AllTaskData1.concat(TasksItem);
     $.each(AllTaskData1, function (index: any, task: any) {
-      if (task?.Id === 3559 || task?.Id === 3677) console.log(task);
+      if (task?.Id === 3559 || task?.Id === 3677) // console.log(task);
       task.Portfolio_x0020_Type = "Component";
       if (IsUpdated === "Service") {
         if (task["Services"] != undefined && task["Services"].length > 0) {
@@ -1968,7 +1968,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       childsData=[]
       setShowTeamMemberOnCheck(false)
     }
-    console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
+    // console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
     var Arrays: any = []
     const checked = eTarget;
     if (checked == true) {
@@ -3308,7 +3308,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               Item.subRows.push(checkedList[0]);
             }
           }
-          console.log(res);
+          // console.log(res);
           setData((data) => [...maidataBackup]);
           RestruringCloseCall();
           //setModalIsOpenToFalse();
@@ -3327,7 +3327,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           Item_x0020_Type: ChengedItemTitl,
         })
         .then((res: any) => {
-          console.log(res);
+          // console.log(res);
           maidataBackup.forEach((obj, index) => {
             obj.isRestructureActive = false;
             if (obj?.Id === checkedList[0]?.Id) {
@@ -3647,8 +3647,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     SmartSuggestions: any;
     SmartFilters: any;
   }[];
-  console.log(siteConfig);
-  console.log(siteConfig);
+  // console.log(siteConfig);
+  // console.log(siteConfig);
 
   const findUserByName = (name: any) => {
     const user = AllUsers.filter((user: any) => user.AssingedToUserId === name);
@@ -4062,7 +4062,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     enableSubRowSelection: false,
   });
 
-  console.log(".........", table.getSelectedRowModel().flatRows);
+  // console.log(".........", table.getSelectedRowModel().flatRows);
   React.useEffect(() => {
     CheckDataPrepre()
   }, [table?.getSelectedRowModel()?.flatRows.length])
@@ -4184,10 +4184,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
  
   // const parentClientCat = React.useCallback((items:any) => {
 
-  //   console.log(items)
+  //   // console.log(items)
   
   //   if(items!=undefined ){
-  // console.log(selectedClientCategory)
+  // // console.log(selectedClientCategory)
   //  MeetingItemsParentcat[0]=items
   
   //   }
@@ -4838,9 +4838,9 @@ Bug
                   </a>
                 </span>
               </div>
-              {console.log(
+              {/* {// console.log(
                 "restructure functio test in div==================================="
-              )}
+              )} */}
               {checkedList != undefined &&
                 checkedList.length > 0 &&
                 checkedList[0].Item_x0020_Type != "Task" ? (
@@ -5362,9 +5362,9 @@ Bug
 //               config.listId,
 //               select
 //             );
-//             console.log(AllTasksMatches);
+//             // console.log(AllTasksMatches);
 //             Counter++;
-//             console.log(AllTasksMatches.length);
+//             // console.log(AllTasksMatches.length);
 //             if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
 //               $.each(AllTasksMatches, function (index: any, item: any) {
 //                 item.isDrafted = false;
@@ -5457,7 +5457,7 @@ Bug
 //                 //     result.ClientCategory.push(catego);
 //                 //   });
 //                 // }
-//                 if (result?.Id === 498 || result?.Id === 104) console.log(result);
+//                 if (result?.Id === 498 || result?.Id === 104) // console.log(result);
 //                 result["Shareweb_x0020_ID"] = globalCommon.getTaskId(result);
 //                 if (result["Shareweb_x0020_ID"] == undefined) {
 //                   result["Shareweb_x0020_ID"] = "";
@@ -5488,7 +5488,7 @@ Bug
 //                 return type.tagged != true;
 //               });
 //               TasksItem = AllTasks;
-//               console.log(Response);
+//               // console.log(Response);
 //               map(TasksItem, (task: any) => {
 //                 if (!isItemExistsNew(CopyTaskData, task)) {
 //                   CopyTaskData.push(task);
@@ -5499,7 +5499,7 @@ Bug
 //               makeFinalgrouping();
 //             }
 //           } catch (error) {
-//             console.log(error);
+//             // console.log(error);
 //           }
 //         } else Counter++;
 //       });
@@ -5693,7 +5693,7 @@ Bug
 //       setData(maidataBackup);
 //       //setData(ComponentsData)= SharewebCommonFactoryService.ArrayCopy($scope.CopyData);
 //     }
-//     // console.log($scope.ComponetsData['allComponentItemWithStructure']);
+//     // // console.log($scope.ComponetsData['allComponentItemWithStructure']);
 //   };
 
 //   // var TaxonomyItems: any = [];
@@ -5714,7 +5714,7 @@ Bug
 //   const getTaskUsers = async () => {
 //     let taskUsers = (Response = TaskUsers = await globalCommon.loadTaskUsers());
 //     setTaskUser(Response);
-//     console.log(Response);
+//     // console.log(Response);
 //   };
 //   const GetSmartmetadata = async () => {
 //     var metadatItem: any = [];
@@ -5729,7 +5729,7 @@ Bug
 
 
 
-//     console.log(smartmetaDetails);
+//     // console.log(smartmetaDetails);
 //     setMetadata(smartmetaDetails);
 //     map(smartmetaDetails, (newtest) => {
 //       newtest.Id = newtest.ID;
@@ -5805,7 +5805,7 @@ Bug
 //       NextProp.MasterTaskListID,
 //       select
 //     );
-//     console.log(componentDetails);
+//     // console.log(componentDetails);
 //     //  componentDetails?.map((items:any) =>{
 //     //   items.Created = Moment(items?.Created).format("DD/MM/YYYY")
 
@@ -5912,7 +5912,7 @@ Bug
 //     try {
 //       json = JSON.parse(jsonItem);
 //     } catch (err) {
-//       console.log(err);
+//       // console.log(err);
 //     }
 //     return json;
 //   };
@@ -6000,7 +6000,7 @@ Bug
 //                   "/SP/SiteCollectionImages/ICONS/24/right-list-icon.png";
 //               ComponetsData["allComponets"][i]["subRows"].push(task);
 //               if (ComponetsData["allComponets"][i]?.Id === 413)
-//                 console.log(ComponetsData["allComponets"][i]["subRows"].length);
+//                 // console.log(ComponetsData["allComponets"][i]["subRows"].length);
 //             }
 //             break;
 //           }
@@ -6479,7 +6479,7 @@ Bug
 //     AllTaskData1 = AllTaskData1.concat(TasksItem);
 //     $.each(AllTaskData1, function (index: any, task: any) {
 //       if (task?.Id === 2701 || task?.Id === 3677)
-//         console.log(task);
+//         // console.log(task);
 //       task.Portfolio_x0020_Type = "Component";
 //       if (IsUpdated === "Service") {
 //         if (task["Services"] != undefined && task["Services"].length > 0) {
@@ -6554,7 +6554,7 @@ Bug
 //       setcheckData([])
 //       setShowTeamMemberOnCheck(false)
 //     }
-//     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
+//     // console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
 //     var Arrays: any = []
 //     const checked = eTarget;
 //     if (checked == true) {
@@ -7858,7 +7858,7 @@ Bug
 //               Item.subRows.push(checkedList[0]);
 //             }
 //           }
-//           console.log(res);
+//           // console.log(res);
 //           setData((data) => [...maidataBackup]);
 //           RestruringCloseCall();
 //           //setModalIsOpenToFalse();
@@ -7877,7 +7877,7 @@ Bug
 //           Item_x0020_Type: ChengedItemTitl,
 //         })
 //         .then((res: any) => {
-//           console.log(res);
+//           // console.log(res);
 //           maidataBackup.forEach((obj, index) => {
 //             obj.isRestructureActive = false;
 //             if (obj?.Id === checkedList[0]?.Id) {
@@ -8198,8 +8198,8 @@ Bug
 //     SmartSuggestions: any;
 //     SmartFilters: any;
 //   }[];
-//   console.log(siteConfig);
-//   console.log(siteConfig);
+//   // console.log(siteConfig);
+//   // console.log(siteConfig);
 
 //   const findUserByName = (name: any) => {
 //     const user = AllUsers.filter((user: any) => user.Title == name);
@@ -8546,7 +8546,7 @@ Bug
 //     enableSubRowSelection: false,
 //   });
 
-//   console.log(".........", table.getSelectedRowModel().flatRows);
+//   // console.log(".........", table.getSelectedRowModel().flatRows);
 //   React.useEffect(() => {
 //     CheckDataPrepre()
 //   }, [table?.getSelectedRowModel()?.flatRows.length])
@@ -9292,7 +9292,7 @@ Bug
 //                   </a>
 //                 </span>
 //               </div>
-//               {console.log(
+//               {// console.log(
 //                 "restructure functio test in div==================================="
 //               )}
 //               {checkedList != undefined &&
