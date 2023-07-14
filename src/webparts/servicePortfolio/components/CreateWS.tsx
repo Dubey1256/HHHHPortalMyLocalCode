@@ -396,7 +396,7 @@ const CreateWS = (props: any) => {
             SharewebTaskLevel1No: AllItems.SharewebTaskLevel1No,
             ClientCategoryId: { "results": InheritClientCategory },
             SiteCompositionSettings:props?.props?.SiteCompositionSettings!=undefined?props?.props?.SiteCompositionSettings:"",
-            ClientTime:props?.props?.ClientTime.length>0 ?props?.props?.ClientTime:"",
+            ClientTime:props?.props?.ClientTime != null ?props?.props?.ClientTime:"",
             AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
             Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
             Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] }
