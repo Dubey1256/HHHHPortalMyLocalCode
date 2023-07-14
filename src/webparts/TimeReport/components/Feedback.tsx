@@ -6,16 +6,19 @@ import TimeReport from './TimeReport';
 export default class Feedback extends React.Component<IFeedbackProps, {}> {
   public render(): React.ReactElement<IFeedbackProps> {
     const {
+      Context,
       description,
       isDarkTheme,
       environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      userDisplayName,
+      TaskUsertListID,
+      SmartMetadataListID,
     } = this.props;
 
     return (
      <>
-<TimeReport/>
+<TimeReport ContextData={this.props}/>
      </>
     
     );

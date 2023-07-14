@@ -2745,6 +2745,7 @@ function ComponentTable(SelectedProp: any) {
   
  
   const buttonRestructuring = () => {
+    AllDataRender = [];
     var ArrayTest: any = [];
     if (
       checkedList.length > 0 &&
@@ -3217,7 +3218,10 @@ function ComponentTable(SelectedProp: any) {
         });
       };
     setOldArrayBackup(ArrayTest);
-    setData([...maidataBackup]);
+    AllDataRender = AllDataRender?.concat(maidataBackup);
+    Renderarray = [];
+    Renderarray = Renderarray.concat(AllDataRender);
+    refreshDataTaskLable();
   };
 
 
@@ -3335,6 +3339,8 @@ const topRestructureClose=()=>{
     let PortfolioLevelNum: any = 0;
     let SharewebTaskLevel1No:number =0;
     let Shareweb_x0020_ID:any ;
+
+    AllDataRender = [];
     
 
     if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")){
@@ -3350,8 +3356,10 @@ const topRestructureClose=()=>{
     if( RestructureChecked != undefined && RestructureChecked?.length > 0 && (RestructureChecked[0].Item_x0020_Type == "SubComponent" || RestructureChecked[0].Item_x0020_Type == "Feature")){
       maidataBackup.map((obj:any)=>{
         if(obj.Item_x0020_Type === "Component"){
-         PortfolioLevelNum = obj.PortfolioLevel + 1;
-           PortfolioStructureIDs = "C" + PortfolioLevelNum;
+          if(PortfolioLevelNum <= obj.PortfolioLevel){
+            PortfolioLevelNum = obj.PortfolioLevel + 1;
+            PortfolioStructureIDs = "C" + PortfolioLevelNum;
+          }
       }
    })
     }
@@ -3361,24 +3369,32 @@ const topRestructureClose=()=>{
       if(obj.childs.length > 0 && obj.childs != undefined){
         obj.childs.map((sub:any)=>{
           if(checkedList[0].ParentTask?.Id === sub.Id){
-            SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
-            PortfolioStructureIDs = sub.PortfolioStructureID;
-            Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
-          }   
+            if(SharewebTaskLevel1No <= sub.SharewebTaskLevel1No){
+              SharewebTaskLevel1No = sub.SharewebTaskLevel1No + 1;
+              PortfolioStructureIDs = sub.PortfolioStructureID;
+              Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+            }
+}   
           if(sub.childs.length > 0 && sub.childs != undefined){
             sub.childs.map((newsub:any)=>{
               if(checkedList[0].ParentTask?.Id === newsub.Id){
-                SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
+                if(SharewebTaskLevel1No <= newsub.SharewebTaskLevel1No){
+                  SharewebTaskLevel1No = newsub.SharewebTaskLevel1No + 1;
               PortfolioStructureIDs = newsub.PortfolioStructureID;
               Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                }
+               
               }  
               
               if(newsub.childs.length > 0 && newsub.childs != undefined){
                 newsub.childs.map((feature:any)=>{
                   if(checkedList[0].ParentTask?.Id === feature.Id){
-                    SharewebTaskLevel1No = feature.SharewebTaskLevel1No +1;
+                    if(SharewebTaskLevel1No <= feature.SharewebTaskLevel1No){
+                      SharewebTaskLevel1No = feature.SharewebTaskLevel1No +1;
                   PortfolioStructureIDs = feature.PortfolioStructureID;
                   Shareweb_x0020_ID = 'SA' + SharewebTaskLevel1No;
+                    }
+                   
                   }  
                 })
               }
@@ -3410,10 +3426,11 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
         .then(async (res: any) => {
 
 
-          // let checkUpdate : number = 1;
+          let checkUpdate : number = 1;
           let array : any = [...maidataBackup];
           let backupCheckedList :any =[];
           let latestCheckedList:any =[] ; 
+          let count:number = 0;
           checkedList.map((items:any)=>{
             latestCheckedList.push({...items})
             backupCheckedList.push({...items})
@@ -3424,26 +3441,32 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
               items.PortfolioStructureID = postData.PortfolioStructureID,
               items.Item_x0020_Type = postData.Item_x0020_Type
               items.Shareweb_x0020_ID = postData.PortfolioStructureID,
-              items.SiteIconTitle = postData.SiteIconTitle,
+              items.SiteIconTitle = siteIcon,
               items.Parent = {Id:null,Title:null}
           })
 
 
           array.map((obj:any,index:any)=>{
             obj.isRestructureActive=false;
-            array.push(...latestCheckedList);
-            
+
+            if(count==0){
+              array.splice(array.length-1,0,...latestCheckedList);
+              count = 1;
+            }
+                       
             if(obj?.subRows != undefined && obj?.subRows.length > 0){
               obj?.subRows?.map((sub:any,subIndex:any)=>{
-                if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
+                if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && checkUpdate == 1){
                             array[index]?.subRows.splice(subIndex,1);
                             array[index]?.childs.splice(subIndex,1);
+                            checkUpdate = 2;
                       }
                 if(sub?.subRows != undefined && sub?.subRows.length > 0){
                   sub?.subRows?.map((newsub:any,newsubIndex:any)=>{
-                    if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
+                    if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type  && checkUpdate == 1){
                       array[index]?.subRows[subIndex]?.subRows.splice(newsubIndex,1);
                    array[index]?.childs[subIndex]?.childs.splice(newsubIndex,1);
+                   checkUpdate = 2;
                 }
                   })
                 }
@@ -3453,15 +3476,20 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
            
           })
  
-          Renderarray = [...array];
-          refreshDataTaskLable();
-          setRowSelection({});
+          setmaidataBackup(array);
           setComponentRestruct(false);
           setTopCompoIcon(false)   
           setRestructureChecked([]);
           setNewArrayBackup([]);
           setOldArrayBackup([]);
+          setRowSelection({});
           RestruringCloseCall();
+          setCheckedList([]);
+          AllDataRender = AllDataRender?.concat(array);
+          Renderarray = [];
+          Renderarray = Renderarray.concat(AllDataRender);
+          refreshDataTaskLable();
+          console.log(Renderarray);
 
 
         });
@@ -3483,7 +3511,8 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
         .then(async (res: any) => {
 
 
-          // let checkUpdate : number = 1;
+          let checkUpdate : number = 1;
+          let count :number =0
           let array : any = [...maidataBackup];
           let backupCheckedList :any =[];
           let latestCheckedList:any =[] ; 
@@ -3501,59 +3530,121 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
           })
 
 
-          array.map((obj:any,index:any)=>{
+
+          array?.map((obj:any,index:any)=>{
             obj.isRestructureActive=false;
-            array.push(...latestCheckedList);
-            
-            if(obj?.subRows != undefined && obj?.subRows.length > 0){
-              obj?.subRows?.map((sub:any,subIndex:any)=>{
-                if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
-                            array[index]?.subRows.splice(subIndex,1);
-                            array[index]?.childs.splice(subIndex,1);
-                      }
-                if(sub?.subRows != undefined && sub?.subRows.length > 0){
-                  sub?.subRows?.map((newsub:any,newsubIndex:any)=>{
-                    if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type){
-                      array[index]?.subRows[subIndex]?.subRows.splice(newsubIndex,1);
-                   array[index]?.childs[subIndex]?.childs.splice(newsubIndex,1);
-                }
-                  })
-                }
-  
+            if(obj.Id === newItemBackUp?.Id && obj.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && obj.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title && checkUpdate != 3 ){
+                     obj.subRows.push(...latestCheckedList);
+                     obj.childs.push(...latestCheckedList);
+                     checkUpdate = checkUpdate + 1;
+            }
+            if(obj.Id === backupCheckedList[0]?.Id && obj.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && obj.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                          array.splice(index,1);
+                          checkUpdate = checkUpdate + 1;
+            }
+
+            if(obj.subRows != undefined && obj.subRows.length > 0){
+              obj.subRows.forEach((sub: any, indexsub: any) => {
+                sub.isRestructureActive=false;
+                if(sub.Id === newItemBackUp?.Id && sub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && sub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+                  sub.subRows.push(...latestCheckedList) ;
+                  sub.childs.push(...latestCheckedList) ;
+                  checkUpdate = checkUpdate + 1;
+         }
+         if(sub.Id === backupCheckedList[0]?.Id && sub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && sub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                       array[index]?.subRows.splice(indexsub,1);
+                       array[index]?.childs.splice(indexsub,1);
+                       checkUpdate = checkUpdate + 1;
+         }
+
+         if (sub.subRows != undefined && sub.subRows.length > 0) {
+          sub.subRows.forEach((newsub: any, lastIndex: any) => {
+            newsub.isRestructureActive=false;
+            if(newsub.Id === newItemBackUp?.Id && newsub.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && newsub.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+              newsub.subRows.push(...latestCheckedList);
+              newsub.childs.push(...latestCheckedList);
+              checkUpdate = checkUpdate + 1;
+     }
+     if(newsub.Id === backupCheckedList[0]?.Id && newsub.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && newsub.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+                   array[index]?.subRows[indexsub]?.subRows.splice(lastIndex,1);
+                   array[index]?.childs[indexsub]?.childs.splice(lastIndex,1);
+                   checkUpdate = checkUpdate + 1;
+     }
+
+     if (newsub.subRows != undefined && newsub.subRows.length > 0) {
+      newsub.subRows.forEach((activity: any, activityIndex: any) => {
+        activity.isRestructureActive=false;
+        if(activity.Id === newItemBackUp?.Id && activity.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && activity.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+          activity.subRows.push(...latestCheckedList);
+          activity.childs.push(...latestCheckedList);
+          checkUpdate = checkUpdate + 1;
+ }
+ if(activity.Id === backupCheckedList[0]?.Id && activity.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && activity.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+               array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows.splice(activityIndex,1);
+               array[index]?.childs[indexsub]?.childs[lastIndex].childs.splice(activityIndex,1);
+               checkUpdate = checkUpdate + 1;
+ }
+
+ if (activity.subRows != undefined && activity.subRows.length > 0) {
+  activity.subRows.forEach((workstream: any, workstreamIndex: any) => {
+    workstream.isRestructureActive=false;
+    if(workstream.Id === newItemBackUp?.Id && workstream.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && workstream.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+      workstream.subRows.push(...latestCheckedList);
+      workstream.childs.push(...latestCheckedList);
+      checkUpdate = checkUpdate + 1;
+}
+if(workstream.Id === backupCheckedList[0]?.Id && workstream.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && workstream.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows.splice(workstreamIndex,1);
+           array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs.splice(workstreamIndex,1);
+           checkUpdate = checkUpdate + 1;
+}
+
+if (activity.subRows != undefined && activity.subRows.length > 0) {
+  activity.subRows.forEach((task: any, taskIndex: any) => {
+    task.isRestructureActive=false;
+    if(task.Id === newItemBackUp?.Id && task.Item_x0020_Type === newItemBackUp?.Item_x0020_Type && task.SharewebTaskType?.Title === newItemBackUp?.SharewebTaskType?.Title  && checkUpdate != 3){
+      task.subRows.push(...latestCheckedList);
+      task.childs.push(...latestCheckedList);
+      checkUpdate = checkUpdate + 1;
+}
+if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupCheckedList[0]?.Item_x0020_Type && task.SharewebTaskType?.Title === backupCheckedList[0]?.SharewebTaskType?.Title && checkUpdate != 3){
+           array[index]?.subRows[indexsub]?.subRows[lastIndex].subRows[activityIndex]?.subRows[workstreamIndex]?.subRows.splice(taskIndex,1);
+           array[index]?.childs[indexsub]?.childs[lastIndex].childs[activityIndex]?.childs[workstreamIndex].childs?.splice(taskIndex,1);
+           checkUpdate = checkUpdate + 1;
+}
+  })}
+
+
+  })
+}
+
+
+})
+     }
+          })
+         }
               })
             }
-           
+
           })
  
-          Renderarray = [...array];
-          refreshDataTaskLable();
-          setRowSelection({});
+          setmaidataBackup(array);
           setComponentRestruct(false);
           setTopCompoIcon(false)   
           setRestructureChecked([]);
           setNewArrayBackup([]);
           setOldArrayBackup([]);
+          setRowSelection({});
           RestruringCloseCall();
+          setCheckedList([]);
+          AllDataRender = AllDataRender?.concat(array);
+          Renderarray = [];
+          Renderarray = Renderarray.concat(AllDataRender);
+          refreshDataTaskLable();
 
 
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   }
@@ -3567,6 +3658,7 @@ if (ChengedItemTitle != undefined && ChengedItemTitle != "" && (RestructureCheck
 
   const UpdateTaskRestructure = async function () {
      
+    AllDataRender = [];
     var Ids: any = [];
         Ids=newItemBackUp.Id;
         let Title:any = newItemBackUp.Title;
@@ -3740,18 +3832,20 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
 
           })
 
-          Renderarray = [...array];
-          refreshDataTaskLable();
-          setRowSelection({});
+          setmaidataBackup(array);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
           setRestructureChecked([]);
           setNewArrayBackup([]);
           setOldArrayBackup([]);
+          setRowSelection({});
           RestruringCloseCall();
-
-
-
-         
-        });
+          setCheckedList([]);
+          AllDataRender = AllDataRender?.concat(array);
+          Renderarray = [];
+          Renderarray = Renderarray.concat(AllDataRender);
+          refreshDataTaskLable();
+      });
     }else{
 
       let numbers :any ;
@@ -3821,8 +3915,6 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
               ParentTaskId : Ids
         })
         .then((res: any) => {
-
-    
           let checkUpdate : number = 1;
           let array : any = [...maidataBackup];
           let backupCheckedList :any =[];
@@ -3939,13 +4031,19 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
 
           })
 
-          Renderarray = [...array];
-          refreshDataTaskLable();
-          setRowSelection({});
+          setmaidataBackup(array);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
           setRestructureChecked([]);
           setNewArrayBackup([]);
           setOldArrayBackup([]);
+          setRowSelection({});
           RestruringCloseCall();
+          setCheckedList([]);
+          AllDataRender = AllDataRender?.concat(array);
+          Renderarray = [];
+          Renderarray = Renderarray.concat(AllDataRender);
+          refreshDataTaskLable();
 
         });
     }   
@@ -3967,6 +4065,7 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
     let ChengedItemTitle: any = "";
     let siteIcon : any = '';
     let PortfolioLevelNum: any = 0;
+    AllDataRender = [];
     
 
     if( RestructureChecked != undefined && RestructureChecked?.length > 0){
@@ -4122,14 +4221,20 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
 
           })
 
-          Renderarray = [...array];
-         
-          refreshDataTaskLable();
-          setRowSelection({});
+          setmaidataBackup(array);
+          setComponentRestruct(false);
+          setTopCompoIcon(false)   
           setRestructureChecked([]);
           setNewArrayBackup([]);
           setOldArrayBackup([]);
+          setRowSelection({});
           RestruringCloseCall();
+          setCheckedList([]);
+          AllDataRender = AllDataRender?.concat(array);
+          Renderarray = [];
+          Renderarray = Renderarray.concat(AllDataRender);
+          refreshDataTaskLable();
+
 
 
         });
@@ -4473,12 +4578,12 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
               componentRestruct ?
               <span onClick={()=>setTopCompoIcon(true)}>
                { 
-                checkedList[0].Portfolio_x0020_Type === "Service" ? <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
-                <img
-              className="icon-sites-img"
-              src={'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
-             
-            /> 
+                checkedList[0].Portfolio_x0020_Type === "Service" && checkedList[0].Item_x0020_Type !== "Task" ? 
+                <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
+                 ( checkedList[0].Services.length > 0 && checkedList[0].SharewebTaskType?.Title === "Task" && checkedList[0].SharewebTaskType?.Title === "Workstream" ? 
+                  <img className="icon-sites-img" src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png" /> :
+                  (checkedList[0].SharewebTaskType?.Title !== "Activities" ? <img className="icon-sites-img" src='https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png' /> : "")
+              )
                } 
               </span>
               : <span></span> 
@@ -6229,7 +6334,7 @@ if(task.Id === backupCheckedList[0]?.Id && task.Item_x0020_Type === backupChecke
                        sub.childs[0].Item_x0020_Type === 'Feature' &&  sub.childs?.length > 0 && sub?.Id == item?.Id ? <span>
                           After restructuring selected SubComponent becomes Component and Features stay Features under the new Component.
                         </span> : (
-                          sub.Id == item.Id && sub.childs?.length == 0 ? <div><span>All below selected items will be upgraded as Component please click Submit to continue.</span>
+                          sub.Id == item.Id && (sub.childs?.length == 0 || sub.childs[0]?.Item_x0020_Type === 'Task') ? <div><span>All below selected items will be upgraded as Component please click Submit to continue.</span>
                           <span className="Dyicons">{sub?.SiteIconTitle}</span>   <span>{sub?.Title}</span>
                      </div> :  ""
                         ) 
