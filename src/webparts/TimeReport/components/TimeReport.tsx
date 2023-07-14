@@ -4,7 +4,11 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 // import { useExpanded, useFilters, usePagination, useSortBy, useTable } from 'react-table'
 import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
+import "@pnp/sp/sputilities";
 
+import { IEmailProperties } from "@pnp/sp/sputilities";
+
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import Tooltip from '../../../globalComponents/Tooltip';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
 import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
@@ -14,7 +18,6 @@ import {
 //import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
 
 import * as Moment from 'moment';
-import * as $ from 'jquery';
 import { MdEmail } from "react-icons/Md";
 import Loader from "react-loader";
 var AllUsers: any = []
@@ -32,8 +35,9 @@ var checkDate: any = ''
 var FeedBackItemArray: any = [];
 //var DesignTime: any = 0
 var TotalTime: any = 0
-const TimeReport = () => {
-
+var CurrentUserId=''
+const TimeReport = (props:any) => {
+    CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
     var OffshoreSitee = '&$filter=';
     var HealthSitee = '&$filter=';
     var GenderSitee = '&$filter=';
@@ -52,13 +56,19 @@ const TimeReport = () => {
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
     const [loaded, setLoaded] = React.useState(true);
+    const [checkedCustom,setcheckedCustom] = React.useState(false )
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(true);
     const [checkedTask, setcheckedTask] = React.useState(false);
+    const [defaultDate,setDefaultDate] = React.useState()
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
     
     React.useEffect(() => {
+    var datteee = new Date()
+    var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+    setDefaultDate(MyYesterdayDate)
+    
         showProgressBar();
         GetTaskUsers();
         GetSmartmetadata();
@@ -72,6 +82,8 @@ const TimeReport = () => {
         taskUsers = await web.lists
             .getByTitle('Task Users')
             .items
+            .select('Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
+            .expand('AssingedToUser,Approver')
             .top(4999)
             .get();
         AllUsers = taskUsers;
@@ -197,18 +209,32 @@ const TimeReport = () => {
     }
 
     var datess = ''
-
+    var TodayDate =''
     const GeneratedTask = async (Type: any) => {
       
          DevloperTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
 
-        if (Type == "Yesterday" || Type == "Today") {
+        if (Type == "Yesterday") {
+            var datteee = new Date()
+            var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+            setDefaultDate(MyYesterdayDate)
             var myDate = new Date()
-            var final: any = (Moment(myDate).add(-1, 'days').format())
+            var final: any = (Moment(myDate).add(-2, 'days').format())
         }
-        else {
+        if(Type == 'Today'){
+            var dat:any = new Date()
+            setDefaultDate(dat)
+            var myDate = new Date()
+            setSelectDate(myDate)
+            var final: any = (Moment(myDate).add(-1, 'days').format())
+           
+        }
+        if(Type == 'Custom') {
+            setcheckedWS(false)
+            setcheckedTask(false)
+            setcheckedCustom(true)
             var myDate = new Date(selectdate)
             var final: any = (Moment(myDate).add(-1, 'days').format())
         }
@@ -257,9 +283,12 @@ const TimeReport = () => {
         if (selectdate != undefined) {
             var myDate = new Date(selectdate)
             var Datenew = Moment(myDate).format("DD/MM/YYYY")
+            setcheckedCustom(true)
         }
         else {
-            var Datenew = Moment(datess).format("DD/MM/YYYY")
+            var myDate = new Date()
+            var final: any = (Moment(myDate).add(-1, 'days').format())
+            var Datenew = Moment(final).format("DD/MM/YYYY")
         }
 
         var StartDates = Datenew.split("/");
@@ -486,13 +515,21 @@ const TimeReport = () => {
         if (Dates == 'Yesterday') {
             setcheckedWS(true)
             setcheckedTask(false)
+            setcheckedCustom(false)
             selectdate = undefined
             var Yesterday: any = new window.Date();
             var a = Yesterday.getDate() - 1;
             var Datene = Moment(Yesterday).subtract(1, 'day')
-            var Datenew = Moment(Datene).format("DDMMYYYY")
+            var Datenew = Moment(Datene).format("DD-MM-YYYY")
             checkDate = Datenew;
             GeneratedTask(Dates);
+        }
+       
+        if (Dates == 'Custom') {
+            setcheckedWS(false)
+            setcheckedTask(false)
+            setcheckedCustom(true)
+           
         }
 
 
@@ -747,26 +784,70 @@ const TimeReport = () => {
             </div>
         );
     };
+    
     const sendEmail=()=>{
         var body1:any=[]
         var body2:any=[]
+        var To:any=[]
+        var ApprovalId:any = []
         var TotlaTime = QATime + DevloperTime + DesignTime
+
+        AllUsers?.forEach((items:any)=>{
+            if(CurrentUserId == items.AssingedToUserId){
+                items.Approver?.forEach((val:any)=>{
+                    ApprovalId.push(val)
+                })
+
+            }
+
+        })
+        ApprovalId?.forEach((va:any)=>{
+            AllUsers?.forEach((ba:any)=>{
+                if(ba.AssingedToUserId == va.Id){
+                    To.push(ba?.Email)
+                }
+            })
+
+        })
         data?.forEach((item:any)=>{
+            if (item.Components == undefined || item.Components == '') {
+                item.Components = '';
+            }
+
+            if (item.Designation == undefined || item.Designation == '') {
+                item.Designation = '';
+            }
+            if (item.SubComponents == undefined || item.SubComponents == '') {
+                item.SubComponents = '';
+            }
+            if (item.Features == undefined || item.Features == '') {
+                item.Features = '';
+            }
+            if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == '') {
+                item.Priority_x0020_Rank = '';
+            }
+            if (item.ClientCategory == undefined || item.ClientCategory == '') {
+                item.ClientCategory = '';
+            }
+            if (item.PercentComplete == undefined || item.PercentComplete == '') {
+                item.PercentComplete = '';
+            }
            var text = '<tr>' +
             '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.ClientCategory + '</td>'
-            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Component + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponent + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Feature + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
-            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item.Comments + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Priority_x0020_Rank + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Effort + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.PercentComplete + '%' + '</td>'
-            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Status + '</td>'
+            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item.Department + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
             + '</tr>'
         body1.push(text);
         })
@@ -800,7 +881,8 @@ const TimeReport = () => {
     '</tbody>' +
     '</table>';
 var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
-var ReportDatetime = "11/07/2023"
+var ReportDate = new Date()
+ var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
     var body =
                 '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
                 '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
@@ -826,6 +908,8 @@ var ReportDatetime = "11/07/2023"
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+
 
                 + '</thead>' +
                 '<tbody align="center">' +
@@ -838,7 +922,6 @@ var ReportDatetime = "11/07/2023"
               var cc:any=[] 
               var ReplyTo:any = "" 
             var from:any= undefined
-            var To = ["Ranu.trivedi@hochhuth-consulting.de"];
             var subject = 'TimeSheet :' + ' ' + ReportDatetime;
             body = body.replace('>,<', '><');
            sendEmailToUser(from, To, body, subject, ReplyTo, cc);
@@ -846,56 +929,71 @@ var ReportDatetime = "11/07/2023"
 
     }
     const sendEmailToUser =(from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any) => {
-        var siteurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
-        var urlTemplate = siteurl + "/_api/SP.Utilities.Utility.SendEmail";
-        var sendData = JSON.stringify({
-            'properties': {
-                '__metadata': {
-                    'type': 'SP.Utilities.EmailProperties'
-                },
-                'AdditionalHeaders': {
-                    "__metadata": {
-                        "type": "Collection(SP.KeyValue)"
-                    },
-                    "results": [{
-                        "__metadata": {
-                            "type": 'SP.KeyValue'
-                        },
-                        //'Reply- To': ReplyTo,
-                        'Key': 'Reply-To:',
-                        'Value': ReplyTo,
-                        'ValueType': 'Edm.String'
-                    }]
-                },
-                'From': from,
-                'To': {
-                    'results': to
-                },
-                'CC': {
-                    'results': cc
-                },
-                'Body': body,
-                'Subject': subject
-            }
-        })
-        $.ajax({
-            contentType: 'application/json',
-            url: urlTemplate,
-            type: "POST",
-            data: sendData,
-            headers: {
-                "Accept": "application/json;odata=verbose",
-                "content-type": "application/json;odata=verbose",
-                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
-            },
-            success: function (data) {
-                // alert('Email sent sucessfully');
-            },
-            error: function (err) {
-                alert('Error in sending Email: ' + JSON.stringify(err));
-            }
-
+        let sp = spfi().using(spSPFx(props.ContextData.Context));
+        sp.utility.sendEmail({
+          Body: body,
+          Subject: subject,  
+          To: to,
+          CC:cc,
+          AdditionalHeaders: {
+            "content-type": "text/html"
+          },
+        }).then(() => {
+          console.log("Email Sent!");
+    
+        }).catch((err) => {
+          console.log(err.message);
         });
+        // var siteurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+        // var urlTemplate = siteurl + "/_api/SP.Utilities.Utility.SendEmail";
+        // var sendData = JSON.stringify({
+        //     'properties': {
+        //         '__metadata': {
+        //             'type': 'SP.Utilities.EmailProperties'
+        //         },
+        //         'AdditionalHeaders': {
+        //             "__metadata": {
+        //                 "type": "Collection(SP.KeyValue)"
+        //             },
+        //             "results": [{
+        //                 "__metadata": {
+        //                     "type": 'SP.KeyValue'
+        //                 },
+        //                 //'Reply- To': ReplyTo,
+        //                 'Key': 'Reply-To:',
+        //                 'Value': ReplyTo,
+        //                 'ValueType': 'Edm.String'
+        //             }]
+        //         },
+        //         'From': from,
+        //         'To': {
+        //             'results': to
+        //         },
+        //         'CC': {
+        //             'results': cc
+        //         },
+        //         'Body': body,
+        //         'Subject': subject
+        //     }
+        // })
+        // $.ajax({
+        //     contentType: 'application/json',
+        //     url: urlTemplate,
+        //     type: "POST",
+        //     data: sendData,
+        //     headers: {
+        //         "Accept": "application/json;odata=verbose",
+        //         "content-type": "application/json;odata=verbose",
+        //         "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
+        //     },
+        //     success: function (data) {
+        //         // alert('Email sent sucessfully');
+        //     },
+        //     error: function (err) {
+        //         alert('Error in sending Email: ' + JSON.stringify(err));
+        //     }
+
+        // });
     }
     
     return (
@@ -908,19 +1006,23 @@ var ReportDatetime = "11/07/2023"
                     </h3>
                 </div>
                 <div className='col-sm-9 text-primary'>
-                    <h6 className='pull-right'><b><a href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    <h6 className='pull-right'><b><a  data-interception="off"
+                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
                     </h6>
                 </div>
             </div>
             <div className='row'>
                 <div className='col-7 mt-4'>
 
-                    <input type='date' value={Moment(selectdate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
+                    <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2'>
-                        <input type="radio" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
+                        <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="me-1" />Custom
                     </label>
                     <label className='mx-2'>
-                        <input type="radio" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
+                        <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
+                    </label>
+                    <label className='mx-2'>
+                        <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
                     </label>
                     <button className='btn btn-primary' type="submit" onClick={() => GeneratedTask("Custom")}>Generate TimeSheet</button>
 
@@ -959,8 +1061,15 @@ var ReportDatetime = "11/07/2023"
             </div>
 
             <div className='Alltable'>
-             <div className='pull-right' style={{fontSize:'20px',position:'relative'}} onClick={()=>sendEmail()}><MdEmail/></div>
-            <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} />
+            
+             {
+                data?.length >0?
+                <>
+                 <div className='pull-right' style={{fontSize:'20px',position:'relative',right:'165px'}} onClick={()=>sendEmail()}><MdEmail/></div>
+               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
+                <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
+             }
+            
             <Loader
                   loaded={loaded}
                   lines={13}
