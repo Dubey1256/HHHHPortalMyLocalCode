@@ -5617,22 +5617,6 @@ const EditTaskPopup = (Items: any) => {
             </div>
 
             {/* ********************** This in Add Image Description Model ****************** */}
-            {/* <div className={ServicesTaskCheck ? "hoverImageModal serviepannelgreena" : "hoverImageModal"} style={{ display: AddImageDescriptions }}>
-                <div className="hoverImageModal-popup">
-                    <div className="hoverImageModal-container">
-                        <textarea onChange={(e) => UpdateImageDescription(e)}
-                            style={{ width: '100%', marginLeft: '3px', minHeight: '150px' }}
-                            value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
-                        // value={AddImageDescriptionsIndex != undefined && AddImageDescriptionsIndex >= 0 ? TaskImages[AddImageDescriptionsIndex].Description != undefined ? TaskImages[AddImageDescriptionsIndex].Description : '' : ''}
-                        >
-                        </textarea>
-                    </div>
-                    <footer className="d-flex float-end pb-1 mx-2" style={{ color: "white" }}>
-                        <button className="btn btn-secondary px-4 mx-1" onClick={SaveImageDescription}>Save</button>
-                        <button className="btn btn-default" onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                    </footer>
-                </div>
-            </div> */}
             <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
                 <div className="modal-header mb-1">
                     <h5 className="modal-title">Add Image Description</h5>
