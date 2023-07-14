@@ -50,14 +50,7 @@
         }
       ]
     },
-    "task-user-management-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/taskUserManagement/TaskUserManagementWebPart.js",
-          "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
-        }
-      ]
-    },
+    
     "taskprofile-web-part": {
       "components": [
         {
@@ -307,7 +300,6 @@
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
-    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
