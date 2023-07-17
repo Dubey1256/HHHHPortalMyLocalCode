@@ -15,6 +15,7 @@ import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Modal } from '@fluentui/react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
@@ -116,7 +117,7 @@ const EditTaskPopup = (Items: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
     const [hoverImageModal, setHoverImageModal] = React.useState('None');
-    const [AddImageDescriptions, setAddImageDescriptions] = React.useState('None');
+    const [AddImageDescriptions, setAddImageDescriptions] = React.useState(false);
     const [AddImageDescriptionsDetails, setAddImageDescriptionsDetails] = React.useState<any>('');
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
@@ -2875,13 +2876,13 @@ const EditTaskPopup = (Items: any) => {
     // *************** this is used for adding description for images functions ******************
 
     const openAddImageDescriptionFunction = (Index: any, Data: any, type: any) => {
-        setAddImageDescriptions("Block");
+        setAddImageDescriptions(true);
         // setAddImageDescriptionsIndex(Index);
         setAddImageDescriptionsDetails(Data.Description != undefined ? Data.Description : '');
         AddImageDescriptionsIndex = Index;
     }
     const closeAddImageDescriptionFunction = () => {
-        setAddImageDescriptions("None");
+        setAddImageDescriptions(false);
         // setAddImageDescriptionsIndex(-1);
         AddImageDescriptionsIndex = undefined;
     }
@@ -4614,7 +4615,7 @@ const EditTaskPopup = (Items: any) => {
                         />
                     }
 
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} IsEmailCategoryTask={EmailStatus} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5616,22 +5617,28 @@ const EditTaskPopup = (Items: any) => {
             </div>
 
             {/* ********************** This in Add Image Description Model ****************** */}
-            <div className={ServicesTaskCheck ? "hoverImageModal serviepannelgreena" : "hoverImageModal"} style={{ display: AddImageDescriptions }}>
-                <div className="hoverImageModal-popup">
-                    <div className="hoverImageModal-container">
-                        <textarea onChange={(e) => UpdateImageDescription(e)}
-                            style={{ width: '100%', marginLeft: '3px', minHeight: '150px' }}
-                            value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
-                        // value={AddImageDescriptionsIndex != undefined && AddImageDescriptionsIndex >= 0 ? TaskImages[AddImageDescriptionsIndex].Description != undefined ? TaskImages[AddImageDescriptionsIndex].Description : '' : ''}
-                        >
-                        </textarea>
-                    </div>
-                    <footer className="d-flex float-end pb-1 mx-2" style={{ color: "white" }}>
-                        <button className="btn btn-secondary px-4 mx-1" onClick={SaveImageDescription}>Save</button>
-                        <button className="btn btn-default" onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                    </footer>
+            <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
+                <div className="modal-header mb-1">
+                    <h5 className="modal-title">Add Image Description</h5>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' /></span>
+                    <button type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                        onClick={closeAddImageDescriptionFunction}
+                    ></button>
                 </div>
-            </div>
+                <div className="modal-body">
+                    <div className='col'><textarea id="txtUpdateComment" rows={6}
+                        value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
+                        className="full-width"
+                        onChange={(e) => UpdateImageDescription(e)}></textarea></div>
+                </div>
+                <footer className='text-end mt-2'>
+                    <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                </footer>
+            </Modal>
 
             {/* ********************* this is Copy Task And Move Task panel ****************** */}
             <Panel
