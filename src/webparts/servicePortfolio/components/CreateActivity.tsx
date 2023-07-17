@@ -7,7 +7,6 @@ import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponen
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import * as Moment from 'moment';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
 import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
