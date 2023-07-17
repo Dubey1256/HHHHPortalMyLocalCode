@@ -15,6 +15,8 @@ import * as pnp from 'sp-pnp-js';
 
 export interface IFeedbackWebPartProps {
   description: string;
+  SmartMetadataListID: "01a34938-8c7e-4ea6-a003-cee649e8c67a";
+  TaskUsertListID: "b318ba84-e21d-4876-8851-88b94b9dc300";
 }
 
 export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebPartProps> {
@@ -29,8 +31,12 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
+        userDisplayName: this.context.pageContext.user.displayName,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        Context: this.context,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        TaskUsertListID: this.properties.TaskUsertListID,
+        SmartMetadataListID: this.properties.SmartMetadataListID,
       }
     );
 
@@ -94,7 +100,13 @@ export default class FeedbackWebPart extends BaseClientSideWebPart<IFeedbackWebP
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                })
+                }),
+                PropertyPaneTextField("TaskUsertListID", {
+                  label: "Task User List",
+                }),
+                PropertyPaneTextField("SmartMetadataListID", {
+                  label: "Smart Metadata List",
+                }),
               ]
             }
           ]
