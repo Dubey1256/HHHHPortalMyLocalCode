@@ -6,6 +6,7 @@ import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments';
@@ -441,7 +442,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 ImageUrl: Attach?.ServerRelativeUrl,
                 UploadeDate: item?.UploadeDate,
                 UserImage: item?.UserImage,
-                UserName: item?.UserName
+                UserName: item?.UserName,
+                Description:item?.Description
               })
             }
           })
@@ -1450,6 +1452,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
+                                 {imgData?.Description != undefined &&<span title={ imgData?.Description} className="mx-1" >
+                                    <BiInfoCircle />
+                                    </span>}
 
                                 </span>
                               </div>
