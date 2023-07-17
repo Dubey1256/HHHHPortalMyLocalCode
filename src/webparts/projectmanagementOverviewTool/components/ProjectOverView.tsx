@@ -5,7 +5,7 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import {
     ColumnDef,
 } from "@tanstack/react-table";
-
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaInfoCircle, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import GlobalCommanTable, { IndeterminateCheckbox } from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import HighlightableCell from "../../../globalComponents/GroupByReactTableComponents/highlight";
@@ -19,16 +19,18 @@ import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
 var siteConfig: any = []
-var AllTaskUsers: any = []
+var AllTaskUsers: any = [];
+let MyAllData: any = []
 var Idd: number;
 var allSitesTasks: any = [];
 var AllListId: any = {};
 var currentUserId: '';
 var currentUser: any = [];
-let headerOptions:any={
-    openTab:true,
-    teamsIcon:true
+let headerOptions: any = {
+    openTab: true,
+    teamsIcon: true
 }
+let AllSitesAllTasks: any = [];
 var isShowTimeEntry: any = "";
 var isShowSiteCompostion: any = "";
 export default function ProjectOverview(props: any) {
@@ -77,6 +79,7 @@ export default function ProjectOverview(props: any) {
             isShowSiteCompostion: isShowSiteCompostion
         }
         setPageLoader(true);
+        LoadAllSiteAllTasks()
         TaskUser()
         GetMetaData()
 
@@ -128,7 +131,105 @@ export default function ProjectOverview(props: any) {
     const editTaskCallBack = React.useCallback((item: any) => {
         setisOpenEditPopup(false);
     }, []);
+    const loadAllComponent = async () => {
+        let MasterListData: any = [];
+        let web = new Web(AllListId?.siteUrl);
+        MasterListData = await web.lists
+            .getById(AllListId?.MasterTaskListID)
+            .items.select("ComponentCategory/Id", "ComponentCategory/Title", "DueDate", "SiteCompositionSettings", "PortfolioStructureID", "ItemRank", "ShortDescriptionVerified", "Portfolio_x0020_Type", "BackgroundVerified", "descriptionVerified", "Synonyms", "BasicImageInfo", "Deliverable_x002d_Synonyms", "OffshoreComments", "OffshoreImageUrl", "HelpInformationVerified", "IdeaVerified", "TechnicalExplanationsVerified", "Deliverables", "DeliverablesVerified", "ValueAddedVerified", "CompletedDate", "Idea", "ValueAdded", "TechnicalExplanations", "Item_x0020_Type", "Sitestagging", "Package", "Parent/Id", "Parent/Title", "Short_x0020_Description_x0020_On", "Short_x0020_Description_x0020__x", "Short_x0020_description_x0020__x0", "Admin_x0020_Notes", "AdminStatus", "Background", "Help_x0020_Information", "SharewebComponent/Id", "SharewebCategories/Id", "SharewebCategories/Title", "Priority_x0020_Rank", "Reference_x0020_Item_x0020_Json", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Services/Id", "Services/Title", "Services/ItemType", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "Item_x002d_Image", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "AttachmentFiles/FileName", "FileLeafRef", "FeedBack", "Title", "Id", "PercentComplete", "Company", "StartDate", "DueDate", "Comments", "Categories", "Status", "WebpartId", "Body", "Mileage", "PercentComplete", "Attachments", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title", "ClientCategory/Id", "ClientCategory/Title")
+            .expand("ClientCategory", "ComponentCategory", "AssignedTo", "Component", "Services", "AttachmentFiles", "Author", "Editor", "Team_x0020_Members", "SharewebComponent", "SharewebCategories", "Parent")
+            .top(4999)
+            .get().then((data) => {
+                console.log(data)
+                data?.forEach((val: any) => {
+                    MyAllData.push(val)
+                })
 
+
+            }).catch((error) => {
+                console.log(error)
+            })
+
+
+    }
+    const LoadAllSiteAllTasks = async function () {
+        await loadAllComponent()
+        let AllSiteTasks: any = [];
+        let approverTask: any = [];
+        let SharewebTask: any = [];
+        let AllImmediates: any = [];
+        let AllEmails: any = [];
+        let AllBottleNeckTasks: any = [];
+        let AllPriority: any = [];
+        let query =
+            "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+        let Counter = 0;
+        let web = new Web(AllListId?.siteUrl);
+        let arraycount = 0;
+        try {
+            if (siteConfig?.length > 0) {
+
+                siteConfig.map(async (config: any) => {
+                    if (config.Title != "SDC Sites") {
+                        let smartmeta = [];
+                        await web.lists
+                            .getById(config.listId)
+                            .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                            .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                            .getAll().then((data: any) => {
+                                smartmeta = data;
+                                smartmeta.map((task: any) => {
+                                    task.AllTeamMember = [];
+                                    task.HierarchyData = [];
+                                    task.siteType = config.Title;
+                                    task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                    task.listId = config.listId;
+                                    task.siteUrl = config.siteUrl.Url;
+                                    task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                                    task.DisplayDueDate =
+                                        task.DueDate != null
+                                            ? Moment(task.DueDate).format("DD/MM/YYYY")
+                                            : "";
+                                    task.portfolio = {};
+                                    if (task?.Component?.length > 0) {
+                                        task.portfolio = task?.Component[0];
+                                        task.PortfolioTitle = task?.Component[0]?.Title;
+                                        task["Portfoliotype"] = "Component";
+                                    }
+                                    if (task?.Services?.length > 0) {
+                                        task.portfolio = task?.Services[0];
+                                        task.PortfolioTitle = task?.Services[0]?.Title;
+                                        task["Portfoliotype"] = "Service";
+                                    }
+                                    task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                                    task.TeamMembersSearch = "";
+                                    task.componentString =
+                                        task.Component != undefined &&
+                                            task.Component != undefined &&
+                                            task.Component.length > 0
+                                            ? getComponentasString(task.Component)
+                                            : "";
+                                    task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+
+
+                                    AllSiteTasks.push(task)
+                                });
+                                arraycount++;
+                            });
+                        let currentCount = siteConfig?.length;
+                        if (arraycount === currentCount) {
+                            AllSitesAllTasks = AllSiteTasks;
+
+                        }
+                    } else {
+                        arraycount++;
+                    }
+                });
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    };
     const GetMetaData = async () => {
         if (AllListId?.SmartMetadataListID != undefined) {
             try {
@@ -202,8 +303,8 @@ export default function ProjectOverview(props: any) {
                             ) : (
                                 ""
                             )}{" "}
-
-                            {row?.original.Shareweb_x0020_ID}
+                             {row?.original?.siteType != "Project" ?  <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />:<span>{row?.original?.Shareweb_x0020_ID}</span>}
+                           
                         </>
                     </div>
                 ),
@@ -254,9 +355,9 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.PercentComplete,
                 cell: ({ row, getValue }) => (
-              
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
-            
+
+                    <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='PercentComplete' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
+
 
                 ),
                 id: "PercentComplete",
@@ -269,14 +370,15 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.Priority_x0020_Rank,
                 cell: ({ row }) => (
-            
-                        <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
 
-              
+                    <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Priority' TaskUsers={AllTaskUser} item={row?.original} pageName={'ProjectOverView'} />
+
+
                 ),
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
                 resetColumnFilters: false,
+                sortDescFirst: true,
                 resetSorting: false,
                 header: "",
                 size: 100,
@@ -284,11 +386,11 @@ export default function ProjectOverview(props: any) {
             {
                 accessorFn: (row) => row?.TeamMembersSearch,
                 cell: ({ row }) => (
-                   <div >
+                    <div >
                         <InlineEditingcolumns AllListId={AllListId} callBack={CallBack} columnName='Team' item={row?.original} TaskUsers={AllTaskUser} pageName={'ProjectOverView'} />
-                   </div>
-                    
-                    
+                    </div>
+
+
                 ),
                 id: 'TeamMembersSearch',
                 placeholder: "Team",
@@ -388,7 +490,8 @@ export default function ProjectOverview(props: any) {
                                     onChange: row?.getToggleSelectedHandler(),
                                 }}
                             /> : ''}
-                            <span className='ms-1'>{row?.original?.Shareweb_x0020_ID}</span>
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+
                         </>
                     </div>
                 ),
@@ -461,6 +564,7 @@ export default function ProjectOverview(props: any) {
                 id: 'Priority_x0020_Rank',
                 placeholder: "Priority",
                 resetColumnFilters: false,
+                sortDescFirst: true,
                 resetSorting: false,
                 header: "",
                 size: 100,
@@ -621,6 +725,7 @@ export default function ProjectOverview(props: any) {
                 placeholder: "Priority",
                 resetColumnFilters: false,
                 size: 100,
+                sortDescFirst: true,
                 resetSorting: false,
                 header: ""
             },
@@ -731,7 +836,7 @@ export default function ProjectOverview(props: any) {
                                     onChange: row?.getToggleSelectedHandler(),
                                 }}
                             />
-                            <span className='ms-1'>{row?.original.Shareweb_x0020_ID}</span>
+                            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
 
                         </>
                     </div>
@@ -793,6 +898,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 enableMultiSort: true,
                 sortDescFirst: true,
+                defaultSortDirection: 'desc',
                 resetSorting: false,
                 header: "",
                 size: 100,
@@ -825,6 +931,7 @@ export default function ProjectOverview(props: any) {
                 resetColumnFilters: false,
                 resetSorting: false,
                 enableMultiSort: true,
+                defaultSortDirection: 'desc',
                 sortDescFirst: true,
                 header: "",
                 size: 100,
@@ -905,7 +1012,7 @@ export default function ProjectOverview(props: any) {
                 if (tasksCopy?.length > 0) {
                     tasksCopy?.map((item: any) => {
                         let teamUsers: any = [];
-                        item?.Team_x0020_Members?.map((item1: any) => {
+                        item?.AssignedTo?.map((item1: any) => {
                             teamUsers.push(item1?.Title)
                         });
                         if (item.DueDate != undefined) {
@@ -1091,6 +1198,7 @@ export default function ProjectOverview(props: any) {
                 })
             })
             // })
+            Alltask = sortOnPriority(Alltask)
             setAllTasks(Alltask);
             setPageLoader(false);
             setData(Alltask);
@@ -1306,7 +1414,11 @@ export default function ProjectOverview(props: any) {
             alert('Site Config Length less than 0')
         }
     };
-    console.log(AllTasks);
+    const sortOnPriority = (Array: any) => {
+        return Array.sort((a: any, b: any) => {
+            return b?.Priority_x0020_Rank - a?.Priority_x0020_Rank;
+        })
+    }
     return (
         <>
             <div>
@@ -1344,9 +1456,9 @@ export default function ProjectOverview(props: any) {
                                         </div>
                                     </div>
                                     <div className="Alltable">
-                                        {selectedView == 'grouped' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData}  pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
-                                        {selectedView == 'flat' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
-                                        {selectedView == 'teamWise' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId}  columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true}/> : ''}
+                                        {selectedView == 'grouped' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={columns} data={data} paginatedTable={false} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'flat' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={flatView} paginatedTable={true} data={AllSiteTasks} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
+                                        {selectedView == 'teamWise' ? <GlobalCommanTable headerOptions={headerOptions} AllListId={AllListId} columns={groupedUsers} paginatedTable={true} data={categoryGroup} callBackData={callBackData} pageName={"ProjectOverviewGrouped"} TaskUsers={AllTaskUser} showHeader={true} /> : ''}
                                     </div>
                                 </>
                                 : ""}
@@ -1354,7 +1466,7 @@ export default function ProjectOverview(props: any) {
                                 {!GroupedDisplayTable ?
 
                                     <div className="Alltable">
-                                        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser}  showHeader={true}/>
+                                        <GlobalCommanTable AllListId={AllListId} headerOptions={headerOptions} paginatedTable={false} columns={column2} data={flatData} callBackData={callBackData} pageName={"ProjectOverview"} TaskUsers={AllTaskUser} showHeader={true} />
                                     </div> : ''}
                             </div>
                         </div>
