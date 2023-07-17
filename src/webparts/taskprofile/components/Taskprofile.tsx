@@ -6,6 +6,7 @@ import { Web } from "sp-pnp-js";
 import CommentCard from '../../../globalComponents/Comments/CommentCard';
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import * as globalCommon from '../../../globalComponents/globalCommon'
+import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import RelevantDocuments from './RelevantDocuments';
@@ -441,7 +442,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                 ImageUrl: Attach?.ServerRelativeUrl,
                 UploadeDate: item?.UploadeDate,
                 UserImage: item?.UserImage,
-                UserName: item?.UserName
+                UserName: item?.UserName,
+                Description:item?.Description
               })
             }
           })
@@ -527,7 +529,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       console.log(ClientCategory);
     }
  
-    if (ClientTimeArray != undefined && ClientTimeArray != null) {
+    if (ClientTimeArray != undefined && ClientTimeArray.length>0) {
       ClientTimeArray?.map((item: any) => {
         array2?.map((items: any) => {
           if (item?.SiteName == items?.SiteName) {
@@ -1450,6 +1452,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
+                                 {imgData?.Description != undefined &&<span title={ imgData?.Description} className="mx-1" >
+                                    <BiInfoCircle />
+                                    </span>}
 
                                 </span>
                               </div>
@@ -1470,7 +1475,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                     }
                     <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
-                        this.state.Result["SharewebTaskType"] == 'Task' || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
+                        this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
                         this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != ''&& this.state.countfeedback>=0 &&
                         <div className={"Addcomment " + "manage_gap"}>

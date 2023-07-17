@@ -143,18 +143,7 @@ const AddProject = (props: any) => {
         setIsPortfolio(true);
         setShareWebComponent(item);
     }
-    const onRenderCustomFooterMain = () => {
-        return (
-
-
-            <footer className='text-end'>
-                <Button type="button" className="me-2" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
-                <Button type="button" variant="primary" onClick={() => addFunction()}>Create</Button>
-            </footer>
-
-
-        )
-    }
+    
     return (
         <>
             <button type="button" className='btn btn-primary mb-2' onClick={() => OpenCreateTaskPopup()}>Create Project</button>
@@ -164,10 +153,9 @@ const AddProject = (props: any) => {
                 type={PanelType.medium}
                 isOpen={lgShow}
                 onDismiss={() => closePopup()}
-                isBlocking={false}
-                onRenderFooter={onRenderCustomFooterMain}>
+                isBlocking={false}>
 
-                <div className={IsComponent ? 'card-body' : 'card-body'}>
+                <div className={IsComponent ? 'Create-Projectpoup border mb-2 mt-2 p-2' : 'Create-Projectpoup  border mb-2 mt-2 p-2'}>
                     <span >
                         <div>
                             <span>
@@ -176,8 +164,6 @@ const AddProject = (props: any) => {
                         </div>
                     </span>
                     <div className="row">
-                        <div className='row pe-0'>
-
                             <div className="col-sm-12 input-group full-width">
                                 <div className="input-group full-width">
                                     <label className="form-label full-width">
@@ -248,10 +234,13 @@ const AddProject = (props: any) => {
                                 }
 
                             </div>
-
-                        </div>
                     </div>
                 </div>
+                <footer className='text-end '>
+                <Button type="button" variant="primary" className='me-1' onClick={() => addFunction()}>Create</Button>
+                <Button type="button" className="btn btn-default" variant="secondary" onClick={() => closePopup()}>Cancel</Button>
+           
+            </footer>
             </Panel>
             {IsPortfolio && (
             <ServiceComponentPortfolioPopup

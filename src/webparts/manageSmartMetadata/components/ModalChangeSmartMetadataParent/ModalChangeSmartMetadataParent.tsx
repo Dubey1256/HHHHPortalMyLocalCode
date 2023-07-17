@@ -49,7 +49,7 @@ class ModalChangeSmartMetadataParent extends React.Component<IModalChangeSmartMe
     
     render() {
         const elemChangeParent: JSX.Element = (
-            <Container fluid>
+            <Container fluid className="mb-3">
                 <Row>
                     <Col>
                         <Dropdown label="Top Level" options={this.optionsTopLevelItems} selectedKey={this.state.selRootLevelOptionKey} onChange={this.onTopLevelOptionChange} calloutProps={{doNotLayer: true}} />
@@ -62,8 +62,8 @@ class ModalChangeSmartMetadataParent extends React.Component<IModalChangeSmartMe
         );
         const elemFooter: JSX.Element = (
             <div style={{textAlign:"right"}}>
-                <Button variant="primary" onClick={()=>this.props.saveModalChangeParent(this.state.selParentId)} disabled={isNaN(this.state.selParentId)}  style={{marginLeft:"5px",height:"34px"}} >Save</Button>
-                <Button variant="secondary" onClick={this.props.hideModalChangeParent}  style={{marginLeft:"5px",height:"34px"}}>Cancel</Button>
+                <Button variant="btn primary" onClick={()=>this.props.saveModalChangeParent(this.state.selParentId)} disabled={isNaN(this.state.selParentId)}  >Save</Button>
+                <Button variant="btn btn-default" onClick={this.props.hideModalChangeParent}  >Cancel</Button>
             </div>
         );
         
