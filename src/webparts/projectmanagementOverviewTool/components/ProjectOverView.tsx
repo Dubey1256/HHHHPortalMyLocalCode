@@ -267,6 +267,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
+                id:'Shareweb_x0020_ID',
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 80,
@@ -440,6 +441,7 @@ export default function ProjectOverview(props: any) {
         () => [
             {
                 accessorKey: "Shareweb_x0020_ID",
+                id:'Shareweb_x0020_ID',
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
