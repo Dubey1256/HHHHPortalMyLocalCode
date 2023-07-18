@@ -20,8 +20,8 @@ import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaS
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
+import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
 
@@ -142,13 +142,10 @@ const GlobalCommanTable = (items: any) => {
     let callBackData = items?.callBackData;
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
-    let excelDatas = items?.excelDatas;
     let siteUrl: any = '';
     let showHeader = items?.showHeader;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
-    const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-    const fileExtension = ".xlsx";
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     );
@@ -188,43 +185,7 @@ const GlobalCommanTable = (items: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
-    const exportToExcelNew = () => {
-        let excelColumns:any = [];
-        columns?.map((col:any)=>{
-            if(col?.placeholder!=undefined&&col?.placeholder!=''){
-                excelColumns.push(col?.id)
-            }
-        })
-        let excelRows:any=table?.getFilteredRowModel()?.rows?.map((row:any)=>{
-            const newObject = excelColumns.reduce((obj:any, propName:any) => {
-                return {
-                  ...obj,
-                  [propName]: row?.original[propName],
-                };
-              }, {});
-              return newObject;
-        })
-        // Create a new workbook and worksheet
-        const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.json_to_sheet(excelRows);
-      
-        // Add the worksheet to the workbook
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Table Data');
-      
-        // Convert the workbook to an Excel file
-        const excelFile = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
-      
-        // Save the file with a specified name
-        const fileName = 'table-data.xlsx';
-        const buffer = new ArrayBuffer(excelFile.length);
-        const view = new Uint8Array(buffer);
-        for (let i = 0; i < excelFile.length; i++) {
-          view[i] = excelFile.charCodeAt(i) & 0xff;
-        }
-      
-        // Save the file using FileSaver.js
-        FileSaver.saveAs(new Blob([buffer], { type: 'application/octet-stream' }), fileName);
-      };
+    
 
     React.useEffect(() => {
         CheckDataPrepre()
@@ -340,15 +301,74 @@ const GlobalCommanTable = (items: any) => {
         })
         doc.save('Data PrintOut');
     }
-    const downloadExcel = (csvData: any, fileName: any) => {
-        const ws = XLSX.utils.json_to_sheet(csvData);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, fileName + fileExtension);
+    // Export To Excel////////
+
+    const exportToExcel = () => {
+        const flattenedData: any[] = [];
+        const flattenRowData = (row: any) => {
+            const flattenedRow: any = {};
+            columns.forEach((column: any) => {
+                if (column.placeholder != undefined && column.placeholder != '') {
+                    flattenedRow[column.id] = row.original[column.id];
+                }
+            });
+            flattenedData.push(flattenedRow);
+            if (row.getCanExpand()) {
+                row.subRows.forEach(flattenRowData);
+            }
+        };
+        table.getRowModel().rows.forEach(flattenRowData);
+        const worksheet = XLSX.utils.aoa_to_sheet([]);
+        XLSX.utils.sheet_add_json(worksheet, flattenedData, {
+            skipHeader: false,
+            origin: "A1",
+        });
+        const maxLength = 32767;
+        const sheetRange = XLSX.utils.decode_range(worksheet["!ref"]);
+        for (let R = sheetRange.s.r; R <= sheetRange.e.r; ++R) {
+            for (let C = sheetRange.s.c; C <= sheetRange.e.c; ++C) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+                const cell = worksheet[cellAddress];
+                if (cell && cell.t === "s" && cell.v.length > maxLength) {
+                    const chunks = [];
+                    let text = cell.v;
+                    while (text.length > maxLength) {
+                        chunks.push(text.slice(0, maxLength));
+                        text = text.slice(maxLength);
+                    }
+                    chunks.push(text);
+                    cell.v = chunks.shift();
+                    chunks.forEach((chunk) => {
+                        const newCellAddress = XLSX.utils.encode_cell({
+                            r: R + chunks.length,
+                            c: C,
+                        });
+                        worksheet[newCellAddress] = { t: "s", v: chunk };
+                    });
+                }
+            }
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const excelData = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        if (typeof saveAs === "function") {
+            saveAs(excelData, "table.xlsx");
+        } else {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(excelData);
+            downloadLink.download = "table.xlsx";
+            downloadLink.click();
+        }
     };
 
-
+    ////Export to excel end/////
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
@@ -365,7 +385,7 @@ const GlobalCommanTable = (items: any) => {
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' onClick={() => exportToExcelNew()}><RiFileExcel2Fill /></a>
+                    <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill/></a>
 
                     <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
