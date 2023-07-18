@@ -862,7 +862,10 @@ function TasksTable(props: any) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
        console.log(MeetingItems[MeetingItems.length - 1]) 
-       MeetingItems[MeetingItems.length - 1].ClientTime=JSON.parse(MeetingItems[MeetingItems.length - 1].ClientTime)
+       if(MeetingItems[MeetingItems.length - 1]?.ClientTime?.length>0 && MeetingItems[MeetingItems?.length - 1].ClientTime!=undefined){
+        MeetingItems[MeetingItems.length - 1].ClientTime=JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
+       }
+    
         setMeetingPopup(true)
       }
     }
@@ -876,7 +879,13 @@ function TasksTable(props: any) {
       if (props.props.SharewebTaskType == 'Activities') {
         let parentcat:any=[];
         let data:any=props.props
-        data.ClientTime=JSON.stringify(data.ClientTime)
+        if(data?.ClientTime!=null && data?.ClientTime!=undefined &&data?.ClientTime[0].Title!=undefined ){
+
+          data.ClientTime=JSON.stringify(data?.ClientTime)
+        }else{
+          data.ClientTime=""
+        }
+       
         MeetingItems.push(data)
        setWSPopup(true)
        
