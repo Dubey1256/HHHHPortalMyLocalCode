@@ -15,9 +15,11 @@ import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Modal } from '@fluentui/react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
+import { BiInfoCircle } from 'react-icons/bi'
 import NewTameSheetComponent from "./NewTimeSheet";
 import CommentBoxComponent from "./CommentBoxComponent";
 import TimeEntryPopup from './TimeEntryComponent';
@@ -43,6 +45,7 @@ import SiteCompositionComponent from "./SiteCompositionComponent";
 import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
+import { Description } from "@material-ui/icons";
 
 
 var AllMetaData: any = []
@@ -81,6 +84,7 @@ var AllClientCategoryDataBackup: any = [];
 var selectedClientCategoryData: any = [];
 var GlobalServiceAndComponentData: any = [];
 var timesheetData: any = [];
+var AddImageDescriptionsIndex: any;
 const EditTaskPopup = (Items: any) => {
     const Context = Items.context;
     const AllListIdData = Items.AllListId;
@@ -113,6 +117,8 @@ const EditTaskPopup = (Items: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
     const [hoverImageModal, setHoverImageModal] = React.useState('None');
+    const [AddImageDescriptions, setAddImageDescriptions] = React.useState(false);
+    const [AddImageDescriptionsDetails, setAddImageDescriptionsDetails] = React.useState<any>('');
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
     const [ImageCustomizePopup, setImageCustomizePopup] = React.useState(false);
@@ -218,6 +224,7 @@ const EditTaskPopup = (Items: any) => {
         loadAllCategoryData("Categories");
         loadAllClientCategoryData("Client Category");
         GetMasterData();
+        AddImageDescriptionsIndex = undefined;
     }, [])
 
 
@@ -541,15 +548,19 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                // if (item.Priority_x0020_Rank != undefined) {
-                //     if (ItemRankArray != undefined) {
-                //         ItemRankArray?.map((rank: any) => {
-                //             if (rank.rank == item.Priority_x0020_Rank) {
-                //                 item.Priority_x0020_Rank = rank.rank;
-                //             }
-                //         })
-                //     }
-                // }
+                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null) {
+                    if (item.Priority != undefined) {
+                        if (item.Priority == "(3) Low") {
+                            item.Priority_x0020_Rank = 1
+                        }
+                        if (item.Priority == "(2) Normal") {
+                            item.Priority_x0020_Rank = 4
+                        }
+                        if (item.Priority == "(1) High") {
+                            item.Priority_x0020_Rank = 8
+                        }
+                    }
+                }
                 item.TaskId = globalCommon.getTaskId(item);
                 item.siteUrl = siteUrls;
                 item.siteType = Items.Items.siteType;
@@ -1660,7 +1671,7 @@ const EditTaskPopup = (Items: any) => {
                     if (EditData.siteType == 'Offshore Tasks') {
                         setWorkingMember(36);
                     } else if (DesignStatus) {
-                        setWorkingMember(172);
+                        setWorkingMember(40);
                     } else {
                         setWorkingMember(42);
                     }
@@ -1775,7 +1786,7 @@ const EditTaskPopup = (Items: any) => {
             if (EditData.siteType == 'Offshore Tasks') {
                 setWorkingMember(36);
             } else if (DesignStatus) {
-                setWorkingMember(172);
+                setWorkingMember(40);
             } else {
                 setWorkingMember(42);
             }
@@ -1880,7 +1891,7 @@ const EditTaskPopup = (Items: any) => {
     const UpdateTaskInfoFunction = async (typeFunction: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
-        if(EnableSiteCompositionValidation){
+        if (EnableSiteCompositionValidation) {
             if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
                 SiteCompositionPrecentageValue = 0
@@ -1986,15 +1997,15 @@ const EditTaskPopup = (Items: any) => {
                         }
                         Items.Call(DataJSONUpdate);
                     }
-                    if(EditData?.Categories?.toLowerCase().indexOf('approval') == -1){
+                    if (EditData?.Categories?.toLowerCase().indexOf('approval') == -1) {
                         Items.Call(true);
                     }
-                    if(EditData?.Categories==undefined){
+                    if (EditData?.Categories == undefined) {
                         Items.Call(true);
                     }
-                    
+
                     else {
-                       
+
                         Items.Call();
                     }
                 })
@@ -2617,9 +2628,11 @@ const EditTaskPopup = (Items: any) => {
                     ImageUrl: imgItem.data_url,
                     UserImage: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Item_x0020_Cover?.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg",
                     UserName: currentUserDataObject != undefined && currentUserDataObject.Title?.length > 0 ? currentUserDataObject.Title : Items.context.pageContext._user.displayName,
+                    Description: imgItem.Description != undefined ? imgItem.Description : ''
                 };
                 tempArray.push(ImgArray);
             } else {
+                imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
                 tempArray.push(imgItem);
             }
         })
@@ -2692,10 +2705,12 @@ const EditTaskPopup = (Items: any) => {
                             ImageUrl: imgItem.imageDataUrl,
                             UploadeDate: imgItem.UploadeDate,
                             UserName: imgItem.UserName,
-                            UserImage: imgItem.UserImage
+                            UserImage: imgItem.UserImage,
+                            Description: imgItem.Description != undefined ? imgItem.Description : ''
                         }
                         UploadImageArray.push(tempObject)
                     } else {
+                        imgItem.Description = imgItem.Description != undefined ? imgItem.Description : '';
                         UploadImageArray.push(imgItem);
                     }
                 }
@@ -2704,7 +2719,7 @@ const EditTaskPopup = (Items: any) => {
         if (UploadImageArray != undefined && UploadImageArray.length > 0) {
             try {
                 let web = new Web(siteUrls);
-                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!") })
+                await web.lists.getById(Items.Items.listId).items.getById(Items.Items.Id).update({ BasicImageInfo: JSON.stringify(UploadImageArray) }).then((res: any) => { console.log("Image JSON Updated !!"); AddImageDescriptionsIndex = undefined })
             } catch (error) {
                 console.log("Error Message :", error);
             }
@@ -2858,6 +2873,30 @@ const EditTaskPopup = (Items: any) => {
         setReplaceImagePopup(false)
     }
 
+    // *************** this is used for adding description for images functions ******************
+
+    const openAddImageDescriptionFunction = (Index: any, Data: any, type: any) => {
+        setAddImageDescriptions(true);
+        // setAddImageDescriptionsIndex(Index);
+        setAddImageDescriptionsDetails(Data.Description != undefined ? Data.Description : '');
+        AddImageDescriptionsIndex = Index;
+    }
+    const closeAddImageDescriptionFunction = () => {
+        setAddImageDescriptions(false);
+        // setAddImageDescriptionsIndex(-1);
+        AddImageDescriptionsIndex = undefined;
+    }
+
+    const UpdateImageDescription = (e: any) => {
+        TaskImages[AddImageDescriptionsIndex].Description = e.target.value;
+        setAddImageDescriptionsDetails(e.target.value);
+    }
+
+    const SaveImageDescription = () => {
+        UpdateBasicImageInfoJSON(TaskImages);
+        closeAddImageDescriptionFunction();
+    }
+
     // ***************** this is for the Copy and Move Task Functions ***************
 
     const CopyAndMovePopupFunction = (Type: any) => {
@@ -2930,9 +2969,9 @@ const EditTaskPopup = (Items: any) => {
                         window.open(url);
                     } else {
                         console.log(`Task Moved Successfully on ${SelectedSite} !!!!!`);
-                        if(timesheetData != undefined && timesheetData.length > 0){
+                        if (timesheetData != undefined && timesheetData.length > 0) {
                             await moveTimeSheet(SelectedSite, res.data);
-                        }else{
+                        } else {
                             deleteItemFunction(Items.Items.Id);
                         }
                     }
@@ -2959,24 +2998,24 @@ const EditTaskPopup = (Items: any) => {
                     }
                 })
             })
-            TimesheetConfiguration?.forEach((val: any) => {
-                TimeSheetlistId = val.TimesheetListId;
-                siteUrl = val.siteUrl
-                listName = val.TimesheetListName
+        TimesheetConfiguration?.forEach((val: any) => {
+            TimeSheetlistId = val.TimesheetListId;
+            siteUrl = val.siteUrl
+            listName = val.TimesheetListName
+        })
+        var count = 0;
+        timesheetData?.forEach(async (val: any) => {
+            var siteType: any = "Task" + SelectedSite + "Id"
+            var SiteId = "Task" + Items.Items.siteType;
+            var Data = await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
+                [siteType]: newItem.Id,
+            }).then((res) => {
+                count++
+                if (count == timesheetData.length) {
+                    deleteItemFunction(Items.Items.Id);
+                }
             })
-            var count = 0;
-            timesheetData?.forEach(async (val: any) => {
-                var siteType: any = "Task" + SelectedSite + "Id"
-                var SiteId = "Task" + Items.Items.siteType;
-                var Data = await web.lists.getById(TimeSheetlistId).items.getById(val.Id).update({
-                    [siteType]: newItem.Id,
-                }).then((res) => {
-                    count++
-                    if (count == timesheetData.length) {
-                        deleteItemFunction(Items.Items.Id);
-                    }
-                })
-            })
+        })
         var UpdatedData: any = {}
     }
 
@@ -3222,7 +3261,7 @@ const EditTaskPopup = (Items: any) => {
 
     // *********** this is for Send Email Notification for Approval Category Task Functions ****************************
 
-    const SendEmailNotificationCallBack = React.useCallback((items:any) => {
+    const SendEmailNotificationCallBack = React.useCallback((items: any) => {
         setSendEmailComponentStatus(false);
         Items.Call(items);
     }, [])
@@ -3396,10 +3435,14 @@ const EditTaskPopup = (Items: any) => {
                                     src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/32/icon_maill.png" />
                                 Share This Task
                             </span> ||
-                            <a target="_blank" className="mx-2" data-interception="off"
+
+                            {Items.Items.siteType == "Offshore Tasks" ? <a target="_blank" className="mx-2" data-interception="off"
+                                href={`${siteUrls}/Lists/SharewebQA/EditForm.aspx?ID=${EditData.ID}`}>
+                                Open Out-Of-The-Box Form
+                            </a> : <a target="_blank" className="mx-2" data-interception="off"
                                 href={`${siteUrls}/Lists/${Items.Items.siteType}/EditForm.aspx?ID=${EditData.ID}`}>
                                 Open Out-Of-The-Box Form
-                            </a>
+                            </a>}
                             <span >
                                 <button className="btn btn-primary px-3"
                                     onClick={UpdateTaskInfoFunction}>
@@ -3566,7 +3609,6 @@ const EditTaskPopup = (Items: any) => {
                 onRenderFooter={onRenderCustomFooterMain}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
-
                     <div className="modal-body mb-5">
                         <ul className="fixed-Header nav nav-tabs" id="myTab" role="tablist">
                             <button
@@ -3611,7 +3653,7 @@ const EditTaskPopup = (Items: any) => {
 
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
-                            <div className="tab-pane  show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
+                            <div className="tab-pane show active" id="BASICINFORMATION" role="tabpanel" aria-labelledby="BASICINFORMATION">
                                 <div className="row">
                                     <div className="col-md-5">
                                         <div className="col-12 ">
@@ -4417,7 +4459,10 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span onClick={() => openReplaceImagePopup(index)} title="Replace image"><TbReplace /> </span>
                                                                             <span className="mx-1" title="Delete" onClick={() => RemoveImageFunction(index, ImageDtl.ImageName, "Remove")}> | <RiDeleteBin6Line /> | </span>
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
-                                                                                <FaExpandAlt />
+                                                                                <FaExpandAlt /> |
+                                                                            </span>
+                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                                <BiInfoCircle />
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -4570,7 +4615,7 @@ const EditTaskPopup = (Items: any) => {
                         />
                     }
 
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} IsEmailCategoryTask={EmailStatus} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5554,7 +5599,10 @@ const EditTaskPopup = (Items: any) => {
                         <span style={{ color: 'white' }}>{HoverImageData[0]?.ImageName}</span>
                         <img className="img-fluid" style={{ width: '100%', height: "450px" }} src={HoverImageData[0]?.ImageUrl}></img>
                     </div>
-                    <footer className="justify-content-between d-flex pb-1 mx-2" style={{ color: "white" }}>
+                    {HoverImageData[0]?.Description != undefined ? <div className="bg-Ff mx-2 p-2 text-start">
+                        <span>{HoverImageData[0]?.Description ? HoverImageData[0]?.Description : ''}</span>
+                    </div> : null}
+                    <footer className="justify-content-between d-flex py-2 mx-2" style={{ color: "white" }}>
                         <span className="mx-1"> Uploaded By :
                             <span className="mx-1">
                                 <img style={{ width: "25px", borderRadius: "25px" }} src={HoverImageData[0]?.UserImage ? HoverImageData[0]?.UserImage : ''} />
@@ -5567,6 +5615,30 @@ const EditTaskPopup = (Items: any) => {
                     </footer>
                 </div>
             </div>
+
+            {/* ********************** This in Add Image Description Model ****************** */}
+            <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
+                <div className="modal-header mb-1">
+                    <h5 className="modal-title">Add Image Description</h5>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' /></span>
+                    <button type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                        onClick={closeAddImageDescriptionFunction}
+                    ></button>
+                </div>
+                <div className="modal-body">
+                    <div className='col'><textarea id="txtUpdateComment" rows={6}
+                        value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
+                        className="full-width"
+                        onChange={(e) => UpdateImageDescription(e)}></textarea></div>
+                </div>
+                <footer className='text-end mt-2'>
+                    <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                </footer>
+            </Modal>
 
             {/* ********************* this is Copy Task And Move Task panel ****************** */}
             <Panel

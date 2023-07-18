@@ -155,6 +155,7 @@ const Picker = (item: any) => {
             if (checkDataExistCount == 0) {
                 tempArray.push(item);
             }
+            SelectedCategoryBackupArray=select
             if (tempArray != undefined && tempArray.length > 0) {
                 SelectedCategoryBackupArray = SelectedCategoryBackupArray.concat(tempArray)
             } else {
@@ -272,7 +273,7 @@ const Picker = (item: any) => {
 
     const customFooter = () => {
         return (
-            <footer className={isServiceTask ? "serviepannelgreena" : ""}>
+            <footer className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "serviepannelgreena" : ""}>
                 <span>
                     <a className="siteColor mx-1" target="_blank" data-interception="off" href={`{}/SitePages/SmartMetadata.aspx`} >Manage Smart Taxonomy</a>
                 </span>
@@ -286,7 +287,7 @@ const Picker = (item: any) => {
 
     const customHeader = () => {
         return (
-            <div className={isServiceTask ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
+            <div className={isServiceTask ||item?.props?.Portfolio_x0020_Type=="Service" ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"} >
                 <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
                 <h2 className="heading">Select Category</h2>
                 </div>

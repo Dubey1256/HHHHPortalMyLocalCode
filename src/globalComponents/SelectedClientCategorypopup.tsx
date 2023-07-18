@@ -9,9 +9,17 @@ const SelectedClientCategoryPupup = (props: any) => {
     const [checked, setChecked] = React.useState(false);
    const getClientCategory=(data:any)=>{
      let parentcat:any=[]
-    data?.ClientCategory?.results?.map((items:any)=>{
-        parentcat.push(items)
-      })
+     if(  data?.ClientCategory?.results?.length>0){
+        data?.ClientCategory?.results?.map((items:any)=>{
+            parentcat.push(items)
+          })
+     }
+     if(data?.ClientCategory?.length>0){
+        data?.ClientCategory?.map((items:any)=>{
+            parentcat.push(items)
+          })
+     }
+   
       setClientCategory(parentcat)
    }
        React.useEffect(() =>{
@@ -31,14 +39,13 @@ const SelectedClientCategoryPupup = (props: any) => {
 
     const closeSelectedClientCategoryPupup = () => {
         setPopupSmartTaxanomy(false)
-        // props.callback(checkedData)
+        data.ClientCategory2={}
+        data.ClientCategory2={
+           results:[]
+        };
+         props.callback(data)
         checkedData=[];
-        // props.Call();
-        // NewArray = []
-        // setSelect([])
-        // item.closePopupCallBack();
-
-    }
+      }
     
     const handleChange = (items: any, e: any) => {
         setChecked(!checked);
@@ -60,20 +67,20 @@ const SelectedClientCategoryPupup = (props: any) => {
         data.ClientCategory2={}
         data.ClientCategory2={
            results:checkedData};
-    //    data.ClientCategory2.results=checkedData
-        props.callback(data)
+      props.callback(data)
         checkedData=[];
 
     }
     const customFooter = () => {
         return (
             <footer>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => saveCategories()}>
-                    OK
-                </button>
-                <button type="button" className="btn btn-primary float-end me-5" onClick={() => closeSelectedClientCategoryPupup()}>
+                 <button type="button" className="btn btn-default float-end mx-3" onClick={() => closeSelectedClientCategoryPupup()}>
                     Cancel
                 </button>
+                <button type="button" className="btn btn-primary float-end " onClick={() => saveCategories()}>
+                    OK
+                </button>
+               
             </footer>
         )
     }
@@ -88,7 +95,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                 onDismiss={closeSelectedClientCategoryPupup}
                 isBlocking={false}
                 onRenderFooter={customFooter}
-            // className={props?.props?.Portfolio_x0020_Type == 'Service'||props?.props?.Services?.length>0 ? "serviepannelgreena" : ""}
+            className={data?.Portfolio_x0020_Type == 'Service'|| data?.Services?.length>0 ? "serviepannelgreena" : ""}
             >
 
                 {allClientCategory?.map((item: any, index: any) => (
@@ -99,7 +106,7 @@ const SelectedClientCategoryPupup = (props: any) => {
                                 id={item?.Id}
                                 name={item?.Title}
                                 type="checkbox"
-                                
+                                className="form-check-input me-2"
                                 onChange={(e) => handleChange(item, e)}
                             />
                             {item?.Title}

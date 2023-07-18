@@ -50,14 +50,7 @@
         }
       ]
     },
-    "task-user-management-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/taskUserManagement/TaskUserManagementWebPart.js",
-          "manifest": "./src/webparts/taskUserManagement/TaskUserManagementWebPart.manifest.json"
-        }
-      ]
-    },
+    
     "taskprofile-web-part": {
       "components": [
         {
@@ -281,6 +274,14 @@
           "manifest": "./src/webparts/userTimeEntry/UserTimeEntryWebPart.manifest.json"
         }
       ]
+    },
+    "team-portfolio-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/teamPortfolio/TeamPortfolioWebPart.js",
+          "manifest": "./src/webparts/teamPortfolio/TeamPortfolioWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -307,7 +308,6 @@
     "ComponentPortfolioWebPartStrings": "lib/webparts/componentPortfolio/loc/{locale}.js",
     "ComponentProfileWebPartStrings": "lib/webparts/componentProfile/loc/{locale}.js",
     "ComponentEditPopupWebPartStrings": "lib/webparts/componentEditPopup/loc/{locale}.js",
-    "TaskUserManagementWebPartStrings": "lib/webparts/taskUserManagement/loc/{locale}.js",
     "TaskprofileWebPartStrings": "lib/webparts/taskprofile/loc/{locale}.js",
     "ComponentCommentsWebPartStrings": "lib/webparts/componentComments/loc/{locale}.js",
     "FeedbackWebPartStrings": "lib/webparts/TimeReport/loc/{locale}.js",
@@ -337,6 +337,7 @@
     "TeamleaderDashboardWebPartStrings": "lib/webparts/teamleaderDashboard/loc/{locale}.js",
     "TestWebPartWebPartStrings": "lib/webparts/testWebPart/loc/{locale}.js",
     "RootDashboardWebPartStrings": "lib/webparts/rootDashboard/loc/{locale}.js",
-    "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js"
+    "UserTimeEntryWebPartStrings": "lib/webparts/userTimeEntry/loc/{locale}.js",
+    "TeamPortfolioWebPartStrings": "lib/webparts/teamPortfolio/loc/{locale}.js"
   }
 }

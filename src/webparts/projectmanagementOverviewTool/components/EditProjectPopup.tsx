@@ -1,5 +1,5 @@
 import * as React from "react";
-// import ImagesC from "./Images";
+import * as Moment from 'moment';
 import {
   arraysEqual,
   Modal,
@@ -29,8 +29,128 @@ import Tooltip from "../../../globalComponents/Tooltip";
 // import ImagesC from "./Image";
 import { AllOut } from "@material-ui/icons";
 import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
-// import PortfolioTagging from "./PortfolioTagging"; // replace 
+// import PortfolioTagging from "./PortfolioTagging"; // replace
 import ServiceComponentPortfolioPopup from "../../../globalComponents/EditTaskPopup/ServiceComponentPortfolioPopup";
+
+// % complete save on the project popup
+
+interface EditableFieldProps {
+  listName: string;
+  itemId: number;
+  fieldName: string;
+  value: any;
+  onChange: (value: string) => void;
+  type: string;
+  web: string;
+}
+
+export const EditableField: React.FC<EditableFieldProps> = ({
+  listName,
+  itemId,
+  fieldName,
+  value,
+  onChange,
+  type,
+  web,
+}) => {
+  const [editing, setEditing] = React.useState(false);
+  const [fieldValue, setFieldValue] = React.useState(value);
+
+  const handleCancel = () => {
+    setEditing(false);
+    setFieldValue(value);
+  };
+
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFieldValue(event.target.value);
+  };
+  if (fieldName == "PercentComplete") {
+    const handleSave = async () => {
+      try {
+        setFieldValue(parseInt(fieldValue));
+        // if(type == "Number"){
+        //   setFieldValue(fieldValue/100);
+        // }
+        let valpercent = parseInt(fieldValue);
+        let webs = new Web(web);
+        await webs.lists
+          .getByTitle(listName)
+          .items.getById(itemId)
+          .update({
+            [fieldName]: valpercent / 100,
+          });
+
+        setEditing(false);
+        onChange(fieldValue);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (editing) {
+      return (
+        <div className="editcolumn ">
+          <span>
+            {" "}
+            <input
+              type={type}
+              value={fieldValue}
+              onChange={handleInputChange}
+            />
+          </span>
+          <span>
+            <a onClick={handleSave}>
+              <span
+                title="save"
+                className="svg__iconbox svg__icon--Save "
+              ></span>
+            </a>
+            <a onClick={handleCancel}>
+              <span
+                title="cancel"
+                className="svg__iconbox svg__icon--cross "
+              ></span>
+            </a>
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="input-group position-relative">
+        <span className="input-group-text ">
+          <input
+            type={type}
+            disabled={true}
+            value={fieldValue}
+            onChange={handleInputChange}
+            className="border-0 border-end"
+          />
+          <svg
+            className="ms-1"
+            onClick={handleEdit}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 48 48"
+            fill="none"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M33.5163 8.21948C33.058 8.34241 32.4072 8.6071 32.0702 8.80767C31.7334 9.00808 26.7046 13.9214 20.8952 19.7259L10.3328 30.2796L9.12891 35.1C8.46677 37.7511 7.95988 39.9549 8.0025 39.9975C8.04497 40.0399 10.2575 39.5397 12.919 38.8857L17.7581 37.6967L28.08 27.4328C33.7569 21.7875 38.6276 16.861 38.9036 16.4849C40.072 14.8925 40.3332 12.7695 39.5586 11.1613C38.8124 9.61207 37.6316 8.62457 36.0303 8.21052C34.9371 7.92775 34.5992 7.92896 33.5163 8.21948ZM35.7021 10.1369C36.5226 10.3802 37.6953 11.5403 37.9134 12.3245C38.2719 13.6133 38.0201 14.521 36.9929 15.6428C36.569 16.1059 36.1442 16.4849 36.0489 16.4849C35.8228 16.4849 31.5338 12.2111 31.5338 11.9858C31.5338 11.706 32.8689 10.5601 33.5598 10.2469C34.3066 9.90852 34.8392 9.88117 35.7021 10.1369ZM32.3317 15.8379L34.5795 18.0779L26.1004 26.543L17.6213 35.008L17.1757 34.0815C16.5838 32.8503 15.1532 31.437 13.9056 30.8508L12.9503 30.4019L21.3663 21.9999C25.9951 17.3788 29.8501 13.5979 29.9332 13.5979C30.0162 13.5979 31.0956 14.6059 32.3317 15.8379ZM12.9633 32.6026C13.8443 32.9996 14.8681 33.9926 15.3354 34.9033C15.9683 36.1368 16.0094 36.0999 13.2656 36.7607C11.9248 37.0836 10.786 37.3059 10.7347 37.2547C10.6535 37.1739 11.6822 32.7077 11.8524 32.4013C11.9525 32.221 12.227 32.2709 12.9633 32.6026Z"
+              fill="#333333"
+            />
+          </svg>
+        </span>
+      </div>
+    );
+  }
+};
+
+// % End of the project popup
 
 var PostTechnicalExplanations = "";
 var PostDeliverables = "";
@@ -59,7 +179,7 @@ function EditProjectPopup(item: any) {
   const [SharewebItemRank, setSharewebItemRank] = React.useState([]);
   const [isOpenPicker, setIsOpenPicker] = React.useState(false);
   const [IsComponent, setIsComponent] = React.useState(false);
-
+  const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
   const [SharewebComponent, setSharewebComponent] = React.useState("");
   const [SharewebCategory, setSharewebCategory] = React.useState("");
   const [CollapseExpend, setCollapseExpend] = React.useState(true);
@@ -82,16 +202,35 @@ function EditProjectPopup(item: any) {
     EditorState.createEmpty()
   );
 
-
   const [activePicker, setActivePicker] = React.useState(null);
-
+  const [PercentCompleteStatus, setPercentCompleteStatus] = React.useState('');
   const [datepicker, setdatepicker] = React.useState(false);
+  // Save % complete
+  const [Items, setItem] = React.useState("");
+  const handleFieldChange = (fieldName: any) => (e: any) => {
+    const updatedItem = { ...EditData[0], [fieldName]: e.target.value };
+    setItem(updatedItem);
+  };
 
   // Date picker closer
   const handlePickerFocus = (pickerName: any) => {
     setActivePicker(pickerName);
   };
 
+  const StatusArray = [
+    { value: 1, status: "1% For Approval", taskStatusComment: "For Approval" },
+    { value: 2, status: "2% Follow Up", taskStatusComment: "Follow Up" },
+    { value: 3, status: "3% Approved", taskStatusComment: "Approved" },
+    { value: 5, status: "5% Acknowledged", taskStatusComment: "Acknowledged" },
+    { value: 10, status: "10% working on it", taskStatusComment: "working on it" },
+    { value: 70, status: "70% Re-Open", taskStatusComment: "Re-Open" },
+    { value: 80, status: "80% In QA Review", taskStatusComment: "In QA Review" },
+    { value: 90, status: "90% Project completed", taskStatusComment: "Task completed" },
+    { value: 93, status: "93% For Review", taskStatusComment: "For Review" },
+    { value: 96, status: "96% Follow-up later", taskStatusComment: "Follow-up later" },
+    { value: 99, status: "99% Completed", taskStatusComment: "Completed" },
+    { value: 100, status: "100% Closed", taskStatusComment: "Closed" }
+  ]
   const handlePickerBlur = () => {
     setActivePicker(null);
   };
@@ -176,7 +315,7 @@ function EditProjectPopup(item: any) {
     if (CategoriesData != undefined) {
       CategoriesData.forEach(function (type: any) {
         CheckCategory.forEach(function (val: any) {
-          if (type.Id == val.Id ) {
+          if (type.Id == val.Id) {
             BackupCat.push(type.Id);
             setcheckedCat(true);
           }
@@ -189,33 +328,33 @@ function EditProjectPopup(item: any) {
     // setComponent(CompoenetItem => ([...CompoenetItem]));
   }, []);
 
-
-  const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-    if (functionType == 'close') {
-      setIsComponent(false);
-      setIsPortfolio(false);
-    } else {
-      if (Type === "Service") {
-        if (DataItem.length > 0) {
-          DataItem.map((selectedData: any) => {
-            TaggedServices.push(selectedData);
-          })
+  const ComponentServicePopupCallBack = React.useCallback(
+    (DataItem: any, Type: any, functionType: any) => {
+      if (functionType == "close") {
+        setIsComponent(false);
+        setIsPortfolio(false);
+      } else {
+        if (Type === "Service") {
+          if (DataItem.length > 0) {
+            DataItem.map((selectedData: any) => {
+              TaggedServices.push(selectedData);
+            });
+          }
+          setLinkedComponentData(TaggedServices);
         }
-        setLinkedComponentData(TaggedServices)
-      }
-      if (Type === "Component") {
-        if (DataItem?.length > 0) {
-          DataItem.map((selectedData: any) => {
-            TaggedComponents.push(selectedData);
-          })
+        if (Type === "Component") {
+          if (DataItem?.length > 0) {
+            DataItem.map((selectedData: any) => {
+              TaggedComponents.push(selectedData);
+            });
+          }
+          setSmartComponentData(TaggedComponents);
         }
-        setSmartComponentData(TaggedComponents);
+        setIsPortfolio(false);
       }
-      setIsPortfolio(false);
-    }
-  }, [])
-
-
+    },
+    []
+  );
 
   var isItemExists = function (arr: any, Id: any) {
     var isExists = false;
@@ -230,7 +369,10 @@ function EditProjectPopup(item: any) {
   const GetTaskUsers = async () => {
     let web = new Web(AllListId?.siteUrl);
     let taskUsers = [];
-    taskUsers = await web.lists.getById(AllListId?.TaskUsertListID).items.top(4999).get();
+    taskUsers = await web.lists
+      .getById(AllListId?.TaskUsertListID)
+      .items.top(4999)
+      .get();
     AllUsers = taskUsers;
     var UpdatedData: any = {};
     AllUsers.forEach(function (taskUser: any) {
@@ -451,6 +593,7 @@ function EditProjectPopup(item: any) {
     //     success: function (data) {
     var Tasks = componentDetails;
     $.each(Tasks, function (index: any, item: any) {
+      StatusAutoSuggestion(item?.PercentComplete!=undefined?item?.PercentComplete*100:null)
       item.DateTaskDueDate = new Date(item.DueDate);
       if (item.DueDate != null)
         item.TaskDueDate = moment(item.DueDate).format("MM-DD-YYYY");
@@ -479,6 +622,7 @@ function EditProjectPopup(item: any) {
         }
       }
       getpriority(item);
+      item.showdes = true;
       item.assigned = getMultiUserValues(item);
       if (item.ItemRank != undefined)
         item.ItemRankTitle = TaskItemRank[0].filter(
@@ -580,19 +724,12 @@ function EditProjectPopup(item: any) {
         // setCompletiondatenew(item.CompletedDate);
       }
       item.SmartCountries = [];
+     
       item.siteUrl = AllListId?.siteUrl;
       item["SiteIcon"] =
         item.siteType == "Master Tasks"
-          ? GetIconImageUrl(
-            item.siteType,
-            AllListId?.siteUrl,
-            undefined
-          )
-          : GetIconImageUrl(
-            item.siteType,
-            AllListId?.siteUrl,
-            undefined
-          );
+          ? GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined)
+          : GetIconImageUrl(item.siteType, AllListId?.siteUrl, undefined);
       if (item.Synonyms != undefined && item.Synonyms.length > 0) {
         item.Synonyms = JSON.parse(item.Synonyms);
       }
@@ -600,12 +737,12 @@ function EditProjectPopup(item: any) {
     //  deferred.resolve(Tasks);
     setComponent(Tasks);
     backcatss = BackupCat.filter((val: any, id: any, array: any) => {
-
       return array.indexOf(val) == id;
-
-    })
+    });
     //CheckCategory.forEach((val:any)=>{})
+
     setEditData(Tasks[0]);
+    
     setModalIsOpenToTrue(true);
 
     //  setModalIsOpenToTrue();
@@ -631,7 +768,7 @@ function EditProjectPopup(item: any) {
     smartmetaDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.SmartMetadataListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID,Title,IsVisible,ParentID,Parent/Id,Parent/Title,SmartSuggestions,TaxType,Description1,Item_x005F_x0020_Cover,listId,siteName,siteUrl,SortOrder,SmartFilters,Selectable"
       )
@@ -645,16 +782,19 @@ function EditProjectPopup(item: any) {
         if (val.TaxType == "Sites") {
           site.push(val);
         }
-        if (val.TaxType == "Categories" && (val.Title == "Phone" || val.Title == "Email Notification" || val.Title == "Approval" || val.Title == "Immediate")) {
+        if (
+          val.TaxType == "Categories" &&
+          (val.Title == "Phone" ||
+            val.Title == "Email Notification" ||
+            val.Title == "Approval" ||
+            val.Title == "Immediate")
+        ) {
           categoryhh.push(val);
         }
-
       });
       CheckCategory = categoryhh.filter((val: any, id: any, array: any) => {
-
         return array.indexOf(val) == id;
-
-      })
+      });
       site.forEach(function (val: any) {
         if (
           val.listId != undefined &&
@@ -719,7 +859,7 @@ function EditProjectPopup(item: any) {
     componentDetails = await web.lists
       //.getById('ec34b38f-0669-480a-910c-f84e92e58adf')
       .getById(AllListId?.MasterTaskListID)
-      .items//.getById(this.state.itemID)
+      .items //.getById(this.state.itemID)
       .select(
         "ID",
         "Title",
@@ -923,6 +1063,51 @@ function EditProjectPopup(item: any) {
   //         }
   //     });
   // }
+  const StatusAutoSuggestion = (percentValue: any) => {
+    setTaskStatusPopup(false)
+    let StatusInput = percentValue;
+    let TaskStatus = '';
+    let PercentCompleteStatus = '';
+    let value = Number(percentValue)
+    if (value <= 100) {
+      if (StatusInput > 0) {
+        if (StatusInput == 0) {
+          TaskStatus = 'Not Started'
+          PercentCompleteStatus = 'Not Started';
+
+        }
+        if (StatusInput < 70 && StatusInput > 10 || StatusInput < 80 && StatusInput > 70) {
+          TaskStatus = "In Progress";
+          PercentCompleteStatus = `${Number(StatusInput).toFixed(0)}% In Progress`;
+        } else {
+          StatusArray.map((percentStatus: any, index: number) => {
+            if (percentStatus.value == StatusInput) {
+              TaskStatus = percentStatus.taskStatusComment;
+              PercentCompleteStatus = percentStatus.status;
+            }
+          })
+          if (StatusInput == 10) {
+            EditData.CompletedDate = undefined;
+            if (EditData.StartDate == undefined) {
+              EditData.StartDate = Moment(new Date()).format("MM-DD-YYYY")
+            }
+          }
+        }
+        setPercentCompleteStatus(PercentCompleteStatus);
+        setEditData({ ...EditData, PercentComplete: value, Status: TaskStatus })
+      } else {
+        TaskStatus = '';
+        PercentCompleteStatus = '';
+        setPercentCompleteStatus(PercentCompleteStatus);
+      }
+    } else {
+      alert("Status not should be greater than 100");
+      setEditData({ ...EditData, Priority_x0020_Rank: 0 })
+    }
+
+
+    // value: 5, status: "05% Acknowledged", taskStatusComment: "Acknowledged"
+  }
   const setPriority = function (item: any, val: number) {
     item.Priority_x0020_Rank = val;
     getpriority(item);
@@ -967,21 +1152,32 @@ function EditProjectPopup(item: any) {
   const setPriorityNew = function (e: any, item: any) {
     item.Priority_x0020_Rank = e.target.value;
     if (item.Priority_x0020_Rank <= 10) {
-
-      if (item.Priority_x0020_Rank == 8 || item.Priority_x0020_Rank == 9 || item.Priority_x0020_Rank == 10) {
+      if (
+        item.Priority_x0020_Rank == 8 ||
+        item.Priority_x0020_Rank == 9 ||
+        item.Priority_x0020_Rank == 10
+      ) {
         item.Priority = "(1) High";
       }
-      if (item.Priority_x0020_Rank == 4 || item.Priority_x0020_Rank == 5 || item.Priority_x0020_Rank == 6 || item.Priority_x0020_Rank == 7) {
+      if (
+        item.Priority_x0020_Rank == 4 ||
+        item.Priority_x0020_Rank == 5 ||
+        item.Priority_x0020_Rank == 6 ||
+        item.Priority_x0020_Rank == 7
+      ) {
         item.Priority = "(2) Normal";
       }
-      if (item.Priority_x0020_Rank == 1 || item.Priority_x0020_Rank == 2 || item.Priority_x0020_Rank == 3 || item.Priority_x0020_Rank == 0) {
+      if (
+        item.Priority_x0020_Rank == 1 ||
+        item.Priority_x0020_Rank == 2 ||
+        item.Priority_x0020_Rank == 3 ||
+        item.Priority_x0020_Rank == 0
+      ) {
         item.Priority = "(3) Low";
       }
-
     } else {
-      item.Priority_x0020_Rank = ""
+      item.Priority_x0020_Rank = "";
       alert("Please Enter priority between 0 to 10");
-
     }
     // getpriority(item);
     setComponent((EditData) => [...EditData]);
@@ -999,8 +1195,6 @@ function EditProjectPopup(item: any) {
     setComponent((EditData) => [...EditData]);
   };
 
-
-
   const SaveData = async () => {
     var UploadImage: any = [];
 
@@ -1016,26 +1210,26 @@ function EditProjectPopup(item: any) {
         }
       });
       if (itemm.isChecked == true || itemm.isselected == true) {
-        array2.push(itemm)
+        array2.push(itemm);
       }
-    })
-  
-    if(array2 != undefined && array2.length>0 ){
-      array2.map((item:any)=>{
-         if(item.isselected == true || item.isChecked == true){
-          NewArray.push(item)
-         }
-      })
-    //  NewArray = array2
+    });
+
+    if (array2 != undefined && array2.length > 0) {
+      array2.map((item: any) => {
+        if (item.isselected == true || item.isChecked == true) {
+          NewArray.push(item);
+        }
+      });
+      //  NewArray = array2
     }
 
     if (NewArray != undefined && NewArray.length > 0) {
-      CheckCategory = []
+      CheckCategory = [];
       NewArray.map((NeitemA: any) => {
         CategoriesData.push(NeitemA);
       });
     } else {
-      CheckCategory = []
+      CheckCategory = [];
     }
     var categoriesItem = "";
     CategoriesData?.map((category: any) => {
@@ -1054,43 +1248,29 @@ function EditProjectPopup(item: any) {
     });
 
     if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
+      AssignedToIds=[]
       TaskAssignedTo.map((taskInfo) => {
         AssignedToIds.push(taskInfo.Id);
       });
     } else {
-      if (EditData.AssignedTo != undefined && EditData.AssignedTo?.length > 0) {
-        EditData.AssignedTo.map((taskInfo: any) => {
-          AssignedToIds.push(taskInfo.Id);
-        });
-      }
+      AssignedToIds=[]
     }
     if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
+      TeamMemberIds=[];
       TaskTeamMembers.map((taskInfo) => {
+        
         TeamMemberIds.push(taskInfo.Id);
       });
     } else {
-      if (
-        EditData.Team_x0020_Members != undefined &&
-        EditData.Team_x0020_Members?.length > 0
-      ) {
-        EditData.Team_x0020_Members.map((taskInfo: any) => {
-          TeamMemberIds.push(taskInfo.Id);
-        });
-      }
+      TeamMemberIds=[]
     }
     if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
+      ResponsibleTeamIds=[]
       TaskResponsibleTeam.map((taskInfo) => {
         ResponsibleTeamIds.push(taskInfo.Id);
       });
     } else {
-      if (
-        EditData.Responsible_x0020_Team != undefined &&
-        EditData.Responsible_x0020_Team?.length > 0
-      ) {
-        EditData.Responsible_x0020_Team.map((taskInfo: any) => {
-          ResponsibleTeamIds.push(taskInfo.Id);
-        });
-      }
+      ResponsibleTeamIds=[]
     }
     let selectedComponent: any[] = [];
     if (smartComponentData !== undefined && smartComponentData.length > 0) {
@@ -1151,9 +1331,15 @@ function EditProjectPopup(item: any) {
               : [],
         },
         Deliverable_x002d_Synonyms: Items.Deliverable_x002d_Synonyms,
-        StartDate: EditData.StartDate ? moment(EditData.StartDate).format("MM-DD-YYYY") : null,
-        DueDate: EditData.DueDate ? moment(EditData.DueDate).format("MM-DD-YYYY") : null,
-        CompletedDate: EditData.CompletedDate ? moment(EditData.CompletedDate).format("MM-DD-YYYY") : null,
+        StartDate: EditData.StartDate
+          ? moment(EditData.StartDate).format("MM-DD-YYYY")
+          : null,
+        DueDate: EditData.DueDate
+          ? moment(EditData.DueDate).format("MM-DD-YYYY")
+          : null,
+        CompletedDate: EditData.CompletedDate
+          ? moment(EditData.CompletedDate).format("MM-DD-YYYY")
+          : null,
         // Categories:EditData.smartCategories != undefined && EditData.smartCategories != ''?EditData.smartCategories[0].Title:EditData.Categories,
         Categories: categoriesItem ? categoriesItem : null,
         SharewebCategoriesId: { results: CategoryID },
@@ -1165,6 +1351,8 @@ function EditProjectPopup(item: any) {
         AdminStatus: Items.AdminStatus,
         Priority: Items.Priority,
         Mileage: Items.Mileage,
+        PercentComplete: Items?.PercentComplete ? (Items?.PercentComplete / 100) : null,
+        Status: Items?.Status ? Items?.Status : null,
         ValueAdded: Items.ValueAdded,
         Idea: Items.Idea,
         Background: Items.Background,
@@ -1310,6 +1498,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskAssignedTo(tempArray);
       console.log("Team Config  assigadf=====", tempArray);
+    }else{
+      setTaskAssignedTo([])
     }
     if (dt?.TeamMemberUsers?.length > 0) {
       let tempArray: any = [];
@@ -1322,6 +1512,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskTeamMembers(tempArray);
       console.log("Team Config member=====", tempArray);
+    }else{
+      setTaskTeamMembers([]);
     }
     if (dt?.ResponsibleTeam?.length > 0) {
       let tempArray: any = [];
@@ -1334,6 +1526,8 @@ function EditProjectPopup(item: any) {
       });
       setTaskResponsibleTeam(tempArray);
       console.log("Team Config reasponsible ===== ", tempArray);
+    }else{
+      setTaskResponsibleTeam([]);
     }
   };
   var itemInfo = {
@@ -1341,9 +1535,7 @@ function EditProjectPopup(item: any) {
       ? TeamConfigInfo.Portfolio_x0020_Type
       : "",
     Services: TeamConfigInfo ? TeamConfigInfo.Services : "",
-    siteUrl: TeamConfigInfo
-      ? TeamConfigInfo.siteUrl
-      : AllListId?.siteUrl,
+    siteUrl: TeamConfigInfo ? TeamConfigInfo.siteUrl : AllListId?.siteUrl,
     listName: TeamConfigInfo ? TeamConfigInfo.siteType : "",
     itemID: TeamConfigInfo ? TeamConfigInfo.Id : "",
   };
@@ -1363,23 +1555,40 @@ function EditProjectPopup(item: any) {
     }
     setComponent((EditData) => [...EditData]);
   };
+
   const onRenderCustomHeader = () => {
     return (
       <>
-        <div
-          style={{
-            marginRight: "auto",
-            fontSize: "20px",
-            fontWeight: "600",
-            paddingLeft: "25px"
-          }}
-        >
-          {`Project > ${EditData.Title}`}
+        <div className="align-items-center d-flex full-width justify-content-between">
+          <div className="ps-4">
+            {" "}
+            <ul className=" m-0 p-0 spfxbreadcrumb">
+              <li>
+                {/* if="Task.Portfolio_x0020_Type=='Component'  (Task.Item_x0020_Type=='Component Category')" */}
+
+                <a
+                  target="_blank"
+                  data-interception="off"
+                  href={`${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx`}
+                >
+                  Project
+                </a>
+              </li>
+              <li>
+                <a>{EditData.Title}</a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="feedbkicon">
+            {" "}
+            <Tooltip />{" "}
+          </div>
         </div>
-        <Tooltip />
       </>
     );
   };
+
   const deleteTask = async () => {
     var confirmDelete = confirm("Are you sure, you want to delete this?");
     if (confirmDelete) {
@@ -1397,20 +1606,19 @@ function EditProjectPopup(item: any) {
     }
   };
   var NewArray: any = [];
-  var array2:any=[];
-  const checkCat = (type: any,e:any) => {
-
+  var array2: any = [];
+  const checkCat = (type: any, e: any) => {
     const { checked } = e.target;
-    if(checked == true){
-      type.isselected = true
-      array2.push(type)
-    }else{
-      type.isselected = false
-      CheckCategory?.forEach((itemm:any,index:any)=>{
-            if(itemm.Id == type.Id){
-              itemm.isChecked = false
-            }
-          })
+    if (checked == true) {
+      type.isselected = true;
+      array2.push(type);
+    } else {
+      type.isselected = false;
+      CheckCategory?.forEach((itemm: any, index: any) => {
+        if (itemm.Id == type.Id) {
+          itemm.isChecked = false;
+        }
+      });
       // array2.push(type)
     }
     // else{
@@ -1425,10 +1633,7 @@ function EditProjectPopup(item: any) {
     //     }
     //   })
     // }
-
-
   };
-
 
   // const unTagService = (array: any, index: any) => {
   //   array.splice(index, 1);
@@ -1443,19 +1648,19 @@ function EditProjectPopup(item: any) {
 
   const RemoveSelectedServiceComponent = (DataId: any, ComponentType: any) => {
     let BackupArray: any = [];
-    let TempArray: any = []
+    let TempArray: any = [];
     if (ComponentType == "Service") {
-      BackupArray = TaggedServices
+      BackupArray = TaggedServices;
     }
     if (ComponentType == "Component") {
-      BackupArray = TaggedComponents
+      BackupArray = TaggedComponents;
     }
     if (BackupArray != undefined && BackupArray.length > 0) {
       BackupArray.map((componentData: any) => {
         if (DataId != componentData.Id) {
           TempArray.push(componentData);
         }
-      })
+      });
     }
     if (TempArray != undefined && TempArray.length >= 0) {
       if (ComponentType == "Service") {
@@ -1467,8 +1672,7 @@ function EditProjectPopup(item: any) {
         setSmartComponentData(TempArray);
       }
     }
-
-  }
+  };
   return (
     <>
       {console.log("Done")}
@@ -1512,7 +1716,6 @@ function EditProjectPopup(item: any) {
                     CONCEPT
                   </button>
                 </li>
-
               </ul>
               <div
                 className="tab-content border border-top-0 clearfix "
@@ -1605,7 +1808,10 @@ function EditProjectPopup(item: any) {
                                     <label className="form-label full-width">
                                       Component Portfolio
                                     </label>
-                                    <input type="text" className="form-control" />
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                    />
                                     <span className="input-group-text">
                                       <svg
                                         onClick={(e) =>
@@ -1635,7 +1841,8 @@ function EditProjectPopup(item: any) {
                                                 <div className="Component-container-edit-task d-flex justify-content-between my-1 block">
                                                   <a
                                                     style={{
-                                                      color: "#fff !important",
+                                                      color:
+                                                        "#fff !important",
                                                     }}
                                                     target="_blank"
                                                     href={`${AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.Id}`}
@@ -1643,7 +1850,15 @@ function EditProjectPopup(item: any) {
                                                     {com.Title}
                                                   </a>
                                                   <a>
-                                                    <span onClick={() => RemoveSelectedServiceComponent(com.Id, "Component")} className="bg-light svg__icon--cross svg__iconbox"></span>
+                                                    <span
+                                                      onClick={() =>
+                                                        RemoveSelectedServiceComponent(
+                                                          com.Id,
+                                                          "Component"
+                                                        )
+                                                      }
+                                                      className="bg-light svg__icon--cross svg__iconbox"
+                                                    ></span>
                                                     {/* <img
                                                       className="mx-2"
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
@@ -1664,7 +1879,10 @@ function EditProjectPopup(item: any) {
                                     <label className="form-label full-width">
                                       Service Portfolio
                                     </label>
-                                    <input type="text" className="form-control" />
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                    />
                                     <span className="input-group-text">
                                       <svg
                                         onClick={(e) =>
@@ -1692,7 +1910,6 @@ function EditProjectPopup(item: any) {
                                             return (
                                               <>
                                                 <div className="Component-container-edit-task block d-flex justify-content-between my-1">
-
                                                   <a
                                                     className="hreflink "
                                                     target="_blank"
@@ -1703,17 +1920,19 @@ function EditProjectPopup(item: any) {
                                                   </a>
                                                   <a>
                                                     <span
-                                                      onClick={() => RemoveSelectedServiceComponent(com.Id, "Service")}
+                                                      onClick={() =>
+                                                        RemoveSelectedServiceComponent(
+                                                          com.Id,
+                                                          "Service"
+                                                        )
+                                                      }
                                                       className="bg-light svg__icon--cross svg__iconbox"
-                                                    >
-
-                                                    </span>
+                                                    ></span>
                                                   </a>
                                                   {/* <img
                                                       src={`${AllListId?.siteUrl}/_layouts/images/delete.gif`}
                                                      
                                                     /> */}
-
                                                 </div>
                                               </>
                                             );
@@ -1733,13 +1952,24 @@ function EditProjectPopup(item: any) {
                               <label className="form-label  full-width">
                                 Start Date
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.StartDate ? moment(EditData.StartDate).format("YYYY-MM-DD") : ""}
-                                onChange={(e) => setEditData({
-                                  ...EditData, StartDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.StartDate
+                                    ? moment(EditData.StartDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    StartDate: e.target.value,
+                                  })
+                                }
                               />
-
                             </div>
                           </div>
                           <div className="col-sm-4 ps-0">
@@ -1747,11 +1977,23 @@ function EditProjectPopup(item: any) {
                               <label className="form-label  full-width">
                                 Due Date
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.DueDate ? moment(EditData.DueDate).format("YYYY-MM-DD") : ''}
-                                onChange={(e) => setEditData({
-                                  ...EditData, DueDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.DueDate
+                                    ? moment(EditData.DueDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    DueDate: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -1761,11 +2003,23 @@ function EditProjectPopup(item: any) {
                                 {" "}
                                 Completion Date{" "}
                               </label>
-                              <input type="date" className="form-control" max="9999-12-31"
-                                defaultValue={EditData.CompletedDate ? moment(EditData.CompletedDate).format("YYYY-MM-DD") : ''}
-                                onChange={(e) => setEditData({
-                                  ...EditData, CompletedDate: e.target.value
-                                })}
+                              <input
+                                type="date"
+                                className="form-control"
+                                max="9999-12-31"
+                                defaultValue={
+                                  EditData.CompletedDate
+                                    ? moment(EditData.CompletedDate).format(
+                                      "YYYY-MM-DD"
+                                    )
+                                    : ""
+                                }
+                                onChange={(e) =>
+                                  setEditData({
+                                    ...EditData,
+                                    CompletedDate: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -1922,7 +2176,9 @@ function EditProjectPopup(item: any) {
                                           className="form-check-input"
                                           defaultChecked={type.isChecked}
                                           type="checkbox"
-                                          onClick={(e:any) => checkCat(type,e)}
+                                          onClick={(e: any) =>
+                                            checkCat(type, e)
+                                          }
                                         />
                                         <label className="form-check-label">
                                           {type.Title}
@@ -2078,7 +2334,7 @@ function EditProjectPopup(item: any) {
                         </div>
                       </div>
                       <div className="col-sm-3 ">
-                        <div className="col" title="Priority">
+                        <div className="col">
                           <div className="input-group mb-2">
                             <label className="form-label  full-width">
                               Priority
@@ -2144,22 +2400,9 @@ function EditProjectPopup(item: any) {
                                     return (
                                       <a
                                         target="_blank"
-                                        href={
-                                          userDtl.Item_x0020_Cover
-                                            ? userDtl.Item_x0020_Cover.Url
-                                            : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
-                                        }
+        
                                       >
                                         <img
-                                          ui-draggable="true"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-placement="bottom"
-                                          title={
-                                            userDtl.Title ? userDtl.Title : ""
-                                          }
-                                          on-drop-success="dropSuccessHandler($event, $index, AssignedToUsers)"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
                                           style={{
                                             width: "35px",
                                             height: "35px",
@@ -2167,8 +2410,8 @@ function EditProjectPopup(item: any) {
                                             borderRadius: "50px",
                                           }}
                                           src={
-                                            userDtl.Item_x0020_Cover.Url
-                                              ? userDtl.Item_x0020_Cover.Url
+                                            userDtl?.Item_x0020_Cover?.Url
+                                              ? userDtl?.Item_x0020_Cover?.Url
                                               : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"
                                           }
                                         />
@@ -2177,6 +2420,26 @@ function EditProjectPopup(item: any) {
                                   }
                                 )}
                               </div>
+                            </div>
+                          </div>
+                          <div className="col mt-2">
+                            <div className="input-group">
+                              <label className="form-label full-width">Status</label>
+                              <input type="text" maxLength={3} placeholder="% Complete" className="form-control px-2"
+                                defaultValue={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                value={EditData?.PercentComplete != undefined ? Number(EditData.PercentComplete).toFixed(0) : null}
+                                onChange={(e) => StatusAutoSuggestion(e.target.value)} />
+                              <span className="input-group-text" title="Status Popup" onClick={() => setTaskStatusPopup(true)}>
+                                <span title="Edit Task" className="svg__iconbox svg__icon--editBox"></span>
+                                {/* <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7 21.9323V35.8647H13.3613H19.7226V34.7589V33.6532H14.3458H8.96915L9.0264 25.0837L9.08387 16.5142H24H38.9161L38.983 17.5647L39.0499 18.6151H40.025H41V13.3076V8H24H7V21.9323ZM38.9789 12.2586L39.0418 14.4164L24.0627 14.3596L9.08387 14.3027L9.0196 12.4415C8.98428 11.4178 9.006 10.4468 9.06808 10.2838C9.1613 10.0392 11.7819 9.99719 24.0485 10.0441L38.9161 10.1009L38.9789 12.2586ZM36.5162 21.1565C35.8618 21.3916 34.1728 22.9571 29.569 27.5964L23.4863 33.7259L22.7413 36.8408C22.3316 38.554 22.0056 39.9751 22.017 39.9988C22.0287 40.0225 23.4172 39.6938 25.1029 39.2686L28.1677 38.4952L34.1678 32.4806C41.2825 25.3484 41.5773 24.8948 40.5639 22.6435C40.2384 21.9204 39.9151 21.5944 39.1978 21.2662C38.0876 20.7583 37.6719 20.7414 36.5162 21.1565ZM38.5261 23.3145C39.2381 24.2422 39.2362 24.2447 32.9848 30.562C27.3783 36.2276 26.8521 36.6999 25.9031 36.9189C25.3394 37.0489 24.8467 37.1239 24.8085 37.0852C24.7702 37.0467 24.8511 36.5821 24.9884 36.0529C25.2067 35.2105 25.9797 34.3405 31.1979 29.0644C35.9869 24.2225 37.2718 23.0381 37.7362 23.0381C38.0541 23.0381 38.4094 23.1626 38.5261 23.3145Z" fill="#333333" /></svg> */}
+                              </span>
+                              {PercentCompleteStatus?.length > 0 ?
+                                <span className="full-width l-radio">
+                                  <input type='radio' className="form-check-input my-2" checked />
+                                  <label className="ps-2 pt-1">
+                                    {PercentCompleteStatus}
+                                  </label>
+                                </span> : null}
                             </div>
                           </div>
                         </div>
@@ -2244,8 +2507,7 @@ function EditProjectPopup(item: any) {
                                     <input
                                       type="checkbox"
                                       defaultChecked={
-                                        EditData.descriptionVerified ===
-                                        true
+                                        EditData.descriptionVerified === true
                                       }
                                     ></input>
                                     <span className="ps-1">Verified</span>
@@ -2257,16 +2519,13 @@ function EditProjectPopup(item: any) {
                                         ? EditData.Body
                                         : ""
                                     }
-                                    HtmlEditorStateChange={
-                                      HtmlEditorCallBack
-                                    }
+                                    HtmlEditorStateChange={HtmlEditorCallBack}
                                   ></HtmlEditorCard>
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -2281,7 +2540,8 @@ function EditProjectPopup(item: any) {
                   <div className="row">
                     <div className="col-sm-7">
                       <div className="row">
-                        <TeamConfigurationCard AllListId={AllListId}
+                        <TeamConfigurationCard
+                          AllListId={AllListId}
                           ItemInfo={item?.props}
                           parentCallback={DDComponentCallBack}
                         ></TeamConfigurationCard>
@@ -2289,9 +2549,6 @@ function EditProjectPopup(item: any) {
                       <div className="row">
                         <section className="accordionbox">
                           <div className="accordion p-0  overflow-hidden">
-
-
-
                             <div className="card shadow-none  mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -2412,8 +2669,6 @@ function EditProjectPopup(item: any) {
                               </div>
                             </div>
 
-
-
                             <div className="card shadow-none mb-2">
                               <div
                                 className="accordion-item border-0"
@@ -2480,8 +2735,6 @@ function EditProjectPopup(item: any) {
                     <div className="col-sm-5"></div>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
@@ -2537,7 +2790,8 @@ function EditProjectPopup(item: any) {
                     <span>
                       {" "}
                       {EditData.ID ? (
-                        <VersionHistoryPopup  siteUrls={AllListId?.siteUrl}
+                        <VersionHistoryPopup
+                          siteUrls={AllListId?.siteUrl}
                           taskId={EditData.ID}
                           listId={AllListId?.MasterTaskListID}
                         />
@@ -2575,7 +2829,6 @@ function EditProjectPopup(item: any) {
                     </span>
                     <span className="p-1">|</span>
                     <a
-
                       data-interception="off"
                       className="p-1"
                       href={`${AllListId?.siteUrl}/Lists/Master%20Tasks/EditForm.aspx?ID=${EditData.Id}`}
@@ -2612,10 +2865,49 @@ function EditProjectPopup(item: any) {
               ></ServiceComponentPortfolioPopup>
             )}
             {IsComponentPicker && (
-              <Picker props={SharewebCategory} AllListId={AllListId} Call={Call}></Picker>
+              <Picker
+                props={SharewebCategory}
+                AllListId={AllListId}
+                Call={Call}
+              ></Picker>
             )}
           </div>
         )}
+      </Panel>
+      {/* ***************** this is status panel *********** */}
+      <Panel
+        headerText={`Update Task Status`}
+        isOpen={TaskStatusPopup}
+        onDismiss={() => { setTaskStatusPopup(false) }}
+        isBlocking={TaskStatusPopup}
+      >
+        <div>
+          <div className="modal-body">
+            <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
+              <tbody>
+                {StatusArray?.map((item: any, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <div className="form-check l-radio">
+                          <input className="form-check-input"
+                            type="radio" checked={EditData.PercentComplete == item.value}
+                            onClick={() => StatusAutoSuggestion(item.value)} />
+                          <label className="form-check-label mx-2">{item.status}</label>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* <footer className="float-end">
+                        <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
+                            OK
+                        </button>
+                    </footer> */}
+        </div>
       </Panel>
     </>
   );

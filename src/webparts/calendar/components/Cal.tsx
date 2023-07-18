@@ -112,6 +112,7 @@ const App = (props: any) => {
   const [endDate, setEndDate]: any = React.useState(null);
   const [chkName, setChkName]: any = React.useState("");
   const [type, setType]: any = React.useState("");
+  const [dType, sedType]: any = React.useState("");
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   // const myButton = document.getElementById("myButton");
@@ -364,10 +365,16 @@ const App = (props: any) => {
   const minDate: Date = today;
 
   const leaveTypes = [
-    { key: "Event", text: "Event" },
-    { key: "Training", text: "Training " },
+    { key: "Sick", text: "Sick" },
+    // { key: "Training", text: "Training " },
     { key: "Planned Leave", text: "Planned" },
     { key: "Un-Planned", text: "Un-Planned" },
+    { key: "Restricted Holiday", text: "Restricted Holiday" },
+    { key: "LWP", text: "LWP" },
+  ];
+  const Designation = [
+    { key: "SPFx", text: "SPFx" },
+    { key: "Share-Web", text: "Share-Web " },
   ];
 
   const openm = () => {
@@ -379,6 +386,7 @@ const App = (props: any) => {
     setStartDate(null);
     setEndDate(null);
     setType("");
+    sedType("");
     setInputValueReason("");
   };
 
@@ -457,7 +465,7 @@ const App = (props: any) => {
       .expand("Author", "Editor")
       .get()
       .then((dataaa: any[]) => {
-        console.log("datata", dataaa);
+        console.log("datata----", dataaa);
 
         compareData = dataaa;
         // dataaa.EventDate
@@ -508,6 +516,7 @@ const App = (props: any) => {
           }
 
           const dataEvent = {
+            shortD: item.Title,
             iD: item.ID,
             title: a,
             start: startdate,
@@ -521,6 +530,7 @@ const App = (props: any) => {
             cTime: createdAt,
             mTime: modifyAt,
             Name: item.Name,
+            Designation: item.Designation,
           };
           // const create ={
           //   id:item.Id,
@@ -593,6 +603,7 @@ const App = (props: any) => {
             reason: inputValueReason,
             type: type,
             loc: location,
+            Designation: dType,
           };
 
           setDetails(newEvent);
@@ -619,6 +630,8 @@ const App = (props: any) => {
               (selectedTime + "" + ":00"),
 
             fAllDayEvent: allDay,
+
+            Designation: newEvent.Designation,
           };
 
           let web = new Web(props.props.siteUrl);
@@ -1080,6 +1093,7 @@ const App = (props: any) => {
       end: endDate,
       reason: inputValueReason,
       type: type,
+      Designation: dType,
       loc: location,
     };
     if (
@@ -1102,6 +1116,7 @@ const App = (props: any) => {
         Event_x002d_Type: newEvent.type,
 
         Description: newEvent.reason,
+        Designation: newEvent.Designation,
 
         EndDate:
           ConvertLocalTOServerDateToSave(newEvent.end, selectedTimeEnd) +
@@ -1126,6 +1141,7 @@ const App = (props: any) => {
 
   const handleDateClick = async (event: any) => {
     console.log(event);
+    setInputValueName(event.shortD);
     setshowRecurrence(false);
     setPeoplePickerShow(false);
     setShowRecurrenceSeriesInfo(false);
@@ -1135,7 +1151,8 @@ const App = (props: any) => {
     if (event.RecurrenceData) {
       setdisab(true);
       eventPass = event;
-      setInputValueName(event.title);
+      setInputValueName(event.shortD);
+      // setInputValueName(event.title);
       //setStartDate(event.start);
       //setEndDate(event.end);
       setdisabl(false);
@@ -1147,6 +1164,7 @@ const App = (props: any) => {
       createdBY = event.created;
       modofiedBy = event.modify;
       setType(event.eventType);
+      sedType(event.Designation);
       setInputValueReason(event.desc);
 
       const eventItem: any = await getEvent(event.iD);
@@ -1171,8 +1189,9 @@ const App = (props: any) => {
     localArr.map((item: any) => {
       if (item.iD == event.iD) {
         setdisab(true);
+
         eventPass = event;
-        setInputValueName(item.title);
+        setInputValueName(item.shortD);
         setStartDate(item.start);
         setEndDate(item.end);
         setdisabl(false);
@@ -1190,6 +1209,7 @@ const App = (props: any) => {
         MTime = date.format("HH:mm:ss");
         MDate = date.format("DD/MM/YYYY");
         setType(item.eventType);
+        sedType(item.Designation);
         setInputValueReason(item.desc);
         setRecurrenceData(item.RecurrenceData);
         setEditRecurrenceEvent(false);
@@ -1202,6 +1222,7 @@ const App = (props: any) => {
   const handleSelectSlot = (slotInfo: any) => {
     setSelectedPeople(props.props.context._pageContext._user.loginName);
     setPeopleName(props.props.context._pageContext._user.displayName);
+    setLocation("");
     setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
@@ -1339,20 +1360,33 @@ const App = (props: any) => {
   const closeModal = () => {
     setIsOpen(false);
   };
-
+  const emailCallback = React.useCallback(() => {
+    getData();
+  }, []);
   const emailComp = () => {
     const currentDate = new Date();
+    const currentDayEvents: any = [];
 
-    const currentDayEvents = chkName.filter(
-      (event: { start: moment.MomentInput }) =>
-        moment(event.start).isSame(currentDate, "day")
-    );
+    // const currentDayEvents = chkName.filter(
+    //   (event: { start: moment.MomentInput }) =>
+    //     moment(event.start).isSame(currentDate, "day")
+    // );
+
+    chkName.map((item: any) => {
+      if (item.start <= currentDate && currentDate <= item.end) {
+        currentDayEvents.push(item);
+      }
+    });
 
     console.log(currentDayEvents);
     setTodayEvent(currentDayEvents);
     setEmail(true);
   };
 
+  // var a:any=false
+  // if(a==true){
+  //   getData();
+  // }
   React.useEffect(() => {
     //void getSPCurrentTimeOffset();
     void getData();
@@ -1391,6 +1425,7 @@ const App = (props: any) => {
           Context={props.props.context}
           data={todayEvent}
           data2={details}
+          call={emailCallback}
         />
       ) : null}
 
@@ -1416,8 +1451,19 @@ const App = (props: any) => {
                 return (
                   <tr>
                     <td>{item.title}</td>
-                    <td><a href="#" onClick={() =>handleDateClick(item)}><span title="Edit" className="svg__iconbox svg__icon--edit"></span></a></td>
-                    <td><a href="#" onClick={deleteElement} ><span className="svg__iconbox svg__icon--trash"></span></a></td>
+                    <td>
+                      <a href="#" onClick={() => handleDateClick(item)}>
+                        <span
+                          title="Edit"
+                          className="svg__iconbox svg__icon--edit"
+                        ></span>
+                      </a>
+                    </td>
+                    <td>
+                      <a href="#" onClick={deleteElement}>
+                        <span className="svg__iconbox svg__icon--trash"></span>
+                      </a>
+                    </td>
                   </tr>
                 );
               })}
@@ -1567,8 +1613,14 @@ const App = (props: any) => {
           <Dropdown
             label="Leave Type"
             options={leaveTypes}
-            selectedKey={type}
+            defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
             onChange={(e, option) => setType(option.key)}
+          />
+          <Dropdown
+            label="Designation"
+            options={Designation}
+            selectedKey={dType}
+            onChange={(e, option) => sedType(option.key)}
           />
           <div className="col-md-12">
             <ReactQuill
@@ -1579,7 +1631,7 @@ const App = (props: any) => {
         </form>
 
         <br />
-        {!disabl ? (
+        {/* {!disabl ? (
           <PrimaryButton
             disabled={disabl}
             text="Delete"
@@ -1587,26 +1639,91 @@ const App = (props: any) => {
           />
         ) : (
           ""
-        )}
+        )} */}
+        {/* 
+        {!disabl ? <><PrimaryButton text="Save" onClick={updateElement} />
+        <PrimaryButton text="Cancel" onClick={closem}/>
+        </>: ""}
+        
+        {!disabl ? (<>
+          <div>
+            Created {CDate} {CTime} by {createdBY}
+          </div>
+          <div>
+            Last Modified {MDate} {MTime} by {modofiedBy}
+          </div>
+         
+          <a href="#" onClick={deleteElement}>
+          <span className="svg__iconbox svg__icon--trash"></span> Delete this Item
+        </a>
+          </>) : (
+          ""
+        )} */}
 
-        {!disabl ? <PrimaryButton text="Update" onClick={updateElement} /> : ""}
+        {/* {!disabl ? (
+          
+        ) : (
+          ""
+        )} */}
+        {/* <br />
+        {!disab ? <><PrimaryButton text="Submit" onClick={saveEvent} />
+        <PrimaryButton text="Cancel" onClick={closem}/>
+        </> : ""} */}
+
         {!disabl ? (
-          <p>
-            Created By: {createdBY} On {CDate} at {CTime}
-          </p>
+          <footer>
+            <div className="align-items-center d-flex justify-content-between">
+              <div>
+                <div className="">
+                  Created {CDate} {CTime} by {createdBY}
+                </div>
+                <div>
+                  Last Modified {MDate} {MTime} by {modofiedBy}
+                </div>
+                <div>
+                  <a href="#" onClick={deleteElement}>
+                    <span className="svg__iconbox svg__icon--trash"></span>{" "}
+                    Delete this Item
+                  </a>
+                </div>
+              </div>
+              <div>
+                <button
+                  className="btn btn-primary px-3"
+                  onClick={updateElement}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-default ms-1 px-3"
+                  onClick={closem}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </footer>
         ) : (
           ""
         )}
 
-        {!disabl ? (
-          <p>
-            Modified By: {modofiedBy} On {MDate} at {MTime}
-          </p>
+        {!disab ? (
+          <div>
+            <button className="btn btn-primary px-3" onClick={saveEvent}>
+              Save
+            </button>
+            <button
+              type="button"
+              className="btn btn-default ms-1 px-3"
+              onClick={closem}
+            >
+              Cancel
+            </button>
+          </div>
         ) : (
           ""
         )}
-        <br />
-        {!disab ? <PrimaryButton text="Submit" onClick={saveEvent} /> : ""}
       </Panel>
     </div>
   );

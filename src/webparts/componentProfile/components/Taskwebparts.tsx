@@ -22,12 +22,12 @@ import { GlobalConstants } from "../../../globalComponents/LocalCommon";
 import pnp, { Web, SearchQuery, SearchResults, UrlException } from "sp-pnp-js";
 import PortfolioStructureCreationCard from "../../../globalComponents/tableControls/PortfolioStructureCreation";
 import ShowTaskTeamMembers from "../../../globalComponents/ShowTaskTeamMembers";
-import HighlightableCell from "../../componentPortfolio/components/highlight";
 import ExpndTable from "../../../globalComponents/ExpandTable/Expandtable";
 import { Panel, PanelType } from "office-ui-fabric-react";
 import CreateActivity from "../../servicePortfolio/components/CreateActivity";
 import CreateWS from "../../servicePortfolio/components/CreateWS";
-import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+// import SelectedClientCategoryPupup1 from "../../../globalComponents/SelectedClientCategorypopup";
+// import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
 
 import {
   Column,
@@ -51,6 +51,10 @@ import Loader from "react-loader";
 import ShowTeamMembers from "../../../globalComponents/ShowTeamMember";
 import ShowClintCatogory from "../../../globalComponents/ShowClintCatogory";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
+import ReactPopperTooltip from "../../../globalComponents/Hierarchy-Popper-tooltip";
+// import HighlightableCell from "../../../globalComponents/highlight";
+import HighlightableCell from "../../componentPortfolio/components/highlight";
+
 
 ///TanstackTable filter And CheckBox 
 declare module "@tanstack/table-core" {
@@ -171,7 +175,7 @@ var siteConfig: any = [];
 var IsUpdated: any = "";
 let serachTitle: any = "";
 var MeetingItems: any = [];
-let MeetingItemsParentcat:any=[];
+// let MeetingItemsParentcat:any=[];
 var childsData: any = [];
 var selectedCategory: any = [];
 var AllItems: any = [];
@@ -183,8 +187,10 @@ let countaa = 0;
 let Itemtypes: any;
 let globalFilterHighlited: any;
 let SmartMetaData:any=[];
-let selectedClientCategoryPopup:any=false;
-
+// let selectedClientCategoryPopup:any=false;
+let activity = 0;
+let workstrim = 0;
+let task = 0;
 export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   if (countaa == 0) {
     ParentDs = props?.Id
@@ -204,7 +210,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [checkCounter, setCheckCounter] = React.useState(true)
   const [checkData, setcheckData] = React.useState([])
   const [ShowTeamPopup, setShowTeamPopup] = React.useState(false);
-  const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
+  // const[selectedClientCategory,setSelectedClientCategory]=React.useState([]);
   // const[selectedClientCategoryPopup,setSelectedClientCategoryPopup]=React.useState(false);
 
 
@@ -249,8 +255,165 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const [ResturuningOpen, setResturuningOpen] = React.useState(false);
   const [RestructureChecked, setRestructureChecked] = React.useState([]);
   const [ChengedItemTitl, setChengedItemTitle] = React.useState("");
+  const [componentRestruct, setComponentRestruct]: any = React.useState(false);
 
   // SmartTotalTime
+
+  // Popover start 
+
+  function extractValueShareWebTaskId(str: any) {
+    const regex = /T(\d+)/;
+    const match = str.match(regex);
+
+    if (match && match[0]) {
+      return match[0];
+    }
+
+    return '';
+  }
+
+
+  React.useEffect(() => {
+    FindAWTDataCount();
+  }, [data])
+  const FindAWTDataCount = () => {
+    data?.map((Com) => {
+      Com.toolTitle = Com.Title;
+      Com.toolSharewebId = Com.PortfolioStructureID;
+      Com?.subRows?.map((Sub: any) => {
+
+        if (Sub?.Item_x0020_Type == "SubComponent") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.PortfolioStructureID;
+        }
+        if (Sub?.Item_x0020_Type == "Feature") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.PortfolioStructureID;
+        }
+        if (Sub?.SharewebTaskType?.Title === "Activities") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Sub.ShowTooltipSharewebId;
+          activity = activity + 1;
+        }
+        if (Sub?.SharewebTaskType?.Title == "Workstream") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          // Sub.toolSharewebId = Sub.PortfolioStructureID;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          workstrim = workstrim + 1;
+        }
+        if (Sub?.SharewebTaskType?.Title == "Task") {
+          Sub.toolTitle = Com.Title + ' > ' + Sub.Title;
+          Sub.toolSharewebId = Com.PortfolioStructureID + '-' + Sub?.Shareweb_x0020_ID;
+          task = task + 1;
+        }
+
+        Sub?.subRows?.map((feat: any) => {
+          if (feat?.Item_x0020_Type == "SubComponent") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.PortfolioStructureID;
+          }
+          if (feat?.Item_x0020_Type == "Feature") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.PortfolioStructureID;
+          }
+          if (feat?.SharewebTaskType?.Title == "Activities") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = feat.ShowTooltipSharewebId;
+            activity = activity + 1;
+          }
+          if (feat?.SharewebTaskType?.Title == "Workstream") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + feat?.Shareweb_x0020_ID?.slice(-2);
+            workstrim = workstrim + 1;
+          }
+          if (feat?.SharewebTaskType?.Title == "Task") {
+            feat.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title;
+            feat.toolSharewebId = Sub.toolSharewebId + '-' + extractValueShareWebTaskId(feat?.Shareweb_x0020_ID);
+            task = task + 1;
+          }
+          feat?.subRows?.map((acti: any) => {
+            if (Sub?.Item_x0020_Type == "SubComponent") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.PortfolioStructureID;
+
+            }
+            if (Sub?.Item_x0020_Type == "Feature") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.PortfolioStructureID;
+
+            }
+            if (acti?.SharewebTaskType?.Title == "Activities") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = acti.ShowTooltipSharewebId;
+              activity = activity + 1;
+            }
+            if (acti?.SharewebTaskType?.Title == "Workstream") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = feat.toolSharewebId + '-' + acti?.Shareweb_x0020_ID?.slice(-2);
+              workstrim = workstrim + 1;
+            }
+            if (acti?.SharewebTaskType?.Title == "Task") {
+              acti.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title;
+              acti.toolSharewebId = feat.toolSharewebId + '-' + extractValueShareWebTaskId(acti?.Shareweb_x0020_ID)
+              task = task + 1;
+            }
+            acti?.subRows?.map((works: any) => {
+              if (Sub?.Item_x0020_Type == "SubComponent") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.PortfolioStructureID;
+              }
+              if (Sub?.Item_x0020_Type == "Feature") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.PortfolioStructureID;
+              }
+              if (works?.SharewebTaskType?.Title == "Activities") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = works.ShowTooltipSharewebId;
+                activity = activity + 1;
+              }
+              if (works?.SharewebTaskType?.Title == "Workstream") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID?.slice(-2);
+                workstrim = workstrim + 1;
+              }
+              if (works?.SharewebTaskType?.Title == "Task") {
+                works.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title;
+                works.toolSharewebId = acti.toolSharewebId + '-' + works?.Shareweb_x0020_ID;
+                task = task + 1;
+              }
+              works?.subRows?.map((taskss: any) => {
+                if (Sub?.Item_x0020_Type == "SubComponent") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.PortfolioStructureID
+                }
+                if (Sub?.Item_x0020_Type == "Feature") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.PortfolioStructureID
+                }
+                if (taskss?.SharewebTaskType?.Title == "Activities") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = taskss.ShowTooltipSharewebId;
+                  activity = activity + 1;
+                }
+                if (taskss?.SharewebTaskType?.Title == "Workstream") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + taskss?.Shareweb_x0020_ID?.slice(-2);
+                  workstrim = workstrim + 1;
+                }
+                if (taskss?.SharewebTaskType?.Title == "Task") {
+                  taskss.toolTitle = Com.Title + ' > ' + Sub.Title + ' > ' + feat.Title + ' > ' + acti.Title + ' > ' + works.Title + ' > ' + taskss.Title;
+                  taskss.toolSharewebId = works.toolSharewebId + '-' + extractValueShareWebTaskId(taskss?.Shareweb_x0020_ID);
+                  task = task + 1;
+                }
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+
+  // Popover end 
 
 
   const SmartMetaDatas = async () => {
@@ -337,9 +500,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('TaskTimesheet')/items?$select=${select}` }
       ];
     } else {
-      allurls = [
-        { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
-      ];
+      if(listName != undefined){
+        allurls = [
+          { Url: `${items.siteUrl}/_api/web/lists/getbyTitle('${listName}')/items?$select=${select}` }
+        ];
+      }
+     
     }
 
 
@@ -395,11 +561,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           FinalTotalTime = TotalTimeData / 60;
         }
       } catch (error) {
-        console.error("Error:", error);
+        // console.error("Error:", error);
       }
     }
 
-    console.log(FinalTotalTime);
+    // console.log(FinalTotalTime);
     return FinalTotalTime;
   };
 
@@ -467,9 +633,9 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             marginLeft: "20px",
           }}
         >
-          <span>{`Create Activity ${MeetingItems[0]?.Title}`}</span>
+          <span>{`Create  ${IsUpdated} item in ${MeetingItems[0]?.PortfolioStructureID} ${MeetingItems[0]?.Title}`}</span>
         </div>
-        <Tooltip ComponentId={MeetingItems[0]?.Id} />
+        <Tooltip ComponentId="1746" />
       </div>
     );
   };
@@ -1802,6 +1968,8 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       setShowTeamMemberOnCheck(true)
     } else {
       setcheckData([])
+      MeetingItems=[]
+      childsData=[]
       setShowTeamMemberOnCheck(false)
     }
     console.log("itrm: any, child: any, eTarget: any", itrm, child, eTarget)
@@ -1847,7 +2015,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       }
       $('#ClientCategoryPopup').hide();
     }
-
+    setComponentRestruct(false);
     // let list = [...checkedList];
     let list: any = [];
     var flag = true;
@@ -2389,7 +2557,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         AllItems.forEach((comp: any, index: any) => {
           // comp.downArrowIcon =comp.downArrowIcon;
           if (comp?.Id != undefined && item.props.SelectedItem != undefined && comp?.Id === item.props.SelectedItem?.Id) {
-            comp.childsLength = item.props.SelectedItem.subRows.length;
+            comp.childsLength = item.props?.SelectedItem?.subRows?.length;
             comp.show = comp.show == undefined ? false : comp.show
             comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
             comp.RightArrowIcon = item.props.SelectedItem.RightArrowIcon;
@@ -2399,7 +2567,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           if (comp.subRows != undefined && comp.subRows.length > 0) {
             comp.subRows.forEach((subcomp: any, index: any) => {
               if (subcomp?.Id != undefined && item.props.SelectedItem != undefined && subcomp?.Id === item.props.SelectedItem?.Id) {
-                subcomp.childsLength = item.props.SelectedItem.subRows.length;
+                subcomp.childsLength = item?.props?.SelectedItem?.subRows?.length;
                 subcomp.show = subcomp.show == undefined ? false : subcomp.show
                 subcomp.subRows = item.props.SelectedItem.subRows;
                 comp.downArrowIcon = item.props.SelectedItem.downArrowIcon;
@@ -2527,13 +2695,20 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     } else {
       if (MeetingItems[0] != undefined) {
         let parentcat:any=[];
-          if(MeetingItems[0]?.ClientCategory!=undefined && MeetingItems[0]?.ClientCategory?.results?.length>0){
-            MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
-              parentcat.push(items)
-            })
-            setSelectedClientCategory(parentcat)
-            selectedClientCategoryPopup=true
-          }
+          // if(MeetingItems[0]?.ClientCategory!=undefined && (MeetingItems[0]?.ClientCategory?.results?.length>0||MeetingItems[0]?.ClientCategory?.length>0)){
+          //   if(MeetingItems[0]?.ClientCategory?.results?.length>0){
+          //     MeetingItems[0]?.ClientCategory?.results?.map((items:any)=>{
+          //       parentcat.push(items)
+          //     })
+          //   }else{
+          //     MeetingItems[0]?.ClientCategory?.map((items:any)=>{
+          //       parentcat.push(items)
+          //     })
+          //   }
+           
+          //   setSelectedClientCategory(parentcat)
+          //   selectedClientCategoryPopup=true
+          // }
         if (items != undefined && items.length > 0) {
           MeetingItems[0].ClientCategory = [];
           items.forEach((val: any) => {
@@ -2543,6 +2718,12 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (MeetingItems[0].SharewebTaskType != undefined) {
           
           if (MeetingItems[0].SharewebTaskType.Title == "Activities") {
+            // selectedClientCategoryPopup=true
+            // if(selectedClientCategoryPopup==false){
+              
+            //   setWSPopup(true);
+             
+            // }
             setWSPopup(true);
           }
         }
@@ -2550,13 +2731,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         if (
           MeetingItems != undefined &&
           MeetingItems[0].SharewebTaskType?.Title == "Workstream"
+          
         ) {
           setActivityPopup(true);
         }
 
         if (
           MeetingItems[0].SharewebTaskType == undefined &&
-          childsData[0] == undefined&& selectedClientCategoryPopup==false
+          childsData[0] == undefined
         ) {
           setActivityPopup(true);
         }
@@ -2567,25 +2749,42 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       childsData[0] != undefined &&
       childsData[0].SharewebTaskType != undefined
     ) {
+      let parentcat:any=[];
+      // if( childsData[0]?.ClientCategory!=undefined &&  childsData[0]?.ClientCategory?.length>0){
+      //   childsData[0]?.ClientCategory?.map((items:any)=>{
+      //     parentcat.push(items)
+      //   })
+      //   setSelectedClientCategory(parentcat)
+      //   selectedClientCategoryPopup=true
+      // }
+      MeetingItems.push(childsData[0]);
       if (childsData[0].SharewebTaskType.Title == "Activities") {
+        // if(selectedClientCategoryPopup==false){
+        // setWSPopup(true);
+        // }
         setWSPopup(true);
-        MeetingItems.push(childsData[0]);
         //setMeetingItems(childsData)
       }
       if (
         childsData[0] != undefined &&
         childsData[0].SharewebTaskType.Title == "Workstream"
       ) {
-        //setActivityPopup(true)
-        childsData[0].NoteCall = "Task";
-        setMeetingPopup(true);
+        childsData[0].ClientTime=JSON.parse(childsData[0].ClientTime)
         MeetingItems.push(childsData[0]);
+        //setActivityPopup(true)
+       
+          childsData[0].NoteCall = "Task";
+          setMeetingPopup(true);
+         
+       
+       
       }
     }
   };
   const buttonRestructuring = () => {
     var ArrayTest: any = [];
     //  if (checkedList != undefined && checkedList.length === 1) {
+      setComponentRestruct(true);
     if (
       checkedList.length > 0 &&
       checkedList[0].subRows != undefined &&
@@ -2618,14 +2817,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       checkedList[0].Item_x0020_Type === "SubComponent"
     ) {
       maidataBackup.forEach((obj) => {
-        //  obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id) {
+          obj.isRestructureActive = true;
+        if (obj?.Id === checkedList[0]?.Id && obj.Item_x0020_Type != 'Task') {
           obj.isRestructureActive = false;
           ArrayTest.push(...[obj]);
         }
         if (obj.subRows != undefined && obj.subRows.length > 0) {
           obj.subRows.forEach((sub: any) => {
-            if (sub?.Id === checkedList[0]?.Id) {
+            if (sub?.Id === checkedList[0]?.Id && sub.Item_x0020_Type != 'Task') {
               obj.isRestructureActive = false;
               ArrayTest.push(...[obj]);
               ArrayTest.push(...[sub]);
@@ -2641,14 +2840,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     ) {
       maidataBackup.forEach((obj) => {
         obj.isRestructureActive = true;
-        if (obj?.Id === checkedList[0]?.Id) {
+        if (obj?.Id === checkedList[0]?.Id && obj.Item_x0020_Type != 'Task') {
           obj.isRestructureActive = false;
         }
 
         if (obj.subRows != undefined && obj.subRows.length > 0) {
           obj.subRows.forEach((sub: any) => {
             sub.isRestructureActive = true;
-            if (sub?.Id === checkedList[0]?.Id) {
+            if (sub?.Id === checkedList[0]?.Id && sub.Item_x0020_Type != 'Task') {
               sub.isRestructureActive = false;
               obj.isRestructureActive = false;
               ArrayTest.push(...[obj]);
@@ -2656,7 +2855,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
             }
             if (sub.subRows != undefined && sub.subRows.length > 0) {
               sub.subRows.forEach((newsub: any) => {
-                if (newsub?.Id === checkedList[0]?.Id) {
+                if (newsub?.Id === checkedList[0]?.Id && newsub.Item_x0020_Type != 'Task') {
                   ArrayTest.push(...[obj]);
                   ArrayTest.push(...[sub]);
                   ArrayTest.push(...[newsub]);
@@ -2761,18 +2960,19 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     var TestArray: any = [];
     setResturuningOpen(true);
     maidataBackup.forEach((obj) => {
-      if (obj?.Id === item?.Id) TestArray.push(obj);
+      if (obj?.Id === item?.Id)
+        TestArray.push(obj);
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
           sub.isRestructureActive = true;
-          if (sub?.Id === item?.Id) {
+          if (sub?.Id === item?.Id && sub.Item_x0020_Type != 'Task') {
             //TestArray.push(obj)
             TestArray.push(...[obj]);
             TestArray.push(...[sub]);
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
-              if (newsub?.Id === item?.Id) {
+              if (newsub?.Id === item?.Id && newsub.Item_x0020_Type != 'Task') {
                 TestArray.push(...[obj]);
                 TestArray.push(...[sub]);
                 TestArray.push(...[newsub]);
@@ -2790,12 +2990,14 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           ? "Component"
           : checkedList[0].Item_x0020_Type;
     let Items: any = [];
-    Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
+    if (OldArrayBackup.length > 1)
+      Items.push(OldArrayBackup[OldArrayBackup.length - 1]);
+    else Items = checkedList;
     setRestructureChecked(Items);
     if (TestArray.length === 0) {
       OldArrayBackup.unshift(props);
       TestArray.push(props);
-    }
+    }else OldArrayBackup.unshift(props);
     //     setNewArrayBackup(NewArrayBackup => ([...props]));
     //    else
     setNewArrayBackup((NewArrayBackup) => [...TestArray]);
@@ -2980,7 +3182,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   const UpdateRestructure = async function () {
     let PortfolioStructureIDs: any = "";
     var Item: any = "";
-    let flag: any = false;
+    let flag: any = true;
     let ChengedItemTitle: any = "";
     // if (ChengedItemTitle === '' && RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].Item_x0020_Type == 'Component') {
     //     ChengedItemTitle = RestructureChecked[0].Item_x0020_Type;
@@ -3027,6 +3229,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
     maidataBackup.forEach((obj) => {
       if (obj?.Id === newItem?.Id) {
         PortfolioLevelNum = obj.subRows.length + 1;
+        flag = false;
       }
       if (obj.subRows != undefined && obj.subRows.length > 0) {
         obj.subRows.forEach((sub: any) => {
@@ -3035,6 +3238,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               if (leng.Item_x0020_Type === newItem.Item_x0020_Type) count++;
             });
             PortfolioLevelNum = count + 1;
+            flag = false;
           }
           if (sub.subRows != undefined && sub.subRows.length > 0) {
             sub.subRows.forEach((newsub: any) => {
@@ -3044,6 +3248,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     count++;
                 });
                 PortfolioLevelNum = count + 1;
+                flag = false;
               }
             });
           }
@@ -3075,7 +3280,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       // if (Item != undefined)
       //     PortfolioStructureIDs = Item.PortfolioStructureID + '-' + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
     }
+    if (flag === true) {
+      let findItem = maidataBackup.filter((obj: any) => obj.Item_x0020_Type === checkedList[0]?.Item_x0020_Type)
+      var result = findItem[findItem.length - 1];
+      PortfolioLevelNum = result.PortfolioLevel + 1
+      PortfolioStructureIDs = Item.PortfolioStructureID + "-" + ChengedItemTitle.slice(0, 1) + PortfolioLevelNum;
 
+    }
     var UploadImage: any = [];
 
     var item: any = {};
@@ -3107,6 +3318,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           //setModalIsOpenToFalse();
         });
     }
+    setComponentRestruct(false);
     if (ChengedItemTitl != undefined && ChengedItemTitl != "") {
       let web = new Web(NextProp?.siteUrl);
       await web.lists
@@ -3555,11 +3767,16 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 145,
       },
       {
-        accessorKey: "Shareweb_x0020_ID",
+        accessorFn: (row) => row?.Shareweb_x0020_ID,
+        cell: ({ row, getValue }) => (
+          <>
+            <ReactPopperTooltip ShareWebId={getValue()} row={row} />
+          </>
+        ),
+        id: "Shareweb_x0020_ID",
         placeholder: "ID",
         header: "",
         size: 130,
-        resetColumnFilters: false,
       },
       {
         accessorFn: (row) => row?.Title,
@@ -3746,6 +3963,28 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         size: 1,
       },
       {
+        header: ({ table }: any) => (
+          <>
+            {
+              componentRestruct ?
+                <span onClick={() => OpenModal(props)}>
+                  <img
+                    className="icon-sites-img"
+                    src={IsUpdated == "Service" ? 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Service_Icons/Restructuring_Tool.png' : 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SiteCollectionImages/ICONS/Shareweb/Restructuring_Tool.png'}
+
+                  />
+                </span>
+                : ''
+            }
+
+          </>
+        ),
+        id: "row?.original.Id",
+        canSort: false,
+        placeholder: "",
+        size: 1,
+      },
+      {
         cell: ({ row, getValue }) => (
           <>
 
@@ -3854,6 +4093,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
         onChangeHandler(itrm, props, eTarget, table?.getSelectedRowModel()?.flatRows);
       }
     } else {
+      childsData=[]
       MeetingItems = [];
       setcheckData([])
       setCheckedList([]);
@@ -3946,36 +4186,39 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
   }, [Iconssc]);
 
  
-  const parentClientCat = React.useCallback((items:any) => {
+  // const parentClientCat = React.useCallback((items:any) => {
 
-    console.log(items)
+  //   console.log(items)
   
-    if(items!=undefined ){
+  //   if(items!=undefined ){
+  // console.log(selectedClientCategory)
+  //  MeetingItemsParentcat[0]=items
   
-      // setSelectedClientCategory(items)
-  
-      console.log(selectedClientCategory)
-  
-      // MeetingItemsParentcat[0]= {...MeetingItemsParentcat[0],...MeetingItems[0]}
-  
-      MeetingItemsParentcat[0]=items
-  
-    }
-  
-      selectedClientCategoryPopup=false;
-  
-  
-  
-  
-      setActivityPopup(true);
-  
-     
-  
-      // setSelectedClientCategory(items)
+  //   }
+  //  selectedClientCategoryPopup=false;
+  //  if(items?.SharewebTaskType?.Title == "Workstream"){
+  //       items.NoteCall="Task"
+  //       setMeetingPopup(true);
+  //     }
+      
+  //     if(items?.SharewebTaskType?.Title == "Activities"){
+  //       setWSPopup(true);
+         
+  //     }
+      
+  // if(items?.SharewebTaskType==undefined){
+  //   setActivityPopup(true);
+  // }
   
      
   
-  }, [])
+     
+  
+  //     // setSelectedClientCategory(items)
+  
+     
+  
+  // }, [])
 
   return (
     <div
@@ -4226,7 +4469,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
           Context={NextProp.Context}
         ></TimeEntryPopup>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""}
+      {/* {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={MeetingItems[0]} callback={parentClientCat} />:""} */}
       {/* {popupStatus ? <EditInstitution props={itemData} /> : null} */}
       {MeetingPopup && (
         <CreateActivity
@@ -4239,7 +4482,6 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
       {WSPopup && (
         <CreateWS props={MeetingItems[0]} SelectedProp={NextProp} Call={Call} data={data}></CreateWS>
       )}
-      {selectedClientCategoryPopup&&selectedClientCategory.length>0? <SelectedClientCategoryPupup1 items={selectedClientCategory} callback={parentClientCat} />:""}
 
       <Panel
 
@@ -4322,48 +4564,11 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                                     } */}
               {props != undefined && props.Portfolio_x0020_Type == "Service" ? (
                 <ul className="quick-actions">
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/bug.png"
-                        />
-                      </span>
-                      Bug
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img
-                          className="icon-sites"
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/feedbck.png"
-                        />
-                      </span>
-                      Feedback
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img src="	https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png" />
-                      </span>
-                      Improvement
-                    </div>
-                  </li>
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-                      <span className="icon-sites">
-                        <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/design.png" />
-                      </span>
-                      Design
-                    </div>
-                  </li>
+                  
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
                     <div onClick={() => CreateMeetingPopups("Activities")}>
                       <span className="icon-sites"></span>
-                      Activities
+                      Activity
                     </div>
                   </li>
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
@@ -4375,28 +4580,31 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 </ul>
               ) : (
                 <ul className="quick-actions">
-
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                    <div onClick={(e) => CreateMeetingPopups("Activities")}>
+<div onClick={() => CreateMeetingPopups("Activities")}>
 
-                      <span className="icon-sites">
+  <span className="icon-sites"></span>
 
-                        <img
+  Activity
 
-                          className="icon-sites"
+</div>
 
-                          src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Implementation.png"
+</li>
 
-                        />
+<li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
-                      </span>
+<div onClick={() => CreateMeetingPopups("Task")}>
 
-                      Implmentation
+  <span className="icon-sites"> </span>
 
-                    </div>
+  Task
 
-                  </li>
+</div>
+
+</li>
+
+                
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4419,6 +4627,23 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                     </div>
 
                   </li>
+                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
+
+<div onClick={() => CreateMeetingPopups("Improvement")}>
+
+  <span className="icon-sites"> <img
+
+    className="icon-sites"
+
+    src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
+
+  /></span>
+
+  Improvement
+
+</div>
+
+</li>
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4432,7 +4657,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Activity
+Implementation
 
                     </div>
 
@@ -4450,7 +4675,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Bug
+Feedback
 
                     </div>
 
@@ -4468,29 +4693,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Feedback
+Design
 
                     </div>
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Improvement")}>
-
-                      <span className="icon-sites"> <img
-
-                        className="icon-sites"
-
-                        src="https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/Shareweb/Impovement.png"
-
-                      /></span>
-
-                      Improvement
-
-                    </div>
-
-                  </li>
+                 
 
                   <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
 
@@ -4504,35 +4713,13 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
 
                       /></span>
 
-                      Design
+Bug 
 
                     </div>
 
                   </li>
 
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Activities")}>
-
-                      <span className="icon-sites"></span>
-
-                      Activity
-
-                    </div>
-
-                  </li>
-
-                  <li className="mx-1 p-2 position-relative bg-siteColor text-center mb-2">
-
-                    <div onClick={() => CreateMeetingPopups("Task")}>
-
-                      <span className="icon-sites"> </span>
-
-                      Task
-
-                    </div>
-
-                  </li>
+                  
 
                 </ul>
 
@@ -4638,10 +4825,10 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
                 })}
                 <span>
                   {" "}
-                  <img
+                  {RestructureChecked != undefined && RestructureChecked.length > 0 && RestructureChecked[0].SiteIcon != undefined &&    <img
                     className="icon-sites-img me-1 ml20"
                     src={RestructureChecked[0].SiteIcon}
-                  ></img>
+                  ></img>}
                   <a
                     data-interception="off"
                     target="_blank"

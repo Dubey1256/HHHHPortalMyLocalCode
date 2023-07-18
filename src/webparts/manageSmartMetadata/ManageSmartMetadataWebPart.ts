@@ -6,22 +6,27 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { getSP } from '../../spservices/pnpjsConfig';
 
 import * as strings from 'ManageSmartMetadataWebPartStrings';
-import ManageSmartMetadataApp from './components/ManageSmartMetadataApp';
-import { IManageSmartMetadataAppProps } from './components/IManageSmartMetadataAppProps';
+import ManageSmartMetadata from './components/ManageSmartMetadata';
+import { IManageSmartMetadataProps } from './components/IManageSmartMetadataProps';
+import { getSP } from '../../spservices/pnpjsConfig';
 
 export interface IManageSmartMetadataWebPartProps {
-  description: string;
+  smartMetadadaListId: string;
+  siteConfigurationsListId: string;
 }
 
 export default class ManageSmartMetadataWebPart extends BaseClientSideWebPart<IManageSmartMetadataWebPartProps> {
 
-  
   public render(): void {
-    const element: React.ReactElement<IManageSmartMetadataAppProps> = React.createElement(
-      ManageSmartMetadataApp
+    const element: React.ReactElement<IManageSmartMetadataProps> = React.createElement(
+      ManageSmartMetadata,
+      {
+        smartMetadadaListId: this.properties.smartMetadadaListId,
+        siteConfigurationsListId: this.properties.siteConfigurationsListId,
+        context: this.context
+      }
     );
 
     ReactDom.render(element, this.domElement);
@@ -29,8 +34,10 @@ export default class ManageSmartMetadataWebPart extends BaseClientSideWebPart<IM
 
   protected async onInit(): Promise<void> {
     await super.onInit();
-    getSP(this.context);
+    getSP(this.context);   
   }
+
+
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
@@ -51,8 +58,11 @@ export default class ManageSmartMetadataWebPart extends BaseClientSideWebPart<IM
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('smartMetadadaListId', {
+                  label: "Smart Metadata List Id"
+                }),
+                PropertyPaneTextField('siteConfigurationsListId', {
+                  label: "Site Configurations List Id"
                 })
               ]
             }

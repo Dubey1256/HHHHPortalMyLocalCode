@@ -514,9 +514,9 @@ function CreateTaskComponent(props: any) {
         MetaData = await web.lists
             .getById(ContextValue.SmartMetadataListID)
             .items
-            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
+            .select("Id,Title,listId,siteUrl,siteName,Item_x005F_x0020_Cover,ParentID,Parent/Id,Parent/Title,EncodedAbsUrl,IsVisible,Created,Item_x0020_Cover,Modified,Description1,SortOrder,Selectable,TaxType,Created,Modified,Author/Name,Author/Title,Editor/Name,Editor/Title,AlternativeTitle")
             .top(4999)
-            .expand('Author,Editor')
+            .expand('Author,Editor,Parent')
             .get();
         AllMetadata = MetaData;
         siteConfig = getSmartMetadataItemsByTaxType(AllMetadata, 'Sites')
@@ -537,6 +537,7 @@ function CreateTaskComponent(props: any) {
         setTiming(Timing)
         setpriorityRank(Priority)
 
+      
         TaskTypes?.map((task: any) => {
             if (task.ParentID !== undefined && task.ParentID === 0 && task.Title !== 'Phone') {
                 Task.push(task);
@@ -548,7 +549,7 @@ function CreateTaskComponent(props: any) {
         })
         Task?.map((taskItem: any) => {
             subCategories?.map((item: any) => {
-                if (taskItem.Id === item.ParentID) {
+                if (taskItem.Id === item.Parent.Id) {
                     try {
                         item.ActiveTile = false;
                         item.SubTaskActTile = item.Title.replace(/\s/g, "");
@@ -724,44 +725,12 @@ function CreateTaskComponent(props: any) {
                 });
             }
             let selectedCC:any=[];
-            let postClientTime:any='';
-            let siteCompositionDetails:any='';
+            let postClientTime:any;
+            let siteCompositionDetails:any;
             try {
                 let selectedComponent: any[] = [];
                 
-                if (save.Component !== undefined && save.Component.length > 0) {
-                    save.Component?.map((com: any) => {
-                        if (save.Component !== undefined && save.Component.length >= 0) {
-                            $.each(save.Component, function (index: any, smart: any) {
-                                selectedComponent.push(smart.Id);
-                                postClientTime=smart?.Sitestagging;
-                                siteCompositionDetails=smart?.SiteCompositionSettings;
-                                smart?.ClientCategory?.map((cc:any)=>{
-                                    if(cc.Id!=undefined){
-                                        selectedCC.push(cc.Id) 
-                                    }
-                                })
-                            })
-                        }
-                    })
-                }
-                let selectedService: any[] = [];
-                if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
-                    save.linkedServices?.map((com: any) => {
-                        if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
-                            $.each(save.linkedServices, function (index: any, smart: any) {
-                                selectedService.push(smart.Id);
-                                postClientTime=smart?.Sitestagging;
-                                siteCompositionDetails=smart?.SiteCompositionSettings;
-                                smart?.ClientCategory?.map((cc:any)=>{
-                                    if(cc.Id!=undefined){
-                                        selectedCC.push(cc.Id) 
-                                    }
-                                })
-                            })
-                        }
-                    })
-                }
+               
                 let CopyUrl;
                 if (save.taskUrl != undefined && save.taskUrl.length > 255) {
                     CopyUrl = save.taskUrl
@@ -775,6 +744,46 @@ function CreateTaskComponent(props: any) {
                         if (site.Title === save.siteType) {
                             selectedSite = site;
                         }
+                    })
+                    if (save.Component !== undefined && save.Component.length > 0) {
+                        save.Component?.map((com: any) => {
+                            if (save.Component !== undefined && save.Component.length >= 0) {
+                                $.each(save.Component, function (index: any, smart: any) {
+                                    selectedComponent.push(smart.Id);
+                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
+                                        postClientTime=JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails=smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc:any)=>{
+                                            if(cc.Id!=undefined){
+                                                selectedCC.push(cc.Id) 
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    let selectedService: any[] = [];
+                    if (save.linkedServices !== undefined && save.linkedServices.length > 0) {
+                        save.linkedServices?.map((com: any) => {
+                            if (save.linkedServices !== undefined && save.linkedServices.length >= 0) {
+                                $.each(save.linkedServices, function (index: any, smart: any) {
+                                    selectedService.push(smart.Id);
+                                    if(selectedSite?.Parent?.Title=="SDC Sites"){
+                                        postClientTime=JSON.parse(smart?.Sitestagging);
+                                        siteCompositionDetails=smart?.SiteCompositionSettings;
+                                        smart?.ClientCategory?.map((cc:any)=>{
+                                            if(cc.Id!=undefined){
+                                                selectedCC.push(cc.Id) 
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    postClientTime?.map((items:any)=>{
+                        items.SiteName=items.Title
                     })
                     let priorityRank = 4;
                     if (save.rank === undefined || parseInt(save.rank) <= 0) {
@@ -806,11 +815,13 @@ function CreateTaskComponent(props: any) {
 
                     //Latest code for Creating Task
                     if (burgerMenuTaskDetails.TaskType == "Design") {
-                        AssignedToIds.push(172);
-                        TeamMembersIds.push(172);
+                        AssignedToIds.push(40);
+                        TeamMembersIds.push(40);
                         TeamMembersIds.push(49);
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
+                   
+                   
                     var item = {
                         "Title": save.taskName,
                         "Priority": priority,
@@ -830,7 +841,7 @@ function CreateTaskComponent(props: any) {
                         SiteCompositionSettings:siteCompositionDetails!=undefined?siteCompositionDetails: '',
                         AssignedToId: { "results": AssignedToIds },
                         SharewebTaskTypeId: 2,
-                        ClientTime: postClientTime!=undefined?postClientTime:'',
+                        ClientTime: postClientTime!=undefined?JSON.stringify(postClientTime):'',
                         component_x0020_link: {
                             __metadata: { 'type': 'SP.FieldUrlValue' },
                             Description: save.taskUrl?.length > 0 ? save.taskUrl : null,
@@ -864,10 +875,10 @@ function CreateTaskComponent(props: any) {
                         }
                         item.Responsible_x0020_TeamId = { "results": ResponsibleTeam }
                     }
-                    if (Tasks != undefined && save.siteType == 'Shareweb') {
-                        item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings;
-                        item.ClientTime = Tasks[0]?.Sitestagging;
-                    }
+                    // if (Tasks != undefined && save.siteType == 'Shareweb') {
+                    //     item.SiteCompositionSettings = Tasks[0]?.SiteCompositionSettings!=undefined?Tasks[0]?.SiteCompositionSettings:Tasks?.SiteCompositionSettings;
+                    //     item.ClientTime = Tasks[0]?.Sitestagging!=undefined?Tasks[0]?.Sitestagging:Tasks?.Sitestagging;
+                    // }
 
 
 
@@ -1963,7 +1974,7 @@ function CreateTaskComponent(props: any) {
                                                     {subCategory?.map((item: any) => {
                                                         return (
                                                             <>
-                                                                {Task.Id === item.ParentID && <>
+                                                                 {Task.Id === item.ParentID && <>
                                                                     {/* onClick={() => selectSubTaskCategory(item.Title, item.Id)} */}
                                                                     <a onClick={() => selectSubTaskCategory(item.Title, item.Id, item)} id={"subcategorytasks" + item.Id} className={item.ActiveTile ? 'bg-siteColor subcategoryTask selectedTaskList text-center' : 'bg-siteColor subcategoryTask text-center'} >
 

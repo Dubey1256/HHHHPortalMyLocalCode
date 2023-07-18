@@ -9,7 +9,7 @@ import Tooltip from '../../../globalComponents/Tooltip'
 import ApprovalHistoryPopup from '../../../globalComponents/EditTaskPopup/ApprovalHistoryPopup';
 // import * as moment from "moment-timezone";
 var sunchildcomment: any;
-var countemailbutton:number;
+let countemailbutton:number;
  var changespercentage=false;
 
 export interface ITaskFeedbackProps {
@@ -339,18 +339,25 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
           countemailbutton=0;
           this.setState({
             emailcomponentopen:true,
+            emailComponentstatus:item
           }
          
           )
+        }
+        if(isShowLight==1 && item=="Approve"){
+          countemailbutton=0;
+          this.setState({
+            emailcomponentopen:true,
+            emailComponentstatus:item
+          })
         }else{
           countemailbutton=1;
-        }
+          this.setState({
+            emailcomponentopen:false,
+
+          })
          
-      }else{
-        countemailbutton=0;
-        this.setState({
-          emailcomponentopen:true,
-        })
+      }
        
       }
     }
@@ -361,29 +368,32 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     console.log(percentageStatus)
     console.log(pervious)
     console.log(countApprove)
- 
-    if((countApprove==0&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
+    let percentageComplete;
+    let changespercentage1;
+    if((countApprove==1&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
       changespercentage=true;
     }
-    if((countApprove==1&&(percentageStatus=="Reject"||percentageStatus=="Maybe")&&(pervious?.isShowLight=="Approve"&&pervious?.isShowLight!=undefined))){
+    if((countApprove==0&&(percentageStatus=="Reject"||percentageStatus=="Maybe")&&(pervious?.isShowLight=="Approve"&&pervious?.isShowLight!=undefined))){
       changespercentage=false;
     }
     if((countApprove==0&&percentageStatus=="Approve"&&(pervious.isShowLight=="Reject"||pervious.isShowLight=="Maybe")&&pervious.isShowLight!=undefined)){
       changespercentage=true;
     }
-    let percentageComplete;
+  
    
     let taskStatus=""; 
     if(changespercentage==true){
     percentageComplete=0.03;
+    changespercentage1=3
     taskStatus="Approved"
 
     }
    if(changespercentage==false){
      percentageComplete=0.02;
+     changespercentage1=2
      taskStatus="Follow Up"
       }
-   
+   this.props.Result.PercentComplete=changespercentage1
       const web = new Web( this.props.Result.siteUrl);
       await web.lists.getByTitle(this.props.Result.listName)
      
@@ -392,6 +402,8 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
         Status:taskStatus,
       }).then((res:any)=>{
        console.log(res);
+      
+
      
        })
      .catch((err:any) => {
@@ -426,7 +438,7 @@ private async changeTrafficLigth  (index:any,item:any){
        fbData: tempData,
        index: index,
       
-       emailComponentstatus:item
+      //  emailComponentstatus:item
    });
   
    console.log(this.state?.fbData);
@@ -464,7 +476,7 @@ private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status
    fbData: tempData,
      index: parentindex,
    
-     emailComponentstatus:status
+    //  emailComponentstatus:status
   });
   console.log(this.state.emailcomponentopen)
   await this.onPost("trafficlightSubtext",parentindex-1,subchileindex,tempData);
@@ -478,16 +490,16 @@ private async changeTrafficLigthsubtext(parentindex:any,subchileindex:any,status
 private async onPost (trafficlight:any,parentindex:any,subchileindex:any,tempData:any){
  let fullfeedbackbackup:any=this.props?.fullfeedback
 if(trafficlight=="trafficlight"){
-  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
-  if(indexfeedback===parentindex){
-    fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
+  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any,index:number)=>{
+  if(index===parentindex){
+    fullfeedbackbackup[0]?.FeedBackDescriptions.splice(index, 1,tempData);
   }
   })
 }
 if(trafficlight=="trafficlightSubtext"){
-  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any)=>{
-    if(indexfeedback===parentindex){
-     fullfeedbackbackup[0]?.FeedBackDescriptions.splice(indexfeedback, 1,tempData);
+  fullfeedbackbackup[0]?.FeedBackDescriptions.map((indexfeedback:any,index:number)=>{
+    if(index===parentindex){
+     fullfeedbackbackup[0]?.FeedBackDescriptions.splice(index, 1,tempData);
     }
     })
 }
@@ -610,7 +622,7 @@ private approvalcallback(){
             <div className="border p-2 full-width text-break"
              title={this.state.fbData.ApproverData!=undefined&&this.state.fbData.ApproverData.length>0? this.state.fbData.ApproverData[this.state.fbData.ApproverData.length-1].isShowLight:""}>
 
-              <span dangerouslySetInnerHTML={{ __html: this.state.fbData.Title }}></span>
+              <span dangerouslySetInnerHTML={{ __html: this.state.fbData.Title.replace(/\n/g,"<br />") }}></span>
               <div className="col">
                 {this.state.fbData['Comments'] != null && this.state.fbData['Comments'].length > 0 && this.state.fbData['Comments']?.map((fbComment: any, k: any) => {
                   return <div className={fbComment.isShowLight!=undefined && fbComment.isApprovalComment?`col d-flex add_cmnt my-1 ${fbComment.isShowLight}`:"col d-flex add_cmnt my-1"}>
@@ -629,7 +641,7 @@ private approvalcallback(){
                           <a  title='Delete' onClick={() => this.clearComment(false, k, 0)}><span className='svg__iconbox svg__icon--trash'></span></a>
                         </span>
                       </div>
-                      <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title }}></span></div>
+                      <div><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g,"<br />") }}></span></div>
                     </div>
                   </div>
                 })}
@@ -709,7 +721,7 @@ private approvalcallback(){
 
               <div className="border p-2 full-width text-break"
                 title={fbSubData?.ApproverData!=undefined&&fbSubData?.ApproverData?.length>0? fbSubData?.ApproverData[fbSubData?.ApproverData.length-1]?.isShowLight:""}>
-                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/<[^>]*>/g, '') }}></span></span>
+                <span ><span dangerouslySetInnerHTML={{ __html: fbSubData?.Title?.replace(/\n/g,"<br />") }}></span></span>
                 <div className="feedbackcomment col-sm-12 PadR0 mt-10">
                   {fbSubData?.Comments != null && fbSubData.Comments.length > 0 && fbSubData?.Comments?.map((fbComment: any, k: any) => {
                     return <div className={fbComment?.isShowLight!=undefined && fbComment.isApprovalComment?`col-sm-12 d-flex mb-2 add_cmnt my-1 ${fbComment?.isShowLight}`:"col-sm-12 d-flex mb-2 add_cmnt my-1 "}>
@@ -728,7 +740,7 @@ private approvalcallback(){
                             <a title='Delete' onClick={() => this.clearComment(true, k, j)}><span className='svg__iconbox svg__icon--trash'></span></a>
                           </span>
                         </div>
-                        <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title }}></span></div>
+                        <div ><span dangerouslySetInnerHTML={{ __html: fbComment?.Title.replace(/\n/g,"<br />") }}></span></div>
                       </div>
                     </div>
                   })}

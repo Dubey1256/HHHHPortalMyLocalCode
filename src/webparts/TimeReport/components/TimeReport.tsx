@@ -4,61 +4,75 @@ import { arraysEqual, Modal, Panel, PanelType } from 'office-ui-fabric-react';
 // import { useExpanded, useFilters, usePagination, useSortBy, useTable } from 'react-table'
 import "bootstrap/dist/css/bootstrap.min.css";
 import FroalaCommentBox from '../../../globalComponents/FlorarComponents/FroalaCommentBoxComponent';
+import "@pnp/sp/sputilities";
 
+import { IEmailProperties } from "@pnp/sp/sputilities";
+
+import { SPFI, spfi, SPFx as spSPFx } from "@pnp/sp";
 import Tooltip from '../../../globalComponents/Tooltip';
 import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaSearch, FaSort, FaSortDown, FaSortUp } from 'react-icons/fa';
-
-//import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+import GlobalCommanTable from '../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable';
 import {
-    Column,
-    Table,
-    useReactTable,
-    ColumnFiltersState,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getFacetedRowModel,
-    //getFacetedUniqueValues,
-    //getFacetedMinMaxValues,
-    // getPaginationRowModel,
-    sortingFns,
-    getSortedRowModel,
-    FilterFn,
-    SortingFn,
     ColumnDef,
-    flexRender,
-    FilterFns,
-} from '@tanstack/react-table'
+} from "@tanstack/react-table";
+//import { Button, Table, Row, Col, Pagination, PaginationLink, PaginationItem, Input } from "reactstrap";
+
 import * as Moment from 'moment';
+import { MdEmail } from "react-icons/Md";
+import Loader from "react-loader";
 var AllUsers: any = []
 let smartmetaDetails: any = [];
 var AllTasks: any = []
 var TaskItemRank: any = []
 var AllTime: any = []
 var AllTimeMigration: any = []
+var DevloperTime: any = 0.00;
+var QATime: any = 0.00;
+var DesignTime: any = 0.00;
 var checkDate: any = ''
-var DevloperTime: any = 0
-var QATime: any = 0
+//var DevloperTime: any = 0
+//var QATime: any = 0
 var FeedBackItemArray: any = [];
-var DesignTime: any = 0
+//var DesignTime: any = 0
 var TotalTime: any = 0
-const TimeReport = () => {
+var CurrentUserId=''
+const TimeReport = (props:any) => {
+    CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
+    var OffshoreSitee = '&$filter=';
+    var HealthSitee = '&$filter=';
+    var GenderSitee = '&$filter=';
+    var SharewebSitee = '&$filter=';
+    var EISitee = '&$filter=';
+    var EPSSitee = '&$filter=';
+    var EducationSitee = '&$filter=';
+    var DESitee = '&$filter=';
+    var QASitee = '&$filter=';
+    var GrueneSitee = '&$filter=';
+    var HHHHSitee = '&$filter=';
+    var KathaBeckSitee = '&$filter=';
+    var MigrationSitee = '&$filter=';
+    var ALAKDigitalSitee = '&$filter=';
     const [data, setData] = React.useState([])
     // const [checkDate, setcheckDate] = React.useState('')
     const [update, setUpdate] = React.useState(0)
+    const [loaded, setLoaded] = React.useState(true);
+    const [checkedCustom,setcheckedCustom] = React.useState(false )
     const [Editpopup, setEditpopup] = React.useState(false)
     var [selectdate, setSelectDate] = React.useState(undefined)
     const [checkedWS, setcheckedWS] = React.useState(true);
     const [checkedTask, setcheckedTask] = React.useState(false);
+    const [defaultDate,setDefaultDate] = React.useState()
     const [post, setPost] = React.useState({ Title: '', ItemRank: '', Body: '' })
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
-    const [globalFilter, setGlobalFilter] = React.useState('')
+    
     React.useEffect(() => {
+    var datteee = new Date()
+    var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+    setDefaultDate(MyYesterdayDate)
+    
+        showProgressBar();
         GetTaskUsers();
-        GetMigrationTime();
         GetSmartmetadata();
-        GetAllTimeEntry();
+
 
     }, [])
 
@@ -68,6 +82,8 @@ const TimeReport = () => {
         taskUsers = await web.lists
             .getByTitle('Task Users')
             .items
+            .select('Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
+            .expand('AssingedToUser,Approver')
             .top(4999)
             .get();
         AllUsers = taskUsers;
@@ -77,7 +93,7 @@ const TimeReport = () => {
     const GetSmartmetadata = async () => {
         var metadatItem: any = []
         let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        smartmetaDetails = await web.lists
+        metadatItem = await web.lists
             .getById('01a34938-8c7e-4ea6-a003-cee649e8c67a')
             .items
             .select('Id', 'Title', 'IsVisible', 'ParentID', 'SmartSuggestions', 'TaxType', 'Description1', 'Item_x005F_x0020_Cover', 'listId', 'siteName', 'siteUrl', 'SortOrder', 'SmartFilters', 'Selectable', 'Parent/Id', 'Parent/Title')
@@ -86,366 +102,520 @@ const TimeReport = () => {
             .expand('Parent')
             .get()
 
-        console.log(smartmetaDetails);
+        console.log(metadatItem);
+        metadatItem?.forEach((config: any) => {
+            if (config.Title != 'Health' && config.Title != 'Gender' && config.Title != 'Foundation' && config.Title != 'Small Projects' && config.Title != 'Master Tasks' && config.Title != 'SDC Sites') {
+                smartmetaDetails.push(config)
+            }
+        })
         LoadAllSiteTasks();
 
     }
     TaskItemRank.push([{ rankTitle: 'Select Item Rank', rank: null }, { rankTitle: '(8) Top Highlights', rank: 8 }, { rankTitle: '(7) Featured Item', rank: 7 }, { rankTitle: '(6) Key Item', rank: 6 }, { rankTitle: '(5) Relevant Item', rank: 5 }, { rankTitle: '(4) Background Item', rank: 4 }, { rankTitle: '(2) to be verified', rank: 2 }, { rankTitle: '(1) Archive', rank: 1 }, { rankTitle: '(0) No Show', rank: 0 }]);
 
-    const LoadAllSiteTasks = () => {
+    const LoadAllSiteTasks = async () => {
         var Counter = 0;
-        smartmetaDetails?.forEach(async (config: any) => {
-            if (config.listId != undefined && config.listId != null && config.Parent != undefined) {
-                let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
-                let AllTasksMatches = [];
-                AllTasksMatches = await web.lists
-                    .getById(config.listId)
-                    .items
-                    .select('ParentTask/Title', 'ParentTask/Id', 'Services/Title', 'ClientTime', 'Services/Id', 'Events/Id', 'Events/Title', 'ItemRank', 'Portfolio_x0020_Type', 'SiteCompositionSettings', 'SharewebTaskLevel1No',
-                        'SharewebTaskLevel2No', 'TimeSpent', 'BasicImageInfo', 'OffshoreComments', 'OffshoreImageUrl', 'CompletedDate', 'Shareweb_x0020_ID',
-                        'Responsible_x0020_Team/Id', 'Responsible_x0020_Team/Title', 'SharewebCategories/Id', 'SharewebCategories/Title', 'ParentTask/Shareweb_x0020_ID', 'SharewebTaskType/Id', 'SharewebTaskType/Title',
-                        'SharewebTaskType/Level', 'Priority_x0020_Rank', 'Team_x0020_Members/Title', 'Team_x0020_Members/Name', 'Component/Id', 'Component/Title', 'Component/ItemType',
-                        'Team_x0020_Members/Id', 'Item_x002d_Image', 'component_x0020_link', 'IsTodaysTask', 'AssignedTo/Title', 'AssignedTo/Name', 'AssignedTo/Id',
-                        'ClientCategory/Id', 'ClientCategory/Title', 'FileLeafRef', 'FeedBack', 'Title', 'Id', 'PercentComplete', 'StartDate', 'DueDate', 'Comments', 'Categories', 'Status', 'Body',
-                        'Mileage', 'PercentComplete', 'ClientCategory', 'Priority', 'Created', 'Modified', 'Author/Id', 'Author/Title', 'Editor/Id', 'Editor/Title'
-                    )
-                    .expand('ParentTask', 'Events', 'Services', 'SharewebTaskType', 'AssignedTo', 'Component', 'ClientCategory', 'Author', 'Editor', 'Team_x0020_Members', 'Responsible_x0020_Team', 'SharewebCategories')
-                    .getAll(4000);
+        let web = new Web('https://hhhhteams.sharepoint.com/sites/HHHH/SP');
+     
+        const requests = smartmetaDetails.map((listID: any) => web.lists
+            .getById(listID?.listId)
+            .items
+            .select("ParentTask/Title", "ParentTask/Id", "Services/Title", "ClientTime", "Services/Id", "Events/Id", "Events/Title", "ItemRank", "Portfolio_x0020_Type", "SiteCompositionSettings", "SharewebTaskLevel1No", "SharewebTaskLevel2No",
+                "TimeSpent", "BasicImageInfo", "OffshoreComments", "OffshoreImageUrl", "CompletedDate", "Shareweb_x0020_ID", "Responsible_x0020_Team/Id", "Responsible_x0020_Team/Title",
+                "SharewebCategories/Id", "SharewebCategories/Title", "ParentTask/Shareweb_x0020_ID",
+                "SharewebTaskType/Id", "SharewebTaskType/Title", "SharewebTaskType/Level", "Priority_x0020_Rank", "Team_x0020_Members/Title", "Team_x0020_Members/Name", "Component/Id", "Component/Title", "Component/ItemType", "Team_x0020_Members/Id", "component_x0020_link", "IsTodaysTask", "AssignedTo/Title", "AssignedTo/Name", "AssignedTo/Id", "ClientCategory/Id", "ClientCategory/Title", "FileLeafRef", "FeedBack", "Title", "Id", "ID", "PercentComplete", "StartDate", "DueDate", "Comments", "Categories", "Status", "Body", "Mileage", "PercentComplete", "ClientCategory", "Priority", "Created", "Modified", "Author/Id", "Author/Title", "Editor/Id", "Editor/Title")
+            .expand("ParentTask", "Events", "Services", "SharewebTaskType", "AssignedTo", "Component", "ClientCategory", "Author", "Editor", "Team_x0020_Members", "Responsible_x0020_Team", "SharewebCategories")
+            .getAll()
+        );
 
-                console.log(AllTasksMatches);
-                Counter++;
-                console.log(AllTasksMatches.length);
-                if (AllTasksMatches != undefined && AllTasksMatches.length > 0) {
-                    AllTasksMatches.forEach((item: any) => {
-                        item.isDrafted = false;
-                        item.flag = true;
-                        item.TitleNew = item.Title;
-                        item.siteType = config.Title;
-                        item.childs = [];
-                        item.listId = config.listId;
-                        item.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
-                        if (item.SharewebCategories.results != undefined) {
-                            if (item.SharewebCategories.results.length > 0) {
-                                item.SharewebCategories.results?.forEach((ind: any, value: any) => {
-                                    if (value.Title.toLowerCase() == 'draft') {
-                                        item.isDrafted = true;
-                                    }
-                                });
-                            }
-                        }
-                    })
-                    AllTasks = AllTasks.concat(AllTasksMatches);
-                    if (Counter == smartmetaDetails.length) {
-                        AllTasks.forEach((result: any) => {
-                            result.TaskTime = []
-                            result.TimeSpent = 0
-                            result.Components = ''
-                            result.SubComponents = ''
-                            result.Features = ''
-                            result.userName = ''
-                            result.TeamLeaderUser = []
-                            result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
-                            result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
-                            result.chekbox = false;
-                            result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
+        try {
+            const responses = await Promise.all(requests);
+            responses.forEach((item: any) => {
+                item?.forEach((val: any) => {
+                    AllTasks.push(val)
+                })
 
-                            if (result.DueDate == 'Invalid date' || '') {
-                                result.DueDate = result.DueDate.replaceAll("Invalid date", "")
-                            }
+            })
+            AllTasks.forEach((result: any) => {
+                result.isDrafted = false;
+                result.flag = true;
+                result.TitleNew = result.Title;
+                result.siteUrl = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP';
+                result.TaskTime = []
+                result.TimeSpent = 0
+                result.Components = ''
+                result.SubComponents = ''
+                result.Features = ''
+                result.userName = ''
+                result.TeamLeaderUser = []
+                result.AllTeamName = result.AllTeamName === undefined ? '' : result.AllTeamName;
+                result.PercentComplete = (result.PercentComplete * 100).toFixed(0);
+                result.chekbox = false;
+                result.DueDate = Moment(result.DueDate).format('DD/MM/YYYY')
 
-                            result.chekbox = false;
-                            if (result.Short_x0020_Description_x0020_On != undefined) {
-                                result.Short_x0020_Description_x0020_On = result.Short_x0020_Description_x0020_On.replace(/(<([^>]+)>)/ig, '');
-                            }
-
-                            if (result.AssignedTo != undefined && result.AssignedTo.length > 0) {
-                                result.AssignedTo?.forEach((Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        AllUsers?.forEach((users: any) => {
-
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ';';
-                                            }
-
-                                        })
-                                    }
-                                })
-                            }
-                            if (result.Responsible_x0020_Team != undefined && result.Responsible_x0020_Team.length > 0) {
-                                result.Responsible_x0020_Team.forEach((Assig: any) => {
-                                    if (Assig.Id != undefined) {
-                                        AllUsers?.forEach((users: any) => {
-
-                                            if (Assig.Id != undefined && users.AssingedToUser != undefined && Assig.Id == users.AssingedToUser.Id) {
-                                                users.ItemCover = users.Item_x0020_Cover;
-                                                result.TeamLeaderUser.push(users);
-                                                result.AllTeamName += users.Title + ';';
-                                            }
-
-                                        })
-                                    }
-                                })
-                            }
-
-
-                        })
-
-                        selectType('Yesterday')
-                    }
+                if (result.DueDate == 'Invalid date' || '') {
+                    result.DueDate = result.DueDate.replaceAll("Invalid date", "")
                 }
-            }
-
-            else Counter++;
-
-        })
-
-    }
-    const GetMigrationTime = async () => {
-
-        var AllTimeEntry: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        AllTimeEntry = await web.lists
-            .getById('9ed5c649-3b4e-42db-a186-778ba43c5c93')
-            .items
-            .select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title")
-            .expand("Category,TimesheetTitle,TaskMigration,TaskALAKDigital")
-            .top(4999)
-            .orderBy("Id", false)
-            .get()
-
-        console.log(AllTimeEntry);
-        AllTimeEntry?.forEach((time: any) => {
-            if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
-                time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
-                AllTimeMigration.push(time)
-            }
-        })
-        console.log(AllTimeMigration)
 
 
-    }
-    const GetAllTimeEntry = async () => {
 
-        var AllTimeEntry: any = []
-        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
-        AllTimeEntry = await web.lists
-            .getById('464fb776-e4b3-404c-8261-7d3c50ff343f')
-            .items
-            .select("Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskHHHH/Id,TaskHHHH/Title,TaskShareweb/Id,TaskShareweb/Title,TaskEPS/Id,TaskEPS/Title,TaskQA/Id,TaskQA/Title,TaskEI/Id,TaskEI/Title,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,TaskSmallProjects/Id,TaskSmallProjects/Title")
-            .expand("Category,TimesheetTitle,TaskHHHH,TaskShareweb,TaskEPS,TaskQA,TaskShareweb,TaskEI,TaskOffshoreTasks,TaskSmallProjects")
-            .top(4999)
-            .orderBy("Id", false)
-            .get()
 
-        console.log(AllTimeEntry);
-        AllTimeEntry?.forEach((time: any) => {
-            if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
-                time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
-                AllTime.push(time)
-            }
-        })
-        if (AllTimeMigration != undefined && AllTimeMigration.length > 0) {
-            const finalData = AllTimeMigration.filter((val: any, id: any, array: any) => {
-                return array.indexOf(val) == id;
             })
-            finalData.forEach((item: any) => {
-                AllTime.push(item)
-            })
+            selectType('Yesterday')
+        } catch (error) {
+            console.error(error);
         }
-        console.log(AllTime)
+
+    }
+    var showProgressBar = () => {
+        setLoaded(false);
+        $(" #SpfxProgressbar").show();
+      };
+    
+      var showProgressHide = () => {
+        setLoaded(true);
+        $(" #SpfxProgressbar").hide();
+      };
+    const GetMigrationTime = async () => {
+        var selectedDate:any=[]
+        var filteres = `Modified ge '${datess}'`
+        var query = "Id,Title,TaskDate,AdditionalTimeEntry,Created,Modified,TaskTime,Modified,SortOrder,AdditionalTimeEntry,Category/Id,Category/Title,TimesheetTitle/Id,TimesheetTitle/Title,TaskALAKDigital/Id,TaskALAKDigital/Title,TaskMigration/Id,TaskMigration/Title&$expand= Category,TimesheetTitle,TaskMigration,TaskALAKDigital&$top=4999&$filter=" + filteres + ""
+        await $.ajax({
+            url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyTitle('TasksTimesheet2')/items?$select=" + query + "",
+            method: "GET",
+            async: false,
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "content-Type": "application/json;odata=verbose"
+            },
+            success: function (data) {
+
+                selectedDate = data.d.results;
+                selectedDate?.forEach((time: any) => {
+                    if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
+                        time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
+                        AllTime.push(time)
+                    }
+                })
+
+
+            },
+            error: function (data) {
+
+            }
+        })
 
 
     }
-    const GenerateTime = () => {
-        var data: any = []
 
-        QATime = 0
-        DesignTime = 0
-        DevloperTime = 0
-        TotalTime = 0
-        var FinalSelectDate: any = []
-        if (selectdate != undefined) {
-            var Datenew = Moment(selectdate).format("DDMMYYYY")
-            checkDate = Datenew
+    var datess = ''
+    var TodayDate =''
+    const GeneratedTask = async (Type: any) => {
+      
+         DevloperTime = 0.00;
+         QATime = 0.00;
+         DesignTime = 0.00;
+
+        if (Type == "Yesterday") {
+            var datteee = new Date()
+            var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
+            setDefaultDate(MyYesterdayDate)
+            var myDate = new Date()
+            var final: any = (Moment(myDate).add(-2, 'days').format())
+        }
+        if(Type == 'Today'){
+            var dat:any = new Date()
+            setDefaultDate(dat)
+            var myDate = new Date()
+            setSelectDate(myDate)
+            var final: any = (Moment(myDate).add(-1, 'days').format())
+           
+        }
+        if(Type == 'Custom') {
             setcheckedWS(false)
             setcheckedTask(false)
+            setcheckedCustom(true)
+            var myDate = new Date(selectdate)
+            var final: any = (Moment(myDate).add(-1, 'days').format())
         }
-        const finalData = AllTime.filter((val: any, id: any, array: any) => {
-            return array.indexOf(val) == id;
-        })
-        finalData.forEach((item: any) => {
-            if (item.AdditionalTime != undefined && item.AdditionalTime.length > 0) {
-                item.AdditionalTime.forEach((val: any) => {
-                    var dateValue = val.TaskDate?.split("/");
-                    var dp = dateValue[0] + dateValue[1] + dateValue[2];
-                    //var changeDate = Moment(Dateet).format("DDMMYYYY")
-                    if (dp == checkDate) {
+         
+        datess = new Date(final).toISOString()
+        var ccc: any = []
+        var selectedDate: any = []
+        AllTime=[]
 
-                        FinalSelectDate.push(item)
+        var filteres = `Modified ge '${datess}'`
+        var query = "Id,Title,TaskDate,TaskTime,AdditionalTimeEntry,Modified,Description,TaskOffshoreTasks/Id,TaskOffshoreTasks/Title,Author/Id,AuthorId,Author/Title,TaskKathaBeck/Id,TaskKathaBeck/Title,TaskDE/Title,TaskDE/Id,TaskEI/Title,TaskEI/Id,TaskEPS/Title,TaskEPS/Id,TaskEducation/Title,TaskEducation/Id,TaskHHHH/Title,TaskHHHH/Id,TaskQA/Title,TaskQA/Id,TaskGender/Title,TaskGender/Id,TaskShareweb/Title,TaskShareweb/Id,TaskGruene/Title,TaskGruene/Id&$expand=Author,TaskKathaBeck,TaskDE,TaskEI,TaskEPS,TaskEducation,TaskGender,TaskQA,TaskDE,TaskShareweb,TaskHHHH,TaskGruene,TaskOffshoreTasks&$top=4999&$filter=" + filteres + ""
+        await $.ajax({
+            url: "https://hhhhteams.sharepoint.com/sites/HHHH/SP/_api/web/lists/getbyTitle('TaskTimeSheetListNew')/items?$select=" + query + "",
+            method: "GET",
+            async: false,
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "content-Type": "application/json;odata=verbose"
+            },
+            success: async function (data) {
+        
+               selectedDate = data.d.results;
+                await GetMigrationTime()
+                selectedDate?.forEach((time: any) => {
+                    if (time.AdditionalTimeEntry != null && time.AdditionalTimeEntry != undefined) {
+                        time.AdditionalTime = JSON.parse(time.AdditionalTimeEntry)
+                        AllTime.push(time)
                     }
                 })
+                
+                makefinalTask(AllTime);
+
+
+            },
+            error: function (data) {
+
             }
-
         })
-        if (FinalSelectDate != undefined) {
-            FinalSelectDate.forEach((val: any) => {
-                AllTasks?.forEach((task: any) => {
-
-                    if (val.TaskQA != undefined || val.TaskHHHH != undefined || val.TaskEPS != undefined || val.TaskEI != undefined || val.TaskShareweb != undefined || val.TaskMigration != undefined || val.TaskALAKDigital != undefined || val.TaskOffshoreTasks != undefined) {
-                        if (val.TaskQA != undefined && val.TaskQA.Id == task.Id || val.TaskHHHH != undefined && val.TaskHHHH.Id == task.Id || val.TaskEPS != undefined && val.TaskEPS.Id == task.Id || val.TaskMigration != undefined && val.TaskMigration.Id == task.Id || val.TaskALAKDigital != undefined && val.TaskALAKDigital.Id == task.Id || val.TaskOffshoreTasks != undefined && val.TaskOffshoreTasks.Id == task.Id) {
-                            if (val.AdditionalTime != undefined) {
-                                const RemoveDuplicateTime = val.AdditionalTime.filter((val: any, id: any, array: any) => {
-                                    return array.indexOf(val) == id;
-                                })
-                                RemoveDuplicateTime.forEach((type: any) => {
-                                    var dateValue = type.TaskDate?.split("/");
-                                    var dps = dateValue[0] + dateValue[1] + dateValue[2];
-                                    if (dps == checkDate) {
-                                        AllUsers?.forEach((user: any) => {
-                                            if (user.AssingedToUserId == type.AuthorId) {
-                                                task.AllTeamName = user.TimeCategory;
-                                                task.userName = user.Title
-                                            }
-                                        })
-                                        if (task.Component != undefined) {
-                                            if (task.Component[0]?.ItemType == 'Component') {
-                                                task.Components = task.Component[0].Title
-                                            }
-                                            if (task.Component[0]?.ItemType == 'SubComponent') {
-                                                task.SubComponents = task.Component[0].Title
-                                            }
-                                            if (task.Component[0]?.ItemType == 'Feature') {
-                                                task.Features = task.Component[0].Title
-                                            }
-                                        }
-                                        task.TimeSpent = parseFloat(type.TaskTime);
-
-                                    }
-                                })
-                            }
-                            data.push(task)
-                        }
-                    }
-                })
-            })
-            if (data != undefined) {
-                data.forEach((time: any) => {
-                    if (time.AllTeamName == 'Development') {
-                        DevloperTime = DevloperTime + parseInt(time.TimeSpent)
-                    }
-                    if (time.AllTeamName == 'Design') {
-                        DesignTime = DesignTime + parseInt(time.TimeSpent)
-                    }
-                    if (time.AllTeamName == 'QA') {
-                        QATime = QATime + parseInt(time.TimeSpent)
-                    }
-
-                })
-            }
-        }
-        selectdate = undefined;
-        console.log(data)
 
 
-        setData(data)
-        if (checkDate == 'Today') {
-            setUpdate(update + 1)
-        }
+
+
     }
+    const compareDates = (selectedworkingDate: any) => {
+        var flag = false;
+        if (selectdate != undefined) {
+            var myDate = new Date(selectdate)
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")
+            setcheckedCustom(true)
+        }
+        else {
+            var myDate = new Date()
+            var final: any = (Moment(myDate).add(-1, 'days').format())
+            var Datenew = Moment(final).format("DD/MM/YYYY")
+        }
+
+        var StartDates = Datenew.split("/");
+        var selectedStartDate = StartDates[2] + '/' + StartDates[1] + '/' + StartDates[0];
+        if (selectedStartDate == selectedworkingDate)
+            flag = true;
+        return flag;
+    }
+    const makefinalTask = (AllTime: any) => {
+        var SelectedTime: any = []
+        AllTime?.forEach((task: any) => {
+            task.AdditionalTime?.forEach((timeSpent: any) => {
+
+                if (timeSpent.TaskDate != undefined) {
+
+                    var workingDates = timeSpent.TaskDate.split("/");
+                    var selectedworkingDate = workingDates[2] + '/' + workingDates[1] + '/' + workingDates[0];
+                    var workingDateTime = workingDates[0] + '-' + workingDates[1] + '-' + workingDates[2];
+                    var isCompareDateflag = compareDates(selectedworkingDate);
+                    if (isCompareDateflag) {
+                        var sheetDetails: any = {};
+                        sheetDetails.Date = workingDateTime;
+
+                        if (task.TaskDE != undefined && task.TaskDE.Id != undefined) {
+                            sheetDetails.Task = task.TaskDE.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskDE.Title;
+                            sheetDetails.TaskId = task.TaskDE.Id;
+                            DESitee += '(Id eq ' + task.TaskDE.Id + ') or';
+                            sheetDetails.siteType = 'DE'
+                        }
+                        if (task.TaskEI != undefined && task.TaskEI.Id != undefined) {
+                            sheetDetails.Task = task.TaskEI.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEI.Title;
+                            sheetDetails.TaskId = task.TaskEI.Id;
+                            EISitee += '(Id eq ' + task.TaskEI.Id + ') or';
+                            sheetDetails.siteType = 'EI'
+                        }
+                        if (task.TaskEPS != undefined && task.TaskEPS.Id != undefined) {
+                            sheetDetails.Task = task.TaskEPS.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEP.Title;
+                            sheetDetails.TaskId = task.TaskEPS.Id;
+                            EPSSitee += '(Id eq ' + task.TaskEPS.Id + ') or';
+                            sheetDetails.siteType = 'EPS'
+                        }
+                        if (task.TaskEducation != undefined && task.TaskEducation.Id != undefined) {
+                            sheetDetails.Task = task.TaskEducation.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskEducation.Title;
+                            sheetDetails.TaskId = task.TaskEducation.Id;
+                            EducationSitee += '(Id eq ' + task.TaskEducation.Id + ') or';
+                            sheetDetails.siteType = 'Education'
+                        }
+                        if (task.TaskHHHH != undefined && task.TaskHHHH.Id != undefined) {
+                            sheetDetails.Task = task.TaskHHHH.Title; // == undefined ? (task.Title == undefined ? '' : task.Title) : task.TaskHHHH.Title;
+                            sheetDetails.TaskId = task.TaskHHHH.Id;
+                            HHHHSitee += '(Id eq ' + task.TaskHHHH.Id + ') or';
+                            sheetDetails.siteType = 'HHHH'
+                        }
+                        if (task.TaskQA != undefined && task.TaskQA.Id != undefined) {
+                            sheetDetails.Task = task.TaskQA.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskQA.Title;
+                            sheetDetails.TaskId = task.TaskQA.Id;
+                            QASitee += '(Id eq ' + task.TaskQA.Id + ') or';
+                            sheetDetails.siteType = 'QA'
+                        }
+                        if (task.TaskGender != undefined && task.TaskGender.Id != undefined) {
+                            sheetDetails.Task = task.TaskGender.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGender.Title;
+                            sheetDetails.TaskId = task.TaskGender.Id;
+                            GenderSitee += '(Id eq ' + task.TaskGender.Id + ') or';
+                            sheetDetails.siteType = 'Gender'
+                        }
+                        if (task.TaskShareweb != undefined && task.TaskShareweb.Id != undefined) {
+                            sheetDetails.Task = task.TaskShareweb.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskShareweb.Title;
+                            sheetDetails.TaskId = task.TaskShareweb.Id;
+                            SharewebSitee += '(Id eq ' + task.TaskShareweb.Id + ') or';
+                            sheetDetails.siteType = 'Shareweb'
+                        }
+                        if (task.TaskGruene != undefined && task.TaskGruene.Id != undefined) {
+                            sheetDetails.Task = task.TaskGruene.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskGruene.Title;
+                            sheetDetails.TaskId = task.TaskGruene.Id;
+                            GrueneSitee += '(Id eq ' + task.TaskGruene.Id + ') or';
+                            sheetDetails.siteType = 'Gruene'
+                        }
+                        if (task.TaskOffshoreTasks != undefined && task.TaskOffshoreTasks.Id != undefined) {
+                            sheetDetails.Task = task.TaskOffshoreTasks.Title; // == undefined ? (task.Title == undefined ? '' : task.Title)  : task.TaskOffshoreTasks.Title;
+                            sheetDetails.TaskId = task.TaskOffshoreTasks.Id;
+                            OffshoreSitee += '(Id eq ' + task.TaskOffshoreTasks.Id + ') or';
+                            sheetDetails.siteType = 'Offshore Tasks'
+                        }
+                        if (task.TaskHealth != undefined && task.TaskHealth.Id != undefined) {
+                            sheetDetails.Task = task.TaskHealth.Title;
+                            sheetDetails.TaskId = task.TaskHealth.Id;
+                            HealthSitee += '(Id eq ' + task.TaskHealth.Id + ') or';
+                            sheetDetails.siteType = 'Health'
+                        }
+                        if (task.TaskKathaBeck != undefined && task.TaskKathaBeck.Id != undefined) {
+                            sheetDetails.Task = task.TaskKathaBeck.Title;
+                            sheetDetails.TaskId = task.TaskKathaBeck.Id;
+                            KathaBeckSitee += '(Id eq ' + task.TaskKathaBeck.Id + ') or';
+                            sheetDetails.siteType = 'KathaBeck'
+                        }
+                        if (task.TaskMigration != undefined && task.TaskMigration.Id != undefined) {
+                            sheetDetails.Task = task.TaskMigration.Title;
+                            sheetDetails.TaskId = task.TaskMigration.Id;
+                            MigrationSitee += '(Id eq ' + task.TaskMigration.Id + ') or';
+                            sheetDetails.siteType = 'Migration'
+                        }
+                        if (task.TaskALAKDigital != undefined && task.TaskALAKDigital.Id != undefined) {
+                            sheetDetails.Task = task.TaskALAKDigital.Title;
+                            sheetDetails.TaskId = task.TaskALAKDigital.Id;
+                            ALAKDigitalSitee += '(Id eq ' + task.TaskALAKDigital.Id + ') or';
+                            sheetDetails.siteType = 'ALAKDigital'
+                        }
+                        var Devsheets = [];
+                        sheetDetails.Effort = 0.00;
+                        sheetDetails.Effort = parseFloat(timeSpent.TaskTime);
+                        sheetDetails.Comments = timeSpent.Description;
+                        sheetDetails.userName = timeSpent.AuthorName;
+                        sheetDetails.AuthorId = timeSpent.AuthorId;
+
+                    }
+                    if (sheetDetails != undefined) {
+                        SelectedTime.push(sheetDetails)
+                    }
+
+                }
+            })
+
+        })
+        finalTask(SelectedTime)
+
+    }
+    const finalTask = (SelectedTime: any) => {
+        var MyData: any = []
+        AllUsers?.forEach((val: any) => {
+            SelectedTime?.forEach((item: any) => {
+                if (item.AuthorId == val.AssingedToUserId) {
+                    item.Department = val.TimeCategory
+                    item.Company = val.Company
+                }
+            })
+
+        })
+        AllTasks?.forEach((task: any) => {
+            SelectedTime?.forEach((item: any) => {
+
+                if (item.TaskId === task.Id && item.Task === task.Title && item.Company == 'Smalsus') {
+
+
+                    if (task?.Component[0]?.ItemType == 'Component') {
+                        item.Components = task.Component[0].Title
+                        item.siteUrl = task.siteUrl
+                        item.siteType = item.siteType
+                        item.PercentComplete = task.PercentComplete
+                        item.Status = task.Status
+                        item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                    }
+                    if (task?.Component.length == 0) {
+                        item.siteUrl = task.siteUrl
+                        item.siteType = item.siteType
+                        item.PercentComplete = task.PercentComplete
+                        item.Status = task.Status
+                        item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                    }
+                    if (task?.Component[0]?.ItemType == 'SubComponent') {
+                        item.SubComponents = task.Component[0].Title
+                        item.siteUrl = task.siteUrl
+                        item.siteType = item.siteType
+                        item.PercentComplete = task.PercentComplete
+                        item.Status = task.Status
+                        item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                    }
+                    if (task?.Component[0]?.ItemType == 'Feature') {
+                        item.Features = task.Component[0].Title
+                        item.siteUrl = task.siteUrl
+                        item.siteType = item.siteType
+                        item.PercentComplete = task.PercentComplete
+                        item.Status = task.Status
+                        item.Title = task.Title
+                        item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        task?.ClientCategory?.forEach((cat:any)=>{
+                            item.ClientCategory = cat.Title;
+                        })
+                    }
+
+                }
+
+
+            })
+        })
+        // const finalData = MyData.filter((val: any, TaskId: any, array: any) => {
+        //         return array.indexOf(val) == TaskId;
+        //      })
+        if (SelectedTime != undefined) {
+            SelectedTime.forEach((time: any) => {
+                if (time?.Department == 'Development') {
+                    DevloperTime = DevloperTime + parseFloat(time.Effort)
+                }
+
+                if (time?.Department == 'Design') {
+                    DesignTime = DesignTime + parseFloat(time.Effort)
+                }
+                if (time?.Department == 'QA') {
+                    QATime = QATime + parseFloat(time.Effort)
+                }
+
+            })
+        }
+        setData(SelectedTime)
+        showProgressHide();
+    }
+
     const selectType = (Dates: any) => {
 
         if (Dates == 'Today') {
             setcheckedWS(false)
             selectdate = undefined
-            setSelectDate(undefined)
             setcheckedTask(true)
+            var Yesterday: any = new window.Date();
+            setSelectDate(Yesterday)
+            var a = Yesterday.getDate() - 1;
+            var Datene = Moment(Yesterday).subtract(1, 'day')
             var Datenew = Moment().format("DDMMYYYY")
             checkDate = Datenew;
+          
         }
         if (Dates == 'Yesterday') {
             setcheckedWS(true)
             setcheckedTask(false)
+            setcheckedCustom(false)
             selectdate = undefined
             var Yesterday: any = new window.Date();
-            Yesterday.getDate() - 1;
+            var a = Yesterday.getDate() - 1;
             var Datene = Moment(Yesterday).subtract(1, 'day')
-            var Datenew = Moment(Datene).format("DDMMYYYY")
+            var Datenew = Moment(Datene).format("DD-MM-YYYY")
             checkDate = Datenew;
+            GeneratedTask(Dates);
+        }
+       
+        if (Dates == 'Custom') {
+            setcheckedWS(false)
+            setcheckedTask(false)
+            setcheckedCustom(true)
+           
         }
 
-        if (Dates == 'Yesterday') {
-            GenerateTime();
-        }
+
 
 
     }
 
-    const columns = React.useMemo<ColumnDef<any, unknown>[]>(
+    const column = React.useMemo<ColumnDef<any, unknown>[]>(
         () => [
             {
-               
+
                 accessorFn: (row) => row?.Title,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
-                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.Id + '&Site=' +  row?.original?.siteType}
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=" + row?.original?.TaskId + '&Site=' + row?.original?.siteType}
                         >
-                             {getValue()}
+                            {getValue()}
                         </a>
-                       
+
                     </>
                 ),
-                id:'Title',
+                id: 'Title',
                 header: '',
                 placeholder: "Title",
-                
 
 
-            },
-            {
-                header: '',
-                accessorKey: 'Components',
-                placeholder: "Components",
-                
 
             },
             {
-                header: '',
-                accessorKey: 'SubComponents',
-                placeholder: "SubComponents",
-                Cell: ({ row }: any) => (
-                    <span>
-                      <a
-                        style={{
-                          textDecoration: "none",
-                          color: `${
-                            row?.original?.Component?.length > 0
-                              ? "#000066"
-                              : "serviepannelgreena"
-                          }`,
-                        }}
-                        href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Task-Profile.aspx?taskId=${row?.original?.Id}&Site=${row?.original?.siteType}`}
-                        data-interception="off"
-                        target="_blank"
-                      >
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
+                        >
+                            {getValue()}
                         </a>
-                        </span>
+
+                    </>
+                ),
+                id: 'Components',
+                header: '',
+                accessorFn: (row) => row?.Components,
+                placeholder: "Components",
+
+
+            },
+            {
+                id: 'SubComponents',
+                header: '',
+                accessorFn: (row) => row?.SubComponents,
+                placeholder: "SubComponents",
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
+                        >
+                            {getValue()}
+                        </a>
+
+                    </>
                 ),
 
             },
             {
+                cell: ({ row, getValue }) => (
+                    <>
+                        <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
+                            href={"https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Portfolio-Profile.aspx?taskId=" + row?.original?.TaskId}
+                        >
+                            {getValue()}
+                        </a>
+
+                    </>
+                ),
+                id: 'Features',
                 header: '',
-                accessorKey: 'Features',
+                accessorFn: (row) => row?.Features,
                 placeholder: "Features",
 
             },
             {
                 header: '',
-                accessorKey: 'TimeSpent',
+                accessorKey: 'Effort',
                 placeholder: "Effort",
-               
+
 
             },
             {
@@ -470,13 +640,19 @@ const TimeReport = () => {
             {
                 header: '',
                 accessorKey: 'userName',
-                placeholder: "TimeEntryUser",
+                placeholder: "userName",
 
             },
             {
                 header: '',
-                accessorKey: 'AllTeamName',
+                accessorKey: 'Department',
                 placeholder: "Designation",
+
+            },
+            {
+                header: '',
+                accessorKey: 'ClientCategory',
+                placeholder: "ClientCategory",
 
             },
 
@@ -495,29 +671,29 @@ const TimeReport = () => {
     //     // Return if the item should be filtered in/out
     //     return itemRank.passed
     // }
-    const table = useReactTable({
-        data,
-        columns,
+    // const table = useReactTable({
+    //     data,
+    //     columns,
 
-        state: {
-            columnFilters,
-            globalFilter,
-        },
-        onColumnFiltersChange: setColumnFilters,
-        // onGlobalFilterChange: setGlobalFilter,
-        getCoreRowModel: getCoreRowModel(),
+    //     state: {
+    //         columnFilters,
+    //         globalFilter,
+    //     },
+    //     onColumnFiltersChange: setColumnFilters,
+    //     // onGlobalFilterChange: setGlobalFilter,
+    //     getCoreRowModel: getCoreRowModel(),
 
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        // getPaginationRowModel: getPaginationRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        // getFacetedUniqueValues: getFacetedUniqueValues(),
-        //getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        debugTable: true,
-        debugHeaders: true,
-        debugColumns: false,
-        filterFns: undefined
-    })
+    //     getFilteredRowModel: getFilteredRowModel(),
+    //     getSortedRowModel: getSortedRowModel(),
+    //     // getPaginationRowModel: getPaginationRowModel(),
+    //     getFacetedRowModel: getFacetedRowModel(),
+    //     // getFacetedUniqueValues: getFacetedUniqueValues(),
+    //     //getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    //     debugTable: true,
+    //     debugHeaders: true,
+    //     debugColumns: false,
+    //     filterFns: undefined
+    // })
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
         if (EditorData.length > 0) {
             post.Body = EditorData;
@@ -535,63 +711,67 @@ const TimeReport = () => {
         FeedBackItemArray.push(FeedBackItem)
 
     }, [])
-    function DebouncedInput({
-        value: initialValue,
-        onChange,
-        debounce = 1000,
-        ...props
-    }: {
-        value: string | number
-        onChange: (value: string | number) => void
-        debounce?: number
-    } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
-        const [value, setValue] = React.useState(initialValue)
+    // function DebouncedInput({
+    //     value: initialValue,
+    //     onChange,
+    //     debounce = 1000,
+    //     ...props
+    // }: {
+    //     value: string | number
+    //     onChange: (value: string | number) => void
+    //     debounce?: number
+    // } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+    //     const [value, setValue] = React.useState(initialValue)
 
-        React.useEffect(() => {
-            setValue(initialValue)
-        }, [initialValue])
+    //     React.useEffect(() => {
+    //         setValue(initialValue)
+    //     }, [initialValue])
 
-        React.useEffect(() => {
-            const timeout = setTimeout(() => {
-                onChange(value)
-            }, debounce)
+    //     React.useEffect(() => {
+    //         const timeout = setTimeout(() => {
+    //             onChange(value)
+    //         }, debounce)
 
-            return () => clearTimeout(timeout)
-        }, [value])
+    //         return () => clearTimeout(timeout)
+    //     }, [value])
 
-        return (
-            <input {...props} value={value} onChange={e => setValue(e.target.value)} />
-        )
-    }
-    function Filter({
-        column,
-        table,
-        placeholder
-    }: {
-        column: Column<any, any>;
-        table: Table<any>;
-        placeholder: any
+    //     return (
+    //         <input {...props} value={value} onChange={e => setValue(e.target.value)} />
+    //     )
+    // }
+    // function Filter({
+    //     column,
+    //     table,
+    //     placeholder
+    // }: {
+    //     column: Column<any, any>;
+    //     table: Table<any>;
+    //     placeholder: any
 
-    }): any {
-        const columnFilterValue = column.getFilterValue();
+    // }): any {
+    //     const columnFilterValue = column.getFilterValue();
 
-        return (
-            <input
-                // type="text"
-                type="search"
-                value={(columnFilterValue ?? "") as string}
-                onChange={(e) => column.setFilterValue(e.target.value)}
-                placeholder={`${placeholder?.placeholder}`}
-            // className="w-36 border shadow rounded"
-            />
-        );
-    }
+    //     return (
+    //         <input
+    //             // type="text"
+    //             type="search"
+    //             value={(columnFilterValue ?? "") as string}
+    //             onChange={(e) => column.setFilterValue(e.target.value)}
+    //             placeholder={`${placeholder?.placeholder}`}
+    //         // className="w-36 border shadow rounded"
+    //         />
+    //     );
+    // }
     const EditComponentPopup = () => {
         setEditpopup(true)
     }
     const closeEditPopup = () => {
         setEditpopup(false)
     }
+    const callBackData = React.useCallback((elem: any, ShowingData: any) => {
+
+
+    }, []);
     const onRenderCustomHeaderMain = () => {
         return (
             <div className="d-flex full-width pb-1" >
@@ -604,27 +784,247 @@ const TimeReport = () => {
             </div>
         );
     };
+    
+    const sendEmail=()=>{
+        var body1:any=[]
+        var body2:any=[]
+        var To:any=[]
+        var ApprovalId:any = []
+        var TotlaTime = QATime + DevloperTime + DesignTime
+
+        AllUsers?.forEach((items:any)=>{
+            if(CurrentUserId == items.AssingedToUserId){
+                items.Approver?.forEach((val:any)=>{
+                    ApprovalId.push(val)
+                })
+
+            }
+
+        })
+        ApprovalId?.forEach((va:any)=>{
+            AllUsers?.forEach((ba:any)=>{
+                if(ba.AssingedToUserId == va.Id){
+                    To.push(ba?.Email)
+                }
+            })
+
+        })
+        data?.forEach((item:any)=>{
+            if (item.Components == undefined || item.Components == '') {
+                item.Components = '';
+            }
+
+            if (item.Designation == undefined || item.Designation == '') {
+                item.Designation = '';
+            }
+            if (item.SubComponents == undefined || item.SubComponents == '') {
+                item.SubComponents = '';
+            }
+            if (item.Features == undefined || item.Features == '') {
+                item.Features = '';
+            }
+            if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == '') {
+                item.Priority_x0020_Rank = '';
+            }
+            if (item.ClientCategory == undefined || item.ClientCategory == '') {
+                item.ClientCategory = '';
+            }
+            if (item.PercentComplete == undefined || item.PercentComplete == '') {
+                item.PercentComplete = '';
+            }
+           var text = '<tr>' +
+            '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<a href=' + item.siteUrl + '>' + '<span style="font-size:11px; font-weight:600">' + item.Task + '</span>' + '</a >' + '</td>'
+            + '<td align="left" style="border: 1px solid #aeabab;padding: 4px">' + item?.Comments + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Priority_x0020_Rank + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Effort + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.PercentComplete + '%' + '</td>'
+            + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Status + '</td>'
+            + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item.userName + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Department + '</td>'
+            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
+            + '</tr>'
+        body1.push(text);
+        })
+        var text2 =
+        '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Team' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + 'Time in Hours' + '</strong>' + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Design' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DesignTime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Development' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + DevloperTime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'QA' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime + '</td>'
+        + '</tr>'
+        + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime + '</strong>' + '</td>'
+        + '</tr>';
+    body2.push(text2);
+
+    var bodyA =
+    '<table cellspacing="0" cellpadding="1" width="30%" style="margin: 0 auto;border-collapse: collapse;">'
+    + '<tbody align="center">' +
+    body2 +
+    '</tbody>' +
+    '</table>';
+var pageurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReportSpfx.aspx";
+var ReportDate = new Date()
+ var ReportDatetime =Moment(ReportDate).format('DD/MM/YYYY')
+    var body =
+                '<p style="text-align: center;margin-bottom: 1px;">' + 'TimeSheet of  date' + '&nbsp;' + '<strong>' + ReportDatetime + '</strong>' + '</p>' +
+                '<p style="text-align: center;margin: 0 auto;">' + '<a  href=' + pageurl + ' >' + 'Online version of timesheet' + '</a >' + '</p>' +
+                '<br>'
+
+                + '</br>' +
+                bodyA +
+                '<br>' + '</br>'
+                + '<table cellspacing="0" cellpadding="1" width="100%" style="border-collapse: collapse;">' +
+                '<thead>' +
+                '<tr style="font-size: 11px;">' +
+                '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'SubComponent' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Feature' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Task' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'FullDescription' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Priority' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Effort' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Complete' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Status' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
+                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
+
+
+                + '</thead>' +
+                '<tbody align="center">' +
+                '<tr>' +
+                body1 +
+                '</tr>' +
+                '</tbody>' +
+                '</table>' +
+                '<p>' + '<strong>' + 'Thank You' + '</strong>' + '</p>'
+              var cc:any=[] 
+              var ReplyTo:any = "" 
+            var from:any= undefined
+            var subject = 'TimeSheet :' + ' ' + ReportDatetime;
+            body = body.replace('>,<', '><');
+           sendEmailToUser(from, To, body, subject, ReplyTo, cc);
+            alert('Email sent sucessfully');
+
+    }
+    const sendEmailToUser =(from:any, to:any, body:any, subject:any, ReplyTo:any, cc:any) => {
+        let sp = spfi().using(spSPFx(props.ContextData.Context));
+        sp.utility.sendEmail({
+          Body: body,
+          Subject: subject,  
+          To: to,
+          CC:cc,
+          AdditionalHeaders: {
+            "content-type": "text/html"
+          },
+        }).then(() => {
+          console.log("Email Sent!");
+    
+        }).catch((err) => {
+          console.log(err.message);
+        });
+        // var siteurl = "https://hhhhteams.sharepoint.com/sites/HHHH/SP"
+        // var urlTemplate = siteurl + "/_api/SP.Utilities.Utility.SendEmail";
+        // var sendData = JSON.stringify({
+        //     'properties': {
+        //         '__metadata': {
+        //             'type': 'SP.Utilities.EmailProperties'
+        //         },
+        //         'AdditionalHeaders': {
+        //             "__metadata": {
+        //                 "type": "Collection(SP.KeyValue)"
+        //             },
+        //             "results": [{
+        //                 "__metadata": {
+        //                     "type": 'SP.KeyValue'
+        //                 },
+        //                 //'Reply- To': ReplyTo,
+        //                 'Key': 'Reply-To:',
+        //                 'Value': ReplyTo,
+        //                 'ValueType': 'Edm.String'
+        //             }]
+        //         },
+        //         'From': from,
+        //         'To': {
+        //             'results': to
+        //         },
+        //         'CC': {
+        //             'results': cc
+        //         },
+        //         'Body': body,
+        //         'Subject': subject
+        //     }
+        // })
+        // $.ajax({
+        //     contentType: 'application/json',
+        //     url: urlTemplate,
+        //     type: "POST",
+        //     data: sendData,
+        //     headers: {
+        //         "Accept": "application/json;odata=verbose",
+        //         "content-type": "application/json;odata=verbose",
+        //         "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
+        //     },
+        //     success: function (data) {
+        //         // alert('Email sent sucessfully');
+        //     },
+        //     error: function (err) {
+        //         alert('Error in sending Email: ' + JSON.stringify(err));
+        //     }
+
+        // });
+    }
+    
     return (
         <>
             <div className='row'>
                 <div className='col-sm-3 text-primary'>
                     <h3><b>Time Report</b>
-                    <span>
-                        <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
-                        </h3>
+                        <span>
+                            <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
+                    </h3>
+                </div>
+                <div className='col-sm-9 text-primary'>
+                    <h6 className='pull-right'><b><a  data-interception="off"
+                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    </h6>
                 </div>
             </div>
             <div className='row'>
                 <div className='col-7 mt-4'>
 
-                    <input type='date' value={Moment(selectdate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
+                    <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2'>
-                        <input type="radio" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
+                        <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="me-1" />Custom
                     </label>
                     <label className='mx-2'>
-                        <input type="radio" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
+                        <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
                     </label>
-                    <button className='btn btn-primary' type="submit" onClick={GenerateTime}>Generate TimeSheet</button>
+                    <label className='mx-2'>
+                        <input type="radio" name="Today" checked={checkedTask} onClick={() => selectType('Today')} className="me-1" />Today
+                    </label>
+                    <button className='btn btn-primary' type="submit" onClick={() => GeneratedTask("Custom")}>Generate TimeSheet</button>
 
 
                 </div>
@@ -660,76 +1060,42 @@ const TimeReport = () => {
                 </div>
             </div>
 
-            <DebouncedInput
-                value={globalFilter ?? ''}
-                onChange={(value: any) => setGlobalFilter(String(value))}
-                className="p-2 font-lg shadow border border-block"
-                placeholder="Search all columns..."
-            />
-            <div className="h-2" />
-            <table className='table table-striped table-hover'>
-            <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => {
-                                return (
-                                    <th key={header.id} colSpan={header.colSpan}>
-                                        {header.isPlaceholder ? null : (
-                                            <div style={{ display: "flex" }}>
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                                {header.column.getCanFilter() ? (
-                                                    <div>
-                                                        <Filter column={header.column} table={table} placeholder={header.column.columnDef} />
-                                                    </div>
-                                                ) : null}
-                                                <div
-                                                    {...{
-                                                        className: header.column.getCanSort()
-                                                            ? "cursor-pointer select-none"
-                                                            : "",
-                                                        onClick: header.column.getToggleSortingHandler(),
-                                                    }}
-                                                >
-                                                    {header.column.getIsSorted()
-                                                        ? { asc: <FaSortDown />, desc: <FaSortUp /> }[
-                                                        header.column.getIsSorted() as string
-                                                        ] ?? null
-                                                        : <FaSort />}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </th>
-                                )
-                            })}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table.getRowModel().rows.map(row => {
-                        return (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => {
-                                    return (
-                                        <td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </td>
-                                    )
-                                })}
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
+            <div className='Alltable'>
+            
+             {
+                data?.length >0?
+                <>
+                 <div className='pull-right' style={{fontSize:'20px',position:'relative',right:'165px'}} onClick={()=>sendEmail()}><MdEmail/></div>
+               <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
+                <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
+             }
+            
+            <Loader
+                  loaded={loaded}
+                  lines={13}
+                  length={20}
+                  width={10}
+                  radius={30}
+                  corners={1}
+                  rotate={0}
+                  direction={1}
+                  
+                  speed={2}
+                  trail={60}
+                  shadow={false}
+                  hwaccel={false}
+                  className="spinner"
+                  zIndex={2e9}
+                  top="28%"
+                  left="50%"
+                  scale={1.0}
+                  loadedClassName="loadedContent"
+                />
+            </div>
             <Panel
                 onRenderHeader={onRenderCustomHeaderMain}
                 type={PanelType.custom}
-                customWidth="600px"
+                customWidth="1550px"
                 isOpen={Editpopup}
                 onDismiss={closeEditPopup}
                 isBlocking={false}
@@ -737,19 +1103,19 @@ const TimeReport = () => {
                 <div className='modal-body'>
                     <div className='row mt-4'>
                         <div className='col-sm-4'>
-                            <div className='form-group'>
+                            <div className='form-group mb-2'>
                                 <label>Name</label><br />
                                 <input type="text" className="form-control" disabled={true} value={`Time Report`}></input>
                             </div>
                         </div>
                         <div className='col-sm-4'>
-                            <div className='form-group'>
+                            <div className='form-group mb-2'>
                                 <label>Title</label><br />
                                 <input type="text" className="form-control" defaultValue={`Time Report`} onChange={(e) => setPost({ ...post, Title: e.target.value })} ></input>
                             </div>
                         </div>
                         <div className='col-sm-4'>
-                            <div className="input-group">
+                            <div className="input-group mb-2">
                                 <label className="full-width">Item Rank</label>
                                 <select
                                     className="full_width searchbox_height"
@@ -822,7 +1188,7 @@ const TimeReport = () => {
                                 form
                             </a>
                             <button type="button" className="btn btn-primary ms-2"
-                                >
+                            >
                                 Save
                             </button>
                         </div>
