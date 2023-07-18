@@ -9,6 +9,7 @@ import {
     getExpandedRowModel,
     ColumnDef,
     flexRender,
+    ColumnFiltersState,
     getSortedRowModel,
     SortingState,
     FilterFn,
@@ -19,8 +20,8 @@ import { FaAngleDown, FaAngleUp, FaPrint, FaFileExcel, FaPaintBrush, FaEdit, FaS
 import { HTMLProps } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
+import saveAs from "file-saver";
 import { RiFileExcel2Fill } from 'react-icons/ri';
 import ShowTeamMembers from '../ShowTeamMember';
 
@@ -141,12 +142,14 @@ const GlobalCommanTable = (items: any) => {
     let callBackData = items?.callBackData;
     let callBackDataToolTip = items?.callBackDataToolTip;
     let pageName = items?.pageName;
-    let excelDatas = items?.excelDatas;
+    let siteUrl: any = '';
     let showHeader = items?.showHeader;
     let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
-    const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-    const fileExtension = ".xlsx";
+    let usedFor: any = items?.usedFor;
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+        []
+    );
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const [rowSelection, setRowSelection] = React.useState({});
@@ -161,15 +164,17 @@ const GlobalCommanTable = (items: any) => {
         },
         state: {
             globalFilter,
+            columnFilters,
             expanded,
             sorting,
             rowSelection,
         },
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         onExpandedChange: setExpanded,
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
-        getSubRows: (row: any) => row.subRows,
+        getSubRows: (row: any) => row?.subRows,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: showPagination === true ? getPaginationRowModel() : null,
@@ -181,14 +186,16 @@ const GlobalCommanTable = (items: any) => {
         enableSubRowSelection: false,
         // filterFns: undefined
     });
+    
 
     React.useEffect(() => {
         CheckDataPrepre()
     }, [table?.getSelectedRowModel()?.flatRows.length])
     React.useEffect(() => {
-        if(items?.pageSize!=undefined){
+
+        if (items?.pageSize != undefined) {
             table.setPageSize(items?.pageSize)
-        }else{
+        } else {
             table.setPageSize(100)
         }
         table.setPageSize(100)
@@ -223,16 +230,21 @@ const GlobalCommanTable = (items: any) => {
     }, [table?.getRowModel()?.rows])
 
     const CheckDataPrepre = () => {
-        if (table?.getSelectedRowModel()?.flatRows.length > 0) {
-            table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
-                elem.original.Id = elem.original.ID
-                item = elem.original;
-            });
-            callBackData(item)
+        if (usedFor == "SiteComposition") {
+            let finalData: any = table?.getSelectedRowModel()?.flatRows;
+            callBackData(finalData);
         } else {
-            callBackData(item)
+            if (table?.getSelectedRowModel()?.flatRows.length > 0) {
+                table?.getSelectedRowModel()?.flatRows?.map((elem: any) => {
+                    elem.original.Id = elem.original.ID
+                    item = elem.original;
+                });
+                callBackData(item)
+            } else {
+                callBackData(item)
+            }
+            console.log("itrm", item)
         }
-        console.log("itrm", item)
     }
     const ShowTeamFunc = () => {
         setShowTeamPopup(true)
@@ -242,12 +254,18 @@ const GlobalCommanTable = (items: any) => {
     }, []);
     const openTaskAndPortfolioMulti = () => {
         table?.getSelectedRowModel()?.flatRows?.map((item: any) => {
-            if (item?.original?.siteType === "Master Tasks") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
-            } else if (item?.original?.siteType === "Project") {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+            let siteUrl: any = ''
+            if (item?.original?.siteUrl != undefined) {
+                siteUrl = item?.original?.siteUrl;
             } else {
-                window.open(`${items?.AllListId?.siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
+                siteUrl = items?.AllListId?.siteUrl;
+            }
+            if (item?.original?.siteType === "Master Tasks") {
+                window.open(`${siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else if (item?.original?.siteType === "Project") {
+                window.open(`${siteUrl}/SitePages/Project-Management.aspx?taskId=${item?.original?.Id}`, '_blank')
+            } else {
+                window.open(`${siteUrl}/SitePages/Task-Profile.aspx?taskId=${item?.original?.Id}&Site=${item?.original?.siteType}`, '_blank')
             }
         })
     }
@@ -284,21 +302,83 @@ const GlobalCommanTable = (items: any) => {
         })
         doc.save('Data PrintOut');
     }
-    const downloadExcel = (csvData: any, fileName: any) => {
-        const ws = XLSX.utils.json_to_sheet(csvData);
-        const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-        const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-        const data = new Blob([excelBuffer], { type: fileType });
-        FileSaver.saveAs(data, fileName + fileExtension);
+    // Export To Excel////////
+
+    const exportToExcel = () => {
+        const flattenedData: any[] = [];
+        const flattenRowData = (row: any) => {
+            const flattenedRow: any = {};
+            columns.forEach((column: any) => {
+                if (column.placeholder != undefined && column.placeholder != '') {
+                    flattenedRow[column.id] = row.original[column.id];
+                }
+            });
+            flattenedData.push(flattenedRow);
+            if (row.getCanExpand()) {
+                row.subRows.forEach(flattenRowData);
+            }
+        };
+        table.getRowModel().rows.forEach(flattenRowData);
+        const worksheet = XLSX.utils.aoa_to_sheet([]);
+        XLSX.utils.sheet_add_json(worksheet, flattenedData, {
+            skipHeader: false,
+            origin: "A1",
+        });
+        const maxLength = 32767;
+        const sheetRange = XLSX.utils.decode_range(worksheet["!ref"]);
+        for (let R = sheetRange.s.r; R <= sheetRange.e.r; ++R) {
+            for (let C = sheetRange.s.c; C <= sheetRange.e.c; ++C) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+                const cell = worksheet[cellAddress];
+                if (cell && cell.t === "s" && cell.v.length > maxLength) {
+                    const chunks = [];
+                    let text = cell.v;
+                    while (text.length > maxLength) {
+                        chunks.push(text.slice(0, maxLength));
+                        text = text.slice(maxLength);
+                    }
+                    chunks.push(text);
+                    cell.v = chunks.shift();
+                    chunks.forEach((chunk) => {
+                        const newCellAddress = XLSX.utils.encode_cell({
+                            r: R + chunks.length,
+                            c: C,
+                        });
+                        worksheet[newCellAddress] = { t: "s", v: chunk };
+                    });
+                }
+            }
+        }
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+        const excelData = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        if (typeof saveAs === "function") {
+            saveAs(excelData, "table.xlsx");
+        } else {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(excelData);
+            downloadLink.download = "table.xlsx";
+            downloadLink.click();
+        }
     };
 
-
+    ////Export to excel end/////
     return (
         <>
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
                     <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
-                    <span className='Header-Showing-Items'>{ showDateTime}</span>
+                    { showDateTime &&
+                        <span className='Header-Showing-Items'>{ showDateTime}</span>
+                    }
+                    
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
@@ -310,9 +390,9 @@ const GlobalCommanTable = (items: any) => {
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
                         <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' onClick={() => downloadExcel(excelDatas, "Task-User-Management")}><RiFileExcel2Fill /></a>
+                    <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill/></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All"></i></a>
+                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
                     <a className='Prints' onClick={() => downloadPdf()}>
@@ -385,7 +465,7 @@ const GlobalCommanTable = (items: any) => {
 
                 </tbody>
             </table>
-            {showPagination === true ? <div className="d-flex gap-2 items-center mb-3 mx-2">
+            {showPagination === true && table?.getFilteredRowModel()?.rows?.length > table.getState().pagination.pageSize ? <div className="d-flex gap-2 items-center mb-3 mx-2">
                 <button
                     className="border rounded p-1"
                     onClick={() => table.setPageIndex(0)}
@@ -427,7 +507,7 @@ const GlobalCommanTable = (items: any) => {
                         table.setPageSize(Number(e.target.value))
                     }}
                 >
-                    {[20, 30, 40, 50, 60,100,150,200].map(pageSize => (
+                    {[20, 30, 40, 50, 60, 100, 150, 200].map(pageSize => (
                         <option key={pageSize} value={pageSize}>
                             Show {pageSize}
                         </option>
