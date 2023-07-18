@@ -144,6 +144,7 @@ const GlobalCommanTable = (items: any) => {
     let pageName = items?.pageName;
     let siteUrl: any = '';
     let showHeader = items?.showHeader;
+    let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
     let usedFor: any = items?.usedFor;
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -374,6 +375,10 @@ const GlobalCommanTable = (items: any) => {
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
                     <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                    { showDateTime &&
+                        <span className='Header-Showing-Items'>{ showDateTime}</span>
+                    }
+                    
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
