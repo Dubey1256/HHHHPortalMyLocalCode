@@ -143,6 +143,7 @@ const GlobalCommanTable = (items: any) => {
     let pageName = items?.pageName;
     let excelDatas = items?.excelDatas;
     let showHeader = items?.showHeader;
+    let showDateTime = items?.showDateTime;
     let showPagination: any = items?.showPagination;
     const fileType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
@@ -297,6 +298,7 @@ const GlobalCommanTable = (items: any) => {
             {showHeader === true && <div className='tbl-headings justify-content-between mb-1'>
                 <span className='leftsec'>
                     <span className='Header-Showing-Items'>{`Showing ${table?.getFilteredRowModel()?.rows?.length} out of ${data?.length}`}</span>
+                    <span className='Header-Showing-Items'>{ showDateTime}</span>
                     <DebouncedInput
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
