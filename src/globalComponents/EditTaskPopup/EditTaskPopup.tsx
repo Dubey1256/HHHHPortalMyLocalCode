@@ -548,7 +548,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null) {
+                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null || item.Priority_x0020_Rank == 0) {
                     if (item.Priority != undefined) {
                         if (item.Priority == "(3) Low") {
                             item.Priority_x0020_Rank = 1
