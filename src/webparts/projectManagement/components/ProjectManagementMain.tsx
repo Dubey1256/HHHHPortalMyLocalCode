@@ -6,6 +6,7 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight, FaAngleLeft, FaAngleRight, FaCar
 import { useTable, useSortBy, useFilters, useExpanded, usePagination, HeaderGroup, } from "react-table";
 import { Filter, DefaultColumnFilter, } from "../../projectmanagementOverviewTool/components/filters";
 import { FaAngleDown, FaAngleUp, FaHome } from "react-icons/fa";
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import { Web } from "sp-pnp-js";
 import EditProjectPopup from "../../projectmanagementOverviewTool/components/EditProjectPopup";
 import { IoMdArrowDropright, IoMdArrowDropdown } from "react-icons/io";
@@ -38,6 +39,7 @@ let headerOptions: any = {
   teamsIcon: true
 }
 var DynamicData: any = {}
+var AllSitesAllTasks:any=[];
 var ChildData: any = []
 var Parent: any = []
 var SubChild: any = []
@@ -138,6 +140,7 @@ const ProjectManagementMain = (props: any) => {
     getQueryVariable((e: any) => e);
 
     GetMetaData();
+    LoadAllSiteAllTasks()
     GetMasterData();
     try {
       $("#spPageCanvasContent").removeClass();
@@ -525,7 +528,7 @@ const ProjectManagementMain = (props: any) => {
   }, []);
 
   const LoadAllSiteTasks = async function () {
-    await loadAllComponent()
+
     if (siteConfig?.length > 0) {
       try {
         var AllTask: any = [];
@@ -597,7 +600,6 @@ const ProjectManagementMain = (props: any) => {
                 ? getComponentasString(items.Component)
                 : "";
             items.Shareweb_x0020_ID = globalCommon.getTaskId(items);
-            items.HierarchyData = globalCommon.hierarchyData(items, MyAllData)
             AllUser?.map((user: any) => {
               if (user.AssingedToUserId == items.Author.Id) {
                 items.createdImg = user?.Item_x0020_Cover?.Url;
@@ -699,31 +701,84 @@ const ProjectManagementMain = (props: any) => {
   };
 
 
-  // const ComponentServicePopupCallBack = React.useCallback((DataItem: any, Type: any, functionType: any) => {
-  //   if (functionType == 'close') {
-  //     setIsComponent(false);
-  //     setIsPortfolio(false);
-  //   } else {
-  //     if (Type === "Service") {
-  //       if (DataItem.length > 0) {
-  //         DataItem.map((selectedData: any) => {
-  //           linkedComponentData.push(selectedData);
-  //         })
-  //         TagPotfolioToProject();
-  //       }
-  //     }
-  //     if (Type === "Component") {
-  //       if (DataItem?.length > 0) {
-  //         DataItem.map((selectedData: any) => {
-  //           smartComponentData.push(selectedData);
-  //         })
-  //         TagPotfolioToProject();
-  //       }
-  //     }
-  //     console.log(Masterdata)
-  //     setIsPortfolio(false);
-  //   }
-  // }, [])
+  const LoadAllSiteAllTasks = async function () {
+    await loadAllComponent()
+    let AllSiteTasks: any = [];
+    let approverTask: any = [];
+    let SharewebTask: any = [];
+    let AllImmediates: any = [];
+    let AllEmails: any = [];
+    let AllBottleNeckTasks: any = [];
+    let AllPriority: any = [];
+    let query =
+        "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+    let Counter = 0;
+    let web = new Web(AllListId?.siteUrl);
+    let arraycount = 0;
+    try {
+        if (siteConfig?.length > 0) {
+
+            siteConfig.map(async (config: any) => {
+                if (config.Title != "SDC Sites") {
+                    let smartmeta = [];
+                    await web.lists
+                        .getById(config.listId)
+                        .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+                        .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+                        .getAll().then((data: any) => {
+                            smartmeta = data;
+                            smartmeta.map((task: any) => {
+                                task.AllTeamMember = [];
+                                task.HierarchyData = [];
+                                task.siteType = config.Title;
+                                task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                                task.listId = config.listId;
+                                task.siteUrl = config.siteUrl.Url;
+                                task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                                task.DisplayDueDate =
+                                    task.DueDate != null
+                                        ? Moment(task.DueDate).format("DD/MM/YYYY")
+                                        : "";
+                                task.portfolio = {};
+                                if (task?.Component?.length > 0) {
+                                    task.portfolio = task?.Component[0];
+                                    task.PortfolioTitle = task?.Component[0]?.Title;
+                                    task["Portfoliotype"] = "Component";
+                                }
+                                if (task?.Services?.length > 0) {
+                                    task.portfolio = task?.Services[0];
+                                    task.PortfolioTitle = task?.Services[0]?.Title;
+                                    task["Portfoliotype"] = "Service";
+                                }
+                                task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                                task.TeamMembersSearch = "";
+                                task.componentString =
+                                    task.Component != undefined &&
+                                        task.Component != undefined &&
+                                        task.Component.length > 0
+                                        ? getComponentasString(task.Component)
+                                        : "";
+                                task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+              
+                                
+                                AllSiteTasks.push(task)
+                            });
+                            arraycount++;
+                        });
+                    let currentCount = siteConfig?.length;
+                    if (arraycount === currentCount) {
+                      AllSitesAllTasks = AllSiteTasks;
+                      
+                    }
+                } else {
+                    arraycount++;
+                }
+            });
+        }
+    } catch (e) {
+        console.log(e)
+    }
+};
 
   const ChangeIcon = () => {
     seticon(!icon)
@@ -962,20 +1017,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-              <div className='tooltipSec popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                {row.original.Services.length >= 1 ? (
-                  <span className='text-success'>{row?.original?.Shareweb_x0020_ID}</span>
-                ) : (
-                  <span>{row?.original?.Shareweb_x0020_ID}</span>
-                )}
-                {row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
-                  <div className='popover__content'>
-                    <div className='tootltip-title'>{row?.original?.Title}</div>
-                    <div className='tooltip-body'>
-                      <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-                    </div>
-                  </div>}
-              </div>
+            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
