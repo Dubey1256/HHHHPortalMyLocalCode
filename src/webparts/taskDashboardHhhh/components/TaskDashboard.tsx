@@ -6,6 +6,7 @@ import {
 import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
@@ -479,7 +480,6 @@ const TaskDashboard = (props: any) => {
                                             ? Moment(task.Created).format("DD/MM/YYYY")
                                             : "";
                                     task.TeamMembersId = [];
-                                    task.HierarchyData = globalCommon.hierarchyData(task, MyAllData)
                                     taskUsers?.map((user: any) => {
                                         if (user.AssingedToUserId == task.Author.Id) {
                                             task.createdImg = user?.Item_x0020_Cover?.Url;
@@ -796,21 +796,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-
-                        <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
-                            <div className="popover__content">
-                                <div className="tootltip-title">{row?.original?.Title}
-                                </div>
-                                <div className="tooltip-body">
-                                    {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
-                                        <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-                                    )}
-
-
-                                </div>
-                            </div>
-                        </div>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
                     </span>
 
                 ),
@@ -999,7 +985,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
 
-                        {row?.original?.Shareweb_x0020_ID}
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
 
                     </span>
                 ),
@@ -2025,7 +2011,7 @@ const TaskDashboard = (props: any) => {
                         if (tasksCopy?.length > 0) {
                             tasksCopy?.map((item: any) => {
                                 let teamUsers: any = [];
-                                item?.Team_x0020_Members?.map((item1: any) => {
+                                item?.AssignedTo?.map((item1: any) => {
                                     teamUsers.push(item1?.Title)
                                 });
                                 if (item.DueDate != undefined) {
