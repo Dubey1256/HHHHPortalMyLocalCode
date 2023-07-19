@@ -5665,33 +5665,33 @@ function ComponentTable(SelectedProp: any) {
                 <div className="tbl-headings bg-white">
                   <span className="leftsec">
                     <label>
-                      Showing {ComponentCopy} of
-                      {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
+                      Showing {ComponentCopy} of 
+                      { AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
                     </label>
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
                       <label>
-                        {SubComponentCopy} of
-                        {AllCountItems?.AllSubComponentItems?.length}
+                        {SubComponentCopy} of 
+                        { AllCountItems?.AllSubComponentItems?.length}
                         SubComponents
                       </label>
                     ) : (
                       <label>
-                        {AllCountItems?.AllSubComponentItems?.length} of
-                        {AllCountItems?.AllSubComponentItems?.length}
+                        {AllCountItems?.AllSubComponentItems?.length} of 
+                        { AllCountItems?.AllSubComponentItems?.length}
                         SubComponents
                       </label>
                     )}
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
                       <label>
-                        {FeatureCopy} of {AllCountItems?.AllFeaturesItems?.length}
+                        {FeatureCopy} of { AllCountItems?.AllFeaturesItems?.length}
                         Features
                       </label>
                     ) : (
                       <label>
                         {AllCountItems?.AllFeaturesItems?.length} of
-                        {AllCountItems?.AllFeaturesItems?.length} Features
+                        { AllCountItems?.AllFeaturesItems?.length} Features
                       </label>
                     )}
                     <span
@@ -5714,13 +5714,13 @@ function ComponentTable(SelectedProp: any) {
                         {FilterShowhideShwingData === true ? (
                           <label>
                             {SubComponentCopy} of
-                            {AllCountItems?.AllSubComponentItems?.length}
+                            { AllCountItems?.AllSubComponentItems?.length}
                             SubComponents
                           </label>
                         ) : (
                           <label>
                             {AllCountItems?.AllSubComponentItems?.length} of
-                            {AllCountItems?.AllSubComponentItems?.length}
+                            { AllCountItems?.AllSubComponentItems?.length}
                             SubComponents
                           </label>
                         )}
@@ -5728,12 +5728,12 @@ function ComponentTable(SelectedProp: any) {
                         {FilterShowhideShwingData === true ? (
                           <label>
                             {FeatureCopy} of
-                            {AllCountItems?.AllFeaturesItems?.length} Features
+                            { AllCountItems?.AllFeaturesItems?.length} Features
                           </label>
                         ) : (
                           <label>
                             {AllCountItems?.AllFeaturesItems?.length} of
-                            {AllCountItems?.AllFeaturesItems?.length} Features
+                            { AllCountItems?.AllFeaturesItems?.length} Features
                           </label>
                         )}
 
