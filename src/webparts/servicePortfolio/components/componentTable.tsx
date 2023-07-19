@@ -5665,33 +5665,22 @@ function ComponentTable(SelectedProp: any) {
                 <div className="tbl-headings bg-white">
                   <span className="leftsec">
                     <label>
-                      Showing {ComponentCopy} of 
-                      { AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
+                      Showing {ComponentCopy} of {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
                     </label>
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
                       <label>
-                        {SubComponentCopy} of 
-                        { AllCountItems?.AllSubComponentItems?.length}
-                        SubComponents
-                      </label>
+                        {SubComponentCopy} of {AllCountItems?.AllSubComponentItems?.length} SubComponents </label>
                     ) : (
                       <label>
-                        {AllCountItems?.AllSubComponentItems?.length} of 
-                        { AllCountItems?.AllSubComponentItems?.length}
-                        SubComponents
-                      </label>
+                        {AllCountItems?.AllSubComponentItems?.length} of {AllCountItems?.AllSubComponentItems?.length} SubComponents </label>
                     )}
                     <label className="ms-1 me-1"> | </label>
                     {FilterShowhideShwingData === true ? (
-                      <label>
-                        {FeatureCopy} of { AllCountItems?.AllFeaturesItems?.length}
-                        Features
-                      </label>
+                      <label>  {FeatureCopy} of {AllCountItems?.AllFeaturesItems?.length} Features </label>
                     ) : (
                       <label>
-                        {AllCountItems?.AllFeaturesItems?.length} of
-                        { AllCountItems?.AllFeaturesItems?.length} Features
+                        {AllCountItems?.AllFeaturesItems?.length} of{AllCountItems?.AllFeaturesItems?.length} Features
                       </label>
                     )}
                     <span
@@ -5707,65 +5696,38 @@ function ComponentTable(SelectedProp: any) {
                         style={{ zIndex: 100 }}
                       >
                         <label>
-                          Showing {ComponentCopy} of
-                          {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components
-                        </label>
+                          Showing {ComponentCopy} of  {AllCountItems?.AllComponentItems?.length > 1 ? AllCountItems?.AllComponentItems?.length - 1 : AllCountItems?.AllComponentItems?.length} Components </label>
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
-                          <label>
-                            {SubComponentCopy} of
-                            { AllCountItems?.AllSubComponentItems?.length}
-                            SubComponents
-                          </label>
+                          <label> {SubComponentCopy} of {AllCountItems?.AllSubComponentItems?.length} SubComponents </label>
                         ) : (
                           <label>
-                            {AllCountItems?.AllSubComponentItems?.length} of
-                            { AllCountItems?.AllSubComponentItems?.length}
-                            SubComponents
-                          </label>
+                            {AllCountItems?.AllSubComponentItems?.length} of  {AllCountItems?.AllSubComponentItems?.length} SubComponents </label>
                         )}
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
-                          <label>
-                            {FeatureCopy} of
-                            { AllCountItems?.AllFeaturesItems?.length} Features
-                          </label>
+                          <label> {FeatureCopy} of {AllCountItems?.AllFeaturesItems?.length} Features</label>
                         ) : (
-                          <label>
-                            {AllCountItems?.AllFeaturesItems?.length} of
-                            { AllCountItems?.AllFeaturesItems?.length} Features
-                          </label>
+                          <label> {AllCountItems?.AllFeaturesItems?.length} of {AllCountItems?.AllFeaturesItems?.length} Features</label>
                         )}
 
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
-                          <label>
-                            {activityCopy} of {activity} Activities
-                          </label>
+                          <label> {activityCopy} of {activity} Activities </label>
                         ) : (
-                          <label>
-                            {activity} of {activity} Activities
-                          </label>
+                          <label> {activity} of {activity} Activities</label>
                         )}
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
-                          <label>
-                            {workstrimCopy} of {workstrim} Workstreams
-                          </label>
+                          <label> {workstrimCopy} of {workstrim} Workstreams </label>
                         ) : (
-                          <label>
-                            {workstrim} of {workstrim} Workstreams
-                          </label>
+                          <label> {workstrim} of {workstrim} Workstreams </label>
                         )}
                         <label className="ms-1 me-1"> | </label>
                         {FilterShowhideShwingData === true ? (
-                          <label>
-                            {taskCopy} of {task} Tasks
-                          </label>
+                          <label> {taskCopy} of {task} Tasks </label>
                         ) : (
-                          <label>
-                            {task} of {task} Tasks
-                          </label>
+                          <label> {task} of {task} Tasks </label>
                         )}
                       </span>
                     </span>
@@ -5814,14 +5776,14 @@ function ComponentTable(SelectedProp: any) {
                     )}
 
                     {table?.getSelectedRowModel()?.flatRows.length === 1 ? <button
-                      type="button"
+                      type="button" title="Add Activity-Task"
                       className="btn btn-primary"
                       onClick={() => openActivity()}
                       disabled={ActivityDisable}
                     >
                       Add Activity-Task
-                    </button> : <button
-                      type="button"
+                    </button> : <button 
+                      type="button" title="Add Activity-Task"
                       className="btn btn-primary"
                       onClick={() => openActivity()}
                       disabled={true}
@@ -5830,32 +5792,32 @@ function ComponentTable(SelectedProp: any) {
                     </button>}
                     {table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.Item_x0020_Type != "Component" ||
                       table?.getSelectedRowModel()?.flatRows?.length === 1 && table?.getSelectedRowModel()?.flatRows[0]?.original?.subRows?.length === 0 ? <button
-                        type="button"
+                        type="button" title="Restructure"
                         className="btn btn-primary"
                         onClick={buttonRestructuring}
                       >
                       Restructure
                     </button> : <button
-                      type="button"
+                      type="button" title="Restructure"
                       disabled={true}
                       className="btn btn-primary"
                       onClick={buttonRestructuring}
                     >
-                      Restructure
+                      
                     </button>}
 
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>
-                      <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
-                    </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
+                      <a title="Web Icon" onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                    </span> : <span><a  title="Web Icon" className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
 
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
 
-                    <a className="brush" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}>
+                    <a title="Clear All" className="brush" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}>
                       <FaPaintBrush />
                     </a>
 
-                    <a onClick={Prints} className="Prints">
+                    <a title="Print" onClick={Prints} className="Prints">
                       <FaPrint />
                     </a>
 
@@ -5863,9 +5825,9 @@ function ComponentTable(SelectedProp: any) {
                       <FaFileExcel />
                     </CSVLink> */}
 
-                    <a className='excal' onClick={() => exportToExcel()}><FaFileExcel /></a>
+                    <a title="Export To Excel" className='excal' onClick={() => exportToExcel()}><FaFileExcel /></a>
 
-                    <a className="expand">
+                    <a className="expand" title="Expand">
                       <ExpndTable prop={expndpopup} prop1={tablecontiner} />
                     </a>
                   </span>
