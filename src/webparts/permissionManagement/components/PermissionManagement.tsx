@@ -11,7 +11,7 @@ import './pm.css';
 import { Panel } from "office-ui-fabric-react";
 import { Table } from "react-bootstrap";
 import { IPermissionManagementProps } from './IPermissionManagementProps';
-import Permission_management from './Permission_management';
+import Per_management from './Permission_management';
 // import Select from "react-select";
 // import {ReactSnackBar} from "react-js-snackbar";
 // import ReactSnackBar from "react-js-snackbar";
@@ -29,7 +29,7 @@ export default class PermissionManagement extends React.Component<IPermissionMan
     } = this.props;
 
     return (
-<Permission_management props={this.props}/>
+    <Per_management/>
     );
   }
 }

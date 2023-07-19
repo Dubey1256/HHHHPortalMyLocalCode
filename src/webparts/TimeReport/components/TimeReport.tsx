@@ -1000,14 +1000,14 @@ var ReportDate = new Date()
         <>
             <div className='row'>
                 <div className='col-sm-3 text-primary'>
-                    <h3><b>Time Report</b>
+                    <h3 className="heading">Time Report
                         <span>
                             <img src={require('../../../Assets/ICON/edit_page.svg')} width="25" onClick={(e) => EditComponentPopup()} /></span>
                     </h3>
                 </div>
                 <div className='col-sm-9 text-primary'>
                     <h6 className='pull-right'><b><a  data-interception="off"
-                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport.aspx">Old Time Report</a></b>
+                    target="_blank" href="https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/TimeReport-old.aspx">Old Time Report</a></b>
                     </h6>
                 </div>
             </div>
