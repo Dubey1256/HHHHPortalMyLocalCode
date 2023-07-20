@@ -857,7 +857,13 @@ function TasksTable(props: any) {
       RestruringCloseCall()
     })
   }
+  function structuredClone(obj: any): any {
+
+    return JSON.parse(JSON.stringify(obj));
+
+}
   const openActivity = () => {
+    let data2:any= structuredClone(props?.props)
     if (checkData != undefined && checkData != null) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
@@ -878,15 +884,15 @@ function TasksTable(props: any) {
       }
       if (props.props.SharewebTaskType == 'Activities') {
         let parentcat:any=[];
-        let data:any=props.props
-        if(data?.ClientTime!=null && data?.ClientTime!=undefined &&data?.ClientTime[0].Title!=undefined ){
+    
+        if(data2?.ClientTime!=null && data2?.ClientTime!=undefined){
 
-          data.ClientTime=JSON.stringify(data?.ClientTime)
+          data2.ClientTime=JSON.stringify(data2?.ClientTime)
         }else{
-          data.ClientTime=""
+          data2.ClientTime=null
         }
        
-        MeetingItems.push(data)
+        MeetingItems.push(data2)
        setWSPopup(true)
        
     
