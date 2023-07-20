@@ -4333,7 +4333,7 @@ export default function ComponentTable({ props, NextProp, Iconssc }: any) {
               <ExpndTable prop={expndpopup} prop1={tablecontiner} />
             </a>
             <a>
-              <Tooltip ComponentId="1748" />
+              <Tooltip ComponentId="1263" />
             </a>
           </span>
 
