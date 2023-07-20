@@ -2,7 +2,6 @@ import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
-import pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../globalCommon";
@@ -4539,7 +4538,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-sm-5">
                                         {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
-                                            <>
+                                            <div className="site-composition-on-task-popup">
                                                 {SiteTypes != undefined && SiteTypes.length > 0 ?
                                                     <SiteCompositionComponent
                                                         AllListId={AllListIdData}
@@ -4556,7 +4555,7 @@ const EditTaskPopup = (Items: any) => {
                                                         SitesTaggingData={SitesTaggingData}
                                                     /> : null
                                                 }
-                                            </>
+                                            </div>
                                             : null
                                         }
 
