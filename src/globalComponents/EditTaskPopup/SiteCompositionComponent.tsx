@@ -667,12 +667,12 @@ const SiteCompositionComponent = (Props: any) => {
             })
         }
 
-        if (TotalPercentageCount > 100.5) {
+        if (TotalPercentageCount > 101) {
             TaskShuoldBeUpdate = false;
             TotalPercentageCount = 0
             alert("site composition allocation should not be more than 100%");
         }
-        if (TotalPercentageCount.toFixed(0) < 100 && TotalPercentageCount > 0) {
+        if (TotalPercentageCount.toFixed(0) < 99 && TotalPercentageCount > 0) {
             TotalPercentageCount = 0
             let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
             if (conformationSTatus) {
