@@ -388,14 +388,14 @@ const GlobalCommanTable = (items: any) => {
                     {showTeamMemberOnCheck === true ? <span><a className="teamIcon" onClick={() => ShowTeamFunc()}><span title="Create Teams Group" className="svg__iconbox svg__icon--team teamIcon"></span></a>
                     </span> : <span><a className="teamIcon"><span title="Create Teams Group" style={{ backgroundColor: "gray" }} className="svg__iconbox svg__icon--team teamIcon"></span></a></span>}
                     {table?.getSelectedRowModel()?.rows?.length > 0 ? <span>
-                        <a onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb"></span></a>
+                        <a  onClick={() => openTaskAndPortfolioMulti()} className="openWebIcon" title='Web Page'><span className="svg__iconbox svg__icon--openWeb"></span></a>
                     </span> : <span><a className="openWebIcon"><span className="svg__iconbox svg__icon--openWeb" style={{ backgroundColor: "gray" }}></span></a></span>}
-                    <a className='excal' onClick={() => exportToExcel()}><RiFileExcel2Fill/></a>
+                    <a className='excal' title='Export To Excel' onClick={() => exportToExcel()}><RiFileExcel2Fill/></a>
 
-                    <a className='brush'><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
+                    <a className='brush' title="Clear All"><i className="fa fa-paint-brush hreflink" aria-hidden="true" title="Clear All" onClick={() => { setGlobalFilter(''); setColumnFilters([]); }}></i></a>
 
 
-                    <a className='Prints' onClick={() => downloadPdf()}>
+                    <a  className='Prints' title="Print" onClick={() => downloadPdf()}>
                         <i className="fa fa-print" aria-hidden="true" title="Print"></i>
                     </a>
 

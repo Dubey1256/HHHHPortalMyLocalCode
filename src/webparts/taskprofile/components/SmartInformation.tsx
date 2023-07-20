@@ -18,9 +18,9 @@ import ImageTabComponenet from './ImageTabComponent'
 import { Mention } from 'react-mentions';
 let AllTasktagsmartinfo: any = [];
 let hhhsmartinfoId: any = [];
-let  taskUser:any=[];
+let taskUser: any = [];
 let mastertaskdetails: any;
-let    MovefolderItemUrl2="";
+let MovefolderItemUrl2 = "";
 const SmartInformation = (props: any) => {
   const [show, setShow] = useState(false);
   const [popupEdit, setpopupEdit] = useState(false);
@@ -51,7 +51,7 @@ const SmartInformation = (props: any) => {
   const [Editdocpanel, setEditdocpanel] = useState(false);
   const [EditSmartinfoValue, setEditSmartinfoValue] = useState(null);
   const [Today, setToday] = useState(moment().format("DD/MM/YYYY"));
-  const [folderCreated,setFolderCreated]=useState(true)
+  const [folderCreated, setFolderCreated] = useState(true)
   // const [taskUser,setTaskUser]=useState([]);
   const handleClose = () => {
     setpopupEdit(false);
@@ -90,28 +90,28 @@ const SmartInformation = (props: any) => {
     LoadMasterTaskList();
   }, [show])
 
-//=========== TaskUser Management=====================
-const  GetTaskUsers =async ()  =>{
-  let web = new Web(props.AllListId?.siteUrl);
-  let taskUsers = [];
-  taskUsers = await web.lists
-    .getById(props?.AllListId?.TaskUsertListID)
-    .items
-    .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
-    .filter("ItemType eq 'User'")
-    .expand('AssingedToUser')
-    .get();
-  // taskUsers?.map((item: any, index: any) => {
-  //   if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
-  //     this.backGroundComment = true;
-  //   }
-  // })
-  if(taskUsers.length>0){
-    taskUser=taskUser.concat(taskUsers);
+  //=========== TaskUser Management=====================
+  const GetTaskUsers = async () => {
+    let web = new Web(props.AllListId?.siteUrl);
+    let taskUsers = [];
+    taskUsers = await web.lists
+      .getById(props?.AllListId?.TaskUsertListID)
+      .items
+      .select('Id', 'Email', 'Suffix', 'Title', 'Item_x0020_Cover', 'Company', 'AssingedToUser/Title', 'AssingedToUser/Id',)
+      .filter("ItemType eq 'User'")
+      .expand('AssingedToUser')
+      .get();
+    // taskUsers?.map((item: any, index: any) => {
+    //   if (this.props?.Context?.pageContext?._legacyPageContext?.userId === (item?.AssingedToUser?.Id) && item?.Company == "Smalsus") {
+    //     this.backGroundComment = true;
+    //   }
+    // })
+    if (taskUsers.length > 0) {
+      taskUser = taskUser.concat(taskUsers);
+    }
+
+
   }
-
-
-}
 
 
   // ===============get smartInformationId tag in task========================
@@ -178,13 +178,13 @@ const  GetTaskUsers =async ()  =>{
     setAllSmartInfo(Data)
     if (Data.length > 0) {
       SmartInformation?.map((items: any) => {
-       
+
         hhhsmartinfoId.push(items?.Id);
         if (SmartInformation?.length > 0) {
           Data?.map(async (tagsmartinfo: any) => {
-            if(tagsmartinfo.Title=="Only For Me"){
+            if (tagsmartinfo.Title == "Only For Me") {
               setFolderCreated(false)
-              MovefolderItemUrl2=`/${tagsmartinfo.Id}_.000`
+              // MovefolderItemUrl2 = `/${tagsmartinfo.Id}_.000`
             }
             if (tagsmartinfo?.Id == items?.Id) {
 
@@ -197,14 +197,14 @@ const  GetTaskUsers =async ()  =>{
           })
         }
       })
-      taskUser?.map((user:any)=>{
-        allSmartInformationglobal?.map((smartinfo:any)=>{
-            if (smartinfo?.Author?.Id==user?.AssingedToUser?.Id){
-              smartinfo.Author.AuthorImage=user?.Item_x0020_Cover
-            }
-            if(smartinfo?.Editor?.Id==user?.AssingedToUser?.Id){
-              smartinfo.Editor.EditorImage=user?.Item_x0020_Cover
-            }
+      taskUser?.map((user: any) => {
+        allSmartInformationglobal?.map((smartinfo: any) => {
+          if (smartinfo?.Author?.Id == user?.AssingedToUser?.Id) {
+            smartinfo.Author.AuthorImage = user?.Item_x0020_Cover
+          }
+          if (smartinfo?.Editor?.Id == user?.AssingedToUser?.Id) {
+            smartinfo.Editor.EditorImage = user?.Item_x0020_Cover
+          }
         })
 
       })
@@ -283,30 +283,27 @@ const  GetTaskUsers =async ()  =>{
     console.log(allSmartInformationglobaltagdocuments)
   }
 
-  // const OnChnageTab = () => {
-  //   console.log("sdf hfdsgbsd fbgregre==================");
-  //   setImageTabOpen(true);
-  // }
 
 
   //===============move folder to get the forlderName in the choice column ==================
 
   const SeleteMoveFloderItem = (item: any) => {
     setallSetValue({ ...allValue, SelectedFolder: item })
-    switch (item) {
-      case 'Public':
-        setMovefolderItemUrl("/SmartInformation");
-        break;
-      // case 'Memberarea':
-      //   setMovefolderItemUrl('/Memberarea');
-      //   break;
-      // case 'EDA':
-      //   setMovefolderItemUrl('/EDA Only');
-      //   break;
-      case 'Only For Me':
-        setMovefolderItemUrl('/Only For Me');
-        break;
-    }
+    setMovefolderItemUrl("/SmartInformation");
+    // switch (item) {
+    //   case 'Public':
+    //     setMovefolderItemUrl("/SmartInformation");
+    //     break;
+    //   // case 'Memberarea':
+    //   //   setMovefolderItemUrl('/Memberarea');
+    //   //   break;
+    //   // case 'EDA':
+    //   //   setMovefolderItemUrl('/EDA Only');
+    //   //   break;
+    //   case 'Only For Me':
+    //     setMovefolderItemUrl('/Only For Me');
+    //     break;
+    // }
   }
   // ============load SmartMetaData to get the  infoType in popup======================= 
 
@@ -357,7 +354,7 @@ const  GetTaskUsers =async ()  =>{
       </>
     );
   };
-  
+
   //=========panel header for documents upload and edit  ===================
   const onRenderCustomHeaderDocuments = () => {
     return (
@@ -453,36 +450,36 @@ const  GetTaskUsers =async ()  =>{
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.getById(editvalue?.Id).update(postdata)
           .then(async (editData: any) => {
+            console.log(editData)
+            // if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
+            //   if (folderCreated) {
+            //     var folderName = MovefolderItemUrl.split('/')[1];
+            //     await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
+            //       .items.add({
+            //         FileSystemObjectType: 1,
+            //         ContentTypeId: '0x0120',
+            //         FileLeafRef: folderName,
+            //         FileDirRef: folderName,
 
-            if ((MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") && editvalue.SelectedFolder == "Public") {
-              if(folderCreated){
-                var folderName = MovefolderItemUrl.split('/')[1];
-                await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
-                  .items.add({
-                    FileSystemObjectType: 1,
-                    ContentTypeId: '0x0120',
-                    FileLeafRef: folderName,
-                    FileDirRef:folderName,
-                   
-                  })
-                  .then(async (data: any) => {
-                    console.log(data)
-                    MovefolderItemUrl2=`/${data.data.Id}_.000`;
-  
-                  }).catch((error: any) => {
-                    console.log(error)
-                  })
-              }
-              let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${editvalue?.Id}_.000`);
-              console.log(movedata);
-            }
-            if ((MovefolderItemUrl == "/SmartInformation" || MovefolderItemUrl == "/EDA Only") && (editvalue.SelectedFolder == "Only For Me" || editvalue.SelectedFolder == "EDA Only")) {
-              // MovefolderItemUrl2=""
-              let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${MovefolderItemUrl2}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${""}/${editvalue?.Id}_.000`);
-              console.log(movedata);
-            }
+            //       })
+            //       .then(async (data: any) => {
+            //         console.log(data)
+            //         MovefolderItemUrl2 = `/${data.data.Id}_.000`;
+
+            //       }).catch((error: any) => {
+            //         console.log(error)
+            //       })
+            //   }
+            //   let movedata = await web
+            //     .getFileByServerRelativeUrl(`${movefolderurl}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${editvalue?.Id}_.000`);
+            //   console.log(movedata);
+            // }
+            // if ((MovefolderItemUrl == "/SmartInformation" || MovefolderItemUrl == "/EDA Only") && (editvalue.SelectedFolder == "Only For Me" || editvalue.SelectedFolder == "EDA Only")) {
+            //   // MovefolderItemUrl2=""
+            //   let movedata = await web
+            //     .getFileByServerRelativeUrl(`${movefolderurl}/${MovefolderItemUrl2}/${editvalue?.Id}_.000`).moveTo(`${movefolderurl}${""}/${editvalue?.Id}_.000`);
+            //   console.log(movedata);
+            // }
             GetResult();
             handleClose();
           })
@@ -491,41 +488,53 @@ const  GetTaskUsers =async ()  =>{
           })
       }
       else {
-    
+
         // await web.lists.getByTitle("SmartInformation")
         await web.lists.getById(props?.AllListId?.SmartInformationListID)
           .items.add(postdata)
           .then(async (res: any) => {
             console.log(res);
             setPostSmartInfo(res)
-            if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") {
-            
-              // =========== folder create ===========================
-              if(folderCreated){
-                var folderName = MovefolderItemUrl.split('/')[1];
-                await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
-                  .items.add({
-                    FileSystemObjectType: 1,
-                    ContentTypeId: '0x0120',
-                    FileLeafRef: folderName,
-                    FileDirRef:folderName,
-                   
-                  })
-                  .then(async (data: any) => {
-                    console.log(data)
-                    MovefolderItemUrl2=`/${data.data.Id}_.000`;
-  
-                  }).catch((error: any) => {
-                    console.log(error)
-                  })
-              }
-           
-     //================== move  items inside folder=============
-                let movedata = await web
-                .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${res?.data?.ID}_.000`);
-              console.log(movedata);
-             
-            }
+            // if (MovefolderItemUrl == "/Memberarea" || MovefolderItemUrl == "/EDA Only" || MovefolderItemUrl == "/Only For Me") {
+
+            //   // =========== folder create ===========================
+            //   if (folderCreated) {
+            //     var folderName = MovefolderItemUrl.split('/')[1];
+            //     await sp.web.lists.getById(props?.AllListId?.SmartInformationListID)
+            //       .items.add({
+            //         FileSystemObjectType: 1,
+            //         ContentTypeId: '0x0120',
+            //         FileLeafRef: folderName,
+            //         FileDirRef: folderName,
+
+            //       })
+            //       .then(async (data: any) => {
+            //         console.log(data)
+            //         await sp.web.lists.getById(res.data.Id).update({
+
+            //           Title: folderName,
+
+            //           FileLeafRef: folderName
+
+            //         }).then((res) => {
+
+            //           console.log(res)
+            //           //MovefolderItemUrl2 = `/${data.data.Id}_.000`;
+
+            //         })
+                 
+
+            //       }).catch((error: any) => {
+            //         console.log(error)
+            //       })
+            //   }
+
+            //   //================== move  items inside folder=============
+            //   let movedata = await web
+            //     .getFileByServerRelativeUrl(`${movefolderurl}/${res?.data?.ID}_.000`).moveTo(`${movefolderurl}${MovefolderItemUrl2}/${res?.data?.ID}_.000`);
+            //   console.log(movedata);
+
+            // }
             hhhsmartinfoId.push(res?.data?.ID)
             await web.lists.getByTitle(props?.listName)
               // await web.lists.getById(props.AllListId.SiteTaskListID)
@@ -950,11 +959,13 @@ const  GetTaskUsers =async ()  =>{
         ItemRank: EditdocumentsData.ItemRank,
         Year: EditdocumentsData.Year,
         ItemType: EditdocumentsData.ItemType,
-        
+
         SharewebTaskId: { "results": allValue.componentservicesetdataTag != undefined ? [allValue.componentservicesetdataTag.Id] : [] },
-        Item_x0020_Cover:{ "__metadata": { type: 'SP.FieldUrlValue' },
-        'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
-        'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",},
+        Item_x0020_Cover: {
+          "__metadata": { type: 'SP.FieldUrlValue' },
+          'Description': EditdocumentsData?.Item_x0020_Cover?.Url != "" ? EditdocumentsData?.UrItem_x0020_Coverl?.Url : "",
+          'Url': EditdocumentsData?.Item_x0020_Cover?.Url ? EditdocumentsData?.Item_x0020_Cover?.Url : "",
+        },
         Url: {
           "__metadata": { type: 'SP.FieldUrlValue' },
           'Description': EditdocumentsData?.Url?.Url != "" ? EditdocumentsData?.Url?.Url : "",
@@ -992,18 +1003,18 @@ const  GetTaskUsers =async ()  =>{
     setallSetValue({ ...allValue, Title: items })
     setFiltersmartinfo([])
   }
-  const imageTabCallBack=React.useCallback((data:any)=>{
+  const imageTabCallBack = React.useCallback((data: any) => {
     console.log(EditdocumentsData);
-console.log(data)
-setEditdocumentsData(data);
-  },[])
+    console.log(data)
+    setEditdocumentsData(data);
+  }, [])
 
   return (
     <div>
       {console.log(masterTaskdetails)}
       <div className='mb-3 card commentsection'>
         <div className='card-header'>
-          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip  ComponentId='993'/></span></div>
+          <div className="card-title h5 d-flex justify-content-between align-items-center  mb-0">SmartInformation<span><Tooltip ComponentId='993' /></span></div>
         </div>
 
         {SmartInformation != null && SmartInformation.length > 0 && <div className="Sitecomposition p-2">{SmartInformation?.map((SmartInformation: any, i: any) => {
@@ -1027,7 +1038,7 @@ setEditdocumentsData(data);
                   </span>
                 </div>
 
-                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none',fontSize: "small" }}>
+                <div className="border-0 border-bottom m-0 spxdropdown-menu " style={{ display: smartInformationArrow ? 'block' : 'none', fontSize: "small" }}>
                   <div className="ps-3" style={{ fontSize: "small" }} dangerouslySetInnerHTML={{ __html: SmartInformation?.Description != null ? SmartInformation?.Description : "No description available" }}></div>
                   {SmartInformation?.TagDocument != undefined && SmartInformation?.TagDocument?.length > 0 && SmartInformation?.TagDocument?.map((item: any, index: any) => {
                     return (
@@ -1078,8 +1089,8 @@ setEditdocumentsData(data);
                     )
                   })}
                 </div>
-                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url}/> : ""}</span></div>
-                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ?  <img className='align-self-start'title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} />: ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Created By</span><span className='pe-2'>{SmartInformation?.Created != undefined ? moment(SmartInformation?.Created).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Author?.AuthorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Author?.Title} src={SmartInformation?.Author?.AuthorImage?.Url} /> : ""}</span></div>
+                <div className="px-2" style={{ fontSize: "x-small" }}><span className='pe-2'>Modified By</span><span className='pe-2'>{SmartInformation?.Modified != undefined ? moment(SmartInformation?.Modified).format("DD/MM/YYYY") : ""}</span><span className='round px-1'>{SmartInformation?.Editor?.EditorImage != undefined ? <img className='align-self-start' title={SmartInformation?.Editor?.Title} src={SmartInformation?.Editor?.EditorImage?.Url} /> : ""}</span></div>
               </div>
               <div></div>
             </>)
@@ -1251,7 +1262,7 @@ setEditdocumentsData(data);
               </Button> </div>
           </div>}
           {SelectedTilesTitle === "UploadEmail" && <div>
-            <div>Email</div>
+            <div className='mt-2 emailupload'>Email</div>
             <DragDropFiles
               dropEffect="copy"
               // enable={true}  
