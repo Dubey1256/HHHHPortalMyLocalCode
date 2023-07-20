@@ -111,7 +111,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
             selectfolder2 = "PublishingImages/Covers"
         }
         if (selectfolder == "Images1") {
-            selectfolder2 = "PublishingImages/Page-Images "
+            selectfolder2 = "PublishingImages/Page-Images"
         }
         
       const web=new Web(props.Context.pageContext._site.absoluteUrl);
@@ -184,10 +184,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                 </div>
             </div>
 
-            <div className="col-sm-12 mt-3 row">
+            <div className="col-sm-12 mt-3 mb-2 ps-3 pe-4 imgTab">
                 <Tab.Container id="left-tabs-example" defaultActiveKey="Logos">
                     <Row>
-                        <        Col sm={3} className='mt-5'>
+                        <Col sm={2} className='mt-5 p-0' >
                             <Nav variant="pills" className="flex-column">
                                 <Nav.Item >
                                     <Nav.Link eventKey="Logos" onClick={() => changesTabFunction("Logos")}>Logos</Nav.Link>
@@ -221,10 +221,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                     </ul>
                                     {/* <span> <a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`}>Open this Document</a></span> */}
                                 </div>
-                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.Description)}></span>Clear Image</div>
+                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.itemCoverId)}></span>Clear Image</div>
                             </Nav>
                         </Col>
-                        <Col sm={9}>
+                        <Col sm={10} className='p-0'>
                             <Tab.Content>
                                 <Tab.Pane eventKey="Logos">
                                     <Tabs
@@ -233,7 +233,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -254,7 +254,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
                                                     return (
                                                         <>
@@ -272,7 +272,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -292,7 +292,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
                                                     return (
                                                         <>
@@ -311,7 +311,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"  value={props?.EditdocumentsData?.Title}  placeholder='image Name' />
@@ -331,7 +331,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
                                                     return (
                                                         <>

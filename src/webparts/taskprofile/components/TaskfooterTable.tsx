@@ -1163,13 +1163,21 @@ function TasksTable(props: any) {
     })
   
   }
+  function structuredClone(obj: any): any {
 
+    return JSON.parse(JSON.stringify(obj));
 
-
+}
   const openActivity = () => {
+    let data2:any= structuredClone(props?.props)
     if (checkData != undefined && checkData != null) {
       if (checkData?.SharewebTaskType?.Title == 'Workstream') {
         checkData['NoteCall'] = 'Task'
+       console.log(MeetingItems[MeetingItems.length - 1]) 
+       if(MeetingItems[MeetingItems.length - 1]?.ClientTime?.length>0 && MeetingItems[MeetingItems?.length - 1].ClientTime!=undefined){
+        MeetingItems[MeetingItems.length - 1].ClientTime=JSON.parse(MeetingItems[MeetingItems?.length - 1]?.ClientTime)
+       }
+    
         setMeetingPopup(true)
       }
     }
@@ -1180,8 +1188,19 @@ function TasksTable(props: any) {
         setMeetingPopup(true)
       }
       if (props.props.SharewebTaskType == 'Activities') {
-        MeetingItems.push(props.props)
-        setWSPopup(true)
+        let parentcat:any=[];
+    
+        if(data2?.ClientTime!=null && data2?.ClientTime!=undefined){
+
+          data2.ClientTime=JSON.stringify(data2?.ClientTime)
+        }else{
+          data2.ClientTime=null
+        }
+       
+        MeetingItems.push(data2)
+       setWSPopup(true)
+       
+    
 
       }
     }
