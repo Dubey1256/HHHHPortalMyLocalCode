@@ -1454,7 +1454,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
-                                 {imgData?.Description != undefined &&<span title={ imgData?.Description} className="mx-1" >
+                                 {imgData?.Description != undefined&& imgData?.Description!="" &&<span title={ imgData?.Description} className="mx-1" >
                                     <BiInfoCircle />
                                     </span>}
 
