@@ -130,7 +130,7 @@ const App = (props: any) => {
   const [isChecked, setIsChecked] = React.useState(false);
   const [disableTime, setDisableTime] = React.useState(false);
   //const [maxD, setMaxD] = React.useState(new Date(8640000000000000));
-  const [selectedPeople, setSelectedPeople] = React.useState<any[]>([]);
+  const [selectedPeople, setSelectedPeople]:any = React.useState<any[]>([]);
   const [showRecurrence, setshowRecurrence] = React.useState(false);
   const [showRecurrenceSeriesInfo, setShowRecurrenceSeriesInfo] =
     React.useState(false);
