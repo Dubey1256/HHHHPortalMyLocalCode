@@ -7,7 +7,6 @@ import FroalaImageUploadComponent from '../../../globalComponents/FlorarComponen
 import HtmlEditorCard from '../../../globalComponents/HtmlEditor/HtmlEditor';
 import ComponentPortPolioPopup from '../../EditPopupFiles/ComponentPortfolioSelection';
 import * as Moment from 'moment';
-import LinkedComponent from '../../../globalComponents/EditTaskPopup/LinkedComponent'
 import Picker from '../../../globalComponents/EditTaskPopup/SmartMetaDataPicker';
 import DatePicker from "react-datepicker";
 import ClientCategoryPupup from '../../../globalComponents/ClientCategoryPopup';
@@ -45,6 +44,7 @@ var SiteTypeBackupArray: any = [];
 var counts = 0
 var isModelChange = false
 var TaskImagess: any = []
+var AllClientCategory:any=[];
 const defaultContent = "";
 let defaultfile = [];
 const CreateActivity = (props: any) => {
@@ -56,12 +56,6 @@ const CreateActivity = (props: any) => {
     if (props != undefined) {
         //props.props.DueDate =  Moment(props.props.DueDate).format('DD/MM/YYYY
         var AllItems = props.props
-        if (AllItems !=undefined && AllItems.BodyNew === undefined){
-            AllItems.BodyNew = "";
-        }
-        // if (AllItems !=undefined && AllItems.NoteCall !== undefined &&  AllItems.NoteCall !== 'Activity' && AllItems.NoteCall !== 'Task'){
-        //     AllItems.Title = AllItems.NoteCall+" - "+ AllItems.Title;
-        // }
         SelectedTasks.push(AllItems)
         if (AllItems?.Services != undefined && AllItems?.Services?.length > 0) {
             portfolioId = AllItems.Services[0].Id
@@ -113,23 +107,50 @@ const CreateActivity = (props: any) => {
 
 
     React.useEffect(() => {
+        GetCategoryData();
         loadAllCategoryData("Categories");
-        setPost({ ...post, Title: AllItems.Title })
-
+        setPost({ ...post, Title: AllItems.Title})
         if (AllItems?.Clientcategories != undefined && AllItems?.Clientcategories?.length > 0) {
             AllItems.Clientcategories.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
-        if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
-            AllItems.ClientCategory?.results?.forEach((value: any) => {
-                ClientCategoriesData.push(value)
-            })
-        } else if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
+        if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
             AllItems.ClientCategory.forEach((value: any) => {
                 ClientCategoriesData.push(value)
             })
         }
+
+     if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.length > 0) {
+       if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        AllItems.ClientCategory2.results.forEach((value2: any) => {
+            ClientCategoriesData.push(value2)
+        })
+    }else{
+        AllItems.ClientCategory?.results?.forEach((value: any) => {
+            ClientCategoriesData.push(value)
+        })
+    } 
+        }
+        
+       
+        if (AllItems?.ClientCategory != undefined && AllItems?.ClientCategory?.results?.length > 0) {
+            if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+                AllItems.ClientCategory2.results.forEach((value2: any) => {
+                    ClientCategoriesData.push(value2)
+                })
+            }else{
+                AllItems.ClientCategory?.results?.forEach((value: any) => {
+                    ClientCategoriesData.push(value)
+                })
+            }
+           
+        } 
+        // if (AllItems?.ClientCategory2 != undefined && AllItems?.ClientCategory2.results?.length > 0) {
+        //     AllItems.ClientCategory2.results.forEach((value: any) => {
+        //         ClientCategoriesData.push(value)
+        //     })
+        // }
         if (AllItems?.Portfolio_x0020_Type != undefined) {
             if (AllItems?.Portfolio_x0020_Type == 'Component' || (AllItems.Component != undefined && AllItems.Component.length > 0)) {
                 smartComponentData.push(AllItems);
@@ -171,7 +192,18 @@ const CreateActivity = (props: any) => {
         GetSmartMetadata();
     }, [])
 
+    const GetCategoryData=async ()=>{
+        const web = new Web(dynamicList?.siteUrl);
 
+        const res = await web.lists.getById(dynamicList?.SmartMetadataListID).items
+            .select("Id,Title,TaxType,ParentID").top(4999)
+            .filter("TaxType eq 'Client Category'")
+            .get();
+        console.log(res)
+        AllClientCategory=AllClientCategory.concat(res)
+    
+        
+    }
     const GetSmartMetadata = async () => {
         var SitesTypes: any = [];
         var siteConfig = []
@@ -218,9 +250,15 @@ const CreateActivity = (props: any) => {
                     .get()
                 console.log(componentDetails)
                 if (componentDetails?.length == 0) {
-                    WorstreamLatestId = 1;
+                    WorstreamLatestId = AllItems?.SharewebTaskLevel2No;
                 } else {
-                    WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                    if(AllItems?.SharewebTaskType.Title!= undefined?AllItems?.SharewebTaskType.Title!= 'Workstream':AllItems?.SharewebTaskType!="Workstream"){
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No + 1;
+                    }
+                    else{
+                        WorstreamLatestId = componentDetails[0]?.SharewebTaskLevel2No!=undefined?componentDetails[0]?.SharewebTaskLevel2No:AllItems?.SharewebTaskLevel2No;
+                    }
+                   
                 }
                 getTasktype();
             }
@@ -230,17 +268,17 @@ const CreateActivity = (props: any) => {
         setSiteType(SitesTypes)
         SiteTypeBackupArray = SitesTypes;
 
-        AllItems.SiteCompositionSettingsbackup = globalCommon.parseJSON(AllItems.SiteCompositionSettings);
+        AllItems.SiteCompositionSettingsbackup = globalCommon?.parseJSON(AllItems.SiteCompositionSettings);
 
         if (AllItems.Portfolio_x0020_Type != undefined && (AllItems.Portfolio_x0020_Type === 'Component' || AllItems.Portfolio_x0020_Type === 'Service' || AllItems.Portfolio_x0020_Type == 'Event' || AllItems.Portfolio_x0020_Type == 'Team')) {
 
-            let allItems = globalCommon.parseJSON(AllItems.Sitestagging);
+            let allItems = globalCommon?.parseJSON(AllItems?.Sitestagging);
 
             AllItems.Sitestaggingbackup = [];
 
             allItems?.forEach((obj: any) => {
 
-                if (obj.ClienTimeDescription != undefined) {
+                if (obj?.ClienTimeDescription != undefined) {
 
                     let Item: any = {};
 
@@ -261,7 +299,7 @@ const CreateActivity = (props: any) => {
 
         }
 
-        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems.ClientTime);
+        else AllItems.Sitestaggingbackup = globalCommon.parseJSON(AllItems?.ClientTime);
 
         if (AllItems != undefined && AllItems.Sitestaggingbackup != undefined && AllItems.Sitestaggingbackup.length > 1) {
 
@@ -429,6 +467,13 @@ const CreateActivity = (props: any) => {
                 console.log("Popup component linkedComponent", item1.linkedComponent)
             }
         }
+        if (type == "Service") {
+           
+       
+            setSmartComponentData(item1);
+            console.log("Popup component taskfootertable", item1)
+        }
+
 
         if (CategoriesData != undefined) {
             CategoriesData?.forEach(function (type: any) {
@@ -698,7 +743,7 @@ const CreateActivity = (props: any) => {
     const HtmlEditorCallBack = React.useCallback((EditorData: any) => {
 
         if (EditorData.length > 8) {
-            AllItems.BodyNew = EditorData;
+            AllItems.Body = EditorData;
 
             let param: any = Moment(new Date().toLocaleString())
 
@@ -779,7 +824,7 @@ const CreateActivity = (props: any) => {
                     ClientCategory.push(val.Id)
                 }
             })
-        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length > 0) {
+        if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
             AllItems.AssignedTo.forEach((obj: any) => {
                 AssignedToIds.push(obj.Id);
             })
@@ -791,7 +836,7 @@ const CreateActivity = (props: any) => {
                 })
             }
         }
-        if (AllItems?.Team_x0020_Members != undefined && AllItems?.Team_x0020_Members?.length > 0) {
+        if (AllItems?.Team_x0020_Members != undefined  && AllItems?.Team_x0020_Members?.length>0) {
             AllItems.Team_x0020_Members.forEach((obj: any) => {
                 TeamMemberIds.push(obj.Id);
             })
@@ -803,7 +848,7 @@ const CreateActivity = (props: any) => {
                 })
             }
         }
-        if (AllItems?.Responsible_x0020_Team != undefined && AllItems?.Responsible_x0020_Team?.length > 0) {
+        if (AllItems?.Responsible_x0020_Team != undefined &&  AllItems?.Responsible_x0020_Team?.length>0) {
             AllItems.Responsible_x0020_Team.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
             })
@@ -843,9 +888,8 @@ const CreateActivity = (props: any) => {
                         ClientCategoryId: { "results": ClientCategory },
                         ServicesId: { "results": RelevantPortfolioIds },
                         SharewebTaskTypeId: 1,
-                        Body: AllItems.BodyNew,
+                        Body: AllItems.Body,
                         FeedBack: JSON.stringify(FeedBackItemArray),
-                       // FeedBack: updateFeedbackArray?.length > 0 ? JSON.stringify(updateFeedbackArray) : null,
                         Shareweb_x0020_ID: value.SharewebID,
                         SharewebTaskLevel1No: value.LatestTaskNumber,
                         AssignedToId: { "results": (AssignedToIds != undefined && AssignedToIds?.length > 0) ? AssignedToIds : [] },
@@ -899,7 +943,7 @@ const CreateActivity = (props: any) => {
                         }
                         if (res?.data?.ClientCategoryId?.length > 0) {
                             res.data?.ClientCategoryId?.map((category: any) => {
-                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                let elementFound = AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
                                 if (elementFound) {
                                     res.data.ClientCategory.push(elementFound[0]);
                                 }
@@ -944,10 +988,17 @@ const CreateActivity = (props: any) => {
                             if (res.data.listId != undefined) {
                                 let web = new Web(dynamicList?.siteUrl);
                                 let item = web.lists.getById(res.data.listId).items.getById(res.data.Id);
-                                item.attachmentFiles.add(fileName, data).then((res) => {
+                                item.attachmentFiles.add(fileName, data).then((res)=>{
+
                                     console.log("Attachment added");
 
+
+
+
                                     UpdateBasicImageInfoJSON(tempArray, MyData);
+
+
+
 
                                 })
 
@@ -986,9 +1037,13 @@ const CreateActivity = (props: any) => {
                         if (Task?.Portfolio_x0020_Type != undefined && Task?.Portfolio_x0020_Type == 'Component' || Task?.Component != undefined && Task?.Component?.length > 0) {
                             SharewebID = 'A' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& (Task. SharewebTaskType.Title=="Workstream"||Task. SharewebTaskType=='Workstream')) { 
-                               SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
+                        if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0) {
+                            SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
+                        if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& (Task. SharewebTaskType.Title=="Workstream"||Task. SharewebTaskType=='Workstream')) {
+                            SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W'+WorstreamLatestId+'-T' + LatestId;
+                        }
+                      
                         if (Task?.Events != undefined && Task?.Portfolio_x0020_Type == 'Events') {
                             SharewebID = 'EA' + AllItems?.SharewebTaskLevel1No + '-T' + LatestId;
                         }
@@ -1010,7 +1065,7 @@ const CreateActivity = (props: any) => {
                         ParentTaskId: AllItems.Id,
                         ClientCategoryId: { "results": ClientCategory },
                         SharewebTaskTypeId: SharewebTasknewTypeId,
-                        Body: AllItems.BodyNew,
+                        Body: AllItems?.Description,
                         FeedBack: JSON.stringify(FeedBackItemArray),
                         Shareweb_x0020_ID: SharewebID,
                         Priority: AllItems.Priority,
@@ -1020,7 +1075,7 @@ const CreateActivity = (props: any) => {
                         Responsible_x0020_TeamId: { "results": (ResponsibleTeamIds != undefined && ResponsibleTeamIds?.length > 0) ? ResponsibleTeamIds : [] },
                         Team_x0020_MembersId: { "results": (TeamMemberIds != undefined && TeamMemberIds?.length > 0) ? TeamMemberIds : [] },
                         SiteCompositionSettings: JSON.stringify(AllItems.SiteCompositionSettingsbackup),
-                        ClientTime: JSON.stringify(AllItems.Sitestaggingbackup),
+                        ClientTime: JSON.stringify(AllItems?.ClientTime),
 
                     }).then((res: any) => {
                         let data = res.data;
@@ -1068,7 +1123,7 @@ const CreateActivity = (props: any) => {
                         data.ClientCategory = []
                         if (data?.ClientCategoryId?.length > 0) {
                             data?.ClientCategoryId?.map((category: any) => {
-                                let elementFound = props?.AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
+                                let elementFound = AllClientCategory?.filter((metaCategory: any) => metaCategory?.Id == category)
                                 if (elementFound) {
                                     data.ClientCategory.push(elementFound[0]);
                                 }
@@ -1159,38 +1214,28 @@ const CreateActivity = (props: any) => {
             setTaskResponsibleTeam([])
         }
     }
-    const SelectPriority = (priority: any, e: any) => {
-        if (priority == '(1) High') {
-            setselectPriority('8')
-        }
-        if (priority == '(2) Normal') {
-            setselectPriority("4")
-        }
-        if (priority == '(3) Low') {
-            setselectPriority("1")
-        }
-    }
+   
     const handleDatedue = (date: any) => {
         AllItems.DueDate = date;
         var finalDate = Moment(date).format("YYYY-MM-DD")
         setDate(finalDate);
 
     };
-    const Priority = (e: any) => {
-        if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
-        if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
-            setselectPriority(e.target.value)
-            setPriorityy(true)
-        }
+    // const Priority = (e: any) => {
+    //     if (e.target.value == '1' || e.target.value == '2' || e.target.value == '3') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '4' || e.target.value == '5' || e.target.value == '6' || e.target.value == '7') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
+    //     if (e.target.value == '8' || e.target.value == '9' || e.target.value == '10') {
+    //         setselectPriority(e.target.value)
+    //         setPriorityy(true)
+    //     }
 
-    }
+    // }
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={AllItems?.Portfolio_x0020_Type == 'Service' || AllItems?.Services?.length > 0 ? "serviepannelgreena d-flex full-width pb-1" : "d-flex full-width pb-1"} >
@@ -1199,7 +1244,7 @@ const CreateActivity = (props: any) => {
                         {`Create Quick Option - ${AllItems?.NoteCall}`}
                     </h2>
                 </div>
-                <Tooltip ComponentId={AllItems?.Id} />
+                <Tooltip ComponentId={1746} />
             </div>
         );
     };
@@ -1231,6 +1276,7 @@ const CreateActivity = (props: any) => {
     };
 
     //  ###################  Smart Category Auto Suggesution Functions  ##################
+
     const autoSuggestionsForCategory = (e: any) => {
         let searchedKey: any = e.target.value;
         setCategorySearchKey(e.target.value);
@@ -1246,8 +1292,12 @@ const CreateActivity = (props: any) => {
             setSearchedCategoryData([]);
         }
     }
+
+
+///======================================auto suggestion =====================
+
     var AutoCompleteItems: any = [];
-    const loadAllCategoryData = function (SmartTaxonomy: any) {
+  const loadAllCategoryData = function (SmartTaxonomy: any) {
         var AllTaskusers = []
         var AllMetaData: any = []
         var TaxonomyItems: any = []
@@ -1279,6 +1329,12 @@ const CreateActivity = (props: any) => {
                 if (SmartTaxonomy == "Categories") {
                     TaxonomyItems = loadSmartTaxonomyPortfolioPopup(AllMetaData, SmartTaxonomy);
                     setAllCategoryData(TaxonomyItems)
+                    TaxonomyItems?.map((items: any) => {
+                        if (items.Title == "Actions") {
+                            ShowCategoryDatabackup = ShowCategoryDatabackup.concat(items.childs)
+                        }
+                    })
+
                 }
             },
             error: function (error: any) {
@@ -1437,43 +1493,19 @@ const CreateActivity = (props: any) => {
             setApprovalStatus(true)
         }
     }
-    const ChangePriorityStatusFunction = (e: any) => {
-        let value = e.target.value;
-        if (Number(value) <= 10) {
-            setselectPriority(e.target.value)
-        } else {
-            alert("Priority Status not should be greater than 10");
-            setselectPriority('0')
-        }
+     const ChangePriorityStatusFunction = (e: any) => {
+    let value = e.target.value;
+    if (Number(value) <= 10) {
+        setselectPriority(e.target.value )
+    } else {
+        alert("Priority Status not should be greater than 10");
+        setselectPriority( '0' )
     }
-    const deleteLinkedComponentData = () => {
-        setLinkedComponentData([]);
-    }
-    // ################ this is for Smart category change and remove function #############
-
-    //   const removeCategoryItem = (TypeCategory: any, TypeId: any) => {
-    //     let tempString: any;
-
-    //     let tempArray2: any = [];
-    //     tempShareWebTypeData = [];
-    //     ShareWebTypeData?.map((dataType: any) => {
-    //         if (dataType.Id != TypeId) {
-    //             tempArray2.push(dataType)
-    //             tempShareWebTypeData.push(dataType);
-    //         }
-    //     })
-
-    //     if (usedFor == "For-Panel") {
-    //         setShareWebTypeData(selectCategoryData);
-    //         tempShareWebTypeData = selectCategoryData;
-    //     }
-    //     if (usedFor == "For-Auto-Search") {
-    //         setShareWebTypeData(tempShareWebTypeData);
-    //         setSearchedCategoryData([])
-    //         setCategorySearchKey("");
-    //     }
-    // }
-
+}
+const deleteLinkedComponentData=()=>{
+    setLinkedComponentData([]);
+}
+    
 
     return (
         <>
@@ -1565,7 +1597,7 @@ const CreateActivity = (props: any) => {
                                     </div>
                                     <div className='col-sm-7'>
                                         <HtmlEditorCard
-                                            editorValue={AllItems?.BodyNew != undefined ? AllItems?.BodyNew : ''}
+                                            editorValue={AllItems?.Body != undefined ? AllItems?.Body : ''}
                                             HtmlEditorStateChange={HtmlEditorCallBack}
                                         >
                                         </HtmlEditorCard>
@@ -1627,7 +1659,7 @@ const CreateActivity = (props: any) => {
                                         </span>
                                     </div>
                                 }
-                                {AllItems?.Portfolio_x0020_Type == 'Service' &&
+                                {AllItems?.Portfolio_x0020_Type == 'Service'&&
                                     <div className="input-group">
                                         <label className="form-label full-width">
                                             Service Portfolio
@@ -1643,23 +1675,26 @@ const CreateActivity = (props: any) => {
                                     </div>
                                 }
                                 {AllItems?.Portfolio_x0020_Type == 'Service' &&
-                                    <div className="input-group">
+                                    <div className="col-sm-12  inner-tabb">
 
                                         {
                                             linkedComponentData?.length > 0 ? <div>
                                                 {linkedComponentData?.map((com: any) => {
                                                     return (
-                                                        <>
-                                                            <div className="block d-flex full-width justify-content-between mb-1 p-2">
-                                                                <div>
+                                                        
+                                                            <div className="block d-flex justify-content-between mb-1">
+                                                               
                                                                     <a className="hreflink " target="_blank" style={{ color: "#ffffff !important" }} data-interception="off" href={`${dynamicList.siteUrl}/SitePages/Portfolio-Profile.aspx?taskId=${com.ID}`}>
                                                                         {com.Title}
                                                                     </a>
+                                                                    <a  className='text-end'>
                                                                     <span className='bg-light svg__iconbox svg__icon--cross' onClick={() => deleteLinkedComponentData()}> </span>
+                                                                    </a>
+                                                                   
                                                                     {/* <img src="https://hhhhteams.sharepoint.com/sites/HHHH/SP/_layouts/images/delete.gif" onClick={() => setLinkedComponentData([])} /> */}
-                                                                </div>
+                                                                
                                                             </div>
-                                                        </>
+                                                     
                                                     )
                                                 })}
                                             </div> : null
@@ -1696,31 +1731,7 @@ const CreateActivity = (props: any) => {
 
 
                                 <div className="col-sm-12 padL-0 Prioritytp PadR0 mt-2">
-                                    {/* <fieldset>
-                                        <label>Priority</label>
-                                        <input type="text" className="" placeholder="Priority" ng-model="PriorityRank"
-                                            defaultValue={selectPriority} onChange={(e: any) => Priority(e)} />
-                                        <div className="mt-2">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(1) High', e)}
-                                                />High
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(2) Normal', e)}
-                                                />Normal
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            <label>
-                                                <input style={{ margin: "-1px 2px 0" }} className="form-check-input" name="radioPriority"
-                                                    type="radio" defaultChecked={Priorityy} onClick={(e: any) => SelectPriority('(3) Low', e)} />Low
-                                            </label>
-                                        </div>
-                                    </fieldset> */}
+                                   
                                     <div>
                                         <div className="input-group">
                                             <input type="text" className="form-control"
@@ -1761,7 +1772,7 @@ const CreateActivity = (props: any) => {
                                         <div className="col-sm-12 padding-0 input-group">
                                             <label className="full_width">Categories</label>
                                             {/* <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} /> */}
-                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)} />
+                                            <input type="text" className="ui-autocomplete-input form-control" id="txtCategories" value={categorySearchKey} onChange={(e) => autoSuggestionsForCategory(e)}  />
                                             <span className="input-group-text">
 
                                                 <a className="hreflink" title="Edit Categories">
@@ -1781,7 +1792,7 @@ const CreateActivity = (props: any) => {
                                         <ul className="list-group">
                                             {SearchedCategoryData.map((item: any) => {
                                                 return (
-                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id} onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
+                                                    <li className="hreflink list-group-item rounded-0 list-group-item-action" key={item.id}  onClick={() => setSelectedCategoryData([item], "For-Auto-Search")} >
                                                         <a>{item.Newlabel}</a>
                                                     </li>
                                                 )
@@ -1790,23 +1801,52 @@ const CreateActivity = (props: any) => {
                                         </ul>
                                     </div>) : null}
 
-                                <div className="row">
-                                    <div className="col-sm-12 mt-2">
-                                        {CheckCategory?.map((item: any) => {
-                                            return (
-                                                <>
-                                                    <div
-                                                        className="col-sm-12 padL-0 checkbox">
-                                                        <input type="checkbox"
-                                                            onClick={() => checkCat(item.Title)} />
-                                                        <span style={{ marginLeft: "20px" }}> {item.Title}</span>
-                                                    </div>
-                                                </>
-                                            )
-                                        })}
+                                 <div className="col">
+                                    <div className="col">
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                name="Phone"
+                                                type="checkbox" checked={PhoneStatus}
+                                                value={`${PhoneStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Phone", 199)}
+                                            />
+                                            <label className="form-check-label">Phone</label>
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={EmailStatus}
+                                                value={`${EmailStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Email Notification", 276)}
+                                            />
+                                            <label>Email Notification</label>
+
+                                        </div>
+                                        <div
+                                            className="form-check">
+                                            <input className="form-check-input rounded-0"
+                                                type="checkbox"
+                                                checked={ImmediateStatus}
+                                                value={`${ImmediateStatus}`}
+                                                onClick={(e) => CategoryChange(e, "Immediate", 228)} />
+                                            <label>Immediate</label>
+                                        </div>
+
                                     </div>
+                                    <div className="form-check ">
+                                        <label className="full-width">Approval</label>
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input rounded-0"
+                                            name="Approval"
+                                            checked={ApprovalStatus}
+                                            value={`${ApprovalStatus}`}
+                                            onClick={(e) => CategoryChange(e, "Approval", 227)}
 
-
+                                        />
+                                    </div>
                                 </div>
                                 {CategoriesData != undefined ?
                                     <div>
@@ -1900,7 +1940,7 @@ const CreateActivity = (props: any) => {
                 </div>
 
             </Panel>
-            {IsComponent && ((AllItems?.Services.length > 0) || (AllItems?.Services.length == 0 && AllItems?.Component.length == 0)) &&
+            {IsComponent && ((AllItems?.Services.length > 0) ||(AllItems?.Services.length == 0 && AllItems?.Component.length == 0 && AllItems?.Portfolio_x0020_Type == 'Service')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1908,7 +1948,7 @@ const CreateActivity = (props: any) => {
                     ComponentType={"Service"}
                 />
             }
-            {IsComponent && ((AllItems?.Component.length > 0) || (AllItems?.Component.length == 0 && AllItems?.Services.length == 0)) &&
+            {IsComponent &&  ((AllItems?.Component.length > 0) ||(AllItems?.Component.length == 0 && AllItems?.Services.length == 0 && AllItems?.Portfolio_x0020_Type == 'Component')) &&
                 <ServiceComponentPortfolioPopup
                     props={SharewebComponent}
                     Dynamic={dynamicList}
@@ -1920,7 +1960,7 @@ const CreateActivity = (props: any) => {
             {/* {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Service') && <LinkedComponent props={SharewebComponent} Dynamic={dynamicList} Call={Call}></LinkedComponent>}
             {(IsComponent && AllItems?.Portfolio_x0020_Type == 'Component') && <ComponentPortPolioPopup props={SharewebComponent} Dynamic={dynamicList} Call={Call}></ComponentPortPolioPopup>} */}
             {IsComponentPicker && <Picker props={SharewebCategory} selectedCategoryData={CategoriesData} usedFor="Task-Footertable" AllListId={dynamicList} Call={Call}></Picker>}
-            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory} selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
+            {IsClientPopup && <ClientCategoryPupup props={SharewebCategory}selectedClientCategoryData={ClientCategoriesData} Call={Call}></ClientCategoryPupup>}
         </>
     )
 }
