@@ -707,7 +707,7 @@ const CreateActivity = (props: any) => {
                         .items
                         .select("FolderID,Shareweb_x0020_ID,SharewebTaskLevel1No,SharewebTaskLevel2No,AssignedTo/Title,AssignedTo/Name,AssignedTo/Id,FileLeafRef,Title,Id,Priority_x0020_Rank,PercentComplete,Priority,Created,Modified,SharewebTaskType/Id,SharewebTaskType/Title,SharewebTaskType/Level,SharewebTaskType/Prefix,ParentTask/Id,ParentTask/Title,ParentTask/Shareweb_x0020_ID,Author/Id,Author/Title,Editor/Id,Editor/Title")
                         .expand("SharewebTaskType,ParentTask,Author,Editor,AssignedTo")
-                        .filter(("SharewebTaskType/Title eq 'Workstream'") && ("ParentTask/Id eq '" + val.Id + "'"))
+                        .filter(`(SharewebTaskType/Title eq 'Workstream')&&(ParentTask/Id eq ${val.Id})`)
                         .orderBy("Created", false)
                         .top(4999)
                         .get()
@@ -1040,7 +1040,7 @@ const CreateActivity = (props: any) => {
                         if (Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service' || Task?.Services != undefined && Task?.Services?.length > 0) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-T' + LatestId;
                         }
-                        if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& Task. SharewebTaskType.Title=="Workstream") {
+                        if ((Task?.Services != undefined && Task?.Portfolio_x0020_Type == 'Service') || (Task?.Services != undefined && Task?.Services?.length > 0)&& (Task. SharewebTaskType.Title=="Workstream"||Task. SharewebTaskType=='Workstream')) {
                             SharewebID = 'SA' + AllItems.SharewebTaskLevel1No + '-W'+WorstreamLatestId+'-T' + LatestId;
                         }
                       
@@ -1065,7 +1065,8 @@ const CreateActivity = (props: any) => {
                         ParentTaskId: AllItems.Id,
                         ClientCategoryId: { "results": ClientCategory },
                         SharewebTaskTypeId: SharewebTasknewTypeId,
-                        //Body: AllItems.Description,
+                        Body: AllItems?.Description,
+                        FeedBack: JSON.stringify(FeedBackItemArray),
                         Shareweb_x0020_ID: SharewebID,
                         Priority: AllItems.Priority,
                         SharewebTaskLevel2No: WorstreamLatestId,

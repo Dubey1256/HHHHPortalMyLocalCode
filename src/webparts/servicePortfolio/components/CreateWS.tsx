@@ -245,6 +245,9 @@ const CreateWS = (props: any) => {
     const createChildAsWorkStream = async (item: any, Type: any, index: any, WorstreamLatestId: any) => {
         var NewDate = ''
        var  clientcaterogiesdata2:any=[];
+       var AssignedToUser:any=[];
+       var AllTeamMembers:any=[];
+       var TeamLeaderws:any=[];
         WorstreamLatestId += index;
         var SharewebID = '';
         if (Task == undefined || Task == '')
@@ -326,36 +329,45 @@ const CreateWS = (props: any) => {
         if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
             AllItems.AssignedTo.forEach((obj: any) => {
                 AssignedToIds.push(obj.Id);
+                AssignedToUser.push(obj);
+              
             })
         }
         if (isDropItemRes == true) {
             if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                 TaskAssignedTo.map((taskInfo) => {
                     AssignedToIds.push(taskInfo.Id);
+                    AssignedToUser.push(taskInfo);
                 })
             }
         }
         if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
             AllItems?.TeamMembers.forEach((obj: any) => {
                 TeamMemberIds.push(obj.Id);
+                AllTeamMembers.push(obj);
+    
             })
         }
         if (isDropItem == true) {
             if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                 TaskTeamMembers?.map((taskInfo) => {
                     TeamMemberIds.push(taskInfo.Id);
+                    AllTeamMembers.push(taskInfo);
+      
                 })
             }
         }
         if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
             AllItems?.TeamLeader?.forEach((obj: any) => {
                 ResponsibleTeamIds.push(obj.Id);
+                 TeamLeaderws.push(obj)
             })
         }
         if (isDropItem == true) {
             if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
                 TaskResponsibleTeam?.map((taskInfo) => {
                     ResponsibleTeamIds.push(taskInfo.Id);
+                    TeamLeaderws.push(taskInfo)
                 })
             }
         }
@@ -415,9 +427,9 @@ const CreateWS = (props: any) => {
                 res.data.Author={
                     Id: res?.data?.AuthorId
                 }
-                res.data.Team_x0020_Members=AllItems?.TeamMembers?.length>0?AllItems?.TeamMembers:[]
-                res.data.Responsible_x0020_Team=AllItems?.TeamLeader?.length>0?AllItems?.TeamLeader:[]
-                res.data.AssignedTo= AllItems?.AssignedTo?.length>0? AllItems?.AssignedTo:[]
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
                 res.Item_x0020_Type=""
                 setIsPopupComponent(true)
                 setSharewebTask(res.data)
@@ -435,9 +447,9 @@ const CreateWS = (props: any) => {
                 res.data.Author={
                     Id: res?.data?.AuthorId
                 }
-                res.data.Team_x0020_Members=AllItems?.TeamMembers?.length>0?AllItems?.TeamMembers:[]
-                res.data.Responsible_x0020_Team=AllItems?.TeamLeader?.length>0?AllItems?.TeamLeader:[]
-                res.data.AssignedTo= AllItems?.AssignedTo?.length>0? AllItems?.AssignedTo:[]
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws?.length>0?TeamLeaderws:[]
+                res.data.AssignedTo=AssignedToUser?.length>0?AssignedToUser:[]
                 res.Item_x0020_Type=""
                 setSharewebTask(res.data)
                 closeTaskStatusUpdatePoup(res);
@@ -487,6 +499,9 @@ const CreateWS = (props: any) => {
         let NewDate = ''
         var RelevantPortfolioIds: any = []
         var clientcaterogiesdata2:any=[];
+        var AssignedToUser:any=[];
+        var AllTeamMembers:any=[];
+        var TeamLeaderws:any=[];
         let web = new Web(dynamicList.siteUrl);
         let componentDetails: any = [];
         componentDetails = await web.lists
@@ -591,36 +606,42 @@ const CreateWS = (props: any) => {
             if (AllItems?.AssignedTo != undefined && AllItems?.AssignedTo?.length>0) {
                 AllItems.AssignedTo.forEach((obj: any) => {
                     AssignedToIds.push(obj.Id);
+                    AssignedToUser.push(obj)
                 })
             }
             if (isDropItemRes == true) {
                 if (TaskAssignedTo != undefined && TaskAssignedTo?.length > 0) {
                     TaskAssignedTo.map((taskInfo) => {
                         AssignedToIds.push(taskInfo.Id);
+                        AssignedToUser.push(taskInfo);
                     })
                 }
             }
             if (AllItems?.TeamMembers != undefined  && AllItems?.TeamMembers?.length>0) {
                 AllItems.TeamMembers.forEach((obj: any) => {
                     TeamMemberIds.push(obj.Id);
+                    AllTeamMembers.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskTeamMembers != undefined && TaskTeamMembers?.length > 0) {
                     TaskTeamMembers.map((taskInfo) => {
                         TeamMemberIds.push(taskInfo.Id);
+                        AllTeamMembers.push(taskInfo)
                     })
                 }
             }
             if (AllItems?.TeamLeader != undefined &&  AllItems?.TeamLeader?.length>0) {
                 AllItems.TeamLeader.forEach((obj: any) => {
                     ResponsibleTeamIds.push(obj.Id);
+                    TeamLeaderws.push(obj)
                 })
             }
             if (isDropItem == true) {
                 if (TaskResponsibleTeam != undefined && TaskResponsibleTeam?.length > 0) {
                     TaskResponsibleTeam.map((taskInfo) => {
                         ResponsibleTeamIds.push(taskInfo.Id);
+                        TeamLeaderws.push(taskInfo)
                     })
                 }
             }
@@ -674,9 +695,9 @@ const CreateWS = (props: any) => {
                     Id: res?.data?.AuthorId
                 }
                 res.data.ClientCategory=clientcaterogiesdata2,
-                res.data.Team_x0020_Members=AllItems?.TeamMembers?.length>0?AllItems?.TeamMembers:[]
-                res.data.Responsible_x0020_Team=AllItems?.TeamLeader?.length>0?AllItems?.TeamLeader:[]
-                res.data.AssignedTo= AllItems?.AssignedTo?.length>0? AllItems?.AssignedTo:[]
+                res.data.Team_x0020_Members=AllTeamMembers?.length>0?AllItems?.AllTeamMembers:[]
+                res.data.Responsible_x0020_Team=TeamLeaderws.length>0?TeamLeaderws:[]
+                res.data.AssignedTo= AssignedToUser?.length>0?AssignedToUser:[]
                 res.Item_x0020_Type=""
                 closeTaskStatusUpdatePoup(res);
             })

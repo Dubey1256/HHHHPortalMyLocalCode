@@ -18,7 +18,7 @@ import InlineEditingcolumns from './inlineEditingcolumns';
 import * as globalCommon from "../../../globalComponents/globalCommon";
 import EditTaskPopup from '../../../globalComponents/EditTaskPopup/EditTaskPopup';
 import ShowTeamMembers from '../../../globalComponents/ShowTeamMember';
-import TimeEntryPopup from '../../../globalComponents/TimeEntry/TimeEntryPopup';
+import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 var siteConfig: any = []
 var AllTaskUsers: any = [];
 let MyAllData: any = []
@@ -278,6 +278,7 @@ export default function ProjectOverview(props: any) {
             {
                 accessorKey: "Shareweb_x0020_ID",
                 placeholder: "Id",
+                id:'Shareweb_x0020_ID',
                 resetColumnFilters: false,
                 resetSorting: false,
                 size: 80,
@@ -488,6 +489,7 @@ export default function ProjectOverview(props: any) {
         () => [
             {
                 accessorKey: "Shareweb_x0020_ID",
+                id:'Shareweb_x0020_ID',
                 placeholder: "Id",
                 resetColumnFilters: false,
                 resetSorting: false,
@@ -1469,7 +1471,7 @@ export default function ProjectOverview(props: any) {
                         items.siteUrl = config.siteUrl.Url;
                         SmartTimeData(items)
                             .then((returnresult: any) => {
-                                items.smartTime = String(returnresult)
+                                items.smartTime = returnresult.toFixed(2);
                                 // console.log("Final Total Time:", returnresult);
                             })
                             .catch((error: any) => {
@@ -1759,7 +1761,7 @@ export default function ProjectOverview(props: any) {
                 )}
                 {IsComponent && <EditProjectPopup props={SharewebComponent} AllListId={AllListId} Call={Call} showProgressBar={showProgressBar}> </EditProjectPopup>}
                 {ShowTeamPopup === true ? <ShowTeamMembers props={checkData} callBack={showTaskTeamCAllBack} TaskUsers={AllTaskUser} /> : ''}
-                {openTimeEntryPopup && (<TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />)}
+                {openTimeEntryPopup && <TimeEntryPopup props={taskTimeDetails} CallBackTimeEntry={TimeEntryCallBack} Context={props?.props?.Context} />}
             </div>
 
         </>

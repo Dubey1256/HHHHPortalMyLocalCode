@@ -1,0 +1,89 @@
+/*
+  Your use of the content in the files referenced here is subject to the terms of the license at http://aka.ms/fabric-assets-license
+*/
+.taskSteps {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+}
+.taskSteps.teams {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", sans-serif;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcomeImage {
+  width: 100%;
+  max-width: 420px;
+}
+
+.links a {
+  text-decoration: none;
+  color: "[theme:link, default:#03787c]";
+  color: var(--link);
+}
+.links a:hover {
+  text-decoration: underline;
+  color: "[theme:linkHovered, default: #014446]";
+  color: var(--linkHovered);
+}
+
+.tabletaskSteps {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.tabletaskSteps td, .tabletaskSteps th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+td, th {
+  padding: 0;
+  min-width: 100px;
+}
+
+.AutoCompleteText {
+  width: 100%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.18);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.73);
+  border-radius: 4px;
+}
+
+.AutoCompleteText input {
+  width: 100%;
+  border: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.73);
+  padding: 10px 5px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.AutoCompleteText ul {
+  list-style-type: none;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+.AutoCompleteText ul::before {
+  content: "";
+}
+
+.AutoCompleteText li {
+  padding: 10px 5px;
+  cursor: pointer;
+}
+
+.AutoCompleteText li:hover {
+  text-decoration: underline;
+  background-color: rgba(128, 128, 128, 0.2);
+}/*# sourceMappingURL=TaskSteps.module.css.map */

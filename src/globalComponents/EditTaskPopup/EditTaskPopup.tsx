@@ -2,7 +2,6 @@ import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
-import pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../globalCommon";
@@ -548,7 +547,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null) {
+                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null || item.Priority_x0020_Rank == 0) {
                     if (item.Priority != undefined) {
                         if (item.Priority == "(3) Low") {
                             item.Priority_x0020_Rank = 1
@@ -1892,12 +1891,12 @@ const EditTaskPopup = (Items: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
-            if (SiteCompositionPrecentageValue > 100) {
+            if (SiteCompositionPrecentageValue > 101) {
                 TaskShuoldBeUpdate = false;
                 SiteCompositionPrecentageValue = 0
                 alert("site composition allocation should not be more than 100%");
             }
-            if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
+            if (SiteCompositionPrecentageValue.toFixed(0) < 99 && SiteCompositionPrecentageValue > 0) {
                 SiteCompositionPrecentageValue = 0
                 let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
                 if (conformationSTatus) {
@@ -4539,7 +4538,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-sm-5">
                                         {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
-                                            <>
+                                            <div className="site-composition-on-task-popup">
                                                 {SiteTypes != undefined && SiteTypes.length > 0 ?
                                                     <SiteCompositionComponent
                                                         AllListId={AllListIdData}
@@ -4556,7 +4555,7 @@ const EditTaskPopup = (Items: any) => {
                                                         SitesTaggingData={SitesTaggingData}
                                                     /> : null
                                                 }
-                                            </>
+                                            </div>
                                             : null
                                         }
 
