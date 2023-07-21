@@ -15,6 +15,7 @@ import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/Versio
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
 import EditSiteComposition from './EditSiteComposition';
+import AncTool from '../../../globalComponents/AncTool/AncTool';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -1464,8 +1465,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
-                                  {imgData?.Description != undefined&& imgData?.Description!="" &&<span title={ imgData?.Description} className="mx-1" >
-
+                                 {imgData?.Description != undefined&& imgData?.Description!="" &&<span title={ imgData?.Description} className="mx-1" >
                                     <BiInfoCircle />
 
                                     </span>}
@@ -1604,6 +1604,9 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
             <div className="col-3">
               <div>
                 {this.state.Result != undefined && AllListId != undefined && <CommentCard siteUrl={this.props.siteUrl} AllListId={AllListId} Context={this.props.Context}></CommentCard>}
+                {this.state.Result?.Id != undefined && AllListId != undefined && <>
+                  <AncTool item={this?.state?.Result}  AllListId={AllListId} Context={this.props.Context}/>
+                </>}
               </div>
               <div>{this.state.Result.Id && <SmartInformation Id={this.state.Result.Id} AllListId={AllListId} Context={this.props?.Context} taskTitle={this.state.Result?.Title} listName={this.state.Result?.listName} />}</div>
               <div> {this.state.Result != undefined && <RelevantDocuments siteUrl={this.props.siteUrl} DocumentsListID={this.props?.DocumentsListID} ID={this.state?.itemID} siteName={this.state.listName} folderName={this.state.Result['Title']} ></RelevantDocuments>}</div>
