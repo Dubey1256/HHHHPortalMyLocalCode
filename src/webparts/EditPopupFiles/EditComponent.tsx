@@ -3226,6 +3226,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
+                      
                       <div className="input-group mb-2">
                         <label className="form-label  full-width"></label>
                         <input
@@ -3241,7 +3242,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}>Open</a></span>
+                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open </a></span>
                       </div>
                     </div>
                   </div>
