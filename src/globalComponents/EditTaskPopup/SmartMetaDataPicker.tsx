@@ -155,6 +155,7 @@ const Picker = (item: any) => {
             if (checkDataExistCount == 0) {
                 tempArray.push(item);
             }
+            SelectedCategoryBackupArray=select
             if (tempArray != undefined && tempArray.length > 0) {
                 SelectedCategoryBackupArray = SelectedCategoryBackupArray.concat(tempArray)
             } else {

@@ -370,10 +370,10 @@ export class TaskFeedbackCard extends React.Component<ITaskFeedbackProps, ITaskF
     console.log(countApprove)
     let percentageComplete;
     let changespercentage1;
-    if((countApprove==1&&percentageStatus=="Approve"&&(pervious?.isShowLight==""||pervious?.isShowLight==undefined))){
+    if((countApprove==1&&percentageStatus=="Approve"&&(pervious?.isShowLight=="Approve"||pervious?.isShowLight!=undefined))){
       changespercentage=true;
     }
-    if((countApprove==0&&(percentageStatus=="Reject"||percentageStatus=="Maybe")&&(pervious?.isShowLight=="Approve"&&pervious?.isShowLight!=undefined))){
+    if((countApprove==0&&(percentageStatus=="Reject"||percentageStatus=="Maybe")&&(pervious?.isShowLight=="Reject"&&pervious?.isShowLight!=undefined))){
       changespercentage=false;
     }
     if((countApprove==0&&percentageStatus=="Approve"&&(pervious.isShowLight=="Reject"||pervious.isShowLight=="Maybe")&&pervious.isShowLight!=undefined)){
