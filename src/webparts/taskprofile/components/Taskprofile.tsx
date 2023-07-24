@@ -14,7 +14,6 @@ import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
-import EditSiteComposition from './EditSiteComposition';
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -37,7 +36,7 @@ export interface ITaskprofileState {
   countfeedback: any ,
   sendMail: boolean,
   showPopup: any;
-  EditSiteCompositionStatus: any;
+
   maincollection: any;
   SharewebTimeComponent: any;
   isopenversionHistory: boolean;
@@ -87,7 +86,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SharewebTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
-      EditSiteCompositionStatus: false,
     }
 
     this.GetResult();
@@ -759,8 +757,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     // ClientTimeArray=[];
     this.setState({
       isOpenEditPopup: false,
-      countfeedback: this.state.countfeedback+1,
-      EditSiteCompositionStatus: false
+      countfeedback: this.state.countfeedback+1
     })
     this.GetResult();
   }
@@ -1085,7 +1082,18 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
   private sendEmail(item: any) {
+    var data=this.state.Result;
+    if(item=="Approved"){
+     data.PercentComplete=3
+  }else{
+    data.PercentComplete=2
+  }
+    var data=this.state.Result;
+    this.setState({
+      Result: data,
 
+
+    }),
     console.log(item);
     this.setState({
       sendMail: true,
@@ -1387,15 +1395,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
-                         <a className="sitebutton bg-fxdark d-flex">
-                          <span onClick={() => this.showhideComposition()}>{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span>
-                          <div className="d-flex justify-content-between full-width">
-                            <p className="pb-0 mb-0">Site Composition</p>
-                            <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-                              <span className="svg__iconbox svg__icon--editBox"></span>
-                            </p>
-                          </div>
-                         
+                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
+                          <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
                         </a>
                         <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
                           <ul>
@@ -1464,9 +1465,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                                       <img className='align-self-start' title={imgData?.UserName} src={imgData?.UserImage} />
                                     }
                                   </span>
-                                 {imgData?.Description != undefined&& imgData?.Description!="" &&<span title={ imgData?.Description} className="mx-1" >
+                                 {imgData?.Description != undefined && imgData?.Description !=""&&<span title={ imgData?.Description} className="mx-1" >
                                     <BiInfoCircle />
-
                                     </span>}
 
                                 </span>
@@ -1641,7 +1641,6 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         </div>
 
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
-        {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
  
 
