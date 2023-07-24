@@ -692,7 +692,7 @@ export default function Permission_management(props: any) {
             console.log(a);
         }
         else {
-            setUsersArrByGroup(newUsersArrByGroupp);
+            setUsersArrByGroup(newUsersArrByGroupp); 
         }
 
 
