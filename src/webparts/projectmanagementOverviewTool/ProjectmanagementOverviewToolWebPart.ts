@@ -124,6 +124,7 @@ export default class ProjectmanagementOverviewToolWebPart extends BaseClientSide
                 PropertyPaneTextField('DocumentsListID', {
                   label: "DocumentsListID"
                 }),
+          
                 PropertyPaneTextField('TaskTimeSheetListID', {
                   label: "TaskTimeSheetListID"
                 }),
