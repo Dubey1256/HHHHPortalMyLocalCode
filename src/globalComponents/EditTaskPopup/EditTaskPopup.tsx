@@ -47,6 +47,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import { Description } from "@material-ui/icons";
 
 
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -89,7 +90,7 @@ const EditTaskPopup = (Items: any) => {
     const AllListIdData = Items.AllListId;
     AllListIdData.listId = Items.Items.listId;
     Items.Items.Id = Items.Items.ID;
-
+    let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -175,6 +176,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
+    // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
 
 
     const StatusArray = [
@@ -446,7 +448,20 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
-                    let tempData: any = JSON.parse(item.ClientTime);
+                    let tempData: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        let ShareWebCompositionStatus: any;
+                        item.ClientTime?.map((itemdata: any) => {
+                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                        })
+                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempData = siteConfigData[0].SiteComposition;
+                        }
+                    } else {
+                        tempData = JSON.parse(item.ClientTime)
+                    }
+                    // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
@@ -502,14 +517,25 @@ const EditTaskPopup = (Items: any) => {
                     setClientTimeData(tempArray3)
                     item.siteCompositionData = tempArray3;
                 } else {
-                    const object: any = {
-                        SiteName: Items.Items.siteType,
-                        ClienTimeDescription: 100,
-                        localSiteComposition: true,
-                        siteIcons: Items.Items.SiteIcon
+                    let tempArray: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        if (ShareWebConfigData != undefined) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempArray = siteConfigData[0].SiteComposition;
+                            item.siteCompositionData = tempArray;
+                            setClientTimeData(tempArray);
+                        }
+                    } else {
+                        const object: any = {
+                            SiteName: Items.Items.siteType,
+                            ClienTimeDescription: 100,
+                            localSiteComposition: true,
+                            siteIcons: Items.Items.SiteIcon
+                        }
+                        item.siteCompositionData = [object];
+                        setClientTimeData([object]);
                     }
-                    item.siteCompositionData = [object];
-                    setClientTimeData([object]);
+
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -1418,6 +1444,10 @@ const EditTaskPopup = (Items: any) => {
                 site.isSelected = false;
                 tempArray.push(site);
             }
+            if (site.Title !== undefined && site.Title == 'Shareweb') {
+                // setShareWebConfigData(site.Configurations);
+                ShareWebConfigData = site.Configurations;
+            }
         })
         setSiteTypes(tempArray);
         tempArray?.map((tempData: any) => {
@@ -1891,12 +1921,12 @@ const EditTaskPopup = (Items: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
-            if (SiteCompositionPrecentageValue > 101) {
+            if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
                 SiteCompositionPrecentageValue = 0
                 alert("site composition allocation should not be more than 100%");
             }
-            if (SiteCompositionPrecentageValue.toFixed(0) < 99 && SiteCompositionPrecentageValue > 0) {
+            if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
                 SiteCompositionPrecentageValue = 0
                 let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
                 if (conformationSTatus) {
