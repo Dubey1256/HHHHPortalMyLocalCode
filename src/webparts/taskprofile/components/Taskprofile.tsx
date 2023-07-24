@@ -1654,4 +1654,3 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     );
   }
 }
-
