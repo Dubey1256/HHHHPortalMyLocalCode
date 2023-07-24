@@ -451,12 +451,15 @@ const EditTaskPopup = (Items: any) => {
                     let tempData: any = [];
                     if (Items.Items.siteType == "Shareweb") {
                         let ShareWebCompositionStatus: any;
-                        item.ClientTime?.map((itemdata: any) => {
+                        let TempData:any = JSON.parse(item.ClientTime);
+                        TempData?.map((itemdata: any) => {
                             ShareWebCompositionStatus = itemdata.ClienTimeDescription;
                         })
                         if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
                             let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
                             tempData = siteConfigData[0].SiteComposition;
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
                         }
                     } else {
                         tempData = JSON.parse(item.ClientTime)
@@ -524,6 +527,8 @@ const EditTaskPopup = (Items: any) => {
                             tempArray = siteConfigData[0].SiteComposition;
                             item.siteCompositionData = tempArray;
                             setClientTimeData(tempArray);
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
                         }
                     } else {
                         const object: any = {
