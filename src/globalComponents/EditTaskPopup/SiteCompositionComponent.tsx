@@ -781,15 +781,16 @@ const SiteCompositionComponent = (Props: any) => {
                 </label>
                 </span>
                <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
-                <span className="pull-right">
+                <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
-                        className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
+                        className="form-check-input mb-0 ms-2 mx-1 rounded-0"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
+                    <label data-toggle="tooltip" data-placement="bottom" >
                         Overridden
+                        <span className="svg__iconbox svg__icon--info " title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
                     </label>
                 </span>
             </div>
