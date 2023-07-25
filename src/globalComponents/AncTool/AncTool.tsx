@@ -187,6 +187,7 @@ const AncTool = (props: any) => {
                             return item.Id != file.Id
                         });
                     });
+                    setPageLoader(false)
                     alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
                     return file;
                 })

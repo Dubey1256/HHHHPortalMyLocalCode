@@ -300,7 +300,7 @@ const EmailComponenet = (props: any) => {
                                     <td width={"30px"} style={{border: "1px solid #ccc"}} align='center'>
                                       <p><span style={{ fontSize: '10.0pt', color: '#6f6f6f' }}>{i + 1}.{j + 1}.</span></p>
                                     </td>
-                                    <td style={fbSubData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:(fbData?.isShowLight=="Approve")?({ background: "#00800024",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }):{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
+                                    <td style={fbSubData?.isShowLight=="Reject"?{ background: "rgba(255, 0, 0, 0.09)",border: "1px solid #ccc", padding: "0px 2px 0px 10px"}:(fbSubData?.isShowLight=="Approve")?({ background: "#00800024",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }):{ background: "#fbfbfb",border: "1px solid #ccc", padding: "0px 2px 0px 10px" }}><span dangerouslySetInnerHTML={{ __html: fbSubData['Title'] }}></span>
                                       {fbSubData['Comments'] != null && fbSubData['Comments'].length > 0 && fbSubData['Comments']?.map((fbSubComment: any) => {
                                         return <div style={{ border: 'solid #cccccc 1.0pt', padding: '7.0pt 7.0pt 7.0pt 7.0pt', marginTop: '3.75pt', marginBottom:'5pt' }}>
                                           <div style={{ marginBottom: '3.75pt' }}>
