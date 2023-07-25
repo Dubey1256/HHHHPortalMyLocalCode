@@ -741,46 +741,46 @@ const SiteCompositionComponent = (Props: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             <div className="col-sm-12 ps-3">
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Proportional"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                    onChange={() => ChangeSiteCompositionSettings("Proportional")}
-                    name="SiteCompositions"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                    title="add Proportional Time"
-                    className="me-1  mt-0"
-                />
-                  Proportional
+                    <input
+                        type="radio"
+                        id="Proportional"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        onChange={() => ChangeSiteCompositionSettings("Proportional")}
+                        name="SiteCompositions"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        title="add Proportional Time"
+                        className="me-1  mt-0"
+                    />
+                    Proportional
                 </span>
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Manual"
-                    name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
-                    title="add manual Time"
-                    className="mx-1  mt-0"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
-                    onChange={() => ChangeSiteCompositionSettings("Manual")}
-                />
-                <label>Manual</label>
+                    <input
+                        type="radio"
+                        id="Manual"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
+                        title="add manual Time"
+                        className="mx-1  mt-0"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
+                        onChange={() => ChangeSiteCompositionSettings("Manual")}
+                    />
+                    <label>Manual</label>
                 </span>
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Portfolio"
-                    name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
-                    title="Portfolio"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
-                    onChange={() => ChangeSiteCompositionSettings("Portfolio")}
-                    className="mx-1 mt-0" />
-                <label>
-                    Portfolio
-                </label>
+                    <input
+                        type="radio"
+                        id="Portfolio"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
+                        title="Portfolio"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
+                        onChange={() => ChangeSiteCompositionSettings("Portfolio")}
+                        className="mx-1 mt-0" />
+                    <label>
+                        Portfolio
+                    </label>
                 </span>
-               <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
+                <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
                 <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
@@ -883,7 +883,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                     <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
