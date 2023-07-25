@@ -47,6 +47,7 @@ import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import { Description } from "@material-ui/icons";
 
 
+
 var AllMetaData: any = []
 var taskUsers: any = []
 var IsShowFullViewImage = false;
@@ -89,7 +90,7 @@ const EditTaskPopup = (Items: any) => {
     const AllListIdData = Items.AllListId;
     AllListIdData.listId = Items.Items.listId;
     Items.Items.Id = Items.Items.ID;
-
+    let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -175,6 +176,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
+    // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
 
 
     const StatusArray = [
@@ -446,7 +448,23 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
-                    let tempData: any = JSON.parse(item.ClientTime);
+                    let tempData: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        let ShareWebCompositionStatus: any;
+                        let TempData:any = JSON.parse(item.ClientTime);
+                        TempData?.map((itemdata: any) => {
+                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                        })
+                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempData = siteConfigData[0].SiteComposition;
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        }
+                    } else {
+                        tempData = JSON.parse(item.ClientTime)
+                    }
+                    // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
@@ -502,14 +520,27 @@ const EditTaskPopup = (Items: any) => {
                     setClientTimeData(tempArray3)
                     item.siteCompositionData = tempArray3;
                 } else {
-                    const object: any = {
-                        SiteName: Items.Items.siteType,
-                        ClienTimeDescription: 100,
-                        localSiteComposition: true,
-                        siteIcons: Items.Items.SiteIcon
+                    let tempArray: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        if (ShareWebConfigData != undefined) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempArray = siteConfigData[0].SiteComposition;
+                            item.siteCompositionData = tempArray;
+                            setClientTimeData(tempArray);
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        }
+                    } else {
+                        const object: any = {
+                            SiteName: Items.Items.siteType,
+                            ClienTimeDescription: 100,
+                            localSiteComposition: true,
+                            siteIcons: Items.Items.SiteIcon
+                        }
+                        item.siteCompositionData = [object];
+                        setClientTimeData([object]);
                     }
-                    item.siteCompositionData = [object];
-                    setClientTimeData([object]);
+
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -1418,6 +1449,10 @@ const EditTaskPopup = (Items: any) => {
                 site.isSelected = false;
                 tempArray.push(site);
             }
+            if (site.Title !== undefined && site.Title == 'Shareweb') {
+                // setShareWebConfigData(site.Configurations);
+                ShareWebConfigData = site.Configurations;
+            }
         })
         setSiteTypes(tempArray);
         tempArray?.map((tempData: any) => {
@@ -1891,12 +1926,12 @@ const EditTaskPopup = (Items: any) => {
         let TaskShuoldBeUpdate = true;
         let DataJSONUpdate: any = await MakeUpdateDataJSON();
         if (EnableSiteCompositionValidation) {
-            if (SiteCompositionPrecentageValue > 101) {
+            if (SiteCompositionPrecentageValue > 100) {
                 TaskShuoldBeUpdate = false;
                 SiteCompositionPrecentageValue = 0
                 alert("site composition allocation should not be more than 100%");
             }
-            if (SiteCompositionPrecentageValue.toFixed(0) < 99 && SiteCompositionPrecentageValue > 0) {
+            if (SiteCompositionPrecentageValue.toFixed(0) < 100 && SiteCompositionPrecentageValue > 0) {
                 SiteCompositionPrecentageValue = 0
                 let conformationSTatus = confirm("Site composition should not be less than 100% if you still want to do it click on OK")
                 if (conformationSTatus) {
@@ -3317,10 +3352,23 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        );
+    };
+    const onRenderStatusPanelHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className="subheading">
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
+                    <span className="siteColor">
+                       Update Task Status
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -3331,9 +3379,9 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
-                    <span className="siteColor">
+                    <span>
                         Select Site
                     </span>
                 </div>
@@ -3344,8 +3392,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomReplaceImageHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Replace Image
                     </span>
                 </div>
@@ -3356,8 +3404,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomProjectManagementHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Select Project
                     </span>
                 </div>
@@ -3368,8 +3416,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomApproverHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Select Approver
                     </span>
                 </div>
@@ -3552,31 +3600,31 @@ const EditTaskPopup = (Items: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {/* ***************** this is status panel *********** */}
             <Panel
-                headerText={`Update Task Status`}
+                // headerText={`Update Task Status`}
+                onRenderHeader={onRenderStatusPanelHeader}
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={TaskStatusPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
-                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
-                            <tbody>
+                        <div className="TaskStatus">                     
                                 {StatusArray?.map((item: any, index) => {
                                     return (
-                                        <tr key={index}>
-                                            <td>
+                                        <li key={index}>
+                                            
                                                 <div className="form-check l-radio">
                                                     <input className="form-check-input"
                                                         type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label mx-2">{item.status}</label>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            
+                                        </li>
                                     )
                                 })}
-                            </tbody>
-                        </table>
+                            
+                        </div>
                     </div>
                     {/* <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
@@ -4219,7 +4267,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {selectedProject.map((ProjectData: any) => {
                                                                 return (
-                                                                    <div className="block mt-1 px-2 py-2">
+                                                                    <div className="block mt-1 px-1 py-1">
                                                                         <div className="d-flex justify-content-between">
                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                 {ProjectData.Title}
@@ -4292,7 +4340,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div> : null
                                                     }
-                                                    <div className="bg-e9 border-1 p-2">
+                                                    <div className="bg-e9 border-1 p-1 total-time">
                                                         <label className="siteColor">Total Time</label>
                                                         {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
                                                     </div>
@@ -4373,8 +4421,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     target="_blank"
                                                                     data-interception="off"
                                                                     href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                    <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                    <img className="ProirityAssignedUserPhoto ms-2" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''} 
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
@@ -4437,7 +4484,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div key={index} className="image-item">
                                                                 <div className="my-1">
                                                                     <div>
-                                                                        <input type="checkbox" className="rounded-0" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
+                                                                        <input type="checkbox" className="form-check-input" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
                                                                         <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 24) : ''}</span>
                                                                     </div>
                                                                     <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
@@ -4460,8 +4507,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
-                                                                                <BiInfoCircle />
+                                                                            <span  title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                            <span className="svg__iconbox svg__icon--info "></span>
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -5302,7 +5349,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         {selectedProject.map((ProjectData: any) => {
                                                                             return (
-                                                                                <div className="block mt-1 px-2 py-2">
+                                                                                <div className="block mt-1 px-1 py-1">
                                                                                     <div className="d-flex justify-content-between">
                                                                                         <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                             {ProjectData.Title}
@@ -5628,12 +5675,12 @@ const EditTaskPopup = (Items: any) => {
                     ></button>
                 </div>
                 <div className="modal-body">
-                    <div className='col'><textarea id="txtUpdateComment" rows={6}
+                    <div className='col mx-2'><textarea id="txtUpdateComment" rows={6}
                         value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
                         className="full-width"
                         onChange={(e) => UpdateImageDescription(e)}></textarea></div>
                 </div>
-                <footer className='text-end mt-2'>
+                <footer className='text-end mt-2 mx-2'>
                     <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
                     <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
                 </footer>

@@ -23,7 +23,7 @@ import { EditorState } from "draft-js";
 import HtmlEditorCard from "../../globalComponents/HtmlEditor/HtmlEditor";
 import TeamConfigurationCard from "./TeamConfigurationPortfolio";
 import Tooltip from "../../globalComponents/Tooltip";
-import ImagesC from "./Image";
+import ImagesC from "./ImageInformation";
 import VersionHistoryPopup from "../../globalComponents/VersionHistroy/VersionHistory";
 import SiteCompositionComponent from "./PortfolioSiteCompsition";
 var PostTechnicalExplanations = "";
@@ -1295,6 +1295,11 @@ function EditInstitution({ item, SelectD, Calls }: any) {
           Idea: Items.Idea,
           Background: Items.Background,
           Admin_x0020_Notes: Items.Admin_x0020_Notes,
+          Item_x002d_Image: {
+            "__metadata": { type: "SP.FieldUrlValue" },
+            Description: EditData?.Item_x002d_Image?.Url !=undefined? EditData?.Item_x002d_Image?.Url : '',
+            Url:  EditData?.Item_x002d_Image?.Url !=undefined? EditData?.Item_x002d_Image?.Url : ''
+        },
           component_x0020_link: {
             Description:
               Items.component_x0020_link != undefined
@@ -2243,6 +2248,12 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
         }
 
     }
+    const imageTabCallBack=React.useCallback((data:any)=>{
+      setEditData(data)
+      console.log(EditData);
+  console.log(data)
+  // setEditdocumentsData(data);
+    },[])
   return (
     <>
       {console.log("All Done")}
@@ -3215,6 +3226,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                       ></CommentCard>
                     </div>
                     <div className="col-sm-8">
+                      
                       <div className="input-group mb-2">
                         <label className="form-label  full-width"></label>
                         <input
@@ -3230,7 +3242,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                           }
                           placeholder="Url"
                         ></input>
-                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}>Open</a></span>
+                        <span><a target="_blank" data-interception="off" href={EditData.component_x0020_link}> Open </a></span>
                       </div>
                     </div>
                   </div>
@@ -3773,7 +3785,7 @@ const setSelectedCategoryData = (selectCategoryData: any, usedFor: any) => {
                   aria-labelledby="image-tab"
                 >
                   <div className="col-sm-12">
-                    <ImagesC />
+                    <ImagesC EditdocumentsData={EditData} setData={setEditData}AllListId={RequireData} Context={RequireData.Context} callBack={imageTabCallBack}/>
                   </div>
                 </div>
               </div>

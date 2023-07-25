@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { SPFI } from "@pnp/sp";
-import DragDrop from'./FlorarImagetab'
+import FlorarImagetabportfolio from'./FlorarImagetabportfolio'
 import { Tabs, Tab, Col, Nav, Row, Button } from 'react-bootstrap';
 import pnp, { sp, Web } from "sp-pnp-js";
 import { useState } from 'react';
@@ -18,62 +18,54 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     console.log(props)
     console.log(props)
     React.useEffect(() => {
+        // AllImageData()
+        //   .then((data: any) => {
+        //     console.log(data);
+        //     getimageData();
+        //   })
+        //   .catch((err: any) => {
+        //     console.log(err.message);
+        //   });
 
-        getAllImageData();
-    }, [])
-    // const getimageData = async () => {
-    //     const web=new Web(props.Context.pageContext._site.absoluteUrl);
-    //     var selectfolder2 = ""
-    //     if (selectfolder == "Logos") {
-    //         selectfolder2 = "Logos"
-    //     }
-    //     if (selectfolder == "Covers") {
-    //         selectfolder2 = "Covers"
-    //     }
-    //     if (selectfolder == "Images1") {
-    //         selectfolder2 = "Page-Images"
-    //     }
-    //     await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/PublishingImages/${selectfolder2}`).files.get()
-    //         .then(async(data: any) => {
-    //             console.log(data)
-    //             if (data != undefined && data.length > 0) {
-    //                 if (selectfolder == "Logos") {
-    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: data })
-    //                 }
-    //                 if (selectfolder == "Covers") {
-    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistingCover: data })
-    //                 }
-    //                 if (selectfolder == "Images1") {
-    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistingImages1: data })
-    //                 }
-
-    //             }
-             
-    //         }).catch((err: any) => {
-    //             console.log(err.message);
-
+        getAllImageData()
+      }, []);
+      
+    //   const AllImageData = () => {
+    //     return new Promise((resolve, reject) => {
+    //       const web = new Web(props.Context.pageContext.web.absoluteUrl);
+    //       web
+    //         .getFolderByServerRelativeUrl(
+    //           `${props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages`
+    //         )
+    //         .files.get()
+    //         .then((data: any) => {
+    //           resolve(data);
+    //         })
+    //         .catch((error: any) => {
+    //           reject(error);
     //         });
-    // }
-    const getAllImageData=async()=>{
+    //     });
+    //   };
+       const getAllImageData=async()=>{
         const web=new Web(props.Context.pageContext.web.absoluteUrl);
         var data=[ "Logos", "Covers","Page-Images"]
         let ChooseExistinglogoarray: any=[];
         let ChooseExistingCoverarray: any=[];
         let ChooseExistingImages1array: any=[];
         for(let i=0;i<data.length;i++){
-            await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/PublishingImages/${data[i]}`).files.get()
+            await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?.web?.serverRelativeUrl}/PublishingImages/${data[i]}`).files.get()
             .then(async(dataimage: any) => {
                 if (data[i] == "Logos") {
                     ChooseExistinglogoarray=dataimage;
-                  //  setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: dataimage })
+               
                 }
                 if (data[i] == "Covers") {
                     ChooseExistingCoverarray=dataimage
-                   // setChooseExistingFile({ ...chooseExistingFile, ChooseExistingCover: dataimage })
+                   
                 }
                 if (data[i] == "Page-Images") {
                     ChooseExistingImages1array=dataimage
-                    //setChooseExistingFile({ ...chooseExistingFile, ChooseExistingImages1: dataimage })
+        
                 }
             }).catch((err: any) => {
                 console.log(err.message);
@@ -82,6 +74,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
         }
         setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: ChooseExistinglogoarray,ChooseExistingCover:ChooseExistingCoverarray, ChooseExistingImages1:ChooseExistingImages1array})
        }
+   
     const florarImageUploadCallBackFunction = (item: any,FileName:any) => {
         console.log(item)
         let DataObject: any = {
@@ -142,31 +135,33 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
             selectfolder2 = "PublishingImages/Page-Images"
         }
         
-      const web=new Web(props.Context.pageContext._site.absoluteUrl);
+      const web=new Web(props.Context.pageContext.web.absoluteUrl);
      const folder = web.getFolderByServerRelativeUrl(`${selectfolder2}`);
      
         folder.files.add(uploadedImage.fileName, data).then(async(item: any) => {
           console.log(item)
         //   let hostWebURL = props.Context.pageContext._site.absoluteUrl.replace(props.Context.pageContext._site.absoluteUrl,"");
-              let imageURL: string = `${props.Context._pageContext._web.absoluteUrl.split(props.Context.pageContext._web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
+              let imageURL: string = `${props.Context._pageContext._web.absoluteUrl.split(props.Context.pageContext.web.serverRelativeUrl)[0]}${item.data.ServerRelativeUrl}`;
               console.log(imageURL)
            // =========get pic data and its Id=============
       
-            await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/${selectfolder2}/${uploadedImage.fileName}`).getItem()
+            await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?.web?.serverRelativeUrl}/${selectfolder2}/${uploadedImage.fileName}`).getItem()
             .then(async (res: any) => {
               console.log(res);
               let taskItem = {...editData};
+              
               var recentUploadPic={
-                Url :`${imageURL}?updated=${res.Id}`,
+                Url :`${imageURL}`,
                 itemCoverId : res.Id,
                 itemCoverName:uploadedImage.fileName,
-                itemFolderurl:`${props?.Context?._pageContext?._site?.absoluteUrl}/${selectfolder2}`,
+                itemFolderurl:`${props?.Context?._pageContext?.web?.absoluteUrl}/${selectfolder2}`,
                 itemFolderName:selectfolder2
               }
-              taskItem.Item_x0020_Cover=recentUploadPic
-             
+              taskItem.Item_x002d_Image=recentUploadPic
+            //   props.EditdocumentsData=taskItem
              setEditData(taskItem)
-            props.callBack(taskItem);
+             props.setData(taskItem)
+            // props.callBack(taskItem);
          
             }).catch((error:any)=>{
               console.log(error)
@@ -179,35 +174,52 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
 //================== delete the pic =====
     const clearImage= async(itemcoverId:any)=>{
        if(itemcoverId!=null){
-    const web = new Web(props.Context.pageContext._site.absoluteUrl);
+    const web = new Web(props.Context.pageContext.web.absoluteUrl);
     // await web.lists.getByTitle("SmartInformation")
     var text: any = "are you sure want to Delete";
     if (confirm(text) == true) {
-      await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/${editData?.Item_x0020_Cover?.itemFolderName}/${editData?.Item_x0020_Cover?.itemCoverName}`)
+      await web.getFileByServerRelativeUrl(`${props?.Context?._pageContext?.web?.serverRelativeUrl}/${editData?.Item_x002d_Image?.itemFolderName}/${editData?.Item_x002d_Image?.itemCoverName}`)
        .recycle()
         .then((res: any) => {
           console.log(res);
           let taskItem = {...editData};
-          taskItem.Item_x0020_Cover=null;
+          taskItem.Item_x002d_Image=null;
           setEditData(taskItem)
-          props.callBack(taskItem);
+          props.setData(taskItem)
+        //   props.callBack(taskItem);
         })
         .catch((err) => {
           console.log(err.message);
         });
  }
+    }else{
+        let taskItem = {...editData};
+        taskItem.Item_x002d_Image=null;
+        setEditData(taskItem)
+        props.setData(taskItem)
     }
 }
+ const ExistingImageUpload=(Imageurl:any)=>{
+    let taskItem = {...editData};
+  
+   var ExistingImagePicDetails={
+    Url :`${props.Context._pageContext._legacyPageContext.appBarParams.portalUrl}${Imageurl.ServerRelativeUrl}`,
+    
+  }
+    taskItem.Item_x002d_Image=ExistingImagePicDetails;
+    setEditData(taskItem)
+    props.setData(taskItem)
+ }
     return (
         <>
             <div className='d-flex '>
-                <div className="input-group "><label className=" full-width ">Image Url </label>
-                    <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x0020_Cover!=null?editData?.Item_x0020_Cover?.Url:""}/>
+                <div className="input-group "><label className=" full-width ">Image-Url </label>
+                    <input type="text" className="form-control" placeholder='Serach' value={editData?.Item_x002d_Image!=null?editData?.Item_x002d_Image?.Url:""}/>
                 </div>
 
 
                 <div className="input-group mx-3">
-                    <label className=" full-width "></label>
+                    <label className=" full-width ">Selected image alternate text</label>
                     <input type="text" className="form-control" placeholder='Alt text' />
                 </div>
             </div>
@@ -215,7 +227,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
             <div className="col-sm-12 mt-3 mb-2 ps-3 pe-4 imgTab">
                 <Tab.Container id="left-tabs-example" defaultActiveKey="Logos">
                     <Row>
-                        <Col sm={2} className='mt-5 p-0' >
+                        <Col sm={2} className='mt-5 pe-0'>
                             <Nav variant="pills" className="flex-column">
                                 <Nav.Item >
                                     <Nav.Link eventKey="Logos" onClick={() => changesTabFunction("Logos")}>Logos</Nav.Link>
@@ -227,10 +239,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                     <Nav.Link eventKey="Images1" onClick={() => changesTabFunction("Images1")}> Images</Nav.Link>
                                 </Nav.Item>
                                <div className='mt-3 mx-4'>
-                               {editData.Item_x0020_Cover!=undefined &&<div><div><img src={editData?.Item_x0020_Cover?.Url}/></div>
-                                    <span><a  href={editData?.Item_x0020_Cover?.Url}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
+                               {editData.Item_x002d_Image!=undefined &&<div><div><img src={editData?.Item_x002d_Image?.Url}/></div>
+                                    <span><a  href={editData?.Item_x002d_Image?.Url}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
-                                  <ul className='alignCenter list-none'>
+                                  {/* <ul className='alignCenter list-none'>
                                         <li>
                                             <span><a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`} target="_blank" data-interception="off">
                                                 {props.EditdocumentsData?.File_x0020_Type == "pdf" && <span className='svg__iconbox svg__icon--pdf' title="pdf"></span>}
@@ -246,20 +258,20 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                 {props.EditdocumentsData.Url != null && <span className='svg__iconbox svg__icon--link' title="smg"></span>}
                                             </a>Open this Document</span>
                                         </li>
-                                    </ul>
+                                    </ul> */}
                                     {/* <span> <a href={`${props.EditdocumentsData.EncodedAbsUrl}?web=1`}>Open this Document</a></span> */}
                                 </div>
-                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.Description)}></span>Clear Image</div>
+                                <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x002d_Image?.itemCoverId)}></span>Clear Image</div>
                             </Nav>
                         </Col>
                         <Col sm={10} className='p-0'>
                             <Tab.Content>
-                                <Tab.Pane eventKey="Logos">
+                                <Tab.Pane eventKey="Logos"className='p-0'>
                                     <Tabs
                                         defaultActiveKey="copy & paste"
                                         transition={false}
                                         id="noanim-tab-example"
-                                        className=""
+                                        className="p-0"
                                     >
                                         <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
@@ -267,9 +279,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
-                                                    <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <FlorarImagetabportfolio callBack={florarImageUploadCallBackFunction}></FlorarImagetabportfolio>
+                                                   
                                                 </div>
+                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Upload" title="Upload">
@@ -282,18 +295,18 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
                                                 {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
                                                     return (
                                                         <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`}onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
                                             </div>
                                         </Tab>
                                     </Tabs>
                                 </Tab.Pane>
-                                <Tab.Pane eventKey="Covers">
+                                <Tab.Pane eventKey="Covers" className='p-0'>
                                     <Tabs
                                         defaultActiveKey="copy & paste"
                                         transition={false}
@@ -306,9 +319,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                     <input type="text" className="form-control"value={props?.EditdocumentsData?.Title} placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
-                                                    <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
+                                                    <FlorarImagetabportfolio callBack={florarImageUploadCallBackFunction}></FlorarImagetabportfolio>
+                                                   
                                                 </div>
+                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2' onClick={() => uploadImage()}>Upload</Button></div>
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Upload" title="Upload">
@@ -320,18 +334,18 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
                                                 {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
                                                     return (
                                                         <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`} onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
                                             </div>
                                         </Tab>
                                     </Tabs>
                                 </Tab.Pane>
-                                <Tab.Pane eventKey="Images1">
+                                <Tab.Pane eventKey="Images1" className='p-0'>
 
                                     <Tabs
                                         defaultActiveKey="copy & paste"
@@ -345,9 +359,9 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                                     <input type="text" className="form-control"  value={props?.EditdocumentsData?.Title}  placeholder='image Name' />
                                                 </div>
                                                 <div className='mt-3'>
-                                                    <DragDrop callBack={florarImageUploadCallBackFunction}></DragDrop>
-                                                    <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary'>Upload</Button></div> 
-                                                </div>
+                                                    <FlorarImagetabportfolio callBack={florarImageUploadCallBackFunction}></FlorarImagetabportfolio>
+                                                 </div>
+                                                <div className='text-lg-end mt-2'><Button className='btn btn-primary ms-1  mx-2 btn btn-primary'onClick={() => uploadImage()}>Upload</Button></div> 
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Upload" title="Upload">
@@ -359,11 +373,11 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
-                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500 hreflink'>
                                                 {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
                                                     return (
                                                         <>
-                                                            <img src={`${imagesData?.ServerRelativeUrl}`}></img></>
+                                                            <img src={`${imagesData?.ServerRelativeUrl}`}onClick={()=>ExistingImageUpload(imagesData)}></img></>
                                                     )
                                                 })}
                                             </div>

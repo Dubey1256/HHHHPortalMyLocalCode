@@ -740,6 +740,7 @@ const SiteCompositionComponent = (Props: any) => {
     return (
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             <div className="col-sm-12 ps-3">
+                <span className="l-radio">
                 <input
                     type="radio"
                     id="Proportional"
@@ -748,20 +749,24 @@ const SiteCompositionComponent = (Props: any) => {
                     name="SiteCompositions"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
                     title="add Proportional Time"
-                    className="me-1"
+                    className="me-1  mt-0"
                 />
-                <label>Proportional</label>
+                  Proportional
+                </span>
+                <span className="l-radio">
                 <input
                     type="radio"
                     id="Manual"
                     name="SiteCompositions"
                     defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                     title="add manual Time"
-                    className="mx-1"
+                    className="mx-1  mt-0"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
                     onChange={() => ChangeSiteCompositionSettings("Manual")}
                 />
                 <label>Manual</label>
+                </span>
+                <span className="l-radio">
                 <input
                     type="radio"
                     id="Portfolio"
@@ -770,11 +775,12 @@ const SiteCompositionComponent = (Props: any) => {
                     title="Portfolio"
                     value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
                     onChange={() => ChangeSiteCompositionSettings("Portfolio")}
-                    className="mx-1" />
+                    className="mx-1 mt-0" />
                 <label>
                     Portfolio
                 </label>
-                <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />
+                </span>
+               <span> <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" /></span>
                 <span className="pull-right">
                     <input
                         type="checkbox"
@@ -876,7 +882,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
@@ -898,7 +904,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "EPS" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -920,10 +926,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -945,7 +952,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Education" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -968,10 +975,11 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -993,7 +1001,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Migration" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -1016,10 +1024,11 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
