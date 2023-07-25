@@ -1367,6 +1367,7 @@ export default function ProjectOverview(props: any) {
                 })
                 items.DisplayDueDate = items.DueDate != null ? Moment(items.DueDate).format('DD/MM/YYYY') : ""
             })
+            Alltask = sortOnPriority(Alltask)
             setFlatData([...Alltask])
             Alltask.map((items: any) => {
                 items['subRows'] = [];
@@ -1377,7 +1378,6 @@ export default function ProjectOverview(props: any) {
                 })
             })
             // })
-            Alltask = sortOnPriority(Alltask)
             setAllTasks(Alltask);
             setPageLoader(false);
             setData(Alltask);
