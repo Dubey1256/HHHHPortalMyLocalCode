@@ -1149,7 +1149,7 @@ var ReportDate = new Date()
                         <thead>
                             <tr>
                                 <th className='border bg-light'><strong>Team</strong></th>
-                                <th className='border'><strong>Time In Houres</strong></th>
+                                <th className='border'><strong>Time In Hours</strong></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1186,7 +1186,7 @@ var ReportDate = new Date()
              {
                 data?.length >0?
                 <>
-                 <div className='pull-right' style={{fontSize:'20px',position:'relative',right:'165px'}} onClick={()=>sendEmail()}><MdEmail/></div>
+                 <div className='pull-right mail-info' onClick={()=>sendEmail()}><MdEmail/></div>
                <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
