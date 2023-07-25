@@ -1087,7 +1087,20 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
 
   private sendEmail(item: any) {
+    var data=this.state.Result;
+    if(item=="Approved"){
+     data.PercentComplete=3
+  }else{
+    data.PercentComplete=2
+  }
+    var data=this.state.Result;
+    this.setState({
+      Result: data,
 
+ 
+
+
+    }),
     console.log(item);
     this.setState({
       sendMail: true,
@@ -1095,6 +1108,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     this.setState({
       emailStatus: item,
     });
+
+ 
 
   }
 
