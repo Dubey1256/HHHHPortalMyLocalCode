@@ -450,7 +450,8 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 <span>
                                                                     <img
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover?.Url + "')", backgroundSize: "24px 24px" }}
+                                                                        src={item.Item_x0020_Cover?.Url}
+                                                                        // style={{ backgroundImage: "url('" + item.Item_x0020_Cover?.Url + "')", backgroundSize: "36px 36px" }}
                                                                         title={item.AssingedToUser.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
@@ -481,25 +482,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                 <div className="col-sm-7">
                                     <h6>Team Members</h6>
                                     <div className="ps-3">
-                                    <div className="row  UserTimeTabGray">
-                                        <div className='col-sm-5 ps-1 border-end'>
-                                            <div className="col"
-                                                onDrop={(e) => this.onDropTeam1(e, this.state.AssignedToUsers, 'Assigned User', this.state.taskUsers,'Assigned User')}
-                                                onDragOver={(e) => e.preventDefault()}>
-                                                <div className=" p-1" >
-                                                    <div className='d-flex flex-wrap'  
-                                                             data-placeholder="Task Leaders" style={{minHeight:"30px", height:"auto"}} >
-                                                        {this.state.AssignedToUsers && this.state.AssignedToUsers.map((image: any, index: number) => {
-                                                            return <div
-                                                           
-                                                                className="ProirityAssignedUserPhoto"
-                                                                style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "24px 24px" }}
-                                                                title={image.Title}
-                                                                draggable
-                                                                onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
-                                                                onDragOver={(e) => e.preventDefault()} ></div>
-                                                        })
-                                                        }
                                         <div className="row  UserTimeTabGray">
                                             <div className='col-sm-5 ps-1 border-end'>
                                                 <div className="col"
@@ -532,16 +514,6 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                 <div className="p-1">
                                                     <div className='d-flex flex-wrap'
                                                         data-placeholder="Responsible Team">
-                                                    {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
-                                                        return <div
-                                                        
-                                                            className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "24px 24px" }}
-                                                            title={image.Title}
-                                                            draggable
-                                                            onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}
-                                                            onDragOver={(e) => e.preventDefault()} />
-                                                    })
-                                                    }
                                                         {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                             return <img
                                                                 className="ProirityAssignedUserPhoto" 
