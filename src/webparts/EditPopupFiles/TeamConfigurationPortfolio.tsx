@@ -450,7 +450,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 <span>
                                                                     <div
                                                                         className="ProirityAssignedUserPhoto"
-                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover?.Url + "')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('" + item.Item_x0020_Cover?.Url + "')", backgroundSize: "24px 24px" }}
                                                                         title={item.AssingedToUser.Title}
                                                                         draggable
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
@@ -458,7 +458,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                                 </span>:  <span>
                                                                     <div title={item.Title}
                                                                         draggable
-                                                                        style={{ backgroundImage: "url('https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg')", backgroundSize: "36px 36px" }}
+                                                                        style={{ backgroundImage: "url('https://hhhhteams.sharepoint.com/sites/HHHH/SiteCollectionImages/ICONS/32/icon_user.jpg')", backgroundSize: "24px 24px" }}
                                                                         onDragStart={(e) => this.dragStart(e, i, item, 'All')}
                                                                         onDragOver={(e) => e.preventDefault()}
                                                                         className="ProirityAssignedUserPhoto"
@@ -492,7 +492,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                             return <div
                                                            
                                                                 className="ProirityAssignedUserPhoto"
-                                                                style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "36px 36px" }}
+                                                                style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "24px 24px" }}
                                                                 title={image.Title}
                                                                 draggable
                                                                 onDragStart={(e) => this.dragStart(e, index, image, 'Assigned User')}
@@ -515,7 +515,7 @@ export class TeamConfigurationCard extends React.Component<ITeamConfigurationPro
                                                     {this.state.TeamMemberUsers != null && this.state.TeamMemberUsers.length > 0 && this.state.TeamMemberUsers.map((image: any, index: number) => {
                                                         return <div
                                                         
-                                                            className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "36px 36px" }}
+                                                            className="ProirityAssignedUserPhoto" style={{ backgroundImage: "url('" + (image.userImage != null ? image.userImage : image.Item_x0020_Cover?.Url) + "')", backgroundSize: "24px 24px" }}
                                                             title={image.Title}
                                                             draggable
                                                             onDragStart={(e) => this.dragStart(e, index, image, 'TeamMemberUsers')}

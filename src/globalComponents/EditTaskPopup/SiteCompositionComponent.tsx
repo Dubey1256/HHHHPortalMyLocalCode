@@ -882,7 +882,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                     <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
+                                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
@@ -904,7 +904,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "EPS" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -926,10 +926,11 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -951,7 +952,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Education" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -974,10 +975,11 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
@@ -999,7 +1001,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Migration" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between">
+                                                        <div className="input-group block justify-content-between Compositionfild">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -1022,10 +1024,11 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary"
+                                                                    <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                        <img src={require('../../Assets/ICON/edit_page.svg')} width="25" />
+                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
                                                             }
