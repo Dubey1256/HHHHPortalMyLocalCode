@@ -815,8 +815,8 @@ function CreateTaskComponent(props: any) {
 
                     //Latest code for Creating Task
                     if (burgerMenuTaskDetails.TaskType == "Design") {
-                        AssignedToIds.push(172);
-                        TeamMembersIds.push(172);
+                        AssignedToIds.push(40);
+                        TeamMembersIds.push(40);
                         TeamMembersIds.push(49);
                     }
                     var newCopyUrl = CopyUrl != undefined ? CopyUrl : '';
@@ -1281,6 +1281,8 @@ function CreateTaskComponent(props: any) {
         if (items) {
             window.open(base_Url + "/SitePages/Task-Profile.aspx?taskId=" + createdTask?.Id + "&Site=" + createdTask?.siteType, "_self")
               createdTask = {};
+        }else{
+            location.reload();
         }
 
     }, [])

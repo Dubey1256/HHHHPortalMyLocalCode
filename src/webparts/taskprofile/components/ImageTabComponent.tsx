@@ -19,41 +19,69 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
     console.log(props)
     React.useEffect(() => {
 
-        getimageData();
-    }, [selectfolder])
-    const getimageData = async () => {
-        const web=new Web(props.Context.pageContext._site.absoluteUrl);
-        var selectfolder2 = ""
-        if (selectfolder == "Logos") {
-            selectfolder2 = "Logos"
-        }
-        if (selectfolder == "Covers") {
-            selectfolder2 = "Covers"
-        }
-        if (selectfolder == "Images1") {
-            selectfolder2 = "Page-Images"
-        }
-        await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/PublishingImages/${selectfolder2}`).files.get()
-            .then(async(data: any) => {
-                console.log(data)
-                if (data != undefined && data.length > 0) {
-                    if (selectfolder == "Logos") {
-                        setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: data })
-                    }
-                    if (selectfolder == "Covers") {
-                        setChooseExistingFile({ ...chooseExistingFile, ChooseExistingCover: data })
-                    }
-                    if (selectfolder == "Images1") {
-                        setChooseExistingFile({ ...chooseExistingFile, ChooseExistingImages1: data })
-                    }
+        getAllImageData();
+    }, [])
+    // const getimageData = async () => {
+    //     const web=new Web(props.Context.pageContext._site.absoluteUrl);
+    //     var selectfolder2 = ""
+    //     if (selectfolder == "Logos") {
+    //         selectfolder2 = "Logos"
+    //     }
+    //     if (selectfolder == "Covers") {
+    //         selectfolder2 = "Covers"
+    //     }
+    //     if (selectfolder == "Images1") {
+    //         selectfolder2 = "Page-Images"
+    //     }
+    //     await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/PublishingImages/${selectfolder2}`).files.get()
+    //         .then(async(data: any) => {
+    //             console.log(data)
+    //             if (data != undefined && data.length > 0) {
+    //                 if (selectfolder == "Logos") {
+    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: data })
+    //                 }
+    //                 if (selectfolder == "Covers") {
+    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistingCover: data })
+    //                 }
+    //                 if (selectfolder == "Images1") {
+    //                     setChooseExistingFile({ ...chooseExistingFile, ChooseExistingImages1: data })
+    //                 }
 
-                }
+    //             }
              
+    //         }).catch((err: any) => {
+    //             console.log(err.message);
+
+    //         });
+    // }
+    const getAllImageData=async()=>{
+        const web=new Web(props.Context.pageContext.web.absoluteUrl);
+        var data=[ "Logos", "Covers","Page-Images"]
+        let ChooseExistinglogoarray: any=[];
+        let ChooseExistingCoverarray: any=[];
+        let ChooseExistingImages1array: any=[];
+        for(let i=0;i<data.length;i++){
+            await web.getFolderByServerRelativeUrl(`${props?.Context?._pageContext?._site?.serverRelativeUrl}/PublishingImages/${data[i]}`).files.get()
+            .then(async(dataimage: any) => {
+                if (data[i] == "Logos") {
+                    ChooseExistinglogoarray=dataimage;
+                  //  setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: dataimage })
+                }
+                if (data[i] == "Covers") {
+                    ChooseExistingCoverarray=dataimage
+                   // setChooseExistingFile({ ...chooseExistingFile, ChooseExistingCover: dataimage })
+                }
+                if (data[i] == "Page-Images") {
+                    ChooseExistingImages1array=dataimage
+                    //setChooseExistingFile({ ...chooseExistingFile, ChooseExistingImages1: dataimage })
+                }
             }).catch((err: any) => {
                 console.log(err.message);
 
             });
-    }
+        }
+        setChooseExistingFile({ ...chooseExistingFile, ChooseExistinglogo: ChooseExistinglogoarray,ChooseExistingCover:ChooseExistingCoverarray, ChooseExistingImages1:ChooseExistingImages1array})
+       }
     const florarImageUploadCallBackFunction = (item: any,FileName:any) => {
         console.log(item)
         let DataObject: any = {
@@ -111,7 +139,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
             selectfolder2 = "PublishingImages/Covers"
         }
         if (selectfolder == "Images1") {
-            selectfolder2 = "PublishingImages/Page-Images "
+            selectfolder2 = "PublishingImages/Page-Images"
         }
         
       const web=new Web(props.Context.pageContext._site.absoluteUrl);
@@ -184,10 +212,10 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                 </div>
             </div>
 
-            <div className="col-sm-12 mt-3 row">
+            <div className="col-sm-12 mt-3 mb-2 ps-3 pe-4 imgTab">
                 <Tab.Container id="left-tabs-example" defaultActiveKey="Logos">
                     <Row>
-                        <        Col sm={3} className='mt-5'>
+                        <Col sm={2} className='mt-5 p-0' >
                             <Nav variant="pills" className="flex-column">
                                 <Nav.Item >
                                     <Nav.Link eventKey="Logos" onClick={() => changesTabFunction("Logos")}>Logos</Nav.Link>
@@ -224,7 +252,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                 <div className='mt-2 mx-4'><span className="svg__iconbox svg__icon--trash" onClick={()=>clearImage(editData?.Item_x0020_Cover?.Description)}></span>Clear Image</div>
                             </Nav>
                         </Col>
-                        <Col sm={9}>
+                        <Col sm={10} className='p-0'>
                             <Tab.Content>
                                 <Tab.Pane eventKey="Logos">
                                     <Tabs
@@ -233,7 +261,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control" value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -254,7 +282,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistinglogo.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistinglogo != undefined && chooseExistingFile.ChooseExistinglogo.length > 0 && chooseExistingFile?.ChooseExistinglogo?.map((imagesData: any) => {
                                                     return (
                                                         <>
@@ -272,7 +300,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"value={props?.EditdocumentsData?.Title} placeholder='image Name' />
@@ -292,7 +320,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingCover.length})`}>
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistingCover != undefined && chooseExistingFile?.ChooseExistingCover?.length > 0 && chooseExistingFile?.ChooseExistingCover?.map((imagesData: any) => {
                                                     return (
                                                         <>
@@ -311,7 +339,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                         id="noanim-tab-example"
                                         className=""
                                     >
-                                        <Tab eventKey="copy & paste" title="copy & paste">
+                                        <Tab eventKey="copy & paste" title="Copy & Paste">
                                             <div className='border border-top-0  p-2'>
                                                 <div className="input-group "><label className=" full-width ">Image Name</label>
                                                     <input type="text" className="form-control"  value={props?.EditdocumentsData?.Title}  placeholder='image Name' />
@@ -331,7 +359,7 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                             </div>
                                         </Tab>
                                         <Tab eventKey="Choose from existing (0)" title={`Choose from existing (${chooseExistingFile?.ChooseExistingImages1?.length})`} >
-                                            <div className='border border-top-0 ImageSec p-2'>
+                                            <div className='border border-top-0 ImageSec p-2 scrollbar maXh-500'>
                                                 {chooseExistingFile?.ChooseExistingImages1 != undefined && chooseExistingFile?.ChooseExistingImages1?.length > 0 && chooseExistingFile?.ChooseExistingImages1?.map((imagesData: any) => {
                                                     return (
                                                         <>

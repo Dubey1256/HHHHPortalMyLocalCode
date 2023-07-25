@@ -6,6 +6,7 @@ import {
 import '../../projectmanagementOverviewTool/components/styles.css'
 import GlobalCommanTable from "../../../globalComponents/GroupByReactTableComponents/GlobalCommanTable";
 import axios from 'axios';
+import ReactPopperTooltipSingleLevel from '../../../globalComponents/Hierarchy-Popper-tooltipSilgleLevel/Hierarchy-Popper-tooltipSingleLevel';
 import TimeEntryPopup from "../../../globalComponents/TimeEntry/TimeEntryComponent";
 import "@pnp/sp/sputilities";
 import { IEmailProperties } from "@pnp/sp/sputilities";
@@ -479,7 +480,6 @@ const TaskDashboard = (props: any) => {
                                             ? Moment(task.Created).format("DD/MM/YYYY")
                                             : "";
                                     task.TeamMembersId = [];
-                                    task.HierarchyData = globalCommon.hierarchyData(task, MyAllData)
                                     taskUsers?.map((user: any) => {
                                         if (user.AssingedToUserId == task.Author.Id) {
                                             task.createdImg = user?.Item_x0020_Cover?.Url;
@@ -796,21 +796,7 @@ const TaskDashboard = (props: any) => {
                 showSortIcon: true,
                 Cell: ({ row }: any) => (
                     <span>
-
-                        <div className="tooltipSec popover__wrapper me-1" data-bs-toggle="tooltip" data-bs-placement="auto">
-                            {row.original.Services.length >= 1 ? <span className="text-success">{row?.original?.Shareweb_x0020_ID}</span> : <span>{row?.original?.Shareweb_x0020_ID}</span>}
-                            <div className="popover__content">
-                                <div className="tootltip-title">{row?.original?.Title}
-                                </div>
-                                <div className="tooltip-body">
-                                    {(row?.original?.HierarchyData != undefined && row?.original?.HierarchyData.length > 0 &&
-                                        <GlobalCommanTable columns={column} data={row?.original?.HierarchyData} callBackData={callBackData} />
-                                    )}
-
-
-                                </div>
-                            </div>
-                        </div>
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
                     </span>
 
                 ),
@@ -999,7 +985,7 @@ const TaskDashboard = (props: any) => {
                 Cell: ({ row }: any) => (
                     <span>
 
-                        {row?.original?.Shareweb_x0020_ID}
+                        <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesTask} />
 
                     </span>
                 ),
@@ -1886,7 +1872,7 @@ const TaskDashboard = (props: any) => {
 
 
             }
-            body = body.replaceAll('>,<', '><')
+            body = body.replaceAll('>,<', '><').replaceAll(',', '')
         }
         if (input == 'today time entries') {
             var subject = currentLoginUser + `- ${selectedTimeReport} Time Entries`;
@@ -1958,7 +1944,7 @@ const TaskDashboard = (props: any) => {
                 + '</table>'
                 + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/UserTimeEntry.aspx?userId=${currentUserId}` + '>Click here to open the Complete time entry' + '</a>' + '</p>'
                 + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/TaskDashboard.aspx?UserId=` + currentUserId + '>' + 'Click here to open Task Dashboard of ' + currentLoginUser + '</a>' + '</p>'
-            body = body.replaceAll('>,<', '><')
+            body = body.replaceAll('>,<', '><').replaceAll(',', '')
         }
 
 
@@ -1998,7 +1984,7 @@ const TaskDashboard = (props: any) => {
     }
     const sendAllWorkingTodayTasks = () => {
         let text = '';
-        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "jyoti.prasad@hochhuth-consulting.de"];
+        let to: any = ["ranu.trivedi@hochhuth-consulting.de", "prashant.kumar@hochhuth-consulting.de", "abhishek.tiwari@hochhuth-consulting.de"];
         let finalBody: any = [];
         let userApprover = '';
         let taskUsersGroup = groupedUsers;
@@ -2025,7 +2011,7 @@ const TaskDashboard = (props: any) => {
                         if (tasksCopy?.length > 0) {
                             tasksCopy?.map((item: any) => {
                                 let teamUsers: any = [];
-                                item?.Team_x0020_Members?.map((item1: any) => {
+                                item?.AssignedTo?.map((item1: any) => {
                                     teamUsers.push(item1?.Title)
                                 });
                                 if (item.DueDate != undefined) {
@@ -2058,9 +2044,9 @@ const TaskDashboard = (props: any) => {
                                 body1.push(text);
                             })
                             body =
-                                '<h3>'
-                                + teamMember?.Title + ` (${teamMember?.Group})`
-                                + '</h3>'
+                                '<h3><strong>'
+                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + '</strong></h3>'
                                 + '<table style="border: 1px solid #ccc;" border="1" cellspacing="0" cellpadding="0" width="100%">'
                                 + '<thead>'
                                 + '<tr>'
@@ -2079,11 +2065,11 @@ const TaskDashboard = (props: any) => {
                                 + body1
                                 + '</tbody>'
                                 + '</table>'
-                            body = body.replaceAll('>,<', '><')
+                            body = body.replaceAll('>,<', '><').replaceAll(',', '')
                         } else {
-                            body = '<h3>'
-                                + teamMember?.Title + ` (${teamMember?.Group})`
-                                + '</h3>'
+                            body = '<h3><strong>'
+                                + teamMember?.Title + ` (${teamMember?.Group!=null?teamMember?.Group:''})`
+                                + '</strong></h3>'
                                 + '<h4>'
                                 + 'No Working Today Tasks Available '
                                 + '</h4>'
@@ -2095,20 +2081,22 @@ const TaskDashboard = (props: any) => {
 
                         teamsTaskBody.push(body);
                     })
-                    let TeamTitle = '<h2>'
+                    let TeamTitle = '<h2><strong>'
                         + userGroup.Title
-                        + '</h2>'
+                        + '</strong></h2>'
                         + teamsTaskBody
                     finalBody.push(TeamTitle)
                 }
             })
             let sendAllTasks =
-                '<h3>'
-                + 'Please Find the Working Today Tasks of all the Team members mentioned Below.'
-                + '</h3>'
+                '<span style="font-size: 18px;margin-bottom: 10px;">'
+                + 'Hi there, <br><br>'
+                + "Below is the today's working task of all the team members :"
+                + '<p>' + '<a href =' + `${AllListId?.siteUrl}/SitePages/Project-Management-Overview.aspx` + ">Click here for flat overview of the today's tasks: " + '</a>' + '</p>'
+                + '</span>'
                 + finalBody
                 + '<h3>'
-                + 'Thanks And regards'
+                + 'Thanks.'
                 + '</h3>'
                 + '<h3>'
                 + currentUserData?.Title
@@ -2723,12 +2711,12 @@ const TaskDashboard = (props: any) => {
                                         </div>
                                         <details>
                                             {timeEntryTotal > 1 ?
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hours)'}
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hours)'}
                                                     {
                                                         currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                     }
                                                 </summary> :
-                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal + ' Hour)'}
+                                                <summary>{selectedTimeReport}'s Time Entry {'(' + timeEntryTotal.toFixed(2) + ' Hour)'}
                                                     {
                                                         currentUserId == currentUserData?.AssingedToUserId && selectedTimeReport == "Today" ? <span className="align-autoplay d-flex float-end" onClick={() => shareTaskInEmail('today time entries')}><span className="svg__iconbox svg__icon--mail mx-1" ></span>Share {selectedTimeReport}'s Time Entry</span> : ""
                                                     }

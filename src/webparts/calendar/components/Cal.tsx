@@ -18,6 +18,7 @@ import "./style.css";
 // import { Component } from 'react';
 // import MyModal from "./MyModal";
 import { Web } from "sp-pnp-js";
+// import VersionHistoryPopup from "../";
 import {
   Panel,
   PanelType,
@@ -39,6 +40,7 @@ import "react-quill/dist/quill.snow.css";
 import { EventRecurrenceInfo } from "./EventRecurrenceControls/EventRecurrenceInfo/EventRecurrenceInfo";
 import parseRecurrentEvent from "./EventRecurrenceControls/service/parseRecurrentEvent";
 import Tooltip from "../../../globalComponents/Tooltip";
+import VersionHistoryPopup from "../../../globalComponents/VersionHistroy/VersionHistory";
 //import Modal from "react-bootstrap/Modal";
 //import MoreSlot from "./Slots";
 interface IEventData {
@@ -91,7 +93,8 @@ let createdBY: any,
   CDate: any,
   MTime: any,
   MDate: any,
-  localArr: any = [];
+  localArr: any = [],
+  vHistory:any=[]
 let startTime: any,
   //   startDateTime: any,
   eventPass: any = {},
@@ -116,6 +119,7 @@ const App = (props: any) => {
   const [inputValueName, setInputValueName] = React.useState("");
   const [inputValueReason, setInputValueReason] = React.useState("");
   // const myButton = document.getElementById("myButton");
+  const [vId,setVId]=React.useState()
   const [disabl, setdisabl] = React.useState(false);
   const [disab, setdisab] = React.useState(false);
   const [dt, setDt] = React.useState();
@@ -365,10 +369,12 @@ const App = (props: any) => {
   const minDate: Date = today;
 
   const leaveTypes = [
-    { key: "Event", text: "Event" },
-    { key: "Training", text: "Training " },
+    { key: "Sick", text: "Sick" },
+    // { key: "Training", text: "Training " },
     { key: "Planned Leave", text: "Planned" },
     { key: "Un-Planned", text: "Un-Planned" },
+    { key: "Restricted Holiday", text: "Restricted Holiday" },
+    { key: "LWP", text: "LWP" },
   ];
   const Designation = [
     { key: "SPFx", text: "SPFx" },
@@ -383,7 +389,7 @@ const App = (props: any) => {
     setInputValueName("");
     setStartDate(null);
     setEndDate(null);
-    setType("");
+    // setType("");
     sedType("");
     setInputValueReason("");
   };
@@ -514,13 +520,13 @@ const App = (props: any) => {
           }
 
           const dataEvent = {
-            shortD:item.Title,
+            shortD: item.Title,
             iD: item.ID,
             title: a,
             start: startdate,
             end: enddate,
             location: item.Location,
-            desc: item.Description, 
+            desc: item.Description,
             alldayevent: item.fAllDayEvent,
             eventType: item.Event_x002d_Type,
             created: item.Author.Title,
@@ -1185,9 +1191,10 @@ const App = (props: any) => {
       return;
     }
     localArr.map((item: any) => {
+      
       if (item.iD == event.iD) {
         setdisab(true);
-        
+        setVId(item.iD)
         eventPass = event;
         setInputValueName(item.shortD);
         setStartDate(item.start);
@@ -1221,6 +1228,7 @@ const App = (props: any) => {
     setSelectedPeople(props.props.context._pageContext._user.loginName);
     setPeopleName(props.props.context._pageContext._user.displayName);
     setLocation("");
+    setType("Un-Planned")
     setPeoplePickerShow(true);
     setshowRecurrence(true);
     setRecurrenceData(null);
@@ -1612,6 +1620,7 @@ const App = (props: any) => {
             label="Leave Type"
             options={leaveTypes}
             selectedKey={type}
+            // defaultSelectedKey="Un-Planned" // Set the defaultSelectedKey to the key of "Planned Leave"
             onChange={(e, option) => setType(option.key)}
           />
           <Dropdown
@@ -1676,7 +1685,9 @@ const App = (props: any) => {
                   Created {CDate} {CTime} by {createdBY}
                 </div>
                 <div>
-                  Last Modified {MDate} {MTime} by {modofiedBy}
+                  Last Modified {MDate} {MTime} by {modofiedBy} <VersionHistoryPopup   taskId={vId}
+                          listId={props.props.SmalsusLeaveCalendar}
+                          siteUrls={props.props.siteUrl} />
                 </div>
                 <div>
                   <a href="#" onClick={deleteElement}>
@@ -1684,12 +1695,15 @@ const App = (props: any) => {
                     Delete this Item
                   </a>
                 </div>
+                        
               </div>
+              <a target='_blank' href ={`${props.props.siteUrl}/Lists/SmalsusLeaveCalendar/EditForm.aspx?ID=${vId}`}>Open out-of-the-box form</a>
               <div>
                 <button
                   className="btn btn-primary px-3"
                   onClick={updateElement}
-                >Save
+                >
+                  Save
                 </button>
                 <button
                   type="button"
@@ -1706,7 +1720,7 @@ const App = (props: any) => {
         )}
 
         {!disab ? (
-          <div>
+          <div className="modal-footer">
             <button className="btn btn-primary px-3" onClick={saveEvent}>
               Save
             </button>

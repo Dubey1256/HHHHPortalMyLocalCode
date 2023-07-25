@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "3c17afb7-c9f6-4ba7-9202-89b5a86adb88",
+  "alias": "UserTimeEntryWebPart",
+  "componentType": "WebPart",
+
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2,
+
+  // If true, the component can only be installed on sites where Custom Script is allowed.
+  // Components that allow authors to embed arbitrary script code should set this to true.
+  // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "UserTimeEntry" },
+    "description": { "default": "UserTimeEntry description" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "description": "UserTimeEntry",
+      "TaskUserListID" : "b318ba84-e21d-4876-8851-88b94b9dc300",
+      "SmartMetadataListID" : "01a34938-8c7e-4ea6-a003-cee649e8c67a",
+      "TaskTimeSheetListNewListID" : "464fb776-e4b3-404c-8261-7d3c50ff343f",
+      "TaskTimeSheet2ListID" : "9ed5c649-3b4e-42db-a186-778ba43c5c93"
+    }
+  }]
+}

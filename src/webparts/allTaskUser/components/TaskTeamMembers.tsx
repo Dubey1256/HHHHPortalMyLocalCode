@@ -916,18 +916,20 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
 
         elemMemberTaskList = <TaskUsersTable TaskUsers={this.state.sortedItems} GetUser={(userName, taskId)=>this.GetTaskUser(userName, taskId)} AddTask={this.onAddTeamMemberClick} EditTask={this.onEditIconClick} DeleteTask={this.onDeleteIconClick} />
 
-        const elemTaskMetadata = (this.state.showEditPanel && <div style={{width:"40%",display:"inline-block"}}>
-            <Label>Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</Label>
-            <Label>Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</Label>
+        const elemTaskMetadata = (this.state.showEditPanel ?<div>
+              <p className="mb-0">Created {this.state.taskItem.createdOn} by {this.state.taskItem.createdBy}</p>
+            <p className="mb-0">Last modified {this.state.taskItem.modifiedOn} by {this.state.taskItem.modifiedBy}</p>
             <Link href="#" onClick={this.onDeleteTask}><Icon iconName="Delete"/><Text>Delete this user</Text></Link>
-        </div>);
+        
+          
+        </div>:<div></div>);
 
         const elemSaveButton = (<PrimaryButton styles={controlStyles} onClick={this.onSaveTask} disabled={!this.state.enableSave}>Save</PrimaryButton>);
         const elemCancelButton = (<DefaultButton styles={controlStyles} onClick={this.onCancelTask}>Cancel</DefaultButton>);
         
-        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" style={{marginRight:"8px"}}>Open out-of-the-box form</Link>);
-        const elemActionButons = (<div style={{float:"right",width:"60%",display:"inline-block",marginTop:"16px"}}>
-            <div style={{float:"right"}}>
+        const elemOOTBFormLink = (<Link href={`${this.props.context.pageContext.web.absoluteUrl}/Lists/Task%20Users/DispForm.aspx?ID=${this.state.selTaskId}`} target="_blank" className="openlink">Open out-of-the-box form</Link>);
+        const elemActionButons = (<div>
+            <div className="text-end c-footer">
                 { this.state.selTaskId && elemOOTBFormLink }
                 { elemSaveButton }
                 { elemCancelButton }
@@ -945,7 +947,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
             </DialogFooter>
         </Dialog>);
 
-        const elemTaskMemberFooter = () => ( <div style={{width:"100%"}}>
+        const elemTaskMemberFooter = () => ( <div className="align-items-center d-flex justify-content-between ">
             { elemTaskMetadata }
             { elemActionButons }          
         </div>);       
@@ -1022,7 +1024,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                              defaultSelectedKey = {this.state.taskItem.groupId}
                              selectedKey = {this.state.taskItem.groupId}
                              onChange = {this.onGroupChange } 
-                             calloutProps={{ doNotLayer: true }}
+                             calloutProps={{ doNotLayer: false }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm3 ms-md3 ms-lg3">
@@ -1044,7 +1046,7 @@ export default class TaskTeamMembers extends Component<ITeamMembersProps, ITeamM
                             defaultSelectedKey = {this.state.taskItem.timeCategory} 
                             selectedKey = {this.state.taskItem.timeCategory}
                             onChange = {this.onManageTimeCategory } 
-                            calloutProps={{ doNotLayer: true }}
+                            calloutProps={{ doNotLayer: false }}
                         />
                     </div>
                     <div className="ms-Grid-col ms-sm4 ms-md4 ms-lg4">{elemApprover}</div>

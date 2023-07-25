@@ -1097,7 +1097,7 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                             {allLists?.map((item: any) => <li><span><input type='checkbox' checked={checkedValues.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}
                                                  </ul>
-                                                 <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                                 <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                   </div> }
 
 
@@ -1116,7 +1116,7 @@ const excelSelectFunc=(e:any)=>{
                                             </li>
                                             <span><input type='number' value={priorAndPerc.percentage}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,percentage:e.target.value})}  /></span>
                                             </div>
-                                          <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                          <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                           </div>}
 
 
@@ -1126,7 +1126,7 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                         {catogries?.map((item: any,index:any) => <li><span><input type='checkbox' checked={filterCatogries.includes(item)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item} /> <label>{item}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
@@ -1145,7 +1145,7 @@ const excelSelectFunc=(e:any)=>{
                                             </li>
                                             <span><input type='number' value={priorAndPerc.priority}  onChange={(e:any)=>setPriorAndPerc({...priorAndPerc,priority:e.target.value})}  /></span>
                                             </div>
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
 
 
@@ -1161,7 +1161,7 @@ const excelSelectFunc=(e:any)=>{
                                             <input type='date' value={date.due !== null ? date.due : ''} onChange={(e:any)=>setDate({...date, due:e.target.value})} />
                                             </div>
                                            
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
 
@@ -1177,7 +1177,7 @@ const excelSelectFunc=(e:any)=>{
                                             <input type='date' value={date.modify !== null ? date.modify : '' } onChange={(e:any)=>setDate({...date, modify:e.target.value})} />
                                             </div>
                                            
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
                                            
                                             {column?.id == 'created' && 
@@ -1192,7 +1192,7 @@ const excelSelectFunc=(e:any)=>{
                                             <input type='date' value={date.created !== null ? date.created : ''} onChange={(e:any)=>setDate({...date, created:e.target.value})}  />
                                             </div>
                                            
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                            </div>}
 
                                            {column?.id == 'TeamMembersSearch' && 
@@ -1201,7 +1201,7 @@ const excelSelectFunc=(e:any)=>{
                                        <ul className='dropitem'>
                                         {taskUser?.map((item: any) => <li><span><input type='checkbox' checked={checkTeamMembers.includes(item.Title)} onChange={(e: any) => getSelectedSite(e,column?.id)} value={item.Title} /> <label>{item.Title}</label> </span></li>)}                                        
                                             </ul> 
-                                            <li><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
+                                            <li className='d-flex justify-content-end'><a className="btn btn-primary" href="#" onClick={listFilters1}>Filter</a> <a className="btn  btn-default ms-1" href="#" onClick={()=>clearFilter(column?.id)}>Clear</a></li>
                                             </div>}
                                           
                                     </div> : ''

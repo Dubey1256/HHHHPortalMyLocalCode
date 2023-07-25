@@ -1,0 +1,38 @@
+shareweb-breadcrumb-item .Breadcrumb {
+  display: none;
+}
+
+div#workbenchPageContent {
+  max-width: none;
+}
+
+.ms-spimn-img {
+  vertical-align: middle;
+  display: none;
+}
+
+.modal-title {
+  font-size: 18px;
+  line-height: 24px;
+  width: 100%;
+  color: #0000BC;
+}
+
+.abbr[data-original-title], abbr[title] {
+  cursor: help;
+  border-bottom: 1px dotted #777;
+}
+
+.ms-vb2 {
+  padding: 4px 8px 4px 4px;
+}
+
+.table_scroll {
+  height: 450px;
+  overflow: auto;
+}
+
+a:visited, body a {
+  color: #0000BC;
+  text-decoration: none;
+}/*# sourceMappingURL=VersionHistory.css.map */

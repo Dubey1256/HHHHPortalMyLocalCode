@@ -2,7 +2,6 @@ import * as React from "react";
 import * as $ from 'jquery';
 import * as Moment from 'moment';
 import { Web } from "sp-pnp-js";
-import pnp from 'sp-pnp-js';
 import Picker from "./SmartMetaDataPicker";
 import Example from "./FroalaCommnetBoxes";
 import * as globalCommon from "../globalCommon";
@@ -15,6 +14,7 @@ import "bootstrap/js/dist/tab.js";
 import "bootstrap/js/dist/carousel.js";
 import CommentCard from "../../globalComponents/Comments/CommentCard";
 import { Panel, PanelType } from 'office-ui-fabric-react';
+import { Modal } from '@fluentui/react';
 import { FaExpandAlt } from 'react-icons/fa'
 import { RiDeleteBin6Line, RiH6 } from 'react-icons/ri'
 import { TbReplace } from 'react-icons/tb'
@@ -45,6 +45,7 @@ import SmartTotalTime from './SmartTimeTotal';
 import "react-datepicker/dist/react-datepicker.css";
 import BackgroundCommentComponent from "./BackgroundCommentComponent";
 import { Description } from "@material-ui/icons";
+
 
 
 var AllMetaData: any = []
@@ -89,7 +90,7 @@ const EditTaskPopup = (Items: any) => {
     const AllListIdData = Items.AllListId;
     AllListIdData.listId = Items.Items.listId;
     Items.Items.Id = Items.Items.ID;
-
+    let ShareWebConfigData: any = [];
     const [TaskImages, setTaskImages] = React.useState([]);
     const [IsComponent, setIsComponent] = React.useState(false);
     const [IsServices, setIsServices] = React.useState(false);
@@ -116,7 +117,7 @@ const EditTaskPopup = (Items: any) => {
     const [TaskStatusPopup, setTaskStatusPopup] = React.useState(false);
     const [TimeSheetPopup, setTimeSheetPopup] = React.useState(false);
     const [hoverImageModal, setHoverImageModal] = React.useState('None');
-    const [AddImageDescriptions, setAddImageDescriptions] = React.useState('None');
+    const [AddImageDescriptions, setAddImageDescriptions] = React.useState(false);
     const [AddImageDescriptionsDetails, setAddImageDescriptionsDetails] = React.useState<any>('');
     const [ImageComparePopup, setImageComparePopup] = React.useState(false);
     const [CopyAndMoveTaskPopup, setCopyAndMoveTaskPopup] = React.useState(false);
@@ -175,6 +176,7 @@ const EditTaskPopup = (Items: any) => {
     const [IsUserFromHHHHTeam, setIsUserFromHHHHTeam] = React.useState(false);
     const [IsCopyOrMovePanel, setIsCopyOrMovePanel] = React.useState<any>('');
     const [EnableSiteCompositionValidation, setEnableSiteCompositionValidation] = React.useState(false);
+    // const [ShareWebConfigData, setShareWebConfigData] = React.useState<any>([]);
 
 
     const StatusArray = [
@@ -446,7 +448,23 @@ const EditTaskPopup = (Items: any) => {
                     }
                 }
                 if (item.ClientTime != null && item.ClientTime != undefined) {
-                    let tempData: any = JSON.parse(item.ClientTime);
+                    let tempData: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        let ShareWebCompositionStatus: any;
+                        let TempData:any = JSON.parse(item.ClientTime);
+                        TempData?.map((itemdata: any) => {
+                            ShareWebCompositionStatus = itemdata.ClienTimeDescription;
+                        })
+                        if (ShareWebConfigData != undefined || ShareWebCompositionStatus == 100) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempData = siteConfigData[0].SiteComposition;
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        }
+                    } else {
+                        tempData = JSON.parse(item.ClientTime)
+                    }
+                    // let tempData: any = JSON.parse(item.ClientTime);
                     let tempData2: any = [];
                     if (tempData != undefined && tempData.length > 0) {
                         tempData.map((siteData: any) => {
@@ -502,14 +520,27 @@ const EditTaskPopup = (Items: any) => {
                     setClientTimeData(tempArray3)
                     item.siteCompositionData = tempArray3;
                 } else {
-                    const object: any = {
-                        SiteName: Items.Items.siteType,
-                        ClienTimeDescription: 100,
-                        localSiteComposition: true,
-                        siteIcons: Items.Items.SiteIcon
+                    let tempArray: any = [];
+                    if (Items.Items.siteType == "Shareweb") {
+                        if (ShareWebConfigData != undefined) {
+                            let siteConfigData = JSON.parse(ShareWebConfigData != undefined ? ShareWebConfigData : [{}]);
+                            tempArray = siteConfigData[0].SiteComposition;
+                            item.siteCompositionData = tempArray;
+                            setClientTimeData(tempArray);
+                            let siteSeetingJSON = [{"Manual":true,"Proportional":false,"Portfolio":false}]
+                            item.SiteCompositionSettings = JSON.stringify(siteSeetingJSON);
+                        }
+                    } else {
+                        const object: any = {
+                            SiteName: Items.Items.siteType,
+                            ClienTimeDescription: 100,
+                            localSiteComposition: true,
+                            siteIcons: Items.Items.SiteIcon
+                        }
+                        item.siteCompositionData = [object];
+                        setClientTimeData([object]);
                     }
-                    item.siteCompositionData = [object];
-                    setClientTimeData([object]);
+
                 }
 
                 if (item.PercentComplete != undefined) {
@@ -547,7 +578,7 @@ const EditTaskPopup = (Items: any) => {
                 if (item.BasicImageInfo != null && item.Attachments) {
                     saveImage.push(JSON.parse(item.BasicImageInfo))
                 }
-                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null) {
+                if (item.Priority_x0020_Rank == undefined || item.Priority_x0020_Rank == null || item.Priority_x0020_Rank == 0) {
                     if (item.Priority != undefined) {
                         if (item.Priority == "(3) Low") {
                             item.Priority_x0020_Rank = 1
@@ -1417,6 +1448,10 @@ const EditTaskPopup = (Items: any) => {
                 site.BtnStatus = false;
                 site.isSelected = false;
                 tempArray.push(site);
+            }
+            if (site.Title !== undefined && site.Title == 'Shareweb') {
+                // setShareWebConfigData(site.Configurations);
+                ShareWebConfigData = site.Configurations;
             }
         })
         setSiteTypes(tempArray);
@@ -2875,13 +2910,13 @@ const EditTaskPopup = (Items: any) => {
     // *************** this is used for adding description for images functions ******************
 
     const openAddImageDescriptionFunction = (Index: any, Data: any, type: any) => {
-        setAddImageDescriptions("Block");
+        setAddImageDescriptions(true);
         // setAddImageDescriptionsIndex(Index);
         setAddImageDescriptionsDetails(Data.Description != undefined ? Data.Description : '');
         AddImageDescriptionsIndex = Index;
     }
     const closeAddImageDescriptionFunction = () => {
-        setAddImageDescriptions("None");
+        setAddImageDescriptions(false);
         // setAddImageDescriptionsIndex(-1);
         AddImageDescriptionsIndex = undefined;
     }
@@ -3317,10 +3352,23 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderMain = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
                     <span className="siteColor">
                         {`${EditData.TaskId != undefined || EditData.TaskId != null ? EditData.TaskId : ""} ${EditData.Title != undefined || EditData.Title != null ? EditData.Title : ""}`}
+                    </span>
+                </div>
+                <Tooltip ComponentId="1683" />
+            </div>
+        );
+    };
+    const onRenderStatusPanelHeader = () => {
+        return (
+            <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
+                <div className="subheading">
+                    <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
+                    <span className="siteColor">
+                       Update Task Status
                     </span>
                 </div>
                 <Tooltip ComponentId="1683" />
@@ -3331,9 +3379,9 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomHeaderCopyAndMoveTaskPanel = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
+                <div className="subheading">
                     <img className="imgWid29 pe-1 mb-1 " src={Items.Items.SiteIcon} />
-                    <span className="siteColor">
+                    <span>
                         Select Site
                     </span>
                 </div>
@@ -3344,8 +3392,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomReplaceImageHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Replace Image
                     </span>
                 </div>
@@ -3356,8 +3404,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomProjectManagementHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Select Project
                     </span>
                 </div>
@@ -3368,8 +3416,8 @@ const EditTaskPopup = (Items: any) => {
     const onRenderCustomApproverHeader = () => {
         return (
             <div className={ServicesTaskCheck ? "d-flex full-width pb-1 serviepannelgreena" : "d-flex full-width pb-1"}>
-                <div style={{ marginRight: "auto", fontSize: "20px", fontWeight: "600", marginLeft: '20px' }}>
-                    <span className="siteColor">
+                <div className="subheading">
+                    <span>
                         Select Approver
                     </span>
                 </div>
@@ -3552,31 +3600,31 @@ const EditTaskPopup = (Items: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             {/* ***************** this is status panel *********** */}
             <Panel
-                headerText={`Update Task Status`}
+                // headerText={`Update Task Status`}
+                onRenderHeader={onRenderStatusPanelHeader}
                 isOpen={TaskStatusPopup}
                 onDismiss={closeTaskStatusUpdatePopup}
                 isBlocking={TaskStatusPopup}
             >
                 <div className={ServicesTaskCheck ? "serviepannelgreena" : ""} >
                     <div className="modal-body">
-                        <table className="table table-hover" style={{ marginBottom: "0rem !important" }}>
-                            <tbody>
+                        <div className="TaskStatus">                     
                                 {StatusArray?.map((item: any, index) => {
                                     return (
-                                        <tr key={index}>
-                                            <td>
+                                        <li key={index}>
+                                            
                                                 <div className="form-check l-radio">
                                                     <input className="form-check-input"
                                                         type="radio" checked={(PercentCompleteCheck ? EditData.PercentComplete : UpdateTaskInfo.PercentCompleteStatus) == item.value}
                                                         onClick={() => PercentCompleted(item)} />
                                                     <label className="form-check-label mx-2">{item.status}</label>
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            
+                                        </li>
                                     )
                                 })}
-                            </tbody>
-                        </table>
+                            
+                        </div>
                     </div>
                     {/* <footer className="float-end">
                         <button type="button" className="btn btn-primary px-3" onClick={() => setTaskStatusPopup(false)}>
@@ -4219,7 +4267,7 @@ const EditTaskPopup = (Items: any) => {
                                                         <div>
                                                             {selectedProject.map((ProjectData: any) => {
                                                                 return (
-                                                                    <div className="block mt-1 px-2 py-2">
+                                                                    <div className="block mt-1 px-1 py-1">
                                                                         <div className="d-flex justify-content-between">
                                                                             <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                 {ProjectData.Title}
@@ -4292,7 +4340,7 @@ const EditTaskPopup = (Items: any) => {
                                                             </ul>
                                                         </div> : null
                                                     }
-                                                    <div className="bg-e9 border-1 p-2">
+                                                    <div className="bg-e9 border-1 p-1 total-time">
                                                         <label className="siteColor">Total Time</label>
                                                         {EditData.Id != null ? <span className="pull-right siteColor"><SmartTotalTime props={EditData} callBack={SmartTotalTimeCallBack} /> h</span> : null}
                                                     </div>
@@ -4373,8 +4421,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     target="_blank"
                                                                     data-interception="off"
                                                                     href={`${Items.Items.siteType}/SitePages/TaskDashboard.aspx?UserId=${userDtl.AssingedToUserId}&Name=${userDtl.Title}`} >
-                                                                    <img data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''}
-                                                                        style={{ width: "35px", height: "35px", marginLeft: "10px", borderRadius: "50px" }}
+                                                                    <img className="ProirityAssignedUserPhoto ms-2" data-bs-placement="bottom" title={userDtl.Title ? userDtl.Title : ''} 
                                                                         src={userDtl.Item_x0020_Cover ? userDtl.Item_x0020_Cover.Url : "https://hhhhteams.sharepoint.com/sites/HHHH/GmBH/SiteCollectionImages/ICONS/32/icon_user.jpg"}
                                                                     />
                                                                 </a>
@@ -4437,7 +4484,7 @@ const EditTaskPopup = (Items: any) => {
                                                             <div key={index} className="image-item">
                                                                 <div className="my-1">
                                                                     <div>
-                                                                        <input type="checkbox" className="rounded-0" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
+                                                                        <input type="checkbox" className="form-check-input" checked={ImageDtl.Checked} onClick={() => ImageCompareFunction(ImageDtl, index)} />
                                                                         <span className="mx-1">{ImageDtl.ImageName ? ImageDtl.ImageName.slice(0, 24) : ''}</span>
                                                                     </div>
                                                                     <a href={ImageDtl.ImageUrl} target="_blank" data-interception="off">
@@ -4460,8 +4507,8 @@ const EditTaskPopup = (Items: any) => {
                                                                             <span title="Customize the width of page" onClick={() => ImageCustomizeFunction(index)}>
                                                                                 <FaExpandAlt /> |
                                                                             </span>
-                                                                            <span title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
-                                                                                <BiInfoCircle />
+                                                                            <span  title={ImageDtl.Description != undefined && ImageDtl.Description?.length > 1 ? ImageDtl.Description : "Add Image Description"} className="mx-1 img-info" onClick={() => openAddImageDescriptionFunction(index, ImageDtl, "Opne-Model")}>
+                                                                            <span className="svg__iconbox svg__icon--info "></span>
                                                                             </span>
                                                                         </div>
                                                                     </div>
@@ -4538,7 +4585,7 @@ const EditTaskPopup = (Items: any) => {
                                     </div>
                                     <div className="col-sm-5">
                                         {EditData.Id != null && AllListIdData.isShowSiteCompostion ?
-                                            <>
+                                            <div className="site-composition-on-task-popup">
                                                 {SiteTypes != undefined && SiteTypes.length > 0 ?
                                                     <SiteCompositionComponent
                                                         AllListId={AllListIdData}
@@ -4555,7 +4602,7 @@ const EditTaskPopup = (Items: any) => {
                                                         SitesTaggingData={SitesTaggingData}
                                                     /> : null
                                                 }
-                                            </>
+                                            </div>
                                             : null
                                         }
 
@@ -4614,7 +4661,7 @@ const EditTaskPopup = (Items: any) => {
                         />
                     }
 
-                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
+                    {sendEmailComponentStatus ? <EmailComponent CurrentUser={currentUserData} CreatedApprovalTask={Items.sendApproverMail} statusUpdateMailSendStatus={ImmediateStatus && sendEmailComponentStatus ? true : false} IsEmailCategoryTask={EmailStatus} items={LastUpdateTaskData} Context={Context} ApprovalTaskStatus={ApprovalTaskStatus} callBack={SendEmailNotificationCallBack} /> : null}
                 </div>
             </Panel>
             {/* ***************** this is Image compare panel *********** */}
@@ -5302,7 +5349,7 @@ const EditTaskPopup = (Items: any) => {
                                                                     <div>
                                                                         {selectedProject.map((ProjectData: any) => {
                                                                             return (
-                                                                                <div className="block mt-1 px-2 py-2">
+                                                                                <div className="block mt-1 px-1 py-1">
                                                                                     <div className="d-flex justify-content-between">
                                                                                         <a className="hreflink " target="_blank" data-interception="off" href={`https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/Project-Management.aspx?ProjectId=${ProjectData.Id}`}>
                                                                                             {ProjectData.Title}
@@ -5616,22 +5663,28 @@ const EditTaskPopup = (Items: any) => {
             </div>
 
             {/* ********************** This in Add Image Description Model ****************** */}
-            <div className={ServicesTaskCheck ? "hoverImageModal serviepannelgreena" : "hoverImageModal"} style={{ display: AddImageDescriptions }}>
-                <div className="hoverImageModal-popup">
-                    <div className="hoverImageModal-container">
-                        <textarea onChange={(e) => UpdateImageDescription(e)}
-                            style={{ width: '100%', marginLeft: '3px', minHeight: '150px' }}
-                            value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
-                        // value={AddImageDescriptionsIndex != undefined && AddImageDescriptionsIndex >= 0 ? TaskImages[AddImageDescriptionsIndex].Description != undefined ? TaskImages[AddImageDescriptionsIndex].Description : '' : ''}
-                        >
-                        </textarea>
-                    </div>
-                    <footer className="d-flex float-end pb-1 mx-2" style={{ color: "white" }}>
-                        <button className="btn btn-secondary px-4 mx-1" onClick={SaveImageDescription}>Save</button>
-                        <button className="btn btn-default" onClick={closeAddImageDescriptionFunction}>Cancel</button>
-                    </footer>
+            <Modal isOpen={AddImageDescriptions} isBlocking={AddImageDescriptions} containerClassName="custommodalpopup p-2">
+                <div className="modal-header mb-1">
+                    <h5 className="modal-title">Add Image Description</h5>
+                    <span className='mx-1'> <Tooltip ComponentId='5669' /></span>
+                    <button type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                        onClick={closeAddImageDescriptionFunction}
+                    ></button>
                 </div>
-            </div>
+                <div className="modal-body">
+                    <div className='col mx-2'><textarea id="txtUpdateComment" rows={6}
+                        value={AddImageDescriptionsDetails != undefined ? AddImageDescriptionsDetails : ''}
+                        className="full-width"
+                        onChange={(e) => UpdateImageDescription(e)}></textarea></div>
+                </div>
+                <footer className='text-end mt-2 mx-2'>
+                    <button className="btn btnPrimary " onClick={SaveImageDescription}>Save</button>
+                    <button className='btn btn-default ms-1' onClick={closeAddImageDescriptionFunction}>Cancel</button>
+                </footer>
+            </Modal>
 
             {/* ********************* this is Copy Task And Move Task panel ****************** */}
             <Panel
