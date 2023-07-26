@@ -238,8 +238,8 @@ const [editData,setEditData]=useState(props.EditdocumentsData)
                                 <Nav.Item>
                                     <Nav.Link eventKey="Images1" onClick={() => changesTabFunction("Images1")}> Images</Nav.Link>
                                 </Nav.Item>
-                               <div className='mt-3 mx-4'>
-                               {editData.Item_x002d_Image!=undefined &&<div><div><img src={editData?.Item_x002d_Image?.Url}/></div>
+                               <div className='mt-1 mx-1'>
+                               {editData.Item_x002d_Image!=undefined &&<div><div><img  className ="img-fluid" src={editData?.Item_x002d_Image?.Url}/></div>
                                     <span><a  href={editData?.Item_x002d_Image?.Url}target="_blank" data-interception="off"><span className='svg__iconbox svg__icon--jpeg' title="jpeg"></span></a></span>
                                     </div>}
                                   {/* <ul className='alignCenter list-none'>
