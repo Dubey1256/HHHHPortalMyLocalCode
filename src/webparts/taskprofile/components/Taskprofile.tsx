@@ -1414,15 +1414,14 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark d-flex">
+                         <a className="sitebutton bg-fxdark d-flex">
                           <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
                           <div className="d-flex justify-content-between full-width">
-                            <p className="pb-0 mb-0">Site Composition</p>
-                            <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
-                              <span className="svg__iconbox svg__icon--editBox"></span>
-                            </p>
+                            <div className="pb-0 mb-0">Site Composition</div>
+                            <div className="mb-0 pb-0 Edit-site-composition-pupup-btn" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                              <span className="svg__iconbox mt-1 mx-1 svg__icon--editBox"></span>
+                            </div>
                           </div>
-
                         </a>
                         <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
                           <ul>
