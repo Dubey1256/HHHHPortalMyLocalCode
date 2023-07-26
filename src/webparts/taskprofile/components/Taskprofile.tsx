@@ -9,6 +9,7 @@ import * as globalCommon from '../../../globalComponents/globalCommon'
 import { BiInfoCircle } from 'react-icons/bi'
 import SmartTimeTotal from './SmartTimeTotal';
 import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
+import { SlArrowDown, SlArrowRight } from 'react-icons/sl';
 import RelevantDocuments from './RelevantDocuments';
 import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
@@ -42,6 +43,7 @@ export interface ITaskprofileState {
   isopenversionHistory: boolean;
   smarttimefunction: boolean;
   ApprovalStatus: boolean;
+  EditSiteCompositionStatus:any
 }
 
 export default class Taskprofile extends React.Component<ITaskprofileProps, ITaskprofileState> {
@@ -86,6 +88,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       SharewebTimeComponent: [],
       smarttimefunction: false,
       ApprovalStatus: false,
+      EditSiteCompositionStatus:false
     }
 
     this.GetResult();
@@ -1114,6 +1117,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       emailStatus: item,
     });
 
+ 
+
   }
 
 
@@ -1407,8 +1412,15 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   {isShowSiteCompostion && <dl className="Sitecomposition">
                     {ClientTimeArray != null && ClientTimeArray.length > 0 &&
                       <div className='dropdown'>
-                        <a className="sitebutton bg-fxdark " onClick={() => this.showhideComposition()}>
-                          <span >{this.state.showComposition ? <IoMdArrowDropdown /> : <IoMdArrowDropright />}</span><span>Site Composition</span>
+                         <a className="sitebutton bg-fxdark d-flex">
+                          <span className="arrowicons" onClick={() => this.showhideComposition()}>{this.state.showComposition ? <SlArrowDown /> : <SlArrowRight />}</span>
+                          <div className="d-flex justify-content-between full-width">
+                            <p className="pb-0 mb-0">Site Composition</p>
+                            <p className="input-group-text mb-0 pb-0" title="Edit Site Composition" onClick={() => this.setState({ EditSiteCompositionStatus: true })}>
+                              <span className="svg__iconbox svg__icon--editBox"></span>
+                            </p>
+                          </div>
+                         
                         </a>
                         <div className="spxdropdown-menu" style={{ display: this.state.showComposition ? 'block' : 'none' }}>
                           <ul>
@@ -1441,7 +1453,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                 </div>
               </div>
-              <div className='row'>
+              <div className='row url'>
                 <div className="d-flex p-0">
                   <div className='bg-Fa p-2'><label>Url</label></div>
                   <div className='bg-Ff p-2 text-break full-width'>
@@ -1483,7 +1495,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                 </span>
                               </div>
-                              <div>
+                              <div className="expandicon">
                                
                                 <span >
                                   {imgData?.ImageName?.length > 15 ? imgData?.ImageName.substring(0, 15) + '...' : imgData?.ImageName}
@@ -1569,7 +1581,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
                                 </span>
                               </div>
-                              <div>
+                              <div className="expandicon">
                                 <span >{imgData?.UploadeDate}</span>
                                 <span className='round px-1'>
                                   {imgData?.UserImage !== null &&

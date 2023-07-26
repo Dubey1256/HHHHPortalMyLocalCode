@@ -5680,7 +5680,7 @@ function ComponentTable(SelectedProp: any) {
                       <label>  {FeatureCopy} of {AllCountItems?.AllFeaturesItems?.length} Features </label>
                     ) : (
                       <label>
-                        {AllCountItems?.AllFeaturesItems?.length} of{AllCountItems?.AllFeaturesItems?.length} Features
+                        {AllCountItems?.AllFeaturesItems?.length} of {AllCountItems?.AllFeaturesItems?.length} Features
                       </label>
                     )}
                     <span
@@ -5803,7 +5803,7 @@ function ComponentTable(SelectedProp: any) {
                       className="btn btn-primary"
                       onClick={buttonRestructuring}
                     >
-                      
+                      Restructure
                     </button>}
 
                     {table?.getSelectedRowModel()?.flatRows?.length > 0 ? <span>

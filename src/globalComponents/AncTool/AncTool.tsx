@@ -1,17 +1,29 @@
 import React from 'react'
 import DefaultFolderContent from './DefaultFolderContent'
 import axios from 'axios';
+import PageLoader from '../pageLoader';
+// import {
+//     Document,
+//     Packer,
+//     Paragraph
+// } from "docx";
 import Tooltip from '../Tooltip';
 import { sp } from 'sp-pnp-js'
 import { Web } from "@pnp/sp/webs";
 import { IList } from "@pnp/sp/lists";
+import pptxgen from 'pptxgenjs';
+import { Button, Modal } from "react-bootstrap";
+import * as GlobalFunction from '../globalCommon';
+// import { Document, Paragraph, Packer, IRunPropertiesOptions } from 'docx';
+// import officegen from 'officegen';
+import ExcelJS from 'exceljs';
 import { IFileAddResult } from "@pnp/sp/files";
 import { Panel, PanelType } from 'office-ui-fabric-react';
 import ConnectExistingDoc from './ConnectExistingDoc';
 let backupExistingFiles: any = [];
 let backupCurrentFolder: any = [];
 let AllFilesAndFolderBackup: any = [];
-
+let createNewDocType: any = '';
 let siteName: any = '';
 const itemRanks: any[] = [
     { rankTitle: 'Select Item Rank', rank: null },
@@ -23,14 +35,18 @@ const itemRanks: any[] = [
     { rankTitle: '(2) to be verified', rank: 2 },
     { rankTitle: '(1) Archive', rank: 1 },
     { rankTitle: '(0) No Show', rank: 0 }
-  ]
+]
 const AncTool = (props: any) => {
     let siteUrl = '';
+    const [pageLoaderActive, setPageLoader] = React.useState(false)
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [FileNamePopup, setFileNamePopup] = React.useState(false);
     const [ServicesTaskCheck, setServicesTaskCheck] = React.useState(false);
     const [folderExist, setFolderExist] = React.useState(false);
     const [Item, setItem]: any = React.useState({});
+    const [renamedFileName, setRenamedFileName]: any = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState(null);
+    const [newlyCreatedFile, setNewlyCreatedFile]: any = React.useState(null);
     const [itemRank, setItemRank] = React.useState(5);
     const [selectedPath, setSelectedPath] = React.useState({
         displayPath: '',
@@ -53,7 +69,6 @@ const AncTool = (props: any) => {
     const pathGenerator = async () => {
         const params = new URLSearchParams(window.location.search);
         var query = window.location.search.substring(1);
-
         console.log(query)
         //Test = 'https://hhhhteams.sharepoint.com/sites/HHHH/SP/SitePages/CreateTask.aspx'
         var vars = query.split("&");
@@ -135,7 +150,9 @@ const AncTool = (props: any) => {
             setExistingFiles(backupExistingFiles);
         }
     }
+
     const tagSelectedDoc = async (file: any) => {
+        setPageLoader(true)
         let resultArray: any = [];
         if (file[siteName] != undefined && file[siteName].length > 0) {
             file[siteName].map((task: any) => {
@@ -152,7 +169,8 @@ const AncTool = (props: any) => {
                 .update({ [siteColName]: { "results": resultArray } }).then((updatedFile: any) => {
                     file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
                     setDocsToTag([...DocsToTag, ...[file]])
-                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'.`);
+                    alert(`The file '${file?.Title}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                    setPageLoader(false)
                     return file;
                 })
 
@@ -169,7 +187,8 @@ const AncTool = (props: any) => {
                             return item.Id != file.Id
                         });
                     });
-                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'.`);
+                    setPageLoader(false)
+                    alert(`The file '${file?.Title}' has been successfully untagged from the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
                     return file;
                 })
 
@@ -270,24 +289,33 @@ const AncTool = (props: any) => {
         const rank = parseInt(event.target.value);
         setItemRank(rank);
     };
-
-    const handleUpload = async () => {
-        let isFolderAvailable =folderExist;
-      if(isFolderAvailable == false){
+    const CreateFolder = async (path: any, folderName: any): Promise<any> => {
         try {
             const library = sp.web.lists.getByTitle('Documents');
-            const parentFolder = sp.web.getFolderByServerRelativeUrl(selectedPath?.displayPath?.split(props?.item?.Title)[0]);
-            await parentFolder.folders.add(props?.item?.Title).then((data:any)=>{
+            const parentFolder = sp.web.getFolderByServerRelativeUrl(path);
+            await parentFolder.folders.add(folderName).then((data: any) => {
                 console.log('Folder created successfully.');
-                isFolderAvailable=true;
-                setFolderExist(true);
-                
+                return Promise.resolve(data)
             });
-         
-          } catch (error) {
-            console.log('An error occurred while creating the folder:', error);
-          }
-      }
+        } catch (error) {
+            return Promise.reject(error)
+        }
+    }
+    const handleUpload = async () => {
+        let isFolderAvailable = folderExist;
+        setPageLoader(true)
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
+
+            } catch (error) {
+                setPageLoader(false)
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
         if (isFolderAvailable == true) {
             try {
                 // Read the file content
@@ -299,29 +327,33 @@ const AncTool = (props: any) => {
                     await sp.web
                         .getFolderByServerRelativeUrl(selectedPath.displayPath)
                         .files.add(selectedFile?.name, fileContent, true).then(async (uploadedFile: any) => {
-                            const fileItems = await getExistingUploadedDocuments()
-                            fileItems?.map(async (file: any) => {
-                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
-                                    let resultArray: any = [];
-                                    resultArray.push(props?.item?.Id)
-                                    let siteColName = `${siteName}Id`
-                                    // Update the document file here
-                                    let postData = {
-                                        [siteColName]: { "results": resultArray },
-                                        ItemRank: itemRank,
-                                        Title: selectedFile?.name?.split(`.${file.docType}`)[0]
+                            setTimeout(async () => {
+                                const fileItems = await getExistingUploadedDocuments()
+                                fileItems?.map(async (file: any) => {
+                                    if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == selectedFile?.name) {
+                                        let resultArray: any = [];
+                                        resultArray.push(props?.item?.Id)
+                                        let siteColName = `${siteName}Id`
+                                        // Update the document file here
+                                        let postData = {
+                                            [siteColName]: { "results": resultArray },
+                                            ItemRank: itemRank,
+                                            Title: renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name?.split(`.${file.docType}`)[0]
+                                        }
+                                        await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                            .update(postData).then((updatedFile: any) => {
+                                                file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                                setDocsToTag([...DocsToTag, ...[file]])
+                                                setPageLoader(false)
+                                                alert(`The file '${renamedFileName?.length > 0 ? renamedFileName : selectedFile?.name}' has been successfully tagged to the task '${props?.item?.TaskId}'.Please refresh the page to get the changes.`);
+                                                pathGenerator()
+                                                setRenamedFileName('')
+                                                return file;
+                                            })
+                                        console.log("File uploaded successfully.", file);
                                     }
-                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
-                                        .update(postData).then((updatedFile: any) => {
-                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
-                                            setDocsToTag([...DocsToTag, ...[file]])
-                                            alert(`The file '${selectedFile?.name}' has been successfully tagged to the task '${props?.item?.TaskId}'.`);
-                                            pathGenerator()
-                                            return file;
-                                        })
-                                    console.log("File uploaded successfully.", file);
-                                }
-                            })
+                                })
+                            }, 2000);
 
                         });
 
@@ -331,13 +363,109 @@ const AncTool = (props: any) => {
                 reader.readAsArrayBuffer(selectedFile);
             } catch (error) {
                 console.log("File upload failed:", error);
+                setPageLoader(false)
             }
-        } else {
-
         }
         setSelectedFile(null);
         setItemRank(5);
     };
+    // Create Files direct From Code And Tag
+    async function createBlankWordDocx() {
+        createNewDocType = 'docx'
+       let jsonResult= await GlobalFunction.docxUint8Array();
+       setNewlyCreatedFile(jsonResult)
+       setFileNamePopup(true)
+    }
+
+    async function createBlankExcelXlsx() {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+        worksheet.addRow([]);
+        const buffer = await workbook.xlsx.writeBuffer();
+        createNewDocType = 'xlsx'
+        setNewlyCreatedFile(buffer)
+        setFileNamePopup(true)
+    }
+
+    async function createBlankPowerPointPptx() {
+        createNewDocType = 'pptx'
+        const pptx = new pptxgen();
+        pptx.addSlide();
+
+        await pptx.stream().then((file: any) => {
+            setNewlyCreatedFile(file)
+            setFileNamePopup(true);
+        })
+    }
+    const CreateNewAndTag = async () => {
+        setPageLoader(true)
+        let isFolderAvailable = folderExist;
+        let fileName = ''
+        if (isFolderAvailable == false) {
+            try {
+                await CreateFolder(selectedPath?.displayPath?.split(props?.item?.Title)[0], props?.item?.Title).then((data: any) => {
+                    isFolderAvailable = true
+                    setFolderExist(true)
+                })
+
+            } catch (error) {
+                setPageLoader(false)
+                console.log('An error occurred while creating the folder:', error);
+            }
+        }
+        if (isFolderAvailable == true) {
+            try {
+                if (renamedFileName?.length > 0) {
+                    fileName = `${renamedFileName}.${createNewDocType}`
+                } else {
+                    fileName = `${props?.item?.Title}.${createNewDocType}`
+                }
+                await sp.web
+                    .getFolderByServerRelativeUrl(selectedPath.displayPath)
+                    .files.add(fileName, newlyCreatedFile, true).then(async (uploadedFile: any) => {
+                        setTimeout(async () => {
+                            const fileItems = await getExistingUploadedDocuments()
+                            fileItems?.map(async (file: any) => {
+                                if (file?.FileDirRef != undefined && file?.FileDirRef?.toLowerCase() == selectedPath?.displayPath?.toLowerCase() && file?.FileSystemObjectType == 0 && file?.FileLeafRef == fileName) {
+                                    let resultArray: any = [];
+                                    resultArray.push(props?.item?.Id)
+                                    let siteColName = `${siteName}Id`
+                                    // Update the document file here
+                                    let postData = {
+                                        [siteColName]: { "results": resultArray },
+                                        ItemRank: itemRank,
+                                        Title: fileName
+                                    }
+                                    await sp.web.lists.getByTitle('Documents').items.getById(file.Id)
+                                        .update(postData).then((updatedFile: any) => {
+                                            file[siteName].push({ Id: props?.item?.Id, Title: props?.item?.Title });
+                                            setDocsToTag([...DocsToTag, ...[file]])
+                                            setPageLoader(false)
+                                            alert(`The file '${fileName}' has been successfully tagged to the task '${props?.item?.TaskId}'. Please refresh the page to get the changes.`);
+                                            pathGenerator()
+                                            cancelNewCreateFile()
+                                            return file;
+                                        })
+                                    console.log("File uploaded successfully.", file);
+                                }
+                            })
+                        }, 2000);
+
+                    });
+            } catch (error) {
+                setPageLoader(false)
+                console.log("File upload failed:", error);
+            }
+        }
+    }
+    //File Name Popup
+    const cancelNewCreateFile = () => {
+        setFileNamePopup(false);
+        setNewlyCreatedFile(null);
+        setRenamedFileName('');
+        createNewDocType = '';
+    }
+
 
 
     return (
@@ -349,8 +477,27 @@ const AncTool = (props: any) => {
 
                 </div>
                 <div className='card-body'>
-                    <div className="comment-box hreflink mb-2">
-                        <span onClick={() => { setModalIsOpen(true) }}> Click here to add more content</span>
+                    <div className="row">
+                        <div className="comment-box hreflink mb-2 col-sm-12">
+                            <span onClick={() => { setModalIsOpen(true) }}> Click here to add more content</span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankWordDocx()} >
+                                <span className='svg__iconbox svg__icon--docx hreflink' title='Word'></span>
+
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankExcelXlsx()} >
+                                <span className='svg__iconbox svg__icon--xlsx hreflink' title='Excel'></span>
+
+                            </span>
+                        </div>
+                        <div className="col-sm-4">
+                            <span onClick={() => createBlankPowerPointPptx()}>
+                                <span className='svg__iconbox svg__icon--ppt hreflink' title='Presentation'></span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -368,9 +515,9 @@ const AncTool = (props: any) => {
                             <button className="nav-link active" id="Documnets-Tab" data-bs-toggle="tab" data-bs-target="#Documents" type="button" role="tab" aria-controls="Documents" aria-selected="true">
                                 Documents
                             </button>
-                            {/* <button className="nav-link" id="Images-Tab" data-bs-toggle="tab" data-bs-target="#Images" type="button" role="tab" aria-controls="Images" aria-selected="false" >
+                            <button className="nav-link" id="Images-Tab" data-bs-toggle="tab" data-bs-target="#Images" type="button" role="tab" aria-controls="Images" aria-selected="false" >
                                 Images
-                            </button> */}
+                            </button>
 
                         </ul>
                         <div className="border border-top-0 clearfix p-3 tab-content " id="myTabContent">
@@ -502,17 +649,25 @@ const AncTool = (props: any) => {
                                                         onDrop={handleFileDrop} >
                                                         {selectedFile ? <p>Selected file: {selectedFile.name}</p> : <p>Drag and drop file here</p>}
                                                     </div>
-                                                    <input
-                                                        type="file"
-                                                        onChange={handleFileInputChange}
-                                                    />
+                                                    <div className="row">
+                                                        <div className="col-sm-6">
+                                                            <select value={itemRank} onChange={handleRankChange} className='full-width'>
+                                                                {itemRanks.map((rank) => (
+                                                                    <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="col-sm-6">
+                                                            <input type="file" onChange={handleFileInputChange} className='full-width' />
+                                                        </div>
+                                                        <div className="col-sm-12">
+                                                            <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Rename File' className='full-width' />
+                                                        </div>
+                                                    </div>
 
-                                                    <select value={itemRank} onChange={handleRankChange}>
-                                                        {itemRanks.map((rank) => (
-                                                            <option key={rank?.rank} value={rank?.rank}>{rank?.rankTitle}</option>
-                                                        ))}
-                                                    </select>
-                                                    <button onClick={handleUpload}>Upload</button>
+
+
+                                                    <button onClick={handleUpload} className="btn btn-primary mt-2 my-1  float-end px-3">Upload</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -528,6 +683,33 @@ const AncTool = (props: any) => {
                     </div>
                 </div>
             </Panel>
+            <Modal
+                show={FileNamePopup}
+                size="sm"
+                // onHide={() => {setShow(false);item?.callBack()}}
+                backdrop="static"
+                keyboard={false}
+                className='rounded-0'
+            >
+                <Modal.Header >
+                    <Modal.Title>Create New File</Modal.Title>
+                    <span onClick={() => cancelNewCreateFile()}><i className="svg__iconbox svg__icon--cross crossBtn"></i></span>
+                </Modal.Header>
+                <Modal.Body className='pb-3'>
+                    <div className="col-sm-12">
+                        <input type="text" onChange={(e) => { setRenamedFileName(e.target.value) }} value={renamedFileName} placeholder='Enter File Name' className='full-width' />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer className="border-0 pb-1 pt-0">
+                    <Button disabled={renamedFileName?.length > 0 ? false : true} onClick={() => { CreateNewAndTag() }} className="btn btn-primary">
+                        Save
+                    </Button>
+                    <Button className="btn btn-default" onClick={() => cancelNewCreateFile()}>
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            {pageLoaderActive ? <PageLoader /> : ''}
         </>
     )
 }

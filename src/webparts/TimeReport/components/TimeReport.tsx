@@ -29,14 +29,19 @@ var AllTimeMigration: any = []
 var DevloperTime: any = 0.00;
 var QATime: any = 0.00;
 var DesignTime: any = 0.00;
+var TotleTaskTime:any=0.00
+var leaveUsers:any  = 0.00
 var checkDate: any = ''
 //var DevloperTime: any = 0
 //var QATime: any = 0
 var FeedBackItemArray: any = [];
+var todayLeaveUsers:any=[]
 //var DesignTime: any = 0
 var TotalTime: any = 0
 var CurrentUserId=''
+var StartDatesss:any=''
 const TimeReport = (props:any) => {
+   
     CurrentUserId = props.ContextData.Context.pageContext._legacyPageContext?.userId
     var OffshoreSitee = '&$filter=';
     var HealthSitee = '&$filter=';
@@ -82,8 +87,8 @@ const TimeReport = (props:any) => {
         taskUsers = await web.lists
             .getByTitle('Task Users')
             .items
-            .select('Id,UserGroupId,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
-            .expand('AssingedToUser,Approver')
+            .select('Id,UserGroup/Id,UserGroup/Title,TimeCategory,Suffix,Title,Email,SortOrder,Role,IsShowTeamLeader,Company,ParentID1,Status,Item_x0020_Cover,AssingedToUserId,isDeleted,AssingedToUser/Title,AssingedToUser/Id,AssingedToUser/EMail,ItemType,Approver/Id,Approver/Title,Approver/Name')
+            .expand('AssingedToUser,Approver,UserGroup')
             .top(4999)
             .get();
         AllUsers = taskUsers;
@@ -211,15 +216,17 @@ const TimeReport = (props:any) => {
     var datess = ''
     var TodayDate =''
     const GeneratedTask = async (Type: any) => {
-      
+        leaveUsers =0.00
          DevloperTime = 0.00;
          QATime = 0.00;
          DesignTime = 0.00;
+         TotleTaskTime = 0.00
 
         if (Type == "Yesterday") {
             var datteee = new Date()
             var MyYesterdayDate:any = Moment(datteee).add(-1, 'days').format()
             setDefaultDate(MyYesterdayDate)
+            var Datenew = Moment(MyYesterdayDate).format("DD/MM/YYYY")
             var myDate = new Date()
             var final: any = (Moment(myDate).add(-2, 'days').format())
         }
@@ -227,6 +234,8 @@ const TimeReport = (props:any) => {
             var dat:any = new Date()
             setDefaultDate(dat)
             var myDate = new Date()
+            var Datenew = Moment(myDate).format("DD/MM/YYYY")
+          
             setSelectDate(myDate)
             var final: any = (Moment(myDate).add(-1, 'days').format())
            
@@ -236,6 +245,8 @@ const TimeReport = (props:any) => {
             setcheckedTask(false)
             setcheckedCustom(true)
             var myDate = new Date(selectdate)
+            var Datenew = Moment(selectdate).format("DD/MM/YYYY")
+         
             var final: any = (Moment(myDate).add(-1, 'days').format())
         }
          
@@ -278,6 +289,72 @@ const TimeReport = (props:any) => {
 
 
     }
+    const GetleaveUser=async(selectDate:any)=>{
+        var myData:any=[]
+        var leaveUser:any=[]
+        todayLeaveUsers=[]
+        let web = new Web("https://hhhhteams.sharepoint.com/sites/HHHH/SP");
+
+        myData = await web.lists
+            .getById('72ABA576-5272-4E30-B332-25D7E594AAA4')
+            .items
+            .select("RecurrenceData,Duration,Author/Title,Editor/Title,Category,Description,ID,EndDate,EventDate,Location,Title,fAllDayEvent,EventType,UID,fRecurrence,Event_x002d_Type,Name")
+            .top(499)
+            .expand("Author,Editor")
+            .getAll()
+            console.log(myData);
+           
+            myData?.forEach((val:any)=>{
+                if(val.Name != null && val.Name != undefined){
+                    // var TodayDate:any = new Date()
+                    // TodayDate =  Moment(TodayDate).format("DD/MM/YYYY")
+                   //var TodayDate =  selectDate.split("/")
+                   var TodayDate =  selectDate[2] + selectDate[1] + selectDate[0]
+                    var endDate = Moment(val.EndDate).format("DD/MM/YYYY")
+                    var eventDate = Moment(val.EventDate).format("DD/MM/YYYY")
+
+                    var NewEndDate = endDate.split("/")
+                    var NewEventDate = eventDate.split("/")
+
+                     var End = NewEndDate[2]  + NewEndDate[1] + NewEndDate[0]
+                     var start = NewEventDate[2] + NewEventDate[1] + NewEventDate[0]
+
+
+                     if (TodayDate >= start && TodayDate <= End){
+                        console.log(val)
+                        leaveUser.push(val)
+    
+                    }
+                }
+               
+            })
+            console.log(leaveUser)
+            leaveUser?.forEach((val:any)=>{
+                var users:any={}
+                AllUsers?.forEach((item:any)=>{
+                    if(val.Name == item.Title){
+                        users['userName'] = item.Title
+                        users['Components'] = ''
+                        users['SubComponents'] = ''
+                        users['Features'] = ''
+                        users['Department'] = item.TimeCategory
+                        users['Effort'] = 8
+                        users['Task'] = 'Leave'
+                        users['Comments'] = 'Leave'
+                        users['ClientCategory'] = 'Leave'
+                        users['siteType'] = ''
+                        users['Date'] = ''
+                        users['Status'] = ''
+                        todayLeaveUsers.push(users)
+                    }
+                })
+            })
+            console.log(todayLeaveUsers)
+            if(todayLeaveUsers != undefined && todayLeaveUsers.length>0){
+                 leaveUsers = todayLeaveUsers.length * 8
+            }
+           
+    }
     const compareDates = (selectedworkingDate: any) => {
         var flag = false;
         if (selectdate != undefined) {
@@ -290,14 +367,15 @@ const TimeReport = (props:any) => {
             var final: any = (Moment(myDate).add(-1, 'days').format())
             var Datenew = Moment(final).format("DD/MM/YYYY")
         }
+      
 
-        var StartDates = Datenew.split("/");
-        var selectedStartDate = StartDates[2] + '/' + StartDates[1] + '/' + StartDates[0];
+        StartDatesss = Datenew.split("/");
+        var selectedStartDate = StartDatesss[2] + '/' + StartDatesss[1] + '/' + StartDatesss[0];
         if (selectedStartDate == selectedworkingDate)
             flag = true;
         return flag;
     }
-    const makefinalTask = (AllTime: any) => {
+    const makefinalTask = async (AllTime: any) => {
         var SelectedTime: any = []
         AllTime?.forEach((task: any) => {
             task.AdditionalTime?.forEach((timeSpent: any) => {
@@ -412,6 +490,7 @@ const TimeReport = (props:any) => {
             })
 
         })
+        await GetleaveUser(StartDatesss)
         finalTask(SelectedTime)
 
     }
@@ -419,9 +498,27 @@ const TimeReport = (props:any) => {
         var MyData: any = []
         AllUsers?.forEach((val: any) => {
             SelectedTime?.forEach((item: any) => {
+                item.Company = 'Smalsus'
                 if (item.AuthorId == val.AssingedToUserId) {
-                    item.Department = val.TimeCategory
-                    item.Company = val.Company
+                    // item.Department = val.TimeCategory
+                    // item.Company = val.Company
+
+                    if (val.UserGroup.Title == 'Senior Developer Team' || val.UserGroup.Title == 'Smalsus Lead Team' || val.UserGroup.Title == 'External Staff' )
+
+                    item.Department = 'Developer';
+
+                if (val.UserGroup.Title == 'Junior Developer Team')
+
+                item.Department = 'Junior Developer';
+
+                if (val.UserGroup.Title == 'Design Team')
+
+                item.Department = 'Design';
+
+                if (val.UserGroup.Title == 'QA Team')
+
+                item.Department = 'QA';
+
                 }
             })
 
@@ -440,6 +537,9 @@ const TimeReport = (props:any) => {
                         item.Status = task.Status
                         item.Title = task.Title
                         item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        task?.ClientCategory?.forEach((cat:any)=>{
+                            item.ClientCategory = cat.Title;
+                        })
                     }
                     if (task?.Component.length == 0) {
                         item.siteUrl = task.siteUrl
@@ -448,6 +548,9 @@ const TimeReport = (props:any) => {
                         item.Status = task.Status
                         item.Title = task.Title
                         item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        task?.ClientCategory?.forEach((cat:any)=>{
+                            item.ClientCategory = cat.Title;
+                        })
                     }
                     if (task?.Component[0]?.ItemType == 'SubComponent') {
                         item.SubComponents = task.Component[0].Title
@@ -457,6 +560,9 @@ const TimeReport = (props:any) => {
                         item.Status = task.Status
                         item.Title = task.Title
                         item.Priority_x0020_Rank = task.Priority_x0020_Rank
+                        task?.ClientCategory?.forEach((cat:any)=>{
+                            item.ClientCategory = cat.Title;
+                        })
                     }
                     if (task?.Component[0]?.ItemType == 'Feature') {
                         item.Features = task.Component[0].Title
@@ -470,18 +576,20 @@ const TimeReport = (props:any) => {
                             item.ClientCategory = cat.Title;
                         })
                     }
+                   
 
                 }
 
 
             })
+           
         })
         // const finalData = MyData.filter((val: any, TaskId: any, array: any) => {
         //         return array.indexOf(val) == TaskId;
         //      })
         if (SelectedTime != undefined) {
             SelectedTime.forEach((time: any) => {
-                if (time?.Department == 'Development') {
+                if (time?.Department == 'Developer' || time?.Department == 'Junior Developer') {
                     DevloperTime = DevloperTime + parseFloat(time.Effort)
                 }
 
@@ -493,7 +601,11 @@ const TimeReport = (props:any) => {
                 }
 
             })
+            TotleTaskTime = QATime + DevloperTime + DesignTime
         }
+        todayLeaveUsers?.forEach((items:any)=>{
+            SelectedTime.push(items)
+        })
         setData(SelectedTime)
         showProgressHide();
     }
@@ -521,6 +633,7 @@ const TimeReport = (props:any) => {
             var a = Yesterday.getDate() - 1;
             var Datene = Moment(Yesterday).subtract(1, 'day')
             var Datenew = Moment(Datene).format("DD-MM-YYYY")
+            var Daten = Moment(Datene).format("DD/MM/YYYY")
             checkDate = Datenew;
             GeneratedTask(Dates);
         }
@@ -541,7 +654,7 @@ const TimeReport = (props:any) => {
         () => [
             {
 
-                accessorFn: (row) => row?.Title,
+                accessorFn: (row) => row?.Task,
                 cell: ({ row, getValue }) => (
                     <>
                         <a data-interception="off" target="_blank" className="hreflink serviceColor_Active"
@@ -552,9 +665,9 @@ const TimeReport = (props:any) => {
 
                     </>
                 ),
-                id: 'Title',
+                id: 'Task',
                 header: '',
-                placeholder: "Title",
+                placeholder: "Task",
 
 
 
@@ -832,10 +945,12 @@ const TimeReport = (props:any) => {
             if (item.PercentComplete == undefined || item.PercentComplete == '') {
                 item.PercentComplete = '';
             }
+            if (item.Date == undefined || item.Date == '') {
+                item.Date = '';
+            }
            var text = '<tr>' +
             '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.Date + '</td>'
             + '<td width="7%" style="border: 1px solid #aeabab;padding: 4px">' + item.siteType + '</td>'
-            + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.ClientCategory + '</td>'
             + '<td width="10%" style="border: 1px solid #aeabab;padding: 4px">' + item?.Components + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.SubComponents + '</td>'
             + '<td style="border: 1px solid #aeabab;padding: 4px">' + item?.Features + '</td>'
@@ -869,6 +984,10 @@ const TimeReport = (props:any) => {
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + QATime + '</td>'
         + '</tr>'
         + '<tr>'
+        + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + 'Users on leave' + '</td>'
+        + '<td style="border: 1px solid #aeabab;padding: 4px">' + leaveUsers + '</td>'
+        + '</tr>'
+        + '<tr>'
         + '<td style="border: 1px solid #aeabab;padding: 5px;width: 50%;" bgcolor="#f5f5f5">' + '<strong>' + 'Total' + '</strong>' + '</td>'
         + '<td style="border: 1px solid #aeabab;padding: 4px">' + '<strong>' + TotlaTime + '</strong>' + '</td>'
         + '</tr>';
@@ -896,7 +1015,6 @@ var ReportDate = new Date()
                 '<tr style="font-size: 11px;">' +
                 '<th  style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Date' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "7%" bgcolor="#f5f5f5">' + 'Sites' + '</th>'
-                + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'Component' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'SubComponent' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Feature' + '</th>'
@@ -909,8 +1027,6 @@ var ReportDate = new Date()
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" width = "8%" bgcolor="#f5f5f5">' + 'TimeEntryUser' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'Designation' + '</th>'
                 + '<th style="border: 1px solid #aeabab;padding: 5px;" bgcolor="#f5f5f5">' + 'ClientCategory' + '</th>'
-
-
                 + '</thead>' +
                 '<tbody align="center">' +
                 '<tr>' +
@@ -1016,7 +1132,7 @@ var ReportDate = new Date()
 
                     <input type='date' value={Moment(selectdate!= undefined?selectdate:defaultDate).format("YYYY-MM-DD")} max="9999-12-31 mx-3" onChange={(e) => setSelectDate(e.target.value)} />
                     <label className='mx-2'>
-                        <input type="radio" name="Custom" checked={checkedCustom} onClick={() => selectType('Custom')} className="me-1" />Custom
+                        <input type="radio" name="Custom" checked={checkedCustom} className="me-1" />Custom
                     </label>
                     <label className='mx-2'>
                         <input type="radio"  name="Yesterday" checked={checkedWS} onClick={() => selectType('Yesterday')} className="me-1" />Yesterday
@@ -1033,26 +1149,31 @@ var ReportDate = new Date()
                         <thead>
                             <tr>
                                 <th className='border bg-light'><strong>Team</strong></th>
-                                <th className='border'><strong>Time In Houres</strong></th>
+                                <th className='border'><strong>Time In Hours</strong></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td className='border bg-light'>Design</td>
-                                <td className='border'>{DesignTime}</td>
+                                <td className='border'>{DesignTime.toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td className='border bg-light'>Development</td>
-                                <td className='border'>{DevloperTime}</td>
+                                <td className='border'>{DevloperTime.toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td className='border bg-light'> QA</td>
 
-                                <td className='border'>{QATime}</td>
+                                <td className='border'>{QATime.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td className='border bg-light'> Users on Leave </td>
+
+                                <td className='border'>{leaveUsers.toFixed(2)}</td>
                             </tr>
                             <tr>
                                 <td className='border bg-light'> <strong>Total Time</strong></td>
-                                <td className='border'>{QATime + DevloperTime + DesignTime}</td>
+                                <td className='border'>{TotleTaskTime?.toFixed(2)}</td>
                             </tr>
 
                         </tbody>
@@ -1065,7 +1186,7 @@ var ReportDate = new Date()
              {
                 data?.length >0?
                 <>
-                 <div className='pull-right' style={{fontSize:'20px',position:'relative',right:'165px'}} onClick={()=>sendEmail()}><MdEmail/></div>
+                 <div className='pull-right mail-info' onClick={()=>sendEmail()}><MdEmail/></div>
                <GlobalCommanTable columns={column} data={data} callBackData={callBackData} showHeader={true} /> </>:
                 <div className="bg-f5f5 mb-2 mt-2">Oops! Time Entries not available (Might be Weekend or Holiday or No data available In this Selected Date).</div>
              }
