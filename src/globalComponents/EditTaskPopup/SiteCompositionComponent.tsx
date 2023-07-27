@@ -782,7 +782,7 @@ const SiteCompositionComponent = (Props: any) => {
                         Portfolio
                     </label>
                 </span>
-                <span><span title="Edit Task" className="svg__iconbox svg__icon--editBox"  onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
+                <span><span  className="svg__iconbox svg__icon--editBox"  onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
                 <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
@@ -860,7 +860,7 @@ const SiteCompositionComponent = (Props: any) => {
                                             <td className="m-0 p-1 align-middle" style={{ width: "36%" }}>
                                                 {siteData.Title == "EI" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between  Compositionfild">
+                                                        <div className="input-group block justify-content-between">
                                                             {EIClientCategory != undefined && EIClientCategory.length > 0 ?
                                                                 <> {EIClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
