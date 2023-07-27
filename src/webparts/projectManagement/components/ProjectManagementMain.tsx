@@ -28,6 +28,7 @@ import SmartInformation from "../../taskprofile/components/SmartInformation";
 import Accordion from 'react-bootstrap/Accordion';
 //import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import Card from 'react-bootstrap/Card';
+import InfoIconsToolTip from "../../../globalComponents/InfoIconsToolTip/InfoIconsToolTip";
 var QueryId: any = "";
 let linkedComponentData: any = [];
 let smartComponentData: any = [];
@@ -39,7 +40,7 @@ let headerOptions: any = {
   teamsIcon: true
 }
 var DynamicData: any = {}
-var AllSitesAllTasks:any=[];
+var AllSitesAllTasks: any = [];
 var ChildData: any = []
 var Parent: any = []
 var SubChild: any = []
@@ -231,26 +232,26 @@ const ProjectManagementMain = (props: any) => {
         AllUsers?.map((items: any) => {
           items.AssignedUser = [];
           items.AssignedTo = [];
-          items.Team_x0020_Members=[];
-          items.Responsible_x0020_Team=[];
+          items.Team_x0020_Members = [];
+          items.Responsible_x0020_Team = [];
           AllUser?.map((user: any) => {
-            if(items?.Team_x0020_MembersId!=undefined){
-              items?.Team_x0020_MembersId?.map((taskUser:any)=>{
+            if (items?.Team_x0020_MembersId != undefined) {
+              items?.Team_x0020_MembersId?.map((taskUser: any) => {
                 if (user.AssingedToUserId == taskUser) {
-                  user.Id=user.AssingedToUserId ;
+                  user.Id = user.AssingedToUserId;
                   items.Team_x0020_Members.push(user)
                 }
               })
             }
-            if(items?.Responsible_x0020_TeamId!=undefined){
-              items?.Responsible_x0020_TeamId?.map((taskUser:any)=>{
+            if (items?.Responsible_x0020_TeamId != undefined) {
+              items?.Responsible_x0020_TeamId?.map((taskUser: any) => {
                 if (user.AssingedToUserId == taskUser) {
-                  user.Id=user.AssingedToUserId ;
+                  user.Id = user.AssingedToUserId;
                   items.Responsible_x0020_Team.push(user)
                 }
               })
             }
-           
+
           });
           if (items.AssignedToId != undefined) {
             items.AssignedToId.map((taskUser: any) => {
@@ -259,7 +260,7 @@ const ProjectManagementMain = (props: any) => {
 
               AllUser?.map((user: any) => {
                 if (user.AssingedToUserId == taskUser) {
-                  user.Id=user.AssingedToUserId ;
+                  user.Id = user.AssingedToUserId;
                   items.AssignedTo.push(user);
                   newuserdata["useimageurl"] = user?.Item_x0020_Cover?.Url;
                   newuserdata["Suffix"] = user?.Suffix;
@@ -711,74 +712,74 @@ const ProjectManagementMain = (props: any) => {
     let AllBottleNeckTasks: any = [];
     let AllPriority: any = [];
     let query =
-        "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
+      "&$filter=Status ne 'Completed'&$orderby=Created desc&$top=4999";
     let Counter = 0;
     let web = new Web(AllListId?.siteUrl);
     let arraycount = 0;
     try {
-        if (siteConfig?.length > 0) {
+      if (siteConfig?.length > 0) {
 
-            siteConfig.map(async (config: any) => {
-                if (config.Title != "SDC Sites") {
-                    let smartmeta = [];
-                    await web.lists
-                        .getById(config.listId)
-                        .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
-                        .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
-                        .getAll().then((data: any) => {
-                            smartmeta = data;
-                            smartmeta.map((task: any) => {
-                                task.AllTeamMember = [];
-                                task.HierarchyData = [];
-                                task.siteType = config.Title;
-                                task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
-                                task.listId = config.listId;
-                                task.siteUrl = config.siteUrl.Url;
-                                task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
-                                task.DisplayDueDate =
-                                    task.DueDate != null
-                                        ? Moment(task.DueDate).format("DD/MM/YYYY")
-                                        : "";
-                                task.portfolio = {};
-                                if (task?.Component?.length > 0) {
-                                    task.portfolio = task?.Component[0];
-                                    task.PortfolioTitle = task?.Component[0]?.Title;
-                                    task["Portfoliotype"] = "Component";
-                                }
-                                if (task?.Services?.length > 0) {
-                                    task.portfolio = task?.Services[0];
-                                    task.PortfolioTitle = task?.Services[0]?.Title;
-                                    task["Portfoliotype"] = "Service";
-                                }
-                                task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
-                                task.TeamMembersSearch = "";
-                                task.componentString =
-                                    task.Component != undefined &&
-                                        task.Component != undefined &&
-                                        task.Component.length > 0
-                                        ? getComponentasString(task.Component)
-                                        : "";
-                                task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
-              
-                                
-                                AllSiteTasks.push(task)
-                            });
-                            arraycount++;
-                        });
-                    let currentCount = siteConfig?.length;
-                    if (arraycount === currentCount) {
-                      AllSitesAllTasks = AllSiteTasks;
-                      
-                    }
-                } else {
-                    arraycount++;
-                }
-            });
-        }
+        siteConfig.map(async (config: any) => {
+          if (config.Title != "SDC Sites") {
+            let smartmeta = [];
+            await web.lists
+              .getById(config.listId)
+              .items.select("ID", "Title", "ClientCategory/Id", "ClientCategory/Title", 'ClientCategory', "Comments", "DueDate", "ClientActivityJson", "EstimatedTime", "EstimatedTimeDescription", "Approver/Id", "Approver/Title", "ParentTask/Id", "ParentTask/Title", "workingThisWeek", "IsTodaysTask", "AssignedTo/Id", "SharewebTaskLevel1No", "SharewebTaskLevel2No", "OffshoreComments", "AssignedTo/Title", "OffshoreImageUrl", "SharewebCategories/Id", "SharewebCategories/Title", "Status", "StartDate", "CompletedDate", "Team_x0020_Members/Title", "Team_x0020_Members/Id", "ItemRank", "PercentComplete", "Priority", "Body", "Priority_x0020_Rank", "Created", "Author/Title", "Author/Id", "BasicImageInfo", "component_x0020_link", "FeedBack", "Responsible_x0020_Team/Title", "Responsible_x0020_Team/Id", "SharewebTaskType/Title", "ClientTime", "Component/Id", "Component/Title", "Services/Id", "Services/Title", "Services/ItemType", "Modified")
+              .expand("Team_x0020_Members", "Approver", "ParentTask", "ClientCategory", "AssignedTo", "SharewebCategories", "Author", "Responsible_x0020_Team", "SharewebTaskType", "Component", "Services")
+              .getAll().then((data: any) => {
+                smartmeta = data;
+                smartmeta.map((task: any) => {
+                  task.AllTeamMember = [];
+                  task.HierarchyData = [];
+                  task.siteType = config.Title;
+                  task.bodys = task.Body != null && task.Body.split('<p><br></p>').join('');
+                  task.listId = config.listId;
+                  task.siteUrl = config.siteUrl.Url;
+                  task.PercentComplete = (task.PercentComplete * 100).toFixed(0);
+                  task.DisplayDueDate =
+                    task.DueDate != null
+                      ? Moment(task.DueDate).format("DD/MM/YYYY")
+                      : "";
+                  task.portfolio = {};
+                  if (task?.Component?.length > 0) {
+                    task.portfolio = task?.Component[0];
+                    task.PortfolioTitle = task?.Component[0]?.Title;
+                    task["Portfoliotype"] = "Component";
+                  }
+                  if (task?.Services?.length > 0) {
+                    task.portfolio = task?.Services[0];
+                    task.PortfolioTitle = task?.Services[0]?.Title;
+                    task["Portfoliotype"] = "Service";
+                  }
+                  task["SiteIcon"] = config?.Item_x005F_x0020_Cover?.Url;
+                  task.TeamMembersSearch = "";
+                  task.componentString =
+                    task.Component != undefined &&
+                      task.Component != undefined &&
+                      task.Component.length > 0
+                      ? getComponentasString(task.Component)
+                      : "";
+                  task.Shareweb_x0020_ID = globalCommon.getTaskId(task);
+
+
+                  AllSiteTasks.push(task)
+                });
+                arraycount++;
+              });
+            let currentCount = siteConfig?.length;
+            if (arraycount === currentCount) {
+              AllSitesAllTasks = AllSiteTasks;
+
+            }
+          } else {
+            arraycount++;
+          }
+        });
+      }
     } catch (e) {
-        console.log(e)
+      console.log(e)
     }
-};
+  };
 
   const ChangeIcon = () => {
     seticon(!icon)
@@ -1017,7 +1018,7 @@ const ProjectManagementMain = (props: any) => {
         cell: ({ row, getValue }) => (
           <>
             <span className="d-flex">
-            <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
+              <ReactPopperTooltipSingleLevel ShareWebId={row?.original?.Shareweb_x0020_ID} row={row?.original} singleLevel={true} masterTaskData={MyAllData} AllSitesTaskData={AllSitesAllTasks} />
             </span>
           </>
         ),
@@ -1046,19 +1047,7 @@ const ProjectManagementMain = (props: any) => {
                   {row?.original?.Title}
                 </a>
               )}
-
-              {row?.original?.Body !== null && (
-                <span className='me-1'>
-                  <div className='popover__wrapper me-1' data-bs-toggle='tooltip' data-bs-placement='auto'>
-                    <span className='svg__iconbox svg__icon--info'></span>
-                    <div className='popover__content'>
-                      <span>
-                        <p dangerouslySetInnerHTML={{ __html: row?.original?.bodys }}></p>
-                      </span>
-                    </div>
-                  </div>
-                </span>
-              )}
+              {row?.original?.Body !== null && row?.original?.Body !=undefined ? <InfoIconsToolTip Discription={row?.original?.bodys} row={row?.original} />:''}
             </span>
           </>
         ),
@@ -1662,7 +1651,7 @@ const ProjectManagementMain = (props: any) => {
                                 <dl>
                                   <dt className="bg-fxdark">Assigned To</dt>
                                   <dd className="bg-light">
-                                 {Masterdata?.AssignedTo?.length>0||Masterdata?.Team_x0020_Members?.length>0||Masterdata?.Responsible_x0020_Team?.length>0?<ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} />:''}   
+                                    {Masterdata?.AssignedTo?.length > 0 || Masterdata?.Team_x0020_Members?.length > 0 || Masterdata?.Responsible_x0020_Team?.length > 0 ? <ShowTaskTeamMembers props={Masterdata} TaskUsers={AllTaskUsers} /> : ''}
                                   </dd>
                                 </dl>
                                 <dl>
