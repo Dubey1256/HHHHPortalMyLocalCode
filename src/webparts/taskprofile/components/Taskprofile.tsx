@@ -15,6 +15,7 @@ import SmartInformation from './SmartInformation';
 import VersionHistoryPopup from '../../../globalComponents/VersionHistroy/VersionHistory';
 import TasksTable from './TaskfooterTable';
 import EmailComponenet from './emailComponent';
+import EditSiteComposition from './EditSiteComposition'
 var ClientTimeArray: any = [];
 var TaskIdCSF: any = "";
 var TaskIdAW = "";
@@ -400,16 +401,19 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
       Approver: taskDetails.Approver != undefined ? taskDetails.Approver[0] : "",
       ParentTask: taskDetails?.ParentTask,
     };
-    tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items:any)=>{
-      if(items?.Comments?.length>0){
-        items?.Comments?.map((comment:any)=>{
-          comment.AuthorImage = comment.AuthorImage.replace(
-            "https://www.hochhuth-consulting.de",
-            "https://hhhhteams.sharepoint.com/sites/HHHH"
-          );
-        })
-      }
-    })
+    if(tempTask?.FeedBack!=null&& tempTask?.FeedBack.length>0){
+      tempTask?.FeedBack[0]?.FeedBackDescriptions?.map((items:any)=>{
+        if(items?.Comments?.length>0){
+          items?.Comments?.map((comment:any)=>{
+            comment.AuthorImage = comment?.AuthorImage?.replace(
+              "https://www.hochhuth-consulting.de",
+              "https://hhhhteams.sharepoint.com/sites/HHHH"
+            );
+          })
+        }
+      })
+    }
+   
     console.log(tempTask);
 
     this.setState({
@@ -446,8 +450,8 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
         }
         if (attachdata.length > 0) {
           BasicImageInfo?.forEach(function (item: any) {
-            if (item.ImageUrl != undefined && item.ImageUrl != "") {
-              item.ImageUrl = item.ImageUrl.replace(
+            if (item?.ImageUrl != undefined && item?.ImageUrl != "") {
+              item.ImageUrl = item?.ImageUrl?.replace(
                 "https://www.hochhuth-consulting.de",
                 "https://hhhhteams.sharepoint.com/sites/HHHH"
               );
@@ -1057,7 +1061,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
     if (breadcrumbitem != undefined) {
       if (breadcrumbitem?.ParentTask != undefined && breadcrumbitem?.ParentTask?.Shareweb_x0020_ID != undefined && breadcrumbitem?.ChildTask == undefined && breadcrumbitem?.SubChildTask == undefined) {
 
-        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID).replace("-", ">")
+        TaskIdAW = (breadcrumbitem?.ParentTask?.Shareweb_x0020_ID)?.replace("-", ">")
       }
       if (breadcrumbitem.ChildTask != undefined && breadcrumbitem.SubChildTask == undefined) {
         if (breadcrumbitem.ChildTask.Shareweb_x0020_ID != undefined) {
@@ -1066,11 +1070,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
           }
         }
         else if (breadcrumbitem?.ChildTask != undefined && breadcrumbitem?.ChildTask?.TaskId != undefined && breadcrumbitem?.SubChildTask == undefined) {
-          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId).replace("-", ">")
+          TaskIdAW = (breadcrumbitem?.ChildTask?.TaskId)?.replace("-", ">")
         }
       }
       else if (breadcrumbitem?.SubChildTask != undefined && breadcrumbitem?.SubChildTask?.TaskId != undefined) {
-        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId).replace("-", ">")
+        TaskIdAW = (breadcrumbitem?.SubChildTask?.TaskId)?.replace("-", ">")
       }
     }
     this.maincollection.push(breadcrumbitem);
@@ -1242,7 +1246,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                   <dl>
                     <dt className='bg-Fa'>Task Id</dt>
                     <dd className='bg-Ff position-relative' ><span className='tooltipbox'>{this.state.Result["TaskId"]} </span>
-                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW.replace("-", ">")}</span>}</span>}
+                      {TaskIdCSF != "" && <span className="idhide bg-fxdark siteColor">{TaskIdCSF?.replace("-", ">")}{TaskIdAW == "" && this.state.Result["TaskId"] != undefined && <span className='text-body'>{">" + this.state.Result["TaskId"]}</span>} {TaskIdAW != "" && <span className='text-body'>{">" + TaskIdAW?.replace("-", ">")}</span>}</span>}
 
                     </dd>
 
@@ -1510,11 +1514,11 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
                         })}
                       </div>
                     }
-                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"].length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
+                    <div className={this.state.Result["BasicImageInfo"] != null && this.state.Result["BasicImageInfo"]?.length > 0 ? "col-sm-8 pe-0 mt-2" : "col-sm-12 pe-0 ps-0 mt-2"}>
                       {this.state.Result["SharewebTaskType"] != null && (this.state.Result["SharewebTaskType"] == '' ||
                         this.state.Result["SharewebTaskType"] == 'Task'|| this.state.Result["SharewebTaskType"]=="Workstream" || this.state.Result["SharewebTaskType"] == "Activities") && this.state.Result["FeedBack"] != undefined && this.state.Result["FeedBack"].length > 0 && this.state.Result["FeedBack"][0].FeedBackDescriptions != undefined &&
-                        this.state.Result["FeedBack"][0].FeedBackDescriptions.length > 0 &&
-                        this.state.Result["FeedBack"][0].FeedBackDescriptions[0].Title != ''&& this.state.countfeedback>=0 &&
+                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.length > 0 &&
+                        this.state.Result["FeedBack"][0]?.FeedBackDescriptions[0]?.Title != ''&& this.state.countfeedback>=0 &&
                         <div className={"Addcomment " + "manage_gap"}>
                           {this.state.Result["FeedBack"][0]?.FeedBackDescriptions?.map((fbData: any, i: any) => {
                             let userdisplay: any = [];
@@ -1666,7 +1670,7 @@ export default class Taskprofile extends React.Component<ITaskprofileProps, ITas
 
         {this.state.isOpenEditPopup ? <EditTaskPopup Items={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
         {/* {this.state.isTimeEntry ? <TimeEntry props={this.state.Result} isopen={this.state.isTimeEntry} CallBackTimesheet={() => { this.CallBackTimesheet() }} /> : ''} */}
- 
+      {this.state.EditSiteCompositionStatus ? <EditSiteComposition EditData={this.state.Result} context={this.props.Context} AllListId={AllListId} Call={() => { this.CallBack() }} /> : ''}
 
       </div>
     );
