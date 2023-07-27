@@ -743,56 +743,56 @@ const SiteCompositionComponent = (Props: any) => {
         <div className={ServicesTaskCheck ? "serviepannelgreena" : ""}>
             <div className="col-sm-12 ps-3">
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Proportional"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                    onChange={() => ChangeSiteCompositionSettings("Proportional")}
-                    name="SiteCompositions"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
-                    title="add Proportional Time"
-                    className="me-1  mt-0"
-                />
-                  Proportional
+                    <input
+                        type="radio"
+                        id="Proportional"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        onChange={() => ChangeSiteCompositionSettings("Proportional")}
+                        name="SiteCompositions"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Proportional : false}
+                        title="add Proportional Time"
+                        className="me-1  mt-0"
+                    />
+                    Proportional
                 </span>
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Manual"
-                    name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
-                    title="add manual Time"
-                    className="mx-1  mt-0"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
-                    onChange={() => ChangeSiteCompositionSettings("Manual")}
-                />
-                <label>Manual</label>
+                    <input
+                        type="radio"
+                        id="Manual"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
+                        title="add manual Time"
+                        className="mx-1  mt-0"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Manual : false}
+                        onChange={() => ChangeSiteCompositionSettings("Manual")}
+                    />
+                    <label>Manual</label>
                 </span>
                 <span className="l-radio">
-                <input
-                    type="radio"
-                    id="Portfolio"
-                    name="SiteCompositions"
-                    defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
-                    title="Portfolio"
-                    value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
-                    onChange={() => ChangeSiteCompositionSettings("Portfolio")}
-                    className="mx-1 mt-0" />
-                <label>
-                    Portfolio
-                </label>
+                    <input
+                        type="radio"
+                        id="Portfolio"
+                        name="SiteCompositions"
+                        defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
+                        title="Portfolio"
+                        value={SiteCompositionSettings ? SiteCompositionSettings[0]?.Portfolio : false}
+                        onChange={() => ChangeSiteCompositionSettings("Portfolio")}
+                        className="mx-1 mt-0" />
+                    <label>
+                        Portfolio
+                    </label>
                 </span>
-               <span> <SlPencil onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></SlPencil> 
-               {/* <img className="mt-0 siteColor mx-1" onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition." src="/sites/HHHH/SiteCollectionImages/ICONS/32/icon_inline.png" />*/} </span> 
-                <span className="pull-right">
+                <span><span title="Edit Task" className="svg__iconbox svg__icon--editBox"  onClick={() => alert("We are working on it. This feature will be live soon..")} title="Click here to edit tagged portfolio site composition."></span></span>
+                <span className="d-flex justify-content-center pull-right overrid">
                     <input
                         type="checkbox"
-                        className="form-check-input mb-0 ms-2 mt-1 mx-1 rounded-0"
+                        className="form-check-input mb-0 ms-2 mx-1 rounded-0"
                         defaultChecked={SiteCompositionSettings ? SiteCompositionSettings[0]?.localSiteComposition : false}
                         onChange={() => ChangeSiteCompositionSettings("Overridden")}
                     />
-                    <label data-toggle="tooltip" data-placement="bottom" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component.">
+                    <label data-toggle="tooltip" data-placement="bottom" className="d-flex">
                         Overridden
+                        <span className="svg__iconbox svg__icon--info" title="If this is checked then it should consider site allocations in Time Entry from Task otherwise from tagged component."></span>
                     </label>
                 </span>
             </div>
@@ -885,7 +885,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                                     <a className="bg-white border border-secondary pancilicons"
                                                                         onClick={() => openClientCategoryModel(340, 'EI')}
                                                                     >
-                                                                     <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                        <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
                                                                     </a>
                                                                     : null
                                                             }
@@ -907,7 +907,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "EPS" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between Compositionfild">
+                                                        <div className="input-group block justify-content-between">
                                                             {EPSClientCategory != undefined && EPSClientCategory.length > 0 ?
                                                                 <> {EPSClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -929,10 +929,10 @@ const SiteCompositionComponent = (Props: any) => {
                                                                 </> : <input type="text" value={SearchedKeyForEPS} onChange={(e) => autoSuggestionsForClientCategoryIdividual(e, "EPS", 341)} style={siteData.BtnStatus ? {} : { cursor: "not-allowed" }} className="border-secondary form-control" placeholder="Search Client Category Here!" readOnly={siteData.BtnStatus ? false : true} />}
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary pancilicons"
+                                                                    <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(341, "EPS")}
                                                                     >
-                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
@@ -955,7 +955,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Education" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between Compositionfild">
+                                                        <div className="input-group block justify-content-between">
                                                             {EducationClientCategory != undefined && EducationClientCategory.length > 0 ?
                                                                 <> {EducationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -978,10 +978,10 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary pancilicons"
+                                                                    <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(344, "Education")}
                                                                     >
-                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
@@ -1004,7 +1004,7 @@ const SiteCompositionComponent = (Props: any) => {
                                                     : null}
                                                 {siteData.Title == "Migration" ?
                                                     <>
-                                                        <div className="input-group block justify-content-between Compositionfild">
+                                                        <div className="input-group block justify-content-between">
                                                             {MigrationClientCategory != undefined && MigrationClientCategory.length > 0 ?
                                                                 <> {MigrationClientCategory?.map((dataItem: any) => {
                                                                     if (dataItem.siteName == siteData.Title) {
@@ -1027,10 +1027,10 @@ const SiteCompositionComponent = (Props: any) => {
 
                                                             {
                                                                 siteData.BtnStatus ?
-                                                                    <a className="bg-white border border-secondary pancilicons"
+                                                                    <a className="bg-white border border-secondary"
                                                                         onClick={() => openClientCategoryModel(569, 'Migration')}
                                                                     >
-                                                                          <span title="Edit Task" className="svg__iconbox svg__icon--editBox hreflink"></span>
+                                                                         <span title="Edit Task" className="svg__iconbox svg__icon--edit hreflink"></span>
                                                                         {/* <img src={require('../../Assets/ICON/edit_page.svg')} width="25" /> */}
                                                                     </a>
                                                                     : null
@@ -1059,7 +1059,7 @@ const SiteCompositionComponent = (Props: any) => {
                         </tbody>
                         : null}
                 </table>
-                <div className="bg-secondary d-flex justify-content-between p-1 shadow-lg">
+                <div className="bg-e9 d-flex justify-content-between p-1 shadow-lg">
                     <div>
                         <button className="btn btn-primary px-4 ms-2" onClick={UpdateSiteTaggingAndClientCategory} style={usedFor == 'Task-Profile' ? { display: 'block' } : { display: 'none' }}>
                             Save
